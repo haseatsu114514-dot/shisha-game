@@ -66,19 +66,20 @@ try {
     QA.fresh();
   });
 
-  await check("opt-in, identity and missing assets", async () => {
+  await check("enabled route, identity and registered assets", async () => {
     const result = await page.evaluate(() => {
       const { core, data, route, bonds } = QA;
       const before = JSON.stringify(core.state);
       const unknown = data.displayName("hiyori", core.state);
-      const ready = route.availableHiyoriEvents();
+      const ready = route.availableHiyoriEvents().map((e) => e.id);
       const finale = bonds.finaleDue("hiyori");
       const unchanged = JSON.stringify(core.state) === before;
       core.state.met.hiyori = true;
       return { unknown, known: data.displayName("hiyori", core.state), ready, finale, unchanged,
         portrait: data.portraitInfo("hiyori", "normal"), icon: data.faceIconUrl("hiyori") };
     });
-    assert.deepEqual(result, { unknown: "？？？", known: "ひより", ready: [], finale: false, unchanged: true, portrait: null, icon: null });
+    assert.equal(result.unknown, "？？？"); assert.equal(result.known, "ひより");
+    assert.deepEqual(result.ready, ["meeting"]); assert(result.unchanged && !result.finale && result.portrait && result.icon);
   });
 
   await check("spoken first, silent inner, click and ordinary dialogue", async () => {
@@ -186,16 +187,19 @@ try {
       const { core, data, route, daily, bonds, stats, romance, vn } = QA;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       const added = [];
+      const originals = { ...data.DB.dialogues };
       const add = (id, lines, branches = {}) => { data.DB.dialogues[id] = { dialogue_id: id, lines, branches }; added.push(id); };
       try {
         const s = QA.fresh(); vn.vnTest.turbo = true;
         data.DB.hiyori.route.enabled = true;
-        const missing = route.hiyoriEventStatus("meeting");
+        const missing = route.hiyoriEventStatus("axe_reveal");
         for (const e of route.hiyoriRoute().events) add(e.dialogue,
-          e.id === "meeting" ? [{ speaker: "hiyori", text: "泡沢ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
+          e.id === "meeting" ? [{ speaker: "hiyori", text: "朝霧ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
             { type: "set_flag", flag: "_lime_contact_hiyori" }] : [{ speaker: "hiyori", text: "テスト用の正式台本", inner: "表示だけで正体フラグは立てない" }]);
         const workTooEarly = await daily.playHiyoriEvent("work_talk");
         await daily.playHiyoriEvent("meeting");
+        await daily.playHiyoriEvent("sumi_message");
+        await daily.playHiyoriEvent("relay");
         stats.gainAffinity("hiyori", 5); // 次回交流の好感度を共通APIで加える
         const first = daily.playHiyoriEvent("cracks");
         const beforeEnd = !!s.flags._hiyori_cracks_done;
@@ -247,7 +251,10 @@ try {
         return { missing, workTooEarly, beforeEnd, concurrent, replay, stablePts, story, withoutGift, romantic, lovers, publicUnchanged, dateInner, friendRoute, noConfession, friendLime, friendInner };
       } finally {
         data.DB.hiyori = original;
-        for (const id of added) delete data.DB.dialogues[id];
+        for (const id of added) {
+          if (originals[id]) data.DB.dialogues[id] = originals[id];
+          else delete data.DB.dialogues[id];
+        }
         vn.vnTest.turbo = false;
       }
     });
@@ -277,6 +284,7 @@ try {
       const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rin === 33 && manualState.lovePts.hiyori === 20;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       data.DB.hiyori.route.enabled = true;
+      const originals = { ...data.DB.dialogues };
       for (const event of route.hiyoriRoute().events) data.DB.dialogues[event.dialogue] = { lines: [{ speaker: "hiyori", text: "条件確認" }] };
       const statuses = [];
       for (const chapter of [1, 2, 3, 4, 5]) {
@@ -284,7 +292,10 @@ try {
         statuses.push({ chapter, tokyo: route.hiyoriEventStatus("tokyo_contact"), dubai: route.hiyoriEventStatus("dubai_support"),
           lover: route.hiyoriEventStatus("chapter5_lover"), friend: route.hiyoriEventStatus("chapter5_friend"), preserved: !!core.state.flags._hiyori_real_self_known });
       }
-      for (const event of route.hiyoriRoute().events) delete data.DB.dialogues[event.dialogue];
+      for (const event of route.hiyoriRoute().events) {
+        if (originals[event.dialogue]) data.DB.dialogues[event.dialogue] = originals[event.dialogue];
+        else delete data.DB.dialogues[event.dialogue];
+      }
       data.DB.hiyori = original;
       const old = core.newState(); old.schema = 7; old.affinity.rin = 42; old.money = 12345;
       delete old.romance; delete old.romanceChoices; delete old.finales;

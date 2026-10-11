@@ -121,7 +121,9 @@ def place_on_canvas_with_fixed_bbox(
     canvas = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
     x = (canvas_w - new_w) // 2
     y = canvas_h - new_h  # 下揃え
-    canvas.paste(cropped, (x, y), cropped)
+    # RGBA の貼り付けに同じ画像をマスクとして渡すと alpha が二乗される。
+    # 元の半透明の髪や輪郭を保ったままコピーする。
+    canvas.paste(cropped, (x, y))
     return canvas
 
 

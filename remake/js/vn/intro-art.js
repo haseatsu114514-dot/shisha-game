@@ -10,6 +10,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
   }, [
     el("img.ci-art-background", { src: background, alt: "", draggable: "false" }),
     el("div.ci-art-veil", { "aria-hidden": "true" }),
+    ...(id === "hiyori" ? [el("div.ci-ember-glow", { "aria-hidden": "true" })] : []),
     el("div.ci-accent-line", { "aria-hidden": "true" }),
     el("div.ci-ribbon", [
       el("div.ci-art-meta", [
@@ -57,6 +58,18 @@ export function animateIntro(host, id) {
   const animate = (selector, frames, options) => animations.push(host.querySelector(selector).animate(frames, {
     duration: 600, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both", ...options,
   }));
+  if (id === "hiyori") {
+    animate(".ci-art-background", [{ opacity: 0, transform: "scale(1.008)" }, { opacity: 1, transform: "none" }], { duration: 1400 });
+    for (const selector of [".ci-ribbon", ".ci-accent-line"]) {
+      animate(selector, [{ opacity: 0, transform: "rotate(4deg)" }, { opacity: 1, transform: "rotate(4deg)" }], { duration: 900, delay: 150 });
+    }
+    animate(".ci-portrait", [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 1200, delay: 120 });
+    for (const [selector, delay] of [[".ci-title", 470], [".ci-name-line", 510], [".ci-quote-area", 810]]) {
+      animate(selector, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 700, delay });
+    }
+    animate(".ci-ember-glow", [{ opacity: .15 }, { opacity: .65 }, { opacity: .2 }], { duration: 2300, iterations: Infinity, easing: "ease-in-out" });
+    return animations;
+  }
   animate(".ci-art-background", [{ opacity: 0, transform: "scale(1.035)" }, { opacity: 1, transform: "none" }], { duration: 700 });
   animate(".ci-ribbon", [{ transform: "translateX(1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: id === "adam" ? 340 : 480, delay: 130 });
   animate(".ci-accent-line", [{ transform: "translateX(-1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: 510, delay: 180 });

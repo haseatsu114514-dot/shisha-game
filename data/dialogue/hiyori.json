@@ -1,76 +1,1111 @@
 {
-  "_comment": "キャラの正本はdata/characters.json。routeは接続用の基盤で、登場方法・正式台本・贈り物は未決。preview_onlyの台本は表示確認用で本編へ自動挿入しない。innerはプレイヤーだけに見え、はじめには聞こえない。",
+  "_comment": "キャラ設定はdata/characters.json。出会いは自由行動で一服する他店共通。スミさんへの報告・伝言を経て♥3のLIMEからtonariへ。preview_onlyは表示確認用。斧投げ・仕事の深掘り・告白は別途台本待ち。innerはプレイヤーだけに見える。",
   "route": {
-    "enabled": false,
-    "storyEvents": ["meeting", "cracks", "axe_reveal", "work_talk"],
-    "question": { "dialogue": "hiyori_bond_question", "choice": "bond_q1_hiyori", "host": "hiyori_work_talk" },
-    "finale": { "dialogue": "hiyori_bond_finale", "question": "bond_q2_hiyori", "gift": null },
+    "enabled": true,
+    "storyEvents": [
+      "meeting",
+      "cracks",
+      "axe_reveal",
+      "work_talk"
+    ],
+    "question": {
+      "dialogue": "hiyori_bond_question",
+      "choice": "bond_q1_hiyori",
+      "host": "hiyori_work_talk"
+    },
+    "finale": {
+      "dialogue": "hiyori_bond_finale",
+      "question": "bond_q2_hiyori",
+      "gift": null
+    },
     "events": [
-      { "id": "meeting", "dialogue": "hiyori_meeting", "chapters": [1, 2], "flag": "_hiyori_meeting_done", "requires": [], "affinity": 10 },
-      { "id": "cracks", "dialogue": "hiyori_cracks", "chapters": [1, 2], "flag": "_hiyori_cracks_done", "requires": ["_hiyori_meeting_done"], "met": true, "minAffinity": 1, "affinity": 10 },
-      { "id": "axe_reveal", "dialogue": "hiyori_axe_reveal", "chapters": [1, 2], "flag": "_hiyori_real_self_known", "requires": ["_hiyori_cracks_done"], "met": true, "affinity": 10 },
-      { "id": "work_talk", "dialogue": "hiyori_work_talk", "chapters": [1, 2], "flag": "_hiyori_work_talk_done", "requires": ["_hiyori_real_self_known"], "met": true, "minAffinity": 2, "affinity": 10 },
-      { "id": "tokyo_contact", "dialogue": "hiyori_tokyo_contact", "chapters": [3], "flag": "_hiyori_tokyo_contact_seen", "requires": ["_hiyori_work_talk_done"], "contact": true },
-      { "id": "feelings_spoken", "dialogue": "hiyori_feelings_spoken", "chapters": [1, 2, 3], "flag": "_hiyori_feelings_spoken", "requires": ["_hiyori_work_talk_done"], "relationship": "lover", "minLoveLevel": 2 },
-      { "id": "dubai_support", "dialogue": "hiyori_dubai_support", "chapters": [4], "flag": "_hiyori_dubai_support_seen", "requires": ["_hiyori_work_talk_done"], "contact": true },
-      { "id": "chapter5_friend", "dialogue": "hiyori_ch5_friend", "chapters": [5], "flag": "_hiyori_ch5_friend_seen", "requires": ["_hiyori_work_talk_done"], "relationship": "friend" },
-      { "id": "chapter5_lover", "dialogue": "hiyori_ch5_lover", "chapters": [5], "flag": "_hiyori_ch5_lover_seen", "requires": ["_hiyori_work_talk_done"], "relationship": "lover" }
+      {
+        "id": "meeting",
+        "dialogue": "hiyori_meeting",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_meeting_done",
+        "requires": [],
+        "affinity": 10
+      },
+      {
+        "id": "sumi_message",
+        "dialogue": "hiyori_sumi_message",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_sumi_message_done",
+        "requires": [
+          "_hiyori_meeting_done"
+        ],
+        "met": true
+      },
+      {
+        "id": "relay",
+        "dialogue": "hiyori_shop_message",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_message_delivered",
+        "requires": [
+          "_hiyori_sumi_message_done"
+        ],
+        "met": true,
+        "affinity": 10
+      },
+      {
+        "id": "cracks",
+        "dialogue": "hiyori_cracks",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_cracks_done",
+        "requires": [
+          "_hiyori_message_delivered"
+        ],
+        "met": true,
+        "minAffinity": 1,
+        "affinity": 10
+      },
+      {
+        "id": "axe_reveal",
+        "dialogue": "hiyori_axe_reveal",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_real_self_known",
+        "requires": [
+          "_hiyori_cracks_done"
+        ],
+        "met": true,
+        "affinity": 10
+      },
+      {
+        "id": "work_talk",
+        "dialogue": "hiyori_work_talk",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_work_talk_done",
+        "requires": [
+          "_hiyori_real_self_known"
+        ],
+        "met": true,
+        "minAffinity": 2,
+        "affinity": 10
+      },
+      {
+        "id": "tokyo_contact",
+        "dialogue": "hiyori_tokyo_contact",
+        "chapters": [
+          3
+        ],
+        "flag": "_hiyori_tokyo_contact_seen",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "contact": true
+      },
+      {
+        "id": "feelings_spoken",
+        "dialogue": "hiyori_feelings_spoken",
+        "chapters": [
+          1,
+          2,
+          3
+        ],
+        "flag": "_hiyori_feelings_spoken",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "relationship": "lover",
+        "minLoveLevel": 2
+      },
+      {
+        "id": "dubai_support",
+        "dialogue": "hiyori_dubai_support",
+        "chapters": [
+          4
+        ],
+        "flag": "_hiyori_dubai_support_seen",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "contact": true
+      },
+      {
+        "id": "chapter5_friend",
+        "dialogue": "hiyori_ch5_friend",
+        "chapters": [
+          5
+        ],
+        "flag": "_hiyori_ch5_friend_seen",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "relationship": "friend"
+      },
+      {
+        "id": "chapter5_lover",
+        "dialogue": "hiyori_ch5_lover",
+        "chapters": [
+          5
+        ],
+        "flag": "_hiyori_ch5_lover_seen",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "relationship": "lover"
+      },
+      {
+        "id": "tonari_return",
+        "dialogue": "hiyori_tonari_return",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_return_done",
+        "requires": [
+          "_hiyori_sumi_message_done",
+          "_hiyori_message_delivered",
+          "_hiyori_cracks_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 10
+      },
+      {
+        "id": "tonari_followup",
+        "dialogue": "hiyori_tonari_followup",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_followup_done",
+        "requires": [
+          "_hiyori_tonari_return_done"
+        ],
+        "met": true,
+        "affinity": 5
+      }
     ]
   },
   "dialogues": [
     {
       "dialogue_id": "hiyori_preview_gap",
-      "metadata": { "preview_only": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png", "effect": "smoke" },
+      "metadata": {
+        "preview_only": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "effect": "smoke"
+      },
       "lines": [
-        { "speaker": "hiyori", "face": "sad", "text": "私、今日は少し静かにしていたくて……", "inner": "社内チャット二百件。私の総務窓口は閉店です" },
-        { "speaker": "hajime", "text": "ここなら、ゆっくりできますね" },
-        { "speaker": "hiyori", "face": "smile", "text": "この紅茶の香り、落ち着くね……", "inner": "ピーチ足した人に賞与出したい。そんな権限はない" },
-        { "speaker": "hajime", "text": "気に入ってもらえて、よかったです" }
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "私、今日は少し静かにしていたくて……",
+          "inner": "社内チャット二百件。私の総務窓口は閉店です"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ここなら、ゆっくりできますね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "この紅茶の香り、落ち着くね……",
+          "inner": "ピーチ足した人に賞与出したい。そんな権限はない"
+        },
+        {
+          "speaker": "hajime",
+          "text": "気に入ってもらえて、よかったです"
+        }
       ]
     },
     {
       "dialogue_id": "hiyori_preview_axe",
-      "metadata": { "preview_only": true, "clear_portraits": true },
+      "metadata": {
+        "preview_only": true,
+        "clear_portraits": true
+      },
       "lines": [
-        { "speaker": "", "text": "斧投げシーシャバー。隣のレーンで、見覚えのある人が跳ねた。" },
-        { "speaker": "hiyori", "face": "excited", "text": "よっしゃ、ど真ん中！見た！？" },
-        { "speaker": "hajime", "text": "……ひよりさん？" },
-        { "speaker": "", "text": "目が合った。上がった両手だけが、ゆっくり下がる。" },
-        { "speaker": "hiyori", "face": "surprise", "text": "……風に、少し運ばれて……", "inner": "その言い訳で斧の速度は説明できねえ" },
-        { "speaker": "hajime", "text": "投げたのは見えました" },
-        { "speaker": "hiyori", "face": "normal", "text": "……今の、もう一回刺さるかな" }
+        {
+          "speaker": "",
+          "text": "斧投げシーシャバー。隣のレーンで、見覚えのある人が跳ねた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "excited",
+          "text": "よっしゃ、ど真ん中！見た！？"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ひよりさん？"
+        },
+        {
+          "speaker": "",
+          "text": "目が合った。上がった両手だけが、ゆっくり下がる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……風に、少し運ばれて……",
+          "inner": "その言い訳で斧の速度は説明できねえ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "投げたのは見えました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……今の、もう一回刺さるかな"
+        }
       ]
     },
     {
       "dialogue_id": "hiyori_preview_work",
-      "metadata": { "preview_only": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png" },
+      "metadata": {
+        "preview_only": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
       "lines": [
-        { "speaker": "hiyori", "face": "sad", "text": "明日のことは、煙に預けて……", "inner": "交通費の申請二十件。煙では承認できない" },
-        { "speaker": "", "text": "ひよりは社員証をバッグにしまい、スマホの通知を切った。" },
-        { "speaker": "hiyori", "face": "normal", "text": "明日はちゃんとやるよ。今は、好きな雰囲気でいたいだけ" },
-        { "speaker": "hajime", "text": "じゃあ、今は煙を楽しみましょう" },
-        { "speaker": "hiyori", "face": "smile", "text": "うん。……桃、もう少し足せる？" }
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "明日のことは、煙に預けて……",
+          "inner": "交通費の申請二十件。煙では承認できない"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは社員証をバッグにしまい、スマホの通知を切った。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "明日はちゃんとやるよ。今は、好きな雰囲気でいたいだけ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、今は煙を楽しみましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "うん。……桃、もう少し足せる？"
+        }
       ]
     },
     {
       "dialogue_id": "hiyori_preview_romance",
-      "metadata": { "preview_only": true, "private_scene": true, "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "preview_only": true,
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "hiyori", "face": "sad", "text": "君といると、帰り道が遠く感じるね……", "inner": "駅まで二百メートルしかねえ。帰りたくないだけ" },
-        { "speaker": "hajime", "text": "もう少し歩きます？" },
-        { "speaker": "hiyori", "face": "normal", "text": "……帰りたくない。もう少し、一緒にいたい" },
-        { "speaker": "hajime", "text": "俺も、まだ一緒にいたいです" },
-        { "speaker": "hiyori", "face": "smile", "text": "……うん。今のは、ちゃんと口に出せた" }
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "君といると、帰り道が遠く感じるね……",
+          "inner": "駅まで二百メートルしかねえ。帰りたくないだけ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "もう少し歩きます？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……帰りたくない。もう少し、一緒にいたい"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、まだ一緒にいたいです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……うん。今のは、ちゃんと口に出せた"
+        }
       ]
     },
     {
       "dialogue_id": "hiyori_preview_lover",
-      "metadata": { "preview_only": true, "private_scene": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png" },
+      "metadata": {
+        "preview_only": true,
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
       "lines": [
-        { "speaker": "hiyori", "face": "sad", "text": "儚い私を、今夜も見つけてくれたのね……", "inner": "昨日から約束してたけどな。今日は付き合ってもらお" },
-        { "speaker": "hajime", "text": "今日はそういう雰囲気ですか" },
-        { "speaker": "hiyori", "face": "excited", "text": "そう！三分だけ。ラーメン来るまで！" },
-        { "speaker": "hiyori", "face": "smile", "text": "……会いたかったよ。これは、ごっこじゃない" }
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "儚い私を、今夜も見つけてくれたのね……",
+          "inner": "昨日から約束してたけどな。今日は付き合ってもらお"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日はそういう雰囲気ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "excited",
+          "text": "そう！三分だけ。ラーメン来るまで！"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……会いたかったよ。これは、ごっこじゃない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_meeting",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店員に案内された空席は、窓際の相席だった。"
+        },
+        {
+          "speaker": "",
+          "text": "白いブラウスの女性が、そっとバッグを隣へ寄せる。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ここ、どうぞ。煙も、ひとりだと寂しいから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ありがとうございます。失礼します"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "炭の置き方、ずっと見てたね……",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "あ、癖で。まだ勉強中なんです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "どこかで働いてるの？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "tonariっていう店で、バイトしてます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……tonari。そうなんだ",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "朝霧ひより。私も、昔そこで働いてたの",
+          "face": "normal"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_hiyori"
+        },
+        {
+          "speaker": "hajime",
+          "text": "えっ、じゃあ、先輩ですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……煙みたいに、もう遠い昔だけどね",
+          "face": "sad"
+        },
+        {
+          "speaker": "hajime",
+          "text": "スミさんに聞いてみます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……私に会ったって、それだけでいいよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "儚い女は、近況を語りすぎないものだから……",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、俺ははじめです。よろしくお願いします"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……連絡先、交換しておこうか",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりとLIMEを交換した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_hiyori"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "また、どこかの煙の中で……",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "彼女は小さく笑い、窓の方へ目を戻した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_sumi_message",
+      "metadata": {
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "text": "この前、ひよりさんに会いました。先輩だって"
+        },
+        {
+          "speaker": "sumi",
+          "text": "ひより？あいつ、元気だったか",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "なんか、儚い感じでした"
+        },
+        {
+          "speaker": "hajime",
+          "text": "『私は儚い女だから』って言ってました"
+        },
+        {
+          "speaker": "sumi",
+          "text": "儚い女は、自分でそんなこと言わねえだろ……",
+          "face": "thinking"
+        },
+        {
+          "speaker": "sumi",
+          "text": "あいつが儚い？セミに生まれたら、",
+          "face": "surprise"
+        },
+        {
+          "speaker": "sumi",
+          "text": "十二月まで鳴いてそうなくらい、しぶといぞ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……そんな人だったんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "text": "大学の頃は、店じゅうに声が響いてたな",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スミさんの話が、昔のカウンターを浮かび上がらせる。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "sumi"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "スミさーん！今日のピーチ、絶対いい出来！",
+          "face": "student_smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "紅茶と合わせたらさ、もう一口ってなるんだよ！",
+          "face": "student_smile"
+        },
+        {
+          "speaker": "",
+          "text": "ミディアムの髪を揺らし、ひよりは大きく笑う。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "もう一台いける！混む前に、準備しとこ！",
+          "face": "student_smile"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hiyori"
+        },
+        {
+          "speaker": "",
+          "text": "グラスを拭く音が、今のtonariへ戻してくる。"
+        },
+        {
+          "speaker": "sumi",
+          "text": "腕は良かった。客の好みを、よく見てたよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "この前の姿と、全然違いますね"
+        },
+        {
+          "speaker": "sumi",
+          "text": "まあ、そういう年頃なんだろ",
+          "face": "thinking"
+        },
+        {
+          "speaker": "hajime",
+          "text": "スミさんには、会ったってだけ伝えてって"
+        },
+        {
+          "speaker": "sumi",
+          "text": "……そうか",
+          "face": "normal"
+        },
+        {
+          "speaker": "sumi",
+          "text": "次に会ったら、伝えといてくれ",
+          "face": "normal"
+        },
+        {
+          "speaker": "sumi",
+          "text": "『気が向いたら、一服しに来い。客の席もある』って",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。伝えます"
+        },
+        {
+          "speaker": "sumi",
+          "text": "今は忙しいだろ。無理に連れてくるなよ",
+          "face": "normal"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_message",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ひと息ついたところで、隣の席から声がした。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……また会ったね。煙の縁、かな",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "スミさんに、ひよりさんのこと話しました"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……何か、言ってた？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "『気が向いたら、一服しに来い。客の席もある』って"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そう。席、まだあるんだね",
+          "face": "sad",
+          "inner": "うわ。そういう言い方、ずるいって"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今度、一緒に寄ります？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……帰れる場所ほど、遠く見えるものなの",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今日は、ここで煙になっていたいな",
+          "face": "normal",
+          "inner": "スミさんの前でこの顔するのは無理。絶対無理"
+        },
+        {
+          "speaker": "hajime",
+          "text": "わかりました。無理に誘いません"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ありがとう",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_cracks",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "今日も、別の煙の向こうにひよりがいた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……今夜は、桃の香りにほどかれたくて",
+          "face": "sad"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日も仕事帰りですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。帰る前に、少しだけ……",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スマホが震える。ひよりは画面を確かめ、静かに伏せた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "承認の返事はしたから。今は、私の時間なの",
+          "face": "normal",
+          "inner": "二十件ぜんぶ通した。総務窓口、本日終了です"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お疲れさまです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……儚い女にも、生活はあるのね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そうですね。今日は、ゆっくり吸いましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……君と相席だと、ちゃんと休める気がする",
+          "face": "smile",
+          "inner": "こういう普通の一言が、一番助かるんだよな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_tonari_return",
+      "metadata": {
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "スミさんのLIMEを閉じて、tonariの扉を開けた。"
+        },
+        {
+          "speaker": "",
+          "text": "いつものカウンターに、ひよりがひとりで座っている。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ひよりさん？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……え。はじめくん",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "偶然ですね。今日は、こっちに来たんですか"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりはスミさんをちらりと見て、黙って会釈した。"
+        },
+        {
+          "speaker": "sumi",
+          "text": "いらっしゃい。今日は客か？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。隣、いいですか？"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは愛想笑いのまま、小さく椅子を引いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……どうぞ",
+          "face": "normal",
+          "inner": "逃げ場がねえ。いや、逃げる話でもねえ"
+        },
+        {
+          "speaker": "sumi",
+          "text": "ひより。何吸いたい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……まだ、決めてなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "sumi",
+          "text": "ゆっくり決めな。急いで帰る用事もないんだろ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは笑おうとして、少しだけ顔を伏せた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん",
+          "face": "tears"
+        },
+        {
+          "speaker": "",
+          "text": "頬を、一粒の涙が伝う。スミさんは何も聞かなかった。"
+        },
+        {
+          "speaker": "sumi",
+          "text": "ピーチと紅茶はある。昔の好きなやつも",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……じゃあ、それがいい",
+          "face": "tears"
+        },
+        {
+          "speaker": "sumi",
+          "text": "わかった",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "炭を持つ音も、グラスの置き方も、変わっていなかった。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……今日は、ふらっと来ただけなんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "誰にも言わずに、ちょっとだけって",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "来てくれて、よかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……私も。来て、よかった",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "スミさんが差し出した煙を、ひよりはゆっくり確かめた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あの人、私の本当にいい師匠なんだよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……はい"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "君も、ここで頑張ってね。ちゃんと見てるから",
+          "face": "smile"
+        },
+        {
+          "speaker": "sumi",
+          "text": "おい。俺をいないみたいに話すなよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……聞こえてた？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "sumi",
+          "text": "カウンターの端まで、聞こえるだろ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "三人の間に、小さな笑いが戻った。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……また、一服しに来てもいい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "sumi",
+          "text": "客の席は、空けとくよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "元スタッフの席から、今の三人の話が始まる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_tonari_followup",
+      "metadata": {
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "カウンターの端で、ひよりがメニューを眺めていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……煙に呼ばれて、また来てしまったの",
+          "face": "normal",
+          "inner": "スミさん聞いてない。今のはじめくんにだけ"
+        },
+        {
+          "speaker": "sumi",
+          "text": "普通に来たって言えばいいだろ",
+          "face": "thinking"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……お邪魔してます",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日、スミさんに教わった組合せがあって"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……聞かせて",
+          "face": "smile"
+        },
+        {
+          "speaker": "sumi",
+          "text": "ひよりは、紅茶の火の入れ方がうまかったな",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今も、覚えてるよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今度は、はじめくんの一台を吸ってみたいな",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。ちゃんと作れるように練習します"
+        },
+        {
+          "speaker": "sumi",
+          "text": "昔と同じにはならんよ。今の客を見ろ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。今の私に、合わせてね",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "仕事の話と煙の話が、ひとつのカウンターで続いていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_repeat_0",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "空いた席を分け合い、ひよりと同じ煙を眺める。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……どの店でも、君を見つけるね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさんも、色んな店に行くんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "煙の居場所を探してるの……",
+          "face": "sad",
+          "inner": "家と会社の往復だけって、しんどいんだよな"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ここも、落ち着きますよね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。今日はここにしよう",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_repeat_1",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ひよりが、メニューの紅茶の文字を指先で追っていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……同じ葉でも、店で香りが違うね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "火の入れ方ですかね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。最初から急がせないほうがいい時もある",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……煙も、人も",
+          "face": "sad",
+          "inner": "今の後付け、いい感じに儚かったのでは"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、少し待つの練習中です"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……じゃあ、一緒に待とうか",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_repeat_2",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "席に着くと、ひよりがスマホをバッグへしまった。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……今夜は、通知の届かないところへ",
+          "face": "sad"
+        },
+        {
+          "speaker": "hajime",
+          "text": "機内モードですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そういう、現実的な名前もあるね",
+          "face": "normal",
+          "inner": "そうです。総務のグループだけミュートです"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、ゆっくりできますね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。今日の分は、ちゃんと終わらせてきたから",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_repeat_3",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ひよりは窓の外を眺めていた。小さく、お腹が鳴る。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……夜風が、少し騒いだね",
+          "face": "sad",
+          "inner": "腹だよ。昼のサンドイッチだけじゃ無理だよ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "帰り、何か食べていきます？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……あったかいものがいいな",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "近くに、ラーメン屋がありますよ"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……味噌、あるかな",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "あります。のんびり吸ってから、行きましょう"
+        }
       ]
     }
   ]

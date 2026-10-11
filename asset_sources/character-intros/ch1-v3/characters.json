@@ -437,5 +437,25 @@
     },
     "select_label": "あげは（第2章）",
     "scope_note": "第2章の名乗り後。プロとしての目を開いたnormal表情。初遭遇版とは別素材。"
+  },
+  {
+    "id": "hiyori",
+    "color": "#cc8fa7",
+    "secondary": "#f2dce8",
+    "shadow": "#e9dde3",
+    "expression": "normal",
+    "portrait_sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+    "frame": {
+      "width": 886.667,
+      "left": -172.358,
+      "top": 17.219
+    },
+    "caption_source": "data/characters.json: hiyori.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/hiyori-senkou-v1/source.png",
+        "sha256": "1b82afc91d5e70e00c2910e627a23070c7f92e4970ebdc5e997f87cdb4339774"
+      }
+    }
   }
 ]

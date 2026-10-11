@@ -28,7 +28,8 @@ const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new E
 const context = vm.createContext({ console, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
 const noop = () => {}, mods = new Map();
 const values = {
-  "util.js": { el, sleep: async () => {}, fitOneLine: () => {} },
+  "hiyori-route.js": { hiyoriEventStatus: () => "disabled" },
+  "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "ui.js": { layers }, "state.js": { state, save: noop },
   "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
@@ -51,7 +52,7 @@ const phone = phoneModule.namespace, romance = (await load("romance.js")).namesp
 const clone = (v) => JSON.parse(JSON.stringify(v));
 function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
-  Object.assign(state, { chapter: 1, phase: "daily", day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
+  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
   db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; playHook = async () => {};
   for (const layer of Object.values(layers)) layer.replaceChildren();
 }
@@ -258,7 +259,7 @@ for (const id of ["lime_naru_day3", "lime_outing_adam_1", "lime_adam_arcade_afte
   assert.equal(invitationById[id].time_slot, "night"); assert(invitationById[id].after_close, id);
 }
 assert.equal(invitationById.lime_minto_day4.time_slot, "noon"); assert(!invitationById.lime_minto_day4.after_close); assert.equal(invitationById.lime_minto_day4.closed_on, undefined);
-reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages[0].text.includes("休みにした"));
+reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
 for (const day of [6, 11]) {

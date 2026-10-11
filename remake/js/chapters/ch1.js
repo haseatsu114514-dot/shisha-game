@@ -32,6 +32,7 @@ import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory } from "./tsumugi-story.js";
+import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
 
@@ -143,7 +144,11 @@ async function tutorial() {
 // ---------------------------------------------------------------- 夜の固定イベント
 // pin=マップの「!」印／teaser=前日の就寝時の予感／beat=イベント前のつなぎ一行
 
-const nightScene = (id, bg) => () => play(id, bg ? { bg } : {});
+const nightScene = (id, bg) => async () => {
+  const dialogue = DB.dialogues[id];
+  if ((bg || dialogue?.metadata?.bg || "").includes("tonari") && dialogue?.lines?.some((line) => line.speaker === "sumi")) await meetHiyoriAtTonari();
+  await play(id, bg ? { bg } : {});
+};
 // つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
 const sketchScene = (id, bg) => async () => {
   const art = sceneBg(bg, timeOfDay());

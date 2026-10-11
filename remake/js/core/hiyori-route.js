@@ -1,4 +1,4 @@
-// 日付や登場場所はここで決めない。台本が揃い、route.enabled が有効になった後の接続条件。
+// 読了・面識・好感度から、ひよりの各段階への接続条件を判定。
 // 保存先は既存の flags / story / affinity / romanceChoices / finales / lovers。
 import { DB } from "./data.js";
 import { state } from "./state.js";

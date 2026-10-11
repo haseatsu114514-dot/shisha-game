@@ -11,6 +11,7 @@ import { kafukaSpot } from "./kafuka.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
+import { meetHiyoriAtTonari } from "./hiyori.js";
 
 export const VISIT_COST = 3000;
 
@@ -168,6 +169,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
 export async function visitChar(charId) {
+  if (charId === "sumi") await meetHiyoriAtTonari();
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];

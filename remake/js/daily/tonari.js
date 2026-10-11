@@ -11,6 +11,7 @@ import { runDrill, DRILLS } from "../craft/session.js";
 import { runFullPractice } from "../craft/practice.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
+import { meetHiyoriAtTonari } from "./hiyori.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -40,6 +41,7 @@ export function tonariMenu() {
 
 export async function tonariCustomer() {
   addStamina(-10);
+  await meetHiyoriAtTonari();
   await visitChar("tsumugi");
 }
 
@@ -65,6 +67,7 @@ async function baitoShift({ called }) {
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
   await play("remake_baito_start", { bg: TONARI_BG });
+  await meetHiyoriAtTonari();
   const rainy = isRainy();
   if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
   const n = state.baitoCount;

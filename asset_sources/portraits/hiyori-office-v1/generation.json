@@ -1,0 +1,47 @@
+{
+  "tool": "built-in image_gen",
+  "records": [
+    {
+      "face": "normal",
+      "generated": "exec-954d52eb-9f98-45b3-82c6-90928ffd3c0b.png",
+      "prompt": "Use case: identity-preserve / outfit variation.\nImage1: canonical identity/face/hair/expression of Hiyori. Image2: USER'S CLOTHING DESIGN reference ONLY, not the real model's face, hair, body or photo style.\nThe user wants to see an office outfit like image2 because the ordinary white button shirt resembles another heroine. Create a new candidate, keeping Hiyori's identical mature25-year-old face, reddish pink-brown HIGH PONYTAIL, brown eyes, soft downcast half-lidded gaze and small bittersweet fragile/儚げ smile.\nNew blouse follows image2: delicate ivory-WHITE French/cap sleeves, modest small stand/round collar, fine vertical floral lace/embroidered panels along the chest and front, softly textured cloth with opaque underlining, a light gathered shoulder, refined gentle appearance. NOT the prior conventional long-sleeved button shirt.\nBOTTOMS stay BLACK as user previously requested: high-waisted tailored pleated black trousers inspired by image2's cut, neat slightly tapered ankle length, black belt or simple waistband. Do not make the trousers beige. A compact dark handbag held loosely at her side (as photo) instead of bulky office shoulder bag. Plain refined black low shoes suitable for work.\nHealthy adult office woman off duty, no employee badge, no ID card, no name tag or lanyard; no clipboard; no hospital look. Small gold earrings and tiny necklace can stay. Calm subtly weary pose, shoulders soft, no pinup stance.\nRendering: existing premium high-resolution Japanese visual novel portrait with very fine pixel-art-like textured shading, crisp subtly stepped outlines, detailed lace and individual hair strands. Do not turn photoreal, do not copy the model, no chunky pixels/no noise/no blur.\nSingle woman only from ponytail to both shoes entirely visible, tall1024x1536 transparent canvas, figure1300px+, clear margins, no captions/text/logo, no background/glow/shadow/smoke. Clean transparent alpha outside silhouette and fully opaque face/clothes/body.",
+      "source": "asset_sources/portraits/hiyori-office-v1/normal-source.png",
+      "sha256": "52932c9578f0a135e8c505e4bc87e37bf4f043aed1598cf44a2f95b9a4553cea"
+    },
+    {
+      "face": "sad",
+      "generated": "exec-32df9a47-5121-4370-b84e-b107d57488a0.png",
+      "prompt": "Use case: identity-preserve. The supplied image is the USER-SELECTED canonical Hiyori outfit and identity. Preserve her identical mature adult25 face, warm brown eyes, pink-brown HIGH PONYTAIL, ivory-white CAP-SLEEVE FRENCH-SLEEVE floral-lace blouse with modest small round collar, BLACK pleated work trousers, black loafers, compact black handbag, jewelry. NO ID card, NO name tag, NO neck lanyard. Preserve original colors, silhouette, full-body pose and scale. Premium extremely fine pixel-art-like game-portrait texture and sharp detailed hair/lace/fabric, no chunky pixels/no noise/no blur. One expression, one full-body woman, both shoes and all hair visible with margins on1024x1536 transparent canvas, figure1300px+. Clean alpha outside silhouette, no scenery/glow/shadow/smoke/text.\nExpression request: Change the expression to noticeably wistful melancholy: gently downcast half-lidded eyes, faintly raised inner eyebrows, small soft closed mouth, a delicate slightly worried face. She is a healthy office worker acting as a fragile older woman, not ill or traumatized. The free hand rests lightly near her collarbone, shoulders soft.",
+      "source": "asset_sources/portraits/hiyori-office-v1/sad-source.png",
+      "sha256": "dfc856d25e6b2407c7b51512231269de6c553648d258d2cd33940d0764658108"
+    },
+    {
+      "face": "smile",
+      "generated": "exec-3194d855-21ca-4d85-9916-af1a24513bdf.png",
+      "prompt": "Use case: identity-preserve. The supplied image is the USER-SELECTED canonical Hiyori outfit and identity. Preserve her identical mature adult25 face, warm brown eyes, pink-brown HIGH PONYTAIL, ivory-white CAP-SLEEVE FRENCH-SLEEVE floral-lace blouse with modest small round collar, BLACK pleated work trousers, black loafers, compact black handbag, jewelry. NO ID card, NO name tag, NO neck lanyard. Preserve original colors, silhouette, full-body pose and scale. Premium extremely fine pixel-art-like game-portrait texture and sharp detailed hair/lace/fabric, no chunky pixels/no noise/no blur. One expression, one full-body woman, both shoes and all hair visible with margins on1024x1536 transparent canvas, figure1300px+. Clean alpha outside silhouette, no scenery/glow/shadow/smoke/text.\nExpression request: Change the expression to a genuine small tender SMILE, brown eyes gently lifted but still softly half-lidded, delicate blush, a quietly warm closed-mouth smile. Keep the understated fleeting older-sister atmosphere; do not make a wide grin. The free hand rests lightly near her cheek as in source.",
+      "source": "asset_sources/portraits/hiyori-office-v1/smile-source.png",
+      "sha256": "ad85732e012ece532fa0c50c1b365abfe322b545a8d9aab51ac21bb09577ad88"
+    },
+    {
+      "face": "surprise",
+      "generated": "exec-26daa83c-46c6-41f7-a395-bf54d8c9157d.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied USER-SELECTED Hiyori sprite into a SURPRISE / shy frozen expression for being unexpectedly seen at tonari. Keep the same adult25 face identity, reddish pink-brown HIGH PONYTAIL, brown eyes, ivory-white modest French/cap-sleeve floral lace blouse, BLACK tailored work trousers, black loafers, compact black handbag, jewelry and full-body proportions/colors. NO name badge/ID/lanyard.\nChange expression: eyes open slightly wider (still brown and softly shaped), eyebrows raised gently, a tiny parted mouth, faint blush and momentary caught-off-guard tension; embarrassed stillness, not a cartoon scream. The free hand freezes beside her cheek, bag hand remains loose. Present-day heroine normally acts wistful and fleeting; this is a restrained surprise without abandoning her identity.\nPreserve extremely fine pixel-art-like Japanese game-portrait rendering, detailed lace and crisp delicate outlines. One single full-body character, both shoes and ponytail fully visible on tall1024x1536 transparent canvas with margins, figure1300px+. Clean transparent alpha beyond silhouette, no halo/glow/shadow/scenery/smoke/text.",
+      "source": "asset_sources/portraits/hiyori-office-v1/surprise-source.png",
+      "sha256": "21af2428f456cc763a97e9579bdabb98968647a45ddfd257354e39a397124a6e"
+    },
+    {
+      "face": "tears",
+      "generated": "exec-d67ed406-9697-489c-87d3-e33ab8c5908e.png",
+      "prompt": "Use case: identity-preserve. Edit the supplied USER-SELECTED Hiyori sprite into a quietly moved TEARS expression for kindness at tonari. Preserve the same adult25 face identity, reddish pink-brown HIGH PONYTAIL, brown eyes, ivory-white modest French/cap-sleeve floral lace blouse with little stand collar, BLACK tailored trousers, black loafers, compact black handbag, delicate jewelry and full-body proportions. NO name badge, ID or lanyard. Expression: one or two small clear tears at lower eyelids, moist softly narrowed brown eyes, inward raised brows, tiny tender trembling smile. She is healthy and competent, surprised at feeling genuinely welcome; restrained emotion, not sobbing or comedy. Free hand gently touches below an eye to wipe a tear, relaxed bag hand. Preserve detailed fine pixel-art-like Japanese game-portrait rendering, tiny pixel texture and delicate crisp lines. One single complete full-body sprite on tall1024x1536 transparent canvas, fully visible ponytail and both shoes with small margins, figure1300px+. Transparent alpha outside the silhouette; no halo, glow, shadow, scenery, smoke, labels or text.",
+      "source": "asset_sources/portraits/hiyori-office-v1/tears-source.png",
+      "sha256": "6dcaf9b0cc2a9314dd7669afdc8dafe737e3e45632bf93d1384e4940134cfe85"
+    },
+    {
+      "face": "student_smile",
+      "generated": "exec-45c55670-286d-4013-a2e4-408a064b67ca.png",
+      "prompt": "Use case: identity-preserve. Create a university-days flashback full-body sprite of adult Hiyori (early twenties), SAME facial identity, warm brown eyes and reddish pink-brown hair as input current adult Hiyori. PAST HAIRSTYLE explicitly MEDIUM LENGTH: loose shoulder-length hair with soft waves and side bangs, NO ponytail. Outfit: plain black short-sleeve T-shirt and a practical muted warm gray staff apron over slim black trousers, simple black sneakers. No bag, no employee badge, ID, logo, writing or lanyard. She worked part-time at shisha cafe tonari then: bright, healthy and very energetic sincere laughing smile, eyes cheerfully curved, open laughing mouth, one hand raised in a friendly wave, other hand at her hip. Adult proportions, same petite157cm slim build. Render as polished Japanese game character illustration with extremely fine pixel-art-like texture and thin crisp outlines; match the supplied character identity. Complete single full body head to both shoes on tall1024x1536 genuinely transparent canvas, figure1300px+, small margins. No scenery, smoke, halo, shadow or text.",
+      "source": "asset_sources/portraits/hiyori-office-v1/student_smile-source.png",
+      "sha256": "216be2a2b515a271e3fe0eb92abd7593bdd5dba24ca052dee6e6afb58aa7914f"
+    }
+  ]
+}

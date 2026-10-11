@@ -1203,6 +1203,28 @@
           "affinity": 0
         }
       ]
+    },
+    {
+      "id": "hiyori_sumi_tonari_report",
+      "sender": "sumi",
+      "type": "invitation",
+      "trigger_condition": "hiyori_tonari",
+      "time_slot": "noon",
+      "priority": 10,
+      "important": true,
+      "retry_on_decline": true,
+      "exclude_flag": "_hiyori_tonari_return_done",
+      "accept_event": "hiyori_tonari_return",
+      "accept_text": "ちょっと顔を出します",
+      "messages": [
+        "今、ひよりが客として来てるぞ",
+        "今日は休みの寄り道らしい。お前には黙って来たんだな",
+        "仕事で呼んでるわけじゃない。来るなら、お前も客でな"
+      ],
+      "reminder_text": "ひよりが、またひとりで一服しに来てる。お前も来られそうか？",
+      "decline_response": {
+        "text": "おう。また都合が合う時にな。あいつも好きな時に来るだろ"
+      }
     }
   ]
 }

@@ -1,0 +1,60 @@
+{
+  "canvas": [
+    896,
+    1200
+  ],
+  "padding": 20,
+  "sharedScale": 0.7552083333333334,
+  "anchorShiftFiles": 0,
+  "pngWebpRGBA": "all six exact",
+  "sprites": [
+    {
+      "face": "normal",
+      "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+      "size": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "sad",
+      "sha256": "18f17c05c93e8250c08d827e0aa39bc1cf34006e5a837897358d466239c4a32b",
+      "size": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "smile",
+      "sha256": "88c9c8ead7a19168aaddc61fd3cb081aec335733088df43c4b4fba76da4014aa",
+      "size": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "surprise",
+      "sha256": "75818897b6fe9b3adcf386972b823fa07395af2a275b05b2ef68451a4e3a95b9",
+      "size": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "tears",
+      "sha256": "3db9c8f8643e84327c3444900039891be843c5986c669f12bba6ffa3b236a155",
+      "size": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "student_smile",
+      "sha256": "9c9620b66790db2bd8f5730258de1831cd17a88d6c7c9cdc9f13f88ad72d3823",
+      "size": [
+        896,
+        1200
+      ]
+    }
+  ]
+}
