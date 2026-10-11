@@ -17,7 +17,7 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, story
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { deliverMorning, pushNotice, unreadCount, venueInviteNeedingReply, openLime, limeCoach, expireInvitations } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -287,21 +287,28 @@ async function takeAction() {
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
-      const pending = venueInviteNeedingReply(destination?.id, { fixedNight: (day) => !!chapterDef.nightEvents[day] });
-      if (!pending) return true;
-      const reminderId = `${state.chapter}:${state.day}:${pending.id}`;
-      const remembered = state.flags._venue_lime_reminders || [];
-      if (remembered.includes(reminderId)
-        || (destination.id === "minto" && state.flags._minto_store_lime_reminder === reminderId)) return true;
-      // 同じ日・メッセージについて一度だけ。旧セーブに無いフラグでも動く。
       const dayPrefix = `${state.chapter}:${state.day}:`;
-      state.flags._venue_lime_reminders = [...remembered.filter((id) => id.startsWith(dayPrefix)), reminderId];
+      const remembered = Array.isArray(state.flags._venue_lime_reminders)
+        ? state.flags._venue_lime_reminders.filter((id) => id.startsWith(dayPrefix)) : [];
+      // 既に思い出した招待は飛ばし、同日中に別の招待があればそちらを確認する。
+      const ignoredIds = remembered.map((id) => id.slice(dayPrefix.length));
+      if (state.flags._minto_store_lime_reminder?.startsWith(dayPrefix)) {
+        ignoredIds.push(state.flags._minto_store_lime_reminder.slice(dayPrefix.length));
+      }
+      const reminder = actionInviteNeedingReply(destination?.id,
+        { fixedNight: (day) => !!chapterDef.nightEvents[day] }, ignoredIds);
+      if (!reminder) return true;
+      const { item: pending, kind } = reminder;
+      const reminderId = `${dayPrefix}${pending.id}`;
+      state.flags._venue_lime_reminders = [...remembered, reminderId];
       const sender = pending.msg.sender;
       const senderName = { minto: "みんと", sumi: "スミさん", hiyori: "ひより", naru: "なる",
         adam: "アダム", tsumugi: "つむぎ", ageha: "アゲハ", kafuka: "サメちゃん" }[sender] || "誰か";
       const choice = await modal({
         title: "LIMEのお誘い",
-        body: `そういえば、${senderName}からLIMEが来てたな……`,
+        body: kind === "venue"
+          ? `そういえば、${senderName}からLIMEが来てたな……`
+          : `このまま行くと、${senderName}からの今日のお誘いに返事しそびれそうだ……`,
         options: [
           { label: "LIMEを確認する", value: "lime", primary: true, test: "venue-invite-check" },
           { label: "そのまま向かう", value: "go", test: "venue-invite-go" },
