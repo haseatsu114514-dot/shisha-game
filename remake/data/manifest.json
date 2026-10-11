@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 01:56 UTC",
+ "generated": "2026-10-11 02:23 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -279,6 +279,12 @@
   "kitchen_timer.png",
   "smoke_thick.png",
   "steam_mind_world.png",
+  "steam_precision_button.png",
+  "steam_precision_simple.png",
+  "steam_refresh_button.png",
+  "steam_refresh_simple.png",
+  "steam_stick_base.png",
+  "steam_stick_simple_base.png",
   "stove_coil.png",
   "ui_craft_button.png",
   "ui_craft_panel.png",
@@ -1222,6 +1228,48 @@
    1.0,
    2.3039
   ],
+  "steam_precision_button.png": [
+   0.0367,
+   0.0287,
+   0.9625,
+   0.9553,
+   1.0
+  ],
+  "steam_precision_simple.png": [
+   0.1093,
+   0.1108,
+   0.8907,
+   0.8852,
+   1.0
+  ],
+  "steam_refresh_button.png": [
+   0.0247,
+   0.0239,
+   0.9777,
+   0.9657,
+   1.0
+  ],
+  "steam_refresh_simple.png": [
+   0.1316,
+   0.1372,
+   0.8692,
+   0.8652,
+   1.0
+  ],
+  "steam_stick_base.png": [
+   0.0423,
+   0.047,
+   0.9585,
+   0.9553,
+   1.0
+  ],
+  "steam_stick_simple_base.png": [
+   0.0574,
+   0.0574,
+   0.9426,
+   0.9506,
+   1.0
+  ],
   "stove_coil.png": [
    0.1262,
    0.123,
@@ -1446,6 +1494,12 @@
   "ui/making/kitchen_timer.png",
   "ui/making/smoke_thick.png",
   "ui/making/steam_mind_world.png",
+  "ui/making/steam_precision_button.png",
+  "ui/making/steam_precision_simple.png",
+  "ui/making/steam_refresh_button.png",
+  "ui/making/steam_refresh_simple.png",
+  "ui/making/steam_stick_base.png",
+  "ui/making/steam_stick_simple_base.png",
   "ui/making/stove_coil.png",
   "ui/making/ui_craft_button.png",
   "ui/making/ui_craft_panel.png",

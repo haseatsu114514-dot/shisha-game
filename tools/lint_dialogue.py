@@ -119,6 +119,44 @@ def check_choice(where: str, text: str, errors: list) -> None:
         errors.append(f"{where}: 選択肢が全角{flen:g}字（>{CHOICE_LIMIT}）。1行に収まらない → 文言を短く「{text}」")
 
 
+def check_inner(where: str, value, errors: list, warns: list) -> None:
+    """本心も台詞と同じ正史・字数・改行規範で検査する。報酬としては使わない。"""
+    if not isinstance(value, str) or not value.strip():
+        errors.append(f"{where}: inner は空でない文字列にする")
+        return
+    text = value.strip()
+    wrapped = text if text.startswith("（") and text.endswith("）") else f"（{text}）"
+    for bad in BANNED_ERROR:
+        if bad in text:
+            errors.append(f"{where}: 本心に旧名/旧設定 '{bad}' が混入")
+    if DA_RE.search(text):
+        errors.append(f"{where}: 本心でも略記「DA」は禁止")
+    if problem := bracket_problem(wrapped):
+        errors.append(f"{where}: 本心の括弧が壊れている: {problem}")
+    if "\\n" in text or "\n" in text:
+        warns.append(f"{where}: 本心の手動改行はautoWrapに任せる")
+    if fullwidth_len(wrapped) > MAX_PAGE_FULLWIDTH:
+        warns.append(f"{where}: 本心が括弧込みで48字を超える。短くするか改ページを確認")
+    if text.rstrip("」』）").endswith("。"):
+        warns.append(f"{where}: 本心の末尾「。」は取る")
+
+
+def extra_inner_fields(o, where, errors, warns):
+    """動的デート・友人会話でも、ひよりの欄にだけ本心を置く。"""
+    if isinstance(o, dict):
+        for key, value in o.items():
+            location = f"{where}.{key}"
+            if key == "inner":
+                if ".hiyori." not in location:
+                    errors.append(f"{location}: inner はひより固有の演出")
+                check_inner(location, value, errors, warns)
+            else:
+                extra_inner_fields(value, location, errors, warns)
+    elif isinstance(o, list):
+        for i, value in enumerate(o):
+            extra_inner_fields(value, f"{where}[{i}]", errors, warns)
+
+
 def main() -> int:
     filt = sys.argv[1] if len(sys.argv) > 1 else None
     files = sorted(p for p in DLG_DIR.glob("*.json") if not filt or filt in p.name)
@@ -155,6 +193,13 @@ def main() -> int:
                 sp = ln.get("speaker")
                 if sp is not None and sp not in file_whitelist:
                     errors.append(f"{where}: 未登録の speaker '{sp}'（characters.json に無い）")
+
+                if "inner" in ln:
+                    if sp != "hiyori" or ln.get("type"):
+                        errors.append(f"{where}: inner はひよりの通常台詞行だけに付ける")
+                    if not isinstance(ln.get("text"), str) or not ln["text"].strip():
+                        errors.append(f"{where}: inner だけの行にはせず、表の台詞を置く")
+                    check_inner(f"{where} / inner", ln["inner"], errors, warns)
 
                 text = ln.get("text")
                 if not isinstance(text, str):
@@ -207,6 +252,11 @@ def main() -> int:
             continue
         for t in choice_texts(data):
             check_choice(str(rel), t, errors)
+        extra_inner_fields(data, str(rel), errors, warns)
+
+    friend_path = REPO / "remake" / "data" / "friends.json"
+    if not filt or filt in friend_path.name:
+        extra_inner_fields(json.loads(friend_path.read_text(encoding="utf-8")), str(friend_path.relative_to(REPO)), errors, warns)
 
     if warns:
         print(f"⚠️  WARN ({len(warns)})")

@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-11",
+  "screens": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "geometry": {
+        "field": [
+          752,
+          414
+        ],
+        "upperMargin": 17,
+        "buttonsClear": true,
+        "controlsContained": true,
+        "buttonSize": [
+          176,
+          180
+        ],
+        "gaps": [
+          20,
+          20
+        ],
+        "heartSize": "36px",
+        "hitRing": {
+          "declared": 16.363636363636363,
+          "width": 16.3594,
+          "boxSizing": "border-box"
+        }
+      },
+      "states": [
+        "オフ",
+        "オン"
+      ],
+      "hitColors": {
+        "hits": 2,
+        "level": "shaken",
+        "clock": "rgb(239, 135, 149)",
+        "heartbeat": "rgb(239, 135, 149)"
+      }
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "geometry": {
+        "field": [
+          752,
+          414
+        ],
+        "upperMargin": 16.99999595429856,
+        "buttonsClear": true,
+        "controlsContained": true,
+        "buttonSize": [
+          176.00005753886495,
+          179.9999820191047
+        ],
+        "gaps": [
+          19.999847761753138,
+          19.999960442030343
+        ],
+        "heartSize": "36px",
+        "hitRing": {
+          "declared": 16.363636363636363,
+          "width": 16.3594,
+          "boxSizing": "border-box"
+        }
+      },
+      "states": [
+        "オフ",
+        "オン"
+      ]
+    },
+    {
+      "name": "portrait",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "field": [
+          752,
+          414
+        ],
+        "upperMargin": 17,
+        "buttonsClear": true,
+        "controlsContained": true,
+        "buttonSize": [
+          176,
+          180
+        ],
+        "gaps": [
+          20,
+          20
+        ],
+        "heartSize": "36px",
+        "hitRing": {
+          "declared": 16.363636363636363,
+          "width": 16.3594,
+          "boxSizing": "border-box"
+        }
+      },
+      "states": [],
+      "portraitRotationHint": true
+    }
+  ],
+  "pageErrors": []
+}
