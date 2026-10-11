@@ -2,19 +2,24 @@ name: Issue claim coordinator
 on:
   workflow_dispatch:
     inputs:
-      issue:
-        description: Issue number
-        required: true
-        type: string
       operation:
-        description: claim or release
+        description: Claim next eligible issue, claim a specified issue, or release a claim
         required: true
         type: choice
-        options: [claim, release]
+        options: [next, claim, release]
+      issue:
+        description: Issue number (required for claim/release)
+        required: false
+        type: string
       owner:
-        description: Unique session identifier (e.g. codex-20261011-a)
+        description: Unique worker session ID (e.g. codex-a-20261011)
         required: true
         type: string
+      agent:
+        description: Worker type
+        required: true
+        type: choice
+        options: [codex, claude, any]
 permissions:
   issues: write
   contents: read
@@ -25,33 +30,85 @@ jobs:
   coordinate:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate and update claim
+      - name: Select and reserve issue
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          ISSUE: ${{ inputs.issue }}
           OPERATION: ${{ inputs.operation }}
+          ISSUE: ${{ inputs.issue }}
           OWNER: ${{ inputs.owner }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$ISSUE" =~ ^[1-9][0-9]*$ ]] || { echo "::error::Invalid issue"; exit 1; }
-          [[ "$OWNER" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$ ]] || { echo "::error::Invalid owner"; exit 1; }
-          state=$(gh api "repos/$GH_REPO/issues/$ISSUE" --jq '.state')
-          [[ "$state" == open ]] || { echo "::error::Issue not open"; exit 1; }
-          # Issue comments are the authoritative ledger. This workflow serializes writes.
-          comments=$(gh api --paginate "repos/$GH_REPO/issues/$ISSUE/comments?per_page=100" --jq '.[].body')
-          current=$(printf '%s\n' "$comments" | grep '^<!-- issue-claim:v1 ' | tail -1 || true)
-          current_owner=$(printf '%s' "$current" | sed -n 's/.*owner=\([^ ]*\).*/\1/p')
-          current_state=$(printf '%s' "$current" | sed -n 's/.*state=\([^ ]*\).*/\1/p')
-          if [[ "$OPERATION" == claim ]]; then
-            if [[ "$current_state" == claimed && "$current_owner" != "$OWNER" ]]; then
-              echo "::error::Already claimed by $current_owner"
-              exit 1
-            fi
-            # A claim succeeds only when this workflow run is green.
-            gh issue comment "$ISSUE" --body "<!-- issue-claim:v1 state=claimed owner=$OWNER -->\nReserved by $OWNER. Do not start work until this workflow succeeds."
-          else
-            [[ "$current_state" == claimed && "$current_owner" == "$OWNER" ]] || { echo "::error::Only current owner may release"; exit 1; }
-            gh issue comment "$ISSUE" --body "<!-- issue-claim:v1 state=released owner=$OWNER -->\nReleased by $OWNER."
-          fi
+          AGENT: ${{ inputs.agent }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const {owner: repoOwner, repo} = context.repo;
+            const op = process.env.OPERATION;
+            const worker = process.env.OWNER;
+            const agent = process.env.AGENT;
+            if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
+            const rawIssue = process.env.ISSUE.trim();
+            if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
+            const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
+            async function status(number) {
+              const comments = await github.paginate(github.rest.issues.listComments, {owner:repoOwner,repo,issue_number:number,per_page:100});
+              const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && marker.test(c.body || ''));
+              const match = ledger.at(-1)?.body.match(marker);
+              return match ? {state:match[1], owner:match[2]} : {state:'released',owner:null};
+            }
+            async function comment(number,state) {
+              const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
+                (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.');
+              await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
+            }
+            async function issue(number) {
+              const {data} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
+              if (data.pull_request || data.state !== 'open') throw Error('Not an open issue: #' + number);
+              return data;
+            }
+            async function ensureNoOpenPR(number) {
+              const {data} = await github.rest.search.issuesAndPullRequests({q:'repo:' + repoOwner + '/' + repo + ' is:pr is:open "' + '#' + number + '"',per_page:30});
+              if (data.items.some(p => new RegExp('(?:^|\\s)(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)?\\s*#' + number + '(?![0-9])','i').test(p.body || ''))) {
+                throw Error('Open PR already references issue #' + number);
+              }
+            }
+            if (op === 'release') {
+              const number = Number(rawIssue);
+              await issue(number);
+              const claim = await status(number);
+              if (claim.state !== 'claimed' || claim.owner !== worker) throw Error('Only the current owner can release #' + number);
+              await comment(number,'released');
+              core.summary.addRaw('Released #' + number).write();
+            } else {
+              let candidates = [];
+              if (op === 'claim') candidates = [Number(rawIssue)];
+              else {
+                const all = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'open',per_page:100});
+                const ranks = {S:0,A:1,B:2,C:3,D:4};
+                candidates = all.filter(i => !i.pull_request).map(i => {
+                  const labels = i.labels.map(l => typeof l === 'string' ? l : l.name);
+                  const d = labels.find(l => /^difficulty:[S-D]$/.test(l));
+                  const priority = /^\\[P([0-2])\\]/.exec(i.title)?.[1];
+                  return {number:i.number, difficulty:d ? ranks[d.split(':')[1]] : 99, priority:priority===undefined?3:Number(priority), title:i.title, labels};
+                }).filter(i => i.difficulty !== 99)
+                  .filter(i => agent !== 'claude' || /恋愛|友情|ひより|みんと|つむぎ|サメ|関係|交際|遠距離|イベント|台詞/.test(i.title))
+                  .sort((a,b) => a.difficulty-b.difficulty || a.priority-b.priority || a.number-b.number)
+                  .map(i => i.number);
+              }
+              let selected = null;
+              for (const number of candidates) {
+                try {
+                  await issue(number);
+                  const claim = await status(number);
+                  if (claim.state === 'claimed') {
+                    if (op === 'claim') throw Error('Already claimed by ' + claim.owner);
+                    continue;
+                  }
+                  await ensureNoOpenPR(number);
+                  selected = number;
+                  break;
+                } catch(e) { if(op === 'claim') throw e; core.info('Skip #' + number + ': ' + e.message); }
+              }
+              if (!selected) throw Error('No available issue; inspect reservations or add eligible work.');
+              await comment(selected,'claimed');
+              core.summary.addRaw('Reserved #' + selected + ' for ' + worker).write();
+              core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
+            }
