@@ -10,6 +10,7 @@ on:
       - 'remake/test/browser/hiyori_gate.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'remake/test/browser/lime_evening.mjs'
+      - 'remake/test/browser/minto_invite_reminder.mjs'
       - '.github/workflows/lime-invitations.yml'
   push:
     branches: [main]
@@ -22,6 +23,7 @@ on:
       - 'remake/test/browser/hiyori_gate.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'remake/test/browser/lime_evening.mjs'
+      - 'remake/test/browser/minto_invite_reminder.mjs'
       - '.github/workflows/lime-invitations.yml'
   workflow_dispatch:
 permissions:
@@ -64,6 +66,7 @@ jobs:
             sleep 1
           done
           node remake/test/browser/lime_evening.mjs
+          node remake/test/browser/minto_invite_reminder.mjs
           node remake/test/browser/hiyori_gate.mjs
           node --experimental-vm-modules remake/test/hiyori_frequency.mjs
           node --experimental-vm-modules remake/test/daily_consistency.mjs
@@ -74,5 +77,6 @@ jobs:
           name: lime-invitation-results
           path: |
             .codex/artifacts/remake-browser/lime-evening*
+            .codex/artifacts/remake-browser/venue-invite-reminder*
             .codex/artifacts/remake-browser/hiyori-gate*
           retention-days: 7
