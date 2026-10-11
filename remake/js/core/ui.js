@@ -105,7 +105,7 @@ export function uiArtReady(ms = 2000) {
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
- * 新しい場面が始まって見えるのを防ぐ）。戻り値の Promise で「絵が出た」を待てる
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
  */
 export function setBg(url, { instant = false, tint = null, fast = false, ready = [] } = {}) {
   const host = layers.bg;
@@ -133,8 +133,11 @@ export function setBg(url, { instant = false, tint = null, fast = false, ready =
     }
     requestAnimationFrame(() => next.classList.add("show"));
     setTimeout(() => olds.forEach((o) => o.remove()), fast ? 260 : 700);
-  }).finally(() => {
-    if (curtain) curtain.release().finally(() => { if (activeCurtain === curtain) activeCurtain = null; });
+  }).finally(async () => {
+    if (curtain) {
+      try { await curtain.release(); }
+      finally { if (activeCurtain === curtain) activeCurtain = null; }
+    }
   });
   return bgTask;
 }
@@ -182,8 +185,12 @@ export function showScreen(name, node) {
     document.body.dataset.screen = name;
     refreshWeather();
   };
-  if (activeCurtain && name !== "none") activeCurtain.covered.then(commit);
-  else commit();
+  if (activeCurtain && name !== "none") {
+    // 覆ったところで古い地図を片付け、開いている戸口には背景だけを見せる。
+    // 後から別の画面が指定されたときは、古い予約で消したり差し替えたりしない。
+    activeCurtain.covered.then(() => { if (revision === screenRevision) host.replaceChildren(); });
+    bgTask.then(commit);
+  } else commit();
   return node;
 }
 

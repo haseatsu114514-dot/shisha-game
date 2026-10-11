@@ -7,10 +7,13 @@ on:
       - "remake/js/core/mg-kit.js"
       - "remake/js/core/scene-motions.js"
       - "remake/js/core/transition*.js"
+      - "remake/js/core/ui.js"
+      - "remake/js/daily/map.js"
       - "remake/css/motions*.css"
       - "remake/css/motions/**"
       - "remake/css/vn.css"
       - "remake/test/motion_endings.mjs"
+      - "remake/test/navigation_transitions.mjs"
       - "remake/test/load_recorder.mjs"
       - "remake/tools/load-recorder.mjs"
       - "remake/tools/measure_load.mjs"
@@ -54,3 +57,4 @@ jobs:
           PY
           node remake/test/load_recorder.mjs
           node remake/test/motion_endings.mjs
+          node remake/test/navigation_transitions.mjs
