@@ -8,6 +8,7 @@ import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { playerInner, paginateInner } from "./inner.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
@@ -55,12 +56,13 @@ function buildDom() {
     portraits: el("div.vn-portraits"),
     name: el("div.vn-name"),
     text: el("div.vn-text", { "aria-live": "polite" }),
+    inner: el("div.vn-inner", { hidden: true, "aria-live": "polite", "aria-label": "ひよりの本心（はじめには聞こえない）" }),
     next: el("div.vn-next", { text: "▼" }),
     choices: el("div.vn-choices"),
     log: el("div.vn-log"),
     controls: el("div.vn-controls"),
   };
-  dom.box = el("div.vn-box", [dom.name, dom.text, dom.next]);
+  dom.box = el("div.vn-box", [dom.name, dom.text, dom.inner, dom.next]);
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
@@ -75,6 +77,7 @@ function buildDom() {
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
+    if (dom.log.classList.contains("show")) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
     if (e.key === "Control") setSkip(true);
   });
@@ -95,13 +98,14 @@ let autoTimer = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
   if (!running) return;
+  if (dom.log.classList.contains("show")) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
   if (running.waitingChoice) {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
   autoTimer = setTimeout(() => {
     if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -150,6 +154,9 @@ export function play(idOrDlg, opts = {}) {
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
+    dom.inner.replaceChildren();
+    dom.inner.hidden = true;
+    dom.box.classList.remove("has-inner");
     dom.name.textContent = "";
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
@@ -498,24 +505,35 @@ function showLine(line) {
     text = clauses.length ? `……${clauses.join("。")}。` : "";
     if (!text) return next();
   }
-  log.push({ name, text: stripTags(text) });
+  let inner = playerInner(line);
+  if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
+  log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
-  r.pages = paginateForBox(text);
+  dom.box.classList.toggle("has-inner", !!inner);
+  r.pages = paginateForBox(text).map((value) => ({ text: value, inner: "" }));
+  if (inner) {
+    // 本心は最後の発言ページの下に出す。長い本心の続きでは発言を残し、打ち直さない。
+    dom.inner.hidden = false; // 本心の書体・実幅を計測する間だけ表示状態にする
+    const thoughts = paginateForBox(inner, dom.inner, paginateInner);
+    const last = r.pages.at(-1);
+    last.inner = thoughts[0];
+    r.pages.push(...thoughts.slice(1).map((value) => ({ text: last.text, inner: value, continuation: true })));
+  }
   r.pageIdx = 0;
   renderPage();
 }
 
 // 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
 let measurementContext = null;
-function paginateForBox(text) {
+function paginateForBox(text, target = dom.text, split = paginate) {
   measurementContext ||= document.createElement("canvas").getContext("2d");
-  if (!measurementContext || !dom.text.clientWidth) return paginate(text);
-  const style = getComputedStyle(dom.text);
+  if (!measurementContext || !target.clientWidth) return split(text);
+  const style = getComputedStyle(target);
   const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
   const tracking = parseFloat(style.letterSpacing) || 0;
-  return paginate(text, {
-    maxWidth: dom.text.clientWidth - 4,
+  return split(text, {
+    maxWidth: target.clientWidth - 4,
     measure(value) {
       measurementContext.font = normal;
       const regularWidth = measurementContext.measureText(value).width;
@@ -561,15 +579,18 @@ function autoFx(line) {
 
 function renderPage() {
   const r = running;
-  const raw = r.pages[r.pageIdx];
+  const page = r.pages[r.pageIdx];
+  const raw = page.text;
   r.fullHtml = formatHtml(raw);
-  const total = visibleLength(r.fullHtml);
+  r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
+  r.spokenLength = visibleLength(r.fullHtml);
+  const total = r.spokenLength + visibleLength(r.fullInnerHtml);
   clearInterval(r.typeTimer);
   dom.next.classList.remove("show");
   const speed = vnTest.turbo ? 4 : config.textSpeed;
   if (speed >= 4 || skipMode) {
     r.typing = false;
-    dom.text.innerHTML = r.fullHtml;
+    renderTyped(total);
     dom.next.classList.add("show");
     kickAuto();
     return;
@@ -577,15 +598,15 @@ function renderPage() {
   // 重要行（[imp]）は一拍の「溜め」を置いてから出す
   const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
   r.typing = true;
-  dom.text.innerHTML = "";
-  let shown = 0;
+  let shown = page.continuation ? r.spokenLength : 0;
+  renderTyped(shown);
   const interval = { 1: 46, 2: 26, 3: 12 }[speed] || 26;
   const step = Math.max(1, Math.round(total / 90));
   const start = () => {
     r.typeTimer = setInterval(() => {
       shown += step;
-      dom.text.innerHTML = sliceHtml(r.fullHtml, shown);
-      if (shown % 3 < step) SE.blip(r.speaker);
+      renderTyped(shown);
+      if (shown <= r.spokenLength && shown % 3 < step) SE.blip(r.speaker);
       if (shown >= total) completeTyping();
     }, interval);
   };
@@ -594,13 +615,21 @@ function renderPage() {
   kickAuto();
 }
 
+function renderTyped(shown) {
+  const r = running;
+  dom.text.innerHTML = sliceHtml(r.fullHtml, Math.min(shown, r.spokenLength));
+  const innerShown = Math.max(0, shown - r.spokenLength);
+  dom.inner.hidden = !r.fullInnerHtml || innerShown === 0;
+  dom.inner.innerHTML = innerShown ? sliceHtml(r.fullInnerHtml, innerShown) : "";
+}
+
 function completeTyping() {
   const r = running;
   if (!r) return;
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   r.typing = false;
-  dom.text.innerHTML = r.fullHtml;
+  renderTyped(r.spokenLength + visibleLength(r.fullInnerHtml));
   dom.next.classList.add("show");
   kickAuto();
 }
@@ -702,12 +731,14 @@ function pickChoice(line, c) {
 
 function openLog() {
   SE.select();
+  clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
     l.name ? el("b", { text: l.name }) : null,
     el("span", { text: l.text }),
+    l.inner ? el("div.log-inner", { text: l.inner, "aria-label": "ひよりの本心（はじめには聞こえない）" }) : null,
   ])));
   dom.log.replaceChildren(
-    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); } })]),
+    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); kickAuto(); } })]),
     list,
   );
   dom.log.classList.add("show");
