@@ -1,0 +1,62 @@
+[
+  {
+    "file": "bg_tonari_inside_day",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 62,
+    "old_webp_bytes": 128380,
+    "new_webp_bytes": 152452,
+    "sha256": "db0e4a692dd3960402f5b8c8a8041953277821666d1affc1fcd24f94961fa21a"
+  },
+  {
+    "file": "bg_tonari_inside_night",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 62,
+    "old_webp_bytes": 194206,
+    "new_webp_bytes": 170682,
+    "sha256": "867630430cb245faad747e391db44017295ab022accb0f4711ece44d17924a9f"
+  },
+  {
+    "file": "bg_tonari_inside_overcast_day",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 62,
+    "old_webp_bytes": null,
+    "new_webp_bytes": 147394,
+    "sha256": "4e25db3e149b0745ce4d22fc178c9479a860b9c99fb403162ee8e8fc8be4ee4c"
+  },
+  {
+    "file": "bg_tonari_inside_overcast_night",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 62,
+    "old_webp_bytes": null,
+    "new_webp_bytes": 161322,
+    "sha256": "328a0a1903b1a8d5dd03f1cda05fd2287c107e5414b8dc5818d796fd683bc0e1"
+  }
+]

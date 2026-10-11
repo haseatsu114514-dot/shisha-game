@@ -21,6 +21,7 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {} };
 const values = {
+  "hiyori.js": { visitHiyoriAtShop: async () => false, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
@@ -33,7 +34,7 @@ const values = {
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
-  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
+  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },

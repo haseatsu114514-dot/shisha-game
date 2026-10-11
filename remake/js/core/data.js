@@ -4,6 +4,9 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 const ROOT = "../";
+// データローダは状態モジュールを読み込まない。天気側が表示用の読み取り関数を登録する。
+let backgroundWeather = () => null;
+export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
 
 /** 読み込んだ全データ。起動時に loadAll() が埋める */
 export const DB = {
@@ -221,6 +224,13 @@ export function sceneBg(ref, timeOfDay = "day") {
     if (list.includes(variant)) name = variant;
   }
   if (!list.includes(name)) return { url: null, tint: null };
+  // 曇り・雨は同じ曇天画。雨粒は既存weatherレイヤーだけが描く。
+  // 差分の用意された場所だけ切り替え、未制作の場所は従来の絵を維持する。
+  const weather = backgroundWeather();
+  if (weather === "cloud" || weather === "rain") {
+    const overcast = name.replace(/_(day|night)\.png$/, "_overcast_$1.png");
+    if (list.includes(overcast)) name = overcast;
+  }
   const tint = timeOfDay === "night" && !name.endsWith("_night.png") && !BG_NO_NIGHT_TINT.has(name) ? "night" : null;
   return { url: img(`backgrounds/${name}`), tint };
 }

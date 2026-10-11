@@ -12,13 +12,13 @@ import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js"
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
-import { hasContact } from "./spots.js";
+import { hasContact, spotById, isClosed } from "./spots.js";
 import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 
-import { invitationCost } from "./invitations.js";
+import { invitationCost, storeInvitationSpot } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -31,6 +31,10 @@ const canRetry = (item) => item.result === "expired"
 
 /** 営業中の私的な約束や、固定イベントとの重複を避ける。時刻を持たない誘いは従来どおり */
 function invitationAvailable(m, { fixedNight = () => false } = {}) {
+  const store = storeInvitationSpot(m);
+  if (m.accept_event === "__hiyori_shop__" && (!spotById(m.visit_spot) || isClosed(spotById(m.visit_spot))
+    || state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`)) return false;
+  if (store && isClosed(spotById(store))) return false;
   if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
   if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
@@ -68,6 +72,8 @@ function scheduledInvitation(m, opts = {}) {
 }
 
 /** 期限切れは既読とは別。未読のままでも、重要な誘いの再案内を止めない */
+const replySlot = (m) => m.time_slot === "night" ? 1 : storeInvitationSpot(m) ? Math.min(1, state.slot) : 0;
+
 export function expireInvitations(opts = {}) {
   const pending = state.pendingInvite;
   if (pending) {
@@ -80,9 +86,11 @@ export function expireInvitations(opts = {}) {
       : source ? scheduledInvitation(source, { ...opts, day: dueDay }) : source;
     // 夜の行動枠で受け付けた仕事後の約束は、閉店イベントが済むまでslot2で待つ。
     const waitingForClose = pending.afterClose && pending.queuedAfterClose && dueDay === state.day && state.slot >= 2;
+    const storeVisit = storeInvitationSpot(schedule);
+    if (storeVisit && dueDay === state.day && state.slot === 1 && pending.slot === 0) pending.slot = 1;
     const past = dueDay < state.day || dueDay === state.day && pending.slot < state.slot && !waitingForClose;
-    const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && opts.fixedNight?.(dueDay) || schedule === null
-      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== (schedule.time_slot === "night" ? 1 : 0)));
+    const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && !storeVisit && opts.fixedNight?.(dueDay) || schedule === null
+      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule)));
     if (past || conflict) {
       // 旧セーブに残った予約も、消す前に経緯をトークへ残す。既読記録は戻さない。
       if (!booked) {
@@ -104,7 +112,15 @@ export function expireInvitations(opts = {}) {
     } else if (schedule?.after_close) pending.afterClose = true;
   }
   for (const item of state.inbox || []) {
-    if (item.done || item.msg?.type !== "invitation" || inviteState(item) !== "expired") continue;
+    // 旧版が昼の終了時に失効させた未返信の店LIMEも、当日・営業時間内だけ救済する。
+    if (item.result === "expired" && !item.needsResend && item.day === state.day
+      && storeInvitationSpot(item.msg) && state.slot < 2 && invitationAvailable(item.msg, opts)
+      && !state.flags[`_invited_${originId(item)}`]) {
+      item.done = false;
+      delete item.result;
+      item.replyState = "waiting";
+    }
+    if (item.done || item.msg?.type !== "invitation" || inviteState(item, opts) !== "expired") continue;
     item.done = true;
     item.result = "expired";
     item.replyState = "expired";
@@ -192,10 +208,16 @@ export function morningMessages(opts = {}) {
   // スミさんの急なバイトの誘いは仕事の連絡なので、重なってもよい（オーナー指定。どちらを受けるかはプレイヤーが選ぶ）
   const meetInvite = (m) => m?.type === "invitation" && m.accept_event !== "__sumi_baito__";
   const otherInvite = out.some(meetInvite) || inbox.some((i) => !i.done && meetInvite(i.msg));
+  const hiyori = hiyoriInvite(opts);
+  if (hiyori && out.length < 3 && !otherInvite && !state.pendingInvite && !senders.has("hiyori")
+    && !delivered.has(hiyori.id) && invitationAvailable(hiyori, opts)) {
+    out.push(hiyori);
+    senders.add("hiyori");
+  }
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;
-    if (template.type === "invitation" && otherInvite) continue;
+    if (template.type === "invitation" && (otherInvite || out.some(meetInvite))) continue;
     const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
     if (!m || !invitationAvailable(m, opts)) continue;
     out.push(m);
@@ -203,6 +225,21 @@ export function morningMessages(opts = {}) {
     break;
   }
   return out;
+}
+
+// 再会後のたまの誘い。受信した日を保存するため、読了・辞退・ロードで連投しない。
+function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
+  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+    || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
+  const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
+  if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
+  const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
+  if (!open.length) return null;
+  const spot = open[Math.floor(state.day / 4) % open.length];
+  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
+    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
+    messages: [`……今夜、${spot.label}で一緒に一服しない？`], accept_text: "今夜、行くね",
+    decline_response: { text: "……うん。また都合のいい日に" } };
 }
 
 /**
@@ -289,7 +326,7 @@ export function deliverMorning(opts = {}) {
   for (const m of msgs) {
     if (m.temporary_closed) state.flags[`_temporary_closed_${m.sender}`] = `${state.chapter || 1}:${state.day}`;
     const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
-    state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg,
+    state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter, msg,
       read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] }));
   }
   return msgs.length;
@@ -325,12 +362,12 @@ export function pushNotice(count, { onOpen = null } = {}) {
 
 /**
  * 誘いに今から返事できるか。open=乗れる / expired=時間切れ / busy=別の約束がある
- * （昼の誘いは昼の行動の前まで、夜の誘いは夜の行動の前まで。日をまたいだら時間切れ）
+ * （店への誘いは当日の営業時間内なら夜も可。昼限定の外出は昼まで）
  */
-function inviteState(item) {
+function inviteState(item, opts = {}) {
   const m = item.msg;
-  const slot = m.time_slot === "night" ? 1 : 0;
-  if (state.phase !== "daily" || item.day !== state.day || state.slot > slot) return "expired";
+  const slot = replySlot(m);
+  if (!invitationAvailable(m, opts) || state.phase !== "daily" || item.day !== state.day || state.slot > slot) return "expired";
   if (state.pendingInvite) return "busy";
   return "open";
 }
@@ -419,9 +456,9 @@ function readReward(m) {
 }
 
 /** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */
-function declineConflictingInvites(acceptedItem) {
+function declineConflictingInvites(acceptedItem, opts = {}) {
   for (const other of state.inbox || []) {
-    if (other === acceptedItem || other.done || other.msg?.type !== "invitation" || inviteState(other) === "expired") continue;
+    if (other === acceptedItem || other.done || other.msg?.type !== "invitation" || inviteState(other, opts) === "expired") continue;
     const m = other.msg;
     const source = DB.lime.find((message) => message.id === originId(other)) || m;
     const text = POLITE.has(m.sender) ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった";
@@ -471,7 +508,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   }
 
   if (m.type === "invitation" && m.accept_event) {
-    const st = forced ? "open" : inviteState(item);
+    const st = forced ? "open" : inviteState(item, ui.inviteOptions);
     if (st === "expired") {
       item.done = true;
       item.result = "expired";
@@ -490,8 +527,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       : polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
     const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
     const first = !state.flags[hintKey];
-    const night = m.time_slot === "night";
-    const deadline = night ? "夜の行動の前まで" : "昼の行動の前まで";
+    const night = replySlot(m) === 1;
+    const deadline = storeInvitationSpot(m) ? "夜の行動の前まで（店の営業日だけ）" : night ? "夜の行動の前まで" : "昼の行動の前まで";
     const pick = await ui.choose(
       [
         st === "busy"
@@ -513,10 +550,11 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.result = "accepted";
       const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0,
         day: state.day, originId: originId(item), afterClose: !!m.after_close, temporaryClosed: !!m.temporary_closed };
+      if (m.visit_spot) inv.visitSpot = m.visit_spot;
       accepted.push(inv);
       if (!forced) {
         state.pendingInvite = inv;
-        declineConflictingInvites(item);
+        declineConflictingInvites(item, ui.inviteOptions);
       }
       const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る"
         : m.temporary_closed ? "臨時休暇の午後に会う約束ができた"
@@ -571,13 +609,14 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null } = {}) {
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
-  expireInvitations();
+  expireInvitations({ fixedNight });
   const accepted = [];
   const ui = phoneShell({ time: clockNow(), title: `DAY ${state.day}` });
+  ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
 
@@ -595,7 +634,7 @@ export async function openLime({ tutorial = false, sender = null } = {}) {
       ui.chat.append(el("div.lime-tip", [
         el("b", { text: "LIMEの使い方" }),
         el("span", { text: "読みたいトークをタップ。赤い丸は未読のしるし。" }),
-        el("span", { text: "誘いには、その日のうちなら返事ができる（昼の誘いは昼の行動の前まで・夜の誘いは夜の行動の前まで）。" }),
+        el("span", { text: "誘いには、その日のうちなら返事ができる（店への誘いは営業日なら夜まで・昼限定のお出かけは昼まで）。" }),
       ]));
     }
     if (!senders.length) ui.chat.append(el("p.lime-empty", { text: "まだトークはない" }));
@@ -603,7 +642,7 @@ export async function openLime({ tutorial = false, sender = null } = {}) {
       const items = thread(sender);
       const last = items.at(-1);
       const unread = items.some((i) => !i.read);
-      const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i) !== "expired");
+      const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i, ui.inviteOptions) !== "expired");
       const lastText = last.read
         ? (last.log.filter((l) => l.text).at(-1)?.text || [].concat(last.msg.messages || []).at(-1))
         : [].concat(last.msg.messages || [])[0];

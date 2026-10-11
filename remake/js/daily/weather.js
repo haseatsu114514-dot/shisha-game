@@ -1,6 +1,9 @@
 // 天気（旧版 A8/W4）。日ごとに晴れ/雨を、セーブ固有の種から決める（約3割・DAY1 は晴れ固定）。
 // 雨の日: マップに雨、観音堂・カフェは雨の回、つむぎは長居、バイトは長居客の追加注文ぶん給料に上乗せ。
 import { state } from "../core/state.js";
+import { setBackgroundWeatherSource } from "../core/data.js";
+
+setBackgroundWeatherSource(weatherOf);
 
 export function isRainy(day = state?.day) {
   if (!state || !day || day < 2 || state.phase === "tournament") return false;
@@ -11,7 +14,7 @@ export function isRainy(day = state?.day) {
 
 /**
  * DAYカードに出す天気（CI109）。雨は isRainy のまま。雨でない日の約3割を「くもり」として見せるだけで、
- * くもりは遊びの内容（背景・会話・給料・制作）を何も変えない。DAY1 は晴れ。大会中は null。
+ * くもりは会話・給料・制作を変えず、専用の曇天画がある背景だけ切り替える。DAY1 は晴れ。大会中は null。
  */
 export function weatherOf(day = state?.day) {
   if (!state || !day || state.phase === "tournament") return null;
@@ -36,7 +39,8 @@ const CHOIZAP_WINDOWS = [[731,152,61,28],[815,152,50,28],[1123,156,104,24]];
 /** 見えている背景と画面に対応する雨。抽選とセーブ値は既存 isRainy を使う。 */
 export function rainScene(background, screen) {
   if (["title", "end", "result", "count"].includes(screen)) return null;
-  const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png");
+  const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
+    .replace(/_overcast_(day|night)\.png$/, "_$1.png");
   if (!file || /(?:title|tournament)/.test(file) || !isRainy()) return null;
   if (/^bg_(?:osu_map|map_local|street|kannon|tonari_outside|cafe|shishark|shishark_preparing)(?:_day|_night)?\.png$/.test(file)) {
     return { mode: "outdoor", windows: [] };

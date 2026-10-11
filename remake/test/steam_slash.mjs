@@ -55,10 +55,14 @@ try {
       const heart=document.querySelector('.dodge-heart'),core=heart.querySelector('.dodge-core'),pad=document.querySelector('.dodge-pad'),knob=pad.querySelector('.dodge-knob');
       const h=heart.getBoundingClientRect(),c=core.getBoundingClientRect(),p=pad.getBoundingClientRect(),k=knob.getBoundingClientRect(),scale=p.width/pad.offsetWidth;
       return {color:getComputedStyle(heart).color,white:getComputedStyle(core).backgroundColor,width:core.offsetWidth,expected:parseFloat(heart.style.getPropertyValue('--hit-diameter')),
+        artWidth:heart.querySelector('svg').getBoundingClientRect().width/(h.width/heart.offsetWidth),
+        artHeight:heart.querySelector('svg').getBoundingClientRect().height/(h.height/heart.offsetHeight),
         centered:Math.abs(h.x+h.width/2-c.x-c.width/2)<.2&&Math.abs(h.y+h.height/2-c.y-c.height/2)<.2,
         extra:getComputedStyle(core,'::after').content,lift:(p.y+p.height/2-k.y-k.height/2)/scale};
     });
     assert.equal(look.white,'rgb(255, 255, 255)');assert(Math.abs(look.width-look.expected)<1&&look.centered);
+    assert(Math.abs(look.artWidth-18)<.1&&Math.abs(look.artHeight-18)<.1, 'Heart artwork should be 18px at logical scale');
+    assert(look.expected>0&&look.expected<8, 'Good-condition white circle should be smaller than the standard 8px diameter');
     assert.equal(look.extra,'none');assert(Math.abs(look.lift-10)<.2);assert.equal(look.color,'rgb(112, 215, 237)');
     await shot(page,`controls-${name}`);
     // ノブの見た目の中心を押しても、ハートが勝手に動かない。

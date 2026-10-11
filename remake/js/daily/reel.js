@@ -702,7 +702,7 @@ function announce(r) {
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", source: "slot", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
-    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
+    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `Lv.${r.starTo}に到達` : "",
     fx,
   });
 }

@@ -179,13 +179,14 @@ function balancePages(pages) {
 /** 短い末尾だけのページは避けつつ、常にMAX_PAGE_LINES以内に収める。 */
 export function paginate(raw, layout = {}) {
   const lines = autoWrap(raw, WRAP_LIMIT, layout).split("\n");
+  const maxLines = layout.maxLines ?? MAX_PAGE_LINES;
   const pages = [];
   let start = 0;
-  if (lines.length > MAX_PAGE_LINES && lines.length % MAX_PAGE_LINES === 1 &&
+  if (maxLines > 1 && lines.length > maxLines && lines.length % maxLines === 1 &&
       widthOf(lines.at(-1)) <= WRAP_LIMIT * 0.4) {
     pages.push(lines[0]); start = 1;
   }
-  for (let k = start; k < lines.length; k += MAX_PAGE_LINES) pages.push(lines.slice(k, k + MAX_PAGE_LINES).join("\n"));
+  for (let k = start; k < lines.length; k += maxLines) pages.push(lines.slice(k, k + maxLines).join("\n"));
   return balancePages(pages.length ? pages : [""]);
 }
 

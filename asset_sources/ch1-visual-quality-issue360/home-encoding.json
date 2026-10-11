@@ -1,0 +1,62 @@
+[
+  {
+    "file": "bg_home_day",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 74,
+    "old_webp_bytes": 112710,
+    "new_webp_bytes": 157492,
+    "sha256": "8ea371aae52f40c2fe553a56ef0939cb81d355966ebbef56cd4b7be2c6ba4555"
+  },
+  {
+    "file": "bg_home_night",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 74,
+    "old_webp_bytes": 168432,
+    "new_webp_bytes": 114716,
+    "sha256": "27021c23060e7c46f0954e760e96c169e93986369d7c0c01ac93c5bf77e2fb13"
+  },
+  {
+    "file": "bg_home_overcast_day",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 74,
+    "old_webp_bytes": null,
+    "new_webp_bytes": 112154,
+    "sha256": "b1cb027a0e20acd2e86b9dd93109d2ab4c9494e91ef45c0c49392fc76daae75d"
+  },
+  {
+    "file": "bg_home_overcast_night",
+    "native_size": [
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "webp_quality": 74,
+    "old_webp_bytes": null,
+    "new_webp_bytes": 109880,
+    "sha256": "429b2c1138b4dfca871520e85200b27fe08c30a888484027987639ec11e0dd61"
+  }
+]

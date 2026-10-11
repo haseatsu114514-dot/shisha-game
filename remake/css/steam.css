@@ -82,9 +82,9 @@
 .dodge-object.smoke { filter: drop-shadow(0 0 5px #bc9feb44); }
 .bench[data-step="steam"] .dodge-heart { --heart-ink: #70d7ed; --heart-hit: #ef8795; color: var(--heart-ink); background: none; text-shadow: none; filter: drop-shadow(0 0 3px #79e1f055); }
 .bench[data-step="steam"] .dodge-heart.shield { color: var(--heart-hit); filter: drop-shadow(0 0 3px #ef879566); }
-.dodge-heart > span { position: absolute; left: -4px; top: -4px; }
-.dodge-heart > span, .dodge-heart svg { display: block; width: 36px; height: 36px; }
-.dodge-core { width: var(--hit-diameter, 18px); height: var(--hit-diameter, 18px); left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; box-shadow: none; }
+.dodge-heart > span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.dodge-heart > span, .dodge-heart svg { display: block; width: var(--heart-size, 18px); height: var(--heart-size, 18px); }
+.dodge-core { width: var(--hit-diameter, 8px); height: var(--hit-diameter, 8px); left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; box-shadow: none; }
 .dodge-core::after, .dodge-heart.shield::after { content: none; }
 
 /* 操作を近くにまとめる。精密モードはボタンの灯りで示す。 */

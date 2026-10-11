@@ -12,7 +12,7 @@ const context = vm.createContext({ Math, Set, Promise, console });
 const mocks = {
   "core/data.js": { DB },
   "core/state.js": { state, save: () => saves++ },
-  "core/stats.js": { gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3 },
+  "core/stats.js": { gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {} },
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
   "daily/bonds.js": { afterStory: async () => {} },
 };

@@ -120,6 +120,8 @@ function peopleTab() {
       el("span.pp-hearts", [
         lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
         hearts,
+        !lover && id === "hiyori" && lv >= 3 && !state.flags._hiyori_tonari_return_done
+          ? el("span.pp-relation", { text: "スミさんとの再会待ち" }) : null,
         !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
       ]),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
