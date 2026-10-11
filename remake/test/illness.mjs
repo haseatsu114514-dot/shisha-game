@@ -21,7 +21,7 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {} };
 const values = {
-  "hiyori.js": { visitHiyoriAtShop: async () => false, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false },
+  "hiyori.js": { visitHiyoriAtShop: async () => false, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },

@@ -25,7 +25,7 @@ import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout
 import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
-import { visitHiyoriAtShop, playHiyoriEvent } from "./hiyori.js";
+import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -357,6 +357,11 @@ async function meetInvitation(inv) {
   } else if (inv.event === "hiyori_tonari_return") {
     await playHiyoriEvent("tonari_return");
     state.visitedDay.tonari = state.day;
+    addStamina(-10);
+  } else if (inv.event === "__hiyori_shop__") {
+    const spot = spotById(inv.visitSpot);
+    await playHiyoriHangout({ bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
+    state.visitedDay[spot.id] = state.day;
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）

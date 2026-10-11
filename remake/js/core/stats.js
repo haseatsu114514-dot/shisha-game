@@ -143,14 +143,42 @@ export function affinityLevel(id) {
 
 /** 読み終えた物語の節目で最低限の親しさを保証する。既存の好感度・端数・恋人の絆は減らさない。 */
 export function ensureAffinityLevel(id, level) {
-  const target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
+  let target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
   if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
+  if (hiyoriWaiting(id) && target > Math.max(prevPts, AFFINITY_RANK_PTS[3])) {
+    const cap = Math.max(prevPts, AFFINITY_RANK_PTS[3]);
+    // 最低値の保証を何度呼んでも、同じ保証分を積み増さない。
+    state.flags._hiyori_affinity_waiting_pts = Math.max(state.flags._hiyori_affinity_waiting_pts || 0, target - cap);
+    target = cap;
+  }
   if (prevPts >= target) return 0;
   state.affinity[id] = target;
-  queueAffinityGain({ id, level: affinityLevel(id), levelUp: level > before, prevPts, pts: target });
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before, prevPts, pts: target });
   return target - prevPts;
+}
+
+const hiyoriWaiting = (id) => id === "hiyori" && !state.flags._hiyori_tonari_return_done
+  && !(state.lovers || []).includes(id);
+
+/** 待っていた実獲得量を、正本の再会読了後に一度だけ・次のハートまで救済する。 */
+export function releaseHiyoriAffinity() {
+  if (!state.flags._hiyori_tonari_return_done || state.flags._hiyori_affinity_waiting_released) return 0;
+  state.flags._hiyori_affinity_waiting_released = true;
+  if ((state.lovers || []).includes("hiyori")) return 0;
+  const prevPts = state.affinity.hiyori || 0;
+  const before = affinityLevel("hiyori");
+  const next = AFFINITY_RANK_PTS[before + 1] ?? prevPts;
+  const got = Math.min(Math.max(0, Number(state.flags._hiyori_affinity_waiting_pts) || 0),
+    AFFINITY_RANK_PTS[4] - AFFINITY_RANK_PTS[3], Math.max(0, next - prevPts));
+  // 元の獲得記録は残す。倍率・占い・端数処理をもう一度かけない。
+  state.flags._hiyori_affinity_released_pts = got;
+  if (!got) return 0;
+  state.affinity.hiyori = prevPts + got;
+  queueAffinityGain({ id: "hiyori", level: affinityLevel("hiyori"), levelUp: affinityLevel("hiyori") > before,
+    prevPts, pts: state.affinity.hiyori });
+  return got;
 }
 
 const rankOf = (pts) => {
@@ -238,11 +266,13 @@ export function gainAffinity(id, pts) {
   const value = Math.round(pts * mult) * AFFINITY_PACE + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
-  state.affinity[id] = prevPts + got;
-  if (!got) return 0;
+  const applied = hiyoriWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
+  if (applied < got) state.flags._hiyori_affinity_waiting_pts = (state.flags._hiyori_affinity_waiting_pts || 0) + got - applied;
+  state.affinity[id] = prevPts + applied;
+  if (!applied) return 0;
   const after = affinityLevel(id);
   queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
-  return got;
+  return applied;
 }
 
 // ---------------------------------------------------------------- 体力
