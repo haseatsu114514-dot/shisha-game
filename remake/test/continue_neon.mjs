@@ -119,6 +119,17 @@ try {
   await page.emulateMedia({ reducedMotion: "reduce" }); await mount();
   assert.equal(await page.locator(".gameover").getAttribute("data-reduced-motion"), "true");
   assert.equal(await page.locator(".go-smoke-left").evaluate(el => getComputedStyle(el).animationName), "none");
+  // 最新mainの幕待ちのように、生成後すぐDOMへ付かない場合も表示後に時計を始める。
+  await page.evaluate(async () => {
+    const { buildGameOver } = await import("./js/chapters/gameover.js");
+    const { showScreen } = await import("./js/core/ui.js");
+    const root = buildGameOver({ variant: 0, soundEffects: false }); root.id = "continue-delayed";
+    window.setTimeout(() => showScreen("end", root), 500);
+  });
+  await page.clock.runFor(700);
+  assert(await page.locator("#continue-delayed").isVisible());
+  await page.clock.runFor(5200);
+  assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
   assert.deepEqual(errors, []); assert.deepEqual(missing, []);
-  console.log("PASS: reduced motion by option / OS and keyboard retry; page errors / missing art 0");
+  console.log("PASS: reduced motion by option / OS, keyboard retry and deferred mounting; page errors / missing art 0");
 } finally { await browser.close(); }

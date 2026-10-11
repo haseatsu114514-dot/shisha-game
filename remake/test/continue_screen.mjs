@@ -191,7 +191,8 @@ try {
 
   await mount(0);
   await page.clock.runFor(19900);
-  await page.locator('[data-test="retry"]').click();
+  // 期限境界は同じ時計で即時に入力。UI安定待ちによる期限越えを混ぜない（実クリックは全18分岐で確認）。
+  await page.evaluate(() => document.querySelector('[data-test="retry"]').click());
   await page.clock.runFor(200);
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
   assert.equal(await page.locator(".gameover").getAttribute("data-timed-out"), null);

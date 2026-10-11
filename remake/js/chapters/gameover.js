@@ -116,7 +116,10 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   let currentInstant = false, hiddenAt = null, reactionAt = null, choice = null, secondFace = false, exit = 0;
   let reactionLine = -1, reactionLineAt = 0, reactionInstant = false;
   const counted = new Set();
-  const observer = new MutationObserver(() => { if (!root.isConnected) cleanup(); });
+  const observer = new MutationObserver(() => {
+    if (!started && root.isConnected) begin();
+    else if (started && !root.isConnected) cleanup();
+  });
   function setMotion() {
     reduce = reducedMotion || !!motion?.matches;
     root.dataset.reducedMotion = String(reduce);
@@ -272,6 +275,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!active || started || !root.isConnected) return;
     started = true;
     start = speechStart = performance.now();
+    observer.disconnect();
     observer.observe(root.parentNode, { childList: true });
     document.addEventListener("visibilitychange", visibility);
     audio.start();
@@ -306,6 +310,9 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   });
   view.setCaption(script.cues[0].text);
   view.reveal(reduce ? 1 : .03);
+  // 幕の終わりまでshowScreenが挿入を待つ場合にも、実際に表示されてから20秒。
+  // 接続を待つ間だけ広く観測し、開始後は親だけに切り替える。画面離脱で両方を破棄する。
+  observer.observe(document.body, { childList: true, subtree: true });
   frame = requestAnimationFrame(begin);
   root.cleanupContinue = cleanup;
   root.setContinueSoundEffects = audio.setEnabled;
