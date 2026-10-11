@@ -62,20 +62,29 @@ try {
   await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
   await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
   assert.equal(await button.getAttribute('data-remaining'),'1','Repeated key spent the only refresh');
-  await page.waitForFunction(()=>{
-    const b=enemies();return !document.querySelector('.dodge-heart').classList.contains('shield')&&b.some(b=>b.distance<175)&&b.some(b=>b.distance>185);
-  },null,{timeout:8000});
   if(shots) await page.screenshot({path:`${shots}/refresh-medium-before.png`});
-  await page.evaluate(()=>{
-    const times=window.spawnTimes={at:performance.now(),next:0};
-    const observer=new MutationObserver(list=>{
-      if(list.some(m=>[...m.addedNodes].some(n=>n.classList?.contains('dodge-word')||n.classList?.contains('dodge-object')))) {
-        times.next=performance.now();observer.disconnect();
+  const medium=await page.evaluate(()=>new Promise((resolve,reject)=>{
+    const deadline=performance.now()+8000;
+    const attempt=()=>{
+      const radius=T.steam.refreshEffect().radius,b=enemies();
+      if(!document.querySelector('.dodge-heart').classList.contains('shield')&&
+          b.some(b=>b.distance<=radius)&&b.some(b=>b.distance>radius)) {
+        const times=window.spawnTimes={at:performance.now(),next:0};
+        const observer=new MutationObserver(list=>{
+          if(list.some(m=>[...m.addedNodes].some(n=>n.classList?.contains('dodge-word')||n.classList?.contains('dodge-object')))) {
+            times.next=performance.now();observer.disconnect();
+          }
+        });observer.observe(document.querySelector('.dodge'),{childList:true});
+        // Observe and consume in one task: bullets cannot move between them.
+        resolve(consume('x'));return;
       }
-    });observer.observe(document.querySelector('.dodge'),{childList:true});
-  });
-  const medium=await page.evaluate(()=>consume('x'));
+      if(performance.now()>=deadline) {reject(new Error('No unshielded near/far refresh opportunity'));return;}
+      requestAnimationFrame(attempt);
+    };
+    attempt();
+  }));
   assert(medium.near>0&&medium.far>0,JSON.stringify(medium));assert(medium.correctlyRemoved);
+  assert.equal(medium.remaining,medium.far,'Refresh removed bullets outside its radius');
   assert.equal(medium.levelAfter,medium.levelBefore,'Base refresh healed mental state');
   assert(medium.missesUnchanged&&medium.tempUnchanged);
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
