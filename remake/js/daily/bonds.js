@@ -21,6 +21,7 @@ import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
+import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 /**
  * 締めくくり（好感度MAXイベント）。gift=受け取る専用ハガル（equipment.json）、question=最後の質問の選択肢 id。
@@ -33,6 +34,11 @@ export const BOND_FINALES = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
   rin: { dialogue: "ch1_rin_bond_finale", gift: "suyaki_rin", question: "bond_q2_rin" },
+  hiyori: {
+    get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
+    get gift() { return hiyoriRoute().finale?.gift || null; },
+    get question() { return hiyoriRoute().finale?.question || ""; },
+  },
 };
 
 /**
@@ -43,6 +49,12 @@ export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: "bond_q1_tsumugi", host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: "bond_q1_minto", host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
   rin: { dialogue: "ch1_rin_bond_question", choice: "bond_q1_rin", host: "ch1_rin_third", when: "visit" },
+  hiyori: {
+    get dialogue() { return hiyoriRoute().question?.dialogue || ""; },
+    get choice() { return hiyoriRoute().question?.choice || ""; },
+    get host() { return hiyoriRoute().question?.host || ""; },
+    when: "after",
+  },
 };
 
 // ---------------------------------------------------------------- 隠し恋愛値
@@ -68,6 +80,7 @@ export function recordRomanceChoice(line, choice) {
 
 /** まだ恋愛に進める相手か（友情寄りの答えも、断った告白もない）。締めくくりの最後の質問を出す条件 */
 export function romanceOpen(id) {
+  if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   return !!BOND_FINALES[id]?.question && !isLover(id) && !state.flags[`_friend_${id}`]
     && answers(id).every((a) => a.value > 0);
 }
@@ -97,6 +110,7 @@ export async function afterStory(dialogueId, { bg = null } = {}) {
 }
 
 const questionOpen = (id) => {
+  if (id === "hiyori" && !hiyoriRoute().enabled) return false;
   const q = BOND_QUESTIONS[id];
   return !!q && !!DB.dialogues[q.dialogue] && !answered(q.choice) && !state.finales?.[id] && !isLover(id) && !state.flags[`_friend_${id}`];
 };
@@ -119,13 +133,14 @@ export async function playQuestionVisit(id, { bg = null } = {}) {
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
 
 export const finaleSeen = (id) => !!state.finales?.[id];
-const storiesDone = (id) => storyCount(id) >= (VISIT_SEQ[id] || []).length;
+const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : storyCount(id) >= (VISIT_SEQ[id] || []).length;
 
 /**
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。
  * みんとは私的な場面で会うので、私服の約束で本名を聞いた後
  */
 export function finaleDue(id) {
+  if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
@@ -139,6 +154,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null } = {}) {
+  if (id === "hiyori" && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   await play(def.dialogue, bg && !DB.dialogues[def.dialogue].metadata?.bg ? { bg } : {});
@@ -268,10 +284,10 @@ export async function playFriendHangout(id) {
     metadata: { bg: `res://assets/backgrounds/${f.bg}`, private_scene: true },
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "仕事を終えてから。"}${f.place}で、${name}と一服した。` },
-      { speaker: id, face: v.arrive.face, text: v.arrive.text },
+      { speaker: id, face: v.arrive.face, text: v.arrive.text, inner: v.arrive.inner },
       { speaker: "", text: "一台の煙を、急がずに回す。勝ち負けも、試香の数字もない時間だった。" },
-      { speaker: id, face: v.mid.face, text: v.mid.text },
-      { speaker: id, face: v.close.face, text: v.close.text },
+      { speaker: id, face: v.mid.face, text: v.mid.text, inner: v.mid.inner },
+      { speaker: id, face: v.close.face, text: v.close.text, inner: v.close.inner },
       { type: "apply", stats: { [f.stat]: 2 } },
     ],
   });

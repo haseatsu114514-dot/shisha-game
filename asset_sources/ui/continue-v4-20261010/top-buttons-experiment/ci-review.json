@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-10",
+  "base": "8dc490c553b3d3d51d78f4068065d0523bbb8c74",
+  "workflowScope": {
+    "lintDialogue": "PR path filter: data/dialogue/**, data/characters.json, tools/lint_dialogue.py. This UI/art PR does not match; equivalent lint run locally.",
+    "pages": "Only main push; unchanged by this PR."
+  },
+  "baselinePages": {
+    "run": 38069299450,
+    "url": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38069299450",
+    "conclusion": "failure",
+    "failedStep": "actions/configure-pages@v5",
+    "errors": [
+      "Get Pages site: Not Found",
+      "Create Pages site: Resource not accessible by integration"
+    ],
+    "preexisting": true
+  },
+  "localTests": {
+    "continue_screen": "PASS",
+    "continue_audio": "PASS",
+    "continue_premium": "PASS",
+    "lintDialogue": {
+      "files": 42,
+      "errors": 0,
+      "existingWarnings": 345
+    },
+    "tidyDialogueDryRun": {
+      "changedLines": 0
+    },
+    "manifest": "All previous entries retained",
+    "burnt_gameover": "PASS: timeout/title, tournament burn/retry, tutorial and rehearsal"
+  },
+  "validatedCodeCommit": "d145c05"
+}

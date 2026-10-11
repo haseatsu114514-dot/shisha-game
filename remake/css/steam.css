@@ -37,12 +37,18 @@
 @keyframes worker-wait-settle { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2px) scale(1.004); } }
 
 /* 奥の霧・細い軌道・反射面は淡く、動く雑念と心の芯はくっきり。 */
-.steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 10px; }
+.steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 0; }
 .steam .dodge-controls { align-self: center; margin-right: 0; }
-.steam-play, .dodge-controls { width: 752px; }
-.steam-play { flex: 1; display: grid; place-items: center; }
+.dodge-controls { width: 752px; }
+/* フィールドの左右も、ウインドウ上側と同じ17pxの余白に揃える。 */
+.steam-play { width: 784px; flex: 1; display: grid; justify-items: center; align-items: start; }
+/* 上に少し余裕を取り、操作欄との間隔も残す。 */
+.steam-play > .dodge { top: 4px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
-.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: #e3d6c9; opacity: .16; z-index: 1; pointer-events: none; user-select: none; }
+.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
+.dodge { --mental-ink: #86d6c5; }
+.dodge[data-mental="unsteady"] { --mental-ink: #e4bc77; }
+.dodge[data-mental="shaken"] { --mental-ink: #ef8795; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
 .dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
 .dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
@@ -53,7 +59,6 @@
 .dodge-mist.right { right: -180px; top: -120px; transform: rotate(-110deg); animation: dodge-mist-right 18s ease-in-out infinite alternate; }
 @keyframes dodge-mist-left { to { transform: translate(40px, -12px) rotate(73deg) scale(1.08); } }
 @keyframes dodge-mist-right { to { transform: translate(-45px, 12px) rotate(-100deg) scale(1.1); } }
-.dodge-world-title { position: absolute; left: 16px; top: 12px; font-family: "Craft Mincho", var(--font); font-size: 15px; letter-spacing: .14em; color: #cdbca480; z-index: 1; pointer-events: none; }
 .dodge-mental { z-index: 1; }
 .dodge-beat-line { opacity: .18; stroke-width: 1.3; }
 .dodge-mental-caption { display: none; }
@@ -75,27 +80,53 @@
 .dodge-object.clock::after { content: none; }
 .dodge-object.spark { filter: drop-shadow(0 0 4px #f6ce8555); }
 .dodge-object.smoke { filter: drop-shadow(0 0 5px #bc9feb44); }
-.bench[data-step="steam"] .dodge-heart { background: none; text-shadow: none; filter: drop-shadow(0 0 6px #c0e0c577); }
-.dodge-heart > span, .dodge-heart svg { display: block; width: 28px; height: 28px; }
-.dodge-core { width: 4px; height: 4px; left: 12px; top: 12px; box-shadow: 0 0 4px #fff; }
-.dodge-core::after { content: ""; position: absolute; inset: -5px; border: 1px solid #ffffe870; border-radius: 50%; }
-.dodge-heart.shield::after { border-width: 1px; box-shadow: 0 0 8px #c7dfbb55; }
+.bench[data-step="steam"] .dodge-heart { --heart-ink: #70d7ed; --heart-hit: #ef8795; color: var(--heart-ink); background: none; text-shadow: none; filter: drop-shadow(0 0 3px #79e1f055); }
+.bench[data-step="steam"] .dodge-heart.shield { color: var(--heart-hit); filter: drop-shadow(0 0 3px #ef879566); }
+.dodge-heart > span { position: absolute; left: -4px; top: -4px; }
+.dodge-heart > span, .dodge-heart svg { display: block; width: 36px; height: 36px; }
+.dodge-core { width: var(--hit-diameter, 18px); height: var(--hit-diameter, 18px); left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; box-shadow: none; }
+.dodge-core::after, .dodge-heart.shield::after { content: none; }
 
-/* スティックと一回だけのリフレッシュ。 */
-.dodge-controls { gap: 16px; }
-.bench[data-art-skin] .dodge-pad { width: 104px; height: 104px; border: 1px solid #c4ab796b; background: radial-gradient(ellipse at 36% 22%, #50414c, #26202f 45%, #100d1c 72%); box-shadow: inset 0 0 0 3px #c7aa7136, inset 0 0 0 6px #110c1c, 0 5px 12px #0007; }
-.bench[data-art-skin] .dodge-pad > span { display: block; color: #d7c5a85c; }
-.dodge-pad > span svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: .8; }
-.bench[data-art-skin] .dodge-knob { left: 31px; top: 31px; width: 40px; height: 40px; border: 1px solid #e6cda297; background: radial-gradient(ellipse at 32% 20%, #f3e1bb, #ad987b 32%, #5c4956 66%, #241c31); box-shadow: inset 0 1px 2px #fff7, inset 0 0 0 3px #f1dcb23b, 0 6px 7px #0009; }
-.dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #efd8af4d; border-radius: 50%; background: radial-gradient(circle at 32% 27%, #fff6d933, transparent 70%); }
-.bench[data-art-skin] .dodge-pad.held { border-color: #ead8ad; box-shadow: inset 0 0 0 3px #c7aa7166, inset 0 0 0 6px #110c1c, 0 0 12px #c1d4b426; }
+/* 操作を近くにまとめる。精密モードはボタンの灯りで示す。 */
+.dodge-controls { justify-content: flex-end; align-items: flex-start; gap: 12px; height: 180px; flex: none; padding-right: 12px; }
+.bench[data-art-skin] .dodge-pad { --stick-lift: 10px; width: 176px; height: 176px; border: 0; background: none; box-shadow: none; }
+/* 太い四方向矢印・灰色の大きな可動ノブで、照準ボタンと区別する。 */
+.bench[data-art-skin] .dodge-pad > span { display: block; color: #ebdbbfc9; pointer-events: none; }
+.dodge-pad > span img { width: calc(100% + 20px); height: calc(100% + 20px); margin: -10px; object-fit: contain; }
+.dodge-pad > span svg { width: 100%; height: 100%; fill: none; stroke-width: 1; }
+.bench[data-art-skin] .dodge-knob { left: calc(50% - 44px); top: calc(50% - 44px - var(--stick-lift)); width: 88px; height: 88px; border: 2px solid #a6acb7; background: linear-gradient(155deg, #c4cad3, #798491 42%, #424957); box-shadow: inset 0 1px 2px #fff7, inset 0 0 0 3px #171a2544, 0 7px 0 -1px #4c515e, 0 10px 0 -1px #11131e, 0 15px 12px #000a; }
+.dodge-knob::before { content: ""; position: absolute; inset: 17px; z-index: 1; border-radius: 50%; background: repeating-linear-gradient(0deg, transparent 0 7px, #c5ced325 7px 8px); mask-image: radial-gradient(ellipse, #000 35%, transparent 72%); }
+.dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #d2dae047; border-radius: 50%; background: radial-gradient(ellipse at 35% 25%, #c4cbd4, #737d8a 45%, #414957); box-shadow: inset 0 2px 4px #fff2, 0 1px 0 #d5dfe529; }
+.bench[data-art-skin] .dodge-pad.held { box-shadow: 0 0 16px #e2cf9d35; }
+.bench[data-art-skin] .dodge-pad.held > span { filter: brightness(1.12); }
+.bench[data-art-skin] .dodge-pad.held .dodge-knob { border-color: #edf4fc; }
 .dodge-pad:focus-visible { outline: 2px solid #d6c49a; outline-offset: 4px; }
-.bench[data-art-skin] .btn.dodge-refresh, .bench[data-art-skin] .btn.dodge-refresh:hover:not(:disabled) { display: flex; flex-direction: row; justify-content: center; gap: 15px; align-items: center; width: 300px; min-width: 0; height: 80px; min-height: 80px; padding: 16px 24px; border: 1px solid #c8b18a66; border-radius: 9px; background: linear-gradient(150deg, #302631, #191422); color: #eee3c9; box-shadow: inset 0 1px 0 #fff1cf0d, 0 4px 12px #0004; }
-.bench[data-art-skin] .dodge-refresh:hover:not(:disabled) { filter: brightness(1.12); }
-.refresh-emblem { width: 32px; height: 32px; color: #d4dfc6; }
+.bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; align-items: center; width: 176px; min-width: 0; height: 180px; min-height: 180px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: none; color: #eee3c9; box-shadow: none; touch-action: none; }
+.bench[data-art-skin] .dodge-action:hover:not(:disabled) { filter: brightness(1.12); }
+.refresh-emblem { position: relative; width: 152px; height: 152px; flex: none; color: #d4dfc6; pointer-events: none; }
+.refresh-emblem img { position: absolute; left: -12px; top: -12px; display: block; width: 176px; height: 176px; object-fit: contain; }
+.dodge-refresh:enabled .refresh-emblem::after { content: ""; position: absolute; inset: 12px; border: 2px solid transparent; border-top-color: #d2f4ff99; border-bottom-color: #80cfff55; border-radius: 50%; filter: drop-shadow(0 0 3px #70ccff); animation: refresh-energy-orbit 4.5s linear infinite; }
+@keyframes refresh-energy-orbit { to { transform: rotate(360deg); } }
 .refresh-emblem svg { width: 100%; height: 100%; }
-.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 21px; white-space: nowrap; letter-spacing: .06em; }
-.bench[data-art-skin] .dodge-refresh:disabled { opacity: .4; filter: saturate(.5); }
+.refresh-emblem > span:first-child { display: block; width: 100%; height: 100%; }
+.recharge-ring { display: none; position: absolute; inset: 12px; border-radius: 50%; background: conic-gradient(#d7edff calc(var(--recharge) * 1turn), #77728a44 0); mask-image: radial-gradient(circle, transparent 65%, #000 66% 70%, transparent 71%); }
+.action-recharge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: var(--font); font-size: 25px; font-weight: 700; line-height: 1.2; color: #f4f5ff; text-shadow: 0 1px 4px #080512, 0 0 9px #080512; white-space: nowrap; }
+.dodge-action[data-cooling="true"] .recharge-ring { display: block; }
+.dodge-action[data-cooling="true"] .refresh-emblem :is(img, svg) { opacity: .3; }
+.bench[data-art-skin] .btn.dodge-action[data-cooling="true"]:disabled { opacity: 1; filter: none; }
+.dodge-slash:enabled .refresh-emblem { filter: drop-shadow(0 0 5px #d4c6f044); }
+.dodge-slash-fx { position: absolute; pointer-events: none; z-index: 4; transform: translate(-50%, -50%) rotate(var(--angle)); filter: drop-shadow(0 0 5px #9edfff); animation: steam-slash .32s ease-out forwards; }
+.dodge-slash-fx svg { display: block; width: 100%; height: 100%; }
+@keyframes steam-slash { 0% { opacity: .8; } 25% { opacity: 1; } 100% { opacity: 0; } }
+.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
+.precision-copy { display: flex; align-items: center; gap: 8px; }
+.precision-state { display: grid; place-items: center; width: 44px; height: 20px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 12px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
+.dodge-precision[aria-pressed="false"] .refresh-emblem { filter: brightness(.72) saturate(.75); }
+.bench[data-art-skin] .dodge-action:disabled { opacity: .4; filter: saturate(.5); }
+.bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"], .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"]:hover:not(:disabled) { color: #edf4df; background: none; box-shadow: none; }
+.dodge-precision[aria-pressed="true"] .refresh-emblem { filter: brightness(1.2) drop-shadow(0 0 9px #6ee3a575); }
+.dodge-precision[aria-pressed="true"] .precision-state { color: #e8ffe7; border-color: #a9e7b2; background: #347d51; box-shadow: 0 0 7px #79e29c66; }
+.dodge-precision[aria-pressed="true"] .refresh-emblem { color: #e1f2d0; }
 
 /* 波は実際の消去範囲で止まり、消した弾だけが粒になる。 */
 .dr-flash { background: radial-gradient(circle at var(--x) var(--y), #edffe43d, #b5debc20 35%, transparent 72%); }
@@ -103,6 +134,8 @@
 .dr-ring.second { border-color: #dbc7a199; box-shadow: none; }
 .dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
 @media (prefers-reduced-motion: reduce) {
+  .dodge-slash-fx { animation: none; opacity: .8; filter: none; }
+  .dodge-refresh:enabled .refresh-emblem::after { animation: none; }
   .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
   .dodge-mist { opacity: .12; }
   .dodge-thought-echo { animation: none; opacity: .2; }

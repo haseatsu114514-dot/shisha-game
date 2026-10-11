@@ -1,0 +1,50 @@
+name: AI documentation checks
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'docs/**'
+      - 'tools/check_agent_docs.py'
+      - 'tools/test_mashiro_address.py'
+      - 'tools/check_legacy_terms.py'
+      - 'tools/check_mashiro_address.py'
+      - 'tools/check_confession_flags.py'
+      - 'data/dialogue/confession.json'
+      - 'data/lime_messages.json'
+      - 'remake/data/lover.json'
+      - 'data/dialogue/**'
+      - 'brand/character_profiles.md'
+      - '.github/workflows/agent-docs.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'docs/**'
+      - 'tools/check_agent_docs.py'
+      - 'tools/test_mashiro_address.py'
+      - 'tools/check_legacy_terms.py'
+      - 'tools/check_mashiro_address.py'
+      - 'tools/check_confession_flags.py'
+      - 'data/dialogue/confession.json'
+      - 'data/lime_messages.json'
+      - 'remake/data/lover.json'
+      - 'data/dialogue/**'
+      - 'brand/character_profiles.md'
+      - '.github/workflows/agent-docs.yml'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate AI documentation
+        run: |
+          python3 tools/check_agent_docs.py
+          python3 tools/check_mashiro_address.py
+          python3 tools/check_confession_flags.py
+          python3 -m unittest discover -s tools -p test_mashiro_address.py
+          python3 tools/check_legacy_terms.py

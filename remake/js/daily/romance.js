@@ -25,6 +25,7 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
  */
 export function romanceRouteOpen(id) {
+  if (id === "hiyori" && (!DB.hiyori?.route?.enabled || state.chapter > 3)) return false;
   const answers = Object.values(state.romanceChoices || {}).filter((a) => a?.char === id);
   return !!id && state.finales?.[id]?.route === "romance" && answers.length > 0 && answers.every((a) => a.value > 0)
     && !isLover(id) && !state.flags[`_friend_${id}`] && !!DB.dialogues[`confession_${id}`];
@@ -187,19 +188,19 @@ export async function playDate(id) {
     metadata: { bg: `res://assets/backgrounds/${venue.bg}`, private_scene: true },
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
-      { speaker: id, face: sc.arrive.face, text: sc.arrive.text },
+      { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
       { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
-      { speaker: id, face: sc.mid.face, text: sc.mid.text },
+      { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
       { speaker: "", text: sc.choiceQ },
       { type: "choice", choices: [{ text: sc.optA.text, next: "a" }, { text: sc.optB.text, next: "b" }] },
-      { speaker: id, face: sc.close.face, text: sc.close.text },
+      { speaker: id, face: sc.close.face, text: sc.close.text, inner: sc.close.inner },
       { speaker: "", text: maxed
         ? "（もう何も進めなくていい。ただ隣にいる——それだけの時間が、いちばん贅沢だ）"
         : "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる）" },
     ],
     branches: {
-      a: [{ speaker: id, face: sc.arrive.face, text: sc.optA.line }, { type: "apply", stats: { [sc.optA.stat]: 2 } }],
-      b: [{ speaker: id, face: sc.arrive.face, text: sc.optB.line }, { type: "apply", stats: { [sc.optB.stat]: 2 } }],
+      a: [{ speaker: id, face: sc.arrive.face, text: sc.optA.line, inner: sc.optA.inner }, { type: "apply", stats: { [sc.optA.stat]: 2 } }],
+      b: [{ speaker: id, face: sc.arrive.face, text: sc.optB.line, inner: sc.optB.inner }, { type: "apply", stats: { [sc.optB.stat]: 2 } }],
     },
   });
   gainAffinity(id, 10);
