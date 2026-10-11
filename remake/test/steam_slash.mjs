@@ -57,7 +57,7 @@ try {
         extra:getComputedStyle(core,'::after').content,lift:(p.y+p.height/2-k.y-k.height/2)/scale};
     });
     assert.equal(look.white,'rgb(255, 255, 255)');assert(Math.abs(look.width-look.expected)<1&&look.centered);
-    assert(Math.abs(look.artWidth-18)<.1&&Math.abs(look.artHeight-18)<.1, 'Heart artwork should be 18px at logical scale');
+    assert(Math.abs(look.artWidth-20)<.1&&Math.abs(look.artHeight-20)<.1, 'Heart artwork should be 20px; the white hit circle keeps its existing radius');
     assert(look.expected>0&&look.expected<8, 'Good-condition white circle should be smaller than the standard 8px diameter');
     assert.equal(look.extra,'none');assert(Math.abs(look.lift-10)<.2);assert.equal(look.color,'rgb(112, 215, 237)');
     await shot(page,`controls-${name}`);
@@ -127,7 +127,7 @@ try {
     assert.equal(await hitColor.jsonValue(),'rgb(239, 135, 149)');
     await shot(page,`heart-hit-${name}`);
     await page.waitForSelector('.result-card.show',{timeout:25000});
-    assert.equal(await page.locator('.dodge-slash-fx,.dodge-refresh-fx,.dodge-thought-echo,.dodge-word,.dodge-object').count(),0);
+    assert.equal(await page.locator('.dodge-slash-fx,.dodge-refresh-fx,.dodge-thought-echo,.dodge-word-cut,.dodge-word,.dodge-object').count(),0);
     assert(await button.isDisabled());
     const result=await page.evaluate(()=>({...cs.steam}));
     assert(result.slashesUsed>=5);assert.equal(result.refreshesUsed,0);assert.equal(result.score,Math.max(0,100-result.hits*14));

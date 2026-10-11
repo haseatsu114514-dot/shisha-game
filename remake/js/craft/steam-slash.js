@@ -59,3 +59,11 @@ export function buildSlashFx(x, y, angle, reach = SLASH_REACH, hit = false, tier
     // 弧は残す。半円状の一筆を厚い根元から細い先端へ流し、左右対称の扇を避ける。
     html: `<svg viewBox="-100 -100 200 200"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${ink}" stop-opacity=".15"/><stop offset=".55" stop-color="#f4ffff"/><stop offset="1" stop-color="${ink}"/></linearGradient></defs><path d="M32 -26C48 -60 87 -55 97 -12C102 21 86 45 64 53C74 30 77 6 67 -12C60 -24 47 -31 32 -26Z" fill="url(#${id})"/><path d="M32 -26C48 -60 87 -55 97 -12C102 21 86 45 64 53" fill="none" stroke="#fff" stroke-width="${tier === 2 ? 3 : 2}"/><path d="M22 -12L49 -31L43 -16Z" fill="${ink}" fill-opacity=".4"/>${flecks}</svg>` });
 }
+
+// 元の文字列を同じ位置で二分し、判定のない破片として離す。
+export function buildWordCutFx(b) {
+  return el("div.dodge-word-cut", { "aria-hidden": "true", style: { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` } }, [
+    el("span.dodge-cut-half.upper", { text: b.node.textContent }),
+    el("span.dodge-cut-half.lower", { text: b.node.textContent }),
+  ]);
+}

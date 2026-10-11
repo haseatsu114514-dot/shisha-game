@@ -27,4 +27,8 @@ https://github.com/haseatsu114514-dot/shisha-game/issues/356#issuecomment-611428
 
 命中は火花と輝く刃、空振りは淡い刃で区別する。「N個斬った」「強化！」「空振り」の文章は画面に重ねず、操作結果だけをlive regionで読み上げる。
 
+言葉を斬ると元の文字が斜めに二分され、上下の破片が離れて消える。破片は当たり判定を持たず、0.5秒のゲーム時刻で片付ける。リフレッシュは既存の溶ける演出を維持する。動きを減らす設定では破片を静止させる。
+
+ハート外形はオーナー追加指定で18pxから20pxへ少し拡大。中央の白丸・標準半径4pxと能力／体調補正の判定は変更しない。
+
 検証は `node remake/test/steam_attack_growth.mjs`（承認値・可変射程・実弾での成長とリセット）、既存 `steam_slash.mjs`（四方向へ移動中も前方固定・PC／二本指・リチャージ）、`steam_refresh.mjs`、`steam_forecast.mjs`、`steam_heart.mjs`、`browser/save_load.mjs`。ブラウザテストでは `NODE_PATH=remake/test/browser/node_modules` と環境に応じた `CHROME_EXECUTABLE_PATH` を設定する。実施結果・未確認事項と画像はPRに記録し、全項目の成功をこの文書だけで宣言しない。

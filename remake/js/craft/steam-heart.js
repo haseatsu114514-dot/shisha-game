@@ -1,5 +1,5 @@
 // ハートの外形は目印。中央の白丸だけで雑念との接触を判定する。
-export const HEART_SIZE = 18;
+export const HEART_SIZE = 20;
 export function heartHitRadius(gutsTier, focus = 1) {
   return 4 * (1 - 0.2 * gutsTier) / focus;
 }

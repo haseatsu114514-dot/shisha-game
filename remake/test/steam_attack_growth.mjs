@@ -49,7 +49,8 @@ try {
         const near=enemies().filter(b=>geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,profile.reach));
         const words=near.filter(b=>b.word).length;
         button().dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerType:'touch'}));
-        return {before,words,near:near.length,removed:near.every(b=>!b.node.isConnected),after:Number(button().dataset.cutWords),recharge:Number(button().dataset.cooldown),reach:Number(button().dataset.reach),feedback:document.querySelector('[data-test="slash-feedback"]').textContent};
+        const halves=[...document.querySelectorAll('.dodge-word-cut')];
+        return {before,words,pieces:halves.length,split:halves.every(n=>n.children.length===2&&n.children[0].textContent===n.children[1].textContent),still:halves.every(n=>[...n.children].every(h=>getComputedStyle(h).animationName==='none')),near:near.length,removed:near.every(b=>!b.node.isConnected),after:Number(button().dataset.cutWords),recharge:Number(button().dataset.cooldown),reach:Number(button().dataset.reach),feedback:document.querySelector('[data-test="slash-feedback"]').textContent};
       };
       start('drill');
     });
@@ -71,6 +72,8 @@ try {
       });
       assert(result,'No reachable real bullet before steam end');
       assert(result.removed);assert.equal(result.after,result.before+result.words);
+      assert.equal(result.pieces,result.words);assert(result.split,'Each cut word should leave two matching clipped halves');
+      if(mobile)assert(result.still,'Reduced-motion word halves must not animate');
       if(result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
       total=result.after;
       const p=slashProfile(total),newTier=!tiers.has(p.tier);tiers.add(p.tier);
@@ -125,7 +128,7 @@ try {
     if(shots)await page.screenshot({path:`${shots}/growth-${mobile?'mobile-reduced':'desktop'}.png`});
     await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
     await page.waitForSelector('.result-card.show');
-    assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-refresh-fx').count(),0);
+    assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);
     assert.equal(await page.evaluate(()=>cs.steam.wordsCut),total);
     // The next (initial practice) session resets growth and needs no new unlock flags.
     await page.evaluate(()=>{restoreFrames();start('tutorial');});

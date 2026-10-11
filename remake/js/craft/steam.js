@@ -15,7 +15,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
@@ -206,10 +206,14 @@ export async function runSteamDodge(cs) {
     slashBtn.dataset.lastCut = String(cleared.length);
     slashFeedback.dataset.hit = String(cleared.length > 0);
     slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
-    world.dissolve(time, cleared);
+    world.dissolve(time, cleared, { echoWords: false });
     const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     for (const b of cleared) {
+      if (b.word) {
+        const halves = buildWordCutFx(b);
+        box.append(halves); transients.push({ node: halves, until: time + .5 });
+      }
       const spark = el("i.dodge-slash-impact", { "aria-hidden": "true", style: { left: `${clamp(b.x + b.w / 2, 0, W)}px`, top: `${clamp(b.y + b.h / 2, 0, H)}px` } });
       box.append(spark); transients.push({ node: spark, until: time + .32 });
     }
