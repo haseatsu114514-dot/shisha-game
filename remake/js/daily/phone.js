@@ -386,6 +386,29 @@ export function venueInviteNeedingReply(spotId, opts = {}) {
   ) || null;
 }
 
+/**
+ * マップで通常行動を確定する直前に知らせるべき招待。
+ * 1. 今向かう場所と会場が一致する招待
+ * 2. 別の行動を使うと当日の返信期限が切れる招待
+ * 営業後の待ち合わせや外出は「普通に店へ行く」と同一視しない。
+ */
+export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
+  const waiting = (state.inbox || []).filter((item) =>
+    item?.msg?.type === "invitation" &&
+    !item.done && !item.result &&
+    (!item.read || !item.replyState || item.replyState === "waiting") &&
+    !ignoredIds.includes(item.id) &&
+    inviteState(item, opts) === "open"
+  );
+  const matching = waiting.find((item) => visitReminderSpot(item.msg) === spotId);
+  if (matching) return { item: matching, kind: "venue" };
+  // みんとの店頭試飲のような「昼・夜どちらでも返信可」は夜が最後の機会。
+  const expiring = waiting.find((item) =>
+    (storeInvitationSpot(item.msg) ? state.slot === 1 : replySlot(item.msg) === state.slot)
+  );
+  return expiring ? { item: expiring, kind: "deadline" } : null;
+}
+
 // 旧テスト/呼び出しとの互換性を維持する。
 export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
 
