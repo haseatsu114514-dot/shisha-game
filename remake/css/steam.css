@@ -120,21 +120,13 @@
 .dodge-slash-fx[data-hit="false"] { filter: none; }
 .dodge-slash-fx[data-hit="false"] svg { opacity: .5; }
 .slash-control { position: relative; width: 176px; height: 180px; flex: none; }
-.slash-state, .slash-growth { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-family: var(--font); font-weight: 700; line-height: 1.4; }
-.slash-state { top: 11px; color: #d7f6ff; font-size: 18px; }
+.slash-growth { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-family: var(--font); font-weight: 700; line-height: 1.4; }
 .slash-growth { bottom: 9px; display: flex; align-items: center; gap: 9px; color: #e1d4ba; font-size: 16px; font-variant-numeric: tabular-nums; }
-.slash-level { display: flex; gap: 3px; }
-.slash-level i { width: 7px; height: 7px; background: #343045; transform: rotate(45deg); border: 1px solid #9386a166; }
-.slash-level i:first-child { background: #b8e9ff; }
-.dodge-slash[data-tier="1"] .slash-level i:nth-child(-n+2) { background: #d5abff; }
-.dodge-slash[data-tier="2"] .slash-level i { background: #ffe0a3; }
-.dodge-slash[data-cooling="true"] .slash-state { color: #9386a1; }
 .dodge-slash[data-tier="1"] .refresh-emblem { color: #d8d7ff; }
-.dodge-slash[data-tier="2"] .slash-state { color: #ffe9b3; }
 .dodge-slash:enabled .recharge-ring { display: block; opacity: .65; }
 .dodge-slash[data-tier="1"] .recharge-ring { background: conic-gradient(#d5abff calc(var(--recharge) * 1turn), #77728a44 0); }
 .dodge-slash[data-tier="2"] .recharge-ring { background: conic-gradient(#ffe0a3 calc(var(--recharge) * 1turn), #77728a44 0); }
-/* 結果の文章は読み上げ専用。画面は刃・火花・数字・段階灯で伝える。 */
+/* 結果の文章は読み上げ専用。画面は刃の色・火花・数字で伝える。 */
 .slash-feedback { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .dodge-slash-fx[data-tier="1"] { filter: drop-shadow(0 0 6px #d5abff); }
 .dodge-slash-fx[data-tier="2"] { filter: drop-shadow(0 0 7px #ffd58a); }

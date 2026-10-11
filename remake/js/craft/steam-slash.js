@@ -1,4 +1,4 @@
-// SF61・64: 前方だけを切る。方向入力なしは上、入力ありは四方向。
+// #356: オーナーの追加指定で、移動入力にかかわらず上側の前方へ固定。
 import { el } from "../core/util.js";
 
 export const SLASH_REACH = 80;
@@ -12,12 +12,6 @@ export function slashProfile(wordsCut = 0) {
 }
 const ANGLES = { u: -Math.PI / 2, r: 0, d: Math.PI / 2, l: Math.PI };
 
-export function slashDirection(held, x = 0, y = 0) {
-  const key = [...held].at(-1);
-  if (key) return key;
-  if (!x && !y) return "u";
-  return Math.abs(x) >= Math.abs(y) ? (x > 0 ? "r" : "l") : (y > 0 ? "d" : "u");
-}
 export const slashAngle = direction => ANGLES[direction];
 
 // 扇形と弾の実寸矩形の交差。長い言葉も、触れた端だけで切れる。

@@ -15,7 +15,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashDirection, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
@@ -44,7 +44,7 @@ export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタン。方向入力なしは前方、方向キー／スティックで向きを変える。言葉を3個・6個斬ると、段階灯と刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。強化は空振り・被弾・リフレッシュで減らず、次の蒸らしで戻る。", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。言葉を3個・6個斬ると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。強化は空振り・被弾・リフレッシュで減らず、次の蒸らしで戻る。", { brief: "" });
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -57,12 +57,11 @@ export async function runSteamDodge(cs) {
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
   const slashCharge = el("span.action-recharge");
-  const slashState = el("span.slash-state", { text: "↑" });
   const slashCount = el("span.slash-count", { text: "×0" });
-  const slashGrowth = el("span.slash-growth", [slashCount, el("span.slash-level", [el("i"), el("i"), el("i")])]);
+  const slashGrowth = el("span.slash-growth", [slashCount]);
   const slashFeedback = el("span.slash-feedback", { role: "status", "aria-live": "polite", "aria-atomic": "true", dataset: { test: "slash-feedback" } });
-  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "方向キー＋Zで上下左右へアタック。方向入力なしは前方", dataset: { test: "dodge-slash", uses: "0" } }, [
-    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashState, slashGrowth]),
+  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "Z／ボタンで前方へアタック", dataset: { test: "dodge-slash", uses: "0" } }, [
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
   const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
@@ -168,16 +167,12 @@ export async function runSteamDodge(cs) {
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
-    const aim = slashDirection(keysDown, axisX, axisY);
-    const facing = { u: "↑", r: "→", d: "↓", l: "←" }[aim];
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
-      `アタック。${facing}方向の雑念を斬る。入力なしは前方。Zキーでも使用。斬った言葉${wordsCut}個。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。斬った言葉${wordsCut}個。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     slashBtn.dataset.cutWords = String(wordsCut);
     slashBtn.dataset.reach = String(profile.reach);
     slashBtn.dataset.recharge = String(profile.recharge);
     slashBtn.dataset.tier = String(profile.tier);
-    slashBtn.dataset.aim = aim;
-    slashState.textContent = facing;
     slashCount.textContent = `×${wordsCut}`;
     slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
   };
@@ -200,7 +195,7 @@ export async function runSteamDodge(cs) {
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
   const slash = () => {
     if (!running || time < slashReadyAt) return;
-    const direction = slashDirection(keysDown, axisX, axisY), angle = slashAngle(direction);
+    const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
     wordsCut += cleared.filter(b => b.word).length;
