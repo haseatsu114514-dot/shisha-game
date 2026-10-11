@@ -1,77 +1,85 @@
 #!/usr/bin/env python3
-"""Check Mashiro's canonical address for the protagonist in dialogue JSON."""
+"""Check Mashiro's voice in dialogue, LIME and lover messages."""
 import json
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-bad = []
-pattern = re.compile(r"(?:はじめ|始|蒸野)(?:さん|ちゃん|君|くん|様|さま)")
+ADDRESS = re.compile(r"(?:はじめ|ハジメ|始|蒸野)(?:く[〜～ー]*ん|さん|ちゃん|君|様|さま|っち)?")
 FIRST_PERSON = re.compile(r"うち|わたし|私")
+# These contain the same characters but are not personal pronouns or addresses.
+ORDINARY_WORDS = re.compile(r"はじめまして|はじめて|はじめに|はじめから|始ま|始め|そのうち|今のうち|知らないうち|おうち|うちわ|うちの(?:店|会社|職場)|私服|私物|私生活|私用")
+bad = []
+
+
+def check_text(text, path):
+    searchable = ORDINARY_WORDS.sub("", text)
+    for match in ADDRESS.finditer(searchable):
+        if re.sub(r"[〜～ー]", "", match.group()) != "はじめくん":
+            bad.append((path, match.group(), text[:75]))
+    for match in FIRST_PERSON.finditer(searchable):
+        bad.append((path, "一人称 " + match.group(), text[:75]))
+
+
 def scan(value, path, active=False):
     if isinstance(value, dict):
-        active = value.get("speaker") == "mashiro" if "speaker" in value else active
-        for k, v in value.items():
-            if k == "text" and isinstance(v, str) and active:
-                for m in pattern.finditer(v):
-                    if m.group(0) != "はじめくん":
-                        bad.append((path, m.group(0), v[:75]))
-                for m in FIRST_PERSON.finditer(v):
-                    bad.append((path, "一人称 " + m.group(0), v[:75]))
-            elif isinstance(v, (dict, list)):
-                scan(v, path, active if k not in ("events", "steps", "dialogues") else False)
+        if "speaker" in value:
+            active = value["speaker"] == "mashiro"
+        for key, child in value.items():
+            if key == "text" and isinstance(child, str) and active:
+                check_text(child, path)
+            elif isinstance(child, (dict, list)):
+                scan(child, path, active if key not in ("events", "steps", "dialogues", "choices") else False)
     elif isinstance(value, list):
-        for x in value:
-            scan(x, path, active)
+        for child in value:
+            scan(child, path, active)
 
-for file in sorted((ROOT / "data/dialogue").glob("*.json")):
-    try:
-        scan(json.loads(file.read_text(encoding="utf-8")), str(file.relative_to(ROOT)))
-    except json.JSONDecodeError as e:
-        bad.append((str(file), "invalid JSON", str(e)))
 
-# LIME stores the speaker in sender fields.
-lime_path = ROOT / "data/lime_messages.json"
-if lime_path.exists():
-    def scan_lime(node):
-        if isinstance(node, list):
-            for child in node:
-                scan_lime(child)
-        elif isinstance(node, dict):
-            if node.get("sender") == "mashiro":
-                value = node.get("text", node.get("response", ""))
-                if isinstance(value, str):
-                    for m in pattern.finditer(value):
-                        if m.group() != "はじめくん":
-                            bad.append((str(lime_path), m.group(), value[:75]))
-                    for m in FIRST_PERSON.finditer(value):
-                        bad.append((str(lime_path), m.group(), value[:75]))
-            for child in node.values():
-                if isinstance(child, (dict, list)):
-                    scan_lime(child)
-    scan_lime(json.loads(lime_path.read_text(encoding="utf-8")))
+def scan_lime(value, path, active=False):
+    if isinstance(value, dict):
+        if "sender" in value:
+            active = value["sender"] == "mashiro"
+        for key, child in value.items():
+            if active and key in ("text", "response", "reminder_text") and isinstance(child, str):
+                check_text(child, path)
+            elif isinstance(child, (dict, list)):
+                scan_lime(child, path, active)
+    elif isinstance(value, list):
+        for child in value:
+            scan_lime(child, path, active)
 
-# Lover messages are keyed by character ID rather than speaker.
-lover_path = ROOT / "remake/data/lover.json"
-if lover_path.exists():
-    def scan_lover(node, selected=False):
-        if isinstance(node, dict):
-            for key, child in node.items():
-                scan_lover(child, selected or key == "mashiro")
-        elif isinstance(node, list):
-            for child in node:
-                scan_lover(child, selected)
-        elif selected and isinstance(node, str):
-            for m in pattern.finditer(node):
-                if m.group() != "はじめくん":
-                    bad.append((str(lover_path), m.group(), node[:75]))
-            for m in FIRST_PERSON.finditer(node):
-                bad.append((str(lover_path), m.group(), node[:75]))
-    scan_lover(json.loads(lover_path.read_text(encoding="utf-8")))
 
-for p, word, line in bad:
-    print(f"ERROR {p}: Mashiro says {word!r}: {line}", file=sys.stderr)
-if bad:
-    sys.exit(1)
-print("OK: Mashiro's protagonist address in dialogue JSON")
+def scan_lover(value, path, active=False):
+    if isinstance(value, dict):
+        if "speaker" in value or "sender" in value:
+            active = value.get("speaker", value.get("sender")) == "mashiro"
+        for key, child in value.items():
+            # optA/optB are player replies, not Mashiro's speech.
+            scan_lover(child, path, (active or key == "mashiro") and key not in ("optA", "optB"))
+    elif isinstance(value, list):
+        for child in value:
+            scan_lover(child, path, active)
+    elif active and isinstance(value, str):
+        check_text(value, path)
+
+
+def main():
+    bad.clear()
+    sources = [(p, scan) for p in sorted((ROOT / "data/dialogue").glob("*.json"))]
+    sources += [(ROOT / "data/lime_messages.json", scan_lime), (ROOT / "remake/data/lover.json", scan_lover)]
+    for path, scanner in sources:
+        try:
+            scanner(json.loads(path.read_text(encoding="utf-8")), str(path.relative_to(ROOT)))
+        except (OSError, json.JSONDecodeError) as error:
+            bad.append((str(path), "invalid or missing JSON", str(error)))
+    for path, word, text in bad:
+        print(f"ERROR {path}: Mashiro says {word!r}: {text}", file=sys.stderr)
+    if bad:
+        return 1
+    print("OK: Mashiro's はじめくん / 僕 in dialogue, LIME and lover messages")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

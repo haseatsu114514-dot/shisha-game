@@ -146,6 +146,22 @@ body.in-vn #bg { transition: filter 0.4s; }
   font-feature-settings: "palt" 0;
   min-height: 96px;
 }
+/* 同じ発言の下に置く、プレイヤーだけに見えるひよりの本心。通常の会話枠はそのまま。 */
+.vn-box.has-inner { height: 248px; }
+.vn-inner {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: #ffb6cc;
+  text-shadow: 0 1px 2px #000;
+}
+.vn-inner[hidden] { display: none; }
+#vn:has(.vn-box.has-inner) .vn-controls { bottom: 276px; }
+#vn:has(.vn-box.has-inner) .vn-choices { bottom: 332px; }
+#vn:has(.vn-box.has-inner) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 376px; }
 .tx-imp { color: var(--gold-hi); font-weight: 700; text-shadow: 0 0 16px rgba(255, 210, 120, 0.6); }
 .tx-warn { color: #ff8f8f; font-weight: 700; }
 .tx-hint { color: #9fe3ff; }
@@ -247,6 +263,7 @@ body.in-vn #bg { transition: filter 0.4s; }
 .log-list { overflow-y: auto; flex: 1; padding-right: 10px; }
 .log-row { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-size: 18px; line-height: 1.6; }
 .log-row b { display: block; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
+.log-inner { margin-top: 4px; font-size: 16px; color: #ffb6cc; }
 
 /* ---------------------------------------------------------------- 用語集 */
 .glossary-modal { width: 900px; }

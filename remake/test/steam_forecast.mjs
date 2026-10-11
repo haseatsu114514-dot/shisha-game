@@ -36,6 +36,53 @@ const geometry = page => page.locator('.thermo').evaluate(n => {
   return [r.x, r.y, r.width, r.height].map(v => Math.round(v * 100) / 100);
 });
 const screenshot = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
+// 通常／精密／通常を、実際のスティックのドラッグで比べる。スマホはタッチ入力。
+const stickSpeed = async (page, mobile) => {
+  const r = await page.locator('[data-test="dodge-pad"]').boundingBox();
+  const start = { x: r.x + r.width / 2, y: r.y + r.height / 2, id: 1 };
+  const end = { ...start, x: r.x + r.width * .93 };
+  const touch = mobile ? await page.context().newCDPSession(page) : null;
+  const sample = () => page.locator('.dodge-heart').evaluate(n => ({ x: new DOMMatrix(n.style.transform).e, at: performance.now() }));
+  try {
+    if (touch) {
+      await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [start] });
+      await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [end] });
+    } else {
+      await page.mouse.move(start.x, start.y); await page.mouse.down();
+      await page.mouse.move(end.x, end.y);
+    }
+    const before = await sample();
+    await page.waitForTimeout(260);
+    const after = await sample();
+    return (after.x - before.x) / ((after.at - before.at) / 1000);
+  } finally {
+    if (touch) {
+      await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await touch.detach();
+    } else await page.mouse.up();
+  }
+};
+// 一方の指をスティックに残したまま、もう一方で実際にボタンを押す。
+const pressWhileSteering = async (page, selector) => {
+  const pad = await page.locator('[data-test="dodge-pad"]').boundingBox();
+  const button = await page.locator(selector).boundingBox();
+  const stick = { x: pad.x + pad.width * .15, y: pad.y + pad.height / 2, id: 1 };
+  const tap = { x: button.x + button.width / 2, y: button.y + button.height / 3, id: 2 };
+  const touch = await page.context().newCDPSession(page);
+  const heartX = () => page.locator('.dodge-heart').evaluate(n => new DOMMatrix(n.style.transform).e);
+  try {
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [stick] });
+    const before = await heartX();
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [stick, tap] });
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [tap] });
+    assert.equal(await page.locator('.dodge-pad.held').count(), 1, 'Second finger interrupted the stick');
+    await page.waitForTimeout(180);
+    assert(await heartX() < before - 5, 'Movement stopped while pressing a button');
+  } finally {
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await touch.detach();
+  }
+};
 try {
   for (const [name, viewport, mobile] of [
     ['desktop', { width: 1280, height: 720 }, false],
@@ -92,7 +139,21 @@ try {
     assert(await page.locator('.bench-guide').isHidden());
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
-    assert.equal(await page.locator('.dodge-controls').textContent(), 'リフレッシュ');
+    assert(await page.locator('.bench-title').isHidden());
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし中');
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
+    assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', '精密']);
+    assert.equal(await page.locator('.dodge-world-title').count(), 0);
+    const controls = await page.locator('.dodge-controls').evaluate(n => {
+      const r = e => e.getBoundingClientRect(), root = r(n), [refresh, precision, pad] = [...n.children].map(r);
+      const scale = root.width / n.offsetWidth;
+      return { gap: (precision.left - refresh.right) / scale, secondGap: (pad.left - precision.right) / scale,
+        padSize: pad.width / scale, buttonHeight: refresh.height / scale,
+        inRow: pad.right <= root.right + 1 && refresh.left >= root.left - 1 && Math.abs(refresh.top - precision.top) < 1,
+        clear: pad.top > r(document.querySelector('.dodge')).bottom && pad.bottom < r(document.querySelector('.bench')).bottom - 2 };
+    });
+    assert(controls.gap > 0 && controls.gap <= 21 && controls.secondGap > 0 && controls.secondGap <= 21, JSON.stringify(controls));
+    assert(controls.padSize >= 170 && controls.buttonHeight >= 175 && controls.inRow && controls.clear, JSON.stringify(controls));
     await page.locator('[data-test="steam-world-art"]').evaluate(async n => {
       const url = getComputedStyle(n).backgroundImage.match(/url\(["']?([^"')]+)/)?.[1];
       if (!url?.includes('steam_mind_world')) throw new Error('Cosmic artwork is not connected');
@@ -101,9 +162,11 @@ try {
     });
     const buttonLook = await page.locator('.dodge-refresh').evaluate(n => ({ background: getComputedStyle(n).backgroundImage, direction: getComputedStyle(n).flexDirection }));
     assert(!buttonLook.background.includes('url('), 'Old ornate button art overrode the simple refresh');
-    assert.equal(buttonLook.direction, 'row');
+    assert.equal(buttonLook.direction, 'column');
+    assert.match(await page.locator('.dodge-refresh img').getAttribute('src'), /steam_refresh_simple/);
     const traceY = await page.locator('.dodge-beat-line').evaluate(n => Number(n.getAttribute('d').match(/M0,([\d.]+)/)[1]));
-    assert(Math.abs(traceY - 163) < 2, 'Heartbeat was not centered');
+    const fieldHeight = await page.locator('.dodge').evaluate(n => n.offsetHeight);
+    assert(Math.abs(traceY - fieldHeight / 2) < 2, 'Heartbeat was not centered');
     assert.equal(await page.locator('.dodge-hud, .dodge-hits, [data-test="timer-stop"]').count(), 0);
     assert.equal(await page.locator('[data-test="steam-clock"]').count(), 1, 'Remaining time was duplicated');
     const clockLook = await page.locator('[data-test="steam-clock"]').evaluate(n => {
@@ -118,11 +181,38 @@ try {
     assert.equal(clockLook.pointer, 'none', 'Background timer blocked movement');
     await page.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
     const remaining = await page.locator('[data-test="steam-clock"] .clock-value').textContent();
+    const precision = page.locator('[data-test="dodge-precision"]');
+    assert.equal(await precision.getAttribute('aria-pressed'), 'false');
+    assert.equal(await precision.locator('.precision-state').textContent(), 'オフ');
+    const toggle = () => mobile ? precision.tap() : precision.click();
+    const normalSpeed = await stickSpeed(page, mobile);
+    assert(normalSpeed > 100, 'Normal stick did not move');
+    await toggle(); assert.equal(await precision.getAttribute('aria-pressed'), 'true');
+    assert.equal(await precision.locator('.precision-state').textContent(), 'オン');
+    const slowSpeed = await stickSpeed(page, mobile);
+    assert(slowSpeed > normalSpeed * .2 && slowSpeed < normalSpeed * .65, `${name}: precision did not slow the stick (${normalSpeed} -> ${slowSpeed})`);
+    await screenshot(page, `steam-precision-${name}`);
+    await toggle(); assert.equal(await precision.getAttribute('aria-pressed'), 'false');
+    const restoredSpeed = await stickSpeed(page, mobile);
+    assert(Math.abs(restoredSpeed - normalSpeed) < normalSpeed * .3 && restoredSpeed > slowSpeed * 1.5, `${name}: second press did not restore normal movement`);
+    await precision.focus(); await page.keyboard.press('Space');
+    assert.equal(await precision.getAttribute('aria-pressed'), 'true');
+    await page.keyboard.press('Enter');
+    assert.equal(await precision.getAttribute('aria-pressed'), 'false');
+    assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'), '1', 'Precision toggle spent the refresh');
+    assert.equal(await page.locator('.dodge-pad.held').count(), 0, 'Released stick stayed held');
+    console.log(`[precision] PASS: ${name} real ${mobile ? 'touch' : 'mouse'} stick ${normalSpeed.toFixed(0)} -> ${slowSpeed.toFixed(0)} -> ${restoredSpeed.toFixed(0)} px/s; Space/Enter toggle independently of refresh`);
     await page.waitForSelector('.dodge-object');
     await page.waitForTimeout(1200);
     assert.notEqual(await page.locator('[data-test="steam-clock"] .clock-value').textContent(), remaining, 'Background clock stopped counting down');
     await screenshot(page, `steam-live-${name}`);
-    await page.locator('[data-test="dodge-refresh"]').click();
+    if (mobile) {
+      await pressWhileSteering(page, '[data-test="dodge-precision"]');
+      assert.equal(await precision.getAttribute('aria-pressed'), 'true');
+      await pressWhileSteering(page, '[data-test="dodge-refresh"]');
+      assert.equal(await page.locator('[data-test="dodge-refresh"]').getAttribute('data-remaining'), '0');
+      console.log('[controls] PASS: two real simultaneous touches maintain stick movement while toggling precision and refreshing');
+    } else await page.locator('[data-test="dodge-refresh"]').click();
     await page.waitForTimeout(120);
     assert(!/呼吸|息を整|パッド|ボタン|キー/.test(await page.locator('[data-test="craft-feedback"]').textContent()));
     await screenshot(page, `refresh-${name}`);

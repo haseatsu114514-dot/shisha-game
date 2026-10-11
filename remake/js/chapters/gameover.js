@@ -96,7 +96,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage" } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")
@@ -107,7 +107,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
   const view = createContinueView({ script, speaker, character: script.name || "スミさん",
-    premium: speaker !== "sumi", onType: () => audio.voice(speaker) });
+    premium: speaker !== "sumi", layout, background, onType: () => audio.voice(speaker) });
   const { root } = view;
   root.dataset.reason = reason;
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -116,7 +116,10 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   let currentInstant = false, hiddenAt = null, reactionAt = null, choice = null, secondFace = false, exit = 0;
   let reactionLine = -1, reactionLineAt = 0, reactionInstant = false;
   const counted = new Set();
-  const observer = new MutationObserver(() => { if (!root.isConnected) cleanup(); });
+  const observer = new MutationObserver(() => {
+    if (!started && root.isConnected) begin();
+    else if (started && !root.isConnected) cleanup();
+  });
   function setMotion() {
     reduce = reducedMotion || !!motion?.matches;
     root.dataset.reducedMotion = String(reduce);
@@ -145,7 +148,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
       : Math.min(1, (elapsed - cue.at + .05) / typeTime(cue.text, length)));
     const remaining = Math.max(0, Math.ceil(script.duration - countAt));
-    view.count.textContent = String(remaining);
+    view.setCount(remaining, countAt / script.duration);
     root.classList.toggle("go-urgent", remaining > 0 && remaining <= 5);
     root.classList.toggle("go-done", remaining === 0);
     if (remaining <= 5 && !counted.has(remaining)) {
@@ -170,7 +173,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     root.dataset.timedOut = "true";
     root.classList.remove("go-urgent");
     root.classList.add("go-done");
-    view.count.textContent = "0";
+    view.setCount(0, 1);
     view.gameOver();
     if (!counted.has(0)) { counted.add(0); audio.count(0); }
     audio.expire();
@@ -252,6 +255,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   }
   function visibility() {
     if (!active || !started) return;
+    root.dataset.paused = String(document.hidden);
     if (document.hidden) {
       hiddenAt ??= performance.now();
       clearTimeout(deadline);
@@ -271,6 +275,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!active || started || !root.isConnected) return;
     started = true;
     start = speechStart = performance.now();
+    observer.disconnect();
     observer.observe(root.parentNode, { childList: true });
     document.addEventListener("visibilitychange", visibility);
     audio.start();
@@ -305,6 +310,9 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   });
   view.setCaption(script.cues[0].text);
   view.reveal(reduce ? 1 : .03);
+  // 幕の終わりまでshowScreenが挿入を待つ場合にも、実際に表示されてから20秒。
+  // 接続を待つ間だけ広く観測し、開始後は親だけに切り替える。画面離脱で両方を破棄する。
+  observer.observe(document.body, { childList: true, subtree: true });
   frame = requestAnimationFrame(begin);
   root.cleanupContinue = cleanup;
   root.setContinueSoundEffects = audio.setEnabled;

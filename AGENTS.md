@@ -38,6 +38,7 @@ Before any code edit or Git operation:
   2026-06-15, so a folder that still has it is a stale copy. Ignore any
   older rule (in any AGENTS.md or notes) that requires `project.godot`
 - run `./tools/check_git_safety.sh`
+  WARN is allowed; stop on ERROR.
 - if `git config --get core.hooksPath` is not `.githooks`, run
   `./tools/enable_git_hooks.sh`
 - if `git config --local --get shisha.canonicalRoot` is set, confirm
@@ -53,7 +54,7 @@ allowed; `check_git_safety.sh` accepts it.
 
 - branch from `origin/main`
 - use pull requests instead of direct pushes to `main`
-- do not use `git push --force` on shared branches
+- do not use `git push --force`
 - do not use `--allow-unrelated-histories`
 - do not change the default branch to a feature branch as a workaround
 
@@ -70,11 +71,10 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 - 作業を始めるときは `git fetch origin` し、**最新の `origin/main` から新しいブランチ**を切る。
   未コミットの変更が残った古いフォルダや、古い作業ブランチの上で続きをしない。
 - 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
-  push できないときは、差分ファイルを作って終わらせず、止まってオーナーに報告する。
+  push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
 - 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
   デスクトップや外部のライブラリに置いたままにしない。
+- 要望台帳（`docs/owner_requests.md`）のIDは、最新の `origin/main` を取り込んでから次の空き番号を使う（別チャットと同時に作業して番号が重なった例がある・2026-10-04）。
 - 終える前に `git status`（未コミットが無い）と `git log @{u}..HEAD`（未pushが無い）を確認する。
 
 ---
-
-

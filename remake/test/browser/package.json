@@ -1,0 +1,12 @@
+{
+  "name": "shisha-remake-browser-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node save_load.mjs",
+    "test:dev-tools": "node dev_tools.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
