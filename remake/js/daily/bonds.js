@@ -15,7 +15,7 @@ import { TOURNAMENT_DAY } from "../core/rules.js";
 //   物語・恋人の誘いと同じ朝には重ねない（スミさんのバイトの誘いとは重なってよい）。恋人と告白待ちの相手には届かない。
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { affinityLevel } from "../core/stats.js";
+import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
@@ -46,9 +46,9 @@ export const BOND_FINALES = {
  * choice は data 側の選択肢 id（romance_char つき）
  */
 export const BOND_QUESTIONS = {
-  tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: "bond_q1_tsumugi", host: "ch1_tsumugi_fourth", when: "after" },
-  minto: { dialogue: "ch1_minto_bond_question", choice: "bond_q1_minto", host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
-  rin: { dialogue: "ch1_rin_bond_question", choice: "bond_q1_rin", host: "ch1_rin_third", when: "visit" },
+  tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
+  minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
+  rin: { dialogue: "ch1_rin_bond_question", choice: AFFINITY_GATE_CHOICES.rin, host: "ch1_rin_third", when: "visit" },
   hiyori: {
     get dialogue() { return hiyoriRoute().question?.dialogue || ""; },
     get choice() { return hiyoriRoute().question?.choice || ""; },
@@ -105,28 +105,33 @@ export async function afterStory(dialogueId, { bg = null } = {}) {
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
     if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
     await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
+    releaseAffinity(id);
     save();
   }
 }
 
 const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
+  if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
   return !!q && !!DB.dialogues[q.dialogue] && !answered(q.choice) && !state.finales?.[id] && !isLover(id) && !state.flags[`_friend_${id}`];
 };
 const hostSeen = (id) => {
+  if (id === "minto") return !!(state.flags._minto_private_done || state.flags._minto_fifth_done);
   const q = BOND_QUESTIONS[id];
   const at = (VISIT_SEQ[id] || []).indexOf(q?.host);
   return at >= 0 && storyCount(id) > at;
 };
 
-/** 次の訪問で質問の場面を出すか（host の後の最初の訪問。固有会話が残っていればそちらが先） */
-export const questionVisitDue = (id) => BOND_QUESTIONS[id]?.when === "visit" && questionOpen(id) && hostSeen(id);
+/** 節目の読了と♥3が揃った次の実対面。先に節目を読んだ旧進行も未回答の質問を受け取る。 */
+export const questionVisitDue = (id) => (BOND_QUESTIONS[id]?.when === "visit" || !!AFFINITY_GATE_CHOICES[id])
+  && questionOpen(id) && hostSeen(id);
 
 /** 訪問の中で質問の場面を出す（通い訪問の小会話の代わり） */
 export async function playQuestionVisit(id, { bg = null } = {}) {
   const q = BOND_QUESTIONS[id];
   await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
+  releaseAffinity(id);
   save();
 }
 
