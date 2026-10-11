@@ -316,7 +316,8 @@ const text = (raw) => formatHtml(hooks.interpolate ? hooks.interpolate(String(ra
 // 誘いは「当日・その時間帯のうち」なら返事ができる（昼の誘い＝昼の行動の前まで／夜の誘い＝夜の行動の前まで）。
 
 /** 未読があるか（HUD の赤丸） */
-export const hasUnread = () => (state.inbox || []).some((i) => !i.read);
+export const unreadCount = () => (state.inbox || []).filter((i) => !i.read).length;
+export const hasUnread = () => unreadCount() > 0;
 
 /** 今朝のメッセージを受信箱に積む。戻り値=届いた件数 */
 export function deliverMorning(opts = {}) {
@@ -370,6 +371,18 @@ function inviteState(item, opts = {}) {
   if (!invitationAvailable(m, opts) || state.phase !== "daily" || item.day !== state.day || state.slot > slot) return "expired";
   if (state.pendingInvite) return "busy";
   return "open";
+}
+
+/** みんとの店頭試飲に誘う、まだ対応していない当日有効なLIMEだけを返す。 */
+export function mintoStoreInviteNeedingReply(opts = {}) {
+  return (state.inbox || []).find((item) =>
+    item?.msg?.sender === "minto" &&
+    item.msg.type === "invitation" &&
+    storeInvitationSpot(item.msg) === "minto" &&
+    !item.done &&
+    (!item.read || !item.replyState || item.replyState === "waiting") &&
+    inviteState(item, opts) === "open"
+  ) || null;
 }
 
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
