@@ -502,7 +502,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "窓際の女の子が、iPadに描いていた。目が合うと、小さく会釈して、また画面に目を落とす。",
+          "text": "窓際のつむぎが、iPadに描いていた。目が合うと、小さく会釈して、また画面に目を落とす。",
           "portrait": "tsumugi",
           "portrait_face": "bow"
         },
@@ -1850,7 +1850,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_met_tsumugi",
+          "flag": "_tsumugi_contest_research",
           "next_true": "departure_known",
           "next_false": "departure_new"
         },
@@ -1891,7 +1891,7 @@
         "departure_new": [
           {
             "speaker": "",
-            "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
+            "text": "窓際の席で、常連のつむぎが描いていたiPadをしまって席を立った。",
             "portrait": "tsumugi",
             "portrait_face": "normal"
           },
@@ -1899,7 +1899,7 @@
             "type": "intro",
             "char_id": "tsumugi",
             "intro": {
-              "display_name": "窓際の女の子",
+              "display_name": "つむぎ",
               "title": "tonariで煙を描く常連",
               "line": "……",
               "face": "normal"

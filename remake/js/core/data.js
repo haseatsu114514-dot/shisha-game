@@ -127,7 +127,7 @@ export async function loadAll(onProgress = () => {}) {
 
 // 最初から知っている相手・モブ。それ以外は名乗るまで「？？？」（master_spec #1）
 const ALWAYS_KNOWN = new Set([
-  "hajime", "sumi", "salaryman", "kako", "rira", "oneesan", "pakki",
+  "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）

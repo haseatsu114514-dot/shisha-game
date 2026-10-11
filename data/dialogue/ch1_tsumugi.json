@@ -11,7 +11,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥の席に、一人の女の子が座っていた。大きなヘッドフォンを首にかけて、iPadに何かを描いている。"
+          "text": "奥の席に、常連のつむぎが座っていた。首にヘッドフォンをかけ、iPadに何かを描いている。"
         },
         {
           "speaker": "",
@@ -34,11 +34,27 @@
           "text": "シーシャのホースが横に置いてあるが、煙はほとんど出ていない。吸うことより、描くことに夢中らしい。"
         },
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_met_tsumugi",
-          "next_true": "first_known",
-          "next_false": "first_new"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（つむぎちゃん、今日は絵に集中してるな）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "つむぎのラベンダー、頼むぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。作ってきます"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_tsumugi"
+        },
+        {
+          "type": "set_flag",
+          "flag": "known_name_tsumugi"
         },
         {
           "speaker": "",
@@ -166,53 +182,6 @@
             "speaker": "",
             "face": "",
             "text": "──まるで、画面を見られたくないように。"
-          }
-        ],
-        "first_new": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（あの子、常連さんだっけ。スミさんに聞いてみよう）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ああ、つむぎか。たまに来る。いつも隅で絵を描いてる"
-          },
-          {
-            "type": "set_flag",
-            "flag": "_met_tsumugi"
-          },
-          {
-            "type": "set_flag",
-            "flag": "known_name_tsumugi"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "静かな子だ。注文以外ほとんど喋らん。ラベンダーしか頼まない"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "ラベンダーですね。作ってきます"
-          }
-        ],
-        "first_known": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（つむぎちゃん、今日は絵に集中してるな）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "つむぎのラベンダー、頼むぞ"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "はい。作ってきます"
           }
         ]
       }
@@ -1417,11 +1386,22 @@
       },
       "lines": [
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_met_tsumugi",
-          "next_true": "research_known",
-          "next_false": "research_first"
+          "speaker": "",
+          "face": "",
+          "text": "バイトの合間、常連のつむぎがiPadを抱えてカウンターに来た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎちゃん、どうしたの？"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_tsumugi"
+        },
+        {
+          "type": "set_flag",
+          "flag": "known_name_tsumugi"
         },
         {
           "speaker": "tsumugi",
@@ -1545,48 +1525,6 @@
         }
       ],
       "branches": {
-        "research_first": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "バイトの合間、奥の席の女の子がiPadを抱えてカウンターに来た。"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……つむぎです。ここで、絵を描いてます"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "俺は、はじめです。いつもラベンダーの……"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……はい。その、今日はお願いがあって"
-          },
-          {
-            "type": "set_flag",
-            "flag": "_met_tsumugi"
-          },
-          {
-            "type": "set_flag",
-            "flag": "known_name_tsumugi"
-          }
-        ],
-        "research_known": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "バイトの合間、つむぎがiPadを抱えてカウンターに来た。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "つむぎちゃん、どうしたの？"
-          }
-        ],
         "research_exchange": [
           {
             "speaker": "tsumugi",
