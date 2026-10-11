@@ -259,6 +259,24 @@
 .ht-current { font-size: 14px; color: var(--text-dim); }
 
 /* ---------------------------------------------------------------- 炭焼き */
+/* 炭の上には判定文字を重ねない。連続評価は同じ専用欄で更新する。 */
+.heat-feedback {
+  position: relative; width: 100%; height: 44px; display: flex;
+  align-items: center; justify-content: center; gap: 12px;
+  overflow: hidden; flex: none; pointer-events: none;
+  border-block: 1px solid #d8bb8633;
+  background: linear-gradient(90deg, transparent, #d8bb860b 25% 75%, transparent);
+}
+.heat-feedback .stamp {
+  font-size: 24px; letter-spacing: 0.02em;
+  animation: hole-feedback-in 1.1s var(--ease-out) forwards;
+  pointer-events: none;
+}
+.heat-bonus {
+  font-size: 13px; letter-spacing: 0.05em; color: #dec98f;
+  white-space: nowrap;
+}
+
 .heat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .stove { position: relative; width: 520px; }
 .stove-img { margin: 0 auto; filter: brightness(0.85); }
