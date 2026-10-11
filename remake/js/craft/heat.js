@@ -15,13 +15,16 @@ export async function runHeat(cs) {
   await waitBenchReady(cs);
   const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
-  const { res, timings, picks, info } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
+  const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
   cs.heat = res;
   scoreStep(cs, "heat", res.score, "炭焼き");
   refreshBench();
   await sleep(350);
-  if (res.heatStability >= 70) popStamp(panel, "HEAT STABLE", "good", "50%", "60%");
-  if (res.aromaRetention >= 68) popStamp(panel, "AROMA KEEP", "good", "50%", "70%");
+  const bonuses = [
+    ...(res.heatStability >= 70 ? ["HEAT STABLE"] : []),
+    ...(res.aromaRetention >= 68 ? ["AROMA KEEP"] : []),
+  ];
+  feedback.replaceChildren(...bonuses.map((label) => el("span.heat-bonus", { text: label })));
   info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
@@ -82,8 +85,11 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const timingRows = coals.map((_, i) => el("li", { dataset: { test: `coal-timing-${i}` } }, [
     el("b", { text: `炭${i + 1}` }), el("span", { text: "焼成中" }),
   ]));
+  // 炭の操作面とは別の領域に評価を出す（連続評価時は直前の表示を更新）。
+  const feedback = el("div.heat-feedback", { "aria-live": "polite", dataset: { test: "heat-feedback" } });
   const info = el("div.heat-info", [
     el("div.hi-row", [el("span", { text: "黒い芯" }), el("i"), el("span", { text: "赤熱" }), el("i"), el("b", { text: "芯が光る" }), el("i"), el("span", { text: "白熱" }), el("i"), el("span", { text: "灰かぶり" })]),
+    feedback,
     el("ol.heat-picks", { "aria-live": "polite", "aria-label": "各炭のタイミング" }, timingRows),
   ]);
   panel.append(el(`div.heat${compact ? ".heat-compact" : ""}`, [stove, info]));
@@ -113,7 +119,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.node.classList.remove("pikan", "soon");
     c.node.disabled = true;
     c.node.dataset.phase = g;
-    popStamp(panel, G.stamp, G.kind, `${22 + index * (count > 1 ? 44 / (count - 1) : 0) + (count === 1 ? 22 : 0)}%`, "28%");
+    feedback.replaceChildren();
+    popStamp(feedback, G.stamp, G.kind, "50%", "50%");
     if (g === "just") { SE.just(); flash("gold"); tickerSay("パッキー「出たーッ！ EXCELLENT！ 芯まで焼けたーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
@@ -193,5 +200,5 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     aromaRetention: clamp(55 + avg("ar"), 0, 100),
     flash: picks.includes("just"),
   };
-  return { res, timings, picks, info };
+  return { res, timings, picks, info, feedback };
 }
