@@ -26,6 +26,7 @@ import { steamEnvironment, steamForecastProfile } from "./steam-climate.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
+import { buildCraftProgress } from "./progress.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -90,10 +91,8 @@ export function openBench(cs, { steps = [] } = {}) {
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
-  const progressCount = el("b.bench-progress-count");
-  const progress = el("div.bench-progress", { "aria-label": "制作の進み具合", hidden: !steps.length }, [
-    progressCount, el("div.bench-progress-track", steps.map(([id, label]) => el("span", { title: WORKER_STEPS[id] || label, dataset: { step: id } }))),
-  ]);
+  const phaseProgress = buildCraftProgress(steps);
+  const progress = phaseProgress.root, progressCount = phaseProgress.count;
   const guide = buildGuide();
   const panel = el("div.bench-panel");
   // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
@@ -114,7 +113,7 @@ export function openBench(cs, { steps = [] } = {}) {
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, leaf, score };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score };
   renderFatigue();
   return bench;
 }
@@ -127,16 +126,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText;
   b.guide.note.textContent = hintText;
-  const steps = [...b.progress.querySelectorAll("[data-step]")];
-  steps.forEach((s, i) => {
-    s.classList.toggle("now", s.dataset.step === id);
-    if (s.dataset.step === id) {
-      s.classList.add("seen");
-      s.setAttribute("aria-current", "step");
-      b.progressCount.textContent = `${String(i + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`;
-      b.progress.setAttribute("aria-label", `制作の進み具合：${i + 1} / ${steps.length}工程`);
-    } else s.removeAttribute("aria-current");
-  });
+  b.phaseProgress.update(id, titleText);
   b.audience?.setStep(hintText, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);

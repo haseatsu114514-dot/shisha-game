@@ -9,6 +9,7 @@ const ROOT = "../";
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
   kafuka: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
   flavors: [],
   flavorById: {},
   equipment: [],
@@ -37,6 +38,7 @@ const DIALOGUE_FILES = [
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "kafuka", // 帰り道の出会いと、章2からのシーシャーク
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
@@ -94,6 +96,7 @@ export async function loadAll(onProgress = () => {}) {
 
   for (const c of raw.characters) DB.characters[c.id] = c;
   DB.kafuka = raw["dlg:kafuka"] || {};
+  DB.hiyori = raw["dlg:hiyori"] || {};
   if (DB.kafuka.profile?.id) DB.characters[DB.kafuka.profile.id] = DB.kafuka.profile;
   DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
@@ -156,7 +159,7 @@ export function displayName(id, state, { context = null } = {}) {
     return state.flags._minto_name_known ? DB.characters.minto?.private_name || "栞" : "みんと";
   }
   if (id === "kafuka") {
-    if (state?.flags?._kafuka_name_known) return DB.characters.kafuka?.full_name || "波多野かふか";
+    if (state?.flags?._kafuka_name_known) return DB.characters.kafuka?.full_name || realName(id);
     if (state?.flags?._kafuka_nickname_known || state?.flags?._lime_contact_kafuka || state?.contacts?.includes("kafuka")
       || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
     return "？？？";

@@ -1,5 +1,13 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-11 SF49〜56: 蒸らしの[シンプルな円形操作UI・生成指示・原画SHA・実画面](../asset_sources/steam-controls-simple-20261011/README.md)。青白い渦、細い金の照準と緑の輪、太い矢印の黒紫スティック台座をそれぞれ新規生成。精密は照準、スティックは灰色の大きい可動ノブで区別し、文字・オン／オフ・回転・可動ノブはコード側が表示する。以下のSF39〜44の素材は履歴として保持。
+
+> 2026-10-11 SF39〜44: 蒸らしの[円形操作UIの生成指示・個別原画・SHA・表示検証](../asset_sources/steam-controls-20261011/README.md)。青白い渦のリフレッシュ、金の照準と緑の輪の精密モード、黒紫・金のスティック台座を別々の透過RGBAで制作。名前・ON/OFF・発光の変化・スティックのノブ移動・エネルギー回転はコードで制御する。参考画像の操作以外の要素は移さない。
+
+> 2026-10-11 CV35〜46: 添付の完成形を採用してCONTINUEを刷新。[透過アトラス原画](../asset_sources/ui/continue-v4-20261010/neon-reference-20261011/neon-atlas-original.png)・[完全な生成指示](../asset_sources/ui/continue-v4-20261010/neon-reference-20261011/neon-atlas.prompt.txt)・[実参照とSHA256](../asset_sources/ui/continue-v4-20261010/neon-reference-20261011/generation.json)。指定の「コンティニューする？」と「GAME OVER」だけを静的文字として生成し、数字・ボタン文言・人物は焼き込まない。金／紫の文字なし鋭角フレームを生成し、機械的な切出しのみでPNGとWebPへ。以前の暗いステージを本編へ採用し、SVGのHUD・CSSの光と煙を重ねる。[完成画面と改善記録](../asset_sources/ui/continue-v4-20261010/README.md)。以下の古い採用状態は当時の記録。
+
+> 2026-10-10 CV30・CV32: CONTINUEの比較版に[煙と金のGAME OVERロゴ](../asset_sources/ui/continue-v4-20261010/generated/game-over-smoke.png)と[暗いステージ背景](../asset_sources/ui/continue-v4-20261010/generated/backdrop-stage.png)を新規生成。[ロゴの完全な指示](../asset_sources/ui/continue-v4-20261010/generated/game-over-smoke.prompt.txt)・[背景の完全な指示](../asset_sources/ui/continue-v4-20261010/generated/backdrop-stage.prompt.txt)・[生成記録と実画面](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴだけ指定文字を許可。背景の人物・台詞・数字はコードで表示する。紫背景と通常配置は本編の既定のまま、試用背景・上段ボタン・拡大する背面カウントはプレビューで比較。
+
 > 2026-10-10 SF02: 蒸らし中に目を閉じて息を整えるはじめの[生成指示](../asset_sources/steam-focus-20261010/hajime-wait-prompt.txt)・[実参照と原画SHA](../asset_sources/steam-focus-20261010/generation.json)を保存。採用済みの帽子・パーカー・携帯中のマイチップと画風を維持し、シーシャ台やホースは人物画像へ追加しない。[実装画面・検品記録](../asset_sources/steam-focus-20261010/README.md)。
 
 > 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。

@@ -34,7 +34,7 @@ description: オーナーが「立ち絵そろえ」と言ったら使う（「�
 
 ### 0. 準備
 
-1. CLAUDE.md の Git Safety を確認し、`git fetch origin` → 最新の `origin/main` から作業ブランチを切る（このタスクの未マージのPRブランチがあれば、そこに最新mainを取り込んで続ける）。
+1. AGENTS.md の Git Safety を確認し、`git fetch origin` → 最新の `origin/main` から作業ブランチを切る（このタスクの未マージのPRブランチがあれば、そこに最新mainを取り込んで続ける）。
 2. `progress.md` を読み、オーナーの言い方から今回やることを決める（上の「呼び出しの言い方」）。
 
 ### 1. 区切り（どこまで進めて止まるか）

@@ -1,0 +1,107 @@
+name: Remake browser regressions
+
+on:
+  pull_request:
+    paths:
+      - 'remake/**'
+      - 'data/**'
+      - 'assets/audio/**'
+      - 'assets/fonts/**'
+      - 'assets/backgrounds/**'
+      - 'assets/sprites/**'
+      - 'assets/cgs/**'
+      - 'assets/ui/**'
+      - '.github/workflows/remake-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/**'
+      - 'data/**'
+      - 'assets/audio/**'
+      - 'assets/fonts/**'
+      - 'assets/backgrounds/**'
+      - 'assets/sprites/**'
+      - 'assets/cgs/**'
+      - 'assets/ui/**'
+      - '.github/workflows/remake-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remake-browser-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned test dependencies and Chromium
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start production preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/remake-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/remake-preview.log"
+          exit 1
+      # Keep browser suites sequential; they share the preview server and runner.
+      - name: Save/load, legacy migration and PC/mobile controls
+        run: node remake/test/browser/save_load.mjs
+      - name: Steam slash, recharge and PC/mobile controls
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          SHOTS: .codex/artifacts/remake-browser/steam
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/steam_slash.mjs
+          node remake/test/steam_refresh.mjs
+          node remake/test/steam_forecast.mjs
+      - name: Validate developer tools available on this branch
+        run: |
+          selected=()
+          [[ ! -f remake/js/core/dev-inspector.js ]] || selected+=(inspect)
+          [[ ! -f remake/js/core/dev-event-preview.js ]] || selected+=(preview)
+          [[ ! -f remake/js/core/dev-isolated-player.js ]] || selected+=(rehearsal)
+          if [[ ${#selected[@]} -eq 0 ]]; then
+            echo 'Developer tools are not implemented on this branch; their browser suite was not run.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            tools_list=$(IFS=,; echo "${selected[*]}")
+            node remake/test/browser/dev_tools.mjs --tools="$tools_list"
+          fi
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: remake-browser-results
+          path: |
+            .codex/artifacts/remake-browser/
+            ${{ runner.temp }}/remake-preview.log
+          retention-days: 7

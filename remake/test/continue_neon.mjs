@@ -1,0 +1,135 @@
+// 参照UI専用: 1080p/720p/スマホ、顔の保護、実時計HUD、軽減・停止・キーボード。
+// CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/continue_neon.mjs
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const { chromium } = createRequire(import.meta.url)("playwright");
+const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
+const browser = await chromium.launch({ headless: true,
+  ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
+const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+const errors = [], missing = [];
+page.on("pageerror", e => errors.push(e.message));
+page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2|css|js)/.test(r.url())) missing.push(r.url()); });
+await page.route("https://bgmer.net/**", r => r.abort());
+async function mount(options = {}) {
+  await page.evaluate(async options => {
+    const { buildGameOver } = await import("./js/chapters/gameover.js");
+    const { showScreen } = await import("./js/core/ui.js");
+    window.__decisions = [];
+    showScreen("end", buildGameOver({ variant: "premium:ageha", soundEffects: false, ...options,
+      onRetry: () => window.__decisions.push("retry"), onTitle: () => window.__decisions.push("title") }));
+  }, options);
+  await page.clock.runFor(50);
+  await page.locator(".gameover img").evaluateAll(imgs => Promise.all(imgs.map(i => i.decode())));
+}
+async function reading() {
+  return page.evaluate(() => {
+    const root = document.querySelector(".gameover"), ring = root.querySelector(".go-ring-progress"), echo = root.querySelector(".go-count-echo");
+    return { count: root.querySelector(".go-count").textContent, echo: echo.textContent,
+      scale: root.style.getPropertyValue("--go-count-scale"), echoHeight: echo.getBoundingClientRect().height,
+      progress: Number(ring.getAttribute("stroke-dashoffset")) / Number(ring.getAttribute("stroke-dasharray")),
+      urgent: root.classList.contains("go-urgent"), hidden: document.hidden };
+  });
+}
+try {
+  await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
+  await page.evaluate(async () => {
+    const { config } = await import("./js/core/state.js"); config.bgmVolume = config.seVolume = 0;
+    (await import("./js/core/audio.js")).applyVolumes(); await document.fonts.ready;
+  });
+  await page.clock.install({ time: new Date("2026-10-11T09:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-11T09:00:01Z"));
+  for (const viewport of [{ width: 1920, height: 1080 }, { width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport); await mount();
+    assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
+    assert.equal(await page.locator(".gameover").getAttribute("data-background"), "stage");
+    assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
+    assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
+    assert.equal(await page.locator(".go-quit").textContent(), "諦める");
+    const safe = await page.evaluate(() => {
+      const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
+      const k = stage.width / 1280, portrait = root.querySelector(".go-left").getBoundingClientRect();
+      const face = { x: (portrait.left - stage.left) / k + portrait.width / k / 2 - 72,
+        y: (portrait.top - stage.top) / k + 256 * .45, w: 144, h: 256 * .5 };
+      const title = root.querySelector(".go-title"), art = root.querySelector(".go-neon-title");
+      // 実際の透過筆跡をステージ座標へ描き、中心の顔にタイトルが重ならないことを検査。
+      const canvas = document.createElement("canvas"); canvas.width = 1280; canvas.height = 720;
+      const ctx = canvas.getContext("2d");
+      const heading = root.querySelector(".go-heading");
+      ctx.translate(heading.offsetLeft + title.offsetLeft + title.offsetWidth / 2,
+        heading.offsetTop + title.offsetTop + title.offsetHeight / 2);
+      ctx.rotate(-2 * Math.PI / 180);
+      ctx.drawImage(art, -title.offsetWidth / 2, -title.offsetHeight / 2, title.offsetWidth, title.offsetHeight);
+      const data = ctx.getImageData(face.x, face.y, face.w, face.h).data;
+      const hud = root.querySelector(".go-clock").getBoundingClientRect();
+      return { inkOnFace: Array.from(data).filter((a, i) => i % 4 === 3 && a > 24).length,
+        hudOutsideFace: (hud.left - stage.left) / k > face.x + face.w,
+        imagesLoaded: [...root.querySelectorAll("img")].every(i => i.complete && i.naturalWidth > 0) };
+    });
+    assert.equal(safe.inkOnFace, 0, "brush title must not obscure the face");
+    assert(safe.hudOutsideFace && safe.imagesLoaded);
+  }
+  console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
+  await page.setViewportSize({ width: 1280, height: 720 }); await mount();
+  const initial = await reading(); assert.equal(initial.count, "20"); assert.equal(initial.echo, "20");
+  await page.clock.runFor(5200);
+  const fifteen = await reading(); assert.equal(fifteen.count, "15"); assert.equal(fifteen.echo, "15");
+  assert(fifteen.progress > .25 && fifteen.progress < .27, "HUD arc follows the real deadline");
+  assert(fifteen.echoHeight > initial.echoHeight);
+  const advance = await page.evaluate(() => {
+    const root = document.querySelector(".gameover"), ring = root.querySelector(".go-ring-progress");
+    const start = performance.now(), scale = Number(root.style.getPropertyValue("--go-count-scale")), arc = Number(ring.getAttribute("stroke-dashoffset"));
+    for (let i = 0; i < 30; i++) root.querySelector(".go-dialogue").click();
+    return { ms: performance.now() - start, scale: Number(root.style.getPropertyValue("--go-count-scale")) - scale,
+      progress: (Number(ring.getAttribute("stroke-dashoffset")) - arc) / Number(ring.getAttribute("stroke-dasharray")) };
+  });
+  assert(advance.scale <= (advance.ms + 70) / 20000 * 1.05 + .00001, "captions cannot accelerate backdrop beyond real elapsed time");
+  assert(advance.progress <= (advance.ms + 70) / 20000 + .00001, "captions cannot accelerate HUD beyond real elapsed time");
+  assert.equal((await reading()).count, "15");
+  const hover = await page.locator(".go-retry").evaluate(button => {
+    button.focus(); return { shine: getComputedStyle(button, "::after").opacity, outline: getComputedStyle(button).outlineStyle };
+  });
+  assert.equal(hover.outline, "solid", "keyboard selection has a visible outline");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  assert.equal(await page.locator(".go-smoke-left").evaluate(el => getComputedStyle(el).animationPlayState), "paused");
+  const { echoHeight: pausedHeight, ...paused } = await reading(); await page.clock.runFor(12000);
+  const { echoHeight: resumedHeight, ...pausedAfter } = await reading(); assert.deepEqual(pausedAfter, paused);
+  await page.evaluate(() => { Object.defineProperty(document, "hidden", { configurable: true, get: () => false }); document.dispatchEvent(new Event("visibilitychange")); });
+  await page.clock.runFor(10000); const five = await reading();
+  assert.equal(five.count, "5"); assert.equal(five.echo, "5"); assert(five.urgent && five.progress > .75);
+  assert(five.echoHeight > fifteen.echoHeight);
+  await page.clock.runFor(5000);
+  assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "gameover");
+  assert(await page.locator(".go-clock,.go-count-back,.end-actions").evaluateAll(els => els.every(el => el.hidden)));
+  assert.match(await page.locator(".go-title-art").getAttribute("src"), /neon_game_over/);
+  assert(await page.locator(".go-title-art").isVisible()); assert(await page.locator(".go-neon-title").isHidden());
+  assert.deepEqual(await page.evaluate(() => window.__decisions), []);
+  await page.clock.runFor(2000); assert.deepEqual(await page.evaluate(() => window.__decisions), ["title"]);
+  await page.clock.runFor(2000); assert.deepEqual(await page.evaluate(() => window.__decisions), ["title"]);
+  console.log("PASS: real HUD / growing count, independent caption clicks, hidden-tab pause, final 5 seconds and simple GAME OVER → title once");
+  await mount({ reducedMotion: true }); const still = await reading(); await page.clock.runFor(5200);
+  assert.equal((await reading()).echoHeight, still.echoHeight);
+  assert.equal(await page.locator(".go-smoke-left").evaluate(el => getComputedStyle(el).animationName), "none");
+  await page.locator(".go-retry").focus(); await page.keyboard.press("Enter");
+  assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
+  await page.clock.runFor(8000); assert.deepEqual(await page.evaluate(() => window.__decisions), ["retry"]);
+  await page.emulateMedia({ reducedMotion: "reduce" }); await mount();
+  assert.equal(await page.locator(".gameover").getAttribute("data-reduced-motion"), "true");
+  assert.equal(await page.locator(".go-smoke-left").evaluate(el => getComputedStyle(el).animationName), "none");
+  // 最新mainの幕待ちのように、生成後すぐDOMへ付かない場合も表示後に時計を始める。
+  await page.evaluate(async () => {
+    const { buildGameOver } = await import("./js/chapters/gameover.js");
+    const { showScreen } = await import("./js/core/ui.js");
+    const root = buildGameOver({ variant: 0, soundEffects: false }); root.id = "continue-delayed";
+    window.setTimeout(() => showScreen("end", root), 500);
+  });
+  await page.clock.runFor(700);
+  assert(await page.locator("#continue-delayed").isVisible());
+  await page.clock.runFor(5200);
+  assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
+  assert.deepEqual(errors, []); assert.deepEqual(missing, []);
+  console.log("PASS: reduced motion by option / OS, keyboard retry and deferred mounting; page errors / missing art 0");
+} finally { await browser.close(); }

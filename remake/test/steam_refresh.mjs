@@ -1,4 +1,4 @@
-// 一台につき一回の範囲消去、初期の回復なし、成長による範囲・1段階回復。
+// 8秒リチャージ式の範囲消去、初期の回復なし、成長による範囲・1段階回復。
 // サーバー8123: node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -27,7 +27,7 @@ try {
     };
     window.startSteam=guts=>{
       T.core.state.stats.guts=guts; __remake.craftTest.auto=null;
-      window.cs=T.session.newSession('drill');cs.steamSeconds=300;
+      window.cs=T.session.newSession('drill');cs.steamSeconds=600;
       T.session.openBench(cs);window.running=T.steam.runSteamDodge(cs);
     };
     window.consume=key=>{
@@ -95,9 +95,18 @@ try {
     const before=enemies().map(b=>b.node);window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',bubbles:true}));
     return before.every(n=>n.isConnected);
   });assert(empty,'Empty stock still cleared bullets');
-  const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,1);
-  assert.match(baseResult.result,/リフレッシュで1回/);
-  console.log('[refresh] PASS: medium range removes nearby real bullets and preserves distant bullets, no healing/invulnerability/spawn delay, repeat/empty guards, pure hit-based score');
+  assert(Number(await button.getAttribute('data-cooldown')) > 6, 'Refresh recharged immediately');
+  const chargeStarted=performance.now();
+  await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled,null,{timeout:10000});
+  assert(performance.now()-chargeStarted>6000, 'Recharge bypassed the 8-second wait');
+  assert.equal(await button.getAttribute('data-remaining'),'1');
+  assert.equal(await button.locator('.action-recharge').textContent(),'');
+  const second=await page.evaluate(()=>consume('x'));
+  assert(second.near>0&&second.correctlyRemoved,'Recharged refresh did not clear real bullets');
+  assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());
+  const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,2);
+  assert.match(baseResult.result,/リフレッシュで2回/);
+  console.log('[refresh] PASS: actual 8-second recharge and second use, medium range, no base healing/invulnerability/spawn delay, repeat/cooldown guards and hit-based score');
 
   await page.evaluate(()=>startSteam(41));
   await page.waitForFunction(()=>document.querySelector('[data-test="mental-trace"]').dataset.level==='shaken',null,{timeout:10000});
@@ -113,5 +122,5 @@ try {
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());await finish();
   assert.deepEqual(errors,[]);
-  console.log('[refresh] PASS: exactly one refresh at every level; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
+  console.log('[refresh] PASS: one charge at a time; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
 } finally {await browser.close();}
