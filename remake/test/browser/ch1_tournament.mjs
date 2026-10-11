@@ -93,7 +93,9 @@ await suite("ch1-tournament", async check => {
         if (await skip.count()) await skip.click();
         await page.waitForTimeout(60);
       }
-      assert.equal(await page.locator('.entrance, .bench, [data-test="coal-0"]').count(), 0, "SKIP bypassed the asset gate");
+      // 15秒を超えると入場演出は代替表示で続行できるが、作業台の時計はまだ開始しない。
+      assert.equal(await page.locator('.foil-cursor, [data-test="coal-0"], [data-test="dodge"]').count(), 0, "SKIP started a minigame before preparation");
+      if (await page.locator('.bench').count()) assert.equal(await page.locator('.bench').evaluate(n => n.inert), true);
     } finally { release(); }
     const deadline = Date.now() + 15000;
     while (!(await page.locator('.bench .opt-grid, [data-test="mix-ok"]').count())) {
