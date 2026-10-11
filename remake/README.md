@@ -90,7 +90,7 @@ python3 remake/tools/serve_preview.py --port 8123
 - **書体**: すべて `var(--font)`（Zen Kaku Gothic New・太さ 500/700/900）。別の書体を足さない。
   収録文字は JIS 第2水準まで＋データ中の全文字。見慣れない字が豆腐になったら `python3 remake/tools/build_font.py <元TTFのフォルダ>` で作り直す
 
-正史・仕様の正本は変わらない（`CLAUDE.md` / `docs/master_spec.md` / `brand/story_and_structure.md` / `data/*.json`）。
+正史・仕様の正本は変わらない（`docs/gameplay_agent_reference.md` / `docs/master_spec.md` / `brand/story_and_structure.md` / `data/*.json`）。
 リメイク版はそれを読むだけで、既存の台詞や設定を書き換えない。
 リメイク版の進行だけで使う短い場面（チュートリアルの前後・リハーサル・通い訪問の小会話など）は
 `data/dialogue/remake_ch1.json` に置いてある（他の台詞と同じスキーマ・同じリンタで検査される。旧版は読まない）。

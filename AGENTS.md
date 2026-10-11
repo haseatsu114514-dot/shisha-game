@@ -1,57 +1,80 @@
-# AGENTS.md（Codex など AI エージェント向け）
+# AGENTS.md — 共通AI開発ルール（唯一の入口）
 
-> **参照ルール（2026-10-11）**: 共通ルールの正本は引き続き `CLAUDE.md`。Codexはこのファイルに加えて `CLAUDE.md` を読みます。作業に関係する資料だけ追加で参照し、すべての過去の引き継ぎ文書を無条件に読み込まないでください。現行実装の対象は `remake/`・`data/`・`brand/`。古い `web/` やGodotのパスは履歴であり、作業対象にしません。引き継ぎメモの日時・ブランチ・未完了情報は現在も有効か検証してから利用します。既存のGit安全ルールは省略せず守ってください。
+Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS.md` 経由で参照する。**このファイルだけを起点にし、作業に関係する詳細資料だけ読む。**
 
+## 対象・正本
 
-このリポジトリのルールの正本は `CLAUDE.md`。作業前に必ず読むこと。
-ここには、過去に事故が起きた点だけを短くまとめる。
+- 現行ゲーム: `remake/`。台詞・共有データ: `data/`。物語と人物設定: `brand/story_and_structure.md`、`brand/character_profiles.md`、`data/characters.json`。
+- 旧 `web/` と Godot 版は廃止済み。 `project.godot` が存在するチェックアウトは古い。旧パスを実装先にしない。
+- 仕様・要望: `docs/master_spec.md`、`docs/owner_requests.md`。過去の実装メモは現行コードと照合し、矛盾を勝手に確定しない。
+- 詳細な正本一覧・引き継ぎ: `docs/current_documentation_guide.md`。
 
-## キーワードで呼ぶ作業
+## 作業の原則
 
-- **「立ち絵そろえ」**（「立ち絵そろえ 続けて／OK／組み込んで」など）と言われたら [`.agents/skills/portrait-unify/SKILL.md`](.agents/skills/portrait-unify/SKILL.md) の手順で、立ち絵の画質・顔の大きさ・画風の作り直しを進捗表の続きから進める。
+- 開始時にブランチ・作業対象・安全確認を行う。別チャットの未マージPRや未コミット変更を上書きしない。
+- ゲームの挙動・UI・世界観を勝手に変更しない。小さな変更で、関連テストを実行し、未実施は明記する。
+- キャラ設定・台詞・報酬・改行は正本とスキーマに従う。必要時のみ `docs/gameplay_agent_reference.md` と `docs/review_scope.md` を読む。
+- シーシャ画像・キャラCG・外部素材・立ち絵作業は `docs/asset_ai_guidance.md` の該当項目を読む。画像の実物構造・ライセンス・QAを省略しない。
+- 起動・テスト: `remake/README.md`。ゲームデータを編集したら関連リンタ・テストを確認する。
+- 過去の `docs/*handoff*.md` は日時付き履歴。必要時だけ読み、現在のPR・ブランチ・実装で再確認する。
+- 終了時はPRに変更点・テスト・未完・引き継ぎを記す。確定した永続ルールだけ正本を更新し、日付付きMDをむやみに増やさない。
 
-## 画像・台詞などのAI生成で不自然さを減らすとき
+## Git Safety
 
-[AIっぽさを抑える制作・検品メモ](docs/ai_naturalness_guide.md)を必要な箇所だけ参照する。元ツイートの本文・ツリーが完全検証できたものではなく、ゲーム向けの実践メモとして扱う。**正規のキャラ設定と採用済みアセット・機材構造の再現が最優先**。過剰な画風変更や機材の創作改造を勝手にしない。
+If this machine uses a canonical checkout path, store it in local Git
+config with:
+`git config --local shisha.canonicalRoot "$(pwd -P)"`
 
-## 外部素材・効果音・BGMを探すとき
+Do not work from `sheesha_battle`, `シーシャバトル-(4.2)`,
+`.codex_tmp/...`, or any other duplicate checkout. Those paths must be
+treated as stale until the user explicitly replaces the canonical path
+and updates the local config.
 
-素材サイト集と採用手順は [`docs/external_asset_sources.md`](docs/external_asset_sources.md) を参照。
-将来「効果音をつけて」「背景を探して」等の依頼があったら、そこに記録された候補を優先して比較し、**採用した個々の素材の配布元・作者・利用規約・クレジット・GitHubへの保管可否**を確認する。
-ゲームへ同梱できることと、元素材をリポジトリに再配布できることは別。ライセンス未確認素材を勝手に保存・実装しない。
+Before any code edit or Git operation:
 
-シーシャ台を新たに画像生成する場合は、実物写真の一覧と創作上の自由度をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を必ず参照（写真の完コピではない）。喫煙シーンやヒートマネジメントを描く場合は同ディレクトリの [`smoking-and-heat-management-20261009.md`](asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) を追加参照する。アルミ・ボウル・HMD・炭の近接表現は [`heat-management-closeups-20261009.md`](asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md) も確認。さらに[全37写真横断の誤描写防止ガイド](asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)で、ハガル／HMD／ホース／構図の取り違えをチェックする。ホース・マウスピースの新規画像生成では[追加の6写真と接続ガイド](asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)と[追加7写真の区別・素材表現](asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)も読み、首掛けチップと実際のホースを混同しない。2026-10-09追加の[構造図3点](asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)と[ハガル内部・炭配置の調査](asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)もシーシャ機材の生成前に確認する。
+- verify the repo root with `git rev-parse --show-toplevel`
+- confirm that the same directory contains `data/`, `assets/` and `remake/`.
+  `project.godot` must NOT exist: the Godot version was deleted on
+  2026-06-15, so a folder that still has it is a stale copy. Ignore any
+  older rule (in any AGENTS.md or notes) that requires `project.godot`
+- run `./tools/check_git_safety.sh`
+  WARN is allowed; stop on ERROR.
+- if `git config --get core.hooksPath` is not `.githooks`, run
+  `./tools/enable_git_hooks.sh`
+- if `git config --local --get shisha.canonicalRoot` is set, confirm
+  that it matches the repo root
 
-ヒロインの日常・タイトル用CGでは[追加の画像生成ルール](asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)を必読とする。本人と年齢感は正規立ち絵、質感は既存タイトル絵を基準に分ける。完成・喫煙状態はHMD必須・直炭禁止。画像ごとに具体的HMDモデルを一つ選び、部品を混ぜず縮尺を検品する。候補間で台・背景・時間帯・行動を変え、植物を必須にしない。既存のゲーム工程や実物資料の一般方式は変更しない。
+If any check fails, stop. Do not create branches, do not commit, do not
+push, and do not try to merge unrelated histories.
 
-## シーシャCGの出力後必須QA（2つの実例ミス）
+A worktree made from the canonical checkout (`git worktree add`) is
+allowed; `check_git_safety.sh` accepts it.
 
-- [マイマウスピースがチェーンだけになる／ホースが未接続になる失敗例と検品リスト](asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を参照。
-- 首掛けタイプは**鎖と実体のある吸い口パーツ**。マイチップ使用時は**硬いハンドル先端に装着**。首掛け携帯中のときとは別状態。
-- ホースは**本体側の正しいポート→柔らかいホース→硬いハンドル**の経路を出力後に実際に目視で追う。途中で消える／接続されない／パージへ挿さる画像は不採用（合理的な遮蔽・見切れは例外）。
-- [みんとのホース分岐NG原画](asset_sources/shisha-hardware-reference/ng-examples/README.md)も確認。接続点だけで合格にせず、経路を両方向に追い、Y字分岐・第三の端・前後関係のない交差を除外する。
-- 指定されたゲームヒロイン本人の正規立ち絵・設定を優先し、**汎用の別人**なら修正・再生成。目視未確認で「確認済み」と書かない。
+### Hard rules
 
-## Godot版は削除済み
+- branch from `origin/main`
+- use pull requests instead of direct pushes to `main`
+- do not use `git push --force`
+- do not use `--allow-unrelated-histories`
+- do not change the default branch to a feature branch as a workaround
 
-- Godot版は 2026-06-15 に削除済み。`project.godot` は**存在しないのが正しい**。
-- `project.godot` を必須とする古いルール（別の AGENTS.md・メモなど）があっても従わない。
-- 逆に `project.godot` が残っているフォルダは、削除前の古いコピー。そこで作業しない。
+If `git merge-base HEAD origin/main` fails, the branch is not safe for a
+normal PR. Stop and fix the Git layout first.
 
-## GitHub が唯一の正本（PCに作業を残さない）
+### GitHub が唯一の正本（PCに作業を残さない・2026-10-03）
 
-2026-09-30〜10-02 に、PC上のフォルダで作業を進め、push できないまま差分ファイル・画像が
-PCにだけ溜まる事故が起きた（PR #173 で回収）。
+2026-09-30〜10-02 に、Codex がPC上のフォルダで作業を進め、push できないまま差分ファイル・画像が
+PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止として以下を守る。
 
-- 正本は GitHub の `origin` だけ。PCのフォルダ・`outputs/`・stash・画像生成サービスのライブラリは正本ではない。
-- 作業を始めるときは `git fetch origin` し、最新の `origin/main` から新しいブランチを切る。
-- 区切りごと・終わるときに、必ず commit して作業ブランチへ push する。
-- push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まって報告する。
-- 生成した画像・音声もその場で `assets/` か `asset_sources/` に置いて commit する。
-- `main` へ直接 push しない。`--force` と `--allow-unrelated-histories` は使わない。
+- 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
+  チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
+- 作業を始めるときは `git fetch origin` し、**最新の `origin/main` から新しいブランチ**を切る。
+  未コミットの変更が残った古いフォルダや、古い作業ブランチの上で続きをしない。
+- 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
+  push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
+- 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
+  デスクトップや外部のライブラリに置いたままにしない。
 - 要望台帳（`docs/owner_requests.md`）のIDは、最新の `origin/main` を取り込んでから次の空き番号を使う（別チャットと同時に作業して番号が重なった例がある・2026-10-04）。
+- 終える前に `git status`（未コミットが無い）と `git log @{u}..HEAD`（未pushが無い）を確認する。
 
-## 安全確認
-
-- `./tools/check_git_safety.sh` が OK を出すこと（WARN は可、ERROR なら止まる）。
-- 正規チェックアウトから `git worktree add` で作った作業場所は OK と判定される。
+---
