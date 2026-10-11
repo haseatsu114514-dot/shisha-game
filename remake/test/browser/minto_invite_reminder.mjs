@@ -54,9 +54,15 @@ await suite("venue-invite-reminder", async (check) => {
     }));
     assert.deepEqual(before, { slot: 0, money: 30000, read, done: false });
     await page.locator('[data-test="venue-invite-check"]').click();
-    await page.locator('[data-test="lime-chat-minto"]').waitFor();
+    // 送信者指定のLIMEはトーク一覧ではなく本文へ直行する（一覧行は表示されない）。
+    await page.locator('[data-test="reply-2"]').waitFor();
     assert.equal(await page.evaluate(() => QA.core.state.slot), 0, "Opening LIME must not spend an action");
+    await page.locator('[data-test="reply-2"]').click(); // 返事を保留し、一覧へ戻る
     await page.locator('[data-test="phone-close"]').click();
+    assert.deepEqual(await page.evaluate(() => ({
+      slot: QA.core.state.slot, money: QA.core.state.money, read: QA.core.state.inbox[0].read,
+      done: QA.core.state.inbox[0].done,
+    })), { slot: 0, money: 30000, read: true, done: false });
     await page.locator('[data-test="map-go"]').click();
     assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "The same invite must not nag twice");
   }, options);
