@@ -11,7 +11,7 @@ const browser = await chromium.launch({ headless: true,
 });
 try {
   for (const [name, viewport, touch] of [["pc", { width: 1280, height: 720 }, false],
-    ["touch", { width: 844, height: 390 }, true], ["portrait", { width: 390, height: 844 }, true]]) {
+    ["touch", { width: 844, height: 390 }, true], ["portrait", { width: 390, height: 844 }, false]]) {
     const cases = name === "portrait" ? [[false, 4, false], [true, 4, false]] :
       [[false, 3, false], [false, 4, false], [false, 4, true], ...[1, 2, 3, 4].map(n => [true, n, false])];
     for (const [compact, count, excellentOnly] of cases) {
@@ -24,6 +24,13 @@ try {
         return route.continue({ url: u.href });
       });
       await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
+      if (touch) {
+        // スマホ縦向きでは既存の横向き案内が入力を覆う。回転してから実操作する。
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.locator("#rotate-hint").waitFor({ state: "visible" });
+        await page.setViewportSize(viewport);
+        await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+      }
       await page.evaluate(async ({ compact, count }) => {
         const core = await import("./js/core/state.js"); core.newGame();
         const session = await import("./js/craft/session.js"), heat = await import("./js/craft/heat.js");
