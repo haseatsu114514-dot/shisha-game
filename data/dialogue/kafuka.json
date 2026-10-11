@@ -117,11 +117,11 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女がぬいぐるみを持ち上げ、低い声に変えた。口元だけが、かすかに動いている。"
+          "text": "彼女がぬいぐるみを顔の前まで持ち上げ、低い声に変えた。"
         },
         {
           "speaker": "kafuka",
-          "face": "normal",
+          "face": "ventriloquism",
           "text": "余の玉座にふさわしい店を築け",
           "voice": "korochan"
         },
@@ -221,7 +221,7 @@
         },
         {
           "speaker": "kafuka",
-          "face": "smile",
+          "face": "ventriloquism",
           "text": "勇者はじめよ、席を用意して待つ",
           "voice": "korochan"
         },
@@ -263,7 +263,7 @@
           },
           {
             "speaker": "kafuka",
-            "face": "normal",
+            "face": "ventriloquism",
             "text": "側近よ、話が長い。開店前に夜が明けるぞ",
             "voice": "korochan"
           },
@@ -281,7 +281,7 @@
           },
           {
             "speaker": "kafuka",
-            "face": "surprise",
+            "face": "ventriloquism",
             "text": "側近よ、怖い場面で顔を伏せたのは誰だ？",
             "voice": "korochan"
           },
@@ -339,7 +339,7 @@
           },
           {
             "speaker": "kafuka",
-            "face": "smile",
+            "face": "ventriloquism",
             "text": "勇者はじめよ、席は確保してある",
             "voice": "korochan"
           },
@@ -439,7 +439,7 @@
         },
         {
           "speaker": "kafuka",
-          "face": "serious",
+          "face": "ventriloquism",
           "text": "よかろう。はじめの来訪を歓迎する",
           "voice": "korochan"
         },
@@ -569,7 +569,7 @@
         },
         {
           "speaker": "kafuka",
-          "face": "normal",
+          "face": "ventriloquism",
           "text": "側近は、もう一度呼ばれることを望んでいる",
           "voice": "korochan"
         },
