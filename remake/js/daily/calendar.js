@@ -421,6 +421,7 @@ async function endDay() {
   const ev = chapterDef.nightEvents[state.day];
   if (ev && !(ev.done && ev.done())) {
     await bannersIdle();
+    delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
     if (ev.beat) await beat(ev.beat);
     await ev.run();
     await bannersIdle();
@@ -430,6 +431,7 @@ async function endDay() {
   let companion = metTonight ? state.flags._private_night_char : null;
   if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
     state.pendingInvite = null;
+    delete state.flags._home_tonight;
     await beat("——店の営業が終わってから、約束の場所へ。");
     const { spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender] });
     await afterAction({ exerted: true, spent });
@@ -438,7 +440,7 @@ async function endDay() {
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
   const confessed = await maybeConfession(beat, { busyNight: metTonight, companion });
-  if (confessed) await bannersIdle();
+  if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
   const next = chapterDef.nightEvents[state.day + 1];

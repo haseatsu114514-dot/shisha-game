@@ -64,7 +64,10 @@ export function setupHooks() {
     // 大会前夜の過ごし方（練習=本番に小ボーナス／スミさん=根性／早寝=体力全快）
     if (dialogueId === "ch1_day7_last_night") {
       state.flags._last_night = branch;
-      if (branch === "sleep_early") addStamina(maxStamina() - state.stamina);
+      if (branch === "sleep_early") {
+        addStamina(maxStamina() - state.stamina);
+        state.flags._home_tonight = true; // 自室で寝た後に帰り道を重ねない。
+      }
     }
   };
 }
@@ -158,25 +161,24 @@ const sketchScene = (id, bg) => async () => {
 const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, done: () => flag(key) });
 
 const NIGHT_EVENTS = {
-  2: { pin: "tonari", teaser: "tonari", beat: "夜、tonariに顔を出す──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
-  3: { pin: "tonari", teaser: "tonari", beat: "つむぎの途中の絵を見て、閉店後は作業台へ──",
+  2: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  3: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後は作業台で練習する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
     run: async () => {
       await playTsumugiStory(3);
       if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
     } },
-  4: { pin: null, teaser: "帰り道", beat: "買い出しの帰り道──", ...once("_ev_ageha_cameo", nightScene("ch1_ageha_encounter", BG("bg_street_night"))) },
-  5: { pin: "tonari", teaser: "tonari", beat: "閉店後の店に、もう少しだけ残る──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
-  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", midPreparation) },
-  9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
-  10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  11: { pin: "tonari", teaser: "tonari", beat: "閉店間際、つむぎが描き終えた絵を開く──",
+  5: { pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
+  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し。準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
+  9: { pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
+  10: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
+  11: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
     done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
     run: async () => {
       await playTsumugiStory(11, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
       setFlag("_ev_tsumugi_sketch");
     } },
-  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",
+  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。最後の確認をしにtonariへ。店の作業台で、前日リハーサル──",
     done: () => flag("_ev_rehearsal") && flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
     run: async () => {
       await playTsumugiStory(TOURNAMENT_DAY - 1);

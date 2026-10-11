@@ -104,7 +104,17 @@ async function baitoShift({ called }) {
   if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
+  await afterShiftErrand();
   await afterShift();
+}
+
+/** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
+async function afterShiftErrand() {
+  if (state.chapter !== 1 || state.day < 4 || state.flags._ev_ageha_cameo
+    || !DB.dialogues.ch1_ageha_encounter) return;
+  await play("ch1_ageha_encounter");
+  state.flags._ev_ageha_cameo = true;
+  await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
 }
 
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */

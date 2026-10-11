@@ -593,7 +593,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "最後の客を見送ったあと、スミさんが言った。"
+          "text": "閉店間際のtonari。スミさんの話を聞きに来て、最後の客を一緒に見送った。"
         },
         {
           "speaker": "sumi",
@@ -912,7 +912,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会前夜。"
+          "text": "帰宅して荷物を置く。大会前夜の静けさが、自室に広がっている。"
         },
         {
           "speaker": "",
@@ -984,6 +984,10 @@
       "branches": {
         "practice": [
           {
+            "type": "bg",
+            "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "もう一度tonariへ戻った。閉店後の店に照明を半分だけ残して、一人で練習を始めた。"
@@ -1050,6 +1054,10 @@
           }
         ],
         "talk_sumi": [
+          {
+            "type": "bg",
+            "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+          },
           {
             "speaker": "",
             "face": "",

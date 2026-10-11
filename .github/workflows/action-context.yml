@@ -1,0 +1,76 @@
+name: Action and night scene contexts
+on:
+  pull_request:
+    paths:
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/tonari.js'
+      - 'data/dialogue/ch1_ageha.json'
+      - 'data/dialogue/ch1_main.json'
+      - 'remake/test/browser/action_context.mjs'
+      - 'remake/test/paid_action_growth.mjs'
+      - '.github/workflows/action-context.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/tonari.js'
+      - 'data/dialogue/ch1_ageha.json'
+      - 'data/dialogue/ch1_main.json'
+      - 'remake/test/browser/action_context.mjs'
+      - 'remake/test/paid_action_growth.mjs'
+      - '.github/workflows/action-context.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: action-context-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contexts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Real actions, day/night shifts, old saves and eve choices
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          ARTIFACT_DIR: .codex/artifacts/remake-browser/action-context
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/action-context-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/browser/action_context.mjs
+          node remake/test/paid_action_growth.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: action-context-results
+          path: |
+            .codex/artifacts/remake-browser/action-context/
+            ${{ runner.temp }}/action-context-preview.log
+          retention-days: 7
