@@ -477,7 +477,8 @@ async function endDay() {
   delete state.flags._home_tonight;
   const next = chapterDef.nightEvents[state.day + 1];
   if (!athome) {
-    await maybeKafukaEncounter({ hasNightEvent: nightCount > 0,
+    await maybeKafukaEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
+      || state.flags._night_event_day === `${state.chapter}:${state.day}`,
       hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
     await play(`remake_homecoming_${state.day % 3}`);
   }

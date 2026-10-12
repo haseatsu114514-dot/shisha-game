@@ -14,7 +14,7 @@ for (const ratio of [.25, .1, 0]) {
   assert(catchesCold(ratio, () => 0)); assert(!catchesCold(ratio, () => .99));
 }
 
-const state = {}, played = [], saves = [], guards = [];
+const state = {}, played = [], saves = [], guards = [], homecomingChecks = [];
 let rng = .99, route = [], decisions = [], shifts = 0;
 const math = Object.create(Math); math.random = () => rng;
 const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTimeout: () => 0, clearTimeout() {}, document: { querySelector: () => null } });
@@ -44,7 +44,7 @@ const values = {
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
-  "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async () => false, visitKafuka: async () => false, kafukaSpot: () => null },
+  "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitKafuka: async () => false, kafukaSpot: () => null },
 };
 const files = { "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "spots.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 const modules = new Map(), pending = new Map();
@@ -68,7 +68,7 @@ async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sic
   Object.assign(state, { chapter: 1, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
     stats: { technique: 10, sense: 10, guts, charm: 10, insight: 10 }, statXp: {}, story: {}, visitedDay: {}, met: {}, contacts: [], inbox: [], limeRead: [],
     flags: { [`_morning_${day}`]: true, _sick_once: sick, _overwork: 9, ...flags } });
-  played.length = 0; saves.length = 0; guards.length = 0; shifts = 0;
+  played.length = 0; saves.length = 0; guards.length = 0; homecomingChecks.length = 0; shifts = 0;
   rng = roll; route = paths.slice(); decisions = answers.slice();
   await calendarModule.namespace.runDaily({ nightEvents: events });
   return { played: [...played], saves: [...saves], guards: [...guards], stamina: state.stamina, day: state.day, shifts };
@@ -176,4 +176,8 @@ assert.equal(await nights.runNightPlan(budgetEvents), 0);
 assert.equal(executions.length, 1); assert.equal(state.deferredNightEvents.length, 1);
 state.day = 5; await nights.runNightPlan(budgetEvents);
 assert.deepEqual(executions.map(x => x.day), [4, 5]); assert.equal(state.deferredNightEvents.length, 0);
+await run({ stamina: 60, day: 4, slot: 2, flags: { _night_event_day: "1:4" }, events: { 3: event("homecoming_pending") },
+  queue: [{ id: "homecoming_pending", chapter: 1, originalDay: 3, deferredOn: 3, reason: "rest" }] });
+assert(homecomingChecks.find(check => check.day === 4)?.hasNightEvent,
+  "読了直後のロードでも夜の予定が無かったことにして追加遭遇を発火しない");
 console.log("[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy, automatic illness deferral, fixed sick attendance, accepted appointment, preparation deadlines, post-tournament order, no duplicates, other chapters and interrupted scenes");
