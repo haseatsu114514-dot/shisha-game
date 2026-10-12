@@ -72,7 +72,7 @@ assert(aliasAt>=0);assert.equal(encounter.lines[aliasAt+1].flag,'_kafuka_nicknam
 assert(!JSON.stringify(encounter).includes(story.profile.full_name));
 assert(!encounter.lines.some(l=>l.flag==='_kafuka_name_known'));
 const privateName=story.dialogues.find(d=>d.dialogue_id==='kafuka_future_private_name');
-assert.equal(privateName.metadata.future_only,true);
+assert.equal(privateName.metadata.future_only,false,'本名は恋人絆Lv4の正式原稿へ接続済み');
 assert.equal(privateName.metadata.private_scene,true);
 for(const scene of story.dialogues){
  const rows=[...scene.lines,...Object.values(scene.branches||{}).flat()];
