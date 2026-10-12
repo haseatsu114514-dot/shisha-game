@@ -5,6 +5,7 @@ import { layers, showScreen, retire } from "../core/ui.js";
 import { spotById, hasNewEvent } from "./spots.js";
 import { spotAvailability, freeGuide } from "./spot-access.js";
 import { mountReel } from "./reel.js";
+import { cueTransition } from "../core/transitions.js";
 
 export const STREET_DOORS = Object.freeze({ cafe: "cafe", peppermint: "minto", kemurikusa: "naru" });
 export const WALK_STREET = Symbol("walk-street");
@@ -45,7 +46,12 @@ export function openStreet(opts, setInterrupt) {
             const id = STREET_DOORS[door];
             return !!(state.visits[id] > 0 || state.spotVisits?.[id] > 0);
           },
-          enter: (door) => { if (info(door).ok) finish(STREET_DOORS[door]); },
+          enter: (door) => {
+            if (!info(door).ok) return;
+            const spot = spotById(STREET_DOORS[door]);
+            cueTransition("place", { spotId: spot.id, label: spot.label, area: spot.area || "", glyph: spot.glyph || "" });
+            finish(spot.id);
+          },
           back: () => finish(BACK_TO_MAP),
           paused: () => finished || !root.isConnected || root.classList.contains("done")
             || layers.modal.classList.contains("show") || layers.vn.classList.contains("active")

@@ -1,0 +1,19 @@
+{
+  "worker": "codex-visual360-20261012-ac3264e05686",
+  "claim": 38258863589,
+  "status": 38268178988,
+  "base": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+  "ids": [
+    "cg_ch1_sumi_training",
+    "cg_ch1_tsumugi_heart_art",
+    "cg_ch1_minto_casual_reveal",
+    "cg_ch1_dr_kemuri_hook",
+    "cg_ch1_tournament_battle",
+    "cg_ch1_nagumo_smile",
+    "cg_oneesan_first_smoke",
+    "cg_minto_casual",
+    "cg_tsumugi_smoke_color"
+  ],
+  "protect": "Existing title/chapter/intro/polaroid art, A/B backgrounds, other workers source/making fields",
+  "scaleRule": "Small shallow flavour tubs; bare connectors short metal neck and small tapered rubber grommet, never huge caps. In smoking CG use real single-model HMD and complete assembly proportions."
+}

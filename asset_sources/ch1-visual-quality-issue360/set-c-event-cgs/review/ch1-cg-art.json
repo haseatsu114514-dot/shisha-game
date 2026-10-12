@@ -1,0 +1,103 @@
+{
+  "name": "ch1-cg-art",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": "f145263f6f0c854e2778094d737571f14c044333",
+  "results": [
+    {
+      "label": "pc-cg_ch1_sumi_training",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_ch1_tsumugi_heart_art",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_ch1_minto_casual_reveal",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_ch1_dr_kemuri_hook",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_ch1_tournament_battle",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_ch1_nagumo_smile",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_oneesan_first_smoke",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_minto_casual",
+      "status": "passed"
+    },
+    {
+      "label": "pc-cg_tsumugi_smoke_color",
+      "status": "passed"
+    },
+    {
+      "label": "pc-delayed-new-cg",
+      "status": "passed"
+    },
+    {
+      "label": "pc-failed-cg-does-not-unlock-gallery",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_sumi_training",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_tsumugi_heart_art",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_minto_casual_reveal",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_dr_kemuri_hook",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_tournament_battle",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_ch1_nagumo_smile",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_oneesan_first_smoke",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_minto_casual",
+      "status": "passed"
+    },
+    {
+      "label": "touch-cg_tsumugi_smoke_color",
+      "status": "passed"
+    },
+    {
+      "label": "touch-delayed-new-cg",
+      "status": "passed"
+    },
+    {
+      "label": "touch-failed-cg-does-not-unlock-gallery",
+      "status": "passed"
+    },
+    {
+      "label": "unused-placeholder-still-excluded",
+      "status": "passed"
+    },
+    {
+      "label": "touch-portrait-rotation",
+      "status": "passed"
+    }
+  ]
+}

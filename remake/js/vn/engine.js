@@ -467,8 +467,8 @@ async function showCg(id, effect = "") {
   const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
-  await waitSceneAssets(imageReady(url, 15000), r);
-  if (running !== r) return;
+  const loaded = await waitSceneAssets(imageReady(url, 15000), r);
+  if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
     dom.cg.dataset.cg = id;
