@@ -5,7 +5,7 @@ import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, affinityGateWaiting, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { BOND_FINALES } from "./bonds.js";
+import { settledFriend } from "./bonds.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -103,8 +103,6 @@ function meTab() {
 }
 
 const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori"];
-// 「友達」: 告白で友達のままを選んだか、恋愛対象と友情の締めくくりを迎えた
-const friendClosed = (id) => !!state.flags[`_friend_${id}`] || (!!BOND_FINALES[id]?.question && state.finales?.[id]?.route === "friend");
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
@@ -122,7 +120,7 @@ function peopleTab() {
         hearts,
         !lover && lv >= 3 && affinityGateWaiting(id)
           ? el("span.pp-relation", { text: id === "hiyori" ? "スミさんとの再会待ち" : "関係を考える会話待ち" }) : null,
-        !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
+        settledFriend(id) ? el("span.pp-relation", { text: "友達" }) : null,
       ]),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);
