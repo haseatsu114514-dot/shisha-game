@@ -68,3 +68,6 @@ repoのagent_quota_guard.pyは既存のSyntaxErrorで実行不可。公式get_us
 ChromeでMP4の実フレームが復号・表示されることと、37秒/1280×720のメタデータを確認。
 PC・スマートフォンでテロップ版の全文表示、次送り、Space/Enter、戻る、最初から、末尾から先頭、モード切替、横はみ出しなしを確認。ページのJavaScript例外なし。
 証跡はtrailer/render-checks.json、player-checks.json、media-checks.jsonと画面画像。原寸PNGへ文字は焼き込まない。
+
+
+章名/テロップ更新：同期main 5fec373e90cce62fbf50e49bfedea1d47b3b0899の正式章名「第二章 才能の壁 / Jealousy Haze」を反映。DotGothic16の読み込み完了を待ってCanvasとDOMで使用し、章名の一致・フォント読み込み・PC/スマートフォンの送り操作PASS。導入、各字幕、作品名の目視で見切れなし。フォント原本とのバイト一致、同梱SIL OFLを確認。MP4を書き出し直し、SHAと復号/再生QAを更新。PNG素材に変更なし。

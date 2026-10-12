@@ -1,6 +1,8 @@
 window.TRAILER_SPEC = {
   title: "水煙前線",
   subtitle: "-EN:CODE-",
+  chapter: {number: 2, label: "第二章", title: "才能の壁", subtitle: "Jealousy Haze", reading: "ジェラシー・ヘイズ"},
+  textFont: "TrailerDot",
   duration: 37,
   fps: 24,
   width: 1280,

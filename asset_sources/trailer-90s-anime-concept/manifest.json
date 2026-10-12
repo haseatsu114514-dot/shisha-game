@@ -4,7 +4,7 @@
   "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
   "worker": "codex-trailer415-20261013-01a130ab",
   "claim_run": 38268614301,
-  "validated_run": 38276719029,
+  "validated_run": 38283370451,
   "style_revision": "cel-1992-v2",
   "composition_revision": "Minto solo close-up; other five layouts retained",
   "status": "owner_review_only",
@@ -284,11 +284,11 @@
       "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
     }
   ],
-  "synced_main": "478097d257bc2d544f4914a425e7df758eea9b2d",
+  "synced_main": "5fec373e90cce62fbf50e49bfedea1d47b3b0899",
   "trailer": {
     "preview": "trailer/index.html",
     "video": "trailer/teaser-37s.mp4",
-    "sha256": "deb813ef950cbad3fb8c44c7b7e09a630249094fca409171c3bf053a1106dcb0",
+    "sha256": "ecc177ba9b07a7a88a973294dd8087789ec816983a1e2fd9a352a1fa5211dc9f",
     "duration_seconds": 37,
     "dimensions": [
       1280,
@@ -300,6 +300,21 @@
     "motion": "still image camera movement and cuts",
     "manual_player": "typewriter; click/Space/Enter to reveal or advance",
     "source": "trailer/timeline.js",
-    "game_integration": false
+    "game_integration": false,
+    "chapter": {
+      "number": 2,
+      "title": "才能の壁",
+      "subtitle": "Jealousy Haze",
+      "reading": "ジェラシー・ヘイズ",
+      "source": "brand/story_and_structure.md",
+      "source_commit": "5fec373e90cce62fbf50e49bfedea1d47b3b0899"
+    },
+    "font": {
+      "family": "DotGothic16",
+      "file": "trailer/fonts/DotGothic16-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "source": "assets/fonts/DotGothic16-Regular.ttf",
+      "sha256": "92524cf71473014b9988fbcb63ac5cfe045e55944918b021a41f991ca0b6e329"
+    }
   }
 }
