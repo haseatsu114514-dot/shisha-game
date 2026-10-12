@@ -1,0 +1,115 @@
+{
+  "base": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+  "rows": [
+    {
+      "id": "cg_ch1_sumi_training",
+      "event": "ch1_day5_sumi_story",
+      "before": "existing adopted wide CG",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_ch1_tsumugi_heart_art",
+      "event": "ch1_tsumugi_fifth / ch1_tsumugi_sketch",
+      "before": "existing adopted wide CG",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        940
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_ch1_minto_casual_reveal",
+      "event": "ch1_minto_fifth",
+      "before": "existing adopted wide CG",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_ch1_dr_kemuri_hook",
+      "event": "ch1_tournament_after",
+      "before": "existing adopted wide CG",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_ch1_nagumo_smile",
+      "event": "ch1_tournament_reveal",
+      "before": "placeholder excluded from manifest",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_ch1_tournament_battle",
+      "event": "ch1_tournament_match",
+      "before": "existing adopted wide CG",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_minto_casual",
+      "event": "outing_minto_1",
+      "before": "active dialogue command without registered image",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_tsumugi_smoke_color",
+      "event": "ch1_tsumugi_smoke_color",
+      "before": "active dialogue command without registered image",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        940
+      ],
+      "accepted": true
+    },
+    {
+      "id": "cg_oneesan_first_smoke",
+      "event": "ch1_tutorial_oneesan",
+      "before": "active dialogue command without registered image",
+      "after": "generated, FHD optimized and same ID registered",
+      "native": [
+        1672,
+        941
+      ],
+      "accepted": true
+    }
+  ],
+  "preserved": [
+    "all title18/chapter/intro/polaroid artwork",
+    "unused cg_ch1_sumi_secret/cg_ch1_tournament_tension placeholders remain excluded",
+    "cheki event already uses adopted cg_minto_first_cheki; no obsolete cg_minto_cheki alias introduced"
+  ],
+  "manifestChangedFields": [
+    "generated",
+    "cgs",
+    "webp"
+  ],
+  "sourceFilesSharedWithOtherWorker": "only automatically generated manifest (CG/WebP sets; making and all other fields byte-value unchanged), no existing game/CI implementation source changed"
+}

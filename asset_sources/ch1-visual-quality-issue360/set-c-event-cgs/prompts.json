@@ -17,7 +17,16 @@
         "hose": "none",
         "mouthpiece": "none",
         "scale": "hand-sized objects; portrait face and story-specific outfit"
-      }
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/sumi/chr_sumi_normal.png",
+        "assets/backgrounds/bg_tonari_inside_night.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
     },
     {
       "key": "tsumugi",
@@ -34,7 +43,17 @@
         "hose": "none",
         "mouthpiece": "none",
         "scale": "hand-sized objects; portrait face and story-specific outfit"
-      }
+      },
+      "nativeSize": [
+        1672,
+        940
+      ],
+      "references": [
+        "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "assets/backgrounds/bg_tonari_inside_night.png",
+        "previous/cg_ch1_tsumugi_heart_art.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
     },
     {
       "key": "minto_reveal",
@@ -51,7 +70,209 @@
         "hose": "none",
         "mouthpiece": "none",
         "scale": "hand-sized objects; portrait face and story-specific outfit"
-      }
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "previous/cg_ch1_minto_casual_reveal.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
+    },
+    {
+      "key": "dr",
+      "id": "cg_ch1_dr_kemuri_hook",
+      "file": "exec-4d326f64-0828-4ab7-8997-d9338dfb85d3.png",
+      "event": "ch1_tournament_after",
+      "prompt": "Newly redraw a chapter1 tournament-aftermath landscape16:9 pixel-art CG, ideally1920x1080. Image1 is CANONICAL Dr.Kemuri: precisely retain his young-middle-adult face, tousled brown hair with asymmetric fringe, black rectangular glasses, subtle small chin beard, white open-collar shirt, white lab coat with muted olive/brown stains and pens in chest pocket, beige trousers, wristwatch and black slides. Do not replace his adopted outfit with invented blue shirt/tie or old profile details. Image2 old CG establishes composition: he sits ALONE in an empty audience row with laptop on knees, quietly typing, ready to close it when Hajime notices. Image3 is the freshly adopted tournament STAGE scene for matching geometry/colour, image4 PIXEL SHADING only. Rework the image with finely stepped pixel contours and disciplined pixel clusters for face/cloth/computer/seats, not smooth photo/anime illustration. His upper body/face and small laptop lie in left-central60% above lower dialogue band; screen tilted away so no readable code/text/UI. Glasses have restrained light reflections allowing eyes to remain visible, no glowing opaque lenses. Empty dark seats, background four-counter stage seen obliquely with dimming purple/blue/amber lamps; no crowd, arena expansion, plants or extra people. Keep all stage hookahs and top hardware OUT of the distant background crop or remove equipment already packed away after tournament, no tiny malformed bowls/charcoal. No smoking, hoses or handheld mouthpieces. Tone quietly observant/uneasy, not villain grin. Lower25% calm seat shadows for existing dialogue UI. No captions, watermark, logos or lettering. One full-frame event image.",
+      "correction": null,
+      "accepted": true,
+      "plan": {
+        "state": "no visible assembled device",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none"
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+        "previous/cg_ch1_dr_kemuri_hook.png",
+        "set-b adopted stage exec-0911a4fe-c56b-4c46-a5d1-570a82e78dcc.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
+    },
+    {
+      "key": "nagumo",
+      "id": "cg_ch1_nagumo_smile",
+      "file": "exec-6a45965e-e3d4-4cc0-bec3-45c37c2c3815.png",
+      "event": "ch1_tournament_reveal",
+      "prompt": "Generate the missing chapter1 winner-reveal CG as a landscape16:9 finely shaded pixel-art visual novel image. Image1 CANONICAL Nagumo Shuji age45: same angular stern face, narrow dark eyes, strong brows, slicked-back black hair with grey temples, charcoal three-piece suit, white shirt, dark patterned tie, white pocket square, watch. Retain his facial age and authority; do not beautify into another man, add glasses/beard or make him grin. Scene: seated at the judges' table after Hajime's narrow victory, making eye contact with Hajime/viewer. His famously stern mouth has ONLY a barely perceptible one-corner upward movement, restrained unmistakable recognition, closed lips, no teeth. Medium-close3/4 upper-body portrait near centre/left, face clearly in upperhalf. A few blank judging sheets and simple clear water glass at table edge below, not giant props. Image2 tournament background for palette/place, suggest geometric purple-blue stage lights as subdued distant shapes, not readable banners; no other people or crowd silhouettes, no trophy obstructing him. Image3 is square-pixel texture only, not girl/hookah. Background and foreground should be calm enough for bottom25% dialogue overlay. No actual shisha equipment, smoke, HMD, coals, hose or mouthpiece in this close framing. Crisp stepped pixel contours, warm gold edge-light and cool muted suit shadows, carefully drawn face/cloth rather than noisy photo or smooth anime. No text, UI, watermark or logos. One cinematic restrained portrait at a real judging table.",
+      "correction": null,
+      "accepted": true,
+      "plan": {
+        "state": "no visible assembled device",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none"
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+        "set-b adopted stage exec-0911a4fe-c56b-4c46-a5d1-570a82e78dcc.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
+    },
+    {
+      "key": "battle",
+      "id": "cg_ch1_tournament_battle",
+      "file": "exec-927a19cc-e105-4428-ac2f-6136f9fcc847.png",
+      "event": "ch1_tournament_match",
+      "prompt": "Newly redraw a cinematic full-frame landscape16:9 fine pixel-art CG of FOUR competitors packing their bowls at the chapter1 tournament, ideally1920x1080. Images1-4 are respectively CANONICAL Hajime, Naru, Adam and work-costume Minto: face/hair/age/clothes absolute, do not blend their identities. Hajime22 black cap, black hair/hoodie; Naru23 silver hair, golden eyes, black-white street jacket and chain; Adam28 split green/red hair, black shirt and black waist apron; Minto29 same green eyes, long black hair, work horns/bat hair accessories and black-green dress. Image5 is a REAL full bare hookah assembly reference, structure only, do not copy product pattern or logo. The existing adopted stage has four separate black/wood counters with subtle golden diamond-pattern front panels, low raised stage with side steps, a geometric LED backwall of diagonal cyan and violet lines and restrained magenta/blue/amber stage lights. Preserve that identifiable arrangement and material identity. Packing uses small real ceramic bowls with moist brown irregular tobacco leaf flakes, not salad, powder or giant pellets. Pixel-art texture must match previously adopted game images: crisp stepped contours and finely controlled cluster shading. Closer diagonal stage view: Hajime at left-front counter in3/4 so his youthful face is seen; Naru centre-left, Adam centre-right, Minto right, all calmly focused on their own work, not posing for group photo. Snapshot is EARLY PACKING before heat: each handles a small ceramic bowl or small leaf portion at counter height, with proper hands/fingers. On each separate counter one modest inactive hookah: stable clear glass base, slender stem, broad thin ash tray, ABOVE it a very short tiny metal connector with compact small tapered BLACK rubber grommet, never a giant top cap/bowl. All bowls are DETACHED on/held over the working counter. No HMD, burning coals, smoke, hoses or handles at this earlier stage. Flavour tubs are few and SMALL shallow translucent hand-sized closed rectangles with brown wet leaves; no huge bins. Bowls and tubs no wider than a palm, fitting fingers plausibly. Minto may wear a separate tiny hollow personal mouthpiece charm on a thin lanyard alongside her canonical green-heart choker; not giant pendant, no branching hose. Keep faces and meaningful packing actions above lower25% text overlay; quiet countertop fronts below. No spectators/extracharacters, logo, writing, UI, caption/watermark. Rich deliberate stepped pixel clusters for skin/cloth/metal/glass, serious controlled anime-character likeness in pixel art, not smooth painting orphotography. One continuous scene, four distinct contestants and counters.",
+      "correction": "Precisely correct image1, the FOUR-person packing CG. Keep all four characters' faces/clothes/poses/hands, stage, counters, camera and pixel shading exactly unchanged. Image2 is a game drawing showing the owner's corrected small bare-top fittings; image3 a REAL bare-hookah assembly; image4 REAL brown moist tobacco leaf; image5 REAL bowl held while filling. Correct ONLY these materials/proportions: all FOUR bare hookah connectors above their broad thin trays must be short narrow metal necks topped by SMALL tapered MATTE BLACK rubber grommets with little openings. Replace upper half of each current shiny metal cylinder with black rubber taper; shorten whole fitting slightly rather than add a tall cap. Grommet width only about one tenth to one eighth of tray diameter, compact. Keep all trays/stems/bases present and unchanged. All flavour tubs become modest shallow rectangular lidded hand-sized containers, especially halve deep body height; same positions, no jars/bigbins. Brown moist irregular leaf flakes inside, not cereal/drygreenherbs. Reduce the mounded leaf piles in the handheld bowls so tobacco is loosely FLUFFED AT/justbelow the rim, not spilling in heaps above the rims: leave a believable central phunnel hole not packed full. Bowls remain small palm-sized actual ceramic bowls held by correct existing fingers. No HMD, coals, hoses or smoke in this early packing snapshot. No new hands, characters, labels, lettering, UI, watermark. Match refined pixel-art style of image1. One full-frame16:9 event CG.",
+      "accepted": true,
+      "plan": {
+        "state": "early packing, bowls detached, bare small metal/rubber connectors",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "Minto small hollow necklace charm"
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "canonical normal portraits of hajime/naru/adam/minto",
+        "real whole-hookah-large.jpg"
+      ],
+      "correctionReferences": [
+        "rejected/exec-ade5bbd5-0fab-4741-ae87-ad2e524111a8.png",
+        "owner-scale-corrected Naru exec-43c579f3-327f-4cf4-9306-4b72eb7f3606.png",
+        "real whole-hookah-large.jpg",
+        "real owner wet-leaf photo03",
+        "real bowl held packing photo9"
+      ]
+    },
+    {
+      "key": "minto_casual",
+      "id": "cg_minto_casual",
+      "file": "exec-d88b55d7-c19b-4a1a-ab35-7cd600906a5b.png",
+      "event": "outing_minto_1",
+      "prompt": "Generate the missing outing_minto_1 chapter1 CG, newly drawn full-frame landscape16:9 refined pixel art. Image1 CANONICAL PRIVATE Minto absolute face/green eyes/straight long black hair/bangs/white cable cardigan over black ribbed top/charcoal long skirt/simple black shoulder bag with green-heart charm and small green pendant. Keep the same adopted youthful face; no work horns/bat wings/costume, no invented glamour. Unlike her fifth-meeting station pullover scene, this FIRST private buying-trip meeting uses the exact cardigan outfit of this portrait. She is waiting outside TONARI's warm-wood and glass entrance, turns toward Hajime/viewer with a small grateful smile and modest one-hand greeting, other hand gently holding bag strap. Image2 is the freshly adopted local SHOPPING STREET place/palette: same modest Japanese shop scale, timber storefronts, paving and overhead utility cables, coherent warm cream/wood and muted greens, gentle daytime sunlight. Image3 tonari inside DAY establishes glimpse through door: warm wood/olive sofas/mosaic pendant light; only a subtle indoor glimpse, don't copy giant plants or bare-top hardware. Image4 pixel-texture only, not thatgirl/smoke/equipment. Waist/three-quarter medium shot near centre-left, face, modest greeting hand and bagstrap above bottom25%; quiet door threshold/pavement below. No other people, shop staff or silhouettes, no hookah, coals, hose, smoke, big storage tubs, readable words/signs/logos, UI or watermark. Precise stepped pixel edges and deliberate cluster shading in hair/knit/window reflections, not a smooth anime illustration or photo texture. One playable private outing scene, not collage.",
+      "correction": null,
+      "accepted": true,
+      "plan": {
+        "state": "no visible assembled device",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none"
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "set-a day exec-ddcaa8c6-27de-455d-b9b6-d284fd1606c1.png",
+        "assets/backgrounds/bg_tonari_inside_day.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
+    },
+    {
+      "key": "smoke_color",
+      "id": "cg_tsumugi_smoke_color",
+      "file": "exec-bdbb7b17-e533-4ddc-8bce-a03f16f071c8.png",
+      "event": "ch1_tsumugi_smoke_color",
+      "prompt": "Generate the missing cg_tsumugi_smoke_color chapter1 event CG, full-frame landscape16:9 refined pixel-art visual novel image. Image1 CANONICAL Tsumugi face/age21/reddish-brown eyes/short brown bob/bangs/tiny silver earrings/purple floral hoodie absolute. Image2 tonari NIGHT identity, warm timber and quiet blue outside windows; image3 square-pixel TEXTURE ONLY not the woman/equipment. Scene of the gentle synesthesia confession: Tsumugi sits near a window at left-centre, slight warm smile and attentive gaze toward Hajime just outside frame. Her closed black tablet rests naturally against her lap/forearm; no drawing or phone UI. In the empty upper-right/middle space a few thin translucent ribbons of normal lingering room smoke are rendered subjectively as muted warm INDIGO just after sunset, softly edged with a trace of amber light. This is her perception, not solid magical glowing coils, rainbow clouds, coloured tobacco, smoke from her eyes or supernatural sparks. Do not change her natural brown eyes to blue. Smoke drifts thinly upward from BELOW/OUTSIDE frame, not from a missing visible bowl or her mouth. In this observational shot NO actual hookah, bowl/HMD/coals/hose/handle is visible; do not add equipment merely because of the topic. Keep portrait face, subtle smoke texture and open window-light field above bottom25% dialogue area. Warm amber edge light on hoodie/brown hair, quiet deep wood/indigo contrast. No otherpeople, plants added, text, signs, captions, logos, UI or watermark. Crisp stepped pixel contours and delicate deliberately clustered translucent smoke shading, cloth embroidery, not smooth anime or photoreal grain. One understated intimate event scene.",
+      "correction": null,
+      "accepted": true,
+      "plan": {
+        "state": "no visible assembled device",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none"
+      },
+      "nativeSize": [
+        1672,
+        940
+      ],
+      "references": [
+        "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "assets/backgrounds/bg_tonari_inside_night.png",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ]
+    },
+    {
+      "key": "oneesan",
+      "id": "cg_oneesan_first_smoke",
+      "file": "exec-6a89dc11-b6d8-42f3-b829-d4654ca2ea2c.png",
+      "event": "ch1_tutorial_oneesan",
+      "prompt": "Generate the missing cg_oneesan_first_smoke for chapter1's FIRST customer scene, landscape16:9 finely detailed pixel-art CG, ideally1920x1080. Image1 is CANONICAL PRIVATE Minto called anonymous 'oneesan' here: exactly same face/green eyes/longstraightblackhair/bangs/white knitted cardigan over black ribbed top/charcoal long skirt and little green pendant. NO workhorns/wings/devil dress, mature glamour or alternategirl. Image2 tonari DAY room identity warm wood/olive sofa/quiet daylight and mosaic pendant lighting, close intimate sofa/table framing rather than barcounter again. Image3 REAL ONMO SILVER HMD model: exact low lidless aluminum cup, no added lid/dome/handle/chimney; don'tcopy logo. Image4 REAL INSTALLED COMPLETE HOOKAH reference gives HMD-to-bowl/tray/stem/base ratio and body hose port: respect actual proportions, no giant bowl. Image5 pixel-texture ONLY, not girl/directcoals. Scene: oneesan has just tasted Hajime's gentle mint and is slowly exhaling a small fine white puff, pleasantly surprised, subtle softened smile, eyes slightly widened. Seated left-centre, head and hands above bottom25%. One hand holds a slim plain silver rigid hose handle at upper chest, small hollow disposable white tip off her lips after exhaling. A SINGLE dark soft silicone hose physically continues from that handle's LOWER/BUTT END in a smooth clearly visible curve to the proper side port of the ONE hookah on table at right. No Y split, disconnected hose, mouthpipe coming from top of stem, handle fused to bowl or giant tip. Hookah relatively modest to person: stable clear water base, slim brushedmetal/darkstraightstem, broad thin ashtray, SMALL palecream phunnel bowl approximatelypalmwide, fitted ONMO lidless low silver HMD. Exactly TWO small ash-coated squarecoals with faintred innerglow touching the HMD's internal metal floor INSIDE the cup; NO directcoals on tobacco/foil, coal pile or flame. HMD only about one third to two fifths of tray diameter, sits snugly on bowl lip, never giant top. No aluminiumfoil in this selected phunnel+ONMOconfiguration. Add a very small hollow personal mouthpiece charm on a separate thin chain near her existing greenpendant, independent shorttube with visible opening, no Yhose or enormous jewel; this is stored not the hose she holds. Table/bowl may overlap lower right dialogband but all essential top hardware, face and connected hose path stay visible above it. No giant tubs, extra shishas, floating equipment, background people, readable text/UI/caption/logos/watermark. Fine crisp stepped pixel clusters for face/hair/knit/glass/metal and translucent white breath, consistent with game palette, not smooth anime/photography. One warm quietly successful first-service scene.",
+      "correction": "Make a precise hardware correction to image1, the private-Minto first-smoke CG. Preserve her exact face/clothes/hands/necklace and separate little mouthpiece charm, smoke, single continuous hose, full hookah, room, camera and pixel-art shading. ONLY correct how the TWO charcoal cubes sit in the ONMO silver lidless HMD. Images2 and3 are actual ONMO cup and installed whole-hookah references: charcoal is INSIDE the low cup on its metal floor, most charcoal sidewalls are hidden BEHIND the surrounding metal wall, not perched atop its rim. In the current image both whole cubes visibly stand ABOVE the metal rim, which is wrong. Lower both cubes into the existing unchanged metal cup; make only their ash-coated top faces and perhaps a VERY SMALL upper corner visible over the opening/rim. No charcoal lower edges touching the cup rim; lower edges sit hidden inside on the floor. Exactly two cubes, subtle red innerglow, ash-grey outer faces, no flames or thirdcoal. Keep bowl/HMD/tray diameters and all heights/furniture positions exactly as they are; do not enlarge the HMD to solve the fit. Do not add lid/chimney/handles or foil/directcoals. Do not redraw any person or remove any tray. No text/UI/logos. Same full-frame16:9 refined pixel art.",
+      "accepted": true,
+      "plan": {
+        "state": "finished smoking",
+        "HMD": "ONMO silver original aluminum, lidless, no foil",
+        "coals": 2,
+        "hose": "one continuous hose from body side port to rigid handle butt",
+        "mouthpiece": "small disposable handle tip plus separate hollow necklace charm"
+      },
+      "nativeSize": [
+        1672,
+        941
+      ],
+      "references": [
+        "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "assets/backgrounds/bg_tonari_inside_day.png",
+        "real standalone ONMO silver",
+        "real full installed ONMO customer setup",
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ],
+      "correctionReferences": [
+        "rejected/exec-a2ca449e-5234-4310-b3d9-2c4d375fb81c.png",
+        "real standalone ONMO silver",
+        "real full installed ONMO customer setup"
+      ]
     }
+  ],
+  "toolCalls": 11,
+  "adoptedUniqueImages": 9,
+  "delivery": [
+    1920,
+    1080
+  ],
+  "rejected": [
+    {
+      "id": "cg_ch1_tournament_battle",
+      "file": "exec-ade5bbd5-0fab-4741-ae87-ad2e524111a8.png",
+      "reason": "metal-only bare posts and leaf heaps above bowl rim"
+    },
+    {
+      "id": "cg_oneesan_first_smoke",
+      "file": "exec-a2ca449e-5234-4310-b3d9-2c4d375fb81c.png",
+      "reason": "coals appear on HMD rim, corrected inside cup"
+    }
+  ],
+  "nativeSizes": [
+    [
+      1672,
+      940
+    ],
+    [
+      1672,
+      941
+    ]
   ]
 }
