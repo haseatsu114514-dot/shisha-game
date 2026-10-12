@@ -24,8 +24,10 @@ try {
     window.T = { core, ui, map, spots, data, hud, transitions, logos, util, shop, tonari };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 0, money: 30000 });
     for (const id of ["naru", "adam", "minto", "rin", "tsumugi"]) core.state.met[id] = true;
+    // 顔画像を持つ既知の店主の小バッジを、空のmanifestでも実物素材で検証する。
+    data.DB.manifest.faceIcons = ["sumi", "naru", "adam", "minto"].map(id => `face_${id}.png`);
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
-    T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot(); };
+    T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot({ eventPin: "naru" }); };
     await T.openMap();
   });
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
@@ -37,12 +39,17 @@ try {
       const box = n => { const r=n.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom}; };
       const overlaps = (a,b) => Math.min(a.right,b.right)>Math.max(a.x,b.x)+1 && Math.min(a.bottom,b.bottom)>Math.max(a.y,b.y)+1;
       return { logos: [...document.querySelectorAll('.spot-pin .store-logo')].map(n=>({id:n.dataset.storeLogo,loaded:n.querySelector('img')?.complete && n.querySelector('img')?.naturalWidth>0})),
+        owners:[...document.querySelectorAll('.pin-owner-face')].map(n=>({id:n.closest('.spot-pin').dataset.spot,loaded:n.complete && n.naturalWidth>0,width:parseFloat(getComputedStyle(n).width),clear:!n.parentElement.querySelector('.evt-badge') || !overlaps(box(n),box(n.parentElement.querySelector('.evt-badge')))})),
+        eventBadges:[...document.querySelectorAll('.spot-pin .evt-badge')].map(n=>n.closest('.spot-pin').dataset.spot),
         collisions:pins.flatMap((a,i)=>pins.slice(i+1).filter(b=>overlaps(box(a),box(b))).map(b=>[a.dataset.spot,b.dataset.spot])),
         labels:[...document.querySelectorAll('.sub-label')].map(n=>n.textContent),
         overflow:document.documentElement.scrollWidth>innerWidth };
     });
     assert.deepEqual(info.logos.map(n=>n.id).sort(), [...stores].sort());
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
+    assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
+    assert(info.owners.every(n=>n.loaded && n.width===26 && n.clear));
+    assert(info.eventBadges.includes("naru"));
     assert(info.labels.includes("喫茶こはく") && !info.overflow);
     if (shots) await page.screenshot({path:`${shots}/map-${size.width}.png`});
     checks++;

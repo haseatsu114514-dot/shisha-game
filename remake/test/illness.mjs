@@ -30,6 +30,7 @@ const values = {
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
   "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
+  "transitions.js": { refreshPlaceCue: noop },
   "data.js": { DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
