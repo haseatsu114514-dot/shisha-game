@@ -12,6 +12,7 @@ const { chromium } = (() => {
 })();
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
+const STREET_MODE = process.env.STREET_MODE === "1";
 const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
@@ -103,6 +104,25 @@ async function click(sel) {
   if (!el) return false;
   try { await el.click({ timeout: 2000 }); return true; } catch { return false; }
 }
+
+// 任意の街歩き経由でも、同じ行動計画と大会の検証を実行する。
+async function chooseDestination(id) {
+  const doors = { cafe: "cafe", minto: "peppermint", naru: "kemurikusa" };
+  if (STREET_MODE && doors[id]) {
+    await click('[data-test="map-walk"]');
+    await page.waitForSelector('[data-test="street-frame"]');
+    const frame = page.frames().find((f) => f.url().includes("embed=1"));
+    await frame.waitForFunction(() => window.__street?.state().ready && !window.__street.state().paused);
+    // 通し確認では入口へ配置し、実キーで決定。実移動・タップは street_selection.mjs で検証。
+    await frame.evaluate((door) => window.__street.warp(door), doors[id]);
+    await frame.locator("#view").focus();
+    await page.keyboard.press("KeyZ");
+    await page.waitForSelector('[data-test="street-frame"]', { state: "detached" });
+    return true;
+  }
+  return (await click(`[data-test="pin-${id}"]`)) && (await click('[data-test="map-go"]'));
+}
+let checkedDeliveryBoundary = false;
 
 for (;;) {
   if (Date.now() > deadline) throw new Error("timeout (12min)");
@@ -247,11 +267,19 @@ for (;;) {
   // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
     if (!snap.errandDone) guided++; else deliveryGuided++;
-    await click(".spot-pin.guide"); await click('[data-test="map-go"]');
+    const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
+    if (id === "c_station" && snap.slot !== 0) throw new Error("DAY1 scout consumed the action before registration");
+    await chooseDestination(id);
     continue;
   }
   // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない
   if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
+  if (snap.screen === "map" && snap.deliveriesDone && !checkedDeliveryBoundary) {
+    const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
+    if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
+    checkedDeliveryBoundary = true;
+    log("DAY2 minto storefront delivery preserves normal first visit");
+  }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
@@ -280,7 +308,7 @@ for (;;) {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       await click('[data-test="pin-shop"]'); await click('[data-test="map-go"]');
     } else {
-      const ok = (await click(`[data-test="pin-${kind}"]`)) && (await click('[data-test="map-go"]'));
+      const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }
     }
     continue;
