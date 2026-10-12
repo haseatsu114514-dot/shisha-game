@@ -1,0 +1,126 @@
+{
+  "result": "pass",
+  "base_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+  "layout_checks": [
+    {
+      "id": "A",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "0ae26d1e489d1d75e713b761e71f21bca93138fe1bec6ebba046bbe5ef7a31de"
+    },
+    {
+      "id": "B",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "1787a84d42bdd6cf48f4d24cb16a4aa4247db893dfd5e2dcd7e496a4880e9cc7"
+    },
+    {
+      "id": "C",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "e81a17d966e17dd8408e9b8ac1b91c02d5f7a2a44e59f5660dde3d6466ef0df5"
+    },
+    {
+      "id": "D",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "fa57c2fb8084be91264302fb2dc7c5415acb788aadd5cd27b3010f04592c3d54"
+    },
+    {
+      "id": "E",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "1b8b2a434b5f2556ca8845149cd1b247d98afb66e6bfbfdd80977f4091ab789c"
+    },
+    {
+      "id": "F",
+      "six_unique_characters": true,
+      "shared_sprite_hashes": true,
+      "inside_canvas": true,
+      "no_overlap": true,
+      "ground_aligned": true,
+      "layers_recompose_exactly": true,
+      "final_sha256": "c06d16d747ee7682f3fb39b1f8094ef07c2da0b49d0ef138b12d0cad6359d55c"
+    }
+  ],
+  "reference_copies_byte_identical": true,
+  "rgba_sprites": 6,
+  "manual_visual_review": {
+    "opened_full_size": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "opened_identity_comparison": true,
+    "findings": "6人と衣装・右向きの顔/胴/脚・手足・配色・足元・余白・禁止文字を確認。みんとの靴v1を修正しv2を使用。",
+    "identity_checks": {
+      "hajime": "黒キャップ・若い顔・黒フード・カーゴ・ペンダント",
+      "sumi": "ハンチング・四角い眼鏡・ひげ・茶の長いエプロン",
+      "tsumugi": "茶ボブ・赤茶の目・紫の花刺繍・タブレット・黒ニーソと靴",
+      "naru": "銀髪・金茶の目・黒白の切替・腰チェーン・白スニーカー",
+      "adam": "手前の本人右側の緑髪と遠い側の赤髪・黒ヘンリー・黒腰エプロン・首飾りなし",
+      "minto": "黒ロング・緑の目・髪飾り・黒淡緑の営業服・ガーター・緑縁の厚底靴"
+    },
+    "scope": "静止画候補の目視検品。オーナーによる本人性の採用判断は未了。"
+  },
+  "selected_D_refinement": {
+    "owner_selected_D": true,
+    "full_size_opened": true,
+    "six_people_rightward_visual_check": true,
+    "identity_and_clothing_visual_check": true,
+    "game_title_and_formal_subtitle_checked": true,
+    "art_and_type_recompose_exactly": true,
+    "source_hashes_checked": true,
+    "separation_limit": "追加Dは白背景と人物が一枚の生成プレート。文字は独立RGBA。元の6人のRGBAも保持。"
+  },
+  "browser_review": {
+    "six_switches_images_loaded": true,
+    "type_toggle": true,
+    "six_grid": true,
+    "default_selected_D": true,
+    "desktop_viewport": [
+      1280,
+      900
+    ],
+    "mobile_viewport": [
+      390,
+      844
+    ],
+    "horizontal_overflow": false,
+    "broken_images": 0,
+    "console_errors_observed": 0,
+    "screenshots": [
+      "review/browser-selected-D.jpg",
+      "review/browser-mobile.jpg"
+    ]
+  },
+  "not_performed": [
+    "歩行アニメーション",
+    "本編への差し替え",
+    "mainへのマージ",
+    "公開版更新"
+  ]
+}
