@@ -44,12 +44,15 @@ export function createSceneCurtain(host, { fast = false } = {}) {
   ]);
   const unhold = holdKeys();
   host.append(node);
-  const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); })();
+  let coveredAt = 0;
+  const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); coveredAt = performance.now(); })();
   let released = false;
   return { covered, async release() {
     if (released) return;
     released = true;
     await covered;
+    // 通常の場面転換ではロゴを読む時間を確保。素材待ちの時間もこの表示時間へ含める。
+    if (!fast && !reduced) await sleep(Math.max(0, 650 - (performance.now() - coveredAt)));
     // 次の背景・画面・台詞を幕の内側で描いてから開く。
     await nextFrame(); await nextFrame();
     node.classList.add("reveal");
@@ -152,10 +155,7 @@ export async function nightToMorning(host, mid) {
     wx?.fadeOut(up);
     move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);
     await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], up);
-    const glow = el("div.tr-dawn-glow");
-    node.append(glow);
     node.style.pointerEvents = "none";
-    await move(glow, [{ opacity: 1 }, { opacity: 0 }], 560, { easing: EASE.out });
   } finally {
     wx?.stop();
     node.remove();

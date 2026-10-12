@@ -1,0 +1,245 @@
+{
+  "utc": "2026-10-12T14:22:02.511702+00:00",
+  "browser": "Chromium 151 (Playwright 1.62.1)",
+  "baseURL": "http://127.0.0.1:8360/remake/",
+  "visual": {
+    "name": "ch1-visual-quality",
+    "baseURL": "http://127.0.0.1:8360/remake/",
+    "ref": null,
+    "results": [
+      {
+        "label": "desktop-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-desktop-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "tonari-mobile-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-desktop-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-sun-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-sun-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-cloud-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-cloud-night",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "street-mobile-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "unprepared-background-fallbacks",
+        "status": "passed"
+      },
+      {
+        "label": "portrait-rotation-guide",
+        "status": "passed"
+      }
+    ]
+  },
+  "vnReadiness": {
+    "name": "vn-visual-readiness",
+    "baseURL": "http://127.0.0.1:8360/remake/",
+    "ref": null,
+    "results": [
+      {
+        "label": "portrait-pc",
+        "status": "passed"
+      },
+      {
+        "label": "portrait-mobile",
+        "status": "passed"
+      },
+      {
+        "label": "cg-fade-and-choice",
+        "status": "passed"
+      },
+      {
+        "label": "skip-curtain",
+        "status": "passed"
+      }
+    ]
+  },
+  "saveLoad": {
+    "name": "save-load",
+    "baseURL": "http://127.0.0.1:8360/remake/",
+    "ref": null,
+    "results": [
+      {
+        "label": "all-slots-round-trip",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-migration-auto-and-manual",
+        "status": "passed"
+      },
+      {
+        "label": "missing-and-invalid-json",
+        "status": "passed"
+      },
+      {
+        "label": "desktop-ui",
+        "status": "passed"
+      },
+      {
+        "label": "mobile-ui",
+        "status": "passed"
+      },
+      {
+        "label": "touch-portrait-rotation",
+        "status": "passed"
+      }
+    ]
+  },
+  "playthrough": {
+    "command": "node remake/test/playthrough.mjs",
+    "status": "passed",
+    "path": "new game -> day14 rank4 loss -> retry -> rank1 win -> chapter1 clear",
+    "attempts": 2,
+    "lastRank": 1,
+    "total": 100,
+    "saveLoad": "continue + manual slot1 round trip passed",
+    "screenLeaks": 0,
+    "browserErrors": 0,
+    "rainMaps": 11
+  },
+  "dataLoading": {
+    "command": "node --experimental-vm-modules remake/test/data_loading.mjs",
+    "status": "passed",
+    "jsonFiles": 35
+  },
+  "manifestPreservation": {
+    "status": "passed",
+    "changedFields": [
+      "generated",
+      "backgrounds",
+      "webp"
+    ]
+  },
+  "gitDiffCheck": "passed",
+  "ciAtSave": "Data loading smoke passed, chromium pending; not merged"
+}

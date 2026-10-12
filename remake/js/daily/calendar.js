@@ -1,6 +1,6 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
@@ -12,7 +12,7 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
-import { chooseSpot, interruptMap } from "./map.js";
+import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
@@ -76,6 +76,7 @@ export async function runDaily(def) {
 }
 
 async function morning() {
+  refreshWeather();
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
@@ -83,17 +84,17 @@ async function morning() {
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight });
   if (n) pushNotice(n, { onOpen: (sender) => {
-    if (document.querySelector("#screen .map:not(.done)") && !layers.modal.classList.contains("show")) phoneButton({ sender });
+    if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
   setPhoneBadge(hasUnread());
 }
 
-/** HUD の LIME。街に出ているとき（マップ）だけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
+/** HUD の LIME。行き先を選んでいるときだけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
 async function phoneButton({ sender = null } = {}) {
-  if (!document.querySelector("#screen .map:not(.done)") || layers.modal.classList.contains("show")) {
+  if (!isChoosingDestination() || layers.modal.classList.contains("show")) {
     SE.cancel();
-    toast("LIME は街に出ているとき（マップ）に開ける");
+    toast("LIME は行き先を選んでいるときに開ける");
     return;
   }
   SE.select();
@@ -124,8 +125,8 @@ async function openMenu() {
     ],
   });
   if (v === "save") {
-    // 手動セーブは街に出ているとき（マップ）だけ。会話や作業の途中の状態は残さない
-    if (!document.querySelector("#screen .map:not(.done)")) { toast("セーブは街に出ているとき（マップ）にできる"); return; }
+    // 手動セーブは行き先を選んでいるときだけ。会話や作業の途中の状態は残さない
+    if (!isChoosingDestination()) { toast("セーブは行き先を選んでいるときにできる"); return; }
     await saveFlow();
   }
   if (v === "load") {
@@ -295,7 +296,11 @@ async function takeAction() {
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
-  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot));
+  const facility = ["kannon", "choizap"].includes(spot.id);
+  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
+    ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
+    consumed: (result) => result.used && spot.kind === "spot",
+  });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
   state.slot = Math.min(2, state.slot + slotsUsed);
@@ -475,14 +480,12 @@ async function endDay() {
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
-  const next = chapterDef.nightEvents[state.day + 1];
   if (!athome) {
     await maybeKafukaEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
       || state.flags._night_event_day === `${state.chapter}:${state.day}`,
       hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
     await play(`remake_homecoming_${state.day % 3}`);
   }
-  if (next && next.teaser && state.day + 1 < TOURNAMENT_DAY) toast(`（明日、${next.teaser}で何かありそうな気がする）`, { ms: 2400 });
   await bannersIdle();
   await advanceDay();
 }
@@ -501,6 +504,7 @@ async function advanceDay() {
     state.day += 1;
     state.slot = 0;
     state.restDay = exhausted ? { chapter: state.chapter, day: state.day, fullDay: false, illnessHealth } : null;
+    refreshWeather();
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   };

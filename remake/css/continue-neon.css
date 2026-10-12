@@ -62,30 +62,27 @@
 .gameover[data-layout="neon"] .end-actions { top: 56px; left: 38px; right: 38px; gap: 28px; }
 .gameover[data-layout="neon"] .go-choice {
   height: 106px; min-height: 106px; padding: 12px 68px; border: 0; border-radius: 0;
-  background: none; box-shadow: none; font-size: 38px; color: #eee5ff;
-  text-shadow: 0 0 8px #9776fd77, 0 2px 2px #080314;
+  background: none; box-shadow: none; font-size: 38px; color: var(--go-choice-color);
+  text-shadow: 0 0 8px var(--go-choice-glow), 0 2px 2px #080314;
   transition: filter .16s, transform .16s;
 }
-.gameover .go-choice-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+.gameover .go-choice-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none;
+  opacity: calc(1 - var(--go-frame-selected)); transition: opacity .16s; }
+.gameover .go-choice-frame-selected { opacity: var(--go-frame-selected); }
 .gameover[data-layout="neon"] .go-choice-label { position: relative; z-index: 1; transform: skewX(-4deg); }
-.gameover[data-layout="neon"] .go-retry { color: #fff1c8; text-shadow: 0 0 9px #f6cb4b66, 0 2px 2px #150b02; }
 .gameover[data-layout="neon"] .go-choice::before {
   content: ""; position: absolute; z-index: 1; top: 42px; width: 16px; height: 22px;
-  background: #dac1ff; clip-path: polygon(0 0, 100% 50%, 0 100%);
-  filter: drop-shadow(0 0 5px #b98dff);
+  background: var(--go-choice-arrow); clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 5px var(--go-choice-arrow));
 }
-.gameover[data-layout="neon"] .go-retry::before { left: 50px; background: #ffe5a0; clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+.gameover[data-layout="neon"] .go-retry::before { left: 50px; clip-path: polygon(100% 0, 0 50%, 100% 100%); }
 .gameover[data-layout="neon"] .go-quit::before { right: 48px; }
 .gameover[data-layout="neon"] .go-choice::after {
-  content: ""; position: absolute; inset: 15px 28px; opacity: 0; pointer-events: none;
-  background: linear-gradient(105deg, transparent 18%, #f0d9ff44 48%, transparent 70%);
+  content: ""; position: absolute; inset: 15px 28px; opacity: var(--go-frame-selected); pointer-events: none;
+  background: linear-gradient(105deg, transparent 18%, var(--go-choice-sheen) 48%, transparent 70%);
   clip-path: polygon(7% 0, 95% 0, 100% 45%, 93% 100%, 3% 100%, 0 46%);
   transition: opacity .16s;
 }
-.gameover[data-layout="neon"] .go-retry::after { background: linear-gradient(105deg, transparent 18%, #ffefbc44 48%, transparent 70%); }
-.gameover[data-layout="neon"] .go-choice:not(:disabled):is(:hover,:focus-visible)::after,
-.gameover[data-layout="neon"][data-choice="retry"] .go-retry::after,
-.gameover[data-layout="neon"][data-choice="quit"] .go-quit::after { opacity: 1; }
 .gameover[data-layout="neon"] .go-choice:focus-visible { outline: 2px solid #ece3ff; outline-offset: -12px; }
 .gameover[data-layout="neon"] .go-playback { top: 56px; right: -90px; }
 .gameover[data-layout="neon"] .go-next { opacity: 0; }

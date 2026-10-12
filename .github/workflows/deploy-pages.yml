@@ -9,6 +9,7 @@ on:
       - "assets/**"
       - "data/**"
       - "remake/**"
+      - "experiments/proto/street/**"
       - "icon.svg"
       - "tools/browser/flavor_stats_editor.html"
       - "tools/title-review/**"
@@ -60,6 +61,9 @@ jobs:
           # 現行版は共有JSONを直接読む
           cp -r remake _site/remake
           cp -r data _site/data
+          # 本編が使用する既存ハリボテ歩行のみを同じ相対パスで配信。
+          mkdir -p _site/experiments/proto/street
+          cp experiments/proto/street/{index.html,street.js,stage_hankagai.json,stage_hankagai_hd.json,stage_hankagai_set.json} _site/experiments/proto/street/
       - uses: actions/configure-pages@v5
         with:
           enablement: true

@@ -1,0 +1,6 @@
+[save-load] PASS: all-slots-round-trip
+[save-load] PASS: legacy-migration-auto-and-manual
+[save-load] PASS: missing-and-invalid-json
+[save-load] PASS: desktop-ui
+[save-load] PASS: mobile-ui
+[save-load] PASS: touch-portrait-rotation
