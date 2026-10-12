@@ -14,7 +14,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       vn: await import("./js/vn/engine.js"), session: await import("./js/craft/session.js"),
       stats: await import("./js/core/stats.js"), story: await import("./js/chapters/tsumugi-story.js"),
       nights: await import("./js/daily/night-events.js"), intro: await import("./js/vn/intro.js"),
-      ui: await import("./js/core/ui.js") };
+      ui: await import("./js/core/ui.js"), score: await import("./js/craft/score.js") };
     if (fresh) {
       const s = E.core.newGame();
       Object.assign(s, { phase: "daily", day, slot: 2, stamina: 57, weatherSeed: 4 });
@@ -74,7 +74,7 @@ async function finish(page, touch = false) {
 }
 async function snapshot(page) {
   return page.evaluate(() => ({ state: JSON.parse(JSON.stringify(E.core.state)), entries: E.entries,
-    steps: E.steps, benches: E.benches, done: E.ch1.NIGHT_EVENTS[13].done() }));
+    steps: E.steps, benches: E.benches, done: E.ch1.NIGHT_EVENTS[13].done(), bonus: E.score.bonusOf() }));
 }
 async function reload(page, options = {}) {
   await page.reload(); await page.locator('[data-test="title-new"]').waitFor();
@@ -121,11 +121,13 @@ await suite("ch1-eve", async check => {
           assert.equal(s.flags._craft_practice_runs[0].success, true);
           assert(s.flags._ev_rehearsal && s.flags._ch1_eve.practiceDone);
           assert(["good", "great", "rough"].includes(s.rehearsal));
+          assert.equal(result.bonus.bonus, 2 + ({ great: 3, good: 1.5, rough: 0 }[s.rehearsal]));
           // Latest main gates dialogue growth through paidAction: fixed nights award no skill XP.
           assert.deepEqual(s.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
         } else {
           assert.equal(s.rehearsal, null); assert.equal(s.flags._ev_rehearsal, undefined);
           assert.equal(s.flags._craft_practice_runs, undefined);
+          assert.deepEqual(result.bonus, { bonus: 0, notes: [] });
           if (branch === "drill") {
             assert.equal(result.benches, 1); assert.deepEqual(result.steps, ["drill:heat"]);
             assert.equal(s.best.heat, 2); assert(s.flags._ch1_eve.practiceDone);
@@ -192,19 +194,20 @@ await suite("ch1-eve", async check => {
     assert.deepEqual(result.state.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
   });
 
-  for (const stage of ["before-choice", "drill-menu", "during-practice", "during-drill", "during-talk", "after-practice", "after-drill"]) {
+  for (const stage of ["before-choice", "drill-menu", "during-practice", "during-drill", "during-talk", "during-feedback", "after-practice", "after-drill"]) {
     await check(`save-${stage}`, async page => {
-      const practice = stage.includes("practice"), drill = stage.includes("drill");
-      await setup(page, { manual: true, auto: stage.startsWith("during-") && (practice || drill) ? null : "good" });
+      const practice = stage.includes("practice") || stage === "during-feedback", drill = stage.includes("drill");
+      await setup(page, { manual: true, auto: ["during-practice", "during-drill"].includes(stage) ? null : "good" });
       // Stop at the first conclusion line, after actual practice has been checkpointed.
-      if (stage.startsWith("after-")) await page.evaluate(() => {
+      if (stage.startsWith("after-") || stage === "during-feedback") await page.evaluate(stage => {
         E.vn.hooks.onLine = id => {
-          if (id === "ch1_day7_last_night_practice" || id === "ch1_day7_last_night_drill") {
+          if (stage === "during-feedback" ? /^remake_rehearsal_(great|good|rough|burnt)$/.test(id)
+            : id === "ch1_day7_last_night_practice" || id === "ch1_day7_last_night_drill") {
             E.vn.vnTest.turbo = false;
             document.querySelector('[data-test="vn-skip"].on')?.click();
           }
         };
-      });
+      }, stage);
       await page.evaluate(() => E.run());
       await advanceTo(page, '[data-test="choice-3"]');
       if (stage !== "before-choice") await choose(page, practice ? 0 : drill ? 1 : 2);
@@ -215,16 +218,19 @@ await suite("ch1-eve", async check => {
       if (stage === "during-practice") await advanceTo(page, '[data-test="mix-ok"]');
       if (stage === "during-drill") await page.locator('[data-test="coal-0"]').waitFor();
       if (stage === "during-talk") await page.waitForFunction(() => E.entries.includes("ch1_day7_last_night_talk_sumi"));
-      if (stage.startsWith("after-")) {
+      if (stage.startsWith("after-") || stage === "during-feedback") {
         await page.evaluate(() => E.vn.vnTest.turbo = true);
         const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
         if (await skip.isVisible().catch(() => false)) await skip.click();
-        await page.waitForFunction(() => E.entries.some(id => id === "ch1_day7_last_night_practice" || id === "ch1_day7_last_night_drill"));
+        await page.waitForFunction(stage => E.entries.some(id => stage === "during-feedback"
+          ? /^remake_rehearsal_(great|good|rough|burnt)$/.test(id)
+          : id === "ch1_day7_last_night_practice" || id === "ch1_day7_last_night_drill"), stage);
       }
       await page.evaluate(() => E.core.saveToSlot("suien_remake_slot1"));
       const interrupted = await snapshot(page);
       assert(!interrupted.state.flags._ev_last_night);
-      if (stage.startsWith("during-")) assert.equal(interrupted.state.flags._ch1_eve.practiceDone, undefined);
+      if (stage === "during-feedback") assert(interrupted.state.flags._ch1_eve.practiceDone && !interrupted.state.flags._ch1_eve.feedbackRead);
+      else if (stage.startsWith("during-")) assert.equal(interrupted.state.flags._ch1_eve.practiceDone, undefined);
       await reload(page); await page.evaluate(() => { E.core.loadFromSlot("suien_remake_slot1"); E.run(); });
       if (stage === "drill-menu") await page.locator('[data-test="drill-heat"]').click();
       await finish(page);
@@ -232,7 +238,7 @@ await suite("ch1-eve", async check => {
       assert(resumed.done); assert.equal(resumed.state.flags._last_night, practice ? "practice" : drill ? "drill" : stage === "before-choice" ? "sleep_early" : "talk_sumi");
       assert.equal(resumed.entries.filter(id => id === "ch1_tsumugi_eve").length, 0, "Saved Tsumugi event replayed");
       assert.equal(resumed.entries.filter(id => id === "ch1_day7_last_night").length, stage === "before-choice" ? 1 : 0);
-      assert.equal(resumed.benches, stage.startsWith("after-") || stage === "during-talk" || stage === "before-choice" ? 0 : 1);
+      assert.equal(resumed.benches, stage.startsWith("after-") || ["during-talk", "during-feedback", "before-choice"].includes(stage) ? 0 : 1);
       if (practice) { assert.equal(resumed.state.flags._craft_practice_runs.length, 1); assert.equal(resumed.state.stats.guts, 10); }
       if (drill) { assert.equal(resumed.state.best.heat, 2); assert.equal(resumed.state.stats.technique, 10); }
     });
@@ -246,5 +252,87 @@ await suite("ch1-eve", async check => {
     assert.equal(result.state.flags._craft_practice_runs[0].success, false);
     assert.equal(result.state.flags._craft_practice_runs.length, 1);
     assert.equal(result.state.stats.guts, 10); assert(result.done);
+  });
+
+  await check("stock-rescue-before-full-practice", async page => {
+    await setup(page);
+    await page.evaluate(() => {
+      E.core.state.money = 0; E.core.state.flavorStock.blueberry = 1;
+      E.vn.vnTest.choose = () => 0; E.run();
+    });
+    await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('[data-test="shop-leave"]').click(); await finish(page);
+    const result = await snapshot(page);
+    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.blueberry, 51);
+    assert(result.state.flags._prep_flavor_expensed);
+    assert.equal(result.state.flags._craft_practice_runs.length, 1);
+  });
+
+  await check("save-after-real-pull-stamina-cost", async page => {
+    await setup(page, { auto: null });
+    await page.evaluate(() => { E.vn.vnTest.choose = () => 1; E.run(); });
+    await page.locator('[data-test="drill-pull"]').click();
+    // Five real button inputs, no craft auto or synthetic result: the last two cost stamina.
+    for (let count = 1; count <= 5; count++) {
+      await page.locator('[data-test="pull-stop"]:enabled').click();
+      await page.waitForFunction(count => {
+        const node = document.querySelector('[data-test="pull-count"]');
+        return node?.getAttribute("aria-label")?.includes(`${count}`);
+      }, count);
+    }
+    await page.waitForFunction(() => E.core.state.stamina < 57);
+    await page.evaluate(() => E.core.saveToSlot("suien_remake_slot1"));
+    const before = await snapshot(page);
+    assert(!before.state.flags._ev_last_night && !before.state.flags._ch1_eve.practiceDone);
+    await reload(page); await page.evaluate(() => { E.core.loadFromSlot("suien_remake_slot1"); E.run(); });
+    await finish(page);
+    const after = await snapshot(page);
+    assert.equal(after.state.stamina, 57, "Incomplete drill cost was charged twice on restart");
+    assert.equal(after.state.best.pull, 2); assert(after.done);
+    assert.deepEqual(after.state.flavorStock, before.state.flavorStock);
+  });
+
+  await check("already-tournament-does-not-reopen-eve", async page => {
+    await setup(page, { day: 14, auto: null });
+    await page.evaluate(() => {
+      E.core.state.phase = "tournament";
+      const enter = E.vn.hooks.onEnter; E.ch1.devTournament(); E.vn.hooks.onEnter = enter;
+    });
+    await page.waitForFunction(() => E.core.state.tournament.attempts === 1);
+    assert.equal(await page.locator('.vn-choice').count(), 0);
+    const result = await snapshot(page);
+    assert(!result.entries.some(id => id.startsWith("ch1_day7_last_night")));
+    assert.equal(result.state.flags._ev_last_night, undefined);
+    assert.equal(result.state.rehearsal, null);
+  });
+
+  for (const pendingTalk of [false, true]) await check(`chapter-resume-${pendingTalk ? "pending-talk" : "before-choice"}`, async page => {
+    await setup(page, { manual: true, auto: null }); await page.evaluate(() => E.run());
+    await advanceTo(page, '[data-test="choice-3"]');
+    if (pendingTalk) {
+      await choose(page, 2);
+      await page.waitForFunction(() => E.entries.includes("ch1_day7_last_night_talk_sumi"));
+    }
+    await page.evaluate(() => E.core.saveToSlot("suien_remake_slot1"));
+    await reload(page, { auto: null });
+    await page.evaluate(() => {
+      E.core.loadFromSlot("suien_remake_slot1");
+      const enter = E.vn.hooks.onEnter; E.ch1.resumeGame(); E.vn.hooks.onEnter = enter;
+    });
+    // Actual chapter resume traverses endDay and DAY14, including saved nightly plans.
+    const until = Date.now() + 45000;
+    while (!(await page.evaluate(() => E.core.state.phase === "tournament" && E.core.state.tournament.attempts === 1))) {
+      assert(Date.now() < until, "Chapter resume did not reach tournament");
+      const close = page.locator('[data-test="phone-close"]');
+      if (await close.isVisible().catch(() => false)) await close.click();
+      await page.waitForTimeout(40);
+    }
+    const result = await snapshot(page);
+    assert(result.done); assert.equal(result.state.day, 14);
+    assert.equal(result.state.flags._last_night, pendingTalk ? "talk_sumi" : "sleep_early");
+    assert.equal(result.state.rehearsal, null);
+    assert.equal(result.state.flags._craft_practice_runs, undefined);
+    assert.equal(result.entries.filter(id => id === "ch1_day7_last_night").length, pendingTalk ? 0 : 1);
+    assert(!result.steps.some(step => step.startsWith("rehearsal:") || step.startsWith("drill:")));
   });
 });
