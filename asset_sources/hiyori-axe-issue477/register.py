@@ -88,10 +88,12 @@ def main():
         if rel.startswith("sprites/"):
             assert Image.open(ROOT / "assets" / rel).convert("RGBA").tobytes() == Image.open(dst).convert("RGBA").tobytes()
     manifest["webp"] = sorted(set(manifest.get("webp", [])) | set(additions))
-    manifest["generated"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    # This is a scoped registration, not a full manifest rebuild. Keep the
+    # shared rebuild timestamp; record this unit's time in its own receipt.
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
     assert all(sha(ROOT / path) == digest for path, digest in baseline["files"].items())
-    (HERE / "registration.json").write_text(json.dumps({"portrait_before": original, "portrait_after": derived,
+    (HERE / "registration.json").write_text(json.dumps({"registered_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "portrait_before": original, "portrait_after": derived,
         "background": "assets/backgrounds/" + BACKGROUND, "background_sha256": sha(background_path),
         "normalized": records, "old_files_unchanged": True, "lossless_portrait_rgba_equal": True}, indent=2) + "\n")
     print(f"Registered {len(FACES)} Hiyori faces and one original background; adopted files/framing unchanged")
