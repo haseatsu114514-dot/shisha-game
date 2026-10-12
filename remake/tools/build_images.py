@@ -67,7 +67,14 @@ def encode(src: Path, rel: str) -> bytes:
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()
-    quality = next((value for prefix, value in WEBP_QUALITY.items() if rel.startswith(prefix)), 90)
+    facility = rel in (
+        "backgrounds/bg_c_station_day.png", "backgrounds/bg_c_station_night.png",
+        "backgrounds/bg_c_station_lobby.png", "backgrounds/bg_fookah_showroom.png",
+        "backgrounds/bg_c_station_overcast_day.png", "backgrounds/bg_c_station_overcast_night.png",
+        "backgrounds/bg_shop.png", "backgrounds/kemurikusa.png",
+        "backgrounds/peppermint.png", "backgrounds/bg_tournament_stage.png",
+    )
+    quality = 62 if facility else next((value for prefix, value in WEBP_QUALITY.items() if rel.startswith(prefix)), 90)
     best = None
     for opts in ({"lossless": True, "method": 6}, {"quality": quality, "method": 6}):
         b = io.BytesIO()
