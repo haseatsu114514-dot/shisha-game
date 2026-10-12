@@ -709,6 +709,7 @@ function announce(r) {
 
 // 初回のみ: パッキーのアプリ説明（4行・タップ送り）
 const INTRO_LINES = [
+  "ボクはパッキー！ C.STATIONのシーシャ大会を盛り上げる、煙のマスコットだよ。よろしくね！",
   "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
   "キミが体力を使って自由行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
   "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
@@ -730,7 +731,7 @@ function showIntro() {
       text,
       el("span.ri-next", { text: "▼ タップ" }),
     ]);
-    const box = el("div.reel-intro", { dataset: { test: "reel-intro" } }, [panel]);
+    const box = el("div.reel-intro", { role: "dialog", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" } }, [panel]);
     const render = () => { text.textContent = INTRO_LINES[i]; };
     render();
     layers.modal.replaceChildren(box);

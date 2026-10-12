@@ -15,11 +15,11 @@ for (const line of lines.slice(start)) {
 const execute = new (Object.getPrototypeOf(async function () {}).constructor)(
   'github', 'context', 'core', scriptLines.join('\n'));
 const bot = 'github-actions[bot]';
-const fixture = (number, extra = {}) => ({number, state: 'open', title: `[P1] Task ${number}`, labels: [], ...extra});
+const fixture = (number, extra = {}) => ({number, state: 'open', title: `[P1] Task ${number}`, labels: [], url: `https://api.github.com/repos/example.dot/game/issues/${number}`, ...extra});
 const entry = (state, owner, extra = {}) => ({id: 1, user: {login: bot},
   body: `<!-- issue-claim:v1 state=${state} owner=${owner} -->`, ...extra});
 
-function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs = {}, hook} = {}) {
+function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs = {}, approvals = {}, permissions = {admin: 'admin'}, hook} = {}) {
   let id = 100;
   const notices = [], writes = [], calls = [];
   const method = (name, fn) => async args => {
@@ -34,6 +34,10 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
         if (!issue) throw Error('Not found');
         return issue;
       }),
+      getComment: method('getComment', a => {
+        if (!approvals[a.comment_id]) throw Error('Approval not found');
+        return approvals[a.comment_id];
+      }),
       listForRepo: method('listForRepo', a => issues.filter(i => a.state === 'all' || i.state === a.state)),
       listComments: method('listComments', a => comments[a.issue_number] || []),
       createComment: method('createComment', a => {
@@ -42,14 +46,15 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
         writes.push(a); return c;
       }),
     },
+    repos: {getCollaboratorPermissionLevel: method('permission', a => ({permission: permissions[a.username] || 'read'}))},
     pulls: {list: method('pulls', () => prs)},
     actions: {getWorkflowRun: method('run', a => runs[a.run_id] || {status: 'completed', conclusion: 'success'})},
   }, paginate: async (fn, args) => (await fn(args)).data};
-  const context = {repo: {owner: 'example.dot', repo: 'game'}, runId: 901, serverUrl: 'https://github.com'};
+  const context = {repo: {owner: 'example.dot', repo: 'game'}, runId: 901, actor: 'admin', serverUrl: 'https://github.com', payload: {repository: {default_branch: 'main'}}};
   const core = {info() {}, notice: text => notices.push(text),
     summary: {addRaw() { return this; }, async write() {}}};
   async function run(op, number = 1, owner = 'worker-A', input = {}) {
-    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', ...input};
+    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', HANDOFF_COMMENT: '', ...input};
     const original = Object.fromEntries(Object.keys(values).map(k => [k, process.env[k]]));
     Object.assign(process.env, values);
     try { return await execute(github, context, core); }
@@ -57,7 +62,7 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
       if (value === undefined) delete process.env[key]; else process.env[key] = value;
     } }
   }
-  return {run, writes, notices, calls, issues, comments, context};
+  return {run, writes, notices, calls, issues, comments, context, approvals, prs};
 }
 
 test('claim records its exact run/request and rejects both duplicate owners', async () => {
@@ -185,4 +190,221 @@ test('unknown operations and malformed inputs fail before any API call', async (
     await assert.rejects(s.run(op, 1, 'worker-A', input));
     assert.equal(s.calls.length, 0);
   }
+});
+
+
+const savedHead = 'a'.repeat(40);
+const approvedHandoff = () => ({issue: 1, from: 'worker-A', to: 'worker-B', claim_run: '800',
+  stopped: true, pushed: true, prs: [{number: 11, head: savedHead}]});
+function transferSetup(options = {}) {
+  const approval = {id: 50, user: {login: 'admin'}, issue_url: fixture(1).url,
+    html_url: 'https://github.com/example.dot/game/issues/1#issuecomment-50',
+    body: `<!-- issue-handoff:v1 ${JSON.stringify(approvedHandoff())} -->`};
+  return setup({comments: {1: [entry('claimed', 'worker-A', {
+    body: '<!-- issue-claim:v1 state=claimed owner=worker-A -->\n<!-- issue-claim-run:v1 id=800 request=original -->'})]},
+    prs: [{number: 11, body: 'Refs #1', title: 'Saved work', head: {sha: savedHead, repo: {full_name: 'example.dot/game'}}}],
+    approvals: {50: approval}, ...options});
+}
+const transfer = s => s.run('transfer', 1, 'worker-B', {CLAIM_RUN: '800', HANDOFF_COMMENT: '50'});
+
+test('admin transfer preserves PRs and atomically replaces ownership with a new successful run', async () => {
+  const s = transferSetup();
+  await assert.rejects(s.run('claim', 1, 'worker-B'), /Already claimed/);
+  await transfer(s);
+  assert.equal(s.writes.length, 1);
+  assert.match(s.writes[0].body, /state=claimed owner=worker-B/);
+  assert.match(s.writes[0].body, /id=901/);
+  assert.match(s.writes[0].body, /Transferred from worker-A/);
+  assert.ok(s.notices.includes('CLAIMED_ISSUE=1 OWNER=worker-B'));
+  await s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'});
+  await assert.rejects(s.run('status', 1, 'worker-A', {CLAIM_RUN: '800'}), /no longer matches/);
+  await assert.rejects(transfer(s), /original owner/);
+  assert.equal(s.prs[0].head.sha, savedHead);
+  assert.equal(s.writes.length, 1);
+});
+
+for (const change of ['actor', 'author', 'wrong-issue-url', 'missing-record', 'issue', 'from', 'to', 'claim_run', 'stopped', 'pushed', 'empty-prs', 'duplicate-pr', 'wrong-head', 'fork']) {
+  test(`transfer rejects invalid approval: ${change}`, async () => {
+    const s = transferSetup(), h = approvedHandoff(), a = s.approvals[50];
+    if (change === 'actor') s.context.actor = 'non-admin';
+    else if (change === 'author') a.user.login = 'non-admin';
+    else if (change === 'wrong-issue-url') a.issue_url = fixture(2).url;
+    else if (change === 'missing-record') a.body = 'unstructured confirmation';
+    else if (change === 'empty-prs') h.prs = [];
+    else if (change === 'duplicate-pr') h.prs.push({...h.prs[0]});
+    else if (change === 'wrong-head') h.prs[0].head = 'b'.repeat(40);
+    else if (change === 'fork') s.prs[0].head.repo.full_name = 'other/game';
+    else if (['stopped', 'pushed'].includes(change)) h[change] = false;
+    else h[change] = change === 'issue' ? 2 : 'wrong-value';
+    if (change !== 'missing-record') a.body = `<!-- issue-handoff:v1 ${JSON.stringify(h)} -->`;
+    await assert.rejects(transfer(s));
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+for (const conclusion of ['cancelled', 'failure', null]) {
+  test(`transfer refuses original claim from ${conclusion} run`, async () => {
+    const s = transferSetup({runs: {800: {status: conclusion ? 'completed' : 'in_progress', conclusion}}});
+    await assert.rejects(transfer(s), /Original claim run did not succeed/);
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+test('transfer respects blocked/closed Issue, released ledger and new owner other reservations', async () => {
+  for (const type of ['blocked', 'closed', 'released', 'other-claim']) {
+    const s = transferSetup();
+    if (type === 'blocked') s.issues[0].labels = ['blocked'];
+    if (type === 'closed') s.issues[0].state = 'closed';
+    if (type === 'released') s.comments[1].push(entry('released', 'worker-A'));
+    if (type === 'other-claim') s.comments[2] = [entry('claimed', 'worker-B')];
+    await assert.rejects(transfer(s));
+    assert.equal(s.writes.length, 0);
+  }
+});
+
+for (const mutation of ['head', 'pr-added', 'pr-closed', 'claim', 'issue', 'approval']) {
+  test(`transfer rechecks changing state before ledger write: ${mutation}`, async () => {
+    const s = transferSetup({hook(name, args, data) {
+      if (name !== 'listForRepo') return;
+      if (mutation === 'head') data.prs[0].head.sha = 'b'.repeat(40);
+      if (mutation === 'pr-added') data.prs.push({number: 12, body: '#1', head: {sha: savedHead}});
+      if (mutation === 'pr-closed') data.prs.length = 0;
+      if (mutation === 'claim') data.comments[1].push(entry('released', 'worker-A'));
+      if (mutation === 'issue') data.issues[0].state = 'closed';
+      if (mutation === 'approval') s.approvals[50] = {...s.approvals[50], body: 'revoked'};
+    }});
+    await assert.rejects(transfer(s));
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+test('transfer run cancellation after write retains reservation but cannot authorize editing', async () => {
+  const s = transferSetup({runs: {901: {status: 'completed', conclusion: 'cancelled'}}});
+  await transfer(s);
+  await assert.rejects(s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'}), /did not succeed/);
+  await assert.rejects(s.run('claim', 1, 'worker-C'), /Already claimed/);
+  assert.equal(s.writes.length, 1);
+});
+
+test('transfer rejects malformed or irrelevant handoff inputs before API access', async () => {
+  for (const [op, input] of [['transfer', {}], ['transfer', {CLAIM_RUN: '800', HANDOFF_COMMENT: 'bad'}],
+    ['claim', {HANDOFF_COMMENT: '50'}]]) {
+    const s = transferSetup();
+    await assert.rejects(s.run(op, 1, 'worker-B', input));
+    assert.equal(s.calls.length, 0);
+  }
+});
+
+function legacyTransferSetup(options = {}) {
+  const sourceRun = {id: 800, path: '.github/workflows/issue-claim.yml', event: 'workflow_dispatch',
+    head_branch: 'main', run_attempt: 1, status: 'completed', conclusion: 'success',
+    run_started_at: '2026-10-12T03:58:51Z', updated_at: '2026-10-12T03:59:11Z'};
+  const s = transferSetup({...options, comments: {1: [
+    entry('claimed', 'worker-A', {id: 10, created_at: '2026-10-12T03:59:09Z'}),
+    entry('released', 'worker-A', {id: 20, created_at: '2026-10-12T04:30:54Z'}),
+  ]}, runs: {800: sourceRun, ...options.runs}});
+  const handoff = {...approvedHandoff(), recovery: {claim_comment: 10, released_comment: 20}};
+  s.approvals[50].body = `<!-- issue-handoff:v1 ${JSON.stringify(handoff)} -->`;
+  return {...s, sourceRun, handoff};
+}
+
+test('explicit admin recovery binds a released legacy pair to its successful run and preserves the PR', async () => {
+  const s = legacyTransferSetup();
+  await assert.rejects(s.run('claim', 1, 'worker-B'), /Open PR/);
+  await transfer(s);
+  assert.equal(s.writes.length, 1);
+  assert.match(s.writes[0].body, /Recovered legacy claim\/release comments 10\/20/);
+  assert.match(s.writes[0].body, /state=claimed owner=worker-B/);
+  assert.equal(s.prs[0].head.sha, savedHead);
+  await s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'});
+  await assert.rejects(transfer(s), /last bot claim\/release pair/);
+});
+
+for (const recovery of [null, {}, {claim_comment: '10', released_comment: 20},
+  {claim_comment: 10, released_comment: 10}, {claim_comment: 0, released_comment: 20}]) {
+  test(`legacy recovery refuses malformed comment IDs: ${JSON.stringify(recovery)}`, async () => {
+    const s = legacyTransferSetup();
+    s.handoff.recovery = recovery;
+    s.approvals[50].body = `<!-- issue-handoff:v1 ${JSON.stringify(s.handoff)} -->`;
+    await assert.rejects(transfer(s), /Legacy recovery requires/);
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+for (const change of ['missing-claim', 'claim-id', 'release-id', 'owner', 'human-claim', 'human-release',
+  'claim-run-metadata', 'release-run-metadata', 'malformed-release-metadata', 'intervening-bot', 'active-claim']) {
+  test(`legacy recovery refuses a different reservation history: ${change}`, async () => {
+    const s = legacyTransferSetup(), history = s.comments[1];
+    if (change === 'missing-claim') history.shift();
+    if (change === 'claim-id') history[0].id = 11;
+    if (change === 'release-id') history[1].id = 21;
+    if (change === 'owner') history[0].body = entry('claimed', 'worker-C').body;
+    if (change === 'human-claim') history[0].user.login = 'admin';
+    if (change === 'human-release') history[1].user.login = 'admin';
+    if (change === 'claim-run-metadata') history[0].body += '\n<!-- issue-claim-run:v1 id=800 request=old -->';
+    if (change === 'release-run-metadata') history[1].body += '\n<!-- issue-claim-run:v1 id=801 request=old -->';
+    if (change === 'malformed-release-metadata') history[1].body += '\n<!-- issue-claim-run:v1 id=unknown -->';
+    if (change === 'intervening-bot') history.splice(1, 0, entry('claimed', 'worker-C', {id: 12}));
+    if (change === 'active-claim') history.push(entry('claimed', 'worker-A', {id: 21}));
+    await assert.rejects(transfer(s), /last bot claim\/release pair/);
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+for (const change of ['run-id', 'workflow', 'event', 'attempt', 'branch', 'before-run', 'after-run',
+  'missing-time', 'invalid-time', 'unknown-default-branch']) {
+  test(`legacy recovery refuses an unbound source run: ${change}`, async () => {
+    const s = legacyTransferSetup(), run = s.sourceRun;
+    if (change === 'run-id') run.id = 801;
+    if (change === 'workflow') run.path = '.github/workflows/other.yml';
+    if (change === 'event') run.event = 'pull_request';
+    if (change === 'attempt') run.run_attempt = 2;
+    if (change === 'branch') run.head_branch = 'feature';
+    if (change === 'before-run') s.comments[1][0].created_at = '2026-10-12T03:58:50Z';
+    if (change === 'after-run') s.comments[1][0].created_at = '2026-10-12T03:59:12Z';
+    if (change === 'missing-time') delete s.comments[1][0].created_at;
+    if (change === 'invalid-time') run.updated_at = 'not a timestamp';
+    if (change === 'unknown-default-branch') delete s.context.payload.repository.default_branch;
+    await assert.rejects(transfer(s), /not bound to the approved coordinator run/);
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+for (const conclusion of ['cancelled', 'failure', null]) {
+  test(`legacy recovery refuses a ${conclusion} source run`, async () => {
+    const s = legacyTransferSetup();
+    Object.assign(s.sourceRun, {status: conclusion ? 'completed' : 'in_progress', conclusion});
+    await assert.rejects(transfer(s), /Original claim run did not succeed/);
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+for (const change of ['actor', 'author', 'head', 'other-claim', 'blocked', 'closed']) {
+  test(`legacy recovery keeps existing admin, PR and worker guards: ${change}`, async () => {
+    const s = legacyTransferSetup();
+    if (change === 'actor') s.context.actor = 'non-admin';
+    if (change === 'author') s.approvals[50].user.login = 'non-admin';
+    if (change === 'head') s.prs[0].head.sha = 'b'.repeat(40);
+    if (change === 'other-claim') s.comments[2] = [entry('claimed', 'worker-B')];
+    if (change === 'blocked') s.issues[0].labels = ['blocked'];
+    if (change === 'closed') s.issues[0].state = 'closed';
+    await assert.rejects(transfer(s));
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+test('legacy recovery rechecks the released pair immediately before writing', async () => {
+  const s = legacyTransferSetup({hook(name, args, data) {
+    if (name === 'listForRepo') data.comments[1].push(entry('claimed', 'worker-C', {id: 21}));
+  }});
+  await assert.rejects(transfer(s), /last bot claim\/release pair/);
+  assert.equal(s.writes.length, 0);
+});
+
+test('canceled recovery after a write retains the reservation without authorizing editing', async () => {
+  const s = legacyTransferSetup({runs: {901: {status: 'completed', conclusion: 'cancelled'}}});
+  await transfer(s);
+  await assert.rejects(s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'}), /did not succeed/);
+  await assert.rejects(s.run('claim', 1, 'worker-C'), /Already claimed/);
+  assert.equal(s.writes.length, 1);
 });

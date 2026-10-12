@@ -13,7 +13,7 @@ import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { chekiShot, tarotFlip } from "../core/scene-motions.js";
+import { chekiShot, tarotFlip, limeExchange } from "../core/scene-motions.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -161,7 +161,8 @@ export function play(idOrDlg, opts = {}) {
       bgmBefore: currentBgm(), // metadata.bgm で曲を替えた会話は、終わったらこの曲へ戻す
       bgmSwitched: false,
       bgmOnSpeaker: null,
-      pendingIntros: [], // 名乗りを受けて、次の台詞の前に出す初登場カットイン
+      pendingIntros: [], // 立ち絵と実際の発話を読んだ後に出す初登場カットイン
+      spoken: new Set(),
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -266,7 +267,7 @@ function finish() {
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
   dom.effect.dataset.effect = "";
-  layers.vn.classList.remove("sepia");
+  layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited });
@@ -291,7 +292,7 @@ function next() {
   // 制御行はまとめて処理し、表示する台詞行に着いたら止まる
   for (;;) {
     const line = r.queue.shift();
-    if (line === undefined) return finish();
+    if (line === undefined) return introThenShow();
     const type = line.type || "";
     if (!type) return introThenShow(line);
     if (type === "choice") return showChoices(line);
@@ -299,11 +300,23 @@ function next() {
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (line.next_id && jumpTo(line.next_id)) return; continue; }
     if (type === "set_flag") {
+      const contact = /^_lime_contact_(.+)$/.exec(line.flag || "");
+      const alreadyConnected = contact && (state.flags[line.flag] || state.contacts.includes(contact[1]));
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
       if (m) {
         markMet(m[1]);
-        if (needsIntro(m[1])) r.pendingIntros.push(m[1]); // 名乗った直後の台詞の前にカットイン
+        if (needsIntro(m[1])) queueIntro({ id: m[1] });
+      }
+      if (contact && !alreadyConnected && !vnTest.turbo) {
+        const id = contact[1];
+        const key = `_lime_exchange_shown_${id}`;
+        if (!state.flags[key]) {
+          state.flags[key] = true;
+          r.ready = false;
+          limeExchange(id).then(() => { if (running === r) { r.ready = true; next(); } });
+          return;
+        }
       }
       continue;
     }
@@ -315,8 +328,13 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip() }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context) }[line.id];
       if (!run) continue;
+      if (line.id === "lime") {
+        const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;
+        if (state.flags[key]) continue;
+        state.flags[key] = true;
+      }
       r.ready = false;
       run().then(() => { if (running === r) { r.ready = true; next(); } });
       return;
@@ -325,6 +343,8 @@ function next() {
       const id = line.char_id;
       const variant = line.variant || "";
       if (state.flags[introSeenKey(id, variant)]) continue;
+      // はじめの指定紹介以外は、本人が立ち絵で話すまで予約しておく。
+      if (id !== "hajime") { queueIntro({ id, variant, override: line.intro || {} }); continue; }
       if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
       playIntro(id, { variant, override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
@@ -432,6 +452,8 @@ function runFx(line) {
   else if (id === "cutin") { flash("gold"); SE.just(); }
   else if (id === "sepia") layers.vn.classList.add("sepia");
   else if (id === "sepia_off") layers.vn.classList.remove("sepia");
+  else if (id === "flashback") layers.vn.classList.add("flashback");
+  else if (id === "flashback_off") layers.vn.classList.remove("flashback");
   else if (id === "scent") scent(line.color || "#e8c27a", line.color2 || line.color || "#b8743a");
 }
 
@@ -445,8 +467,8 @@ async function showCg(id, effect = "") {
   const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
-  await waitSceneAssets(imageReady(url, 15000), r);
-  if (running !== r) return;
+  const loaded = await waitSceneAssets(imageReady(url, 15000), r);
+  if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
     dom.cg.dataset.cg = id;
@@ -470,24 +492,28 @@ async function visualSettled(node) {
 
 // ---------------------------------------------------------------- 台詞行
 
-// 初登場カットイン（vn/intro.js）: 名乗った相手・名前が出て初めて喋る相手を、台詞の前に一度だけ出す
+function queueIntro(cue) {
+  if (!running.pendingIntros.some((pending) => pending.id === cue.id && (pending.variant || "") === (cue.variant || ""))) {
+    running.pendingIntros.push(cue);
+  }
+}
+
+// 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
 function introThenShow(line) {
   const r = running;
-  const ids = r.pendingIntros.splice(0);
-  const speaker = String(line.speaker || "");
-  if (!ids.includes(speaker)) ids.push(speaker);
-  const due = ids.filter(needsIntro);
-  if (!due.length) return showLine(line);
+  const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
+  r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
+  if (!due.length) return line ? showLine(line) : finish();
   if (vnTest.turbo) {
-    due.forEach(markIntroSeen);
-    return showLine(line);
+    due.forEach(({ id, variant }) => markIntroSeen(id, variant || ""));
+    return line ? showLine(line) : finish();
   }
   r.ready = false;
   (async () => {
-    for (const id of due) await playIntro(id, { onAppear: () => speakerBgm(id) });
+    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
-    showLine(line);
+    if (line) showLine(line); else finish();
   })();
 }
 
@@ -561,6 +587,10 @@ async function showLine(line) {
     r.pages.push(...thoughts.slice(1).map((value) => ({ text: last.text, inner: value, continuation: true })));
   }
   r.pageIdx = 0;
+  if (!NO_PORTRAIT.has(speaker) && Object.hasOwn(r.slots, speaker)) {
+    r.spoken.add(speaker);
+    if (needsIntro(speaker)) queueIntro({ id: speaker });
+  }
   renderPage();
 }
 

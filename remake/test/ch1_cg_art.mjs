@@ -104,6 +104,30 @@ await suite("ch1-cg-art", async check => {
       assert.ok(audit.maxOpacity >= .95, "New CG was skipped before fully displayed");
       await page.locator('[data-test="choice-0"]').click(); await page.evaluate(() => window.cgScene);
     }, options);
+    await check(`${device}-failed-cg-does-not-unlock-gallery`, async page => {
+      await prepare(page);
+      const saved = await storageSnapshot(page);
+      await page.route("**/cg_oneesan_first_smoke.webp", route => route.fulfill({
+        status: 200, contentType: "image/webp", body: "invalid image bytes",
+      }));
+      await page.evaluate(() => {
+        const original = C.data.DB.dialogues.ch1_tutorial_oneesan;
+        const command = original.lines.find(line => line.type === "show_cg" && line.cg_id === "cg_oneesan_first_smoke");
+        window.cgScene = C.engine.play({ dialogue_id: "failed-cg", lines: [
+          { text: "一台を見せる。" }, command, { text: "画像がなくても進める。" },
+          { type: "hide_cg" }, { type: "choice", choices: [{ text: "続ける" }] },
+        ] });
+      });
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "一台を見せる。");
+      await page.locator('[data-test="vn-skip"]').click();
+      await page.locator('[data-test="choice-0"]').waitFor();
+      assert.equal(await page.locator(".vn-cg.show").count(), 0);
+      assert.equal(await page.locator('[data-test="vn-loading"]').count(), 0);
+      assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_gallery") || "[]")
+        .includes("cg_oneesan_first_smoke")), false);
+      assert.deepEqual(await storageSnapshot(page), saved);
+      await page.locator('[data-test="choice-0"]').click(); await page.evaluate(() => window.cgScene);
+    }, options);
   }
 
   await check("unused-placeholder-still-excluded", async page => {

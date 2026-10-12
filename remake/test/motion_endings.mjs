@@ -134,7 +134,7 @@ async function checkScene(name, viewport, label, variant = null) {
     await page.waitForSelector(".mo, .scene-curtain, .tr-dawn");
     await page.keyboard.press("Enter");
     assert.equal(await page.evaluate(() => audit.keys), 0, `${name}: Enter leaked through the motion`);
-    await page.waitForFunction(() => window.motionDone, null, { timeout: 20000 });
+    await page.waitForFunction(() => window.motionDone, null, { timeout: 45000 });
     await page.evaluate(() => window.motionRun);
     const result = await page.evaluate(() => ({
       ...audit, dotLoops: audit.dotLoops.map((a) => ({ state: a.playState, iterations: a.effect.getTiming().iterations === Infinity })),

@@ -1,0 +1,627 @@
+{
+  "issue": 402,
+  "worker": "codex-craft402-20261012-6be8a561d8",
+  "claim_run": 38258703042,
+  "status_run": 38271982529,
+  "assets": [
+    {
+      "id": "mix",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v4.png",
+      "sha256": "42725bef1d560682e8b5f4dfbcb53a6e9fa2967d160eae4c748f59488010d421",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v4.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_mix.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 145848,
+      "runtime_webp_sha256": "2ec2bd1e111d574bfae6c5e0b6fe1e12fa081adf15ef617671be1d7932f1ec25",
+      "status": "implemented_in_draft",
+      "visual_qa": "v4 full-size and native mix UI inspected: visibly red/russet moist chopped shisha leaf inside one closed translucent tub; short-end-only sticker and clear long wall, neutral thoughtful face and pose maintained. PC1280x720 and touch844x390 decode/selection/composition checks PASS. Generic illustration stayed the same while selecting 10g apple/2g mint. No game/CSS change; prior 19-case regression belongs to c6cc01a."
+    },
+    {
+      "id": "pack",
+      "original": "asset_sources/craft-scenes-issue402/originals/pack-v3.png",
+      "sha256": "4ed88166ff39bc0e0f6c6f337f86a51e7da63f51ef32b6fad56121ce4e8390d2",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pack-v3.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pack.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pack.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 234502,
+      "runtime_webp_sha256": "56264c15719b360218a05603fa03764ae8f969b775f2d8333147616b1dcb9f19",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "holes",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-base-v2.png",
+      "sha256": "d7683a19c35a6583c1b6391f42761aa29dc952aa07a6c2b9b3c0e326b062ac92",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-base-v2.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 71382,
+      "runtime_webp_sha256": "855328542d9d5eeb45dff2b4271d064a54f09638e646b5a645a47fa80d12c11a",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "heat",
+      "original": "asset_sources/craft-scenes-issue402/originals/heat-v2.png",
+      "sha256": "825582bcb0fb6777a647bdf596eda29d953d591ec198f0d1ae7096d8f2401cf1",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/heat-v2.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_heat.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_heat.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 152358,
+      "runtime_webp_sha256": "51693b0379a3e5595a7fa9867607a72df2b2809bec67d1a084e7cd1d0ccb8fa3",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "pull",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-v2.png",
+      "sha256": "d73a0953a564d18d7f1f1b71cd42bc7d82cf12d895015bfe33098744dff59681",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-v2.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 131756,
+      "runtime_webp_sha256": "a9c2a44e051a79280df8d8d0dfeb14e9ed88cd88bd16b89e8c4c391548759f2c",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "pull-rest",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-rest-v3.png",
+      "sha256": "e0dd7890fc86e6d10178e3e8c0de83955e35eab503d72786c28f17c1c028462b",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-rest-v3.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull_rest.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull_rest.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 125214,
+      "runtime_webp_sha256": "c5571932a21f193e32e743587286738e67c332a70a82e3d02d941b80d31a9262",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "holes-contact",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-hand-contact-v1.png",
+      "sha256": "fbbe74e43a66663d6bde327a696b70d98cd2950b18ad2cd98eac50da1f9514ac",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-hand-contact-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes_contact.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes_contact.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 53096,
+      "runtime_webp_sha256": "15eda22d8869eced699ee1b81d1457101bbf8606afa48b226c339ee36388825f",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "holes-hover",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-hand-hover-v1.png",
+      "sha256": "9042acb542cd4a6bedd26d5e6be88532ba5d9d182990d3acb6e18057ac2b7c48",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-hand-hover-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes_hover.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes_hover.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 55098,
+      "runtime_webp_sha256": "ab9aba41d8c0a21a2360f5faa8c1132fe1b9fdf6046f2f2e812acecd9685379f",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    },
+    {
+      "id": "holes-release",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-hand-release-v1.png",
+      "sha256": "b12ff25db2a225c7836af06300019892b2f8d9b3c4aa0b9fdb9d57cfc057905e",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-hand-release-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes_release.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes_release.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 54650,
+      "runtime_webp_sha256": "67957ac1b9c3f59c62bff78cf35cfda6544f92cd57d7fe0b383270784ade2024",
+      "status": "implemented_in_draft",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+    }
+  ],
+  "rejected": [
+    {
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-rest-v1.png",
+      "sha256": "d4878aa009ad5845458bc6d0e910bf4d420ba1e8609c09c5e13a45d6c7414c8f",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-rest-v1.txt",
+      "reason": "Ribbed hose and cap motif differed from the inhaling variant; not used at runtime. Edited from pull-v1 to produce v2."
+    },
+    {
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v2.png",
+      "sha256": "afff04ae4d8e440f7eec152ed31604eccdb7d8dba28d8ce253ada80a9005cbb8",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v2.txt",
+      "reason": "Owner rejected the label on the long side / wrapping around a corner. Short end wall only in v3."
+    },
+    {
+      "original": "asset_sources/craft-scenes-issue402/originals/pack-v2.png",
+      "sha256": "a3dfe9ed32c7a1d2156f07d20b6fb6b8a90391e885a4cf961a891ab08ecf41b3",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pack-v2.txt",
+      "reason": "Owner rejected the label on the long side / wrapping around a corner. Short end wall only in v3."
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://mozeshisha.de/media/49/90/f2/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen5.jpg",
+      "role": "hand/bowl scale and wet leaf placement",
+      "download_sha256": "2b8cfdacda010ef25f193f325c4a867c202829d0df68ed0ac5103fc66eb0da14",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/14/cc/32/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen4.jpg",
+      "role": "RIGHT HALF: foil/poker contact and one-handed bowl scale",
+      "download_sha256": "8e3c8739ddc7a58463a4fa6064505c3113dadb7924bd4b228026de1ee33ca778",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/31/ca/41/1705415069/ao-kohlezange-ripper_984_2000x2000.jpg",
+      "role": "two connected metal arms and jaws, not the branded cutouts",
+      "download_sha256": "6842aa0ca6aa8ae3ee7848cae47783a2a5a8213feff72296f648aba013c36793",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/c0/fc/b5/1781696417/ao-einweg-hygienemundstucke-bunt_10507_1200x1450.jpg",
+      "role": "short plastic disposable chip",
+      "download_sha256": "9caf59f6d92ec23251308c4b9a3a71068220c4e43f3d301dbeddbf912abb6e6e",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/52/c9/2b/1784151273/wookah-mundstueck-white-nox_8589_1200x1450.jpg",
+      "role": "rigid straight handle/lower metal connector ONLY, color and branding not copied",
+      "download_sha256": "258cb567f13ddcc28d9fc2d27590c0331ebc63cadb48a20df55790e03cffb988",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/10/28/e1/1784151949/alite-gaming-mundstuck_9638_1200x1450.jpg",
+      "role": "soft hose/connector ONLY, closed loop and gaming design not copied",
+      "download_sha256": "95a4270061e2627f9f3a82c161b893c037682d3610f3c0d8c2c269ee9b644f14",
+      "redistribution": "Reference only; not included in repository/game"
+    }
+  ],
+  "reference_order": {
+    "mix": [
+      "person",
+      "texture_only",
+      "owner open tub photo03",
+      "owner stacked tub photo04"
+    ],
+    "holes": [
+      "person",
+      "texture_only",
+      "handheld-foil.jpg",
+      "handheld-pack.jpg"
+    ],
+    "pack": [
+      "person",
+      "texture_only",
+      "handheld-pack.jpg",
+      "owner open tub photo03"
+    ],
+    "heat": [
+      "person",
+      "texture_only",
+      "tongs-photo.jpg"
+    ],
+    "pull": [
+      "person",
+      "texture_only",
+      "tips-photo.jpg",
+      "rigid-handle-photo.jpg",
+      "handle-photo.jpg"
+    ],
+    "pull-rest-v1": [
+      "person",
+      "texture_only",
+      "tips-photo.jpg",
+      "rigid-handle-photo.jpg",
+      "handle-photo.jpg"
+    ],
+    "pull-rest-v2": [
+      "originals/pull-v1.png",
+      "person"
+    ],
+    "mix-v2": [
+      "owner close-up tub photo in recent conversation",
+      "canonical Hajime portrait shown in conversation",
+      "originals/mix-v1.png shown in conversation"
+    ],
+    "holes-base-v2": [
+      "originals/holes-v1.png"
+    ],
+    "holes-hand-contact-v1": [
+      "originals/holes-v1.png"
+    ],
+    "holes-hand-hover-v1": [
+      "originals/holes-hand-contact-v1.png"
+    ],
+    "holes-hand-release-v1": [
+      "originals/holes-hand-contact-v1.png"
+    ],
+    "pack-v2": [
+      "originals/pack-v1.png"
+    ],
+    "heat-v2": [
+      "originals/heat-v1.png"
+    ],
+    "pull-v2": [
+      "originals/pull-v1.png"
+    ],
+    "pull-rest-v3": [
+      "originals/pull-v2.png"
+    ],
+    "mix-v3": [
+      "originals/mix-v2.png"
+    ],
+    "pack-v3": [
+      "originals/pack-v2.png"
+    ],
+    "mix-v4": [
+      "originals/mix-v3.png"
+    ]
+  },
+  "superseded": [
+    {
+      "id": "mix",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v1.png",
+      "sha256": "c626a058d7c4421c7b317b506685e3cdb7bb9d1824398d684e3601d3ee39047a",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_mix.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 202858,
+      "runtime_webp_sha256": "2ced967aad3b6051231e1cc36d3068b2ca3c775f2da3ed677adac56c5cb5303d",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "pack",
+      "original": "asset_sources/craft-scenes-issue402/originals/pack-v1.png",
+      "sha256": "cc715ffc1d53106d80919645cec55373ec1b5fa86a4c332c7e50e3963a19c718",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pack-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pack.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pack.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 287126,
+      "runtime_webp_sha256": "cc530a326ce4e11601e4769e0be3988e34cf0a22ff936ca32c650cf3a16042c8",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "holes",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-v1.png",
+      "sha256": "a4c0dce36ef60cbdf87219a163323b336f4fe64349629c15080a74430900568e",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 161028,
+      "runtime_webp_sha256": "bbdbd8624fc2e6ae6ef1014a091504d5ed3010fa9d36549fe870f849ee0b0edc",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "heat",
+      "original": "asset_sources/craft-scenes-issue402/originals/heat-v1.png",
+      "sha256": "a002c650456b8d3a260bf7c3b5d02ac6c4621aa15ec6f606ca2828c46c64c189",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/heat-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_heat.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_heat.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 197500,
+      "runtime_webp_sha256": "b4cdfd183972f1c3525b2be6596d9207de48069998758b959e52ab0ef2170247",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "pull",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-v1.png",
+      "sha256": "bc88b5cd87167f2b4968ad77ed32f0ae01e90195d3b58d15474eaf7ecca1ef73",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 145586,
+      "runtime_webp_sha256": "1248bd6fc7d93db84dd4d2f64937e44b846caf9b12e7b3f9be581da1d985a81b",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "pull-rest",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-rest-v2.png",
+      "sha256": "a0b3ac4b1004b02c201c1032ce49efcda9c92f89ba5f9cdf9bba17b44e6846a9",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-rest-v2.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull_rest.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull_rest.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "superseded",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 138708,
+      "runtime_webp_sha256": "2c2eb60fc176505032de91553ea59bb8567dbc32bc025a96d4097daaac33f2f7",
+      "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "mix",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v3.png",
+      "sha256": "dd15c78ce125ad3e1687291d4361b0f939ade2a341704821cefa53c9a1950e12",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v3.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_mix.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 137568,
+      "runtime_webp_sha256": "06b4395e26c768e3a93d72d14b7422334ddc1034b62c40311aa73842c80cc842",
+      "status": "superseded",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion.",
+      "runtime_at_commit": "c6cc01a33c43dce012483ba2fcdc0ba15e6591eb",
+      "reason": "Owner requested visibly reddish moist flavor inside the choosing-scene tub; v4 replaces the frosted gray contents of v3."
+    }
+  ],
+  "owner_photo_reference": {
+    "received": "2026-10-12",
+    "description": "New close-up supplied for container/label material. Latest owner correction: sticker on ONE short end wall only, clear long sides, no wrap around corner. NAKHLA/two-apple text is not copied.",
+    "access": "Recent conversation image passed with num_last_images_to_include=3 for mix-v2. No local original file path was exposed; not recreated as a fake photo source."
+  },
+  "foil_registration": {
+    "canvas": [
+      1536,
+      1024
+    ],
+    "center": [
+      660,
+      426
+    ],
+    "radii": [
+      216,
+      125
+    ],
+    "contact_tip": [
+      824,
+      365
+    ],
+    "hover_tip_measured": [
+      822,
+      326
+    ],
+    "release_tip_measured": [
+      824,
+      335
+    ],
+    "hover_lift": 30,
+    "release_lift": 60,
+    "method": "Originals stay untouched; runtime translates each frame to correct generated registration drift. Normalized real hole positions map to the photographed foil ellipse."
+  },
+  "verification": {
+    "browser_results": "docs/qa/craft-scenes-issue402/worker-scenes.json",
+    "browser_cases": 19,
+    "screens": "docs/qa/craft-scenes-issue402/screens/",
+    "foil_vm": "Passed exact templates/completion/timeouts/shared thermal assertions and actual-hole notification counts.",
+    "devices": "Chromium Linux browser with touch emulation; not physical iOS/Android devices.",
+    "publication": "Draft PR432; not merged or deployed.",
+    "browser_results_at_commit": "c6cc01a33c43dce012483ba2fcdc0ba15e6591eb",
+    "latest_mix_visual_results": "docs/qa/craft-scenes-issue402/mix-v4-visual.json",
+    "latest_mix_visual_cases": 2
+  },
+  "resume_main": "90ae31e"
+}

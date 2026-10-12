@@ -31,10 +31,10 @@ const values = {
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled" },
   "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
-  "ui.js": { layers }, "state.js": { state, save: noop },
-  "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
+  "ui.js": { layers }, "state.js": { state, save: noop, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
+  "stats.js": { gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
   "audio.js": { SE: { phone: noop, select: noop, click: noop, cancel: noop } },
-  "engine.js": { hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
+  "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "rules.js": { TOURNAMENT_DAY: 14 },
   "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
     isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
@@ -259,7 +259,7 @@ for (const known of [false, true]) {
   assert(confessionIndex > 0); assert(state.flags._minto_name_known);
   if (known) assert.equal(introIndex, -1);
   else { assert(introIndex > 0 && introIndex < confessionIndex); const lines = plays[introIndex][0].lines;
-    assert(lines.some((line) => line.speaker === "minto" && /緑川栞.*二人の時/.test(line.text)));
+    assert(lines.some((line) => line.speaker === "minto" && /緑川栞.*２人の時/.test(line.text)));
     assert(lines.some((line) => line.speaker === "hajime" && line.text.startsWith("栞さん")));
   }
 }

@@ -1,0 +1,29 @@
+[
+  {
+    "name": "onmo-silver.jpg",
+    "url": "https://mozeshisha.de/media/a9/f2/95/1781816432/onmo-hmd-silber-1_9495_1200x1450.jpg",
+    "sha256": "6b0854ccaa96e13e0a7791091c5ba745da1f6ce59b8101ee1bf59b6b522209ff",
+    "bytes": 156927,
+    "redistributed": false
+  },
+  {
+    "name": "onmo-installed-hand.jpg",
+    "url": "https://mozeshisha.de/media/38/4c/f5/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen7.jpg",
+    "sha256": "c753bc321e6958412cf851231c3ab3c38c38226d9b9fc85127f3fa7e7f15e0bd",
+    "bytes": 112930,
+    "redistributed": false
+  },
+  {
+    "name": "whole-hookah.png",
+    "url": "https://mozeshisha.de/media/92/c3/61/1783923507/breeze.png",
+    "sha256": "6edd1c37c006c869bba70f494534c048e22527adb651d902a73eb3824c120761",
+    "bytes": 17233,
+    "redistributed": false
+  },
+  {
+    "page": "https://mozeshisha.de/en/moze-breeze-two-wavy-mint/",
+    "url": "https://mozeshisha.de/media/db/19/e8/1782074337/moze-breeze-two-wavy-mint_9757_1200x1450.jpg",
+    "sha256": "b570d29d64b13b3f6c91f1d4825ca8e69a158a477083f89636ccb4a92999543d",
+    "redistributed": false
+  }
+]
