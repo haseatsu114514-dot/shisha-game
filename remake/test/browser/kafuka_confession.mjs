@@ -214,7 +214,8 @@ await suite("kafuka-confession", async check => {
         return { chapter1, unread, missing, before, sharkLime, otherLime, friend, tooLate, fabricated };
       });
       assert(!r.chapter1 && !r.unread && !r.missing && !r.tooLate && !r.fabricated);
-      assert.deepEqual(r.before.lovers, ["kafuka"]); assert.deepEqual(r.sharkLime, []);
+      assert.deepEqual(r.before.lovers, ["kafuka"]);
+      assert.equal(r.sharkLime.length, 1); assert.equal(r.sharkLime[0].id, "_lover_private_account_kafuka");
       assert(r.otherLime.some(m => m.accept_event === "date_mashiro"));
       assert.deepEqual(r.friend.lovers, []); assert(r.friend.flags._friend_kafuka);
     }, options);

@@ -38,6 +38,12 @@
   const FADE_MS = 260;
   const BACKDROP_PARALLAX = 0.5;                         // 遠景の視差（ステージの far.parallax で上書き）
   const params = new URLSearchParams(location.search);
+  // 本編埋込は訪問・セーブを所有しない。親が入店条件と進行を担当する。
+  const EMBED = params.get("embed") === "1" && window.parent !== window;
+  let host = null;
+  const hostPaused = () => EMBED && (!host || host.paused());
+  const visitedDoor = (id) => EMBED ? !!host?.visited(id) : !!save.visited[id];
+  if (EMBED) document.body.classList.add("embedded");
   const NIGHT = params.get("night") === "1";
   // ?stage=hd … 高解像度2.5D版（AA9）／ ?stage=set … ハリボテ背景版（AA11。背景は一枚絵・キャラ72ドット）
   const STAGE_KIND = ["hd", "set"].includes(params.get("stage")) ? params.get("stage") : "base";
@@ -89,6 +95,7 @@
   // ---------------------------------------------------------------- 訪問記録（このブラウザだけ）
   const save = (() => {
     const blank = { visited: {} };
+    if (EMBED) return blank;
     try {
       if (params.get("reset") === "1") localStorage.removeItem(SAVE_KEY);
       const raw = localStorage.getItem(SAVE_KEY);
@@ -100,6 +107,7 @@
     return blank;
   })();
   function persist() {
+    if (EMBED) return;
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* 保存できなくても動く */ }
   }
 
@@ -424,9 +432,10 @@
       stage = base ? mergeStage(base, stage) : null;
     }
     if (!stage) {
-      showFatal(`${STAGE_FILE} を読めませんでした。リポジトリのルートで python3 -m http.server 8123 を起動して開いてください。`);
+      showFatal(EMBED ? "通りを読み込めませんでした。ピンマップへ戻って移動できます。" : `${STAGE_FILE} を読めませんでした。リポジトリのルートで python3 -m http.server 8123 を起動して開いてください。`);
       return;
     }
+    if (EMBED) stage.exit.label = "ピンマップへ";
     applyProfile(stage);
     assets.meta = await loadJSON(STREET_DIR + "street_assets.json" + BUST);
     if (!assets.meta) assets.missing.push("street_assets.json");
@@ -655,9 +664,14 @@
   }
 
   // ---------------------------------------------------------------- 更新
+  let wasHostPaused = EMBED;
   function update(dt) {
+    if (hostPaused()) { resetInput(); wasHostPaused = true; return; }
+    if (EMBED && wasHostPaused) canvas.focus({ preventScroll: true });
+    wasHostPaused = false;
     const now = performance.now();
     const frozen = mode !== "walk" || busy || msg.active;
+    if (EMBED && frozen) resetInput();
     if (!frozen) updatePlayer(dt);
     else if (player.moving) { player.moving = false; player.running = false; player.frame = 0; player.animT = 0; }
     if (mode === "walk" || mode === "menu") updateNpcs(dt, now);
@@ -1153,6 +1167,14 @@
       ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
     }
 
+    // 入店状態は前景の電柱より前に表示して、案内と休業の表示を隠さない。
+    ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
+    if (EMBED && host) for (const d of doors) {
+      const av = host.info(d.id);
+      drawWorldText(`${av.event ? "! " : ""}${av.label}`, d.cx, d.top - 24, 12, av.guided ? "#f4d27a" : "#fff");
+      drawWorldText(av.tag || av.why || "", d.cx, d.top - 8, 10, av.ok ? "#bfe8c8" : "#ffb8b8");
+    }
+
     // 決定できる相手がいる時は頭上に「！」
     if (focus && !busy && !msg.active) {
       const bob = Math.floor(performance.now() / 300) % 2;
@@ -1401,13 +1423,21 @@
     else fadeTo(go);
   }
   function goAreaMap() {
-    if (busy) return;
+    if (busy || hostPaused()) return;
+    if (EMBED) { resetInput(); host.back(); return; }
     keys.left = false;
     showAreaMap(false);
   }
 
   function enterShop(d) {
-    if (busy) return;
+    if (busy || hostPaused()) return;
+    if (EMBED) {
+      resetInput();
+      const av = host.info(d.id);
+      if (!av.ok) say([av.why]);
+      else host.enter(d.id);
+      return;
+    }
     currentDoor = d;
     fadeTo(() => {
       mode = "interior";
@@ -1436,16 +1466,16 @@
   let travelItems = [];
   let travelSel = 0;
   function openTravel() {
-    if (busy || mode !== "walk" || msg.active) return;
+    if (busy || hostPaused() || mode !== "walk" || msg.active) return;
     travelItems = [
       { label: "通りの入口", go: () => placePlayer(stage.spawn.x, stage.spawn.y, stage.spawn.dir) },
       ...doors.map((d) => ({
-        label: save.visited[d.id] ? `${d.label}の前` : "？？？",
-        off: !save.visited[d.id],
+        label: visitedDoor(d.id) ? `${d.label}の前` : "？？？",
+        off: !visitedDoor(d.id),
         door: d.id,
         go: () => placeAtDoor(d, "down"),
       })),
-      { label: "エリアマップへ", map: true },
+      { label: EMBED ? "ピンマップへ" : "エリアマップへ", map: true },
     ];
     travelSel = 0;
     mode = "menu";
@@ -1482,7 +1512,7 @@
   }
   function chooseTravel() {
     const it = travelItems[travelSel];
-    if (!it || it.off || busy) return;
+    if (!it || it.off || busy || hostPaused()) return;
     closeTravel();
     if (it.map) goAreaMap();
     else fadeTo(it.go);
@@ -1497,7 +1527,8 @@
   const ACT_KEYS = new Set(["KeyZ", "Enter", "NumpadEnter", "Space"]);
   const CANCEL_KEYS = new Set(["KeyX", "Escape"]);
   function act() {
-    if (busy) return;
+    if (hostPaused()) { resetInput(); return; }
+    if (busy || hostPaused()) return;
     if (msg.active) { advanceMsg(); return; }
     if (mode === "walk") interact(findFocus());
     else if (mode === "interior") leaveShop();
@@ -1505,6 +1536,7 @@
     else if (mode === "menu") chooseTravel();
   }
   window.addEventListener("keydown", (e) => {
+    if (hostPaused()) { resetInput(); return; }
     const mk = MOVE_KEYS[e.code];
     if (mk) {
       keys[mk] = true;
@@ -1533,7 +1565,17 @@
     const mk = MOVE_KEYS[e.code];
     if (mk) keys[mk] = false;
   });
-  window.addEventListener("blur", () => { for (const k of Object.keys(keys)) keys[k] = false; });
+  function resetInput() {
+    for (const k of Object.keys(keys)) keys[k] = false;
+    pointerHeld = false;
+    player.target = player.pending = null;
+    player.tapRun = player.moving = player.running = false;
+    player.frame = player.animT = 0;
+  }
+  window.addEventListener("blur", () => {
+    if (EMBED) resetInput();
+    else for (const k of Object.keys(keys)) keys[k] = false;
+  });
 
   // 遠くをタップしたら走って向かう（スマホでもダッシュできるように・AA8）
   function farTarget() {
@@ -1547,7 +1589,7 @@
     return { x: Math.round(cam.x) + sx, y: sy };
   }
   canvas.addEventListener("pointerdown", (e) => {
-    if (busy) return;
+    if (busy || hostPaused()) return;
     if (msg.active) { advanceMsg(); return; }
     if (mode === "menu") { closeTravel(); return; }
     if (mode !== "walk") return;
@@ -1566,7 +1608,7 @@
     player.tapRun = farTarget();
   });
   canvas.addEventListener("pointermove", (e) => {
-    if (!pointerHeld || mode !== "walk" || msg.active) return;
+    if (hostPaused() || !pointerHeld || mode !== "walk" || msg.active) return;
     const p = pointerToWorld(e);
     player.target = { x: clamp(p.x, stage.walk.x0 + FOOT_HALF_W, stage.walk.x1 - FOOT_HALF_W), y: clampWalkY(p.y) };
     player.tapRun = farTarget();                             // 押したまま遠くへ引っぱると走る
@@ -1574,10 +1616,10 @@
   const release = () => { pointerHeld = false; };
   canvas.addEventListener("pointerup", release);
   canvas.addEventListener("pointercancel", release);
-  $("#msg").addEventListener("pointerdown", (e) => { e.stopPropagation(); if (!busy && msg.active) advanceMsg(); });
+  $("#msg").addEventListener("pointerdown", (e) => { e.stopPropagation(); if (!busy && !hostPaused() && msg.active) advanceMsg(); });
   $("#interior").addEventListener("pointerdown", (e) => {
     if (e.target.closest("button")) return;
-    if (!busy && msg.active) advanceMsg();
+    if (!busy && !hostPaused() && msg.active) advanceMsg();
   });
   $("#btn-out").addEventListener("click", (e) => { e.currentTarget.blur(); leaveShop(); });
   $("#btn-act").addEventListener("click", (e) => { e.currentTarget.blur(); act(); });
@@ -1588,6 +1630,7 @@
   }
   $("#btn-run").addEventListener("click", (e) => {
     e.currentTarget.blur();
+    if (hostPaused()) return;
     save.alwaysRun = !save.alwaysRun;
     persist();
     syncRunButton();
@@ -1595,6 +1638,7 @@
   syncRunButton();
   $("#btn-map").addEventListener("click", (e) => {
     e.currentTarget.blur();
+    if (hostPaused()) return;
     if (mode === "menu") closeTravel();
     else openTravel();
   });
@@ -1615,17 +1659,27 @@
     last = now;
     if (stage && mode !== "loading") {
       update(dt);
-      tickMsg(dt);
+      if (!hostPaused()) tickMsg(dt);
       render();
     }
     requestAnimationFrame(loop);
   }
 
+  // 同一オリジンの本編だけが使用する接続口。単体試作の動作と保存はそのまま。
+  window.streetScene = {
+    connect: (adapter) => {
+      if (!EMBED) return;
+      host = adapter;
+      resetInput();
+      if (!hostPaused()) canvas.focus({ preventScroll: true });
+    },
+  };
+
   // テスト・デバッグ用
   window.__street = {
     state: () => ({
       ready: mode !== "loading",
-      mode, busy,
+      mode, busy, paused: hostPaused(), embedded: EMBED,
       x: Math.round(player.x * 10) / 10, y: Math.round(player.y * 10) / 10, dir: player.dir, moving: player.moving,
       running: player.running, alwaysRun: !!save.alwaysRun,
       camX: Math.round(cam.x),
