@@ -357,7 +357,14 @@ for (;;) {
 const s = await page.evaluate(() => window.__remake.state);
 if (s.day !== 14) throw new Error(`Tournament/clear day must remain DAY14, got DAY${s.day}`);
 if (!s.flags._ev_first_practice || !s.flags._ev_midcheck || !s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
-if ((s.flags._craft_practice_runs || []).length < 3 || !s.flavors.includes("blueberry")) throw new Error(`Missing practice/shopping: runs=${JSON.stringify(s.flags._craft_practice_runs)} flavors=${JSON.stringify(s.flavors)}`);
+const practiceRuns = s.flags._craft_practice_runs || [];
+const prepared = s.flags._prep_flavor;
+// くじで先に材料を得た場合は、既存在庫で準備を済ませる契約。ブルーベリーの新規購入を強制しない。
+if (practiceRuns.length < 3 || !s.flavors.includes("lemon") || !s.flavors.includes(prepared)
+  || ["mint", "double_apple"].includes(prepared)
+  || !(practiceRuns.find(run => run.kind === "midcheck")?.mix?.[prepared] > 0)) {
+  throw new Error(`Missing practice/shopping: prepared=${prepared} runs=${JSON.stringify(practiceRuns)} flavors=${JSON.stringify(s.flavors)}`);
+}
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
