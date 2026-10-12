@@ -12,7 +12,7 @@ export function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
-  const thermometer = buildSteamTemperature();
+  const thermometer = buildSteamTemperature(cs);
   const forecast = buildSteamForecast(cs, thermometer);
   let start;
   const render = () => {

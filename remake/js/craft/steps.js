@@ -11,6 +11,7 @@ import { flavorColor } from "./art.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
+import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
@@ -124,6 +125,12 @@ export async function stepMix(cs) {
   const layers = el("div.bowl-layers");
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
+  const thermometer = buildThermometer({ cs, bandPreview: true, height: 200, width: 36 });
+  const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
+  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
+    el("b", { text: "この配合の温度帯" }),
+    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
+  ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "この配合で詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
 
@@ -134,6 +141,9 @@ export async function stepMix(cs) {
     layers.replaceChildren(...Object.entries(cs.mix).filter(([, g]) => g > 0).map(([id, g]) =>
       el("i", { style: { height: `${(g / cap) * 100}%`, background: flavorColor(id) } })));
     const info = evaluateMix(cs);
+    const bands = thermometer.updateBands();
+    idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
+    optimalLine.textContent = `虹 · 最適温 ${formatTemperatureRange(bands.optimal)}`;
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
@@ -177,7 +187,8 @@ export async function stepMix(cs) {
   panel.append(el("div.mix", [
     el("div.mix-list", rows.map((r) => r.row)),
     el("div.mix-side", [
-      el("div.mix-bowl", [layers]),
+      el("div.mix-overview", [el("div.mix-bowl", [layers]), thermometer.root]),
+      temperaturePreview,
       lcd, regLine, recipeLine,
       hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.memo}` }) : null,
       okBtn,

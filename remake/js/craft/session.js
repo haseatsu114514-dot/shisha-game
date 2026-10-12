@@ -110,7 +110,7 @@ export function openBench(cs, { steps = [] } = {}) {
   ]);
   root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
-  const thermal = buildThermalAtmosphere(root, worker);
+  const thermal = buildThermalAtmosphere(root, worker, cs);
   showScreen("bench", root);
   const loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
   root.append(loading);

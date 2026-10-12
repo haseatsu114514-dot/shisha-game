@@ -202,6 +202,15 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 15px; color: var(--gold-hi); min-height: 22px; }
 .mix-hint { font-size: 14px; color: #9fe3ff; line-height: 1.5; padding: 8px 10px; border: 1px dashed rgba(159, 227, 255, 0.4); border-radius: 6px; }
+.mix-overview { display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; flex: none; }
+.mix-overview .mix-bowl { width: 170px; height: 150px; flex: none; }
+.mix-overview .mix-temperature { height: 200px; flex: none; }
+.mix-temperature-preview { width: 100%; text-align: center; }
+.mix-temperature-preview > b { font-size: 14px; color: var(--text-dim); }
+.mix-temperature-legend { display: flex; flex-direction: column; gap: 4px; margin-top: 5px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-ideal { color: #74e0b0; }
+.mix-optimal { color: #ffe5ff; }
+.mix-temperature [hidden] { display: none; }
 
 /* ---------------------------------------------------------------- 穴あけ */
 .holes { display: flex; gap: 24px; align-items: center; height: 100%; }
@@ -727,10 +736,10 @@
    文字の目盛りは置かず、管の中の印で示す。適温の両端に白い刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
-.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
+.thermo-scale { position: absolute; inset: 0; background: var(--thermo-gradient, linear-gradient(0deg,
   #fff4d2 0%, #ffedb0 13%, #ffe270 26%, #ffd12a 37%, #f6d559 40%, #67d2a3 42%,
   #4fcf98 44%, #74e0b0 54%, #4fcf98 64%,
-  #79d9a9 66%, #ffb247 71%, #ff8a2a 76%, #ff3f17 83%, #eb210d 89%, #b0140a 94%, #650609 100%); }
+  #79d9a9 66%, #ffb247 71%, #ff8a2a 76%, #ff3f17 83%, #eb210d 89%, #b0140a 94%, #650609 100%)); }
 .thermo-scale::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, #783c191f 0 .5px, #fff3d322 .5px 1px, transparent 1px 1.5%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
