@@ -26,7 +26,8 @@
           1536
         ],
         "mode": "RGB"
-      }
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
     },
     {
       "character": "ageha",
@@ -49,7 +50,8 @@
           1536
         ],
         "mode": "RGB"
-      }
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
     },
     {
       "character": "ageha",
@@ -72,7 +74,8 @@
           1536
         ],
         "mode": "RGB"
-      }
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
     },
     {
       "character": "kafuka",
@@ -574,14 +577,15 @@
       ],
       "mode": "RGB",
       "character": "ageha",
-      "status": "候補保存のみ",
+      "status": "要修正",
       "approved": false,
       "runtime_paths": [],
       "identity_reference": "assets/sprites/characters/ageha/chr_ageha_normal.png",
       "prompt": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.prompt.txt",
       "metadata": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.metadata.json",
       "visual_review": "蜂蜜色ツインテール・熊2個・豹柄・ピンクトップ・黒スカートを維持。スマホ撮影とVサイン。鏡照明の反復は舞台裏という場面に根拠あり。",
-      "hardware_reference_limitation": null
+      "hardware_reference_limitation": null,
+      "owner_reassessment": "顔の同一人物性を再審査。洗い物場面は他キャラとの構図・シーン重複も要修正。過去の作業者QAは承認の根拠にしない。"
     },
     {
       "path": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.png",
@@ -599,7 +603,8 @@
       "prompt": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.prompt.txt",
       "metadata": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.metadata.json",
       "visual_review": "本人の髪・熊・衣装を維持。脚付きボウルをブラシで清掃、別の冷たいONMO、炭・完成台なし。窓左側の室内蔦はCI97で除去対象。",
-      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。",
+      "owner_reassessment": "顔の同一人物性を再審査。洗い物場面は他キャラとの構図・シーン重複も要修正。過去の作業者QAは承認の根拠にしない。"
     },
     {
       "path": "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.png",
@@ -673,5 +678,6 @@
     "tool": "image_gen.imagegen",
     "generated_original": "/workspace/generated_images/exec-f150e30d-a6e9-4fd0-aa6c-53beeaa9e1a9.png",
     "qa": "原寸で目視。背景の室内鉢植え3領域が消え、可食ミントの飾りを維持。顔・髪・服・手・パフェの大きな破綻は見られず細かな粒子感を維持。ただし生成編集で全体の画素は微変化、完全同一画素ではない。主観的な顔一致の最終判断はオーナーへ。"
-  }
+  },
+  "ageha_followup": "ageha-identity/candidates.json"
 }

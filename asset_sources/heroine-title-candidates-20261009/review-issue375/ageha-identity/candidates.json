@@ -1,0 +1,314 @@
+{
+  "issue": 375,
+  "claim_run": 38198013265,
+  "worker": "codex-e-visual-20261011-01",
+  "date": "2026-10-12",
+  "approval": false,
+  "candidates": [
+    {
+      "id": "ageha-01-professional-face",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_01_professional_taste.png",
+        "sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "candidate": {
+        "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png",
+        "sha256": "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "comparison": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face-before-after.jpg",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.prompt.txt",
+      "identity_references": [
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_ageha.png",
+          "sha256": "2a49d4ea53139114f09593dd53b06402d9a8f753592d0239b24d4c8eaf7c199f",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "generated_original": "/workspace/generated_images/exec-465d6c26-5492-46d8-8ad2-03fa00fd4ccc.png",
+      "tool": "image_gen.imagegen",
+      "runtime_path": null,
+      "locality": "生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。",
+      "face_detail": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face-face-detail.jpg"
+    },
+    {
+      "id": "ageha-02-grocery-face",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_02_grocery_smile.png",
+        "sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "candidate": {
+        "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png",
+        "sha256": "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "comparison": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face-before-after.jpg",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.prompt.txt",
+      "identity_references": [
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_ageha.png",
+          "sha256": "2a49d4ea53139114f09593dd53b06402d9a8f753592d0239b24d4c8eaf7c199f",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        },
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+          "sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "generated_original": "/workspace/generated_images/exec-eb13aa0c-33e1-4afe-96fe-8a428d342e93.png",
+      "tool": "image_gen.imagegen",
+      "runtime_path": null,
+      "locality": "生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。",
+      "face_detail": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face-face-detail.jpg"
+    },
+    {
+      "id": "ageha-03-studio-face",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_03_model_moment.png",
+        "sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "candidate": {
+        "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png",
+        "sha256": "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "comparison": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face-before-after.jpg",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.prompt.txt",
+      "identity_references": [
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_ageha.png",
+          "sha256": "2a49d4ea53139114f09593dd53b06402d9a8f753592d0239b24d4c8eaf7c199f",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "generated_original": "/workspace/generated_images/exec-3dd177d1-00e3-40b6-b0da-9d1a8ce52e6c.png",
+      "tool": "image_gen.imagegen",
+      "runtime_path": null,
+      "locality": "生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。",
+      "face_detail": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face-face-detail.jpg"
+    },
+    {
+      "id": "ageha-04-selfie-face",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "source": {
+        "path": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.png",
+        "sha256": "8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "candidate": {
+        "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png",
+        "sha256": "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "comparison": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face-before-after.jpg",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.prompt.txt",
+      "identity_references": [
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_ageha.png",
+          "sha256": "2a49d4ea53139114f09593dd53b06402d9a8f753592d0239b24d4c8eaf7c199f",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "generated_original": "/workspace/generated_images/exec-c4a10e86-acc7-4492-86e3-2ea45437e665.png",
+      "tool": "image_gen.imagegen",
+      "runtime_path": null,
+      "locality": "生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。",
+      "face_detail": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face-face-detail.jpg"
+    },
+    {
+      "id": "ageha-05-closing-rack",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "source": {
+        "path": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.png",
+        "sha256": "bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "candidate": {
+        "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png",
+        "sha256": "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "comparison": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack-before-after.jpg",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.prompt.txt",
+      "identity_references": [
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_ageha.png",
+          "sha256": "2a49d4ea53139114f09593dd53b06402d9a8f753592d0239b24d4c8eaf7c199f",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "generated_original": "/workspace/generated_images/exec-1fede246-cbdd-422e-9b3a-e9b27aaaf126.png",
+      "tool": "image_gen.imagegen",
+      "runtime_path": null,
+      "locality": "生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。",
+      "hardware_reference": {
+        "url": "https://mozeshisha.de/media/8c/14/0e/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen6.jpg",
+        "article": "https://mozeshisha.de/en/knowledge/hookah-bowl-smokebox-knowledge/tobacco-bowl-preparation/",
+        "sha256": "c507b1b2eb8e8f289758cb040fc814029c23bfc989ecf3a9c083ee8fcfdbdb66",
+        "use": "実写の掌との比率・フット付きファンネル形状のみ参照。写真の再配布なし。",
+        "qa": "流し・蛇口・胸前の両手持ちから、閉店後の乾燥ラックへ変更。機材の数・細い脚・置き方は原寸比較して選定する。洗浄済みなので炭・HMDなし。"
+      }
+    }
+  ]
+}
