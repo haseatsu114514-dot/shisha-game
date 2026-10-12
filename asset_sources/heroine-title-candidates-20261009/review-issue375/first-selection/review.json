@@ -1,0 +1,232 @@
+{
+  "issue": 375,
+  "review_date_jst": "2026-10-13",
+  "base_sha": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+  "worker": "codex-visual-20261012-e492484f3b",
+  "claim_run": 38268843432,
+  "status_run": 38269090046,
+  "scope": "最新CG候補15点を原寸目視。旧版は履歴とし、第一選別の対象は最新版。正式タイトル21枚/立ち絵/背景/装備4原画は置換しない。",
+  "method": "AIによる目視所見。画素・物理検証の自動合格でもオーナー採用でもない。",
+  "recommendations": {
+    "revise": "煙の始点を局所修正して再比較を推奨。人物・構図ごとの不採用を確定しない。",
+    "inspect": "動作/煙の表現として成立し得るため、選定時に確認。",
+    "retain": "第一選別に残す提案。機材モデル/寸法・本人性の正式承認やゲーム採用は未完。"
+  },
+  "items": [
+    {
+      "id": "C01",
+      "name": "つむぎ：ボウル準備",
+      "path": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.png",
+      "sha256": "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524",
+      "ai_recommendation": "retain",
+      "observation": "顔・手・準備中の器に、大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C02",
+      "name": "つむぎ：雨の日の絵描き",
+      "path": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_03_rain_drawing.png",
+      "sha256": "659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb",
+      "ai_recommendation": "retain",
+      "observation": "ペンとタブレット、座り姿の大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C03",
+      "name": "ましろ：窓辺の喫煙",
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.png",
+      "sha256": "71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48",
+      "ai_recommendation": "inspect",
+      "observation": "煙の細い先端と唇の間に隙間が見える。吐いた煙が流れた瞬間とも読めるため、破綻とは断定しない。口元へ始点を寄せるか選定時に確認。",
+      "roi": [
+        410,
+        360,
+        715,
+        520
+      ],
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C04",
+      "name": "ましろ：ダーク葉の準備",
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.png",
+      "sha256": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
+      "ai_recommendation": "retain",
+      "observation": "手持ちボウル・ピックの大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C05",
+      "name": "ましろ：てつこの休憩",
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_03_tetsuko.png",
+      "sha256": "c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c",
+      "ai_recommendation": "retain",
+      "observation": "撫でる手・猫・座り姿の大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C06",
+      "name": "みんと：夜の一服［背景修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-night-ci97.png",
+      "sha256": "a0e72959159b679853efd314a2cfdbb06a0bf82be6140e28ba985c34fd2b81b6",
+      "ai_recommendation": "revise",
+      "observation": "煙の細い始点が笑っている唇から外れ、画面右の頬側にある。口から吐いた煙に見える始点へ局所修正を推奨。短いボウル脚のモデル/寸法照合も未完。",
+      "roi": [
+        410,
+        340,
+        740,
+        500
+      ],
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C07",
+      "name": "みんと：開店準備［背景修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-prep-ci97.png",
+      "sha256": "5b863c089a4ba5d4249800efc8b6dc041aba67154b8f511b9842291df17eca9f",
+      "ai_recommendation": "retain",
+      "observation": "手・布・器に大きな破綻は見当たらない。丸缶からタッパーへの方針確認は別の修正課題。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C08",
+      "name": "みんと：私服パフェ［背景修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/minto-private-parfait-ci97.png",
+      "sha256": "11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e",
+      "ai_recommendation": "retain",
+      "observation": "スプーン・グラスを持つ手に大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C09",
+      "name": "アゲハ：プロの試飲［顔修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png",
+      "sha256": "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83",
+      "ai_recommendation": "revise",
+      "observation": "煙の細い始点が口元より下にあり、持ったハンドル/チップ先端に重なる。器具から煙が出ているように見えるため、口から吐く始点へ局所修正を推奨。",
+      "roi": [
+        490,
+        315,
+        770,
+        485
+      ],
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": true
+    },
+    {
+      "id": "C10",
+      "name": "アゲハ：買い物の笑顔［顔修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png",
+      "sha256": "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced",
+      "ai_recommendation": "retain",
+      "observation": "袋を支える両手・笑い顔に大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": true
+    },
+    {
+      "id": "C11",
+      "name": "アゲハ：スタジオ［顔修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png",
+      "sha256": "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd",
+      "ai_recommendation": "retain",
+      "observation": "髪/腰に触れる手・身体の大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": true
+    },
+    {
+      "id": "C12",
+      "name": "アゲハ：舞台裏の自撮り［顔修正版］",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png",
+      "sha256": "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc",
+      "ai_recommendation": "retain",
+      "observation": "スマホを持つ手・Vサインに、余分な指は確認できない。手前の手の大きさは遠近として説明できる。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": true
+    },
+    {
+      "id": "C13",
+      "name": "アゲハ：閉店後の乾燥ラック",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png",
+      "sha256": "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98",
+      "ai_recommendation": "inspect",
+      "observation": "手に持った器の脚が斜めで、棚へ戻す途中か静置かを確認したい。動作として成立し得るため、浮遊/転倒の破綻と断定しない。棚上/下の各器の脚・寸法/モデル再現は未合格。",
+      "roi": [
+        670,
+        905,
+        1024,
+        1210
+      ],
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": true
+    },
+    {
+      "id": "C14",
+      "name": "りん：深夜コーヒー",
+      "path": "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.png",
+      "sha256": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
+      "ai_recommendation": "retain",
+      "observation": "ミルのつまみと本体を持つ両手に大きな破綻は見当たらない。黒縁眼鏡は正規設定。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    },
+    {
+      "id": "C15",
+      "name": "りん：香りのブレンド",
+      "path": "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.png",
+      "sha256": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
+      "ai_recommendation": "retain",
+      "observation": "缶・ピック・ボウルと両手の大きな破綻は見当たらない。",
+      "roi": null,
+      "owner_decision": null,
+      "owner_adopted": false,
+      "runtime_registered": false,
+      "ageha_owner_hold": false
+    }
+  ]
+}

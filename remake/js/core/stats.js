@@ -3,7 +3,7 @@ import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
-import { conditionForRatio } from "./condition.js";
+import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -136,6 +136,7 @@ export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori"];
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
   tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
+  kafuka: "bond_q1_kafuka",
 });
 const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];
 const waitingKey = (id) => `_${id}_affinity_waiting_pts`;
@@ -320,7 +321,11 @@ export function staminaAfter(n) {
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();
-export const currentCondition = () => conditionForRatio(staminaRatio());
+export const currentCondition = () => {
+  const sick = state.restDay;
+  return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
+    || conditionForRatio(staminaRatio());
+};
 
 // ---------------------------------------------------------------- お金
 
