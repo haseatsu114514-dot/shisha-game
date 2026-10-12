@@ -1,42 +1,59 @@
 # 斧投げミニゲーム（#480）
 
-練習ページは remake/axe-throw.html。開発コンソールなしで遊べる。
-生成済みの斧・木製ボード・専用背景（素材PR #478）を実際に表示し、
-照準→構える→往復ゲージ中央で投げる、を3回行う。1投0〜6点、合計最大18点。
-スマホ縦／横はタップと矢印、PCはマウス・方向キー・Space／Enterを使う。
-Escape／「やめる」で中断、結果画面の「もう一度」で3投をやり直す。
+remake/axe-throw.html で、開発コンソールなしで遊べる。
+横ゲージ→縦ゲージ→力ゲージを、ボタン／Space／Enterで順に止める。
+横・縦はそれぞれ止めた位置で照準が固定され、力は緑の帯が目安。
+弱すぎると届かず落下、強すぎると回転が合わず落下して0点。
+投げる前に通常／4か所のキルショットを選ぶ。構え直しは投数・宣言回数を消費しない。
+スマホ縦／横・PCの実操作に対応し、ひより／サメちゃんの立ち絵と前後のコメントが出る。
+サメちゃんは遊びに付き添う立場で、物語上の大会ライバルや競争相手には追加しない。
+ひよりの大声はキルショット成功時だけの短い反応。素顔発覚や恋愛成立を推定しない。
 
-リングと判定は共通のaxe-model.jsから描く。狙いと実際に止めた針だけで着地点を決める。
-背景タブでは針・投擲時間を止め、復帰時の大きな進みを防ぐ。
-動きを減らす設定では飛行の回転を省き、着地点と点数を表示する。
-画像の実デコードを待ってから操作を開き、画像失敗時は再読込／中断ができる。
+## ラウンジ競技ルール（lounge-2026-v1）
+
+参考: [WATL公式2026ルール](https://worldaxethrowingleague.com/axe-throwing-rules/)
+（確認した版は2026-10-07更新）。本ゲームは公式大会シミュレーターではない。
+
+- 3投の練習（最大22点）／10投の競技練習（最大64点）。後半5投でも宣言と閉鎖状態を引き継ぐ。
+- 通常はリング1〜5点、中央と4つの外側ブル6点。黒いリング境界は低い側の点、赤いブルの境界はブル。
+- 選んだ青いキルショットを投げる前に宣言すると外7点／内8点。宣言した投は選んだ青以外0点。
+- 宣言は1ゲーム2回まで。外れ・落下でも消費する。成功するとその高さの左右両方が閉じる。
+- 宣言なしで青い場所へ刺さった場合は通常リングの点数。宣言の取消は構える前・構え直し後にできる。
+- 力は0〜1、適正帯.54〜.70、刺さる範囲.42〜.82。着地点の上下と斧の回転にも力が影響する。
+
+10投・宣言・7/8点・成功時の高さ閉鎖は競技を参考に採用。
+ゲーム用に的の寸法を拡大し、刃の接地面ではなく表示される刃先の座標で判定する。
+投距離・左右レーン交代・反則・審判・落下による宣言追加・延長戦は実装しない。
+「10投の競技練習」はプレイヤーだけが投げる。キャラクターの投擲と勝敗を含む対戦は未実装。
+キャラクター表示と判定モデルを分離し、後の対戦が同じルールと各投の記録を使える構成にする。
 
 ## 本編から呼ぶ
 
-前段VNの終了を待ってから、js/minigames/axe.js の runAxeThrow({host, signal, reducedMotion}) をawaitする。
+前段VNが終わってから js/minigames/axe.js の
+runAxeThrow({host, signal, reducedMotion, mode: "practice"|"league", opponent: "hiyori"|"kafuka"}) をawaitする。
 host省略時は既存stage、練習ページではaxe-app。同じhostへの二重呼び出しは同じPromiseを返す。
 hostの既存DOMを消さず一時画面を重ね、終了・AbortSignal・host撤去で時計と入力を片付ける。
-キーボードの焦点を一時画面に収め、閉じると元の操作へ戻す。
+キーボードの焦点を画面に収め、閉じると元の操作へ戻す。
+背景タブでは針・投擲時間を止め、復帰時に大きく進まない。動き軽減時は飛行回転を省く。
+画像の実デコードを待ってから操作を開き、失敗時は再読込／中断ができる。
 
-返り値は {completed, cancelled, throws, total, grade}。
-各投はaim/timing/landing/score/precisionを持つ。
-「終了」で受け取った3投のみcompleted=true。中断結果はcompleted=false、grade=null。
-completedを確認した呼び出し元が後段VNを再生し、正式台本の読了後にだけ物語や報酬を処理する。
+返り値は {completed, cancelled, throws, total, grade, ruleset, mode, opponent, throwCount, maximum}。
+各投は aim / power / called / landing / rotation / stuck / score / outcome / dropReason を持つ。
+全投の結果を見て「終了」した時だけ completed=true。中断は completed=false、grade=null。
+呼び出し元がcompletedを確認して後段VNを再生し、正式台本読了後だけ物語や報酬を処理する。
 
-このモジュールと練習ページはセーブ・好感度・お金・体力・恋人／友人・LIME・行動枠を変更しない。
-既存schemaを変更せず、練習の記録はページ内の表示だけ。
-正式なひよりの素顔発覚・解禁・台本・報酬は後続の旧 #343。新規ゲームから後半章へ到達可能と扱わない。
-素材の登録記録にあるminigame_connected=falseは#477登録時点の記録であり、
-#480では斧・ボードをゲームから直接参照する。本編の正式イベント接続はまだ行っていない。
+この機能はセーブ・好感度・お金・体力・恋人／友人・LIME・行動枠を変更しない。
+練習の記録とキャラ選択はページ内だけで、既存schemaを変更しない。
+正式なひよりの解禁・素顔発覚・台本・報酬は後続の旧 #343。本編の後半章への接続は未実装。
+生成済みの斧・ボード・背景・ひより差分（素材PR #478）を直接参照し、旧画像は変更しない。
+素材登録のminigame_connected=falseは#477登録時点の履歴で、現在は練習ページで使っている。
 
 ## 検証
 
-- node --test remake/test/axe_throw.mjs：リング境界、照準とタイミング、最大点、不正数値、往復周期。
-- node remake/test/browser/axe_throw.mjs：実PC／タッチ縦横／キーボード／動き軽減の3投・再挑戦・終了、
-  背景停止、狙い直し、キーリピート／ダブルクリック、二重開始、事前Abort／host撤去、
-  旧セーブ・実友人・恋人の関係／LIME／保存不変。
+- node --test remake/test/axe_throw.mjs：通常／外側ブル／境界、3ゲージ、力による落下、宣言内外／外れ、2回制限、閉鎖／後半、最大点、キャラ反応、不正入力。
+- node remake/test/browser/axe_throw.mjs：実PC／タッチ縦横／キーボード／動き軽減の3ゲージ投擲、10投／青成功・失敗／閉鎖、キャラ反応、再挑戦、背景停止、構え直し、連打、Abort／二重開始／撤去、旧セーブ・実友人・恋人・LIME不変。
 - node remake/test/browser/save_load.mjs：手動／自動・旧schema・保存UI。
-- node --experimental-vm-modules remake/test/lime_consistency.mjs：既存受信・返信・予約の回帰。
+- node --experimental-vm-modules remake/test/lime_consistency.mjs：受信・返信・予約の回帰。
 
-CIは .github/workflows/axe-throw.yml。結果と実画面をartifactに保存する。
-原画・実指示・SHA・可逆WebPは asset_sources/hiyori-axe-issue477/ に保存。
+CIは .github/workflows/axe-throw.yml。結果と画面をartifactに保存する。
+原画・実指示・SHA・可逆WebPは asset_sources/hiyori-axe-issue477/。

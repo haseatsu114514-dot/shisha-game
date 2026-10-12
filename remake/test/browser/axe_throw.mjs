@@ -8,123 +8,133 @@ const phase = (page, value) => page.waitForFunction(value => document.querySelec
 async function press(page, selector, touch = false) {
   if (touch) await page.locator(selector).tap(); else await page.locator(selector).click();
 }
+async function pressReady(page, touch = false, keyboard = false) {
+  await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
+  if (keyboard) { await game(page).focus(); await page.keyboard.press("Space"); }
+  else await press(page, '[data-test="axe-action"]', touch);
+}
 async function fit(page) {
-  const results = await game(page).locator(".axe-header, .axe-panel, .axe-button, .axe-note, .axe-legend").evaluateAll(nodes => {
-    const game = document.querySelector(".axe-game").getBoundingClientRect();
+  const results = await game(page).locator(".axe-header, .axe-panel, .axe-button, .axe-note, .axe-legend, .axe-companion, .axe-comment").evaluateAll(nodes => {
+    const bounds = document.querySelector(".axe-game").getBoundingClientRect();
     return nodes.map(n => {
       const r = n.getBoundingClientRect();
       return { text: n.textContent, visible: r.width > 0 && r.height > 0,
-        fits: r.left >= game.left - 1 && r.right <= game.right + 1 && r.top >= game.top - 1 && r.bottom <= game.bottom + 1
+        fits: r.left >= bounds.left - 1 && r.right <= bounds.right + 1 && r.top >= bounds.top - 1 && r.bottom <= bounds.bottom + 1
           && r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1
           && n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1 };
     });
   });
   for (const r of results) if (r.visible) assert(r.fits, JSON.stringify(r));
+  const target = await page.locator(".axe-target").boundingBox(); assert(target && target.height > 100,"Target must stay usable");
 }
-async function aimAt(page, x = 0, y = 0, touch = false) {
-  const point = await page.locator('[data-test="axe-target"]').evaluate((svg, { x, y }) => {
-    const p = svg.createSVGPoint(); p.x = 330 + x * 164; p.y = 245 + y * 164;
-    const result = p.matrixTransform(svg.getScreenCTM()); return { x: result.x, y: result.y };
-  }, { x, y });
-  if (touch) await page.touchscreen.tap(point.x, point.y);
-  else await page.mouse.click(point.x, point.y);
+async function stopGauge(page, value, touch, keyboard) {
+  await page.waitForFunction(value => {
+    const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
+    return !root.querySelector('[data-test="axe-action"]').disabled && n >= value - .02 && n <= value + .005;
+  }, value);
+  await pressReady(page, touch, keyboard);
 }
-async function shoot(page, { touch = false, x = 0, y = 0, keyboard = false } = {}) {
-  await phase(page, "aim"); await aimAt(page, x, y, touch);
-  await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
-  if (keyboard) await page.keyboard.press("Space"); else await press(page, '[data-test="axe-action"]', touch);
-  await phase(page, "timing"); await fit(page);
-  await page.waitForFunction(() => {
-    const root = document.querySelector('[data-test="axe-game"]');
-    return Number(root.dataset.timing) >= .48 && Number(root.dataset.timing) <= .52;
-  });
-  if (keyboard) await page.keyboard.press("Space"); else await press(page, '[data-test="axe-action"]', touch);
-  await page.waitForFunction(() => ["result","summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard = false } = {}) {
+  await phase(page,"choice"); await pressReady(page,touch,keyboard); await phase(page,"horizontal"); await fit(page);
+  await stopGauge(page,(x / 1.08 + 1) / 2,touch,keyboard); await phase(page,"vertical");
+  const stoppedX=await game(page).getAttribute("data-aim-x");
+  await stopGauge(page,(y / 1.08 + 1) / 2,touch,keyboard); await phase(page,"power");
+  assert.equal(await game(page).getAttribute("data-aim-x"),stoppedX,"Horizontal position remains locked");
+  await fit(page); await stopGauge(page,power,touch,keyboard); await phase(page,"result");
 }
-async function standalone(page, { touch = false, keyboard = false } = {}) {
+async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
   await page.evaluate(() => {
-    localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
-      lovers: ["rin"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
-      pendingInvite: { sender: "hiyori", day: 10, slot: 1 }, affinity: { hiyori: 66 } }));
-    localStorage.setItem("unrelated", "keep"); sessionStorage.setItem("unrelated", "keep");
+    localStorage.setItem("suien_remake_save", JSON.stringify({ schema:5, money:45678, stamina:71, lovers:["rin"], flags:{_friend_hiyori:true},
+      inbox:[{id:"keep",read:true}], pendingInvite:{sender:"hiyori",day:10,slot:1}, affinity:{hiyori:66} }));
+    localStorage.setItem("unrelated","keep"); sessionStorage.setItem("unrelated","keep");
   });
-  await page.goto(new URL("axe-throw.html", page.url()).href);
-  if (keyboard) { await page.locator('[data-test="axe-start"]').focus(); await page.keyboard.press("Enter"); }
-  else await press(page, '[data-test="axe-start"]', touch);
-  await phase(page, "aim");
+  await page.goto(new URL("axe-throw.html",page.url()).href);
+  await press(page,'[data-companion="' + opponent + '"]',touch);
+  const selector=league?'[data-test="axe-league"]':'[data-test="axe-start"]';
+  if (keyboard) { await page.locator(selector).focus(); await page.keyboard.press("Enter"); } else await press(page,selector,touch);
+  await phase(page,"choice");
 }
 await suite("axe-throw", async check => {
   for (const [label, options, touch] of [
-    ["pc", { viewport: { width: 1280, height: 800 } }, false],
-    ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
-    ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true],
-    ["keyboard-reduced", { viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" }, false],
-  ]) await check(label, async page => {
-    const keyboard = label === "keyboard-reduced";
-    await standalone(page, { touch, keyboard }); const before = await storageSnapshot(page); await fit(page);
-    for (let n = 0; n < 3; n++) {
-      await shoot(page, { touch, x: n === 1 ? 1 : 0, y: n === 1 ? 1 : 0, keyboard });
-      await fit(page);
-      if (n < 2) await press(page, '[data-test="axe-action"]', touch);
+    ["pc",{viewport:{width:1280,height:800}},false],
+    ["touch-landscape",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
+    ["touch-portrait",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
+    ["keyboard-reduced",{viewport:{width:1280,height:720},reducedMotion:"reduce"},false],
+  ]) await check(label,async page => {
+    const keyboard=label==="keyboard-reduced";
+    await standalone(page,{touch,keyboard}); const before=await storageSnapshot(page); await fit(page);
+    const introComment=await page.locator(".axe-comment").textContent();
+    for (let n=0;n<3;n++) {
+      await shoot(page,{touch,power:n===1?.92:.62,keyboard}); await fit(page);
+      if (n===0) assert.notEqual(await page.locator(".axe-comment").textContent(),introComment);
+      if (n===1) assert.match(await page.locator(".axe-note").textContent(),/落下/);
+      await pressReady(page,touch,keyboard);
     }
-    assert.equal(await game(page).getAttribute("data-phase"), "summary");
-    assert.match(await page.locator('[data-test="axe-note"]').textContent(), /合計 .*18点/);
-    if (shotsPath) await page.screenshot({ path: shotsPath + "/" + label + "-summary.png" });
-    await press(page, '[data-test="axe-retry"]', touch); await phase(page, "aim");
-    assert.equal(await page.locator('[data-test="axe-round"]').textContent(), "1 / 3 投");
-    for (let n = 0; n < 3; n++) {
-      await shoot(page, { touch, keyboard });
-      if (n < 2) await press(page, '[data-test="axe-action"]', touch);
-    }
-    await press(page, '[data-test="axe-action"]', touch);
+    await phase(page,"summary"); assert.match(await page.locator(".axe-note").textContent(),/合計 .*22点/);
+    if (shotsPath) await page.screenshot({path:shotsPath + "/" + label + "-summary.png"});
+    await press(page,'[data-test="axe-retry"]',touch); await phase(page,"choice");
+    assert.equal(await page.locator('[data-test="axe-round"]').textContent(),"1 / 3 投");
+    assert.match(await page.locator(".axe-call-status").textContent(),/残り2回/);
+    await shoot(page,{touch,keyboard}); await page.keyboard.press("Escape");
     await page.locator('[data-test="axe-start"]').waitFor();
-    assert.match(await page.locator(".axe-intro p").textContent(), /前回の記録/);
-    assert.deepEqual(await storageSnapshot(page), before, "Practice must preserve raw legacy saves and LIME");
-  }, options);
-  await check("pause-reaim-and-repeat", async page => {
-    await standalone(page);
-    await page.locator('[data-test="axe-aim-右"]').click();
-    assert(Number(await game(page).getAttribute("data-aim-x")) > -.42);
-    await page.locator('[data-test="axe-action"]').click(); await phase(page, "timing");
-    await page.evaluate(() => {
-      window.testHidden = true;
-      Object.defineProperty(document, "hidden", { configurable: true, get: () => window.testHidden });
-      document.dispatchEvent(new Event("visibilitychange"));
-    });
-    const needle = await game(page).getAttribute("data-timing"); await page.waitForTimeout(350);
-    assert.equal(await game(page).getAttribute("data-timing"), needle);
-    assert(await page.locator('[data-test="axe-action"]').isDisabled());
-    await page.evaluate(() => { window.testHidden = false; document.dispatchEvent(new Event("visibilitychange")); });
-    await page.locator('[data-test="axe-reaim"]').click(); await phase(page, "aim");
-    await page.locator('[data-test="axe-target"]').focus(); await page.keyboard.press("Space");
-    await phase(page, "timing"); await page.waitForTimeout(300);
-    await page.evaluate(() => document.querySelector('[data-test="axe-target"]').dispatchEvent(new KeyboardEvent("keydown", { key: " ", repeat: true, bubbles: true })));
-    assert.equal(await game(page).getAttribute("data-phase"), "timing");
-    for (let i = 0; i < 10; i++) await page.keyboard.press("Tab");
-    assert(await game(page).evaluate(root => root.contains(document.activeElement)));
-    await page.keyboard.press("Escape"); assert.equal(await game(page).count(), 0);
+    assert.deepEqual(await storageSnapshot(page),before,"Practice must preserve raw legacy saves and LIME");
+  },options);
+  await check("ten-throws-killshots-and-companion",async page => {
+    await standalone(page,{league:true,opponent:"kafuka"}); const before=await storageSnapshot(page);
+    assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
+    await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
+    // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
+    await shoot(page,{x:-.56,y:-.70});
+    assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
+    assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
+    assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);
+    await pressReady(page); await phase(page,"choice");
+    assert(await page.locator('[data-call="upper-left"]').isDisabled()); assert(await page.locator('[data-call="upper-right"]').isDisabled());
+    assert(!(await page.locator('[data-call="lower-left"]').isDisabled()));
+    await page.locator('[data-call="lower-left"]').click(); await shoot(page); // declaration miss at center earns zero
+    assert.match(await page.locator(".axe-note").textContent(),/青い的から外れた · 0点/); await pressReady(page);
+    assert.match(await page.locator(".axe-call-status").textContent(),/残り0回/);
+    for (let n=2;n<10;n++) {
+      if(n===5) { assert.match(await page.locator(".axe-note").textContent(),/後半5投/); assert(await page.locator('[data-call="upper-left"]').isDisabled()); }
+      await shoot(page,{x:n%2?.36:0,y:n%2?.24:0}); await pressReady(page);
+    }
+    await phase(page,"summary"); await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
+    if(shotsPath) await page.screenshot({path:shotsPath + "/league-kafuka-summary.png"});
+    await pressReady(page); assert.deepEqual(await storageSnapshot(page),before);
+    assert.match(await page.locator(".axe-intro > p").first().textContent(),/前回の記録/);
   });
-  await check("pointer-double-click", async page => {
-    await standalone(page); await aimAt(page);
-    await page.locator('[data-test="axe-action"]').dblclick(); await phase(page, "timing");
-    await page.waitForFunction(() => Number(document.querySelector(".axe-game").dataset.timing) >= .48
-      && Number(document.querySelector(".axe-game").dataset.timing) <= .52);
-    await page.locator('[data-test="axe-action"]').dblclick(); await phase(page, "result");
-    assert.equal(await page.locator('[data-test="axe-round"]').textContent(), "2 / 3 投");
-    assert.equal(await page.locator(".axe-scores span").nth(1).textContent(), "2投目  —");
+  await check("pause-reaim-and-repeat",async page => {
+    await standalone(page); await page.locator('[data-call="lower-right"]').click(); await pressReady(page); await phase(page,"horizontal");
+    await page.evaluate(() => {
+      window.testHidden=true; Object.defineProperty(document,"hidden",{configurable:true,get:()=>window.testHidden}); document.dispatchEvent(new Event("visibilitychange"));
+    });
+    const needle=await game(page).getAttribute("data-timing"); await page.waitForTimeout(350);
+    assert.equal(await game(page).getAttribute("data-timing"),needle); assert(await page.locator('[data-test="axe-action"]').isDisabled());
+    await page.evaluate(()=>{window.testHidden=false;document.dispatchEvent(new Event("visibilitychange"));});
+    await page.locator('[data-test="axe-reaim"]').click(); await phase(page,"choice");
+    assert.match(await page.locator(".axe-call-status").textContent(),/宣言中/);
+    await page.locator('[data-call="normal"]').click(); assert.match(await page.locator(".axe-call-status").textContent(),/残り2回/);
+    await pressReady(page); await phase(page,"horizontal"); await page.waitForTimeout(300);
+    await game(page).evaluate(root=>root.dispatchEvent(new KeyboardEvent("keydown",{key:" ",repeat:true,bubbles:true})));
+    assert.equal(await game(page).getAttribute("data-phase"),"horizontal");
+    for(let i=0;i<10;i++) await page.keyboard.press("Tab"); assert(await game(page).evaluate(root=>root.contains(document.activeElement)));
+    await page.keyboard.press("Escape"); assert.equal(await game(page).count(),0);
+  });
+  await check("pointer-double-click",async page => {
+    await standalone(page); await page.locator('[data-test="axe-action"]:not([disabled])').dblclick(); await phase(page,"horizontal");
+    await page.waitForTimeout(350); await page.locator('[data-test="axe-action"]:not([disabled])').dblclick(); await phase(page,"vertical");
+    assert.equal(await page.locator('[data-test="axe-round"]').textContent(),"1 / 3 投");
     await page.keyboard.press("Escape");
   });
-  await check("pre-abort-and-host-detach", async page => {
-    await page.evaluate(async () => {
-      const mini = await import("./js/minigames/axe.js");
-      const signal = new AbortController(); signal.abort();
-      window.cancelledGame = await mini.runAxeThrow({ signal: signal.signal });
-      const host = document.createElement("div"); document.body.append(host);
-      window.detachedGame = mini.runAxeThrow({ host }); host.remove();
+  await check("pre-abort-and-host-detach",async page => {
+    await page.evaluate(async()=>{
+      const mini=await import("./js/minigames/axe.js"),signal=new AbortController(); signal.abort();
+      window.cancelledGame=await mini.runAxeThrow({signal:signal.signal});
+      const host=document.createElement("div");document.body.append(host);window.detachedGame=mini.runAxeThrow({host});host.remove();
+      window.invalidMode=await mini.runAxeThrow({mode:"fake"}).then(()=>false,e=>e instanceof RangeError);
     });
-    const result = await page.evaluate(async () => [cancelledGame, await detachedGame]);
-    assert(result.every(r => r.cancelled && !r.completed && r.throws.length === 0));
-    assert.equal(await game(page).count(), 0);
+    const result=await page.evaluate(async()=>[cancelledGame,await detachedGame]);
+    assert(result.every(r=>r.cancelled&&!r.completed&&r.throws.length===0));assert(await page.evaluate(()=>invalidMode));assert.equal(await game(page).count(),0);
   });
   for (const relationship of ["friend-legacy", "friend", "lover"]) await check("api-" + relationship, async page => {
     await page.evaluate(async relationship => {
@@ -145,7 +155,7 @@ await suite("axe-throw", async check => {
     }, relationship);
     assert(await page.evaluate(() => A.duplicate)); assert.equal(await game(page).count(), 1);
     if (relationship === "friend") assert(await page.evaluate(() => A.friendBefore));
-    await phase(page, "aim"); await fit(page);
+    await phase(page, "choice"); await fit(page);
     await shoot(page); await fit(page);
     await page.evaluate(() => A.abort.abort()); const result = await page.evaluate(() => A.flow);
     assert(!result.completed && result.cancelled && result.throws.length === 1);
@@ -153,8 +163,8 @@ await suite("axe-throw", async check => {
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
     assert(await page.evaluate(() => A.route.hiyoriIsFriend() === A.friendBefore));
     await page.evaluate(() => { A.flow = A.mini.runAxeThrow({ reducedMotion: true }); });
-    for (let n = 0; n < 3; n++) { await shoot(page); if (n < 2) await page.locator('[data-test="axe-action"]').click(); }
-    await page.locator('[data-test="axe-action"]').click(); const complete = await page.evaluate(() => A.flow);
+    for (let n = 0; n < 3; n++) { await shoot(page); if (n < 2) await pressReady(page); }
+    await pressReady(page); await phase(page, "summary"); await pressReady(page); const complete = await page.evaluate(() => A.flow);
     assert(complete.completed && !complete.cancelled); assert.equal(complete.throws.length, 3);
     assert.equal(complete.total, complete.throws.reduce((sum, shot) => sum + shot.score, 0));
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
