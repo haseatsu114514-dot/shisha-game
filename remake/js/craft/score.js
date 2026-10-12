@@ -7,6 +7,7 @@ import { state } from "../core/state.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
+import { temperatureBands } from "./temperature-model.js";
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
@@ -29,7 +30,9 @@ export function computeShisha(cs) {
   const h = cs.holes || { total: 22, evenness: 0.6, outerEven: 0.6, innerExcess: 0, score: 60 };
   const c = cs.heat || { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 };
   const m = cs.mixInfo || { score: 60, intensity: 5, total: 12 };
-  const p = cs.pull || { score: 60, temp: 0.54, pulls: 3 };
+  const bands = temperatureBands(cs);
+  const p = cs.pull || { score: 60, temp: bands.center, pulls: 3 };
+  const overheated = Number.isFinite(p.temp) ? p.temp > bands.ideal[1] : !!p.over;
   const st = cs.steam || { min: 5, hits: 2, score: 70 };
   const care = cs.careHistory?.length ? { score: cs.careHistory.reduce((sum, item) => sum + item.score, 0) / cs.careHistory.length } : cs.care || { score: 60 };
   const grams = m.total || 12;
@@ -44,7 +47,7 @@ export function computeShisha(cs) {
   const draw = clamp(42 + holeDraw + packDraw, 0, 100);
   const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + (cs.equip?.charcoal === "cube_charcoal" ? 5 : 0), 0, 100);
   const heatStability = clamp(h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability, 0, 100);
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + (p.over ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);
+  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + (overheated ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);
   const gift = giftBowlEffect(cs);
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0), 0, 100);
   const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3, 0, 100);

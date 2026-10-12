@@ -70,7 +70,7 @@ export async function runSteamDodge(cs) {
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
     el("span.precision-copy", [el("span.refresh-copy", { text: "精密" }), precisionState]),
   ]);
-  const thermometer = buildSteamTemperature();
+  const thermometer = buildSteamTemperature(cs);
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const mental = buildMentalTrace(W, H);
   const world = buildSteamWorld(W, H);
