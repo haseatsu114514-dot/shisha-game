@@ -8,16 +8,16 @@
       "chapter": 2,
       "title": "才能の壁",
       "english": "Jealousy Haze",
-      "concept": "初稿の青・ピンクを保ち、はじめのポーズを勇気を出して立ち向かう姿に変更",
-      "variant": "bright-courage-v5",
-      "original": "originals/ch2-bright-courage-v5.png",
-      "original_sha256": "ca7d74cd46d7f1d701bb386432fdd0542645aebd33dd9787c314151cca116370",
+      "concept": "指定画像の紫・ピンクの暗さ、立ち向かうはじめ。光の位置を4案で比較",
+      "variant": "light-A",
+      "original": "originals/ch2-light-A.png",
+      "original_sha256": "9cdb2d480ec58780c1327ddd45c3259b7246a9ca51ef24f55ac98141381cfcd9",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-4c217aba-1347-48ca-bc6c-7fb52af16372",
-      "prompt": "prompts/ch2-bright-courage-v5.txt"
+      "generation_id": "exec-9be79077-7f8d-408b-9aa9-84b481c37c0b",
+      "prompt": "prompts/ch2-light-A.txt"
     },
     {
       "chapter": 3,
@@ -229,13 +229,30 @@
         "refs/ageha.png",
         "refs/hajime.png"
       ]
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "初稿の青・ピンクを保ち、はじめのポーズを勇気を出して立ち向かう姿に変更",
+      "variant": "bright-courage-v5",
+      "original": "originals/ch2-bright-courage-v5.png",
+      "original_sha256": "ca7d74cd46d7f1d701bb386432fdd0542645aebd33dd9787c314151cca116370",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-4c217aba-1347-48ca-bc6c-7fb52af16372",
+      "prompt": "prompts/ch2-bright-courage-v5.txt",
+      "status": "superseded; latest user specified dark-v2 darkness and four light positions"
     }
   ],
   "references_used": {
     "2": [
-      "originals/ch2-bright-v1.png",
-      "originals/ch2-silhouette-v3.png",
-      "refs/hajime.png"
+      "user-darkness-reference",
+      "originals/ch2-bright-courage-v5.png",
+      "refs/hajime.png",
+      "refs/ageha.png"
     ],
     "3": [
       "originals/ch3.png",
@@ -260,5 +277,84 @@
     "fit": "Pillow ImageOps.fit, LANCZOS, centered, preserve aspect ratio",
     "typography": "separate RGBA layer; ch2 Gothic/Arial Narrow Bold and Italic, ch3 light Mincho/Times, ch4 Mincho W6, ch5 metallic Gothic/DIN Condensed. Placement varies by chapter.",
     "production_adopted": false
+  },
+  "lighting_variants": [
+    {
+      "id": "A",
+      "label": "アゲハの目元",
+      "original": "originals/ch2-light-A.png",
+      "original_sha256": "9cdb2d480ec58780c1327ddd45c3259b7246a9ca51ef24f55ac98141381cfcd9",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-9be79077-7f8d-408b-9aa9-84b481c37c0b",
+      "prompt": "prompts/ch2-light-A.txt",
+      "references_used": [
+        "user-darkness-reference",
+        "originals/ch2-bright-courage-v5.png",
+        "refs/hajime.png",
+        "refs/ageha.png"
+      ]
+    },
+    {
+      "id": "B",
+      "label": "アゲハの顔半分",
+      "original": "originals/ch2-light-B.png",
+      "original_sha256": "ea5f637477f4987d6581bf6043a2f1771bab83cbda7a899616a248c6603c75a4",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-e2d8c163-1597-4bff-8650-bbc1dad889ee",
+      "prompt": "prompts/ch2-light-B.txt",
+      "references_used": [
+        "originals/ch2-light-A.png",
+        "refs/ageha.png",
+        "refs/hajime.png"
+      ]
+    },
+    {
+      "id": "C",
+      "label": "髪と肩の輪郭",
+      "original": "originals/ch2-light-C.png",
+      "original_sha256": "0fd6c100a63c7e66dc8081132121684af674d9105aeb4bc8148392a643dbf076",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-c8b378ea-a699-435c-b68b-f94c86fc3b7f",
+      "prompt": "prompts/ch2-light-C.txt",
+      "references_used": [
+        "originals/ch2-light-A.png",
+        "refs/ageha.png",
+        "refs/hajime.png"
+      ]
+    },
+    {
+      "id": "D",
+      "label": "はじめを照らす",
+      "original": "originals/ch2-light-D.png",
+      "original_sha256": "e55be0536690bdac41172321fde58dfb57b234caed449ef2eed0a414a3ec07f8",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-47af6730-ea43-4a3b-bc41-95a09715687a",
+      "prompt": "prompts/ch2-light-D.txt",
+      "references_used": [
+        "originals/ch2-light-A.png",
+        "refs/ageha.png",
+        "refs/hajime.png"
+      ]
+    }
+  ],
+  "lighting_default": "A",
+  "darkness_reference": {
+    "file_name": "codex-clipboard-de77704a-b948-48cd-92e8-3013bb6094f9.png",
+    "sha256": "8876544c97757345609c342c20dc1dcd8d100d82482b92da158e435467269f60",
+    "purpose": "exact darkness and purple/pink palette for chapter2",
+    "matches_original_ch2_dark_v2": false,
+    "stored_in_repository": false
   }
 }
