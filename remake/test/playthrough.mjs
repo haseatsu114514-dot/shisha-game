@@ -40,6 +40,7 @@ const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_B
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
+  if (window.top !== window) return; // 会話計測フックは本編だけ。歩行frameに相対importを注入しない。
   window.addEventListener("DOMContentLoaded", async () => {
     const audio = await import("./js/core/audio.js");
     const { hooks } = await import("./js/vn/engine.js");
@@ -70,7 +71,7 @@ log("title OK");
 if (SHOTS) await page.screenshot({ path: `${SHOTS}/title.png` });
 await page.click('[data-test="title-new"]');
 // 天気の種を固定（雨の日 = DAY2/7/10/13）。雨の日のマップ・バイトを必ず通す
-await page.evaluate(() => { window.__remake.state.weatherSeed = 4; });
+await page.evaluate(() => { const s = window.__remake.state; s.weatherSeed = 4; s.seed = 1; s.reel.seed = 1; });
 
 let planIdx = 0;
 let pendingAfter = null;
@@ -109,9 +110,10 @@ async function click(sel) {
 async function chooseDestination(id) {
   const doors = { cafe: "cafe", minto: "peppermint", naru: "kemurikusa" };
   if (STREET_MODE && doors[id]) {
+    if (!(await page.$(`[data-test="pin-${id}"]:not(.off)`))) return false;
+    const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
     await click('[data-test="map-walk"]');
-    await page.waitForSelector('[data-test="street-frame"]');
-    const frame = page.frames().find((f) => f.url().includes("embed=1"));
+    const frame = await navigating;
     await frame.waitForFunction(() => window.__street?.state().ready && !window.__street.state().paused);
     // 通し確認では入口へ配置し、実キーで決定。実移動・タップは street_selection.mjs で検証。
     await frame.evaluate((door) => window.__street.warp(door), doors[id]);
@@ -321,7 +323,10 @@ for (;;) {
       const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
       await click(`[data-test="${errand}"]`);
     }
-    if (pendingShopBuy && pendingShopBuy !== "__upstairs") await click(`[data-test="buy-${pendingShopBuy}"]`);
+    if (pendingShopBuy && pendingShopBuy !== "__upstairs") {
+      await page.locator('.shop-tab[data-tab="flavor"]').click();
+      await page.locator(`[data-test="buy-${pendingShopBuy}"]`).click();
+    }
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
     if (!kujiDrawn) {
       kujiDrawn = true;
@@ -352,7 +357,7 @@ for (;;) {
 const s = await page.evaluate(() => window.__remake.state);
 if (s.day !== 14) throw new Error(`Tournament/clear day must remain DAY14, got DAY${s.day}`);
 if (!s.flags._ev_first_practice || !s.flags._ev_midcheck || !s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
-if ((s.flags._craft_practice_runs || []).length < 3 || !s.flavors.includes("blueberry")) throw new Error("Missing early practice, midchapter shopping or rehearsal");
+if ((s.flags._craft_practice_runs || []).length < 3 || !s.flavors.includes("blueberry")) throw new Error(`Missing practice/shopping: runs=${JSON.stringify(s.flags._craft_practice_runs)} flavors=${JSON.stringify(s.flavors)}`);
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
@@ -372,7 +377,7 @@ for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
 }
 log("tournament BGM: opening → crafting ROUND 1–4 → judging, including retry: PASS");
 // スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
-log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
+log(`slot: seed=${s.reel.seed} spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);
 if (!s.reel.introDone) throw new Error("slot intro not shown");
 // 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない

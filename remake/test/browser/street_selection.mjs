@@ -39,9 +39,9 @@ try {
       await page.waitForSelector('.map:not(.done)');
     };
     const walk = async () => {
+      const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
       await page.locator('[data-test="map-walk"]').click();
-      await page.waitForSelector('[data-test="street-frame"]');
-      const frame = page.frames().find((f) => f.url().includes('embed=1'));
+      const frame = await navigating;
       await frame.waitForFunction(() => window.__street?.state().ready && !window.__street.state().paused);
       return frame;
     };
@@ -92,6 +92,13 @@ try {
       assert.equal(await page.locator('[data-test="street-frame"]').count(), 0);
     }
     pass(`${label}: 3 doors return only correct main IDs, no prototype interior or rewards`);
+    await reset(); frame = await walk();
+    await frame.evaluate(() => __street.place(460, 310, 'up'));
+    const cam = (await frame.evaluate(() => __street.state())).camX;
+    await tap(frame, 534 - cam, 200);
+    await page.waitForFunction(() => T.result === 'cafe'); await unchanged();
+    pass(`${label}: ${touch ? 'real touch' : 'pointer'} door hit walks to cafe and resolves main ID`);
+
     await reset('delivery', { guide: { pin: 'minto', free: '配達（代金なし）', text: '店先へ配達' } });
     frame = await walk(); await pressDoor(frame, 'peppermint');
     await page.waitForFunction(() => T.result === 'minto'); await unchanged();
@@ -127,6 +134,24 @@ try {
     await page.keyboard.up('ArrowRight'); await page.locator('[data-test="phone-close"]').click();
     await frame.waitForFunction(() => !__street.state().paused); await page.waitForTimeout(250);
     assert.equal((await frame.evaluate(() => __street.state())).x, x);
+    await page.evaluate(() => {
+      const s = T.core.state;
+      const msg = { id: 'qa_street_invite', sender: 'sumi', type: 'invitation', time_slot: 'night',
+        accept_event: '__sumi_baito__', messages: ['今夜のシフト、入れるか？'] };
+      s.inbox.push({ id: msg.id, originId: msg.id, day: s.day, msg, read: false, done: false, replyState: 'waiting', log: [] });
+      T.inviteBefore = { day: s.day, slot: s.slot, money: s.money, stamina: s.stamina };
+    });
+    await page.locator('[data-test="hud-phone"]').click();
+    await page.locator('[data-test="lime-chat-sumi"]').click();
+    await page.locator('[data-test="reply-0"]').click();
+    await page.locator('[data-test="phone-next"]').click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.waitForSelector('[data-test="street-frame"]', { state: 'detached' });
+    await page.waitForSelector('.map:not(.done)');
+    assert.deepEqual(await page.evaluate(() => { const s = T.core.state; return { day: s.day, slot: s.slot, money: s.money, stamina: s.stamina }; }), await page.evaluate(() => T.inviteBefore));
+    assert.equal(await page.evaluate(() => T.core.state.pendingInvite.slot), 1);
+    frame = await walk();
+    pass(`${label}: accepting real LIME invitation interrupts street and preserves existing future-slot contract`);
     await page.locator('[data-test="hud-menu"]').click(); await page.waitForSelector('.menu-modal');
     await frame.waitForFunction(() => __street.state().paused);
     await page.locator('[data-test="menu-save"]').click(); await page.locator('[data-test="slot-1"]').click();
@@ -184,8 +209,9 @@ try {
   const page = await browser.newPage(); await page.route(/assets\/proto_(street_set|walk)\//, r => r.fulfill({ status: 404, body: '' }));
   await page.goto(BASE); await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
-  await page.locator('[data-test="map-walk"]').click(); await page.waitForSelector('[data-test="street-frame"]');
-  const frame = page.frames().find(f=>f.url().includes('embed=1')); await frame.waitForFunction(()=>__street.state().ready&&!__street.state().paused);
+  const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
+  await page.locator('[data-test="map-walk"]').click();
+  const frame = await navigating; await frame.waitForFunction(()=>__street.state().ready&&!__street.state().paused);
   assert.equal((await frame.evaluate(()=>__street.layout())).setSource,'placeholder');
   await frame.evaluate(()=>__street.warp('cafe')); await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
   await page.waitForFunction(()=>selected==='cafe'); pass('missing images: placeholder still selects main cafe');
