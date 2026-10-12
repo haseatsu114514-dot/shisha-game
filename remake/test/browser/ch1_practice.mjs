@@ -62,7 +62,7 @@ function resourcesUnchanged(s) {
 }
 
 await suite("ch1-practice", async run => {
-  const check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
+  const check = (...args) => !process.env.TEST_CASES || new RegExp(process.env.TEST_CASES).test(args[0]) ? run(...args) : Promise.resolve();
   for (const [label, flags, hasChoice] of [
     ["skipped", { _tutorial_skipped: true }, false],
     ["legacy-no-history", {}, false],
@@ -103,7 +103,10 @@ await suite("ch1-practice", async run => {
       await page.evaluate(() => P.core.saveToSlot("suien_remake_slot1"));
       await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
       await page.evaluate(() => { P.core.loadFromSlot("suien_remake_slot1"); P.run(); }); await finish(page);
-      const again = await snapshot(page); assert.equal(again.benches, 0); assert.deepEqual(again.state, r.state);
+      const again = await snapshot(page); assert.equal(again.benches, 0);
+      const { savedAt: _beforeTime, ...beforeState } = r.state;
+      const { savedAt: _afterTime, ...afterState } = again.state;
+      assert.deepEqual(afterState, beforeState);
     }, options);
     await check(`${device}-mid-care`, async page => {
       await setup(page, { day: 7 }); await page.evaluate(() => P.run()); await finish(page);
