@@ -104,12 +104,20 @@
   "preserved": [
     "all title18/chapter/intro/polaroid artwork",
     "unused cg_ch1_sumi_secret/cg_ch1_tournament_tension placeholders remain excluded",
-    "cheki event already uses adopted cg_minto_first_cheki; no obsolete cg_minto_cheki alias introduced"
+    "First-visit cg_minto_first_cheki artwork is unchanged. The separate active cg_minto_cheki reference in the DAY4 invitation is outside these nine CGs and is handled in a following unit."
   ],
   "manifestChangedFields": [
     "generated",
     "cgs",
     "webp"
   ],
-  "sourceFilesSharedWithOtherWorker": "only automatically generated manifest (CG/WebP sets; making and all other fields byte-value unchanged), no existing game/CI implementation source changed"
+  "sourceFilesSharedWithOtherWorker": "Merged latest main unchanged. Only CG registration additions and the image-load result guard in vn/engine.js are edited; other manifest fields, backgrounds, making entries, dialogue and save/reward logic are preserved.",
+  "review": {
+    "worker": "codex-cg360-20261012-7242bf5ca07e",
+    "originalPrHead": "8bea7f994eaebce7f1b996cb3972941e5f636f89",
+    "testedSourceHead": "f145263f6f0c854e2778094d737571f14c044333",
+    "verification": "review/verification.json",
+    "acceptedByVisualQA": true,
+    "humanApprovalClaimed": false
+  }
 }

@@ -6,6 +6,7 @@ on:
       - 'remake/img/cgs/**'
       - 'remake/data/manifest.json'
       - 'remake/test/ch1_cg_art.mjs'
+      - 'remake/js/vn/engine.js'
       - '.github/workflows/ch1-cg-art.yml'
   workflow_dispatch:
 permissions:
