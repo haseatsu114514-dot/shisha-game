@@ -367,6 +367,12 @@ if (practiceRuns.length < 3 || !s.flavors.includes("lemon") || !s.flavors.includ
 }
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
+const recognitionComments = await page.evaluate(() => Object.entries((window.__remake.DB || {}).dialogues || {}).flatMap(([id, d]) =>
+  id.startsWith("ch1_craft_recognition_") ? d.lines.filter(l => l.speaker === "sumi").map(l => l.text) : []));
+const scoreSheet = s.inbox.find(item => item.id === "_sys_sumi_scoresheet");
+if (!recognitionComments.length || !scoreSheet?.msg.messages.some(text => recognitionComments.includes(text))) {
+  throw new Error("A successful tournament did not acknowledge any actual craft step");
+}
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
 const bgmCues = await page.evaluate(() => window.__tournamentBgmCues);
 for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {

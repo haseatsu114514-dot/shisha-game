@@ -179,38 +179,55 @@
 .opt.off, .opt:disabled { opacity: 0.35; cursor: not-allowed; }
 .step-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
 
-/* 配合 */
-.mix { display: flex; gap: 18px; height: 100%; }
-.mix-list { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 530px; padding-right: 6px; }
-.flavor-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
-.fr-swatch { flex: none; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.35), 0 0 10px rgba(0, 0, 0, 0.3); }
-.fr-name { flex: 1; display: flex; flex-direction: column; }
+/* 配合: 葉と器、香りの返事を中心に置く。 */
+.mix { display: grid; grid-template-columns: 300px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 18px 24px; height: 100%; }
+.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; }
+.mix-vessel { position: relative; flex: none; width: 300px; height: 332px; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #d5a26012, transparent 70%); }
+.mix-vessel-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
+.mix-vessel-art > .art { flex: none; }
+.mix-clay-leaves { position: absolute; top: 11%; left: 35px; width: 230px; height: 62px; border-radius: 50%; background-size: 175% auto; background-position: center 18%; }
+.mix-taste { width: 100%; padding: 8px; text-align: center; }
+.mix-taste > b { font-family: "Craft Mincho", var(--font); font-size: 23px; color: #e2c593; letter-spacing: .04em; }
+.mix-taste p { margin: 8px 0; min-height: 50px; font-size: 15px; line-height: 1.7; color: #e4ddd2; }
+.mix-taste-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.mix-taste-tags span { padding: 3px 9px; border: 1px solid #c4ab7a44; border-radius: 20px; font-size: 12px; color: #d0bda0; }
+.mix-list { min-width: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
+.mix-list-caption { margin: 8px 0 2px; font-size: 16px; letter-spacing: .08em; color: #d3c2a8; }
+.flavor-row { display: flex; align-items: center; gap: 8px; padding: 12px; min-height: 76px; background: linear-gradient(120deg, #a2815520, #ffffff04); border: 1px solid #ae906c38; border-radius: 10px; }
+.fr-swatch { flex: none; width: 28px; height: 38px; border-radius: 70% 18% 70% 18%; box-shadow: inset 0 -4px 8px #0006; transform: rotate(-20deg); }
+.fr-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .fr-name b { font-size: 16px; }
-.fr-name small { font-size: 14px; color: var(--text-dim); }
+.fr-name small { font-size: 12px; line-height: 1.5; color: var(--text-dim); }
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
-.fr-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.35); color: var(--text); font-size: 20px; cursor: pointer; }
+.fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
-.fr-g { width: 44px; text-align: center; font-family: var(--font); font-size: 18px; }
-.mix-side { width: 280px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.mix-bowl { width: 200px; height: 170px; border-radius: 10px 10px 90px 90px; border: 3px solid rgba(255, 255, 255, 0.25); overflow: hidden; display: flex; flex-direction: column-reverse; background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 -20px 40px rgba(0, 0, 0, 0.5); }
-.bowl-layers { display: flex; flex-direction: column-reverse; width: 100%; height: 100%; }
-.bowl-layers i { display: block; width: 100%; transition: height 0.25s var(--ease-out); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.15); }
-.lcd { width: 220px; padding: 10px 8px; text-align: center; font-family: var(--font); font-size: 25px; font-variant-numeric: tabular-nums; color: #a8d9b6; background: #ffffff04; border: 1px solid #ffffff15; border-radius: 10px; }
-.lcd:not(.ok) { color: #e5c694; }
-.reg-line { font-size: 15px; color: #ff9b9b; }
+.fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .flavor-row { min-height: 180px; display: grid; grid-template-columns: 54px minmax(0, 1fr) 54px; grid-template-rows: 1fr 54px; padding: 16px 22px; gap: 12px; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-swatch { width: 42px; height: 55px; grid-area: 1 / 1; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-name { grid-area: 1 / 2 / 2 / 4; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-name b { font-size: 20px; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-btn { width: 54px; height: 54px; }
+.mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-g { width: 100%; font-size: 28px; }
+.mix-footer { grid-column: 1 / -1; display: grid; grid-template-columns: 210px 150px minmax(0, 1fr); align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid #d1b48633; }
+.mix-footer > .btn { min-height: 64px; }
+.lcd { padding: 2px 0; text-align: left; font-family: var(--font); font-size: 23px; font-variant-numeric: tabular-nums; color: #bbd4b8; }
+.lcd:not(.ok) { color: #d2bea0; }
+.reg-line { font-size: 12px; color: #ff9b9b; line-height: 1.5; }
 .reg-line.ok { color: var(--good); }
-.recipe-line { font-size: 15px; color: var(--gold-hi); min-height: 22px; }
-.mix-hint { font-size: 14px; color: #9fe3ff; line-height: 1.5; padding: 8px 10px; border: 1px dashed rgba(159, 227, 255, 0.4); border-radius: 6px; }
-.mix-overview { display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; flex: none; }
-.mix-overview .mix-bowl { width: 170px; height: 150px; flex: none; }
-.mix-overview .mix-temperature { height: 200px; flex: none; }
-.mix-temperature-preview { width: 100%; text-align: center; }
-.mix-temperature-preview > b { font-size: 14px; color: var(--text-dim); }
-.mix-temperature-legend { display: flex; flex-direction: column; gap: 4px; margin-top: 5px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.recipe-line { font-size: 13px; color: var(--gold-hi); }
+.mix-hint { font-size: 12px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 1px solid #afc7d244; }
+.mix-temperature-preview { position: relative; font-size: 13px; color: var(--text-dim); }
+.mix-temperature-preview summary { cursor: pointer; padding: 12px 0; }
+.mix-temperature-preview[open] { z-index: 8; }
+.mix-temperature-preview[open] > .thermo, .mix-temperature-preview[open] > .mix-temperature-legend { position: absolute; bottom: 58px; box-shadow: 0 8px 30px #0009; background: #171020; border: 1px solid #c1a37555; }
+.mix-temperature-preview[open] > .thermo { left: -16px; width: 72px; height: 224px; padding: 12px 18px; border-radius: 10px 0 0 10px; }
+.mix-temperature-preview[open] > .mix-temperature-legend { left: 56px; width: 235px; height: 224px; padding: 70px 14px 20px; border-radius: 0 10px 10px 0; }
+.mix-temperature-legend { display: flex; flex-direction: column; gap: 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .mix-ideal { color: #74e0b0; }
 .mix-optimal { color: #ffe5ff; }
 .mix-temperature [hidden] { display: none; }
+.pack-aroma { margin: 12px 0 24px; padding: 14px 20px; border-left: 2px solid #c3a576; background: #d4aa6310; color: #e0c69f; font-size: 19px; line-height: 1.7; }
 
 /* ---------------------------------------------------------------- 穴あけ */
 .holes { display: flex; gap: 24px; align-items: center; height: 100%; }

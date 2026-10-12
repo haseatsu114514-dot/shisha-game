@@ -76,6 +76,15 @@ const BOWL_ART = {
 };
 const PACK_ART = { fluffy: "airy", normal: "normal", firm: "firm" };
 
+/** 配合画面も、実際に選んだハガルと既存の湿った葉の素材を使う。 */
+export function mixBowlPreview(cs, grams, width = 230) {
+  const spec = BOWL_ART[cs.equip.bowl] || BOWL_ART[DB.equipById[cs.equip.bowl]?.art] || BOWL_ART.silicone_bowl;
+  const name = grams > 0 && spec.packed ? spec.packed("normal") : spec.empty;
+  const root = el("div.mix-vessel-art", [artImg(name, width)]);
+  if (grams > 0 && !spec.packed) root.append(el("i.mix-clay-leaves", { style: { backgroundImage: `url("${makingUrl("bowl_packed_normal.png")}")` } }));
+  return root;
+}
+
 // 一台の寸法（px・リグの箱の下端から）。ガラス台 → ステム（首に差し込む）→ トレイ → ボウル → アルミ → 炭
 const RIG = { baseW: 190, stemW: 25, stemShow: 112, stemInside: 30, trayW: 150 };
 
