@@ -101,7 +101,7 @@ export async function visitKafuka(spot) {
   const stamp = `${state.chapter}:${state.day}:${state.slot}`;
   const receipt = state.flags._kafuka_visit;
   const pending = receipt?.stamp === stamp && !!DB.dialogues[receipt.dialogue]?.lines?.length;
-  // 読了直後のセーブから戻った同じ行動は、料金・報酬を再処理せずcalendarに返す。
+  // 同じ行動への再入では、料金・報酬を再処理せずcalendarに返す。
   if (pending && receipt.complete === true) return true;
   const count = state.story.kafuka || 0;
   const dialogue = pending ? receipt.dialogue : kafukaVisitDialogue();
@@ -110,13 +110,14 @@ export async function visitKafuka(spot) {
   visiting = true;
   try {
     if (!pending) {
-      addMoney(-(spot.cost || 0));
-      addStamina(spot.stamina || 0);
       state.flags._kafuka_visit = { stamp, dialogue, complete: false };
       save();
     }
     await play(visitScript(dialogue));
     if (state !== owner) return false;
+    // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
+    addMoney(-(spot.cost || 0));
+    addStamina(spot.stamina || 0);
     const event = entryEvents.find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (dialogue === "kafuka_shop_bond_question") {
@@ -128,7 +129,7 @@ export async function visitKafuka(spot) {
     earnStat("insight", 4);
     syncKafukaKnowledge();
     state.flags._kafuka_visit.complete = true;
-    save();
+    // calendarが行動・育成の確定後に保存する。支払済み／行動未消費の中間セーブを作らない。
     return true;
   } finally { visiting = false; }
 }

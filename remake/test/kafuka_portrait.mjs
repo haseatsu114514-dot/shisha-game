@@ -14,7 +14,7 @@ function collect(value, scene) {
   Object.values(value).forEach(v => collect(v, scene));
 }
 data.dialogues.forEach(scene => collect(scene, scene.dialogue_id));
-assert.equal(lines.length, 7);
+assert(lines.length >= 7, "Keep the original puppet passages and inspect every added line");
 await suite("kafuka-portrait", async check => {
   for (const [label, viewport] of [["desktop", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
