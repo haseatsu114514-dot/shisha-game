@@ -115,7 +115,7 @@ jobs:
           node remake/test/continue_readiness.mjs
           node --experimental-vm-modules remake/test/continue_audio.mjs
           node remake/test/continue_neon.mjs
-          node remake/test/continue_typing.mjs
+          SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs
       - name: Steam slash, recharge and PC/mobile controls
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
