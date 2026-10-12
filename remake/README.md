@@ -274,7 +274,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
    - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 南雲の持ち点10一括投入
-   - 優勝: 表彰 → `ch1_tournament_after` → スミさんの採点表LIME → `ch1_naru_promise` → 第1章クリア
+   - 優勝: 表彰 → `ch1_tournament_after` → スミさんの採点表LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 
 ## セーブ
@@ -284,6 +284,9 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 - ゲーム中にロードすると、いったん読み直してタイトルを飛ばしてそのデータから再開する
 
 ## テスト
+
+第1章の章末と次回予告（#384）は、正規キャラを参照した専用セル画風6枚・4:3・約39秒の字幕とオリジナル合成曲で再生します。初回のみ自動再生し、完走またはスキップ後にオートセーブへ既読を記録します。中断は既読にせず、クリア画面から何度でも再視聴できます。第2章本編は準備中です。
+保存データを変更せず演出だけを見るページは `/remake/chapter-preview.html`。仕様と録画は [章末と次回予告](../docs/chapter_previews.md)。回帰は `node remake/test/browser/ch1_preview.mjs`。
 
 第1章の採用済み店舗ロゴを、マップ看板と入店時の短い表示に使用します。選定・原画・PC/スマートフォン確認は `asset_sources/store-logos/ch1-issue470/README.md`。表示窓は `js/core/store-logos.js`、入店の幕は `js/core/store-arrival.js`。関連確認: `node remake/test/store_logos.mjs` と `node remake/test/navigation_transitions.mjs`。
 

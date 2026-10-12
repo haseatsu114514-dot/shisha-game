@@ -1,0 +1,26 @@
+{
+  "id": "ch1_to_ch2",
+  "title": "才能の壁",
+  "read": "ジェラシー・ヘイズ",
+  "english": "Jealousy Haze",
+  "sub": "HAZE: OPEN CLOUD 編",
+  "duration": 38800,
+  "frames": [
+    { "id": "afterglow", "kind": "prologue", "duration": 2800, "kicker": "なるさんとの約束、そのあとで。", "text": "『もう一口』の言葉より、\n採点表が、気になっていた。" },
+    { "id": "scoresheet", "kind": "image", "duration": 2800, "art": "05_hajime", "speaker": "はじめ", "text": "（……次は、ここでも勝ちたい）", "move": "push", "tone": "cold", "kicker": "技術点。個性点。あの、一票。" },
+    { "id": "next", "kind": "slate", "duration": 2000, "text": "次回予告", "kicker": "水煙前線 -EN:CODE-" },
+    { "id": "new-world", "kind": "image", "duration": 4000, "art": "01_hajime", "text": "街を越えれば、\n煙の景色も変わる。", "move": "pan", "tone": "warm", "kicker": "街の王者。その、先へ。" },
+    { "id": "open-cloud", "kind": "image", "duration": 3600, "art": "02_stage", "text": "県大会、HAZE: OPEN CLOUD。", "move": "pull", "tone": "blue", "kicker": "それぞれの、武器。" },
+    { "id": "vibes", "kind": "image", "duration": 4000, "art": "03_ageha", "speaker": "アゲハ", "text": "だってバイブスで戦うから！", "move": "pop", "tone": "pink", "kicker": "理屈を超える、直感。" },
+    { "id": "where", "kind": "image", "duration": 3600, "art": "05_hajime", "speaker": "はじめ", "text": "俺は……\nどこで戦えばいいんだ。", "move": "push", "tone": "cold", "kicker": "追いつきたい。追い越したい。" },
+    { "id": "friend", "kind": "image", "duration": 3600, "art": "04_naru", "speaker": "なる", "text": "でも、さっきの話、聞いてたか？", "move": "still", "tone": "cold", "kicker": "一番近い声が、遠くなる。" },
+    { "id": "distant", "kind": "image", "duration": 3200, "art": "05_hajime", "speaker": "はじめ", "text": "（味が、遠い。）", "move": "still", "tone": "faded", "kicker": "勝ったのに。" },
+    { "id": "chapter-title", "kind": "title", "duration": 5200, "art": "02_stage", "move": "pull", "text": "才能の壁", "kicker": "第二章" },
+    { "id": "last-question", "kind": "echo", "duration": 4000, "art": "06_sumi", "speaker": "スミ", "text": "お前は今、誰のために作ってる？", "move": "still", "tone": "dark" }
+  ],
+  "source_notes": {
+    "continuity": "第1章の採点表LIME・なるとの約束から続く、次章の断片。後日談と予告の文面は本演出用。第2章本編の読了・交流・報酬は進めない。",
+    "canon": ["brand/story_and_structure.md 第1章・第2章", "data/dialogue/ch1_naru.json ch1_naru_promise", "data/dialogue/ch2_main.json", "data/dialogue/ch2_naru.json"],
+    "spoilers": "県大会の勝敗、未知の送信者の正体、アゲハが去る理由を見せない。"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "output": "/workspace/shared/downloads/ch1-next-preview.mp4",
+  "url": "http://127.0.0.1:8123/remake/chapter-preview.html",
+  "frameCount": 1879,
+  "duration": 44.164840087890624,
+  "audioTrim": 1.192760009765625,
+  "audioContexts": 2,
+  "sampleRate": 48000,
+  "clickInVideoSeconds": 1.8170400390625,
+  "errors": [],
+  "preload": {
+    "artworks": 6,
+    "durationMs": 38800
+  },
+  "finalPageState": {
+    "phase": "ended",
+    "cut": null,
+    "elapsedMs": 0,
+    "ended": true
+  },
+  "finalScreenshot": "/workspace/scratch/ch1-preview-capture/final.png",
+  "media": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720,
+        "pix_fmt": "yuv420p",
+        "color_range": "tv",
+        "nb_frames": "1325"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000",
+        "channels": 2,
+        "nb_frames": "2040"
+      }
+    ],
+    "format": {
+      "duration": "44.166667",
+      "size": "6478772"
+    }
+  },
+  "sha256": "9efa77ec22246774828cd3ee45952a706c05d87e0e147121df2badce3c426c20",
+  "audioPeakDbFS": -8.1,
+  "audioMeanDbFS": -32.7,
+  "visualQA": {
+    "phone": 5.8,
+    "next-slate": 8.6,
+    "ageha": 18.8,
+    "title": 33.2,
+    "last-sumi": 39.0
+  },
+  "visualQAResult": "All five frames have legible complete captions and no clipping. Playback completed before 3-second end card.",
+  "captureMethod": "Chromium CDP rendered frame timestamps plus isolated WebAudio MediaRecorder mix of 2 game AudioContexts. No game code or game saves changed by recording."
+}

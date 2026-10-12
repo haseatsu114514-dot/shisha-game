@@ -37,6 +37,7 @@ import { playTsumugiStory } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
+import { playChapterPreview } from "./ch1-preview.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -494,21 +495,45 @@ async function finishAfterTournament() {
 export async function showClear() {
   playBgm("bgm_result_emotional");
   showHud(false);
-  setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
+  await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
+  const owner = state;
+  let playing = false;
+  const replay = el("button.btn.primary", { text: "次回予告をもう一度", dataset: { test: "end-preview" } });
   const root = el("div.end-screen.clear", [
     el("div.end-title", { text: "第1章 クリア" }),
-    el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 次は県大会『HAZE: OPEN CLOUD』へ。" }),
+    el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
     el("div.end-body", [
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("p", { text: "第2章は、まだ準備中です。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT ──" }), el("b", { text: "県大会『HAZE: OPEN CLOUD』" }), el("span", { text: "県中の煙自慢が、この称号を狙っている。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "第2章の本編は準備中です。" })]),
       ]),
     ]),
-    el("div.end-actions", [el("button.btn.primary", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
+    el("div.end-actions", [replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
   ]);
   showScreen("end", root);
+  async function preview(first = false) {
+    if (playing || !root.isConnected) return;
+    playing = true; replay.disabled = true;
+    const controller = new AbortController();
+    const observer = new MutationObserver(() => { if (!root.isConnected) controller.abort(); });
+    observer.observe(layers.screen, { childList: true });
+    let result;
+    try { result = await playChapterPreview({ signal: controller.signal }); }
+    finally { observer.disconnect(); }
+    if (first && root.isConnected && ["completed", "skipped"].includes(result) && state === owner && state.phase === "cleared") {
+      state.flags._ch1_preview_seen = true;
+      save();
+    }
+    playing = false; replay.disabled = false;
+    if (root.isConnected) {
+      playBgm("bgm_result_emotional");
+      replay.focus({ preventScroll: true });
+    }
+  }
+  replay.addEventListener("click", () => preview(false));
+  if (!flag("_ch1_preview_seen")) await preview(true);
 }
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
