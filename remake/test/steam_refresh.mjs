@@ -46,7 +46,9 @@ try {
   }));
   assert.deepEqual(perks,[{radius:180,recovery:false,stock:1},{radius:220,recovery:false,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
   const finish=async()=>{
-    await page.waitForSelector('.result-card.show',{timeout:20000});
+    // The 20-second simulation caps RAF dt at 50ms; slow frames take longer in
+    // wall time, then the result needs another 400ms and a presentation frame.
+    await page.waitForSelector('.result-card.show',{timeout:60000});
     await page.locator('[data-test="step-details"]').click();
     const result=await page.locator('.rc-lines').textContent();
     const stats=await page.evaluate(()=>({...cs.steam}));
