@@ -59,7 +59,7 @@ export const SPOTS = [
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
-  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,

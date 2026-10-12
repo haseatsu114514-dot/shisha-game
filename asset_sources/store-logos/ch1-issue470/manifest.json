@@ -1,14 +1,15 @@
 {
+  "version": 2,
   "sheets": [
     {
       "id": "tonari",
       "name": "tonari",
       "file": "sheets/tonari.png",
-      "original_generator_path": "/workspace/generated_images/exec-5be23caa-07a1-4a58-9eb7-d9c3929d69e4.png",
-      "sha256": "21acc8fa78144f5c1e75b9e2d4e5cdd223170978d74cbd80c88fa363ec95e270",
+      "original_generator_path": "/workspace/generated_images/exec-1764348e-1964-4519-91c1-3bf98de7b4da.png",
+      "sha256": "d370ab7a92227a33cc69d54c4491e6956afaf50115870d61ebb68300a432d7ef",
       "size": [
-        2172,
-        724
+        2050,
+        767
       ],
       "mode": "RGBA",
       "alpha_range": [
@@ -16,10 +17,10 @@
         255
       ],
       "solid_bbox": [
-        19,
-        31,
-        2109,
-        682
+        64,
+        170,
+        1986,
+        569
       ],
       "solid_edge_pixels": [
         0,
@@ -28,17 +29,17 @@
         0
       ],
       "concepts": {
-        "A": "煙がつなぐ手書き文字",
-        "B": "モザイクランプの紋章",
-        "C": "隣り合う窓の幾何学"
+        "A": "やわらかな小文字",
+        "B": "となりの手書き文字",
+        "C": "tの小さなシンボル"
       }
     },
     {
       "id": "kemurikusa",
       "name": "KEMURIKUSA",
       "file": "sheets/kemurikusa.png",
-      "original_generator_path": "/workspace/generated_images/exec-7fa953b9-1565-4a1a-b44b-836741849200.png",
-      "sha256": "fa80237c2f157224bc12e92fb0c11e30dd58e7a0997a2d2539a316a9706fd6b0",
+      "original_generator_path": "/workspace/generated_images/exec-8a4337b8-8149-4de2-aaf9-f6d18224989d.png",
+      "sha256": "f186172e35f52cfc73edb74a633f3fedfa4580cf713c385607c1704045507a70",
       "size": [
         2172,
         724
@@ -49,10 +50,10 @@
         255
       ],
       "solid_bbox": [
-        57,
-        78,
-        2144,
-        636
+        61,
+        204,
+        2118,
+        510
       ],
       "solid_edge_pixels": [
         0,
@@ -61,31 +62,31 @@
         0
       ],
       "concepts": {
-        "A": "葉と香りの線画",
-        "B": "Kのモノグラム",
-        "C": "洋菓子店風の楕円紋章"
+        "A": "細長い英字ロゴ",
+        "B": "手書きのケムリクサ",
+        "C": "Kを組んだマーク"
       }
     },
     {
       "id": "eden",
       "name": "EDEN",
       "file": "sheets/eden.png",
-      "original_generator_path": "/workspace/generated_images/exec-40f10263-7f1d-47a0-86c1-e75ecba0cfda.png",
-      "sha256": "68b3102129af4c1f8c3bc218c9a03ffa7216483285c62bbd227f62aa062ca2a6",
+      "original_generator_path": "/workspace/generated_images/exec-3baaecb0-31f3-4904-9bf2-eb3cc74f8fbe.png",
+      "sha256": "2b22f322a33142c763cea5493dcb5917ccc9058ffa8bbd2538d1a5a4ab283e1c",
       "size": [
-        1960,
-        802
+        2048,
+        768
       ],
       "mode": "RGBA",
       "alpha_range": [
         0,
-        255
+        254
       ],
       "solid_bbox": [
-        52,
-        24,
-        1930,
-        755
+        119,
+        201,
+        1928,
+        578
       ],
       "solid_edge_pixels": [
         0,
@@ -94,149 +95,17 @@
         0
       ],
       "concepts": {
-        "A": "赤と緑の双子林檎",
-        "B": "楽園の門",
-        "C": "林檎とEの紋章"
+        "A": "静かなセリフ体",
+        "B": "Eの幾何学マーク",
+        "C": "太字と二つの点"
       }
     },
     {
       "id": "peppermint",
       "name": "PEPPERMINT／ぺぱーみんと",
       "file": "sheets/peppermint.png",
-      "original_generator_path": "/workspace/generated_images/exec-7904592b-d287-4c5f-8536-07d1d1ec2de7.png",
-      "sha256": "57129df4c7b55c99e153fe00a05f8246a3323a436e13f4a3aa59987944c01af9",
-      "size": [
-        2172,
-        724
-      ],
-      "mode": "RGBA",
-      "alpha_range": [
-        0,
-        255
-      ],
-      "solid_bbox": [
-        34,
-        19,
-        2145,
-        702
-      ],
-      "solid_edge_pixels": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "concepts": {
-        "A": "角つきミントハート",
-        "B": "小悪魔のリボン紋章",
-        "C": "ぷっくりポップ文字"
-      }
-    },
-    {
-      "id": "dr-fookah",
-      "name": "Dr.fookah",
-      "file": "sheets/dr-fookah.png",
-      "original_generator_path": "/workspace/generated_images/exec-ca9e2cd3-3276-4b5f-8524-377a4b2128e9.png",
-      "sha256": "f63ffd4a59dd34ffea340214ec194a8044be4d4f32e9f1639e8094888dd8b8d7",
-      "size": [
-        1920,
-        819
-      ],
-      "mode": "RGBA",
-      "alpha_range": [
-        0,
-        255
-      ],
-      "solid_bbox": [
-        52,
-        91,
-        1886,
-        708
-      ],
-      "solid_edge_pixels": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "concepts": {
-        "A": "香りの六角紋章",
-        "B": "dfの技術的モノグラム",
-        "C": "香りのボトルの丸紋"
-      }
-    },
-    {
-      "id": "c-station",
-      "name": "C.STATION",
-      "file": "sheets/c-station.png",
-      "original_generator_path": "/workspace/generated_images/exec-8e04d722-1336-4e3a-bd3a-f2d6bf4c4b36.png",
-      "sha256": "bb04522992059d39b9132f87a1d630d8911d4f9d8a2a3f6079498c85b0b90a82",
-      "size": [
-        2172,
-        724
-      ],
-      "mode": "RGBA",
-      "alpha_range": [
-        0,
-        255
-      ],
-      "solid_bbox": [
-        65,
-        119,
-        2150,
-        625
-      ],
-      "solid_edge_pixels": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "concepts": {
-        "A": "集まるCの入口",
-        "B": "CSの連結マーク",
-        "C": "駅のサイン風プレート"
-      }
-    },
-    {
-      "id": "cafe",
-      "name": "カフェ",
-      "file": "sheets/cafe.png",
-      "original_generator_path": "/workspace/generated_images/exec-ac2340bf-0aeb-4001-a6d3-2ad69bf7f6fc.png",
-      "sha256": "82f73726629698d0803226c802d0a77ec6387f01864c918e3ac7d67677108afb",
-      "size": [
-        2172,
-        724
-      ],
-      "mode": "RGBA",
-      "alpha_range": [
-        0,
-        255
-      ],
-      "solid_bbox": [
-        76,
-        15,
-        2124,
-        700
-      ],
-      "solid_edge_pixels": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "concepts": {
-        "A": "スパイスラテのカップ",
-        "B": "ハーブと珈琲豆の紋章",
-        "C": "午後の窓"
-      }
-    },
-    {
-      "id": "choizap",
-      "name": "チョイザップ",
-      "file": "sheets/choizap.png",
-      "original_generator_path": "/workspace/generated_images/exec-a25c4e88-3015-4160-9f13-86b5cb22b701.png",
-      "sha256": "e66c091fda16ecc2c3c5628fd416bf23e31d032b131159a2add3622b0dc95560",
+      "original_generator_path": "/workspace/generated_images/exec-83604396-2371-4ebc-a429-966f19f8a681.png",
+      "sha256": "2f94a0eb4018e3aa43d4aa5577900174f52dd433f0d3cda91d985141f225b835",
       "size": [
         2172,
         724
@@ -248,9 +117,9 @@
       ],
       "solid_bbox": [
         36,
-        103,
-        2144,
-        629
+        259,
+        2137,
+        456
       ],
       "solid_edge_pixels": [
         0,
@@ -259,13 +128,114 @@
         0
       ],
       "concepts": {
-        "A": "一歩進む矢印",
-        "B": "稲妻とCの運動感",
-        "C": "チェックとダンベル"
+        "A": "小悪魔の英字ロゴ",
+        "B": "ひらがなショップ文字",
+        "C": "丸みのある小文字"
+      }
+    },
+    {
+      "id": "dr-fookah",
+      "name": "Dr.fookah",
+      "file": "sheets/dr-fookah.png",
+      "original_generator_path": "/workspace/generated_images/exec-dce065d3-d7cc-4b02-be8b-d688db9d8d57.png",
+      "sha256": "b1b2c0e4f88b10989b1615dceb60223d43270e59fae253b454575dab562cb741",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        73,
+        183,
+        1983,
+        538
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "専門店の文字組み",
+        "B": "細いdfモノグラム",
+        "C": "四角い卸店サイン"
+      }
+    },
+    {
+      "id": "c-station",
+      "name": "C.STATION",
+      "file": "sheets/c-station.png",
+      "original_generator_path": "/workspace/generated_images/exec-9f465b35-a210-42d0-9a32-26071e8d8aaf.png",
+      "sha256": "1fcd55787ebca9e3aafa9f10eb1a4bede16f63ce87fb4a915b6f27911c4bce56",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        46,
+        174,
+        1997,
+        590
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "大型チェーンの英字",
+        "B": "Cの入口マーク",
+        "C": "二段のサイン文字"
+      }
+    },
+    {
+      "id": "choizap",
+      "name": "チョイザップ",
+      "file": "sheets/choizap.png",
+      "original_generator_path": "/workspace/generated_images/exec-d472ee71-d1f0-4fcf-96ef-3919144b5a7d.png",
+      "sha256": "acd540811c3f05ce23f6cbdfb54ca4b339a994b6b9d418d4d8d8254e967b8abc",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        68,
+        300,
+        1990,
+        488
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "日常ジムの太字",
+        "B": "一歩進む小さな記号",
+        "C": "チョイの文字遊び"
       }
     }
   ],
-  "shops": 8,
-  "concepts": 24,
-  "separate_logo_files": false
+  "shops": 7,
+  "concepts": 21,
+  "separate_logo_files": false,
+  "cafe_name": "喫茶こはく",
+  "cafe_logo": false
 }
