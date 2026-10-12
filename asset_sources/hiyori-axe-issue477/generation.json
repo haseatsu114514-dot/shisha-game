@@ -18,12 +18,34 @@
       "mode": "RGBA",
       "adopted": false,
       "runtime_registered": false
+    },
+    {
+      "variant": "axe_laugh",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-laugh-source.png",
+      "sha256": "1fec03d4004926588201445e6c9bf84a09677b4e1066e6526ab7d3beac8bd40f",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
+    },
+    {
+      "variant": "axe_shout",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-shout-source.png",
+      "sha256": "05922903da80ee9ba749469e30f54f7cfb8305ccc914e82cdfea2618328c6797",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
     }
   ],
   "external_files_included": [],
   "remaining": [
-    "axe_laugh",
-    "axe_shout",
     "serious",
     "love_blush",
     "axe background",
