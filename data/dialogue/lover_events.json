@@ -1693,6 +1693,293 @@
           "text": "……それが、かえって胸に痛かった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "lover_kafuka_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "kafuka_bond_level": 1
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道。並んで歩く肩の間が、さっきより少し近い。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "恋人として隣におるのは、まだ落ち着かぬのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、少し緊張しています"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、側近の歩幅に合わせよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "コロちゃん！ わしも合わせておるじゃろう！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、二人でゆっくり歩きましょう"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "……うむ。急いで帰らずとも、よいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女が俺の袖をつまんだ。足音を合わせて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_kafuka_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "kafuka_bond_level": 2
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の話を離れて、サメ映画の話になった。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "excited",
+          "text": "スピルバーグのサメは、見せぬ時間こそ恐ろしいのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "excited",
+          "text": "あの音が来ると、画面におらんのに、もうそこにおる！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、息。少し休んでからで大丈夫です"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "……こほん。わしは平気じゃ。怖がってなどおらん"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "側近は、血の出る場面で目をそらすのである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "コロちゃん！ それは、画面をよく確かめるためじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "怖いところは、俺と一緒に目をそらしましょうか"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "……お主まで一緒なら、少し心強いのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "強がる声の隣で、彼女の指が、そっと俺の指に触れた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_kafuka_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "kafuka_bond_level": 3
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に一緒に出かけるなら、どんな場所がいいか。そんな話をしていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_kafuka_swimming_known",
+          "next_true": "known",
+          "next_false": "reveal"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "泳がなくても、岸から海を見るのもいいですね"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "うむ。お主となら、強がらずに過ごせそうじゃ"
+          }
+        ],
+        "reveal": [
+          {
+            "speaker": "kafuka",
+            "face": "serious",
+            "text": "……海の話になると、言っておきたいことがあるのじゃ"
+          },
+          {
+            "type": "jump",
+            "next_id": "kafuka_future_private_swimming"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "lover_kafuka_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "kafuka_bond_level": 4
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を呼ぶだけで、照れた顔がこちらを向く。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_kafuka_name_known",
+          "next_true": "known",
+          "next_false": "reveal"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "なぎささん。そう呼ぶと、やっぱり照れますね"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "……お主が呼ぶのは、嫌ではないのじゃ"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "ventriloquism",
+            "text": "側近は、もう一度呼ばれることを望んでいる",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "コロちゃん！ ……わしも、自分の声で言えるのじゃ"
+          }
+        ],
+        "reveal": [
+          {
+            "type": "jump",
+            "next_id": "kafuka_future_private_name"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "lover_kafuka_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "kafuka_bond_level": 5
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "別れ際。彼女がコロちゃんを抱き直して、俺の方を向いた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "今日は、コロちゃんの声を借りずに話すのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あなたの声を、聞かせてください"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "店主でも、サメの王の側近でもなくてじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "わしは、お主に会える日を楽しみにしておる"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "笑った顔も、黙って煙を見ておる顔も、好きじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、サメちゃんといる時間が好きです"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "……うむ。これからも、隣にいてほしいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は彼女の手を取った。今夜は、その声に自分の声で返す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "これからも、一緒に過ごしましょう"
+        }
+      ]
     }
   ]
 }
