@@ -33,4 +33,3 @@ sheet.save(ROOT/'lineup.png')
 m['current_lineup']=rows
 (ROOT/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n')
 print('5 chapter board:',sheet.size)
-
