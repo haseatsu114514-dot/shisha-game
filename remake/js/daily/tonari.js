@@ -229,7 +229,7 @@ async function afterShift() {
   }
 }
 
-function chooseDrill() {
+export function chooseDrill() {
   return new Promise((resolve) => {
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "自主練" }),
