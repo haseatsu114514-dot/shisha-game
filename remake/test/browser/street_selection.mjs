@@ -37,6 +37,14 @@ try {
         T.map.chooseSpot(opts).then((v) => { if (T.generation === generation) T.result = v; });
       }, { kind, opts });
       await page.waitForSelector('.map:not(.done)');
+      const overlaps = await page.evaluate(() => {
+        const button = document.querySelector('[data-test="map-walk"]').getBoundingClientRect();
+        return [...document.querySelectorAll('.spot-pin')].filter(pin => {
+          const r = pin.getBoundingClientRect();
+          return r.left < button.right && r.right > button.left && r.top < button.bottom && r.bottom > button.top;
+        }).map(pin => pin.dataset.spot);
+      });
+      assert.deepEqual(overlaps, [], 'walk button covers an existing direct pin');
     };
     const walk = async () => {
       const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));

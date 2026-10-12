@@ -1042,7 +1042,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .keepsake-viewer span { color: var(--gold); }
 
 /* 第1章の任意の街歩き。既存のピンと直接移動を併用する。 */
-.map-walk { position: absolute; z-index: 5; top: 128px; left: 18px; padding: 12px 18px; color: var(--gold-hi); background: var(--ink-2); border: 1px solid var(--gold); border-radius: 6px; cursor: pointer; font-size: 20px; }
+.map-walk { position: absolute; z-index: 5; bottom: 16px; left: 176px; padding: 12px 18px; color: var(--gold-hi); background: var(--ink-2); border: 1px solid var(--gold); border-radius: 6px; cursor: pointer; font-size: 20px; }
 .street-selection { position: absolute; inset: 0; }
 .street-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
 .street-heading { position: absolute; top: 126px; left: 20px; max-width: 730px; color: #fff; background: rgba(0,0,0,.85); padding: 8px 14px; border-radius: 6px; pointer-events: none; }

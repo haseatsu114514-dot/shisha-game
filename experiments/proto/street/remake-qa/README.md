@@ -9,12 +9,15 @@
 | PR #458 の修正版 `smoke.mjs` で現行試作を検証 | 標準/HD/set × 画像あり/404、230項目 PASS。接続後の同じ単体回帰も PASS。`proto-smoke.txt` |
 | `node remake/test/browser/street_selection.mjs` | 33項目 PASS。PC 1280×720、Chromiumの横持ちタッチ844×390。`selection.txt` |
 | `node remake/test/playthrough.mjs` | DAY1〜14、敗北→再挑戦→優勝・章クリア、案内3回/配達2回、LIME、実手動セーブ/ロード、スロット pending=0 PASS。`direct-playthrough.txt` |
-| `STREET_MODE=1 node remake/test/playthrough.mjs` | 歩行経由でも章クリアまで到達。最初のrunは不固定の抽選回数下限で失敗、次runはテスト専用importがframeに注入された404で失敗。テストをseed=1と本編だけの計測へ修正し、最終run/CIを確認中。最終結果はPRに追記する |
+| `STREET_MODE=1 node remake/test/playthrough.mjs` | 歩行経由でも章クリアまで到達。最初のrunは不固定の抽選回数下限で失敗、次runはテスト専用importがframeに注入された404で失敗。テストをseed=1と本編だけの計測へ修正し、計測フックのframe注入と旧fixtureの材料制限を修正後、Actions 38283303619 のdirect/street両経路がDAY14の敗北→再挑戦→優勝までPASS。`street-playthrough-ci.txt` / `direct-playthrough-ci.txt`。最終headはPRで確認する |
 | `node --experimental-vm-modules remake/test/illness.mjs` | 発病、休養、全日休養・夜予定など PASS。`illness.txt` |
 | `node remake/test/temporary_closures.mjs` | 3店の臨時休業、実通知/マップ/保存、翌日/章の解除 PASS。`temporary-closures.txt` |
+| `node remake/test/browser/save_load.mjs` | 全枠・旧schema5・欠落JSON・PC/タッチ/画面回転の6件 PASS。`save-load.txt` |
 | `python3 tools/check_agent_docs.py` / JS構文 / diff / Git Safety | PASS |
 
 BASE_URL は新規の独立checkoutを配信した `http://127.0.0.1:8146/remake/`。単体試作のBASE_URLは `/`。
+PC/タッチの各条件で追加ボタンと全ての既存ピンの矩形が重ならないことも検査。ボタンはピンとスロットの間の下部に置く。
+
 33項目は、実キー/タッチ移動・実タップ入店・小物を調べる・戻るの無消費、6種の入口制限、3ID、無料配達、実LIMEの受諾/中断、MENU/手動枠/実boot-load、旧schema11、昼夜、スロット表示の二重報酬なし、欠落画像の代替を含む。ファストトラベルは試作保存を無視し、本編実訪問だけで解放する。
 
 ## 画面証跡
