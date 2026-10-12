@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: tmp-hiyori-public-qa-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   public-qa:
     runs-on: ubuntu-latest
@@ -18,7 +22,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: codex/issue-341-hiyori-public-qa
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout: |
+            docs/qa/hiyori-public-issue341
+            remake/test/browser
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -44,5 +51,4 @@ jobs:
           git add docs/qa/hiyori-public-issue341/walkthrough-after-sumi-contact
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'test(hiyori): record public walkthrough after Sumi contact fix (#341)'
-          git pull --rebase origin codex/issue-341-hiyori-public-qa
           git push origin HEAD:codex/issue-341-hiyori-public-qa
