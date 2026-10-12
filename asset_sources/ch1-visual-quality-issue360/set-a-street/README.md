@@ -29,7 +29,7 @@ python3 remake/tools/serve_preview.py --port 8360
 NODE_PATH="$PWD/remake/test/browser/node_modules" BASE_URL=http://127.0.0.1:8360/remake/ ARTIFACT_DIR=asset_sources/ch1-visual-quality-issue360/set-a-street/review node remake/test/ch1_visual_quality.mjs
 ```
 
-表示QAは38/38 PASS、データローダ35 JSONの並列上限・失敗・タイムアウト検査PASS。manifestは `generated`・`backgrounds`・`webp` 以外のフィールドが完全一致。VN画像待機／SKIPと第1章通し・セーブロードの最終結果は `validation.json` に記録する。PC・スマホの実画面は `review/`。
+表示QAは38/38 PASS、データローダ35 JSONの並列上限・失敗・タイムアウト検査PASS。manifestは `generated`・`backgrounds`・`webp` 以外のフィールドが完全一致。VN画像待機／SKIP4/4、旧セーブ移行・PC/タッチ操作6/6、第1章の新規→4位敗北→再挑戦→1位優勝・セーブ/ロードがPASS。最終結果は `validation.json`。PC・スマホの実画面は `review/`。
 
 ## 残作業
 
