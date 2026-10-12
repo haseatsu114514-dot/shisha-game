@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 11; // 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 12; // 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -22,7 +22,7 @@ export function newState() {
   return {
     schema: SCHEMA,
     chapter: 1,
-    phase: "opening",          // opening | daily | tournament | cleared
+    phase: "opening",          // opening | daily | tournament | aftermath | cleared
     day: 1,
     slot: 0,                   // 0=昼 1=夜 2=その日の行動は終了
     money: 30000,
@@ -31,6 +31,8 @@ export function newState() {
     statXp: {},
     statsAtChapterStart: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     flags: {},
+    restDay: null,             // {chapter, day, fullDay, illnessHealth}: 発病日の状態は当日だけ維持
+    deferredNightEvents: [],   // {id, chapter, originalDay, deferredOn, reason, prerequisites, doneKeys}
     met: {},                   // 名乗りを受けたキャラ（名前表示の解禁）
     affinityCarry: {}, // 普通の好感度の小数分。既存ポイントは減らさない
     loveCarry: {}, // 恋人の絆の半ポイントを持ち越す
@@ -102,6 +104,19 @@ function migrate(s) {
     }));
   }
   s.flags ||= {};
+  // スキーマ12。古いセーブの延期は空から始め、読了を推測しない。
+  const nightIds = new Set();
+  s.deferredNightEvents = (Array.isArray(s.deferredNightEvents) ? s.deferredNightEvents : []).filter((entry) => {
+    if (!entry || typeof entry.id !== "string" || !entry.id || !Number.isInteger(entry.chapter) || entry.chapter < 1
+      || !Number.isInteger(entry.originalDay) || entry.originalDay < 1 || !Number.isInteger(entry.deferredOn)) return false;
+    const key = `${entry.chapter}:${entry.id}`;
+    if (nightIds.has(key)) return false;
+    nightIds.add(key);
+    return true;
+  });
+  if (!s.restDay || s.restDay.chapter !== s.chapter || s.restDay.day !== s.day) s.restDay = null;
+  else s.restDay = { chapter: s.chapter, day: s.day, fullDay: s.restDay.fullDay === true,
+    illnessHealth: ["green", "yellow", "red"].includes(s.restDay.illnessHealth) ? s.restDay.illnessHealth : null };
   s.loveCarry = Object.fromEntries(Object.entries(s.loveCarry && typeof s.loveCarry === "object" ? s.loveCarry : {})
     .filter(([, v]) => Number.isFinite(v) && v >= 0 && v < 1));
   s.baitoRecent = (Array.isArray(s.baitoRecent) ? s.baitoRecent : [])

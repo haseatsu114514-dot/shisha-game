@@ -3,7 +3,7 @@ import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
-import { conditionForRatio } from "./condition.js";
+import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -320,7 +320,11 @@ export function staminaAfter(n) {
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();
-export const currentCondition = () => conditionForRatio(staminaRatio());
+export const currentCondition = () => {
+  const sick = state.restDay;
+  return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
+    || conditionForRatio(staminaRatio());
+};
 
 // ---------------------------------------------------------------- お金
 
