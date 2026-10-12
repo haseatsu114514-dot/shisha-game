@@ -1,5 +1,4 @@
 {
-  "checked_at_jst": "2026-10-12 13:02",
   "main": "134b1a5a327cf25ddab94b6ab4ed18d604735bbf",
   "deployment_run": 38199885108,
   "files": [
@@ -63,5 +62,6 @@
       "checkout_sha256": "59846c0e354c51c8ecea9308bc0db1471fc6434855d0b499e9cef366468463f4",
       "matches": true
     }
-  ]
+  ],
+  "checked_at": "2026-10-12T04:01:44.616418+00:00"
 }
