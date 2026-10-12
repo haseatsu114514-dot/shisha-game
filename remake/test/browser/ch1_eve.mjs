@@ -103,6 +103,7 @@ await suite("ch1-eve", async check => {
         if (branch === "drill") {
           await page.locator('[data-test="drill-heat"]').waitFor();
           await assertFits(page, ".big-choice");
+          await page.waitForTimeout(550); // Let the existing screen/VN fade finish before recording it.
           await page.screenshot({ path: `${shots}/eve-${device}-drill-menu.png` });
           await select(page, '[data-test="drill-heat"]', touch);
         }
