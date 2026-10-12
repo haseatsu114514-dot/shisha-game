@@ -37,8 +37,9 @@ const deps={
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true,timeOfDay:()=> 'night'},
  '../core/ui.js':{setBg:async()=>{}},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
- '../vn/engine.js':{play:async id=>played.push(id)},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
+ '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
+ './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
 };
 const kafukaModule=new vm.SourceTextModule(await read('js/daily/kafuka.js'),{context});
 await kafukaModule.link(spec=>{const d=deps[spec];assert(d);return new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});});await kafukaModule.evaluate();
@@ -61,6 +62,7 @@ state.limeRead.push(k.KAFUKA_NICKNAME_TOPIC);k.syncKafukaKnowledge();assert.equa
 state.chapter=2;k.syncKafukaKnowledge();const open=k.kafukaSpot();assert.equal(open.unavailable,undefined);assert.equal(open.preview,'bg_shishark');assert.equal(state.flags._shishark_opened,true);
 const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact_kafuka;assert(k.kafukaSpot(),'章2では未交換でも店が開く');state.contacts=contacts;
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_first');assert.equal(state.story.kafuka,1);
+state.day++;
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_repeat_0');
 state.flags._kafuka_name_known=true;assert.equal(data.displayName('kafuka',state),'波多野なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
@@ -81,5 +83,5 @@ for(const scene of story.dialogues){
 assert(story.dialogues[0].lines.some(l=>l.text==='お主、サメは好きか？'));
 assert(story.lime.find(m=>m.id==='lime_kafuka_preparing_thanks').chapter===1);
 assert(story.lime.find(m=>m.id==='lime_kafuka_opening').chapter===2);
-assert.equal(story.profile.romance_available,false);
+assert.equal(story.profile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches: PASS');

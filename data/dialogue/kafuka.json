@@ -12,7 +12,7 @@
     "adult": true,
     "nationality": "Japan",
     "affiliation": "SHISHARK",
-    "romance_available": false,
+    "romance_available": true,
     "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
     "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
     "favorite_flavor": null,
@@ -487,6 +487,491 @@
       ]
     },
     {
+      "dialogue_id": "kafuka_shop_quiet_seat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席に腰を下ろすと、サメちゃんが照明を見上げた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "静かにしたい客が座ると、入口が少し気になるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "目線を外せるものがあると、落ち着きそうですね"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "大きな仕切りは、かえって窮屈じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "照明の向きとか、小さな工夫ならどうです？"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "……試してもよいかの。お主、見てくれるか？"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、客の目で確かめよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "わかりました。いつもの客として座ってみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "光の向きが変わり、入口の明かりが目に入りにくくなった。"
+        },
+        {
+          "type": "choice",
+          "id": "kafuka_quiet_seat_light",
+          "choices": [
+            {
+              "text": "今の方が落ち着きます",
+              "next": "settled"
+            },
+            {
+              "text": "もう少しだけ暗くしてみますか",
+              "next": "softer"
+            }
+          ]
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "……よかった。お主に聞いて正解じゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また座って、確かめさせてください"
+        }
+      ],
+      "branches": {
+        "settled": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "これなら落ち着けます。長居したくなる感じです"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "ほんとにそう思うか？ ……なら、この向きにするのじゃ"
+          }
+        ],
+        "softer": [
+          {
+            "speaker": "kafuka",
+            "face": "serious",
+            "text": "うむ。手元が見える明るさは、残したいのう"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "少しだけ光を落とす。机の上は明るいままだ。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "これなら本も読めるし、ゆっくりできますね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "kafuka_shop_closing_check",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えた頃、カウンターに小さなメモが並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店を閉める前に、点検ですか？"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "今日の気になる所を書いておったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "けっこう細かいですね"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "店は、毎日少しずつ良くなるものじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "側近よ、休息も王命である",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "こ、これが終わったら休むのじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "コロちゃんが言うなら、休憩しましょう"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "……お主までコロちゃんの味方か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店が好きなんですね"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "好きじゃ。……だから、少し怖いのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何がですか？"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "客が、ここを好きになれんかったら、と思うと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それを考えられる店なら、俺はまた来ますよ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "……なら、明日も直すところを探すのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "勇者はじめ、また来るがよい",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はメモを束ねて、ようやく隣の椅子に座った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kafuka_shop_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服が落ち着いた頃、サメちゃんがコロちゃんを膝に戻した。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "お主の顔を見ると、少し安心するのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "……店のこと以外も、話してよいものかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もちろん。サメちゃんの話、聞きたいです"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "お主は、わしと過ごす時間をどう思っておる？"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_kafuka",
+          "romance_char": "kafuka",
+          "choices": [
+            {
+              "text": "店だけじゃなく、あなたに会いたい",
+              "next": "romance",
+              "romance": 1
+            },
+            {
+              "text": "気の合う友達として会いたい",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また同じ席で、一服しましょう"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "うむ。お主の席を、空けておくのじゃ"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "わ、わしにか？ ……そうか"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "ventriloquism",
+            "text": "側近よ、煙で顔を隠すな",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "コロちゃん！ ……わしも、お主と話すのが楽しみじゃ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "うむ。友として、これからも頼むのじゃ"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、余の友としても歓迎する",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "光栄です。店のことも、また相談してください"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "kafuka_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka",
+        "private_scene": true,
+        "bond_finale": "kafuka"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のSHISHARK。サメちゃんが、いつもの席に小さな包みを置いた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "お主、今日は手伝いを頼む日ではないのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "これは、お主に持っていてほしいものじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みには、素焼きのハガルが入っていた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "店を開く前、試すために用意しておったものじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "まだ何の香りにも染まっておらん。お主の一台で、育ててほしいのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "大事に使います。ありがとうございます"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "お主が座る席も、煙の向こうに見える顔も"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "わし一人では、気づけぬことがあったのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "ventriloquism",
+          "text": "王の席は、余が決めたのである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "コロちゃんの席も、もちろん大事じゃ！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "kafuka",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを胸に抱えて、灯りの落ちた店を出た。あの席で過ごした時間が、手の中に残っている。"
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "kafuka",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "店の外でも、お主と一緒にいたいのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "俺もです。また二人で、一服しましょう"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "お主となら、店を離れても話してみたいのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（店の外で、サメちゃんと。俺は、どんな時間を過ごしたいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_kafuka",
+            "romance_char": "kafuka",
+            "choices": [
+              {
+                "text": "二人だけの時間を過ごしたい",
+                "next": "romance",
+                "romance": 1
+              },
+              {
+                "text": "友達として、これからも話したい",
+                "next": "friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "romance": [
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "……二人だけ、か"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "わしも、お主とそういう時間を過ごしたいのじゃ"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、側近の返事を聞き届けよ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "コロちゃん！ わしが言うたじゃろう！"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "うむ。友として、これからも頼むのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。困った時は、俺にも相談してください"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "次に来た時も、あの席を空けておくのじゃ"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "kafuka_future_private_swimming",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png",
@@ -688,7 +1173,9 @@
   "implementation_notes": {
     "first_encounter": "第1章DAY8以降の固定イベント・当夜予約・告白・在宅がない帰り道。重なった時は次の空いた帰り道へ繰り越す。",
     "chapter2_boundary": "現行リメイクは第1章まで。章2用の店訪問とminChapter条件は準備するだけで、章2を遊べる状態にはしない。",
-    "future_private": "本名と泳ぎの私的会話は未接続の原稿。恋愛対象リストや告白条件にはまだ追加しない。",
-    "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。"
+    "future_private": "本名と泳ぎの私的会話は未接続の原稿。告白と恋人/友人状態はmax_relationshipに接続済み。秘密の開示と恋人絆イベントへの接続は別Issueで扱う。",
+    "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
+    "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。",
+    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。途中と最後の質問が恋愛寄りなら共通の夜の告白で恋人/友人を選ぶ。既存の友人/恋人は維持。本名/泳ぎの秘密、恋人絆イベント、専用LIME/デートは別Issue。"
   }
 }

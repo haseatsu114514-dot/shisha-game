@@ -1,0 +1,19 @@
+{
+  "generator": "image_gen.imagegen",
+  "records": [
+    {
+      "id": "bg_c_station_overcast_day",
+      "file": "/workspace/generated_images/exec-d710db74-1c72-4297-a7af-e56136aa105c.png",
+      "prompt": "Edit this exact adopted C.STATION DAY background into an OVERCAST DAY variant. Preserve every room element pixel-aligned: camera, sofas, cushions, tables, rear counter, geometric panel, ceiling lamps and air conditioner, all window frames and city buildings. Change ONLY illumination and sky seen through the windows: blue sky becomes pale cool grey cloud cover, diffused outdoor daylight replaces hard sunny wall highlights and directional solar-shadow edges. The existing interior practical lights remain pleasantly neutral-warm and the room stays clearly visible for portraits. Do not add plants, hookahs, people, furniture, text, pseudo lettering, logos, menus, UI, smoke or decoration. No painted rain streaks or puddles: the game renders rainy-window animation separately, and this image also represents dry cloudy days. Preserve the existing refined pixel-painter material shading, crisp stepped edges, petrol-teal upholstery and subdued lower quarter. One 16:9 full-frame OVERCAST DAY counterpart of exactly the same room, not a filtered blur or contact sheet.",
+      "reference": "generated/bg_c_station_day.png",
+      "accepted": true
+    },
+    {
+      "id": "bg_c_station_overcast_night",
+      "file": "/workspace/generated_images/exec-c3b0fb49-1063-4a65-a1fe-0627b7ddfc23.png",
+      "prompt": "Edit this exact adopted C.STATION CLEAR NIGHT room into OVERCAST NIGHT. Keep camera, all windows and frames, city buildings, sofas, cushions, tables, service counter, abstract panel, ceiling tracks and fixtures exactly pixel-aligned and unchanged. Change only the night sky and ambient lighting: layered dark blue-grey cloud cover outside, no stars, a restrained cooler diffused night fill instead of clear-night blue. Same existing interior warm practical lights, same lit city windows and legible material detail; do not dim the room into black. The existing game adds rain only inside the window masks, so do not paint rain streaks, drops, wet patches or puddles into the image. No people, plants, hookahs, extra furniture, readable or pseudo text, logos, menu, UI or smoke. Match this exact refined pixel-painter art, crisp stepped edges, petrol-teal fabric and warm-grey walls, with quiet lower quarter for dialogue UI. One full-frame 16:9 OVERCAST NIGHT counterpart of the identical room.",
+      "reference": "generated/bg_c_station_night.png",
+      "accepted": true
+    }
+  ]
+}

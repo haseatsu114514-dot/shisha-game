@@ -1,0 +1,79 @@
+name: Full-day rest regressions
+on:
+  pull_request:
+    paths:
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/night-events.js'
+      - 'remake/js/daily/spots.js'
+      - 'remake/js/core/state.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/core/condition.js'
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/js/chapters/tsumugi-story.js'
+      - 'data/dialogue/ch1_main.json'
+      - 'data/dialogue/remake_ch1.json'
+      - 'remake/test/illness.mjs'
+      - 'remake/test/stamina_condition.mjs'
+      - 'remake/test/browser/full_day_rest.mjs'
+      - '.github/workflows/full-day-rest.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/night-events.js'
+      - 'remake/js/core/state.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/core/condition.js'
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/test/illness.mjs'
+      - 'remake/test/stamina_condition.mjs'
+      - 'remake/test/browser/full_day_rest.mjs'
+      - '.github/workflows/full-day-rest.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: full-day-rest-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  rest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - run: node --experimental-vm-modules remake/test/illness.mjs
+      - run: node --experimental-vm-modules remake/test/stamina_condition.mjs
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: PC and touch rest, fixed attendance, save and postponed scenes
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/rest-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/full_day_rest.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: full-day-rest-results
+          path: .codex/artifacts/remake-browser/full-day-rest*
+          retention-days: 7

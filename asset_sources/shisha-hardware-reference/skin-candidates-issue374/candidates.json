@@ -8,8 +8,8 @@
       "id": "handle-01-yoshio",
       "name": "夜潮",
       "category": "handle",
-      "status": "candidate_owner_selection_pending",
-      "approved": false,
+      "status": "approved_design_runtime_integration_pending",
+      "approved": true,
       "runtime_paths": [],
       "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-01-yoshio.png",
       "generated_original": "/workspace/generated_images/exec-73f08ee1-55a5-4143-94a3-edb8e2bc6c74.png",
@@ -38,14 +38,17 @@
         "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
         "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
         "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
-      }
+      },
+      "approval_scope": "design_only",
+      "runtime_integrated": false,
+      "integration_issue": 437
     },
     {
       "id": "handle-02-shishark-blue",
       "name": "SHISHARKブルー",
       "category": "handle",
-      "status": "candidate_owner_selection_pending",
-      "approved": false,
+      "status": "approved_design_runtime_integration_pending",
+      "approved": true,
       "runtime_paths": [],
       "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-02-shishark-blue.png",
       "generated_original": "/workspace/generated_images/exec-bffbeb78-a529-4042-9f60-4bbc646acf9a.png",
@@ -74,14 +77,17 @@
         "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
         "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
         "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
-      }
+      },
+      "approval_scope": "design_only",
+      "runtime_integrated": false,
+      "integration_issue": 437
     },
     {
       "id": "mouthpiece-01-crystal-drop",
       "name": "水晶のしずく",
       "category": "mouthpiece",
-      "status": "candidate_owner_selection_pending",
-      "approved": false,
+      "status": "approved_design_runtime_integration_pending",
+      "approved": true,
       "runtime_paths": [],
       "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-01-crystal-drop.png",
       "generated_original": "/workspace/generated_images/exec-f675a703-67aa-4e6f-ba9c-20e039148bfa.png",
@@ -111,14 +117,17 @@
         "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
         "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
         "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
-      }
+      },
+      "approval_scope": "design_only",
+      "runtime_integrated": false,
+      "integration_issue": 437
     },
     {
       "id": "mouthpiece-02-starmoon-charm",
       "name": "星月のチャーム",
       "category": "mouthpiece",
-      "status": "candidate_owner_selection_pending",
-      "approved": false,
+      "status": "approved_design_runtime_integration_pending",
+      "approved": true,
       "runtime_paths": [],
       "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-02-starmoon-charm.png",
       "generated_original": "/workspace/generated_images/exec-7d69537d-4884-4baf-8eb1-1e1ef78c8675.png",
@@ -148,7 +157,33 @@
         "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
         "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
         "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
-      }
+      },
+      "approval_scope": "design_only",
+      "runtime_integrated": false,
+      "integration_issue": 437
     }
-  ]
+  ],
+  "adoption": {
+    "status": "approved_design_runtime_integration_pending",
+    "date_utc": "2026-10-12",
+    "authority": "repository_owner_user_reply_in_this_work_session",
+    "owner_quote": "4案とも採用し、ゲームへの外観導入は別Issueで進める",
+    "source_url": "https://github.com/haseatsu114514-dot/shisha-game/issues/374#issuecomment-6126516611",
+    "worker": "codex-visual-20261012-e492484f3b",
+    "claim_run": 38264681317,
+    "status_run": 38264775267,
+    "base_sha": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+    "integration_issue": 437,
+    "integration_issue_url": "https://github.com/haseatsu114514-dot/shisha-game/issues/437",
+    "scope": "既存4原画のデザインを採用。ゲーム外観導入は別Issue。原画再生成・加工・runtime登録は行わない。",
+    "runtime_integrated": false,
+    "distribution_assets_ready": false,
+    "unverified": [
+      "実機接続径/嵌合",
+      "手持ち・口・ホース装着時の縮尺",
+      "配信用サイズ・bbox・アンカー",
+      "濃淡背景での輪郭・alpha仕上げ",
+      "選択・描画・保存/旧セーブ復元"
+    ]
+  }
 }

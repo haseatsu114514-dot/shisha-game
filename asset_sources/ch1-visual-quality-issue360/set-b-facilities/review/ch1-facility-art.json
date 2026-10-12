@@ -1,0 +1,103 @@
+{
+  "name": "ch1-facility-art",
+  "baseURL": "http://127.0.0.1:8360/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-bg_c_station_day",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_c_station_night",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_c_station_overcast_day",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_c_station_overcast_night",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_c_station_lobby",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_fookah_showroom",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_shop",
+      "status": "passed"
+    },
+    {
+      "label": "pc-kemurikusa",
+      "status": "passed"
+    },
+    {
+      "label": "pc-peppermint",
+      "status": "passed"
+    },
+    {
+      "label": "pc-bg_tournament_stage",
+      "status": "passed"
+    },
+    {
+      "label": "pc-window-rain-day",
+      "status": "passed"
+    },
+    {
+      "label": "pc-window-rain-night",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_c_station_day",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_c_station_night",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_c_station_overcast_day",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_c_station_overcast_night",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_c_station_lobby",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_fookah_showroom",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_shop",
+      "status": "passed"
+    },
+    {
+      "label": "touch-kemurikusa",
+      "status": "passed"
+    },
+    {
+      "label": "touch-peppermint",
+      "status": "passed"
+    },
+    {
+      "label": "touch-bg_tournament_stage",
+      "status": "passed"
+    },
+    {
+      "label": "touch-window-rain-day",
+      "status": "passed"
+    },
+    {
+      "label": "touch-window-rain-night",
+      "status": "passed"
+    }
+  ]
+}

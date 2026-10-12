@@ -1,4 +1,4 @@
-// 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
+// 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
@@ -10,6 +10,7 @@ import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
+import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/night-events.js";
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
@@ -86,7 +87,7 @@ export async function startNewGame() {
   await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
   scene.stop();
   await sleep(600);
-  await chapterTitle({ no: "第一章", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" });
+  await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
   playBgm("tonari");
   await play("ch1_opening", { bg: TONARI });
   save();
@@ -105,13 +106,16 @@ export async function startNewGame() {
 export async function resumeGame() {
   setupHooks();
   if (state.phase === "cleared") return showClear();
+  if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening") state.phase = "daily";
   await dailyPart();
 }
 
 async function dailyPart() {
-  await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
+  syncNightQueue(NIGHT_EVENTS);
+  const deferFlags = state.deferredNightEvents.filter((entry) => entry.chapter === state.chapter).flatMap((entry) => entry.doneKeys || []);
+  await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N), deferFlags });
   await runDaily({ nightEvents: NIGHT_EVENTS });
   await tournamentDay();
 }
@@ -158,27 +162,29 @@ const sketchScene = (id, bg) => async () => {
   await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
   await play(id, { bg });
 };
-const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, done: () => flag(key) });
+const once = (key, fn) => ({ id: key, doneKeys: [key], run: async () => { await fn(); setFlag(key); }, done: () => flag(key) });
 
-const NIGHT_EVENTS = {
-  2: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
-  3: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後は作業台で練習する──",
+export const NIGHT_EVENTS = {
+  2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
+    label: "基礎練習", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後は作業台で練習する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
     run: async () => {
       await playTsumugiStory(3);
       if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
     } },
-  5: { pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
-  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し。準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
-  9: { pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
-  10: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  11: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
+  5: { label: "スミさんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
+  7: { schedule: "preparation", deadline: 12, prerequisites: ["_ev_first_practice", "_tsumugi_contest_progress"],
+    label: "中間準備", pin: "tonari", teaser: "tonari", beat: "大会への準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
+  9: { label: "出場者説明会", pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
+  10: { label: "常連さんの変化", schedule: "regular", prerequisites: ["_ev_salaryman"], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
+  11: { id: "_ev_tsumugi_sketch", doneKeys: ["_ev_tsumugi_sketch", "_tsumugi_contest_submitted"], label: "つむぎの応募", pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
     done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
     run: async () => {
       await playTsumugiStory(11, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
       setFlag("_ev_tsumugi_sketch");
     } },
-  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。最後の確認をしにtonariへ。店の作業台で、前日リハーサル──",
+  [TOURNAMENT_DAY - 1]: { id: "_ev_rehearsal", doneKeys: ["_ev_rehearsal", "_ev_last_night", "_tsumugi_contest_eve"], label: "大会前夜のリハーサル", pin: "tonari", teaser: "tonari", beat: "夜。最後の確認をしにtonariへ。店の作業台で、前日リハーサル──",
     done: () => flag("_ev_rehearsal") && flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
     run: async () => {
       await playTsumugiStory(TOURNAMENT_DAY - 1);
@@ -226,6 +232,11 @@ const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includ
 const STEPS_ALL = CRAFT_STEPS;
 
 async function tournamentDay() {
+  // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
+  syncNightQueue(NIGHT_EVENTS, { resting: false });
+  await runNightPlan(NIGHT_EVENTS, async () => {
+    await play({ dialogue_id: "remake_rest_preparation_catchup", lines: [{ speaker: "", text: "大会に出る前に、スミさんと残っていた準備を確かめた。" }] });
+  });
   await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
   if (state.phase !== "tournament") {
@@ -419,6 +430,19 @@ async function victory() {
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
   await play("ch1_naru_promise");
+  state.phase = "aftermath";
+  save();
+  await finishAfterTournament();
+}
+
+async function finishAfterTournament() {
+  showHud(false);
+  state.restDay = null; // 大会を終え、体調が戻った後の補完。発病当日の参加はここまで。
+  setFlag("_rest_after_tournament");
+  await finishDeferredNights(NIGHT_EVENTS, async () => {
+    await play({ dialogue_id: "remake_rest_after_tournament", lines: [{ speaker: "", text: "大会を終えて、体調が戻った後。休養で見送ったtonariの予定を、改めて訪ねた。" }] });
+  });
+  delete state.flags._rest_after_tournament;
   state.phase = "cleared";
   save();
   await bannersIdle();
