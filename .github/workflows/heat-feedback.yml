@@ -8,10 +8,13 @@ on:
       - "remake/js/craft/common.js"
       - "remake/js/craft/session.js"
       - "remake/js/craft/pull.js"
+      - "remake/js/craft/progress.js"
       - "remake/css/craft.css"
       - "remake/css/base.css"
       - "remake/test/heat_feedback.mjs"
       - "remake/test/craft_templates_timing.mjs"
+      - "remake/test/browser/craft_progress.mjs"
+      - "remake/test/browser/ch1_tournament.mjs"
       - ".github/workflows/heat-feedback.yml"
   workflow_dispatch:
 
@@ -53,6 +56,14 @@ jobs:
           PY
           node remake/test/craft_templates_timing.mjs
           node remake/test/heat_feedback.mjs
+      - name: Craft progress, serving and two care rounds
+        env:
+          NODE_PATH: ${{ runner.temp }}/heat-test/node_modules
+          ARTIFACT_DIR: ${{ runner.temp }}/heat-feedback/progress
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/browser/craft_progress.mjs
+          node remake/test/browser/ch1_tournament.mjs
       - name: Preserve coal screenshots
         if: always()
         uses: actions/upload-artifact@v4

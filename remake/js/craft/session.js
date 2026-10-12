@@ -314,6 +314,18 @@ export const burstBench = (cs) => failBench(cs, "burnt");
 export function refreshBench() {
   if (!bench) return;
   bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
+  // panelの工程IDは結果評価が参照するためpullのまま保持する。
+  if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {
+    bench.phaseProgress.update("serve", "提供");
+    bench.title.textContent = "提供";
+    bench.hint.textContent = "お客さんへシーシャを提供した。しばらく吸ってもらおう";
+    bench.guide.root.open = false;
+    bench.guide.root.hidden = true;
+    bench.root.dataset.step = "serve";
+    bench.worker.root.dataset.step = "serve";
+    bench.worker.caption.textContent = "シーシャを提供した";
+  }
 }
 
 /** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */

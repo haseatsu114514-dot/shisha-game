@@ -11,6 +11,7 @@
 2026-10-11の第1章大会・準備導線（下記の過去仕様を更新）:
 
 - 本番は組み立て→吸い出し・提供→調整1回目→調整2回目→完成品の審査。コンセプト選択とFLAVOR TRIALは廃止。
+- 制作ヘッダーはパッキング→炭焼き→蒸らし→吸い出し→提供→調整。提供成功後に「提供」を現在地にし、2回の調整は同じ「調整」セルを使う。提供後に約20分吸ってもらった温度低下を短い文章で示す（物語上の時間で、実時間の待機はない）。調整2回・履歴・各20%の得点配分は従来どおり。
 - DAY3は基礎練習、DAY7は初期以外のフレーバーの仕入れと2回調整までの練習、DAY13は通しリハーサル。tonariでも一台を通して練習できる。練習は在庫を減らさず、固定イベントでは能力・スロット成長を付けない。
 - 初期はフラット／キューブの三角3個。`_coal_four_unlocked`／`_coal_mix_unlocked` で上級配置を追加し、配置で決めた個数を焼く。解放イベントの接続は後続章の作業。
 - 蒸らしは経過秒で連続して熱が入り、10分でも後半に温度が上がる。旧0.465上限は廃止。緑の適温は静かな背景、0.49〜0.59の最適温だけに虹を描き、成功時の画面の揺れを止める。
@@ -291,6 +292,7 @@ node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 node remake/test/gameplay_polish.mjs         # 任意練習・会釈・HUD回復・スマホ弾幕/リフレッシュ
 node remake/test/craft_focus.mjs             # 制作UI・審査員・実タイマー・温度引継ぎ・成功帯と針速度
 node remake/test/browser/ch1_tournament.mjs  # 素材待ち・炭解放・調整2回・準備と保存・大会画面
+node remake/test/browser/craft_progress.mjs  # PC/横持ち・提供成功/失敗・共通調整セル・履歴と配点
 node remake/test/craft_templates_timing.mjs  # 配置選択・ゲームへの接続・炭の即時/最終誤差表示・3画面サイズ
 node --experimental-vm-modules remake/test/foil_holes.mjs # 配置の完成条件・追加/解放・実穴の熱への接続
 node --experimental-vm-modules remake/test/stamina_condition.mjs # 体調・炭の既存判定・入力時刻の誤差・自動取り出し
