@@ -272,7 +272,7 @@ try {
     const result = await page.evaluate(() => {
       const { core, route, data } = QA;
       const s = QA.fresh();
-      s.met.hiyori = true; s.contacts = ["hiyori"]; s.affinity.hiyori = 30;
+      s.met.hiyori = true; s.contacts = ["sumi", "hiyori"]; s.affinity.hiyori = 30;
       s.flags._hiyori_real_self_known = true; s.flags._hiyori_work_talk_done = true;
       s.flags._preserve_other_character = true; s.lovers = ["rin", "hiyori"];
       s.loveLevel = { rin: 3, hiyori: 2 }; s.lovePts = { rin: 33, hiyori: 20 };
