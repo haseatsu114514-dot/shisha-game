@@ -27,6 +27,7 @@ jobs:
           export NODE_PATH="$PWD/remake/test/browser/node_modules"
           export ARTIFACT_DIR="$PWD/qa-results"
           node tools/title-review/test.mjs
+          node tools/title-review/notes_test.mjs
           node remake/test/title_arts.mjs
       - uses: actions/upload-artifact@v4
         if: always()
