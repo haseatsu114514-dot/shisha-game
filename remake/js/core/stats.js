@@ -131,7 +131,7 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori", "kafuka"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
