@@ -30,7 +30,7 @@ export function dateScene(id, venue, { choice = null, choiceFlags = null, growth
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
-      { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
+      { speaker: "", text: "２人で１台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
       { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
       { speaker: "", text: sc.choiceQ },
       ...(choice ? branches[choice] : [{ type: "choice", choices: [

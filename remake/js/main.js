@@ -56,7 +56,7 @@ export async function boot() {
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
   // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
-  await warmUiArt();
+  await Promise.all([warmUiArt(), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
   const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop", "bg_tournament_stage"];
   const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rin", "normal"], ["pakki", "normal"]];
   const urls = [

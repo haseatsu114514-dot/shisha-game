@@ -2,9 +2,9 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
-import { renderSceneArt } from "../core/scene-art.js";
+import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
@@ -59,8 +59,14 @@ export function interruptMap(value) {
  */
 export async function chooseSpot(opts = {}) {
   // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
-  const wait = uiArtReady();
-  if (wait) await wait;
+  let notice = null;
+  const timer = setTimeout(() => {
+    notice = el("div.vn-loading", { role: "status", text: "マップを準備しています…" });
+    layers.fx.append(notice);
+  }, 500);
+  try {
+    await Promise.all([uiArtReady(), setBg(bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+  } finally { clearTimeout(timer); notice?.remove(); }
   return openMap(opts);
 }
 
@@ -141,7 +147,19 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       const previewId = s.preview || SPOT_PREVIEW[s.id];
       const pv = previewId ? sceneBg(previewId, tod) : null;
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
-      if (preview) renderSceneArt(preview, pv.url);
+      if (preview) {
+        preview.classList.add("loading");
+        preview.setAttribute("role", "status");
+        preview.textContent = "画像を読み込んでいます…";
+        Promise.all(sceneArtUrls(pv.url).map((url) => imageReady(url, 15000))).then((loaded) => {
+          if (!info.contains(preview)) return;
+          preview.classList.remove("loading");
+          if (!loaded.every(Boolean)) { preview.textContent = "画像を表示できませんでした"; return; }
+          preview.replaceChildren();
+          preview.removeAttribute("role");
+          renderSceneArt(preview, pv.url);
+        });
+      }
       info.replaceChildren(
         el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
         preview,
@@ -216,5 +234,15 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
     interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
     mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
     onShown?.();
+    // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
+    const previews = [...new Set(allSpots().filter(isUnlocked)
+      .flatMap((spot) => sceneArtUrls(sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];
+    let at = 0;
+    const warm = async () => {
+      while (root.isConnected && !root.classList.contains("done") && at < previews.length) {
+        await imageReady(previews[at++], 8000);
+      }
+    };
+    void Promise.all([warm(), warm()]);
   });
 }

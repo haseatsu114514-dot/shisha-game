@@ -31,7 +31,7 @@ try {
   const run = (friend) => page.evaluate(async (friend) => {
     const state = T.fresh();
     T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex((l) =>
-      friend ? l.includes("友達") : /二人|想いを伝え|付き合って/.test(l)));
+      friend ? l.includes("友達") : /２人|想いを伝え|付き合って/.test(l)));
     await T.spots.visitChar("minto");
     const first = T.vn.backlog().map((l) => l.text);
     const identity = { known: !!state.flags._minto_identity_revealed, full: !!state.flags._minto_name_known };
@@ -40,7 +40,8 @@ try {
     await T.spots.visitChar("minto");
     const commute = T.vn.backlog().map(l => l.text);
     const afterThird = !!state.flags._minto_identity_revealed;
-    for (let n = 3; n < 5; n++) await T.spots.visitChar("minto");
+    // 正体判明の日は通常回を消化しない。招待条件の固有会話5件まで実際に読む。
+    for (let n = 0; (state.story.minto || 0) < 5 && n < 8; n++) await T.spots.visitChar("minto");
     const noSpoiler = !T.phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === "rumor_minto_late_night");
     const invite = T.phone.morningMessages({ fixedNight: () => false }).find((m) => m.id === "lime_minto_first_holiday");
     T.vn.backlog().length = 0;
@@ -76,8 +77,8 @@ try {
   assert(!romance.first.some(t => t.includes("出勤前") || t.includes("tonariに来てた")));
   assert.deepEqual(romance.identity, { known: false, full: false });
   assert.equal(romance.afterSecond, false);
-  assert.equal(romance.afterThird, true);
-  assert(romance.commute.some(t => t.includes("出勤前")));
+  assert(romance.commute.some(t => t.includes("PEPPERMINT")));
+  assert(romance.commute.every(t => !t.includes("向かう道") && !t.includes("店の少し手前")));
   assert(romance.noSpoiler);
   assert.deepEqual(romance.invite, { slot: "night", after: true });
   assert(!romance.outing.some((t) => t.includes("お姉、さん") || t.includes("ばれた")), "Already-known identity was revealed again");
@@ -91,7 +92,7 @@ try {
   assert.equal(romance.confessed, true, "Same-person finale on DAY13 postponed confession past the tournament");
   assert(romance.lovers.includes("minto")); assert(romance.gift);
   assert(romance.beats[0].includes("別れ際"));
-  console.log("[minto progression] PASS: street recognition, workday invitation, remembered identity/name, one question, DAY13 same-night dating");
+  console.log("[minto progression] PASS: store recognition, workday invitation, remembered identity/name, one question, DAY13 same-night dating");
   const friend = await run(true);
   assert.equal(friend.q1.value, 0); assert.equal(friend.before, "friend");
   assert.equal(friend.confessed, false); assert.deepEqual(friend.lovers, []); assert(friend.gift);
