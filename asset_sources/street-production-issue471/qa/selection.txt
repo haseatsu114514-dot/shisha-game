@@ -1,0 +1,34 @@
+[street] PASS pc: native arcade, Hajime, actual depth/scale, keyboard/pointer, inspect/back cost zero
+[street] PASS pc: locked uses pin restriction
+[street] PASS pc: closed uses pin restriction
+[street] PASS pc: temporary uses pin restriction
+[street] PASS pc: visited uses pin restriction
+[street] PASS pc: poor uses pin restriction
+[street] PASS pc: guided uses pin restriction
+[street] PASS pc: 3 doors return only correct main IDs, no prototype interior or rewards
+[street] PASS pc: pointer door hit walks to cafe and resolves main ID
+[street] PASS pc: zero-money guided delivery selects minto without consuming first visit
+[street] PASS pc: old prototype visit/dash storage ignored; near exit keeps chooseSpot pending
+[street] PASS pc: accepting real LIME invitation interrupts street and preserves existing future-slot contract
+[street] PASS pc: actual HUD LIME/menu/save pause held input and resume without movement
+[street] PASS pc: real saved-slot boot/load resumes pin map and safe street spawn
+[street] PASS pc: schema11 old save, night sample, safe spawn, no new schema required
+[street] PASS pc: pending slot shown once on street, reward/count unchanged, buttons above doors
+[street] PASS touch: native arcade, Hajime, actual depth/scale, keyboard/touch, inspect/back cost zero
+[street] PASS touch: locked uses pin restriction
+[street] PASS touch: closed uses pin restriction
+[street] PASS touch: temporary uses pin restriction
+[street] PASS touch: visited uses pin restriction
+[street] PASS touch: poor uses pin restriction
+[street] PASS touch: guided uses pin restriction
+[street] PASS touch: 3 doors return only correct main IDs, no prototype interior or rewards
+[street] PASS touch: real touch door hit walks to cafe and resolves main ID
+[street] PASS touch: zero-money guided delivery selects minto without consuming first visit
+[street] PASS touch: old prototype visit/dash storage ignored; near exit keeps chooseSpot pending
+[street] PASS touch: accepting real LIME invitation interrupts street and preserves existing future-slot contract
+[street] PASS touch: actual HUD LIME/menu/save pause held input and resume without movement
+[street] PASS touch: real saved-slot boot/load resumes pin map and safe street spawn
+[street] PASS touch: schema11 old save, night sample, safe spawn, no new schema required
+[street] PASS touch: pending slot shown once on street, reward/count unchanged, buttons above doors
+[street] PASS missing images: placeholder still selects main cafe
+[street] 33 checks PASS

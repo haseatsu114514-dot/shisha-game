@@ -225,7 +225,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "繁華街を歩く（仮導入）", dataset: { test: "map-walk" }, onclick: () => {
+      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
         SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,

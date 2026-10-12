@@ -1,4 +1,4 @@
-// 実ハリボテ画面のPC/タッチ、共通制限、ゼロ消費、HUDと旧セーブの境界。
+// 本編用の遠近通りのPC/タッチ、共通制限、ゼロ消費、HUDと旧セーブの境界。
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -60,30 +60,36 @@ try {
     };
     const tap = async (frame, x, y) => {
       const box = await frame.locator('#view').boundingBox();
-      const sx = box.x + x / 640 * box.width, sy = box.y + y / 360 * box.height;
+      const { w, h } = await frame.evaluate(() => __street.layout().view);
+      const sx = box.x + x / w * box.width, sy = box.y + y / h * box.height;
       if (touch) await page.touchscreen.tap(sx, sy); else await page.mouse.click(sx, sy);
     };
     await reset(); let frame = await walk();
-    assert.equal((await frame.evaluate(() => __street.layout())).kind, 'set');
+    assert.equal((await frame.evaluate(() => __street.layout())).kind, 'arcade');
+    assert.equal((await frame.evaluate(() => __street.state())).character, 'hajime');
     assert.equal((await frame.evaluate(() => __street.state())).alwaysRun, false);
     // 入口ボタンのクリックだけでキーが届く。テスト側からframeをfocusしない。
+    const initial = await frame.evaluate(() => __street.state());
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(800); await page.keyboard.up('ArrowRight');
-    assert((await frame.evaluate(() => __street.state())).x > 150);
-    await tap(frame, 300, 310); await page.waitForTimeout(600);
-    assert((await frame.evaluate(() => __street.state())).x > 200);
-    await frame.evaluate(() => __street.place(716, 300, 'up'));
+    assert((await frame.evaluate(() => __street.state())).x > initial.x + 20);
+    await page.keyboard.down('ArrowUp'); await page.waitForTimeout(800); await page.keyboard.up('ArrowUp');
+    const deeper = await frame.evaluate(() => __street.state());
+    assert(deeper.z > initial.z && deeper.scale < initial.scale, 'walking into depth must reduce projected character size');
+    await tap(frame, 800, 615); await page.waitForTimeout(600);
+    assert((await frame.evaluate(() => __street.state())).y > deeper.y);
+    await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);
     const talkingX = (await frame.evaluate(() => __street.state())).x;
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(200);
-    await page.keyboard.press('KeyZ'); await page.keyboard.press('KeyZ');
+    await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !__street.state().msg); await page.waitForTimeout(100);
     assert.equal((await frame.evaluate(() => __street.state())).x, talkingX, 'inspect dialogue left a held movement key');
     await page.keyboard.up('ArrowRight');
     await unchanged();
     await page.locator('[data-test="street-back"]').click(); await page.waitForSelector('.map:not(.done)');
     assert.equal(await page.evaluate(() => T.result), 'pending'); await unchanged();
-    pass(`${label}: existing set sample, keyboard, ${touch ? 'real touch' : 'pointer'} movement, inspect/back cost zero`);
+    pass(`${label}: native arcade, Hajime, actual depth/scale, keyboard/${touch ? 'touch' : 'pointer'}, inspect/back cost zero`);
 
     for (const [kind, id, door, why] of [
       ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
@@ -108,9 +114,9 @@ try {
     }
     pass(`${label}: 3 doors return only correct main IDs, no prototype interior or rewards`);
     await reset(); frame = await walk();
-    await frame.evaluate(() => __street.place(460, 310, 'up'));
-    const cam = (await frame.evaluate(() => __street.state())).camX;
-    await tap(frame, 534 - cam, 200);
+    await frame.evaluate(() => __street.place(300, 600, 'up'));
+    const doorRect = await frame.evaluate(() => __street.layout().doors.find(d => d.id === 'cafe').rect);
+    await tap(frame, doorRect[0] + doorRect[2]/2, doorRect[1] + doorRect[3]/2);
     await page.waitForFunction(() => T.result === 'cafe'); await unchanged();
     pass(`${label}: ${touch ? 'real touch' : 'pointer'} door hit walks to cafe and resolves main ID`);
 
@@ -126,13 +132,14 @@ try {
     await frame.locator('#btn-map').click();
     await frame.locator('#travel-list [data-door="kemurikusa"]').click();
     await frame.waitForFunction(() => !__street.state().busy);
-    assert.equal((await frame.evaluate(() => __street.state())).x, 1778);
+    const expectedX = await frame.evaluate(() => __street.layout().doors.find(d=>d.id==='kemurikusa').foot[0]);
+    assert(Math.abs((await frame.evaluate(() => __street.state())).x-expectedX)<.01);
     assert.equal(await page.evaluate(() => T.result), 'pending');
-    await frame.evaluate(() => __street.place(8, 292, 'left'));
-    await frame.locator('#view').focus(); await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(300); await page.keyboard.up('ArrowLeft');
+    await frame.evaluate(() => __street.place(640, 679, 'down'));
+    await frame.locator('#view').focus(); await page.keyboard.down('ArrowDown'); await page.waitForTimeout(300); await page.keyboard.up('ArrowDown');
     await page.waitForSelector('.map:not(.done)'); assert.equal(await page.evaluate(() => T.result), 'pending');
     assert.equal(await page.evaluate(() => localStorage.getItem('shisha_proto_street_v1')), await page.evaluate(() => T.protoBefore));
-    pass(`${label}: old prototype visit/dash storage ignored; left exit keeps chooseSpot pending`);
+    pass(`${label}: old prototype visit/dash storage ignored; near exit keeps chooseSpot pending`);
 
     // 本物のrunDaily/HUDからLIMEとMENUを開く（fixtureの擬似HUDではない）。
     await page.evaluate(() => {
@@ -176,7 +183,7 @@ try {
     const saved = await page.evaluate(() => T.core.readSlot('suien_remake_slot1'));
     assert.equal(saved.day, 4); assert.equal(saved.slot, 0); assert.equal(saved.visits.naru || 0, 0);
     await frame.waitForFunction(() => !__street.state().paused);
-    await frame.evaluate(() => __street.place(880, 292, 'right'));
+    await frame.evaluate(() => __street.place(720, 570, 'up'));
     await page.waitForTimeout(100);
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${label}-day.png` });
     pass(`${label}: actual HUD LIME/menu/save pause held input and resume without movement`);
@@ -185,7 +192,7 @@ try {
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.waitForSelector('.map:not(.done)', { timeout: 30000 });
     assert.deepEqual(await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, money: __remake.state.money })), { day: 4, slot: 0, money: saved.money });
-    frame = await walk(); assert.equal((await frame.evaluate(() => __street.state())).x, 60);
+    frame = await walk(); assert.equal((await frame.evaluate(() => __street.state())).x, 640);
     pass(`${label}: real saved-slot boot/load resumes pin map and safe street spawn`);
     await page.locator('[data-test="street-back"]').click();
     await page.close(); page = await context.newPage();
@@ -200,7 +207,7 @@ try {
       T.result = 'pending'; T.map.chooseSpot().then(v => T.result = v);
     });
     await page.waitForSelector('.map:not(.done)'); frame = await walk();
-    assert((await frame.evaluate(() => __street.state())).night); assert.equal((await frame.evaluate(() => __street.state())).x, 60);
+    assert((await frame.evaluate(() => __street.state())).night); assert.equal((await frame.evaluate(() => __street.state())).x, 640);
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${label}-night.png` });
     pass(`${label}: schema11 old save, night sample, safe spawn, no new schema required`);
 
@@ -223,12 +230,12 @@ try {
     assert.deepEqual(errors, []); await context.close();
   }
   // 画像欠落時も本編IDを返せる。入口選択は生成画像の完成に依存しない。
-  const page = await browser.newPage(); await page.route(/assets\/proto_(street_set|walk)\//, r => r.fulfill({ status: 404, body: '' }));
+  const page = await browser.newPage(); await page.route(/(assets\/street_walk|remake\/img\/street)\//, r => r.fulfill({ status: 404, body: '' }));
   await page.goto(BASE); await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
   const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
   await page.locator('[data-test="map-walk"]').click();
-  const frame = await navigating; await frame.waitForFunction(()=>__street.state().ready&&!__street.state().paused);
+  const frame = await navigating; await frame.waitForFunction(()=>window.__street?.state().ready&&!window.__street.state().paused);
   assert.equal((await frame.evaluate(()=>__street.layout())).setSource,'placeholder');
   await frame.evaluate(()=>__street.warp('cafe')); await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
   await page.waitForFunction(()=>selected==='cafe'); pass('missing images: placeholder still selects main cafe');
