@@ -1,0 +1,26 @@
+{
+  "bg_kannon_night.png": {
+    "source": "exec-2eb22929-2e90-4f42-b542-bf418fcf6a95.png",
+    "sha256": "37b55299dbb59f211816a7fb88a16d2a042f434c313ed7d5f943d1d3367936ac"
+  },
+  "bg_cafe_day.png": {
+    "source": "exec-1ad9c50c-664f-4715-b0ac-e287f83ba929.png",
+    "sha256": "03962307bcd22c181a0412ff665853a2dff49f930ff37243d9b0ef5b1d4ef26a"
+  },
+  "bg_cafe_night.png": {
+    "source": "exec-3b83747a-d082-4f01-90a1-9f0d4c2fe5a4.png",
+    "sha256": "c8c258ef1b0d5c18e826ea2013fabb2777d2ee78112ba17253e5f43fe5e4773b"
+  },
+  "bg_choizap_night.png": {
+    "source": "exec-9e69a8cd-3e0d-4ba3-8446-0ae2fdef627f.png",
+    "sha256": "4fbdd9afca7b2826e4ff69e09dce1c9d074315d714d180f14619e8a5c3ad3726"
+  },
+  "bg_cafe_overcast_day.png": {
+    "source": "exec-f88fc286-19d3-4210-a837-bedbf6ad74db.png",
+    "sha256": "6e1a8f6094aaaa63c77092d3fde3098a1aa0e85341aa263c031febeb7f32e03d"
+  },
+  "bg_kannon_overcast_day.png": {
+    "source": "exec-347b135c-4eda-4638-9e74-778a838c5b53.png",
+    "sha256": "d7c3566be4a4cc8e91b79dc0284eab4a21da202e0c510c50430b79a92d13363f"
+  }
+}

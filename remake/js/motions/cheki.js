@@ -191,8 +191,8 @@ function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null }
   for (const s of list) {
     const a = s.pts[0];
     const d = Math.hypot(a[0] - at[0], a[1] - at[1]);
-    if (d > 2) { const dur = 12 + d / hop; plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
-    const dur = base + s.len / speed;
+    if (d > 2) { const dur = Math.max(100, (12 + d / hop) * 2.4); plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
+    const dur = Math.max(90, base + s.len / speed) * 2.4;
     plan.push({ t0: t, dur, s }); t += dur;
     at = s.pts[s.pts.length - 1];
   }
@@ -222,9 +222,11 @@ function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null }
       // 横に走るほど少し寝かせる（追従の揺れ）
       ang += (30 + Math.max(-9, Math.min(9, (x - lx) * 0.9)) - ang) * 0.25;
       lx = x;
+      // コマ落ちで移動区間を飛び越えても、浮いていたペンを一瞬で紙へ落とさない。
+      lift = pen.at.lift + Math.max(-6, Math.min(6, lift - pen.at.lift));
       pen.place(x, y, lift, ang);
       onFrame?.(x, y);
-      if (i < plan.length) requestAnimationFrame(tick); else done();
+      if (i < plan.length || Math.abs(lift) > 0.01) requestAnimationFrame(tick); else done();
     };
     requestAnimationFrame(tick);
   });
@@ -364,10 +366,11 @@ export async function a(url, placeCg = null) {
     const centered = move(cam, [{ transform: camAt(740, 1440) }, { transform: "translate(0px, 0px) scale(1)" }], 620, { easing: CAM });
     move(stripes, [{ transform: "scale(1.18)" }, { transform: "scale(1)" }], 620, { easing: CAM });
     move(glow, [{ transform: "scale(1.5)" }, { transform: "scale(1)" }], 620, { easing: CAM });
-    ink.leaf.forEach((s, i) => inkSelf(s, 230, 40 + i * 36));
-    ink.deco.forEach((s, i) => inkSelf(s, 210, 120 + i * 55));
-    ink.side.forEach((s, i) => inkSelf(s, 200, 220 + i * 36));
-    await centered;
+    await Promise.all([centered,
+      ...ink.leaf.map((s, i) => inkSelf(s, 550, 90 + i * 86)),
+      ...ink.deco.map((s, i) => inkSelf(s, 500, 290 + i * 132)),
+      ...ink.side.map((s, i) => inkSelf(s, 480, 530 + i * 86)),
+    ]);
     // 8. 仕上げ: 光が横切り、四隅にきらめき。背景を会話のCGと同じ黒へ戻し、同じ位置にCGを置く
     print.full.style.opacity = "1";
     SE.perfect();
@@ -649,10 +652,11 @@ export async function b(url, placeCg = null) {
     SE.whoosh();
     const centered = move(fly, [{ transform: `translate(${sx}px, ${sy}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
     move(disc, [{ transform: `translate(${sx * 0.6}px, ${sy * 0.6}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
-    ink.leaf.forEach((s, i) => inkSelf(s, 220, 30 + i * 32, Q_OUT));
-    ink.deco.forEach((s, i) => inkSelf(s, 200, 100 + i * 50, Q_OUT));
-    ink.side.forEach((s, i) => inkSelf(s, 190, 160 + i * 32, Q_OUT));
-    await centered;
+    await Promise.all([centered,
+      ...ink.leaf.map((s, i) => inkSelf(s, 530, 70 + i * 77, Q_OUT)),
+      ...ink.deco.map((s, i) => inkSelf(s, 480, 240 + i * 120, Q_OUT)),
+      ...ink.side.map((s, i) => inkSelf(s, 460, 380 + i * 77, Q_OUT)),
+    ]);
     // 9. 仕上げ: 光が横切り、ぽんと弾む。暗い幕が斜めに横切って会話のCGと同じ黒にし、同じ位置にCGを置く
     print.full.style.opacity = "1";
     SE.perfect();

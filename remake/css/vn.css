@@ -54,6 +54,9 @@
 #vn.sepia .vn-portraits, #vn.sepia .vn-cg { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
 body.in-vn #bg { transition: filter 0.4s; }
 #vn.sepia ~ #bg, body.in-vn:has(#vn.sepia) #bg { filter: sepia(0.8) brightness(0.9); }
+#vn.flashback .vn-portraits, #vn.flashback .vn-cg,
+body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
+#vn.flashback::after { content: "回想"; position: absolute; top: 36px; left: 50%; transform: translateX(-50%); padding: 8px 24px; color: #eee; background: #19151bd9; border: 1px solid #aaa; font-size: 24px; letter-spacing: .25em; pointer-events: none; }
 
 .vn-portraits { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
 .portrait {
