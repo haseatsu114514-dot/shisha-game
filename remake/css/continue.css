@@ -50,16 +50,15 @@
 .gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 54px;
   display: flex; justify-content: center; align-items: center;
   padding: 0; border: 0; background: none; color: #fff; text-align: center; cursor: pointer; }
-/* テロップは1行が限界（オーナー指定）。折り返さず、ゆっくり大きくなる。 */
+/* テロップは1行。表示済みの文字を中央へ並べ、拡大・バウンドはさせない。 */
 .gameover .go-speech-text {
   margin: 0; font-size: 42px; font-weight: 900; line-height: 1.2; letter-spacing: .02em;
   white-space: nowrap; transform-origin: 50% 60%;
   -webkit-text-stroke: 1px var(--go-ink); paint-order: stroke fill;
   text-shadow: 0 3px 0 var(--go-ink), 0 0 18px #050a1fcc;
 }
-.gameover .go-speech-text.go-line-grow { animation: go-line-grow var(--go-line-time, 2s) cubic-bezier(.2,.7,.3,1) both; }
-.gameover .go-letter { display: inline-block; visibility: hidden; white-space: pre; }
-.gameover .go-letter.go-on { visibility: visible; animation: go-letter-grow .24s cubic-bezier(.2,.9,.3,1.3) both; }
+.gameover .go-letter { display: none; visibility: hidden; white-space: pre; }
+.gameover .go-letter.go-on { display: inline-block; visibility: visible; }
 .gameover mark.go-letter { background: none; color: var(--go-accent); font-size: 1.14em; }
 .gameover .go-a11y { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .gameover .go-playback { position: absolute; top: 66px; right: 0; }
@@ -149,8 +148,6 @@
 
 @keyframes go-title-enter { from { opacity: 0; transform: scale(1.18) translateY(-12px); } }
 @keyframes go-portrait-enter { from { opacity: 0; transform: scale(.94) translateY(10px); } }
-@keyframes go-line-grow { from { transform: scale(.9); } to { transform: scale(1.04); } }
-@keyframes go-letter-grow { from { opacity: 0; transform: scale(.35) translateY(6px); } 70% { transform: scale(1.18); } to { opacity: 1; transform: none; } }
 @keyframes go-portrait-beat { 0% { transform: translateY(10px); } 45% { transform: translateY(-3px); } 100% { transform: none; } }
 @keyframes go-stamp { from { opacity: 0; scale: 1.7; } }
 @keyframes go-pencil { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: .55; clip-path: inset(0); } }

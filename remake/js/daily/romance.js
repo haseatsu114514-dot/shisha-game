@@ -10,6 +10,7 @@ import { state, save } from "../core/state.js";
 import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
+import { playKafukaMilestone } from "./kafuka-bonds.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -158,6 +159,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     save();
   }
   await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
+  if (id === "kafuka" && isLover(id)) await playKafukaMilestone();
   save();
   return true;
 }
@@ -166,6 +168,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
 
 /** 恋人の節目（絆Lvが上がった）ごとの恋愛イベント。lover_events.json の lover_{id}_lv{n} */
 async function maybeMilestone(id, beforeLv) {
+  // LIMEで先にLvが上がった場合も、次の実対面で未読の前段から一つだけ読む。
+  if (id === "kafuka") return playKafukaMilestone();
   const lv = state.loveLevel[id] || 0;
   if (lv <= beforeLv) return;
   const evId = [`lover_${id}_lv${lv}`, `lover_${id}_lv${lv}_b`].find((c) => DB.dialogues[c] && !state.loverEventsSeen.includes(c));

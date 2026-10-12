@@ -89,6 +89,9 @@ try {
     window.__remake.craftTest.auto = 'burn';
     window.__run = ch1.devRehearsal().then(() => { window.__done = true; });
   });
+  // 新規保存には持込在庫がない。旧セーブ救済の仕入れを実操作してから制作へ進む。
+  await page.locator('[data-test="buy-blueberry"]').click();
+  await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(() => window.__done, null, { timeout: 180000 });
   const rehearsal = await page.evaluate(() => ({ seen: window.__seen, result: window.__remake.state.rehearsal }));
   assert(rehearsal.seen.includes('remake_rehearsal_burnt') && !rehearsal.seen.includes('remake_rehearsal_rough'), rehearsal.seen.join(','));

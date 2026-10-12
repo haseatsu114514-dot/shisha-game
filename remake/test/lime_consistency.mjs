@@ -34,7 +34,7 @@ const values = {
   "ui.js": { layers }, "state.js": { state, save: noop },
   "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
   "audio.js": { SE: { phone: noop, select: noop, click: noop, cancel: noop } },
-  "engine.js": { hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
+  "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "rules.js": { TOURNAMENT_DAY: 14 },
   "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
     isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
