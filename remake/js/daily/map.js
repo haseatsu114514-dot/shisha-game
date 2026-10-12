@@ -15,6 +15,7 @@ import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
 /** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
 function spotFace(s) {
@@ -197,13 +198,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const face = locked ? null : spotFace(s);
+      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
@@ -211,8 +213,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s)]),
+          el("div.ico", [logo || (face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
+            ? el("span", { text: "？" }) : pinSymbol(s))]),
+          logo && face ? el("img.pin-face.pin-owner-face", { src: face, alt: "" }) : null,
         ]),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
