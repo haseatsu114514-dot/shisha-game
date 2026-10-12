@@ -1,0 +1,50 @@
+[
+  {
+    "label": "pc",
+    "status": "passed",
+    "initial": {
+      "equip": {
+        "bowl": "silicone_bowl",
+        "hms": "lotos_hagal",
+        "charcoal": "flat_charcoal"
+      },
+      "owned": [
+        "silicone_bowl",
+        "lotos_hagal",
+        "flat_charcoal"
+      ],
+      "money": 30000
+    },
+    "types": [
+      "bowl",
+      "hms",
+      "charcoal",
+      "pipe",
+      "homeware"
+    ]
+  },
+  {
+    "label": "mobile",
+    "status": "passed",
+    "initial": {
+      "equip": {
+        "bowl": "silicone_bowl",
+        "hms": "lotos_hagal",
+        "charcoal": "flat_charcoal"
+      },
+      "owned": [
+        "silicone_bowl",
+        "lotos_hagal",
+        "flat_charcoal"
+      ],
+      "money": 30000
+    },
+    "types": [
+      "bowl",
+      "hms",
+      "charcoal",
+      "pipe",
+      "homeware"
+    ]
+  }
+]
