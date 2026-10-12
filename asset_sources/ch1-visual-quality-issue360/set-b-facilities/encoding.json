@@ -1,0 +1,156 @@
+{
+  "quality": 62,
+  "method": 6,
+  "rows": [
+    {
+      "id": "bg_c_station_day",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 132826,
+      "afterBytes": 146334,
+      "sourceSha256": "21c3fba05f9fa925035aad4621e5bf9bb10866566e3c9bc41a613d559c90c508",
+      "runtimeSha256": "57d84a7551685b325be396e8bbb858da044104707a4ead82f1853a9e2e997ba9"
+    },
+    {
+      "id": "bg_c_station_night",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 333968,
+      "afterBytes": 119588,
+      "sourceSha256": "699f2a12fe60920e7bfe5322fd52e4f5c75744387947bab7d9e312fdf62ea68c",
+      "runtimeSha256": "fa10c74fed00d50847d90bf9183e3ddea3ffe3e5f2d6107c418b7d85201b7ae8"
+    },
+    {
+      "id": "bg_fookah_showroom",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 304414,
+      "afterBytes": 176198,
+      "sourceSha256": "b24c065b7da064f3f984add788445ae341c0861224ed308a91b63acb169afd52",
+      "runtimeSha256": "f284ccafdbac14c6dd700dfccacaff755c8b6f485d1f7c2b6a0e8307a6cf55fa"
+    },
+    {
+      "id": "bg_shop",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 181570,
+      "afterBytes": 179796,
+      "sourceSha256": "e55580dc4e104946a410da20554d9d3b15a53d34abf0387407ac34119bec0a4c",
+      "runtimeSha256": "490015cb0d00db1007bafc40d40a20f5bdc4d520a9c17a3aafca39d98d9bba1f"
+    },
+    {
+      "id": "kemurikusa",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 316178,
+      "afterBytes": 168612,
+      "sourceSha256": "be509283c833035ea45275d68359621c699b39c7c5dd155e8a2fb84bbd6b6d30",
+      "runtimeSha256": "163b6c411031847f07d84af9f684664f9d6211702be4b916cf72da9baaf0631f"
+    },
+    {
+      "id": "peppermint",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 132060,
+      "afterBytes": 133040,
+      "sourceSha256": "ff9747d0bcad3fe562c10a9d30e8b5f1172838a31e094312f6ecb8aa177b54bc",
+      "runtimeSha256": "8f6733c8e1e7e6a8ed36f4adae16bfc10c848de794398289b56d80838fd6891c"
+    },
+    {
+      "id": "bg_tournament_stage",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 122962,
+      "afterBytes": 158676,
+      "sourceSha256": "1a989aa63322db22098e95c795f2aec984c53566f58ab5686b5513e3a6b500b8",
+      "runtimeSha256": "259f16ee9819f052054ce3b63de16186604de87b4c4587c52adbcb18fe2b9d92"
+    },
+    {
+      "id": "bg_c_station_overcast_day",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 116488,
+      "sourceSha256": "f85c7f9b2bc52300cf927d2388ceb92868056b6858d85c14df3e01445182d243",
+      "runtimeSha256": "944c7525ab2e95e6524b821ff2137b38b5d089c82423797204c42d71c3e88c96"
+    },
+    {
+      "id": "bg_c_station_overcast_night",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 113598,
+      "sourceSha256": "a241c3d5bfb09122dddef2994d140e40afd5b2f409eae7cb5d65a099e1954a73",
+      "runtimeSha256": "6b50616d6a183410662c0da0a3a9c91bdba4e39abaa9acc40f2238604b98f07d"
+    },
+    {
+      "id": "bg_c_station_lobby",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 132826,
+      "afterBytes": 146334,
+      "sourceSha256": "21c3fba05f9fa925035aad4621e5bf9bb10866566e3c9bc41a613d559c90c508",
+      "runtimeSha256": "57d84a7551685b325be396e8bbb858da044104707a4ead82f1853a9e2e997ba9"
+    }
+  ]
+}

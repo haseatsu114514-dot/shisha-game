@@ -1,0 +1,151 @@
+{
+  "utc": "2026-10-12T15:05:20.391041+00:00",
+  "baseURL": "http://127.0.0.1:8360/remake/",
+  "visual": {
+    "name": "ch1-facility-art",
+    "baseURL": "http://127.0.0.1:8360/remake/",
+    "ref": null,
+    "results": [
+      {
+        "label": "pc-bg_c_station_day",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_c_station_night",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_c_station_overcast_day",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_c_station_overcast_night",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_c_station_lobby",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_fookah_showroom",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_shop",
+        "status": "passed"
+      },
+      {
+        "label": "pc-kemurikusa",
+        "status": "passed"
+      },
+      {
+        "label": "pc-peppermint",
+        "status": "passed"
+      },
+      {
+        "label": "pc-bg_tournament_stage",
+        "status": "passed"
+      },
+      {
+        "label": "pc-window-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "pc-window-rain-night",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_c_station_day",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_c_station_night",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_c_station_overcast_day",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_c_station_overcast_night",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_c_station_lobby",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_fookah_showroom",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_shop",
+        "status": "passed"
+      },
+      {
+        "label": "touch-kemurikusa",
+        "status": "passed"
+      },
+      {
+        "label": "touch-peppermint",
+        "status": "passed"
+      },
+      {
+        "label": "touch-bg_tournament_stage",
+        "status": "passed"
+      },
+      {
+        "label": "touch-window-rain-day",
+        "status": "passed"
+      },
+      {
+        "label": "touch-window-rain-night",
+        "status": "passed"
+      }
+    ]
+  },
+  "tournament": {
+    "name": "ch1-tournament",
+    "baseURL": "http://127.0.0.1:8360/remake/",
+    "ref": null,
+    "results": [
+      {
+        "label": "delayed-assets-gate",
+        "status": "passed"
+      },
+      {
+        "label": "failed-image-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "real-vn-skip-with-delayed-tournament-art",
+        "status": "passed"
+      },
+      {
+        "label": "coals-two-care-and-comments",
+        "status": "passed"
+      },
+      {
+        "label": "preparation-low-money-stock-and-save",
+        "status": "passed"
+      },
+      {
+        "label": "results-desktop",
+        "status": "passed"
+      },
+      {
+        "label": "results-landscape",
+        "status": "passed"
+      },
+      {
+        "label": "results-portrait",
+        "status": "passed"
+      }
+    ]
+  },
+  "dataLoading": "35 JSON PASS",
+  "manifestOtherFields": "unchanged",
+  "saveSchemaAndDialogue": "no edits",
+  "reviewedHardware": "preparation samples: no bowls/HMD/coals/hoses; real product photo viewed and attached; external photos not redistributed",
+  "ci": "not yet run on this branch"
+}
