@@ -115,7 +115,14 @@
 .dodge-action[data-cooling="true"] .refresh-emblem :is(img, svg) { opacity: .3; }
 .bench[data-art-skin] .btn.dodge-action[data-cooling="true"]:disabled { opacity: 1; filter: none; }
 .dodge-slash:enabled .refresh-emblem { filter: drop-shadow(0 0 5px #d4c6f044); }
+.dodge-slash[data-state="ready"] .refresh-emblem::after { content: ""; position: absolute; inset: 12px; border: 2px solid #b8eee0; border-radius: 50%; box-shadow: 0 0 6px #9edddc55; pointer-events: none; }
+.slash-aim { position: absolute; top: 16px; right: 12px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #d2c0a677; border-radius: 50%; background: #171121; color: #fff3dc; font-family: var(--font); font-size: 23px; line-height: 1; }
+.slash-state { position: absolute; top: 107px; left: 50%; z-index: 1; transform: translateX(-50%); display: grid; place-items: center; width: 138px; height: 34px; border: 1px solid #c4b0cf66; border-radius: 5px; background: #171121f2; color: #e5dbea; font-family: var(--font); font-size: 20px; line-height: 1; white-space: nowrap; }
+.dodge-slash[data-state="ready"] .slash-state, .slash-state[data-result="hit"] { color: #d6fff0; border-color: #b8eee0; }
+.slash-state[data-result="miss"] { color: #e2dfeb; border-style: dashed; }
 .dodge-slash-fx { position: absolute; pointer-events: none; z-index: 4; transform: translate(-50%, -50%) rotate(var(--angle)); filter: drop-shadow(0 0 5px #9edfff); animation: steam-slash .32s ease-out forwards; }
+.dodge-slash-fx[data-result="hit"] { filter: drop-shadow(0 0 7px #bdefff); }
+.dodge-slash-fx[data-result="miss"] svg { opacity: .45; }
 .dodge-slash-fx svg { display: block; width: 100%; height: 100%; }
 @keyframes steam-slash { 0% { opacity: .8; } 25% { opacity: 1; } 100% { opacity: 0; } }
 .refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
@@ -134,7 +141,7 @@
 .dr-ring.second { border-color: #dbc7a199; box-shadow: none; }
 .dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
 @media (prefers-reduced-motion: reduce) {
-  .dodge-slash-fx { animation: none; opacity: .8; filter: none; }
+  .dodge-slash-fx, .dodge-slash-fx[data-result="hit"] { animation: none; opacity: .8; filter: none; }
   .dodge-refresh:enabled .refresh-emblem::after { animation: none; }
   .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
   .dodge-mist { opacity: .12; }

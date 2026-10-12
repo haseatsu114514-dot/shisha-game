@@ -15,7 +15,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashDirection, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, SLASH_FORWARD_ANGLE, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
@@ -57,8 +57,11 @@ export async function runSteamDodge(cs) {
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
   const slashCharge = el("span.action-recharge");
-  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "方向キー＋Zで上下左右へアタック。方向入力なしは前方", dataset: { test: "dodge-slash", uses: "0" } }, [
-    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge]),
+  const slashAim = el("span.slash-aim", { text: "↑", "aria-hidden": "true" });
+  const slashState = el("span.slash-state", { text: "開始待ち", role: "status", "aria-live": "polite", "aria-atomic": "true" });
+  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "Zまたはボタンで前方の雑念を斬る。移動方向にかかわらず上へ攻撃", dataset: { test: "dodge-slash", uses: "0", aim: "u" } }, [
+    el("span.refresh-emblem", [el("span", { html: SLASH_ART, "aria-hidden": "true" }), el("i.recharge-ring", { "aria-hidden": "true" }),
+      slashCharge, slashAim, slashState]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
@@ -88,7 +91,8 @@ export async function runSteamDodge(cs) {
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
-  let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let running = false, started = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let slashFeedback = "", slashFeedbackUntil = 0;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
   const transients = [];
@@ -149,18 +153,29 @@ export async function runSteamDodge(cs) {
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
   const rechargeLabel = (button, caption, remaining, duration, label) => {
     const rounded = Math.ceil(remaining * 10) / 10;
+    const phase = !running ? (started ? "ended" : "waiting") : remaining > 0 ? "recharging" : "ready";
+    button.dataset.state = phase;
     button.dataset.cooldown = rounded.toFixed(1);
     button.dataset.cooling = String(running && remaining > 0);
     button.style.setProperty("--recharge", String(1 - remaining / duration));
     caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    const status = phase === "waiting" ? "開始待ち" : phase === "ended" ? "終了" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能";
+    button.setAttribute("aria-label", `${label}。${status}`);
     button.disabled = !running || remaining > 0;
   };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
     rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
   };
-  const slashLabel = () => rechargeLabel(slashBtn, slashCharge, Math.max(0, slashReadyAt - time), SLASH_RECHARGE_SECONDS, "アタック。方向入力に合わせて上下左右の雑念を切る。入力なしは前方。Zキーでも使用");
+  const slashLabel = () => {
+    rechargeLabel(slashBtn, slashCharge, Math.max(0, slashReadyAt - time), SLASH_RECHARGE_SECONDS,
+      "アタック。前方の雑念を斬る。移動方向にかかわらず上へ攻撃。Zキーでも使用");
+    const feedback = running && time < slashFeedbackUntil;
+    const status = feedback ? slashFeedback : { waiting: "開始待ち", ended: "終了", recharging: "再充填中", ready: "使用可能" }[slashBtn.dataset.state];
+    slashState.dataset.result = feedback ? slashBtn.dataset.result : "";
+    // 同じ文字を毎フレーム書き直さず、読み上げは状態・結果が変わった時だけ。
+    if (slashState.textContent !== status) slashState.textContent = status;
+  };
   const refresh = () => {
     if (!running || refreshes === 0) return;
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
@@ -180,12 +195,15 @@ export async function runSteamDodge(cs) {
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
   const slash = () => {
     if (!running || time < slashReadyAt) return;
-    const direction = slashDirection(keysDown, axisX, axisY), angle = slashAngle(direction);
+    const direction = "u", angle = SLASH_FORWARD_ANGLE;
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle));
     slashesUsed++; slashReadyAt = time + SLASH_RECHARGE_SECONDS;
     slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
+    slashBtn.dataset.result = cleared.length ? "hit" : "miss";
+    slashFeedback = cleared.length ? `斬った ×${cleared.length}` : "空振り";
+    slashFeedbackUntil = time + .7;
     world.dissolve(time, cleared);
-    const fx = buildSlashFx(hx, hy, angle);
+    const fx = buildSlashFx(hx, hy, angle, cleared.length);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     SE.whoosh(); slashLabel();
   };
@@ -239,7 +257,7 @@ export async function runSteamDodge(cs) {
   refreshLabel();
   slashLabel();
   await countdown();
-  running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
+  running = started = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
   const auto = autoSkill();
   try {
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }

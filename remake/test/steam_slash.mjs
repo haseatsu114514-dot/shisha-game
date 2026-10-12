@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import { slashTouchesBullet, slashDirection, slashAngle, SLASH_RECHARGE_SECONDS } from '../js/craft/steam-slash.js';
+import { slashTouchesBullet, SLASH_FORWARD_ANGLE, SLASH_RECHARGE_SECONDS } from '../js/craft/steam-slash.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const b=(x,y,w=8,h=8)=>({x,y,w,h});
@@ -11,14 +11,10 @@ assert(!slashTouchesBullet(b(81,-4),0,0,0),'Beyond 80px must survive');
 assert(!slashTouchesBullet(b(10,80),0,0,0),'Outside the fan must survive');
 assert(slashTouchesBullet(b(76,-30,3,60),0,0,0),'Arc crossing a long edge must cut');
 assert(slashTouchesBullet(b(-200,-84,220,8),0,0,-Math.PI/2),'Visible end of a long word must cut');
-for (const [direction,bullet] of [['u',b(-4,-80)],['r',b(80,-4)],['d',b(-4,80)],['l',b(-80,-4)]]) {
-  assert(slashTouchesBullet(bullet,0,0,slashAngle(direction)),direction);
-  assert.equal(slashDirection(new Set([direction])),direction);
-}
-assert.equal(slashDirection(new Set()),'u');
-assert.equal(slashDirection(new Set(['u','r'])),'r');
-assert.equal(slashDirection(new Set(),-.8,.2),'l');
-console.log('[slash geometry] PASS: front/back/reach/edges, four directions, default forward and dominant stick axis');
+assert(slashTouchesBullet(b(-4,-80),0,0,SLASH_FORWARD_ANGLE));
+assert(!slashTouchesBullet(b(-4,81),0,0,SLASH_FORWARD_ANGLE));
+assert(!slashTouchesBullet(b(81,-4),0,0,SLASH_FORWARD_ANGLE));
+console.log('[slash geometry] PASS: front/back/reach/edges and fixed upward forward strike');
 
 const browser=await chromium.launch({headless:true,...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{})});
 const shots=process.env.SHOTS,errors=[];
@@ -98,10 +94,10 @@ try {
     assert.equal(await button.getAttribute('data-uses'),'1','Cooldown/repeat allowed an extra slash');
     if(!mobile) {
       let uses=1;
-      for(const [key,direction] of [['ArrowLeft','l'],['ArrowDown','d'],['ArrowRight','r'],['ArrowUp','u']]) {
+      for(const key of ['ArrowLeft','ArrowDown','ArrowRight','ArrowUp']) {
         await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
         await page.keyboard.down(key);await page.keyboard.press('z');await page.keyboard.up(key);
-        assert.equal(await button.getAttribute('data-direction'),direction);assert.equal(await button.getAttribute('data-uses'),String(++uses));
+        assert.equal(await button.getAttribute('data-direction'),'u','Movement changed the forward attack');assert.equal(await button.getAttribute('data-uses'),String(++uses));
       }
       await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
       await button.focus();await page.keyboard.press('Space');
@@ -110,12 +106,12 @@ try {
       assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'1','Space on slash accidentally refreshed');
     } else {
       const pad=await page.locator('.dodge-pad').boundingBox(),r=await button.boundingBox();
-      for(const [dx,dy,direction] of [[-.8,0,'l'],[0,.8,'d'],[.8,0,'r'],[0,-.8,'u']]) {
+      for(const [dx,dy] of [[-.8,0],[0,.8],[.8,0],[0,-.8]]) {
         await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
         const stick={x:neutral.x+dx*pad.width*.34,y:neutral.y+dy*pad.width*.34,id:1},tap={x:r.x+r.width/2,y:r.y+r.height/3,id:2};
         await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[stick]});
         await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[stick,tap]});
-        assert.equal(await button.getAttribute('data-direction'),direction);
+        assert.equal(await button.getAttribute('data-direction'),'u','Stick direction changed the forward attack');
         assert.equal(await page.locator('.dodge-pad.held').count(),1,'Second finger interrupted movement');
         await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
       }
@@ -134,7 +130,7 @@ try {
     const result=await page.evaluate(()=>({...cs.steam}));
     assert(result.slashesUsed>=5);assert.equal(result.refreshesUsed,0);assert.equal(result.score,Math.max(0,100-result.hits*14));
     await page.close();
-    console.log(`[slash] PASS: ${name} real bullets, bounded/no-heal strike, four directions, cooldown, no-input front, white hit circle, raised neutral knob, distinct hit color and end cleanup`);
+    console.log(`[slash] PASS: ${name} real bullets, bounded/no-heal strike, fixed forward attack during four-way movement, cooldown, white hit circle, raised neutral knob, distinct hit color and end cleanup`);
   }
   assert.deepEqual(errors,[]);
 }finally{await browser.close();}

@@ -1,18 +1,10 @@
-// SF61・64: 前方だけを切る。方向入力なしは上、入力ありは四方向。
+// アタックは移動方向と独立して、画面上の前方だけを切る。
 import { el } from "../core/util.js";
 
 export const SLASH_REACH = 80;
 export const SLASH_HALF_ANGLE = Math.PI * 2 / 9;
 export const SLASH_RECHARGE_SECONDS = 1.8;
-const ANGLES = { u: -Math.PI / 2, r: 0, d: Math.PI / 2, l: Math.PI };
-
-export function slashDirection(held, x = 0, y = 0) {
-  const key = [...held].at(-1);
-  if (key) return key;
-  if (!x && !y) return "u";
-  return Math.abs(x) >= Math.abs(y) ? (x > 0 ? "r" : "l") : (y > 0 ? "d" : "u");
-}
-export const slashAngle = direction => ANGLES[direction];
+export const SLASH_FORWARD_ANGLE = -Math.PI / 2;
 
 // 扇形と弾の実寸矩形の交差。長い言葉も、触れた端だけで切れる。
 export function slashTouchesBullet(b, hx, hy, angle) {
@@ -49,10 +41,12 @@ export function slashTouchesBullet(b, hx, hy, angle) {
 
 export const SLASH_ART = '<svg viewBox="0 0 152 152" aria-hidden="true"><circle cx="76" cy="76" r="61" fill="#201927" fill-opacity=".5" stroke="#b6a5cf" stroke-width="2"/><path d="M35 101Q76 20 123 64Q83 39 35 101Z" fill="#edc3f1"/><path d="M35 101Q76 20 123 64" fill="none" stroke="#b9edff" stroke-width="3"/><path d="m56 102 44-48 8-3-2 9-44 48Z" fill="#f2f2fa" stroke="#a2b9d0" stroke-width="1.5"/><path d="m49 94 21 19m-14-7-10 11m-3-2 6 6" fill="none" stroke="#d6bc8c" stroke-width="5" stroke-linecap="round"/></svg>';
 let fxId = 0;
-export function buildSlashFx(x, y, angle) {
+export function buildSlashFx(x, y, angle, cleared = 0) {
   const r = SLASH_REACH, ex = r * Math.cos(SLASH_HALF_ANGLE), ey = r * Math.sin(SLASH_HALF_ANGLE);
   const id = `steam-slash-${++fxId}`;
-  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx" },
+  // 既存の消弾・粒子はsteam.js/world側。ここは実際の結果で斬撃の明るさを変えるだけ。
+  const trail = [.65, .82].map(scale => `<path d="M${ex * scale} ${-ey * scale}A${r * scale} ${r * scale} 0 0 1 ${ex * scale} ${ey * scale}" fill="none" stroke="url(#${id})" stroke-opacity="${cleared ? .65 : .25}" stroke-width="${cleared ? 2 : 1}"/>`).join("");
+  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx", result: cleared ? "hit" : "miss", cleared: String(cleared) },
     style: { left: `${x}px`, top: `${y}px`, "--angle": `${angle}rad`, width: `${r * 2}px`, height: `${r * 2}px` },
-    html: `<svg viewBox="${-r} ${-r} ${r * 2} ${r * 2}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#80dcff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#f2a4e8"/></linearGradient></defs><path d="M0 0L${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Z" fill="#bdefff" fill-opacity=".07"/><path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Q${r + 10} 0 ${ex} ${-ey}Z" fill="url(#${id})"/><path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}" fill="none" stroke="#fff" stroke-width="2"/></svg>` });
+    html: `<svg viewBox="${-r} ${-r} ${r * 2} ${r * 2}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#80dcff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#f2a4e8"/></linearGradient></defs><path d="M0 0L${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Z" fill="#bdefff" fill-opacity=".07"/>${trail}<path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Q${r + 10} 0 ${ex} ${-ey}Z" fill="url(#${id})"/><path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}" fill="none" stroke="#fff" stroke-width="${cleared ? 3 : 1}"/></svg>` });
 }
