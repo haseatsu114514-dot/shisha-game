@@ -2,6 +2,11 @@
 .worker-actions { position: absolute; inset: 32px 0 0; pointer-events: none; }
 .worker-action { width: 100%; height: 100%; object-fit: contain; object-position: center 75%; pointer-events: none; }
 .worker-action[hidden] { display: none; }
+.bench-worker[data-scene="holes"] .worker-action { object-position: center; }
+.worker-punch, .worker-punch-hands { position: absolute; inset: 0; pointer-events: none; }
+.worker-punch[hidden], .worker-punch-hand[hidden] { display: none; }
+.worker-punch-hand, .worker-punch-dots { position: absolute; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.worker-punch-dots ellipse { fill: #171520; stroke: #b7b0b9; stroke-width: 1.3px; }
 .bench-worker[data-scene]:not([data-scene="fallback"]):not([data-scene="focus"]) .worker-actor { visibility: hidden; }
 .bench-worker:is([data-scene="mix"], [data-scene="pack"], [data-scene="holes"], [data-scene="heat"]) .worker-equipment { visibility: hidden; }
 .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .worker-actions { inset: 20px 0 0; }

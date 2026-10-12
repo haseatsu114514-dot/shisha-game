@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 14:19 UTC",
+ "generated": "2026-10-12 15:21 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -293,6 +293,9 @@
   "foil_surface.png",
   "hajime_craft_heat.png",
   "hajime_craft_holes.png",
+  "hajime_craft_holes_contact.png",
+  "hajime_craft_holes_hover.png",
+  "hajime_craft_holes_release.png",
   "hajime_craft_mix.png",
   "hajime_craft_pack.png",
   "hajime_craft_pull.png",
@@ -1331,27 +1334,48 @@
   "hajime_craft_heat.png": [
    0.0742,
    0.0,
-   0.9336,
+   0.9349,
    1.0,
    1.5
   ],
   "hajime_craft_holes.png": [
    0.0,
+   0.2891,
+   0.5755,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_contact.png": [
+   0.5345,
    0.0332,
    1.0,
    1.0,
    1.5
   ],
-  "hajime_craft_mix.png": [
-   0.0234,
+  "hajime_craft_holes_hover.png": [
+   0.5332,
    0.0,
-   0.9766,
-   0.9639,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_release.png": [
+   0.5352,
+   0.0098,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_mix.png": [
+   0.071,
+   0.002,
+   0.929,
+   0.9951,
    1.5
   ],
   "hajime_craft_pack.png": [
    0.0,
-   0.0957,
+   0.0947,
    1.0,
    1.0,
    1.5
@@ -1366,7 +1390,7 @@
   "hajime_craft_pull_rest.png": [
    0.0,
    0.0,
-   0.9518,
+   0.8835,
    1.0,
    1.5
   ],
@@ -1691,6 +1715,9 @@
   "ui/making/foil_surface.png",
   "ui/making/hajime_craft_heat.png",
   "ui/making/hajime_craft_holes.png",
+  "ui/making/hajime_craft_holes_contact.png",
+  "ui/making/hajime_craft_holes_hover.png",
+  "ui/making/hajime_craft_holes_release.png",
   "ui/making/hajime_craft_mix.png",
   "ui/making/hajime_craft_pack.png",
   "ui/making/hajime_craft_pull.png",

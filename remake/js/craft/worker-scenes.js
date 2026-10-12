@@ -4,7 +4,7 @@ import { makingUrl } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 
 export const WORKER_SCENES = Object.freeze({
-  mix: { file: "hajime_craft_mix.png", description: "タッパーの香りを前に、はじめが考えている" },
+  mix: { file: "hajime_craft_mix.png", description: "閉じたタッパーを前に、はじめが香りの組み合わせを考えている" },
   pack: { file: "hajime_craft_pack.png", description: "はじめの手がハガルに葉をほぐして詰めている" },
   holes: { file: "hajime_craft_holes.png", description: "掌でハガルを支え、張ったアルミに針で小穴を開けている" },
   heat: { file: "hajime_craft_heat.png", description: "トングを持ったはじめが炭の焼け具合を待っている" },

@@ -171,6 +171,10 @@ export function setBenchTemperature(cs, temp) {
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
 }
+/** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
+export function setBenchHoleAction(cs, event) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
+}
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }

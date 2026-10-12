@@ -1,9 +1,10 @@
-// 人物と台を一つの場面に収める。吸引中は水泡を動かし、後から工程別動画へ差し替える。
+// 工程に応じた人物・手元を既存の台へ重ねる。実入力の穴あけと吸引中の泡を表示する。
 import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
 import { artImg, artHeight } from "./art.js";
 import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-scenes.js";
+import { buildWorkerHoles } from "./worker-holes.js";
 import { imageReady } from "../core/ui.js";
 
 export const WORKER_STEPS = {
@@ -33,6 +34,8 @@ export function buildWorkerScene(cs) {
   const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
   const actions = buildWorkerActions();
+  const holes = buildWorkerHoles();
+  actions.root.append(holes.root);
   const equipment = buildHookahRig("worker-equipment");
   const baseH = artHeight("hookah_base.png", 90);
   const water = el("div.worker-water", { "aria-hidden": "true", dataset: { test: "worker-bubbles" },
@@ -82,7 +85,8 @@ export function buildWorkerScene(cs) {
     root.dataset.face = face;
     root.dataset.waiting = String(!!calm);
     const sceneKey = workerSceneKey(root.dataset.step, root.dataset.draw);
-    const scene = actions.show(sceneKey);
+    const scene = actions.show(sceneKey === "holes" && !holes.available ? null : sceneKey);
+    holes.show(sceneKey === "holes" && !!scene);
     root.dataset.scene = scene ? sceneKey : waiting ? "focus" : "fallback";
     root.dataset.artFallback = String(!!sceneKey && !scene);
     stage.setAttribute("aria-label", scene?.description || `はじめの作業風景：${WORKER_STEPS[root.dataset.step] || "一台を仕上げる"}`);
@@ -91,7 +95,7 @@ export function buildWorkerScene(cs) {
       stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
-  const ready = Promise.all([actions.ready, warmFaces]).then(async () => {
+  const ready = Promise.all([actions.ready, holes.ready, warmFaces]).then(async () => {
     facesChecked = true;
     applyFace();
     if (actor && !actor.hidden && !await readyWorkerImage(actor, actor.getAttribute("src"))) {
@@ -100,11 +104,14 @@ export function buildWorkerScene(cs) {
     }
   });
   return { caption, footer, root, ready, setStep(step) {
+    holes.reset();
     root.dataset.step = step;
     delete root.dataset.draw;
     mental = "steady"; root.dataset.mental = mental;
     caption.textContent = WORKER_STEPS[step] || "一台を仕上げる";
     applyFace();
+  }, punch(event) {
+    if (root.dataset.step === "holes") holes.punch(event);
   }, setMental(level) {
     if (mental === level && root.dataset.mental === level) return;
     mental = level; root.dataset.mental = level;

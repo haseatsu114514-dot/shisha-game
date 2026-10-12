@@ -11,7 +11,7 @@ async function init(page) {
     const state = await import("./js/core/state.js"); state.newGame();
     window.T = {
       state, session: await import("./js/craft/session.js"),
-      heat: await import("./js/craft/heat.js"), pull: await import("./js/craft/pull.js"),
+      heat: await import("./js/craft/heat.js"), pull: await import("./js/craft/pull.js"), holes: await import("./js/craft/holes.js"),
       steps: await import("./js/craft/steps.js"),
     };
     T.open = async () => {
@@ -22,14 +22,41 @@ async function init(page) {
   });
 }
 const worker = page => page.locator('[data-test="worker-window"]');
+async function orientForTouch(page, options) {
+  if (options.viewport?.height <= options.viewport?.width || !options.hasTouch) return;
+  // 既存仕様は横向き。縦向きの回転案内を確認し、実際に向きを変えて操作する。
+  assert(await page.locator("#rotate-hint").isVisible());
+  await capture(page, "touch-portrait-rotate-guide");
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+}
+async function startHoles(page) {
+  await page.evaluate(() => { window.holesRun = T.holes.runHoles(cs); });
+  await page.locator('[data-test="hole-start"]').click();
+  await page.locator(".countdown").waitFor();
+  await page.locator(".countdown").waitFor({ state: "detached" });
+}
+async function assertHolePositions(page) {
+  const { actual, painted } = await page.evaluate(() => ({
+    actual: [...document.querySelectorAll(".foil-holes .foil-hole")].map(n => [(parseFloat(n.style.left) - 50) / 50, (parseFloat(n.style.top) - 50) / 50]),
+    painted: [...document.querySelectorAll(".worker-punch-dots ellipse")].map(n => [Number(n.dataset.x), Number(n.dataset.y)]),
+  }));
+  assert.equal(painted.length, actual.length);
+  actual.forEach(([x, y], i) => {
+    // CSSOMは%を有限桁へ丸める。画面上で0.01px未満の差を許す。
+    assert(Math.abs(x - painted[i][0]) < 1e-5 && Math.abs(y - painted[i][1]) < 1e-5, `Painted hole diverged: ${JSON.stringify({ actual: [x, y], painted: painted[i] })}`);
+  });
+}
 
 await suite("worker-scenes", async check => {
   for (const [name, options] of [
     ["pc", {}],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }],
   ]) {
     await check(`steps-faces-${name}`, async page => {
       await init(page); await page.evaluate(() => T.open());
+      await orientForTouch(page, options);
       const before = await page.evaluate(() => JSON.stringify(cs));
       for (const step of ["mix", "pack", "holes", "heat", "pull", "care"]) {
         await page.evaluate(step => T.session.stepPanel(step, step), step);
@@ -64,15 +91,17 @@ await suite("worker-scenes", async check => {
     await check(`real-puff-${name}`, async page => {
       await init(page); await page.evaluate(async () => {
         await T.open(); cs.mix = { double_apple: 10, mint: 2 }; cs.pack = "normal"; cs.place = "triangle";
-        window.pullRun = T.pull.runPull(cs);
       });
+      await orientForTouch(page, options);
+      await page.evaluate(() => { window.pullRun = T.pull.runPull(cs); });
       await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
       assert.equal(await worker(page).getAttribute("data-scene"), "pull");
       const button = page.locator('[data-test="pull-stop"]');
-      if (name === "touch") await button.tap(); else await page.keyboard.press("Space");
+      if (options.hasTouch) await button.tap(); else await page.keyboard.press("Space");
       await page.waitForFunction(() => document.querySelector('.bench-worker')?.dataset.draw);
       assert.equal(await worker(page).getAttribute("data-scene"), "inhale");
       assert(await page.locator('.worker-action[data-scene="inhale"]').isVisible());
+      await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('[data-test="worker-bubbles"]')).opacity) > 0, null, { timeout: 1000 });
       assert(Number(await page.locator('[data-test="worker-bubbles"]').evaluate(n => getComputedStyle(n).opacity)) > 0);
       assert(await button.isDisabled());
       const overlap = await page.evaluate(() => {
@@ -85,7 +114,7 @@ await suite("worker-scenes", async check => {
       const duration = await worker(page).evaluate(n => parseFloat(n.style.getPropertyValue("--draw-duration")));
       assert([1400, 1900, 3200].includes(duration), "Existing puff length changed");
       // 無効中の実タップ/Spaceは次の一口にならない。
-      if (name === "touch") {
+      if (options.hasTouch) {
         const r = await button.boundingBox(); await page.touchscreen.tap(r.x + r.width / 2, r.y + r.height / 2);
       } else await page.keyboard.press("Space");
       await page.waitForFunction(() => !document.querySelector('.bench-worker')?.dataset.draw);
@@ -97,7 +126,66 @@ await suite("worker-scenes", async check => {
       await capture(page, `${name}-real-rest`);
       await assertFits(page, '[data-test="pull-stop"], [data-test="pull-serve"]');
     }, options);
+
+    await check(`real-hole-punch-${name}`, async page => {
+      await init(page); await page.evaluate(() => T.open()); await orientForTouch(page, options); await startHoles(page);
+      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 0, "Foil already had baked-in holes");
+      // 入力イベント内で接触フレームの針先と、その瞬間の実穴を記録する。
+      await page.evaluate(async () => {
+        const { FOIL_VIEW: v } = await import("./js/craft/worker-holes.js");
+        document.querySelector('[data-test="hole-punch"]').addEventListener("pointerdown", () => {
+          const punch = document.querySelector(".worker-punch");
+          const rect = punch.querySelector('[data-pose="contact"]').getBoundingClientRect();
+          const scale = Math.min(rect.width / v.width, rect.height / v.height);
+          const dot = punch.querySelector("ellipse:last-child").getBoundingClientRect();
+          window.tipSample = {
+            pose: punch.dataset.pose,
+            tip: [rect.left + (rect.width - v.width * scale) / 2 + v.tipX * scale, rect.top + (rect.height - v.height * scale) / 2 + v.tipY * scale],
+            hole: [dot.left + dot.width / 2, dot.top + dot.height / 2],
+          };
+        });
+      });
+      const button = page.locator('[data-test="hole-punch"]');
+      if (options.hasTouch) await button.tap(); else await button.click();
+      const sample = await page.evaluate(() => tipSample);
+      assert.equal(sample.pose, "contact");
+      assert(Math.hypot(sample.tip[0] - sample.hole[0], sample.tip[1] - sample.hole[1]) < 1, "Needle tip missed the new hole");
+      if (options.hasTouch) { await button.tap(); await button.tap(); }
+      else { await page.keyboard.press("Space"); await page.keyboard.press("Space"); }
+      assert.equal(await page.locator(".foil-holes .foil-hole").count(), 3);
+      await assertHolePositions(page);
+      await page.waitForFunction(() => document.querySelector(".worker-punch")?.dataset.pose === "hover");
+      assert.equal(await page.locator(".worker-punch-hand:visible").count(), 1);
+      assert.equal(await page.evaluate(() => cs.holes), null, "Presentation completed the minigame");
+      await assertFits(page, '[data-test="hole-punch"], [data-test="hole-done"]');
+      await capture(page, `${name}-real-holes`);
+      await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
+      assert(await page.locator(".worker-punch").isHidden());
+      await page.evaluate(() => T.session.stepPanel("holes", "アルミ穴あけ"));
+      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 0, "Previous foil holes survived a retry");
+    }, options);
   }
+
+  await check("punch-flipbook-and-full-foil", async page => {
+    await init(page); await page.evaluate(() => T.open());
+    const before = await page.evaluate(() => JSON.stringify(cs));
+    await page.evaluate(() => T.session.stepPanel("holes", "アルミ穴あけ"));
+    await page.clock.install({ time: new Date("2026-10-12T12:00:00Z") });
+    await page.clock.pauseAt(new Date("2026-10-12T12:00:01Z"));
+    await page.evaluate(() => bench.worker.punch({
+      dots: Array.from({ length: 24 }, (_, i) => [.8 * Math.cos(i * Math.PI / 12), .8 * Math.sin(i * Math.PI / 12)]), target: [.8, 0],
+    }));
+    assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 24);
+    assert.equal(await page.locator(".worker-punch").getAttribute("data-pose"), "contact");
+    await capture(page, "flipbook-contact");
+    await page.clock.runFor(90);
+    assert.equal(await page.locator(".worker-punch").getAttribute("data-pose"), "release");
+    await capture(page, "flipbook-release");
+    await page.clock.runFor(90);
+    assert.equal(await page.locator(".worker-punch").getAttribute("data-pose"), "hover");
+    await capture(page, "flipbook-hover");
+    assert.equal(await page.evaluate(() => JSON.stringify(cs)), before, "Flipbook mutated the gameplay session");
+  });
 
   await check("slow-image-before-heat", async page => {
     await init(page);
@@ -134,6 +222,38 @@ await suite("worker-scenes", async check => {
     await page.evaluate(() => releaseDecode());
     await page.locator('[data-test="coal-0"]').waitFor();
     assert.equal(await worker(page).getAttribute("data-scene"), "heat");
+  });
+
+  await check("slow-punch-frame-gates-real-holes", async page => {
+    await init(page);
+    let release; const held = new Promise(resolve => { release = resolve; });
+    await page.route("**/img/ui/making/hajime_craft_holes_release.webp", async route => { await held; await route.continue(); });
+    try {
+      await page.evaluate(() => {
+        window.cs = T.session.newSession("drill"); T.session.openBench(cs); window.holesRun = T.holes.runHoles(cs);
+      });
+      await page.locator('[data-test="craft-loading"]').waitFor(); await page.waitForTimeout(350);
+      assert(await page.locator(".bench").evaluate(n => n.inert));
+      assert.equal(await page.locator('[data-test="hole-start"]').count(), 0);
+      assert.equal(await page.locator(".countdown").count(), 0);
+      assert.equal(await page.evaluate(() => cs.holes), null);
+    } finally { release(); }
+    await page.locator('[data-test="hole-start"]').waitFor();
+    assert.equal(await worker(page).getAttribute("data-scene"), "holes");
+    assert(await page.locator('.worker-punch-hand[data-pose="hover"]').evaluate(n => n.complete && n.naturalWidth > 0));
+  });
+
+  await check("broken-punch-frame-complete-fallback", async page => {
+    await init(page);
+    await page.route("**/img/ui/making/hajime_craft_holes_contact.webp", route => route.fulfill({ status: 200, contentType: "image/webp", body: "broken image" }));
+    await page.evaluate(() => T.open()); await startHoles(page);
+    assert.equal(await worker(page).getAttribute("data-scene"), "fallback");
+    assert.equal(await worker(page).getAttribute("data-art-fallback"), "true");
+    assert(await page.locator(".worker-punch").isHidden());
+    assert(await page.locator(".worker-actor").isVisible());
+    await page.locator('[data-test="hole-punch"]').click();
+    assert.equal(await page.locator(".foil-holes .foil-hole").count(), 1);
+    assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 0);
   });
 
   await check("broken-scene-real-mix-fallback", async page => {
@@ -204,5 +324,10 @@ await suite("worker-scenes", async check => {
     assert.equal(await page.locator(".worker-water i").first().evaluate(n => getComputedStyle(n).opacity), "0.7");
     await page.evaluate(() => { T.session.stepPanel("steam", "蒸らし"); });
     assert.equal(await page.locator(".worker-actor").evaluate(n => getComputedStyle(n).animationName), "none");
+    await startHoles(page);
+    await page.locator('[data-test="hole-punch"]').tap();
+    await assertHolePositions(page);
+    assert.equal(await page.locator(".worker-punch").getAttribute("data-pose"), "hover", "Reduced motion played the flipbook");
+    assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 1, "Reduced motion hid the new hole");
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
 });
