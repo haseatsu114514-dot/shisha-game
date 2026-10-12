@@ -1,0 +1,33 @@
+{
+  "issue": 477,
+  "worker": "codex-romance-20261012-c9053659",
+  "claim_run": 38302690637,
+  "status_run": 38302815280,
+  "source": "OpenAI built-in image_gen",
+  "reference": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+  "generated_source": "/workspace/generated_images/exec-3971ad94-d39b-4e5e-a32e-dca20506091f.png",
+  "outputs": [
+    {
+      "variant": "axe_normal",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-normal-source.png",
+      "sha256": "6820a17e0391fbb35927459c02be2cbd3df5c66b9e7abeb72f297fa644d19fc9",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
+    }
+  ],
+  "external_files_included": [],
+  "remaining": [
+    "axe_laugh",
+    "axe_shout",
+    "serious",
+    "love_blush",
+    "axe background",
+    "normalization/encoding/manifest",
+    "visual and PC/touch/save QA"
+  ]
+}
