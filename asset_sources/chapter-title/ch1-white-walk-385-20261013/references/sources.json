@@ -1,0 +1,199 @@
+{
+  "base_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+  "sheet_tool": "tools/make_face_icons.py:face_box (same crop used by make_reference_sheet.py)",
+  "title_decision": "https://github.com/haseatsu114514-dot/shisha-game/issues/445",
+  "references": [
+    {
+      "id": "hajime",
+      "name": "はじめ",
+      "source_path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "git_blob_sha": "c641dc297e7bf7c9c9df01ba4e117be79e92319b",
+      "reference_copy": "references/hajime-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        262,
+        159,
+        713,
+        1182
+      ],
+      "height_cm": 172,
+      "layout_relative_height": 0.945054945054945,
+      "identity_checklist": [
+        "黒髪・灰緑の瞳／22歳",
+        "黒キャップ・黒フードジャケット",
+        "黒カーゴ／黒ハイカット",
+        "銀の筒形ペンダント・両手はポケット"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/hajime",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "current normal"
+    },
+    {
+      "id": "sumi",
+      "name": "スミさん",
+      "source_path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+      "git_blob_sha": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49",
+      "reference_copy": "references/sumi-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        290,
+        103,
+        643,
+        1175
+      ],
+      "height_cm": 182,
+      "layout_relative_height": 1.0,
+      "identity_checklist": [
+        "黒髪・茶の瞳／46歳",
+        "黒ハンチング・四角い黒眼鏡・ひげ",
+        "黒シャツ袖まくり／長い茶エプロン",
+        "黒スラックス・黒革靴／大柄"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/sumi",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "current normal"
+    },
+    {
+      "id": "tsumugi",
+      "name": "つむぎ",
+      "source_path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+      "git_blob_sha": "67fff31bea79471dab2b63f89fcd8ea5c94165e0",
+      "reference_copy": "references/tsumugi-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        313,
+        305,
+        566,
+        1174
+      ],
+      "height_cm": null,
+      "layout_relative_height": 0.8316483516483517,
+      "identity_checklist": [
+        "茶のボブ・赤茶の瞳／21歳",
+        "紫の花刺繍パーカー・小さな丸ピアス",
+        "黒プリーツ・黒ニーソ・黒厚底靴",
+        "黒タブレットを胸で抱える／小柄"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/tsumugi",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "current normal"
+    },
+    {
+      "id": "naru",
+      "name": "なる",
+      "source_path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577",
+      "git_blob_sha": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787",
+      "reference_copy": "references/naru-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        300,
+        124,
+        657,
+        1182
+      ],
+      "height_cm": 176,
+      "layout_relative_height": 0.967032967032967,
+      "identity_checklist": [
+        "短い銀髪・金茶の瞳／23歳",
+        "黒白ジャケット／襟の内側に橙",
+        "銀ペンダント・ピアス・腰チェーン",
+        "黒カーゴ・白スニーカー／日焼け肌"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/naru",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "current normal"
+    },
+    {
+      "id": "adam",
+      "name": "アダム",
+      "source_path": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+      "git_blob_sha": "a6eb1b7f8883e4e3d3b03144cc55c72fb5c0f31c",
+      "reference_copy": "references/adam-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        237,
+        122,
+        641,
+        1178
+      ],
+      "height_cm": 178,
+      "layout_relative_height": 0.978021978021978,
+      "identity_checklist": [
+        "二色の髪：正面の画面左が緑、右が赤",
+        "黄緑寄りの瞳／28歳・しっかりした腕",
+        "黒ヘンリーネック袖まくり・黒腰エプロン",
+        "黒スラックス・黒革靴／首飾りなし"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/adam",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "current normal"
+    },
+    {
+      "id": "minto",
+      "name": "みんと（営業衣装）",
+      "source_path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "source_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+      "source_sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "git_blob_sha": "96aade40abd21eb0ae60efb8a7f03db539a3fdf0",
+      "reference_copy": "references/minto-adopted-normal.png",
+      "image_size": [
+        896,
+        1200
+      ],
+      "alpha_bbox": [
+        351,
+        236,
+        663,
+        1178
+      ],
+      "height_cm": 156,
+      "layout_relative_height": 0.8571428571428571,
+      "identity_checklist": [
+        "黒ロング・緑の瞳／成人の営業姿",
+        "角・コウモリ羽の髪飾り・ハートチョーカー",
+        "黒オフショルダー＋淡緑リボンとフリル",
+        "黒ガーター・ニーソ／緑縁の厚底靴"
+      ],
+      "runtime_evidence": [
+        "remake/data/manifest.json:portraits/minto",
+        "remake/js/core/data.js:portraitInfo"
+      ],
+      "outfit": "営業衣装 / normal、ura_*不使用"
+    }
+  ]
+}
