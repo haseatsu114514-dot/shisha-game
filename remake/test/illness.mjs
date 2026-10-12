@@ -34,7 +34,7 @@ const values = {
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
-  "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop },
+  "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },

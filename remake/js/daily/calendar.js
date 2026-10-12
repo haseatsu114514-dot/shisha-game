@@ -12,7 +12,7 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
-import { chooseSpot, interruptMap } from "./map.js";
+import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
@@ -85,17 +85,17 @@ async function morning() {
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight });
   if (n) pushNotice(n, { onOpen: (sender) => {
-    if (document.querySelector("#screen .map:not(.done)") && !layers.modal.classList.contains("show")) phoneButton({ sender });
+    if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
   setPhoneBadge(hasUnread());
 }
 
-/** HUD の LIME。街に出ているとき（マップ）だけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
+/** HUD の LIME。行き先を選んでいるときだけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
 async function phoneButton({ sender = null } = {}) {
-  if (!document.querySelector("#screen .map:not(.done)") || layers.modal.classList.contains("show")) {
+  if (!isChoosingDestination() || layers.modal.classList.contains("show")) {
     SE.cancel();
-    toast("LIME は街に出ているとき（マップ）に開ける");
+    toast("LIME は行き先を選んでいるときに開ける");
     return;
   }
   SE.select();
@@ -126,8 +126,8 @@ async function openMenu() {
     ],
   });
   if (v === "save") {
-    // 手動セーブは街に出ているとき（マップ）だけ。会話や作業の途中の状態は残さない
-    if (!document.querySelector("#screen .map:not(.done)")) { toast("セーブは街に出ているとき（マップ）にできる"); return; }
+    // 手動セーブは行き先を選んでいるときだけ。会話や作業の途中の状態は残さない
+    if (!isChoosingDestination()) { toast("セーブは行き先を選んでいるときにできる"); return; }
     await saveFlow();
   }
   if (v === "load") {
