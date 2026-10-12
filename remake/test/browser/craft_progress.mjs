@@ -138,5 +138,20 @@ await suite("craft-progress", async check => {
       assert.equal(a.step, "care"); assert.equal(a.label, "調整"); assert.equal(a.count, "6 / 6");
       assert.equal(a.description, "制作の工程：調整。6 / 6");
     }
+    const phases = await page.evaluate(async () => {
+      const { buildCraftProgress } = await import("./js/craft/progress.js");
+      const progress = buildCraftProgress(T.practice.CRAFT_STEPS);
+      return [["setup", "機材", "pack"], ["mix", "配合", "pack"], ["holes", "アルミ穴あけ", "pack"],
+        ["place", "炭配置", "heat"], ["heat", "炭焼き", "heat"], ["steam", "蒸らし中", "steam"],
+        ["pull", "吸い出し", "pull"], ["serve", "提供", "serve"]].map(([id, title, expected]) => {
+          progress.update(id, title);
+          return { expected, active: progress.root.querySelector('[aria-current="step"]').dataset.step,
+            labels: [...progress.root.querySelectorAll('.bench-phase-copy b')].map(n => n.textContent) };
+        });
+    });
+    for (const phase of phases) {
+      assert.equal(phase.active, phase.expected);
+      assert.deepEqual(phase.labels, labels, "Substep titles must keep the six phase labels");
+    }
   });
 });

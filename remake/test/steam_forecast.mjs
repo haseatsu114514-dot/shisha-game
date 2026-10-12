@@ -158,7 +158,7 @@ try {
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし中');
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);

@@ -25,12 +25,11 @@ export function buildCraftProgress(steps) {
     cells.forEach((cell, i) => {
       cell.classList.toggle("now", i === active);
       cell.classList.toggle("seen", i < active);
-      cell.querySelector("b").textContent = i === active && phases[i][0] !== "care" ? (id === "steam" ? "蒸らし中" : title) : phases[i][1];
       if (i === active) cell.setAttribute("aria-current", "step");
       else cell.removeAttribute("aria-current");
     });
     count.textContent = `${active + 1} / ${phases.length}`;
-    const currentTitle = phases[active]?.[0] === "care" ? "調整" : title;
+    const currentTitle = phases[active]?.[1] ?? title;
     root.setAttribute("aria-label", `制作の工程：${currentTitle}。${active + 1} / ${phases.length}`);
   } };
 }
