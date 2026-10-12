@@ -13,7 +13,8 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
     window.E = { core: await import("./js/core/state.js"), ch1: await import("./js/chapters/ch1.js"),
       vn: await import("./js/vn/engine.js"), session: await import("./js/craft/session.js"),
       stats: await import("./js/core/stats.js"), story: await import("./js/chapters/tsumugi-story.js"),
-      nights: await import("./js/daily/night-events.js"), intro: await import("./js/vn/intro.js") };
+      nights: await import("./js/daily/night-events.js"), intro: await import("./js/vn/intro.js"),
+      ui: await import("./js/core/ui.js") };
     if (fresh) {
       const s = E.core.newGame();
       Object.assign(s, { phase: "daily", day, slot: 2, stamina: 57, weatherSeed: 4 });
@@ -25,7 +26,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       s.flags._morning_13 = true;
       for (const id of ["sumi", "tsumugi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) E.intro.markIntroSeen(id);
     } else E.core.load();
-    E.ch1.setupHooks(); E.vn.vnTest.turbo = !manual;
+    E.ui.clearScreen(); E.ch1.setupHooks(); E.vn.vnTest.turbo = !manual;
     E.vn.vnTest.choose = () => 3; // automated compatibility cases choose sleep
     E.session.craftTest.auto = auto;
     E.entries = []; E.steps = []; E.benches = 0;
@@ -57,7 +58,7 @@ async function advanceTo(page, selector, touch = false) {
     const error = await page.evaluate(() => E.error);
     assert(!error, error);
     const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
-    if (await skip.isVisible().catch(() => false)) await select(page, '#vn.active [data-test="vn-skip"]:not(.on)', touch);
+    if (!(await page.evaluate(() => E.vn.vnTest.turbo)) && await skip.isVisible().catch(() => false)) await select(page, '#vn.active [data-test="vn-skip"]:not(.on)', touch);
     await page.waitForTimeout(40);
   }
 }
@@ -67,7 +68,7 @@ async function finish(page, touch = false) {
     const error = await page.evaluate(() => E.error);
     assert(!error, error); assert(Date.now() < until, "Eve did not finish");
     const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
-    if (await skip.isVisible().catch(() => false)) await select(page, '#vn.active [data-test="vn-skip"]:not(.on)', touch);
+    if (!(await page.evaluate(() => E.vn.vnTest.turbo)) && await skip.isVisible().catch(() => false)) await select(page, '#vn.active [data-test="vn-skip"]:not(.on)', touch);
     await page.waitForTimeout(40);
   }
 }
