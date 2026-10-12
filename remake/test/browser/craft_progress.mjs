@@ -80,6 +80,7 @@ await suite("craft-progress", async check => {
         await page.evaluate(() => window.run);
         assert.equal(await active(page), "care");
         assert.deepEqual(await headerLabels(page), labels);
+        assert(!/調整.*回目/.test(await page.locator('.bench-top').textContent()), "Care count leaked into the header score popup");
         if (round === 1) await page.evaluate(() => { window.firstCare = JSON.stringify(cs.careHistory[0]); });
       }
       const data = await page.evaluate(() => {

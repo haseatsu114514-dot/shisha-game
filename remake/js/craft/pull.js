@@ -455,7 +455,7 @@ async function pullGame(cs, mode) {
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL, mode.safe);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
-  scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
+  scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.drift ? "調整" : mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;
     refreshBench();
