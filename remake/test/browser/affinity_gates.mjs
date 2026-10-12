@@ -65,6 +65,7 @@ await suite("affinity-gates", async check => {
           const earlyFinale = G.bonds.finaleDue(id);
           G.stats.gainAffinity(id, 22); // ordinary growth resumes, not another bank release
           s.story[id] = G.spots.VISIT_SEQ[id].length;
+          if (id === "tsumugi") s.flags._tsumugi_contest_submitted = true; // DAY11 fixed story is the chapter-1 relationship beat
           const ready = G.bonds.finaleDue(id);
           await G.bonds.playFinale(id);
           const gift = G.bonds.BOND_FINALES[id].gift;
