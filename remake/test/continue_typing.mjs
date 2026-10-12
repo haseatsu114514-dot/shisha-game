@@ -1,4 +1,4 @@
-// #454: caption-only adoption. Production scripts, controls, deadline and state stay intact.
+// #454/#466: centered typewriter, white captions, unclipped heads and selection-only gold buttons.
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -27,9 +27,19 @@ async function prepare(options) {
     await document.fonts.ready;
     C.script = variant => typeof variant === "number" ? C.go.SUMI_CONTINUE_SCRIPTS[variant]
       : C.premium.PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
-    C.read = () => {
+    C.headTops = new Map();
+    C.read = async () => {
       const root = document.querySelector(".gameover"), caption = root.querySelector(".go-speech-text");
       const box = caption.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      const image = root.querySelector(".go-sumi-img"); await image.decode();
+      if (!C.headTops.has(image.src)) {
+        const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+        const ctx = canvas.getContext("2d"); ctx.drawImage(image, 0, 0);
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let first = 3; while (first < pixels.length && pixels[first] < 24) first += 4;
+        C.headTops.set(image.src, Math.floor((first - 3) / 4 / canvas.width) / canvas.height);
+      }
+      const imageBox = image.getBoundingClientRect(), clip = image.parentElement.getBoundingClientRect();
       return { prefix: [...caption.querySelectorAll(".go-on")].map(n => n.textContent).join(""),
         text: caption.textContent, cue: Number(root.dataset.cue), live: root.querySelector(".go-a11y").textContent,
         count: root.querySelector(".go-count").textContent, phase: root.dataset.phase,
@@ -37,6 +47,13 @@ async function prepare(options) {
         transformed: [caption, ...caption.children].some(n => getComputedStyle(n).transform !== "none"),
         centered: Math.abs((box.left + box.right - stage.left - stage.right) / 2) <= 1,
         fits: box.left >= stage.left - 1 && box.right <= stage.right + 1 && box.height <= stage.height / 720 * 72,
+        white: [...caption.children].every(n => getComputedStyle(n).color === "rgb(255, 255, 255)"),
+        headGap: (imageBox.top + C.headTops.get(image.src) * imageBox.height - clip.top) / stage.height * 720,
+        buttons: [...root.querySelectorAll(".go-choice")].map(button => ({
+          selected: getComputedStyle(button).getPropertyValue("--go-frame-selected").trim() === "1",
+          color: getComputedStyle(button).color,
+          frame: button.querySelector(".go-choice-frame-selected").getAttribute("src"),
+        })),
         decisions: [...C.decisions] };
     };
     C.resources = () => JSON.stringify({ state: C.core.state, storage: { ...localStorage } });
@@ -60,6 +77,8 @@ function captionIsStatic(value) {
   assert(!value.transformed, "Caption and letters must not scale or bounce");
   assert(value.centered && value.fits, "Visible prefix stays centered on one line inside the stage");
   assert(value.text.startsWith(value.prefix), "Only a prefix of whole Unicode characters is visible");
+  assert(value.white, "All normal/reaction letters, including emphasis, stay white");
+  assert(value.headGap >= 10, `Hair/hat stays inside the portrait clip with breathing room: ${JSON.stringify(value)}`);
 }
 
 try {
@@ -75,6 +94,28 @@ try {
         next: !!s.cues[index + 1], slot: (s.cues[index + 1]?.at ?? s.duration) - c.at })))
       .find(c => c.next && [...c.text].length >= 14 && [...c.text].length / 26 < c.slot * .6));
     assert(target, "Production scripts need an uncapped timing sample");
+    await mount(page);
+    await page.mouse.move(0, 0);
+    let buttons = (await read(page)).buttons;
+    assert.deepEqual(buttons.map(b => b.selected), [false, false], "Both choices start neutral");
+    assert.equal(buttons[0].color, buttons[1].color, "Neither choice is privileged before selection");
+    assert(buttons.every(b => b.frame.includes("neon_retry_frame")), "Both choices have the same prepared gold frame");
+    if (!touch) {
+      await page.locator('[data-test="retry"]').hover();
+      assert.deepEqual((await read(page)).buttons.map(b => b.selected), [true, false], "Hover selects retry in gold");
+      await page.locator('[data-test="game-over-title"]').hover();
+      assert.deepEqual((await read(page)).buttons.map(b => b.selected), [false, true], "Hover selects quit in gold");
+      await page.mouse.move(0, 0);
+      await page.keyboard.press("Tab");
+      for (let i = 0; i < 6 && !await page.locator('[data-test="retry"]').evaluate(b => b === document.activeElement); i++) await page.keyboard.press("Tab");
+      assert(await page.locator('[data-test="retry"]').evaluate(b => b === document.activeElement));
+      assert.deepEqual((await read(page)).buttons.map(b => b.selected), [true, false], "Keyboard focus selects retry in gold");
+      await page.locator('[data-test="retry"]').hover();
+      await page.keyboard.press("Tab");
+      assert.deepEqual((await read(page)).buttons.map(b => b.selected), [false, true], "Keyboard focus takes precedence over a resting pointer");
+      await page.mouse.click(0, 0);
+      assert.deepEqual((await read(page)).buttons.map(b => b.selected), [false, false], "Leaving the choices restores neutral colors");
+    }
     await mount(page, target.variant);
     await page.evaluate(index => {
       const root = document.querySelector(".gameover");
@@ -125,6 +166,7 @@ try {
         await mount(page, variant);
         await tap(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`);
         const first = await read(page); captionIsStatic(first);
+        assert.deepEqual(first.buttons.map(b => b.selected), choice === "retry" ? [true, false] : [false, true], "Only the chosen, now disabled button keeps gold during reactions");
         assert.equal(first.live, script.reactions[choice].text.join(""));
         assert.equal(first.prefix, [...script.reactions[choice].text[0]][0]);
         await page.clock.runFor(500);
@@ -132,7 +174,8 @@ try {
         if (partial.prefix !== partial.text) await tap('[data-test="continue-proceed"]');
         assert.equal((await read(page)).prefix, script.reactions[choice].text[0]);
         await tap('[data-test="continue-proceed"]');
-        assert.equal((await read(page)).text, script.reactions[choice].text[1]);
+        const second = await read(page); captionIsStatic(second);
+        assert.equal(second.text, script.reactions[choice].text[1]);
         await page.clock.runFor(10000);
         assert.deepEqual((await read(page)).decisions, [choice], "Reaction leaves through the original route once");
       }
@@ -162,7 +205,7 @@ try {
     await page.clock.runFor(1900); assert.deepEqual((await read(page)).decisions, ["quit"]);
     await page.clock.runFor(1000); assert.deepEqual((await read(page)).decisions, ["quit"]);
     assert.equal(await page.evaluate(() => C.resources()), await page.evaluate(() => C.before), "No game/save changes");
-    console.log(`[continue typing] PASS: ${label} 26/s, centered static prefixes, all ${variants.length} scripts/choices, controls, hidden-tab pause, reduced motion, 20-second timeout and unchanged state`);
+    console.log(`[continue typing] PASS: ${label} 26/s, centered white prefixes, ${await page.evaluate(() => C.headTops.size)} unclipped portrait faces, neutral/selected buttons, all ${variants.length} scripts/choices, controls, hidden-tab pause, reduced motion, 20-second timeout and unchanged state`);
     await context.close();
   }
   assert.deepEqual(errors, []);
