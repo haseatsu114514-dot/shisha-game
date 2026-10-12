@@ -89,8 +89,11 @@ await suite("lover-date-route", async check => {
         assert.equal(result.dateCount, 1); assert.equal(result.choices.length, 1);
         assert.equal(result.lastDate, 4); assert.equal(result.savedLastDate, 4);
         assert.equal(result.pending, null); assert(result.pts > result.beforePts); assert.equal(result.inboxCount, 1);
-        const stat = await page.evaluate(({ id, choice }) => window.__remake.DB.lover.dates[id][choice ? "optB" : "optA"].stat, { id, choice });
-        assert(result.stats[stat] > result.beforeStats[stat], "Date choice reward missing");
+        // Current paidAction policy: invitations award one primary ability, 2P.
+        // The date choice supplies the candidate when the character has no primary.
+        const stat = await page.evaluate(async ({ id, choice }) => (await import("./js/daily/spots.js")).CHAR_STAT[id]
+          || window.__remake.DB.lover.dates[id][choice ? "optB" : "optA"].stat, { id, choice });
+        assert(result.stats[stat] >= result.beforeStats[stat] + 2, "Paid date reward missing");
         if (id === "mashiro") {
           assert(result.lines.some(t => t.includes("僕"))); assert(result.lines.some(t => t.includes("はじめくん")));
           assert(!result.lines.some(t => /はじめさん|蒸野くん/.test(t)));
