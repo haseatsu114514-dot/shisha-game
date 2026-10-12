@@ -1,12 +1,12 @@
 // New-game UI measurement. Never inject day, affinity, story, flags, or lovers.
-// PACE_TARGET=rin|tsumugi|minto PACE_MODE=fast|usual|friend|hold|boost PACE_TOUCH=1
+// PACE_TARGET=rin|tsumugi|minto PACE_MODE=fast|usual|friend|hold|boost|fortune PACE_TOUCH=1
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(new URL("./browser/package.json", import.meta.url))("playwright");
 const target = process.env.PACE_TARGET || "rin", mode = process.env.PACE_MODE || "fast", touch = process.env.PACE_TOUCH === "1";
-assert(["rin", "tsumugi", "minto"].includes(target)); assert(["fast", "usual", "friend", "hold", "boost"].includes(mode));
+assert(["rin", "tsumugi", "minto"].includes(target)); assert(["fast", "usual", "friend", "hold", "boost", "fortune"].includes(mode));
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const dir = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/relationship-pace"); fs.mkdirSync(dir, { recursive: true });
 const label = `${target}-${mode}-${touch ? "touch" : "pc"}`;
@@ -33,7 +33,8 @@ try {
     const enter = P.vn.hooks.onEnter, choose = P.vn.hooks.onChoice;
     P.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); P.events.push({ id, day: P.core.state.day, slot: P.core.state.slot }); };
     P.vn.hooks.onChoice = (...args) => { choose?.(...args); P.choices.push({ scene: args[0], choice: args[1], branch: args[2], next: args[3], text: args[4]?.text, day: P.core.state.day }); };
-    P.vn.vnTest.choose = scene => {
+    P.vn.vnTest.choose = (scene, labels) => {
+      if (scene === "remake_fortune_pick_live") return Math.max(0, labels.findIndex(t => ({ rin: /凛/, tsumugi: /つむぎ/, minto: /みんと|栞/ })[target].test(t)));
       if (mode === "friend" && scene === `ch1_${target}_bond_question`) return 1;
       if (mode === "hold" && scene === `remake_confession_gate_${target}` && !P.held) { P.held = true; return 1; }
       return 0;
@@ -58,6 +59,7 @@ try {
         stats: s.stats, points: s.affinity[target] || 0, level, story: s.story[target] || 0, finale: s.finales[target] || null,
         lover: s.lovers.includes(target), ranks: { ...P.ranks }, visited: s.visitedDay[target] === s.day,
         rinAway: s.day % 7 === P.rules.RIN_AWAY_DAY,
+        met: !!s.met[target], fortuneDay: s.fortuneDay ?? null,
         visitedTsumugi: s.visitedDay.tonari_customer === s.day, baito: s.visitedDay.tonari_baito === s.day,
         sub: document.querySelector(".sub-title")?.textContent || "",
         targetNight: ["tsumugi", "minto"].includes(target) && s.story[target] >= (target === "tsumugi" ? 4 : 5) && P.spots.hasNewStory(target) === false,
@@ -103,6 +105,11 @@ try {
       }
       if (await press('[data-test="coach-lime"]')) continue;
       if (await page.locator(".hud-lime.has").count()) { await press('[data-test="hud-phone"]'); continue; }
+      if (mode === "fortune" && snap.met && snap.fortuneDay !== snap.day && snap.money >= 6000
+        && await page.locator('[data-test="pin-fortune"]:not(.off)').count()) {
+        actions.push({ day: snap.day, slot: snap.slot, action: "fortune", points: snap.points });
+        await press('[data-test="pin-fortune"]'); await press('[data-test="map-go"]'); continue;
+      }
       const visited = target === "tsumugi" ? snap.visitedTsumugi : snap.visited;
       const pin = target === "rin" ? "shop" : target === "tsumugi" ? "tonari" : target;
       const available = (target !== "rin" || !snap.rinAway) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();

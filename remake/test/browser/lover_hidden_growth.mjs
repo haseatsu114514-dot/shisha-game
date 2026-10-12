@@ -49,6 +49,7 @@ await suite("lover-hidden-growth", async check => {
         assert(!rows.find(r => r.text.includes("みんと")).lover);
         assert(rows.find(r => r.text.includes("なる")).text.includes("友達"));
         await assertFits(page, ".st-people, .pp-row, .pp-relation");
+        if (level === 1) await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${mode}-status-hearts.png` });
         await page.locator('[data-test="status-close"]').click();
         assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)
           && H.beforeSave === localStorage.getItem(H.core.SAVE_KEY)), "STATUS changed saved private growth or rewards");
