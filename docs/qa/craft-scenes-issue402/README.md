@@ -48,3 +48,11 @@ mix-v4はオーナーの追加指示で、容器内を赤茶色の湿ったフ�
 原寸1536×1024 RGBAの透過を確認し、既存の制作素材ビルドで1280×853 WebPへ変換。PC1280×720と実タッチ844×390の本番配合UIで画像デコード・表示・10gアップル＋2gミントの操作を確認。配合を選んでも汎用容器の画像は一定。2ケースPASS。[結果](mix-v4-visual.json)、[PC](screens/pc-red-mix.png)、[タッチ](screens/touch-red-mix.png)。9枚合計1,023,904bytes。前述の19ケースはc6cc01a時点の結果であり、赤みだけの変更では画面確認を追加した。
 
 再開前にmain90ae31e・現行Issue/PR/Open PRを照合し、同じworkerとclaim38258703042のstatus38271982529 SUCCESSをログで確認。#436/#438など別workerの変更がmainへ反映されたことは確認し、その候補導入は本作業へ混ぜない。mainは未マージ、予約を保持。
+
+## マージ前の互換性確認（2026-10-13、日本時間）
+
+オーナーの「いや直さなくていい」「マージして」に従い、シール除去と容器縮小はキャンセル。mix-v4までの素材を維持する。予約status38274739167 SUCCESS。
+
+head33f2d7aの全体ブラウザCI run38277379698はSUCCESS。蒸らしの再開fixtureは未生成の精神表示を待つよう修正した。炭CIでは最新main478097dとの結合時に、大会導入テストの非同期evaluateで「Resulting promise was garbage collected」が再現した。画像を保留する前にテスト用moduleを初期化し、本番の開始を同期で呼ぶfixtureへ修正。元のSKIP・時計・画像待ちassertは維持し、画像と本番ゲームコードは不変更。
+
+GitHubのPR結合コミットa1579d2を許可worktreeで再現し、修正したfixtureの大会8ケースはすべてPASS。[結果・結合元・fixtureハッシュ](tournament-integration.json)。最新headのGitHub CI結果とマージ状況はPR #432へ記録する。
