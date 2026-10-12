@@ -28,6 +28,7 @@ button[aria-pressed=true]{color:white;background:#333e45;border-color:#333e45}bu
  <label><input type="checkbox" id="typeToggle" checked>章題を表示</label>
 </div>
 <section id="singleView" aria-label="選択したタイトル画像">
+ <div id="typeChoices" class="bar" aria-label="文字配置の切り替え"><button id="type01">① 控えめな段差</button><button id="type02">② 大小と段差</button><button id="type03">③ 右上がり</button></div>
  <div class="stage" id="stage">
   <img id="plate" src="selected-D/art-plate.png" alt="選定Dの画像生成版。6人が右向きに歩く。">
   <img id="shadow" src="layers/A-shadows.png" alt="">
@@ -38,7 +39,7 @@ button[aria-pressed=true]{color:white;background:#333e45;border-color:#333e45}bu
  <div class="cards" id="cards" aria-label="案の切り替え"></div>
 </section>
 <section id="gridView" class="grid" hidden aria-label="6案の比較一覧"></section>
-<div class="extras"><a href="comparison.png">比較画像を開く</a><a href="README.md">制作記録</a><a href="references/sources.json">参照元とハッシュ</a><a href="generation.json">素材と配置の記録</a><span>← → / 1〜6キーで切り替え</span></div>
+<div class="extras"><a href="selected-D/typography/comparison.png">修正前と文字3案の比較</a><a href="comparison.png">A〜Fの比較画像</a><a href="README.md">制作記録</a><a href="references/sources.json">参照元とハッシュ</a><a href="generation.json">素材と配置の記録</a><span>← → / 1〜6キーで切り替え</span></div>
 <details class="ref"><summary>採用済み画像の参照シート</summary><img src="references/adopted-six-reference-sheet.png" alt="6人の現在の本編立ち絵と顔・衣装の確認シート"></details>
 <details class="ref"><summary>採用画像と今回の歩行素材の比較</summary><img src="review/identity-comparison.png" alt="キャラごとに採用画像と新しい歩行素材を並べた比較"></details>
 </main>
@@ -56,7 +57,7 @@ records.forEach((r,i)=>{
  const full=document.createElement('img');full.src=r.png;full.alt=`案${r.id}：${r.order_names.join('、')}が右向きに歩く`;full.tabIndex=0;full.onclick=()=>{view(false);select(i)};full.onkeydown=e=>{if(e.key==='Enter'){view(false);select(i)}};
  figure.append(caption,full);$('gridView').append(figure);
 });
-function select(i){selected=(i+6)%6;const r=records[selected];$('plate').hidden=true;$('people').hidden=false;$('shadow').hidden=false;$('finalBtn').setAttribute('aria-pressed',false);
+function select(i){selected=(i+6)%6;const r=records[selected];$('typeChoices').hidden=true;$('plate').hidden=true;$('people').hidden=false;$('shadow').hidden=false;$('finalBtn').setAttribute('aria-pressed',false);
  $('shadow').src=`layers/${r.id}-shadows.png`;$('people').src=`layers/${r.id}-characters.png`;$('type').src=`layers/${r.id}-type.png`;$('type').alt='CHAPTER 1 煙がつなぐ街';
  $('people').alt=`左から${r.order_names.join('、')}。全員が右向きに歩く。`;
  $('label').textContent=`案 ${r.id} / ${r.layout} / 並び順${r.order_number}`;
@@ -65,10 +66,11 @@ function select(i){selected=(i+6)%6;const r=records[selected];$('plate').hidden=
  document.querySelectorAll('.card').forEach((b,j)=>b.setAttribute('aria-pressed',j===selected));
 }
 function view(grid){$('singleView').hidden=grid;$('gridView').hidden=!grid;$('singleBtn').setAttribute('aria-pressed',!grid);$('gridBtn').setAttribute('aria-pressed',grid);$('typeToggle').parentElement.hidden=grid;$('prev').hidden=grid;$('next').hidden=grid}
-function showFinal(){view(false);selected=3;$('plate').hidden=false;$('people').hidden=true;$('shadow').hidden=true;$('type').src='selected-D/type.png';$('type').alt='水煙前線 -EN:CODE- CHAPTER 1 煙がつなぐ街 Smoke & Ties';$('label').textContent='選定D / 画像生成で仕上げたタイトルコール';$('intent').textContent='作品名と正式副題を加え、参考画像に近い余白と文字の階層へ。';$('order').textContent='左 → 右：みんと → アダム → なる → つむぎ → スミさん → はじめ';$('download').href='selected-D/D-title.png';$('download').download='ch1-D-title.png';$('finalBtn').setAttribute('aria-pressed',true);document.querySelectorAll('.card').forEach(b=>b.setAttribute('aria-pressed',false));}
+const typeStudies={'01':{stem:'01-subtle',name:'控えめな段差'},'02':{stem:'02-sizes-and-step',name:'大小と段差'},'03':{stem:'03-rise-right',name:'右上がり'}};
+function showFinal(id='02'){view(false);selected=3;const s=typeStudies[id];$('typeChoices').hidden=false;$('plate').hidden=false;$('people').hidden=true;$('shadow').hidden=true;$('type').src=`selected-D/typography/${s.stem}-type.png`;$('type').alt='水煙前線 -EN:CODE- CHAPTER 1 煙がつなぐ街 Smoke & Ties';$('label').textContent=`選定D / 文字案 ${id} · ${s.name}`;$('intent').textContent='英字と記号のベースラインを整え、章題の文字配置を比較。人物と背景は同じ画素です。';$('order').textContent='左 → 右：みんと → アダム → なる → つむぎ → スミさん → はじめ';$('download').href=`selected-D/typography/${s.stem}.png`;$('download').download=`ch1-D-type-${id}.png`;$('finalBtn').setAttribute('aria-pressed',true);document.querySelectorAll('.card').forEach(b=>b.setAttribute('aria-pressed',false));Object.keys(typeStudies).forEach(k=>$(`type${k}`).setAttribute('aria-pressed',k===id));}
 $('prev').onclick=()=>select(selected-1);$('next').onclick=()=>select(selected+1);$('singleBtn').onclick=()=>view(false);$('gridBtn').onclick=()=>view(true);
 $('typeToggle').onchange=()=>{$('type').hidden=!$('typeToggle').checked};
-$('finalBtn').onclick=showFinal;
+$('finalBtn').onclick=()=>showFinal();Object.keys(typeStudies).forEach(id=>$(`type${id}`).onclick=()=>showFinal(id));
 document.addEventListener('keydown',e=>{if(e.target instanceof HTMLInputElement)return;if(e.key==='ArrowLeft'){view(false);select(selected-1);e.preventDefault()}if(e.key==='ArrowRight'){view(false);select(selected+1);e.preventDefault()}if(/^[1-6]$/.test(e.key)){view(false);select(Number(e.key)-1)}});
 showFinal();
 </script>

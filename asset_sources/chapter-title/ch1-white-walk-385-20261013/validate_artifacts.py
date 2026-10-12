@@ -55,6 +55,19 @@ selected_image=Image.open(HERE/'selected-D/art-plate.png').convert('RGBA')
 selected_image.alpha_composite(Image.open(HERE/'selected-D/type.png'))
 assert ImageChops.difference(selected_image.convert('RGB'),Image.open(HERE/'selected-D/D-title.png')).getbbox() is None
 assert selected_image.size==(1280,720)
+type_studies=json.loads((HERE/'selected-D/typography/studies.json').read_text())
+assert sha(HERE/'selected-D/art-plate.png')==type_studies['unchanged_art_sha256']
+old_title=Image.open(HERE/type_studies['before_image']).convert('RGB')
+for s in type_studies['studies']:
+    assert sha(HERE/s['image'])==s['sha256']
+    image=Image.open(HERE/s['image']).convert('RGB')
+    type_layer=Image.open(HERE/s['type_layer']).convert('RGBA')
+    assert image.size==type_layer.size==(1280,720)
+    assert type_layer.getchannel('A').getbbox()[3]<260
+    composed=Image.open(HERE/'selected-D/art-plate.png').convert('RGBA')
+    composed.alpha_composite(type_layer)
+    assert ImageChops.difference(composed.convert('RGB'),image).getbbox() is None
+    assert ImageChops.difference(old_title.crop((0,260,1280,720)),image.crop((0,260,1280,720))).getbbox() is None
 result={'result':'pass','base_commit':g['base_commit'],'layout_checks':checks,
  'reference_copies_byte_identical':True,'rgba_sprites':6,
  'manual_visual_review':{'opened_full_size':['A','B','C','D','E','F'],
@@ -75,6 +88,10 @@ result={'result':'pass','base_commit':g['base_commit'],'layout_checks':checks,
    'default_selected_D':True,'desktop_viewport':[1280,900],'mobile_viewport':[390,844],
    'horizontal_overflow':False,'broken_images':0,'console_errors_observed':0,
    'screenshots':['review/browser-selected-D.jpg','review/browser-mobile.jpg']},
+ 'typography_revision':{'studies_opened_full_size':['01','02','03'],'before_and_after_person_region_pixels_identical':True,
+   'art_file_sha256_unchanged':True,'baseline_punctuation_visual_check':True,'all_studies_recompose_exactly':True,
+   'browser_three_way_switch':True,'browser_download_links_match':True,'default_study':'02',
+   'reservation_status_run':'38283582659'},
  'not_performed':['歩行アニメーション','本編への差し替え','mainへのマージ','公開版更新']}
 (HERE/'review/validation.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
 print('PASS: 6 layouts, 6 shared RGBA sprites, reference hashes, order, bounds, gaps, floor and exact layer composition.')

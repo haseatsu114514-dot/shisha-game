@@ -56,6 +56,10 @@
     "art": "selected-D/art-plate.png",
     "type": "selected-D/type.png"
   },
-  "final_sha256": "e1891934d0283922980b2ab5efc87fc23d30f7a0a54301e946ad16431e960ffc",
-  "note": "A〜Fは同じ6枚の固定素材で作った比較案として保持。本追加Dはその構図をもとに画像生成で仕上げた別プレート。元の6人の独立RGBA素材と旧レイヤーも保持。追加プレートの白背景と人物は一枚で、文字のみ別レイヤー。"
+  "final_sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972",
+  "note": "A〜Fは同じ6枚の固定素材で作った比較案として保持。本追加Dはその構図をもとに画像生成で仕上げた別プレート。元の6人の独立RGBA素材と旧レイヤーも保持。追加プレートの白背景と人物は一枚で、文字のみ別レイヤー。",
+  "typography_default": "02",
+  "typography_record": "selected-D/typography/studies.json",
+  "art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+  "typography_revision": "英字・記号と副題をベースライン基準へ変更。作品名の日欧文字を別ブロックで整列。章題に大小・高さ・字間の意図的な差を付けた3案。人物と背景は画素不変。"
 }

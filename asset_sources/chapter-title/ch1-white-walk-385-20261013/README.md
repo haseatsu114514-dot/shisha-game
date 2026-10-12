@@ -6,6 +6,8 @@
 
 HTMLの初期表示は「仕上げD」。元のA〜Fは上書きせず保持しています。追加Dは元の素材をそのまま合成した6案とは異なる、画像生成で仕上げた別プレートです。追加版は白背景と人物が一枚、文字が別RGBAです。元の6人の独立RGBA、人物／背景／文字レイヤーは全て残っており、追加版から歩行アニメを制作したとは主張していません。追加Dの参照・プロンプト・ハッシュは [`selected-D/generation.json`](selected-D/generation.json)。
 
+**文字の追加調整：** オーナーの「EN:CODEの位置が変」「章題をおしゃれにずらしたい」「他は完璧」に合わせ、人物と背景を完全に固定して3案を制作。英字・記号・副題は上端揃えからベースライン揃えへ直し、和文の作品名と欧文を別ブロックで整列しました。①控えめな段差、②文字の大小と段差、③右上がり。初期表示と `selected-D/D-title.png` は②です。[修正前との比較](selected-D/typography/comparison.png)・[文字配置の数値とSHA256](selected-D/typography/studies.json)。修正前の文字とPNGも同じフォルダに保存。3案すべてで、人物領域（y=260以降）と元のプレートのSHA256が修正前と一致することを検証しています。再組版は `python3 build_type_studies.py`。
+
 `index.html` を開くと、個別表示・A〜F切り替え・6案一覧・章題レイヤーの表示切り替えができます。外部通信やビルドは不要です。`comparison.png` は同じ並び順の小／大を左右で比較する一覧です。
 
 | 案 | 配置 | 左から右の人物順 | 意図 |
@@ -58,5 +60,7 @@ HTMLの初期表示は「仕上げD」。元のA〜Fは上書きせず保持し�
 
 WORKER: `codex-ch1-white-walk-20261013-aa5ec922` / ISSUE: #385 / BRANCH: `codex/ch1-white-walk-385-20261013`。
 claim成功run: `38278913936`（`CLAIMED_ISSUE=385`）、status成功run: `38279080725`（`CLAIM_VALIDATED_ISSUE=385`）。今回の変更予定パスについて開始時のopen PR 11件との衝突なし。Git Safety成功、`.githooks` 有効、独立した新規checkoutの `shisha.canonicalRoot` 一致を確認。
+
+文字修正の継続時、#385が完了扱いで閉じられていたため、継続依頼に合わせて再開。同じworkerの予約をstatus run `38283582659` で再検証し成功。最新mainを作業ブランチへ取り込み、PR #462の本人性と画像を保ったまま文字レイヤーを更新しています。
 
 開始時の `tools/agent_quota_guard.py check codex` は既存SyntaxErrorで実行不能。成功扱いにはしていません。公式Codex利用枠ツールで利用可能を確認しました。ゲームデータと本編コードを変更していないため、ゲーム進行のテストは対象外です。
