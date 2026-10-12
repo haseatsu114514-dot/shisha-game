@@ -142,7 +142,14 @@ try {
     await page.waitForSelector('.dodge'); await ready(page);
     assert.deepEqual(await geometry(page), position, `${name}: thermometer was moved during bullet hell`);
     assert(await page.locator('[data-test="steam-forecast-range"]').isHidden(), 'Forecast leaked into bullet hell');
-    assert(await page.locator('.bench-guide').isHidden());
+    const guide = page.locator('.bench-guide');
+    assert(await guide.isVisible(), 'Optional help button should be available');
+    assert.equal(await guide.getAttribute('open'), null, 'Help must not cover the playfield by default');
+    await guide.locator('summary').click();
+    assert(await guide.locator('.bench-guide-tip').isVisible());
+    assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
+    await guide.locator('summary').click();
+    assert.equal(await guide.getAttribute('open'), null);
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());

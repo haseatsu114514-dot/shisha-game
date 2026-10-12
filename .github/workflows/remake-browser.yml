@@ -113,6 +113,7 @@ jobs:
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/steam_slash.mjs
+          node remake/test/steam_word_cut.mjs
           node remake/test/steam_attack_growth.mjs
           node remake/test/steam_refresh.mjs
           node remake/test/steam_forecast.mjs

@@ -50,7 +50,7 @@ try {
     const look=await page.evaluate(()=>{
       const heart=document.querySelector('.dodge-heart'),core=heart.querySelector('.dodge-core'),pad=document.querySelector('.dodge-pad'),knob=pad.querySelector('.dodge-knob');
       const h=heart.getBoundingClientRect(),c=core.getBoundingClientRect(),p=pad.getBoundingClientRect(),k=knob.getBoundingClientRect(),scale=p.width/pad.offsetWidth;
-      return {color:getComputedStyle(heart).color,white:getComputedStyle(core).backgroundColor,width:core.offsetWidth,expected:parseFloat(heart.style.getPropertyValue('--hit-diameter')),
+      return {color:getComputedStyle(heart).color,shield:heart.classList.contains('shield'),white:getComputedStyle(core).backgroundColor,width:core.offsetWidth,expected:parseFloat(heart.style.getPropertyValue('--hit-diameter')),
         artWidth:heart.querySelector('svg').getBoundingClientRect().width/(h.width/heart.offsetWidth),
         artHeight:heart.querySelector('svg').getBoundingClientRect().height/(h.height/heart.offsetHeight),
         centered:Math.abs(h.x+h.width/2-c.x-c.width/2)<.2&&Math.abs(h.y+h.height/2-c.y-c.height/2)<.2,
@@ -59,7 +59,8 @@ try {
     assert.equal(look.white,'rgb(255, 255, 255)');assert(Math.abs(look.width-look.expected)<1&&look.centered);
     assert(Math.abs(look.artWidth-20)<.1&&Math.abs(look.artHeight-20)<.1, 'Heart artwork should be 20px; the white hit circle keeps its existing radius');
     assert(look.expected>0&&look.expected<8, 'Good-condition white circle should be smaller than the standard 8px diameter');
-    assert.equal(look.extra,'none');assert(Math.abs(look.lift-10)<.2);assert.equal(look.color,'rgb(112, 215, 237)');
+    assert.equal(look.extra,'none');assert(Math.abs(look.lift-10)<.2);
+    assert.equal(look.color,look.shield?'rgb(239, 135, 149)':'rgb(112, 215, 237)','Artwork color must match the actual damage state, including hits during asset/font waits');
     await shot(page,`controls-${name}`);
     // ノブの見た目の中心を押しても、ハートが勝手に動かない。
     const knob=await page.locator('.dodge-knob').boundingBox();

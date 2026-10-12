@@ -44,7 +44,7 @@ export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。言葉を3個・6個斬ると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。強化は空振り・被弾・リフレッシュで減らず、次の蒸らしで戻る。", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -92,7 +92,7 @@ export async function runSteamDodge(cs) {
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
-  let wordsCut = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
+  let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -168,8 +168,10 @@ export async function runSteamDodge(cs) {
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
-      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。斬った言葉${wordsCut}個。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     slashBtn.dataset.cutWords = String(wordsCut);
+    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
+    slashBtn.dataset.maxCombo = String(maxCombo);
     slashBtn.dataset.reach = String(profile.reach);
     slashBtn.dataset.recharge = String(profile.recharge);
     slashBtn.dataset.tier = String(profile.tier);
@@ -198,7 +200,8 @@ export async function runSteamDodge(cs) {
     const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
-    wordsCut += cleared.filter(b => b.word).length;
+    const cutWords = cleared.filter(b => b.word).length;
+    wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
     const after = slashProfile(wordsCut);
     slashCooldown = after.recharge;
     slashesUsed++; slashReadyAt = time + slashCooldown;
@@ -211,7 +214,7 @@ export async function runSteamDodge(cs) {
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     for (const b of cleared) {
       if (b.word) {
-        const halves = buildWordCutFx(b);
+        const halves = buildWordCutFx(b, hx, hy, angle, before.reach);
         box.append(halves); transients.push({ node: halves, until: time + .5 });
       }
       const spark = el("i.dodge-slash-impact", { "aria-hidden": "true", style: { left: `${clamp(b.x + b.w / 2, 0, W)}px`, top: `${clamp(b.y + b.h / 2, 0, H)}px` } });
@@ -302,6 +305,9 @@ export async function runSteamDodge(cs) {
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
+            wordsCut = 0;
+            slashFeedback.textContent = "被弾。コンボが途切れた";
+            slashLabel();
             setPlayerMental(cs, mental.hit(time, hits));
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
@@ -333,7 +339,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut, warmingFactor: steamClimate(cs.environment).transfer };
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, warmingFactor: steamClimate(cs.environment).transfer };
   scoreStep(cs, "steam", score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");

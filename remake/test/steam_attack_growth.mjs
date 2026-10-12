@@ -44,6 +44,26 @@ try {
         const m=new DOMMatrix(document.querySelector('.dodge-heart').style.transform);
         return [...document.querySelectorAll('.dodge-word,.dodge-object')].map(node=>{const t=new DOMMatrix(node.style.transform);return {node,x:t.e,y:t.f,w:node.offsetWidth,h:node.offsetHeight,hx:m.e+14,hy:m.f+14,word:node.classList.contains('dodge-word')};});
       };
+      window.screenPoint=(hx,hy)=>{const r=document.querySelector('.dodge').getBoundingClientRect();return {x:r.left+hx*r.width/784,y:r.top+hy*r.height/414};};
+      window.safePoint=()=>{
+        const all=enemies();
+        // The deterministic wave has its open lane through the middle; avoid entry edges.
+        const corners=[[64,207],[720,207]];
+        const distance=([x,y])=>Math.min(...all.map(b=>Math.hypot(x-Math.max(b.x,Math.min(x,b.x+b.w)),y-Math.max(b.y,Math.min(y,b.y+b.h)))),1000);
+        corners.sort((a,b)=>distance(b)-distance(a));return screenPoint(...corners[0]);
+      };
+      window.wordShot=()=>{
+          if(button().disabled)return null;
+          const all=enemies(),reach=Number(button().dataset.reach);
+          for(const target of all.filter(b=>b.word)) {
+            for(const [hx,hy] of [[target.x-12,target.y+target.h+reach*.3],[target.x+target.w+12,target.y+target.h+reach*.3],[target.x+target.w/2,target.y+target.h/2+reach*.65]]) {
+              if(hx<16||hx>768||hy<16||hy>398)continue;
+              if(all.some(b=>hx>=b.x-8&&hx<=b.x+b.w+8&&hy>=b.y-8&&hy<=b.y+b.h+8))continue;
+              if(geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach))return screenPoint(hx,hy);
+            }
+          }
+        return null;
+      };
       window.strike=()=>{
         const before=Number(button().dataset.cutWords),profile=geometry.slashProfile(before);
         const near=enemies().filter(b=>geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,profile.reach));
@@ -57,20 +77,20 @@ try {
     await page.waitForFunction(()=>window.button && button() && !button().disabled);
     await page.evaluate(()=>controlFrames());
     await page.waitForFunction(()=>frames.size>0,null,{polling:50});
+    const move=async point=>{if(mobile)await page.touchscreen.tap(point.x,point.y);else await page.mouse.move(point.x,point.y);};
+    const shelter=async()=>move(await page.evaluate(()=>safePoint()));
+    const dodgeFrames=async count=>{for(let i=0;i<count;i+=5){await shelter();await page.evaluate(n=>{for(let i=0;i<n;i++)advance();},Math.min(5,count-i));}};
+    const seekShot=async()=>{for(let i=0;i<250;i++){const point=await page.evaluate(()=>wordShot());if(point)return point;await dodgeFrames(5);}return null;};
+    await shelter();
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),'0');
     // Empty shot starts cooldown but gives no growth. A repeated pointer can't attack again.
     const empty=await page.evaluate(()=>{const r=strike();strike();return {...r,uses:button().dataset.uses};});
     assert.equal(empty.after,0);assert.equal(empty.feedback,'空振り');assert.equal(empty.uses,'1');
     let total=0; const tiers=new Set([0]); let objectOnly=false;
     for(let attempt=0;attempt<12 && total<6;attempt++) {
-      const result=await page.evaluate(()=>{
-        for(let frame=0;frame<150;frame++) {
-          advance();
-          if(!button().disabled && enemies().some(b=>geometry.slashTouchesBullet(b,b.hx,b.hy,-Math.PI/2,Number(button().dataset.reach))))return strike();
-        }
-        return null;
-      });
-      assert(result,'No reachable real bullet before steam end');
+      const point=await seekShot();
+      assert(point,'No reachable real word before steam end');await move(point);
+      const result=await page.evaluate(()=>strike());
       assert(result.removed);assert.equal(result.after,result.before+result.words);
       assert.equal(result.pieces,result.words);assert(result.split,'Each cut word should leave two matching clipped halves');
       if(mobile)assert(result.still,'Reduced-motion word halves must not animate');
@@ -80,6 +100,7 @@ try {
       assert.equal(result.reach,p.reach);assert(result.recharge>=p.recharge && result.recharge<=p.recharge+.1+1e-9);
       assert.match(result.feedback,/個斬った/);
       if(shots&&newTier)await page.screenshot({path:`${shots}/tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}.png`});
+      await shelter();
     }
     assert(total>=6);assert(tiers.has(1)&&tiers.has(2),'Both approved growth thresholds must be exercised');
     await page.evaluate(()=>document.fonts.ready);
@@ -88,17 +109,30 @@ try {
     const refresh=await page.evaluate(()=>{
       const before=button().dataset.cutWords;
       document.querySelector('[data-test="dodge-refresh"]').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
-      for(let i=0;i<65;i++)advance();
-      return {before,after:button().dataset.cutWords,ready:!button().disabled,refreshCooldown:document.querySelector('[data-test="dodge-refresh"]').dataset.cooldown};
+      return {before,after:button().dataset.cutWords};
     });
-    assert.equal(refresh.after,refresh.before);assert(refresh.ready);assert(Number(refresh.refreshCooldown)>6);
-    // Let an actual incoming word hit; growth is retained, not a damage-reset combo.
+    assert.equal(refresh.after,refresh.before);
+    await dodgeFrames(65);
+    assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),refresh.before);
+    assert(await page.locator('[data-test="dodge-slash"]').isEnabled());
+    assert(Number(await page.locator('[data-test="dodge-refresh"]').getAttribute('data-cooldown'))>6);
+    // Move onto a real incoming bullet: actual damage must break the combo.
+    const impact=await page.evaluate(()=>{
+      for(let frame=0;frame<100;frame++) {
+        const b=enemies().find(b=>b.x+b.w/2>=16&&b.x+b.w/2<=768&&b.y+b.h/2>=16&&b.y+b.h/2<=398);
+        if(b)return screenPoint(b.x+b.w/2,b.y+b.h/2);advance();
+      }
+      return null;
+    });
+    assert(impact,'No real damage opportunity');await move(impact);
     const damage=await page.evaluate(()=>{
       const before=button().dataset.cutWords,hits=Number(document.querySelector('[data-test="mental-trace"]').dataset.hits);
       for(let i=0;i<250;i++){advance();if(Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)>hits)break;}
-      return {before,after:button().dataset.cutWords,hitsBefore:hits,hitsAfter:Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)};
+      return {before,after:button().dataset.cutWords,reach:button().dataset.reach,recharge:button().dataset.recharge,total:button().dataset.totalWordsCut,hitsBefore:hits,hitsAfter:Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)};
     });
-    assert(damage.hitsAfter>damage.hitsBefore);assert.equal(damage.after,damage.before);
+    assert(Number(damage.before)>=6);assert.equal(damage.hitsAfter,damage.hitsBefore+1);assert.equal(damage.after,'0');
+    assert.equal(damage.reach,'80');assert.equal(damage.recharge,'1.8');assert.equal(Number(damage.total),total);
+    await shelter();
     // Find a real small object and a firing position that excludes every word.
     const smallPosition=await page.evaluate(()=>{
       for(let frame=0;frame<200;frame++) {
@@ -122,7 +156,7 @@ try {
     if(mobile)await page.touchscreen.tap(smallPosition.x,smallPosition.y);else await page.mouse.click(smallPosition.x,smallPosition.y);
     const small=await page.evaluate(()=>{const r=strike();return {...r,removed:!smallTarget.isConnected};});
     assert(small.removed&&small.near>0);assert.equal(small.after,small.before);objectOnly=true;
-    await page.evaluate(()=>{for(let i=0;i<65;i++)advance();});
+    await dodgeFrames(95);
     assert.equal(await page.locator('[data-test="dodge-slash"]').isEnabled(),true);
     await page.evaluate(()=>document.fonts.ready);
     if(shots)await page.screenshot({path:`${shots}/growth-${mobile?'mobile-reduced':'desktop'}.png`});
@@ -130,6 +164,7 @@ try {
     await page.waitForSelector('.result-card.show');
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);
     assert.equal(await page.evaluate(()=>cs.steam.wordsCut),total);
+    assert.equal(await page.evaluate(()=>cs.steam.combo),0);assert.equal(await page.evaluate(()=>cs.steam.maxCombo),total);
     // The next (initial practice) session resets growth and needs no new unlock flags.
     await page.evaluate(()=>{restoreFrames();start('tutorial');});
     await page.waitForFunction(()=>!button().disabled);
@@ -137,7 +172,7 @@ try {
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-reach'),'80');
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-recharge'),'1.8');
     assert.deepEqual(errors,[]);
-    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':'PC'} real words, approved tiers, miss/repeat, refresh/damage retention, cleanup and initial-practice reset (object-only shot observed: ${objectOnly})`);
+    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':'PC'} real words, approved tiers, miss/repeat, refresh retention, damage breaks combo, total/maximum preserved, cleanup and initial-practice reset (object-only shot observed: ${objectOnly})`);
     await page.close();
   }
 } finally {await browser.close();}
