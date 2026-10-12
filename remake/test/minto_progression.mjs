@@ -107,7 +107,7 @@ try {
   assert.equal(romance.afterThird, false);
   assert.deepEqual(romance.heart3Waiting, { hearts: 3, known: false, privateInvite: false });
   assert.equal(romance.afterIdentity, true);
-  assert(romance.commute.some(t => t.includes("出勤前")));
+  assert(romance.commute.some(t => t.includes("PEPPERMINTへ向かう道") || t.includes("tonariに来ていたお姉さん")));
   assert(romance.noSpoiler);
   assert.deepEqual(romance.invite, { slot: "night", after: true });
   assert(!romance.outing.some((t) => t.includes("お姉、さん") || t.includes("ばれた")), "Already-known identity was revealed again");
