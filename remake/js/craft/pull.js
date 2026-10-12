@@ -332,7 +332,9 @@ async function pullGame(cs, mode) {
   const prepareCoals = async () => {
     choosing = true;
     play.hidden = true;
-    const lead = el("p.care-coals-lead", { text: "そろそろ調整の準備をしよう" });
+    const lead = el("p.care-coals-lead", { text: cs.careRound > 1
+      ? "お客さんが吸い続け、再び炭が消耗して温度が下がってきた。もう一度整えよう"
+      : "提供して約20分。お客さんが吸ううちに炭が消耗し、温度が下がってきた。調整しよう" });
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
     const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
     const buttons = el("div.care-coal-btns", options.map((n) => el("button.btn.care-coal", {
@@ -466,7 +468,8 @@ async function pullGame(cs, mode) {
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
     await resultCard(panel, {
-      title: "吸い出し 結果",
+      title: "提供",
+      summary: ["お客さんへシーシャを提供した。しばらく吸ってもらおう"],
       lines: [
         optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         `${pulls}回吸った`,

@@ -277,7 +277,9 @@ export function scoreStep(cs, key, score, label = "") {
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
   cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
-  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, label);
+  // 回数は得点キーに保持し、ヘッダーのポップだけ「調整」に揃える。
+  const displayLabel = ["care", "care1", "care2"].includes(step) ? "調整" : label;
+  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, displayLabel);
   return cs.arcade.total;
 }
 
@@ -314,6 +316,18 @@ export const burstBench = (cs) => failBench(cs, "burnt");
 export function refreshBench() {
   if (!bench) return;
   bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
+  // panelの工程IDは結果評価が参照するためpullのまま保持する。
+  if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {
+    bench.phaseProgress.update("serve", "提供");
+    bench.title.textContent = "提供";
+    bench.hint.textContent = "お客さんへシーシャを提供した。しばらく吸ってもらおう";
+    bench.guide.root.open = false;
+    bench.guide.root.hidden = true;
+    bench.root.dataset.step = "serve";
+    bench.worker.root.dataset.step = "serve";
+    bench.worker.caption.textContent = "シーシャを提供した";
+  }
 }
 
 /** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */
