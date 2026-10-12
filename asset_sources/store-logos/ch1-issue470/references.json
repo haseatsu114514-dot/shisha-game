@@ -1,0 +1,70 @@
+{
+  "source_commit": "14c4f9277030fd59300d7e846b7d0751109a2b05",
+  "issue": 470,
+  "worker": "codex-store-logos-20261012-89eaa1ae",
+  "claim_run": 38293344108,
+  "status_run": 38293454277,
+  "reference_use": "設定と配色の確認。背景画像の実物を目視。新規ロゴ生成には参照画像を添付していない。",
+  "references": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "770d3d47c5ac51722cadffd1bd841e18de88d818e8caab7c85ce7204e32bfe04"
+    },
+    {
+      "path": "docs/asset_ai_guidance.md",
+      "sha256": "8f4780c9a9ac576c2905d01520766e0db08955dd1a8e3b760b47c7bba9c23f51"
+    },
+    {
+      "path": "brand/character_profiles.md",
+      "sha256": "7bfa35025baf35337dcd14528dae8ce9e025186f327ad9af27bb82ff5e3c2e9f"
+    },
+    {
+      "path": "brand/story_and_structure.md",
+      "sha256": "380510b900089c95597d8ec5377015d87fbee55a854a012400c728f17c267521"
+    },
+    {
+      "path": "remake/js/daily/spots.js",
+      "sha256": "19577b2734b8e33a321d0d248b3a3cb183de511729755ab82f397a3bbe58ad09"
+    },
+    {
+      "path": "data/dialogue/ch1_spots.json",
+      "sha256": "d274c7b1ee52d4ca5574945706a0fd4e542ccac965c31716c179da1b3adb40ac"
+    },
+    {
+      "path": "data/dialogue/ch1_rin.json",
+      "sha256": "a69d8604899bafeb6f3f16b0293bb1c39bc859b3c499f6ba47de8cd6fd6fb346"
+    },
+    {
+      "path": "assets/backgrounds/bg_tonari_inside_day.png",
+      "sha256": "0c425cfc21a6241cf7cfba5f257ff5fbd5c42a640e7db28ed8e923ba45058645"
+    },
+    {
+      "path": "assets/backgrounds/kemurikusa.png",
+      "sha256": "fc9286709f93cf0ff475aa008d52c861c6ba8b32e80edc6739703ea5b463262e"
+    },
+    {
+      "path": "assets/backgrounds/bg_eden_shop.png",
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86"
+    },
+    {
+      "path": "assets/backgrounds/peppermint.png",
+      "sha256": "47829d62ec1c6f246273f31b19904d135dbf80abcbe00a5bd754b223f3f78a7d"
+    },
+    {
+      "path": "assets/backgrounds/bg_fookah_showroom.png",
+      "sha256": "de9d99fae8454a83ffc4a0c2cf2652b44262feab1bb1de10465eabfc51b9bd5a"
+    },
+    {
+      "path": "assets/backgrounds/bg_c_station_day.png",
+      "sha256": "21c3fba05f9fa925035aad4621e5bf9bb10866566e3c9bc41a613d559c90c508"
+    },
+    {
+      "path": "assets/backgrounds/bg_cafe_day.png",
+      "sha256": "03962307bcd22c181a0412ff665853a2dff49f930ff37243d9b0ef5b1d4ef26a"
+    },
+    {
+      "path": "assets/backgrounds/bg_choizap.png",
+      "sha256": "5f015c7468034caecb680f2aa3325029ebe74e575358938a9d51cef800b0ea69"
+    }
+  ]
+}

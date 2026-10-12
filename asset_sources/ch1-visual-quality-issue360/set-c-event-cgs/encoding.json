@@ -1,0 +1,141 @@
+{
+  "quality": 74,
+  "method": 6,
+  "rows": [
+    {
+      "id": "cg_ch1_sumi_training",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 111968,
+      "afterBytes": 132900,
+      "sourceSha256": "b5ff2043af2c7a2a9d6097222d247911ff684709a65933dfd3c6c3fa5925f12e",
+      "runtimeSha256": "fde5c824de0253c7c4248d66ce10d5cb3535ceb002c28453f8303cd40c42ec59"
+    },
+    {
+      "id": "cg_ch1_tsumugi_heart_art",
+      "native": [
+        1672,
+        940
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 80800,
+      "afterBytes": 148742,
+      "sourceSha256": "c2030bf7f3815ab8fc453600b53e6b55f0424ef0b38c2ce9aa12d6d5134d9370",
+      "runtimeSha256": "bb8be84db53eec6836e22c778cfc03e3db4cabccfd1dfb64b1545b4151a0ff2d"
+    },
+    {
+      "id": "cg_ch1_minto_casual_reveal",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 133652,
+      "afterBytes": 229754,
+      "sourceSha256": "4bcbb723c1b666fd72974396287bf721561972eaeffbfe6a30ca0c3185fbc2ba",
+      "runtimeSha256": "2146ea7cc3293f837ef9013a56a3e2b674a1986df086357e24b4a8f71fddaef7"
+    },
+    {
+      "id": "cg_ch1_dr_kemuri_hook",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 98354,
+      "afterBytes": 135424,
+      "sourceSha256": "f8e07441840d850c382ed752fbee1f8ad09a036f38bd8177918616be4126b576",
+      "runtimeSha256": "494cba047c2ab9e37f9afbb8daf97af6386dec6e58280e1ce125c91bf61bb575"
+    },
+    {
+      "id": "cg_ch1_nagumo_smile",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 138672,
+      "sourceSha256": "bf851be3789f770ad1f5a7b7823b6685086bcbcaaed8607a0585822033a6a8b5",
+      "runtimeSha256": "41c2057da9d05f2660c26f13d44742699199891f5a28f27200e9892a08cb6d03"
+    },
+    {
+      "id": "cg_ch1_tournament_battle",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 174912,
+      "afterBytes": 205492,
+      "sourceSha256": "694eb554d9f8e302b4047f0fbd5812ca38bfcc9814d6d92c3050234ec8691974",
+      "runtimeSha256": "b14828257f06554fe9c6fb7395ec9dffccdc4b3fdd1e5744ef45f3d263e0b8bf"
+    },
+    {
+      "id": "cg_minto_casual",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 285452,
+      "sourceSha256": "da38f092dd8e6f6f3131aaaf32df1b654398fb81ea6aa4497b44667b5161b0d1",
+      "runtimeSha256": "3b15393ea417d2acbd7aca9df86ba9efb7f4d0e29e00bdb2bf94153129f765f6"
+    },
+    {
+      "id": "cg_tsumugi_smoke_color",
+      "native": [
+        1672,
+        940
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 131424,
+      "sourceSha256": "0615120092964e789101c824bea0a90459b743bba0ef3dfdc9280f0392042315",
+      "runtimeSha256": "655f9e1f6a936e7cd3cd0deda503b1c52cf3c7454f948d9633236f5b9a0cc6de"
+    },
+    {
+      "id": "cg_oneesan_first_smoke",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 0,
+      "afterBytes": 171032,
+      "sourceSha256": "e266c8da745649be63a8c16a3825978456674094f5c1a5584ef0ef6ad12543e0",
+      "runtimeSha256": "360f4e4a8dac14cf9f2c920b51a14033b5168c0e0489afcafa67170c68f2510f"
+    }
+  ]
+}

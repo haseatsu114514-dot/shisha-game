@@ -285,6 +285,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 ## テスト
 
+第1章の採用済み店舗ロゴを、マップ看板と入店時の短い表示に使用します。選定・原画・PC/スマートフォン確認は `asset_sources/store-logos/ch1-issue470/README.md`。表示窓は `js/core/store-logos.js`、入店の幕は `js/core/store-arrival.js`。関連確認: `node remake/test/store_logos.mjs` と `node remake/test/navigation_transitions.mjs`。
+
 2026-10-11: タイトルは6人18枚をランダム表示（直前と同じキャラを避ける）。起動時は選んだ1枚だけデコード。SKIPの台詞送り25msは維持し、途中の表情とCGのフェードを待つ。SKIPの背景幕は片道140ms。
 
 ```bash

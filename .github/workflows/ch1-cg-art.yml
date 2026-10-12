@@ -1,0 +1,66 @@
+name: Chapter 1 CG art
+on:
+  pull_request:
+    paths:
+      - 'assets/cgs/**'
+      - 'remake/img/cgs/**'
+      - 'remake/data/manifest.json'
+      - 'remake/test/ch1_cg_art.mjs'
+      - 'remake/js/vn/engine.js'
+      - '.github/workflows/ch1-cg-art.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ch1-cg-art-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cg-art:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+      ARTIFACT_DIR: .codex/artifacts/ch1-cg-art
+      TEST_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install Chromium
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/cg-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/cg-preview.log"
+          exit 1
+      - name: PC and touch CGs, gallery, delayed loading and save preservation
+        run: node remake/test/ch1_cg_art.mjs
+      - name: Save review evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ch1-cg-art
+          path: |
+            .codex/artifacts/ch1-cg-art/
+            ${{ runner.temp }}/cg-preview.log
+          retention-days: 7
