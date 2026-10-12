@@ -77,6 +77,7 @@ jobs:
         run: |
           node remake/test/browser/save_load.mjs
           node remake/test/browser/sumi_contact.mjs
+          node remake/test/browser/lover_hidden_growth.mjs
       - name: Hiyori encounters, LIME, saves and PC/mobile portraits
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

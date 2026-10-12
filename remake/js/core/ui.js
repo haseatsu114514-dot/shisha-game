@@ -37,9 +37,11 @@ export function initLayers() {
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
-        ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
+        ? (levelUp ? "恋人との絆が深まった" : "心の距離が少し近づいた")
         : levelUp ? `仲が深まった（♥${level}）` : "好感度が少し上がった",
-      hearts: { from: heartState(prevPts), to: heartState(pts) },
+      // The private growth remains hidden; lovers' ordinary hearts stay full.
+      hearts: bond ? { from: Array(5).fill(100), to: Array(5).fill(100) }
+        : { from: heartState(prevPts), to: heartState(pts) },
     });
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
@@ -300,7 +302,7 @@ function pumpBanners() {
     const o = bannerQueue.shift();
     if (o.owner !== state) continue;
     bannerBusy++;
-    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
+    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
