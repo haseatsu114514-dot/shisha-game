@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 14:59 UTC",
+ "generated": "2026-10-12 18:04 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -218,7 +218,9 @@
   "bg_c_station_overcast_night.png",
   "bg_cafe_day.png",
   "bg_cafe_night.png",
+  "bg_cafe_overcast_day.png",
   "bg_choizap.png",
+  "bg_choizap_night.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
@@ -228,6 +230,8 @@
   "bg_home_overcast_day.png",
   "bg_home_overcast_night.png",
   "bg_kannon_day.png",
+  "bg_kannon_night.png",
+  "bg_kannon_overcast_day.png",
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
   "bg_ryuji_shop.png",
@@ -236,6 +240,8 @@
   "bg_shop.png",
   "bg_street_day.png",
   "bg_street_night.png",
+  "bg_street_overcast_day.png",
+  "bg_street_overcast_night.png",
   "bg_title.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
@@ -293,6 +299,15 @@
   "coal_red.png",
   "coal_white.png",
   "foil_surface.png",
+  "hajime_craft_heat.png",
+  "hajime_craft_holes.png",
+  "hajime_craft_holes_contact.png",
+  "hajime_craft_holes_hover.png",
+  "hajime_craft_holes_release.png",
+  "hajime_craft_mix.png",
+  "hajime_craft_pack.png",
+  "hajime_craft_pull.png",
+  "hajime_craft_pull_rest.png",
   "hajime_steam_wait.png",
   "hookah_base.png",
   "hookah_stem.png",
@@ -1324,6 +1339,69 @@
    0.8164,
    1.5
   ],
+  "hajime_craft_heat.png": [
+   0.0742,
+   0.0,
+   0.9349,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes.png": [
+   0.0,
+   0.2891,
+   0.5755,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_contact.png": [
+   0.5345,
+   0.0332,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_hover.png": [
+   0.5332,
+   0.0,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_release.png": [
+   0.5352,
+   0.0098,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_mix.png": [
+   0.071,
+   0.002,
+   0.9297,
+   0.9961,
+   1.5
+  ],
+  "hajime_craft_pack.png": [
+   0.0,
+   0.0947,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_pull.png": [
+   0.0,
+   0.0,
+   0.9629,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_pull_rest.png": [
+   0.0,
+   0.0,
+   0.8835,
+   1.0,
+   1.5
+  ],
   "hajime_steam_wait.png": [
    0.3875,
    0.1323,
@@ -1482,7 +1560,9 @@
   "backgrounds/bg_c_station_overcast_night.png",
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
+  "backgrounds/bg_cafe_overcast_day.png",
   "backgrounds/bg_choizap.png",
+  "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
@@ -1492,6 +1572,8 @@
   "backgrounds/bg_home_overcast_day.png",
   "backgrounds/bg_home_overcast_night.png",
   "backgrounds/bg_kannon_day.png",
+  "backgrounds/bg_kannon_night.png",
+  "backgrounds/bg_kannon_overcast_day.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_ryuji_shop.png",
@@ -1500,6 +1582,8 @@
   "backgrounds/bg_shop.png",
   "backgrounds/bg_street_day.png",
   "backgrounds/bg_street_night.png",
+  "backgrounds/bg_street_overcast_day.png",
+  "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
@@ -1645,6 +1729,15 @@
   "ui/making/coal_red.png",
   "ui/making/coal_white.png",
   "ui/making/foil_surface.png",
+  "ui/making/hajime_craft_heat.png",
+  "ui/making/hajime_craft_holes.png",
+  "ui/making/hajime_craft_holes_contact.png",
+  "ui/making/hajime_craft_holes_hover.png",
+  "ui/making/hajime_craft_holes_release.png",
+  "ui/making/hajime_craft_mix.png",
+  "ui/making/hajime_craft_pack.png",
+  "ui/making/hajime_craft_pull.png",
+  "ui/making/hajime_craft_pull_rest.png",
   "ui/making/hajime_steam_wait.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",

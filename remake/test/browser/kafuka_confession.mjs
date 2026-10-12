@@ -81,7 +81,8 @@ await suite("kafuka-confession", async check => {
         assert.equal(r.final.lovers.includes("kafuka"), lover);
         assert.equal(!!r.final.flags._friend_kafuka, !!(q1 && q2 && reply));
         if (lover) {
-          assert.equal(r.final.loveLevel.kafuka, 1); assert.equal(r.final.lovePts.kafuka, 9);
+          assert.equal(r.final.loveLevel.kafuka, 1); assert.equal(r.final.lovePts.kafuka, 12);
+          assert(r.final.loverEventsSeen.includes("lover_kafuka_lv1"));
           assert.equal(r.final.loverSince.kafuka, 19);
         }
         assert.deepEqual(r.loaded.lovers, r.final.lovers);
@@ -213,7 +214,8 @@ await suite("kafuka-confession", async check => {
         return { chapter1, unread, missing, before, sharkLime, otherLime, friend, tooLate, fabricated };
       });
       assert(!r.chapter1 && !r.unread && !r.missing && !r.tooLate && !r.fabricated);
-      assert.deepEqual(r.before.lovers, ["kafuka"]); assert.deepEqual(r.sharkLime, []);
+      assert.deepEqual(r.before.lovers, ["kafuka"]);
+      assert.equal(r.sharkLime.length, 1); assert.equal(r.sharkLime[0].id, "_lover_private_account_kafuka");
       assert(r.otherLime.some(m => m.accept_event === "date_mashiro"));
       assert.deepEqual(r.friend.lovers, []); assert(r.friend.flags._friend_kafuka);
     }, options);
@@ -277,7 +279,8 @@ await suite("kafuka-confession", async check => {
       await page.waitForFunction(() => K.vn.isPlaying());
       assert.equal(await finishChoices(0), 2); // intention gate, then accept/reject
       const r = await page.evaluate(async () => { await K.confessing; return K.snap(); });
-      assert.deepEqual(r.lovers, ["kafuka"]); assert.equal(r.lovePts.kafuka, 9);
+      assert.deepEqual(r.lovers, ["kafuka"]); assert.equal(r.lovePts.kafuka, 12);
+      assert(r.loverEventsSeen.includes("lover_kafuka_lv1"));
     }, options);
   }
 });

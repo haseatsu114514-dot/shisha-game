@@ -55,3 +55,7 @@ BASE_URL=http://127.0.0.1:8360/remake/ node remake/test/ch1_visual_quality.mjs
 
 `docs/asset_ai_guidance.md` と `asset_sources/shisha-hardware-reference/` の構造・HMD・ホース・実物寸法・喫煙規則に従う。写真一覧や構造図を生成へ渡さず、選んだモデルの実物写真を添付する。顔は採用立ち絵、画風は採用タイトル絵を基準にする。
 提供済みの台はHMD必須。直炭・混成HMD・巨大炭・ホースの誤接続／分岐・機材から出る煙は不採用。制作途中の裸ポストと提供済み状態を区別し、構成と検品結果を画像ごとに記録する。
+
+## セットA：商店街の追加制作
+
+[商店街4枚の生成・接続・比較・検証記録](set-a-street/README.md)。自宅・となりの完成素材は維持。残る施設・横長CGは別PRで進める。

@@ -316,7 +316,7 @@ export async function playFriendHangout(id) {
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "仕事を終えてから。"}${f.place}で、${name}と一服した。` },
       { speaker: id, face: v.arrive.face, text: v.arrive.text, inner: v.arrive.inner },
-      { speaker: "", text: "一台の煙を、急がずに回す。勝ち負けも、試香の数字もない時間だった。" },
+      { speaker: "", text: "１台の煙を、急がずに回す。勝ち負けも、試香の数字もない時間だった。" },
       { speaker: id, face: v.mid.face, text: v.mid.text, inner: v.mid.inner },
       { speaker: id, face: v.close.face, text: v.close.text, inner: v.close.inner },
       { type: "apply", stats: { [f.stat]: 2 } },

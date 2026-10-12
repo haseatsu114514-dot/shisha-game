@@ -975,7 +975,7 @@
       "dialogue_id": "kafuka_future_private_swimming",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png",
-        "future_only": true,
+        "future_only": false,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
         "bgm_on_speaker": "kafuka"
@@ -995,6 +995,10 @@
           "speaker": "kafuka",
           "face": "smile",
           "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_kafuka_swimming_known"
         }
       ]
     },
@@ -1002,7 +1006,7 @@
       "dialogue_id": "kafuka_future_private_name",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png",
-        "future_only": true,
+        "future_only": false,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
         "bgm_on_speaker": "kafuka"
@@ -1173,9 +1177,9 @@
   "implementation_notes": {
     "first_encounter": "第1章DAY8以降の固定イベント・当夜予約・告白・在宅がない帰り道。重なった時は次の空いた帰り道へ繰り越す。",
     "chapter2_boundary": "現行リメイクは第1章まで。章2用の店訪問とminChapter条件は準備するだけで、章2を遊べる状態にはしない。",
-    "future_private": "本名と泳ぎの私的会話は未接続の原稿。告白と恋人/友人状態はmax_relationshipに接続済み。秘密の開示と恋人絆イベントへの接続は別Issueで扱う。",
+    "future_private": "既存の泳ぎの原稿はlover_kafuka_lv3、本名の原稿はlover_kafuka_lv4から正式接続。読了と知識は実際に読んだものだけを記録し、既知の本名は問い直さない。恋人絆Lv1〜5はkafuka-bonds.jsで未読の前段から一つずつ読む。",
     "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
     "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。",
-    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。途中と最後の質問が恋愛寄りなら共通の夜の告白で恋人/友人を選ぶ。既存の友人/恋人は維持。本名/泳ぎの秘密、恋人絆イベント、専用LIME/デートは別Issue。"
+    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。"
   }
 }

@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import vm from "node:vm";
 const craftRoot = new URL("../js/craft/", import.meta.url);
 let now = 1000, nextFrame = 1, frames = new Map(), keymap = null, panel = null, automated = null;
-const stamps = [], delayed = [], results = [];
+const stamps = [], delayed = [], results = [], visualHoles = [];
 class Element {
   constructor(spec) { const [tag, ...classes] = spec.split("."); this.tag = tag; this.classes = new Set(classes); this.children = []; this.listeners = {}; this.style = {}; this.dataset = {}; this.disabled = false;
     this.classList = { add: (...v) => v.forEach((c) => this.classes.add(c)), toggle: (c, yes) => yes ? this.classes.add(c) : this.classes.delete(c) };
@@ -25,8 +25,10 @@ async function frame(time) { now = time; const waiting = [...frames.values()]; f
 const values = {
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
+  "data.js": { DB: { flavorById: {} } },
   "audio.js": { SE: Object.fromEntries(["punch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => {}])) },
-  "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {} },
+  "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
+    setBenchHoleAction: (cs, event) => visualHoles.push({ cs, ...event }) },
   "common.js": { gradeOf: (score) => score >= 90 ? "S" : score >= 80 ? "A" : score >= 65 ? "B" : score >= 50 ? "C" : "D", autoSkill: () => automated,
     skill: { slow: () => 1, window: () => 1 }, resultCard: async (_, data) => results.push(data), keys: (map) => { keymap = map; return () => { keymap = null; }; }, popStamp: (_, text, kind) => stamps.push({ text, kind }) },
 };
@@ -80,7 +82,7 @@ assert(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, .1) 
 assert.equal(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, -.1), conditions.heatDelta(outerOnly, -.1));
 
 async function start(auto = null, templateId = "outer24") {
-  now = 1000; automated = auto; panel = null; frames.clear(); stamps.length = 0; delayed.length = 0; results.length = 0;
+  now = 1000; automated = auto; panel = null; keymap = null; frames.clear(); stamps.length = 0; delayed.length = 0; results.length = 0; visualHoles.length = 0;
   const cs = { mode: "drill", holes: null, holeTemplateId: templateId };
   const running = holes.runHoles(cs); await settle();
   if (!auto) {
@@ -92,12 +94,20 @@ async function start(auto = null, templateId = "outer24") {
 async function punchCircle(period, targets, elapsedStart = 0) {
   for (let k = 0; k < targets; k++) { await frame(1000 + (elapsedStart + k * period / targets) * 1000); fire("hole-punch", "pointerdown"); await settle(); }
 }
+// 同じ位置への押し直しも実穴。TOO CLOSEを演出側が勝手に消さない。
+let probe = await start(); fire("hole-punch", "pointerdown"); fire("hole-punch", "pointerdown");
+assert.equal(visualHoles.length, 2); assert.equal(visualHoles.at(-1).dots.length, 2);
+assert.deepEqual(visualHoles.at(-1).target, visualHoles.at(-1).dots.at(-1));
+assert.equal(visualHoles.at(-1).cs, probe.cs); assert.equal(probe.cs.holes, null);
 // 外周24穴: 選択前は時計が動かず、未完成ではクリック・Enterの全経路を拒否。
 let active = await start(); assert(find("hole-done").disabled); assert(find("hole-next").disabled);
 fire("hole-done"); fire("hole-next"); keymap.Enter(); await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
 await punchCircle(6.4, 24); assert(!find("hole-done").disabled); assert(find("hole-next").disabled); assert(find("hole-punch").disabled);
+assert.equal(visualHoles.length, 24); assert.equal(visualHoles.at(-1).dots.length, 24);
+assert.equal(visualHoles[0].target[0], .8); assert.equal(visualHoles[0].target[1], 0);
 // 完成後の連打で余分な穴や自動送りを増やさない。
 const stampCount = stamps.length; for (let i = 0; i < 5; i++) fire("hole-punch", "pointerdown"); assert.equal(stamps.length, stampCount); assert.equal(delayed.length, 0);
+assert.equal(visualHoles.length, 24, "Disabled input added a visual hole");
 await frame(now + 400); assert.equal(active.cs.holes, null); keymap.Enter(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer24"); assert.equal(active.cs.holes.outer, 24);
 assert.equal(active.cs.holes.middle, 0); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.total, 24); assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.densityProfile.sparse, 0);
