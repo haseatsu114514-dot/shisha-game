@@ -24,7 +24,7 @@ permissions:
   issues: write
   contents: read
 concurrency:
-  group: issue-claim-coordinator
+  group: issue-claim-coordinator-350-isolated-test
   cancel-in-progress: false
 jobs:
   coordinate:
@@ -44,6 +44,9 @@ jobs:
             const op = process.env.OPERATION;
             const worker = process.env.OWNER;
             const agent = process.env.AGENT;
+            // Temporary isolated #350 test harness; removed before final PR.
+            if (!['418', '419'].includes(process.env.ISSUE)) throw Error('Test fixture only');
+            if (worker.endsWith('-hold')) await new Promise(resolve => setTimeout(resolve, 60000));
             if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
             const rawIssue = (process.env.ISSUE || '').trim();
             if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
@@ -125,3 +128,7 @@ jobs:
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
               await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
             }
+
+      - name: Temporary cancellation window after ledger write
+        if: endsWith(inputs.owner, '-cancelafter')
+        run: sleep 90
