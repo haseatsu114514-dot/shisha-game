@@ -21,7 +21,7 @@ async function prepare(page, id = "mashiro", legacy = false) {
       delete s.lastDate; delete s.loveCarry; delete s.loverEventsSeen;
     }
     D.core.save(); D.core.newGame(); D.core.load();
-    D.ch1.setupHooks(); D.vn.vnTest.turbo = true;
+    D.ch1.setupHooks(); D.vn.vnTest.turbo = true; D.core.config.textSpeed = 4;
     window.__remake.craftTest.auto = "good";
     D.events = []; D.choices = []; D.lines = []; D.before = structuredClone(D.core.state);
   }, { id, legacy });
@@ -48,12 +48,16 @@ await suite("lover-date-route", async check => {
           D.vn.hooks.onLine = (id, item) => { line?.(id, item); if (id.startsWith("remake_date_") && item.speaker === "mashiro") D.lines.push(item.text); };
         });
         await page.locator(".map:not(.done)").waitFor();
-        const received = await page.evaluate(id => D.core.state.inbox.filter(i => i.msg.accept_event === `date_${id}`).map(i => ({ read: i.read, done: i.done })), id);
+        const received = await page.evaluate(id => {
+          D.phone.deliverMorning(); D.phone.deliverMorning(); // same morning must not send twice
+          return D.core.state.inbox.filter(i => i.msg.accept_event === `date_${id}`).map(i => ({ read: i.read, done: i.done }));
+        }, id);
         assert.deepEqual(received, [{ read: false, done: false }]);
         await press(page, '[data-test="hud-phone"]');
         await press(page, `[data-test="lime-chat-${id === "minto" ? "minto_private" : id}"]`);
         await page.locator('[data-test="reply-0"]:not([disabled])').waitFor();
         await assertFits(page, ".lime-actions .lime-reply");
+        if (id === "mashiro") await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${mode}-mashiro-invitation.png` });
         await press(page, '[data-test="reply-0"]');
         await press(page, '[data-test="phone-next"]'); await press(page, '[data-test="phone-close"]');
         const booked = await page.evaluate(() => structuredClone(D.core.state.pendingInvite));
@@ -97,6 +101,14 @@ await suite("lover-date-route", async check => {
         if (id === "mashiro") {
           assert(result.lines.some(t => t.includes("僕"))); assert(result.lines.some(t => t.includes("はじめくん")));
           assert(!result.lines.some(t => /はじめさん|蒸野くん/.test(t)));
+          await page.reload();
+          await page.locator('[data-test="title-load"]:not([disabled])').waitFor();
+          await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
+          await press(page, '[data-test="title-load"]'); await press(page, '[data-test="slot-0"]');
+          await page.locator(".map:not(.done)").waitFor();
+          const loaded = await page.evaluate(() => ({ day: window.__remake.state.day, date: window.__remake.state.lastDate.mashiro,
+            pts: window.__remake.state.lovePts.mashiro, pending: window.__remake.state.pendingInvite }));
+          assert.deepEqual(loaded, { day: 5, date: 4, pts: result.pts, pending: null });
         }
       }, { ...options, reducedMotion: "reduce" });
     }
