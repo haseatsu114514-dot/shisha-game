@@ -36,7 +36,7 @@ concurrency:
 jobs:
   chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       TEST_REF: ${{ github.sha }}
     steps:
@@ -108,6 +108,13 @@ jobs:
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
           node remake/test/browser/tutorial_transition.mjs
+      - name: Adopted store logos and entry cards on PC and mobile
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          SHOTS: .codex/artifacts/remake-browser/store-logos
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/store_logos.mjs
       - name: Continue captions, asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

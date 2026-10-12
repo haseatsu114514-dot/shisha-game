@@ -8,6 +8,7 @@ import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
+import { allStoreLogoUrls } from "./store-logos.js";
 
 export const layers = {};
 
@@ -102,7 +103,7 @@ let uiArtDone = false;
 /** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls(), ...allStoreLogoUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   return uiArt;

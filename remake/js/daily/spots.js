@@ -1,6 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { refreshPlaceCue } from "../core/transitions.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
@@ -59,7 +60,7 @@ export const SPOTS = [
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
-  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
@@ -210,6 +211,7 @@ export async function visitChar(charId) {
 }
 
 export async function visitRival(spot) {
+  refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
@@ -218,6 +220,7 @@ export async function visitRival(spot) {
 
 /** 施設スポット（一人の時間）。能力1Pに加え、場所ごとの体力の変化がある。 */
 export async function visitSpot(spot) {
+  refreshPlaceCue(spot.id);
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina || 0);
   state.spotVisits = state.spotVisits || {};
