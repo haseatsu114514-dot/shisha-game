@@ -15,7 +15,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashDirection, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
@@ -44,7 +44,7 @@ export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -57,10 +57,14 @@ export async function runSteamDodge(cs) {
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
   const slashCharge = el("span.action-recharge");
-  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "方向キー＋Zで上下左右へアタック。方向入力なしは前方", dataset: { test: "dodge-slash", uses: "0" } }, [
-    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge]),
+  const slashCount = el("span.slash-count", { text: "×0" });
+  const slashGrowth = el("span.slash-growth", [slashCount]);
+  const slashFeedback = el("span.slash-feedback", { role: "status", "aria-live": "polite", "aria-atomic": "true", dataset: { test: "slash-feedback" } });
+  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "Z／ボタンで前方へアタック", dataset: { test: "dodge-slash", uses: "0" } }, [
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
+  const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
@@ -75,7 +79,7 @@ export async function runSteamDodge(cs) {
   box.append(world.root, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
-    el("div.dodge-controls", [refreshBtn, slashBtn, precisionBtn, pad]),
+    el("div.dodge-controls", [refreshBtn, slashControl, precisionBtn, pad]),
     thermometer.root,
   ]);
   panel.append(steamRoot);
@@ -88,6 +92,7 @@ export async function runSteamDodge(cs) {
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
+  let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -153,14 +158,26 @@ export async function runSteamDodge(cs) {
     button.dataset.cooling = String(running && remaining > 0);
     button.style.setProperty("--recharge", String(1 - remaining / duration));
     caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
     button.disabled = !running || remaining > 0;
   };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
     rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
   };
-  const slashLabel = () => rechargeLabel(slashBtn, slashCharge, Math.max(0, slashReadyAt - time), SLASH_RECHARGE_SECONDS, "アタック。方向入力に合わせて上下左右の雑念を切る。入力なしは前方。Zキーでも使用");
+  const slashLabel = () => {
+    const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
+    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+    slashBtn.dataset.cutWords = String(wordsCut);
+    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
+    slashBtn.dataset.maxCombo = String(maxCombo);
+    slashBtn.dataset.reach = String(profile.reach);
+    slashBtn.dataset.recharge = String(profile.recharge);
+    slashBtn.dataset.tier = String(profile.tier);
+    slashCount.textContent = `×${wordsCut}`;
+    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
+  };
   const refresh = () => {
     if (!running || refreshes === 0) return;
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
@@ -180,13 +197,31 @@ export async function runSteamDodge(cs) {
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
   const slash = () => {
     if (!running || time < slashReadyAt) return;
-    const direction = slashDirection(keysDown, axisX, axisY), angle = slashAngle(direction);
-    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle));
-    slashesUsed++; slashReadyAt = time + SLASH_RECHARGE_SECONDS;
+    const direction = "u", angle = slashAngle(direction);
+    const before = slashProfile(wordsCut);
+    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
+    const cutWords = cleared.filter(b => b.word).length;
+    wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
+    const after = slashProfile(wordsCut);
+    slashCooldown = after.recharge;
+    slashesUsed++; slashReadyAt = time + slashCooldown;
     slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
-    world.dissolve(time, cleared);
-    const fx = buildSlashFx(hx, hy, angle);
+    slashBtn.dataset.lastCut = String(cleared.length);
+    slashFeedback.dataset.hit = String(cleared.length > 0);
+    slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
+    world.dissolve(time, cleared, { echoWords: false });
+    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
+    for (const b of cleared) {
+      if (b.word) {
+        const halves = buildWordCutFx(b, hx, hy, angle, before.reach);
+        box.append(halves); transients.push({ node: halves, until: time + .5 });
+      }
+      const spark = el("i.dodge-slash-impact", { "aria-hidden": "true", style: { left: `${clamp(b.x + b.w / 2, 0, W)}px`, top: `${clamp(b.y + b.h / 2, 0, H)}px` } });
+      box.append(spark); transients.push({ node: spark, until: time + .32 });
+    }
+    slashBtn.classList.remove("striking"); void slashBtn.offsetWidth; slashBtn.classList.add("striking");
+    if (cleared.length) SE.just();
     SE.whoosh(); slashLabel();
   };
   listen(slashBtn, "pointerdown", e => { e.preventDefault(); slash(); });
@@ -270,6 +305,9 @@ export async function runSteamDodge(cs) {
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
+            wordsCut = 0;
+            slashFeedback.textContent = "被弾。コンボが途切れた";
+            slashLabel();
             setPlayerMental(cs, mental.hit(time, hits));
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
@@ -301,7 +339,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, warmingFactor: steamClimate(cs.environment).transfer };
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, warmingFactor: steamClimate(cs.environment).transfer };
   scoreStep(cs, "steam", score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");

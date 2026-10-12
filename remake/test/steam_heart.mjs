@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from '../js/craft/steam-heart.js';
-assert.equal(HEART_SIZE, 18); assert.equal(heartHitRadius(0), 4);
+assert.equal(HEART_SIZE, 20); assert.equal(heartHitRadius(0), 4);
 const b = (x, y, w = 2, h = 2) => ({ x, y, w, h });
 assert(heartTouchesBullet(b(-1, -1), 0, 0, 4));
 for (const bullet of [b(4, -1), b(-6, -1), b(-1, 4), b(-1, -6)]) {
