@@ -43,6 +43,9 @@ def metal(layer,s,x,baseline,size):
     layer.alpha_composite(Image.composite(grad,Image.new('RGBA',SIZE),mask))
 
 def typography(n):
+    generated=ROOT/'type-polish'/'layers'/f'default-ch{n}.png'
+    if generated.exists():
+        return Image.open(generated).convert('RGBA')
     t=Image.new('RGBA',SIZE)
     if n==5:
         spaced(t,'CHAPTER 5',60,99,42,(211,182,255,255),4,face=DIN)

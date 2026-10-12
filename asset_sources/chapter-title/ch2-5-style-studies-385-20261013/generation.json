@@ -8,52 +8,58 @@
       "chapter": 2,
       "title": "才能の壁",
       "english": "Jealousy Haze",
-      "concept": "指定画像の紫・ピンクの暗さ、立ち向かうはじめ。光の位置を4案で比較",
-      "variant": "light-A",
-      "original": "originals/ch2-light-A.png",
-      "original_sha256": "9cdb2d480ec58780c1327ddd45c3259b7246a9ca51ef24f55ac98141381cfcd9",
+      "concept": "照明Cの絵に生成した横・縦の明朝タイトル",
+      "variant": "light-C-user-selected",
+      "original": "originals/ch2-light-C.png",
+      "original_sha256": "0fd6c100a63c7e66dc8081132121684af674d9105aeb4bc8148392a643dbf076",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-9be79077-7f8d-408b-9aa9-84b481c37c0b",
-      "prompt": "prompts/ch2-light-A.txt"
+      "generation_id": "exec-c8b378ea-a699-435c-b68b-f94c86fc3b7f",
+      "prompt": "prompts/ch2-light-C.txt",
+      "generated_title_variant": "ch2-02-horizontal",
+      "generated_title_manifest": "type-polish/manifest.json"
     },
     {
       "chapter": 3,
       "title": "虚ろな王冠",
       "english": "Hollow Crown",
-      "concept": "空洞の見える王冠、雨、空席、帰る灯り",
-      "original": "originals/ch3-crown-v2.png",
-      "original_sha256": "cb426a5fea935f65ee1ee6ae2d34c370ea5c1e15e5d2661e68c7f8e6270c711e",
+      "concept": "王冠が主役の大写し。人物や街並みを入れない",
+      "original": "type-polish/originals/ch3-crown-focus.png",
+      "original_sha256": "aa7e8238c1f38de26914dcfa4abdb362668f42126ce58a573d90b781952a7f39",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-dfa2dc02-e285-47e1-9982-8d1c4ee121f4",
-      "prompt": "prompts/ch3-crown-v2.txt",
-      "variant": "crown-v2"
+      "generation_id": "exec-ecd5b6e0-16e0-4543-b248-f8db4d60545e",
+      "prompt": "type-polish/prompts/ch3-crown-focus.txt",
+      "variant": "ch3-crown-focus",
+      "generated_title_variant": "ch3-01-rain-mincho",
+      "generated_title_manifest": "type-polish/manifest.json"
     },
     {
       "chapter": 4,
       "title": "継承の煙",
       "english": "Legacy Smoke",
-      "concept": "二人の表情と手にフォーカス。ドバイは淡い背景",
-      "original": "originals/ch4-people-v2.png",
-      "original_sha256": "abaf6eba7581bc96894dce18b5946640e02ef96c9d330f18807c6427bbd831c7",
+      "concept": "はじめ主体、守護霊のようなスミ、和風なしのドバイ夜景",
+      "original": "type-polish/originals/ch4-hajime-guardian-dubai.png",
+      "original_sha256": "27d2130ec5c3d5668796066c9929ef7758a2b4ef56a9970493831e9a44ae90c8",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-08a049b7-0c19-4803-a763-70d9f6ebb980",
-      "prompt": "prompts/ch4-people-v2.txt",
-      "variant": "people-v2"
+      "generation_id": "exec-ccac4882-1cfd-405e-b47d-83cc73c41710",
+      "prompt": "type-polish/prompts/ch4-hajime-guardian-dubai.txt",
+      "variant": "ch4-hajime-guardian-dubai",
+      "generated_title_variant": "ch4-02-modern-legacy",
+      "generated_title_manifest": "type-polish/manifest.json"
     },
     {
       "chapter": 5,
       "title": "機械仕掛けの神",
       "english": "Deus Ex Machina",
-      "concept": "紫の金属と歯車、巨大な機械の顔",
+      "concept": "生成したクローム・白金の章題2案",
       "identity_status": "provisional design; no adopted shisha_9000 portrait found in source tree",
       "original": "originals/ch5.png",
       "original_sha256": "20e08027725fa06a276b2d86372b161a8b712ea8a864d0b650f968b7dd3f1260",
@@ -62,7 +68,9 @@
         941
       ],
       "generation_id": "exec-c9895e60-9e4f-4a46-8db6-24e590d9cad4",
-      "prompt": "prompts/ch5.txt"
+      "prompt": "prompts/ch5.txt",
+      "generated_title_variant": "ch5-02-platinum-brush",
+      "generated_title_manifest": "type-polish/manifest.json"
     }
   ],
   "user_references": [
@@ -245,6 +253,70 @@
       "generation_id": "exec-4c217aba-1347-48ca-bc6c-7fb52af16372",
       "prompt": "prompts/ch2-bright-courage-v5.txt",
       "status": "superseded; latest user specified dark-v2 darkness and four light positions"
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "指定画像の紫・ピンクの暗さ、立ち向かうはじめ。光の位置を4案で比較",
+      "variant": "light-A",
+      "original": "originals/ch2-light-A.png",
+      "original_sha256": "9cdb2d480ec58780c1327ddd45c3259b7246a9ca51ef24f55ac98141381cfcd9",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-9be79077-7f8d-408b-9aa9-84b481c37c0b",
+      "prompt": "prompts/ch2-light-A.txt",
+      "status": "before generated title and latest scene direction"
+    },
+    {
+      "chapter": 3,
+      "title": "虚ろな王冠",
+      "english": "Hollow Crown",
+      "concept": "空洞の見える王冠、雨、空席、帰る灯り",
+      "original": "originals/ch3-crown-v2.png",
+      "original_sha256": "cb426a5fea935f65ee1ee6ae2d34c370ea5c1e15e5d2661e68c7f8e6270c711e",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-dfa2dc02-e285-47e1-9982-8d1c4ee121f4",
+      "prompt": "prompts/ch3-crown-v2.txt",
+      "variant": "crown-v2",
+      "status": "before generated title and latest scene direction"
+    },
+    {
+      "chapter": 4,
+      "title": "継承の煙",
+      "english": "Legacy Smoke",
+      "concept": "二人の表情と手にフォーカス。ドバイは淡い背景",
+      "original": "originals/ch4-people-v2.png",
+      "original_sha256": "abaf6eba7581bc96894dce18b5946640e02ef96c9d330f18807c6427bbd831c7",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-08a049b7-0c19-4803-a763-70d9f6ebb980",
+      "prompt": "prompts/ch4-people-v2.txt",
+      "variant": "people-v2",
+      "status": "before generated title and latest scene direction"
+    },
+    {
+      "chapter": 5,
+      "title": "機械仕掛けの神",
+      "english": "Deus Ex Machina",
+      "concept": "紫の金属と歯車、巨大な機械の顔",
+      "identity_status": "provisional design; no adopted shisha_9000 portrait found in source tree",
+      "original": "originals/ch5.png",
+      "original_sha256": "20e08027725fa06a276b2d86372b161a8b712ea8a864d0b650f968b7dd3f1260",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-c9895e60-9e4f-4a46-8db6-24e590d9cad4",
+      "prompt": "prompts/ch5.txt",
+      "status": "before generated title and latest scene direction"
     }
   ],
   "references_used": {
@@ -275,7 +347,7 @@
       720
     ],
     "fit": "Pillow ImageOps.fit, LANCZOS, centered, preserve aspect ratio",
-    "typography": "separate RGBA layer; ch2 Gothic/Arial Narrow Bold and Italic, ch3 light Mincho/Times, ch4 Mincho W6, ch5 metallic Gothic/DIN Condensed. Placement varies by chapter.",
+    "typography": "Generated Japanese chapter-title cutout + separately typeset official game title, CHAPTER and English subtitle. Layered separately.",
     "production_adopted": false
   },
   "lighting_variants": [
@@ -349,12 +421,16 @@
       ]
     }
   ],
-  "lighting_default": "A",
+  "lighting_default": "C",
   "darkness_reference": {
     "file_name": "codex-clipboard-de77704a-b948-48cd-92e8-3013bb6094f9.png",
     "sha256": "8876544c97757345609c342c20dc1dcd8d100d82482b92da158e435467269f60",
     "purpose": "exact darkness and purple/pink palette for chapter2",
     "matches_original_ch2_dark_v2": false,
     "stored_in_repository": false
-  }
+  },
+  "lighting_selected_by_user": "C",
+  "current_reference_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
+  "current_claim_status_run": "38294088521",
+  "title_generation_authorized_by_user": true
 }

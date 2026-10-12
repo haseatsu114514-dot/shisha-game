@@ -18,10 +18,10 @@
 </nav>
 <section id="single"><figure><a id="imageLink" href="images/ch5-title.png" target="_blank" rel="noopener"><img id="mainImage" src="images/ch5-title.png" alt="第5章 機械仕掛けの神：紫に照らされた金属の顔と歯車"></a><figcaption><span id="caption">5章：紫の金属、歯車、巨大な機械の顔</span><span class="downloads"><a id="pngLink" href="images/ch5-title.png" download>タイトルPNG</a><a id="artLink" href="plates/ch5-art.png" download>文字なしPNG</a></span></figcaption></figure></section>
 <section id="grid" hidden aria-label="4章の比較"></section>
-<div class="note"><p id="identityNote">5章の機械の顔は仮デザインです。SHISHA-9000の採用済み画像は現行素材に見当たらないため、提供画像の光・金属・歯車・寄りの構図を参照しました。</p><p>2章は指定画像の紫・ピンクと深い影、立ち向かうはじめ。光の位置4案も別プレビューで比較できます。3章は空洞の見える王冠、4章は二人の表情と手が中心。文字の形と配置も章ごとに調整。本編への差し替えは行っていません。</p><div class="meta"><a href="lighting-ch2/index.html">2章の光4案</a><a href="comparison.png" target="_blank" rel="noopener">比較画像</a><a href="refs/reference-sheet.png" target="_blank" rel="noopener">キャラ参照</a><a href="README.md">制作メモ</a></div></div>
+<div class="note"><p id="identityNote">5章の機械の顔は仮デザインです。SHISHA-9000の採用済み画像は現行素材に見当たらないため、提供画像の光・金属・歯車・寄りの構図を参照しました。</p><p>2章はユーザー選定の照明C。章題は画像生成で再制作しています。3章は王冠の大写し、4章ははじめ主体・守護霊のような師のイメージ・ドバイ夜景へ変更。本編への差し替えは行っていません。</p><div class="meta"><a href="type-polish/index.html">生成章題の6案と変更前比較</a><a href="lighting-ch2/index.html">2章の光4案</a><a href="comparison.png" target="_blank" rel="noopener">比較画像</a><a href="README.md">制作メモ</a></div></div>
 </main>
 <script>
-const items={2:{name:'才能の壁',caption:'2章：紫・ピンクと深い影、立ち向かうはじめ（光A）'},3:{name:'虚ろな王冠',caption:'3章：王冠、雨、空席、帰る灯り'},4:{name:'継承の煙',caption:'4章：二人の表情と手、淡いドバイの背景'},5:{name:'機械仕掛けの神',caption:'5章：紫の金属、歯車、巨大な機械の顔'}};
+const items={2:{name:'才能の壁',caption:'2章：選定Cと生成した章題'},3:{name:'虚ろな王冠',caption:'3章：王冠が主役の大写し'},4:{name:'継承の煙',caption:'4章：はじめと師のイメージ、ドバイ夜景'},5:{name:'機械仕掛けの神',caption:'5章：金属の神と白金の生成章題'}};
 let current=5,showType=true,isGrid=false;
 const $=id=>document.getElementById(id);
 function src(n){return showType?`images/ch${n}-title.png`:`plates/ch${n}-art.png`}

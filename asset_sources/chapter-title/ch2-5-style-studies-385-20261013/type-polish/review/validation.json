@@ -1,0 +1,67 @@
+{
+  "generated_originals_hash_match": true,
+  "selected_ch2_light": "C",
+  "art_ch2_and_ch5_unchanged": true,
+  "candidates": [
+    {
+      "id": "ch2-01-vertical",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "a9904877b0a6e5a23e9a2a76334b3dcd2eee4927c3522af76d0b10fc9f96c0e8"
+    },
+    {
+      "id": "ch2-02-horizontal",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61"
+    },
+    {
+      "id": "ch3-01-rain-mincho",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "8d9d126d1d88eabdd91dc4d52e14734cd4b42eb35dda059b7ce97ea1bfb9d141"
+    },
+    {
+      "id": "ch4-02-modern-legacy",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "7256e4b45c75a4b3c6968d1723b8790152736b05c67f84267e7ee4ca9586ea60"
+    },
+    {
+      "id": "ch5-01-chrome-mincho",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "9137b8f10a846f13c5fd39e821dd4b45ecb3eaef06519d3fec717b394549f150"
+    },
+    {
+      "id": "ch5-02-platinum-brush",
+      "size": [
+        1280,
+        720
+      ],
+      "recomposes_exactly": true,
+      "unchanged_art_at_zero_alpha": true,
+      "sha256": "f0bb477424c4d486cbacf1acf926643cb3d8d559d5a402a0e57188e5bed11656"
+    }
+  ]
+}
