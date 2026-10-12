@@ -47,13 +47,13 @@ def build(row,m):
         ey=589 if key.endswith('vertical') else 361
         spaced(t,'Jealousy Haze',68,ey,24,pale,1.4,ITALIC)
     elif n==3:
-        brand(t,57,58,(209,219,225,255))
-        spaced(t,'CHAPTER 3',59,112,20,(190,205,216,255),4)
-        spaced(t,'Hollow Crown',69,624,22,(204,219,226,255),1.5)
+        brand(t,57,58,(43,55,64,255))
+        spaced(t,'CHAPTER 3',59,112,20,(53,69,79,255),4)
+        spaced(t,'Hollow Crown',69,624,22,(49,63,72,255),1.5)
     elif n==4:
-        brand(t,58,63,(239,225,201,255))
-        spaced(t,'CHAPTER 4',61,145,24,(224,208,176,255),4)
-        spaced(t,'Legacy Smoke',62,437,24,(237,225,204,255),1.8,ITALIC)
+        brand(t,58,63,(31,67,70,255))
+        spaced(t,'CHAPTER 4',61,145,24,(36,72,74,255),4)
+        spaced(t,'Legacy Smoke',62,437,24,(35,69,71,255),1.8,ITALIC)
     elif n==5:
         brand(t,58,58,(222,216,239,255))
         spaced(t,'CHAPTER 5',60,132,24,(199,178,229,255),4)

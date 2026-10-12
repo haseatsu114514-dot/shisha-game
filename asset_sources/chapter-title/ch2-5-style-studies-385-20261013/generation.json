@@ -25,16 +25,16 @@
       "chapter": 3,
       "title": "虚ろな王冠",
       "english": "Hollow Crown",
-      "concept": "王冠が主役の大写し。人物や街並みを入れない",
-      "original": "type-polish/originals/ch3-crown-focus.png",
-      "original_sha256": "aa7e8238c1f38de26914dcfa4abdb362668f42126ce58a573d90b781952a7f39",
+      "concept": "銀灰色の霧と古びた金。空洞のある王冠を大写し",
+      "original": "type-polish/palette-v2/originals/ch3-silver-day.png",
+      "original_sha256": "2e2fedf45c88ededf7aaca385c1bd78a9c3747148edc41ced1173299c478be0c",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-ecd5b6e0-16e0-4543-b248-f8db4d60545e",
-      "prompt": "type-polish/prompts/ch3-crown-focus.txt",
-      "variant": "ch3-crown-focus",
+      "generation_id": "exec-ec7f1877-e16f-48da-9b2d-b325b71c1b81",
+      "prompt": "type-polish/palette-v2/prompts/ch3-silver-day.txt",
+      "variant": "ch3-silver-day",
       "generated_title_variant": "ch3-01-rain-mincho",
       "generated_title_manifest": "type-polish/manifest.json"
     },
@@ -42,16 +42,16 @@
       "chapter": 4,
       "title": "継承の煙",
       "english": "Legacy Smoke",
-      "concept": "はじめ主体、守護霊のようなスミ、和風なしのドバイ夜景",
-      "original": "type-polish/originals/ch4-hajime-guardian-dubai.png",
-      "original_sha256": "27d2130ec5c3d5668796066c9929ef7758a2b4ef56a9970493831e9a44ae90c8",
+      "concept": "はじめ主体と浮かぶ師。砂漠の夕焼けとターコイズのドバイ",
+      "original": "type-polish/palette-v2/originals/ch4-desert-sunset.png",
+      "original_sha256": "e8cff3efedf0ff3e6c75d5b3fbaf53e1c8e95cc3cedda4e351847c62bed5b04a",
       "original_size": [
         1672,
         941
       ],
-      "generation_id": "exec-ccac4882-1cfd-405e-b47d-83cc73c41710",
-      "prompt": "type-polish/prompts/ch4-hajime-guardian-dubai.txt",
-      "variant": "ch4-hajime-guardian-dubai",
+      "generation_id": "exec-4aedd952-8e1f-4423-ab87-cf7ea9aa48b2",
+      "prompt": "type-polish/palette-v2/prompts/ch4-desert-sunset.txt",
+      "variant": "ch4-desert-sunset",
       "generated_title_variant": "ch4-02-modern-legacy",
       "generated_title_manifest": "type-polish/manifest.json"
     },
@@ -317,6 +317,42 @@
       "generation_id": "exec-c9895e60-9e4f-4a46-8db6-24e590d9cad4",
       "prompt": "prompts/ch5.txt",
       "status": "before generated title and latest scene direction"
+    },
+    {
+      "chapter": 3,
+      "title": "虚ろな王冠",
+      "english": "Hollow Crown",
+      "concept": "王冠が主役の大写し。人物や街並みを入れない",
+      "original": "type-polish/originals/ch3-crown-focus.png",
+      "original_sha256": "aa7e8238c1f38de26914dcfa4abdb362668f42126ce58a573d90b781952a7f39",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-ecd5b6e0-16e0-4543-b248-f8db4d60545e",
+      "prompt": "type-polish/prompts/ch3-crown-focus.txt",
+      "variant": "ch3-crown-focus",
+      "generated_title_variant": "ch3-01-rain-mincho",
+      "generated_title_manifest": "type-polish/manifest.json",
+      "status": "before chapter palette distinction"
+    },
+    {
+      "chapter": 4,
+      "title": "継承の煙",
+      "english": "Legacy Smoke",
+      "concept": "はじめ主体、守護霊のようなスミ、和風なしのドバイ夜景",
+      "original": "type-polish/originals/ch4-hajime-guardian-dubai.png",
+      "original_sha256": "27d2130ec5c3d5668796066c9929ef7758a2b4ef56a9970493831e9a44ae90c8",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-ccac4882-1cfd-405e-b47d-83cc73c41710",
+      "prompt": "type-polish/prompts/ch4-hajime-guardian-dubai.txt",
+      "variant": "ch4-hajime-guardian-dubai",
+      "generated_title_variant": "ch4-02-modern-legacy",
+      "generated_title_manifest": "type-polish/manifest.json",
+      "status": "before chapter palette distinction"
     }
   ],
   "references_used": {
@@ -327,13 +363,28 @@
       "refs/ageha.png"
     ],
     "3": [
-      "originals/ch3.png",
-      "refs/hajime.png"
+      {
+        "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch3-art.png",
+        "sha256": "0e4c93807dd4ebfa04dd79faf656019d9857052e18aab6fff168e6ea06aa01d8",
+        "saved_copy": "palette-v2/references/ch3-silver-day-1-ch3-art.png"
+      }
     ],
     "4": [
-      "originals/ch4.png",
-      "refs/sumi.png",
-      "refs/hajime.png"
+      {
+        "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch4-art.png",
+        "sha256": "f5f211bec9c37af994d71a06aaa109921a48470f8b2b39b85b9cc2a22ec02ac1",
+        "saved_copy": "palette-v2/references/ch4-desert-sunset-1-ch4-art.png"
+      },
+      {
+        "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+        "saved_copy": "palette-v2/references/ch4-desert-sunset-2-chr_hajime_normal.png"
+      },
+      {
+        "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/sumi/chr_sumi_normal.png",
+        "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+        "saved_copy": "palette-v2/references/ch4-desert-sunset-3-chr_sumi_normal.png"
+      }
     ],
     "5": [
       "codex-clipboard-194db46d-1dd0-4441-9d28-e0ec3d67aa9a.png",
@@ -432,5 +483,6 @@
   "lighting_selected_by_user": "C",
   "current_reference_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
   "current_claim_status_run": "38294088521",
-  "title_generation_authorized_by_user": true
+  "title_generation_authorized_by_user": true,
+  "chapter_palette_manifest": "type-polish/palette-v2/manifest.json"
 }

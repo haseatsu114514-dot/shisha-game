@@ -1,7 +1,7 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>章題の再制作 — 2〜5章</title><style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#141119;color:#f0eaf4}*{box-sizing:border-box}body{margin:0}main{max-width:1440px;margin:auto;padding:24px}h1{font-size:19px;font-weight:500;margin:0 0 8px}p{font-size:13px;color:#b2a6bd;line-height:1.6}nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 14px}button{font:inherit;font-size:13px;color:inherit;background:#282030;border:1px solid #51415e;border-radius:6px;padding:10px 14px;cursor:pointer}button[aria-pressed=true]{background:#d7c0e8;color:#28162f;border-color:#d7c0e8}button:focus-visible,a:focus-visible{outline:3px solid #cc9deb;outline-offset:3px}a{color:#d6b4ed}img{display:block;width:100%;height:auto;aspect-ratio:16/9}figure{margin:0}figcaption{margin:12px 0;font-size:14px}#grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}section[hidden]{display:none!important}.foot{border-top:1px solid #3c3045;margin-top:24px;padding-top:14px}.links{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;font-size:13px}@media(max-width:720px){main{padding:16px}#grid{grid-template-columns:1fr}button{padding:9px 11px}}
 </style></head><body><main>
-<h1>章題の再制作 — 2〜5章</h1><p>2章は選定Cの光。章題を画像生成で制作し、ゲームタイトルとCHAPTERを別に組版しました。</p>
+<h1>章題の再制作 — 2〜5章</h1><p>2章は選定Cの光。章題を画像生成で制作し、ゲームタイトルとCHAPTERを別に組版しました。<a href="lineup.html">文字入りの現在の5章一覧</a></p>
 <nav aria-label="画面を選択"><button data-key="ch5-02-platinum-brush" aria-pressed="true">5章 — 白金の筆文字</button><button data-key="ch5-01-chrome-mincho" aria-pressed="false">5章 — クローム明朝</button><button data-key="ch2-02-horizontal" aria-pressed="false">2章C — 横の明朝</button><button data-key="ch2-01-vertical" aria-pressed="false">2章C — 縦の明朝</button><button data-key="ch3-01-rain-mincho" aria-pressed="false">3章 — 王冠</button><button data-key="ch4-02-modern-legacy" aria-pressed="false">4章 — はじめとドバイ</button><button id="old" aria-pressed="false">変更前</button><button id="list" aria-pressed="false">6案を一覧</button></nav>
 <section id="single"><figure><a id="imageLink" href="images/ch5-02-platinum-brush.png" target="_blank" rel="noopener"><img id="image" src="images/ch5-02-platinum-brush.png" alt="第5章 白金の筆文字"></a><figcaption id="caption">5章 — 白金の筆文字</figcaption></figure></section>
 <section id="grid" hidden aria-label="最新の6案"></section>
@@ -10,8 +10,8 @@
 const items={
 'ch2-01-vertical':{chapter:2,name:'2章C — 縦の明朝',intent:'鋭い線の強弱を持つ縦の章題。余白と影の緊張感。'},
 'ch2-02-horizontal':{chapter:2,name:'2章C — 横の明朝',intent:'1章に近い文字の品と、かすかなローズ色。4文字を一つの横の章題へ。'},
-'ch3-01-rain-mincho':{chapter:3,name:'3章 — 王冠',intent:'王冠を大写しにし、空洞と深い影で「虚ろ」を見せる。人物・街並みは入れていない。'},
-'ch4-02-modern-legacy':{chapter:4,name:'4章 — はじめとドバイ',intent:'はじめが主役。スミさんは淡く浮かぶ師のイメージ。和風の画風を外し、現代のドバイの夜景へ。'},
+'ch3-01-rain-mincho':{chapter:3,name:'3章 — 王冠',intent:'銀灰色の明るい空気と古びた金の王冠。空洞の内側の影で「虚ろ」を見せる。人物・街並みは入れていない。'},
+'ch4-02-modern-legacy':{chapter:4,name:'4章 — はじめとドバイ',intent:'はじめが主役。スミさんは淡く浮かぶ師のイメージ。和風の画風を外し、夕焼けとターコイズの現代のドバイへ。'},
 'ch5-01-chrome-mincho':{chapter:5,name:'5章 — クローム明朝',intent:'精密な金属の明朝で、機械の格と冷たい美しさを出す。'},
 'ch5-02-platinum-brush':{chapter:5,name:'5章 — 白金の筆文字',intent:'白金の筆文字と大きな「神」で、最終章の強い存在感を出す。'}};
 let key='ch5-02-platinum-brush',old=false,list=false;const $=id=>document.getElementById(id);
