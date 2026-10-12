@@ -9,8 +9,8 @@
     {
       "id": "title_art_hiyori_01_twilight_walk",
       "scene": "夕暮れの帰路",
-      "status": "候補保存のみ・オーナー承認待ち",
-      "approved": false,
+      "status": "採用済み・本編接続済み",
+      "approved": true,
       "candidate": {
         "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.png",
         "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
@@ -51,13 +51,17 @@
       ],
       "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.prompt.txt",
       "generated_original": "/workspace/generated_images/exec-db97ff5f-ed09-4b0e-b662-9f8388f38625.png",
-      "runtime_path": null
+      "runtime_paths": {
+        "png": "assets/ui/title_arts/title_art_hiyori_01_twilight_walk.png",
+        "webp": "remake/img/ui/title_arts/title_art_hiyori_01_twilight_walk.webp",
+        "webp_sha256": "9cdab115bb42facbdf3ec60ecbc95213565799ea0560818abbdd5ba9b97e515a"
+      }
     },
     {
       "id": "title_art_hiyori_02_window_pause",
       "scene": "静かな窓際で一服",
-      "status": "候補保存のみ・オーナー承認待ち",
-      "approved": false,
+      "status": "採用済み・本編接続済み",
+      "approved": true,
       "candidate": {
         "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.png",
         "sha256": "2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6",
@@ -98,7 +102,6 @@
       ],
       "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v2.prompt.txt",
       "generated_original": "/workspace/generated_images/exec-84c2b692-83e3-4923-862e-f10996f0b659.png",
-      "runtime_path": null,
       "prior_version": {
         "image": {
           "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v1.png",
@@ -137,13 +140,18 @@
         "hose": "硬いハンドル根元→暗い柔軟ホース→手前テーブル下/左下画角外。見える区間は一本",
         "tip": "短い淡い半透明の衛生チップ1個を上端へ外被せ。首掛けmyチップなし",
         "camera": "夜・ベンチに座る上半身〜膝の斜め寄り、台を無理に画面内へ置かない"
+      },
+      "runtime_paths": {
+        "png": "assets/ui/title_arts/title_art_hiyori_02_window_pause.png",
+        "webp": "remake/img/ui/title_arts/title_art_hiyori_02_window_pause.webp",
+        "webp_sha256": "bc8a426e511d72f56a83bb08467e15fdb2444ed4272d01953ab54707a11cb3f3"
       }
     },
     {
       "id": "title_art_hiyori_03_after_rain",
       "scene": "雨上がりの街角",
-      "status": "候補保存のみ・オーナー承認待ち",
-      "approved": false,
+      "status": "採用済み・本編接続済み",
+      "approved": true,
       "candidate": {
         "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.png",
         "sha256": "346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c",
@@ -184,7 +192,17 @@
       ],
       "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.prompt.txt",
       "generated_original": "/workspace/generated_images/exec-95b0868d-b057-4273-af09-8db5b3470731.png",
-      "runtime_path": null
+      "runtime_paths": {
+        "png": "assets/ui/title_arts/title_art_hiyori_03_after_rain.png",
+        "webp": "remake/img/ui/title_arts/title_art_hiyori_03_after_rain.webp",
+        "webp_sha256": "107da1a905b110d9ef06eca269b1dec65bb237cc49756dd9e830464793e27fad"
+      }
     }
-  ]
+  ],
+  "approval": {
+    "date": "2026-10-12",
+    "source": "オーナーの本チャットでの選択回答",
+    "instruction": "3案すべて採用して本編登録・マージ",
+    "scope": "01夕暮れ・02窓際v2・03雨上がり。v1とアゲハ修正案は対象外"
+  }
 }

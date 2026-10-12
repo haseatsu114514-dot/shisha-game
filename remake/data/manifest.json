@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 16:53 UTC",
+ "generated": "2026-10-12 03:44 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1116,6 +1116,18 @@
    "file": "title_art_ageha_03_model_moment.png"
   },
   {
+   "character": "hiyori",
+   "file": "title_art_hiyori_01_twilight_walk.png"
+  },
+  {
+   "character": "hiyori",
+   "file": "title_art_hiyori_02_window_pause.png"
+  },
+  {
+   "character": "hiyori",
+   "file": "title_art_hiyori_03_after_rain.png"
+  },
+  {
    "character": "kafuka",
    "file": "title_art_kafuka_01_shishark_test_run.png"
   },
@@ -1652,6 +1664,9 @@
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
   "ui/title_arts/title_art_ageha_02_grocery_smile.png",
   "ui/title_arts/title_art_ageha_03_model_moment.png",
+  "ui/title_arts/title_art_hiyori_01_twilight_walk.png",
+  "ui/title_arts/title_art_hiyori_02_window_pause.png",
+  "ui/title_arts/title_art_hiyori_03_after_rain.png",
   "ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
   "ui/title_arts/title_art_kafuka_02_shark_movie.png",
   "ui/title_arts/title_art_kafuka_03_aquarium.png",

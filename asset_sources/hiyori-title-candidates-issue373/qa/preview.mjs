@@ -10,7 +10,7 @@ await suite('hiyori-title-candidate-preview',async check=>{
    await page.locator('.title-art.ready').waitFor();
    const before=await storageSnapshot(page);
    const manifestBefore=await page.evaluate(()=>JSON.stringify(__remake.DB.manifest));
-   assert.equal(await page.evaluate(()=>__remake.DB.manifest.titleArts.length),18);
+   assert.equal(await page.evaluate(()=>__remake.DB.manifest.titleArts.length),21);
    for(const id of ids){
     await page.evaluate(async id=>{
      const art=await (await import('./js/scenes/title-art.js')).prepareTitleArt({character:'hiyori',file:id+'.png',url:'/asset_sources/hiyori-title-candidates-issue373/'+id+'.png'});
