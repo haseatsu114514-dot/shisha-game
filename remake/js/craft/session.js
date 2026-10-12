@@ -116,7 +116,7 @@ export function openBench(cs, { steps = [] } = {}) {
   root.append(loading);
   root.inert = true;
   root.setAttribute("aria-busy", "true");
-  const ready = Promise.all([bg(), warmCraftAssets(cs.mode)]).finally(() => {
+  const ready = Promise.all([bg(), warmCraftAssets(cs.mode), worker.ready]).finally(() => {
     root.inert = false;
     root.removeAttribute("aria-busy");
     loading.remove();
@@ -151,9 +151,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
-  b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
-  b.worker.setDraw(null);
-  b.worker.setMental("steady");
+  b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
@@ -172,6 +170,10 @@ export function setBenchTemperature(cs, temp) {
 /** 吸い出し・熱管理の一口を左の作業風景へつなぐ。今後の吸引動画もこの状態を読む。 */
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
+}
+/** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
+export function setBenchHoleAction(cs, event) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
 }
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
@@ -325,7 +327,7 @@ export function refreshBench() {
     bench.guide.root.open = false;
     bench.guide.root.hidden = true;
     bench.root.dataset.step = "serve";
-    bench.worker.root.dataset.step = "serve";
+    bench.worker.setStep("serve");
     bench.worker.caption.textContent = "シーシャを提供した";
   }
 }
