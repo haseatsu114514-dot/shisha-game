@@ -11,12 +11,14 @@ import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 import { playKafukaMilestone } from "./kafuka-bonds.js";
+import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
+import { playKafukaDate, kafukaDateGap, kafukaDateReady } from "./kafuka-date.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
 
 const L = () => DB.lover || {};
-const dayTotal = () => ((state.chapter || 1) - 1) * 14 + state.day;
+const dayTotal = relationshipDayTotal;
 export const isLover = (id) => (state.lovers || []).includes(id);
 // 告白・デート・恋人の節目は仕事を離れた私的な場面（みんとは本名を聞いた後なら「栞さん」と呼ぶ）
 const privateCall = (id) => callName(id, state, { context: "private" });
@@ -182,39 +184,17 @@ async function maybeMilestone(id, beforeLv) {
 
 /** デート（LIMEの誘いを受けた時間帯に呼ぶ）。行き先はデート回数でローテーション */
 export async function playDate(id) {
+  if (id === "kafuka") return playKafukaDate();
   const sc = (L().dates || {})[id];
   if (!sc) {
     console.error(`[romance] Missing date scene for ${id}`);
     return;
   }
-  const exclude = { minto: "pepermint", rin: "drfookah" }[id]; // 自分の店は除外
-  const venues = (L().venues || []).filter((v) => v.id !== exclude);
-  const venue = venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
+  const venue = dateVenue(id);
   state.lastDate[id] = state.day;
-  const name = privateCall(id);
-  const maxed = (state.loveLevel[id] || 0) >= 5;
   const before = state.loveLevel[id] || 1;
   bond.private = true;
-  await play({
-    dialogue_id: `remake_date_${id}`,
-    metadata: { bg: `res://assets/backgrounds/${venue.bg}`, private_scene: true },
-    lines: [
-      { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
-      { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
-      { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
-      { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
-      { speaker: "", text: sc.choiceQ },
-      { type: "choice", choices: [{ text: sc.optA.text, next: "a" }, { text: sc.optB.text, next: "b" }] },
-      { speaker: id, face: sc.close.face, text: sc.close.text, inner: sc.close.inner },
-      { speaker: "", text: maxed
-        ? "（もう何も進めなくていい。ただ隣にいる——それだけの時間が、いちばん贅沢だ）"
-        : "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる）" },
-    ],
-    branches: {
-      a: [{ speaker: id, face: sc.arrive.face, text: sc.optA.line, inner: sc.optA.inner }, { type: "apply", stats: { [sc.optA.stat]: 2 } }],
-      b: [{ speaker: id, face: sc.arrive.face, text: sc.optB.line, inner: sc.optB.inner }, { type: "apply", stats: { [sc.optB.stat]: 2 } }],
-    },
-  });
+  await play(dateScene(id, venue));
   gainAffinity(id, 10);
   bond.private = false;
   addStamina(-10);
@@ -247,6 +227,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
   for (const id of state.lovers || []) {
+    if (id === "kafuka" && (state.chapter || 1) < 2) continue;
+    const chapterKey = id === "kafuka" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
       const pool = (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
@@ -271,15 +253,17 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     // デートの誘い（数日おき。絆がMAXになっても頻度を落として続く）
     const maxed = (state.loveLevel[id] || 0) >= 5;
     const last = state.lastDate[id] ?? -9;
-    const invId = `_date_inv_${id}_d${state.day}`;
+    const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
-    if (schedule && (id !== "kafuka" || L().dates?.kafuka)
-      && state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)) {
+    const gap = id === "kafuka" ? kafukaDateGap() : state.day - last;
+    if (schedule && gap >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)
+      && (id !== "kafuka" || kafukaDateReady() && state.pendingInvite?.event !== "date_kafuka")) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,
         ...schedule,
         accept_event: `date_${id}`,
-        messages: [schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？",
+        messages: [(L().inviteOpening || {})[id]?.[schedule.time_slot]
+          || (schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？"),
           ...((maxed && (L().inviteLinesMax || {})[id]) || (L().inviteLines || {})[id] || []).slice()],
         decline_response: { text: (L().declineLines || {})[id] || "また今度ね" },
       });
@@ -287,7 +271,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     }
     // 朝のひとこと（2日おき・キャラごとに位相をずらす）
     const pool = (L().morning || {})[id];
-    const msgId = `_lover_morning_${id}_d${state.day}`;
+    const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && (state.day + (phase[id] || 0)) % 2 === 0 && !read(msgId)) {
       out.push(chat(id, msgId, pool[Math.floor((state.day + (phase[id] || 0)) / 2) % pool.length]));
     }

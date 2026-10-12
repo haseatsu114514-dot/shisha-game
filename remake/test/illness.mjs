@@ -42,6 +42,7 @@ const values = {
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },
   "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
+  "kafuka-date.js": { kafukaDateReady: () => false, playKafukaDate: async () => ({ done: false, spent: 0 }) },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitKafuka: async () => false, kafukaSpot: () => null },
