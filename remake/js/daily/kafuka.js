@@ -5,6 +5,7 @@ import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
 import { gainAffinity, affinityLevel, releaseAffinity, earnStat, addMoney, addStamina } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
+import { finaleAtVisit, playFinale } from "./bonds.js";
 
 export const KAFUKA_NICKNAME_TOPIC = "lime_naru_kafuka_nickname";
 export const KAFUKA_BOND_CHOICE = "bond_q1_kafuka";
@@ -32,6 +33,7 @@ export function kafukaVisitDialogue() {
       return "kafuka_shop_bond_question";
     }
   }
+  if (finaleAtVisit("kafuka")) return "kafuka_bond_finale";
   return `kafuka_shop_repeat_${(count - 1) % 2}`;
 }
 
@@ -113,7 +115,9 @@ export async function visitKafuka(spot) {
       state.flags._kafuka_visit = { stamp, dialogue, complete: false };
       save();
     }
-    await play(visitScript(dialogue));
+    if (dialogue === "kafuka_bond_finale") {
+      if (!await playFinale("kafuka", { deferSave: true })) return false;
+    } else await play(visitScript(dialogue));
     if (state !== owner) return false;
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
