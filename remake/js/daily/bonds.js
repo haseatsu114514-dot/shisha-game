@@ -149,6 +149,9 @@ export function finaleDue(id) {
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
+  // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
+  // DAY12以降は旧セーブで当時の読了フラグが欠ける場合だけ進行不能を避けるフォールバック。
+  if (id === "tsumugi" && (state.chapter || 1) === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
   if (id === "minto" && !(state.flags._minto_identity_revealed && state.flags._minto_name_known)) return false;
   return true;
 }
