@@ -145,7 +145,10 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
     : hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
-  b.audience?.setStep(hintText, id);
+  // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
+  // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
+  const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;
+  b.audience?.setStep(coaching, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);
   b.panel.replaceChildren();
