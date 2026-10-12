@@ -65,7 +65,7 @@ try {
     assert.deepEqual(result.levels, [1, 1, 2, 2]);
     assert.equal(result.pts, 20); assert(result.sameResources);
     assert.deepEqual(result.fortune, { char: "tsumugi" });
-    assert.deepEqual(result.contacts, ["tsumugi"]);
+    assert.deepEqual(result.contacts, ["sumi", "tsumugi"]);
     assert.equal(result.visits, 0); assert.equal(result.stories, 0);
     assert.deepEqual(result.lovers, []); assert.deepEqual(result.answers, {});
     assert.deepEqual(result.memories, ["tsumugi_research", "tsumugi_progress", "tsumugi_submission"]);
