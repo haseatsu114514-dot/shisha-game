@@ -97,6 +97,7 @@ let limeCoach = 0;
 let limeOpened = 0;
 let errandBlocked = false;
 let checkedTutorialGrowth = false;
+let pendingDrill = null;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
 
@@ -343,11 +344,13 @@ for (;;) {
   if (snap.screen === "tonari") {
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
-      pendingAfter = null;
-      if (a === "sumi") await click('[data-test="after-sumi"]');
-      else if (a) await click('[data-test="after-drill"]');
-      else await click('[data-test="after-none"]');
-      if (a && a !== "sumi") { await page.waitForSelector(`[data-test="drill-${a}"]`, { timeout: 5000 }); await click(`[data-test="drill-${a}"]`); }
+      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : a ? '[data-test="after-drill"]' : '[data-test="after-none"]');
+      // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
+      if (selected) { pendingDrill = a && a !== "sumi" ? a : null; pendingAfter = null; }
+      continue;
+    }
+    if (snap.sub === "自主練" && pendingDrill) {
+      if (await click(`[data-test="drill-${pendingDrill}"]`)) pendingDrill = null;
       continue;
     }
     if (/tonari/.test(snap.sub)) { await click('[data-test="sub-back"]'); continue; }
