@@ -39,6 +39,7 @@ const deps={
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
+ './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
 };
 const kafukaModule=new vm.SourceTextModule(await read('js/daily/kafuka.js'),{context});
 await kafukaModule.link(spec=>{const d=deps[spec];assert(d);return new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});});await kafukaModule.evaluate();
@@ -82,5 +83,5 @@ for(const scene of story.dialogues){
 assert(story.dialogues[0].lines.some(l=>l.text==='お主、サメは好きか？'));
 assert(story.lime.find(m=>m.id==='lime_kafuka_preparing_thanks').chapter===1);
 assert(story.lime.find(m=>m.id==='lime_kafuka_opening').chapter===2);
-assert.equal(story.profile.romance_available,false);
+assert.equal(story.profile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches: PASS');

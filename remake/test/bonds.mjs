@@ -264,8 +264,8 @@ try {
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
   // HF03
-  assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, false);
-  log("HF03 kafuka height 156cm (age and romance unchanged)");
+  assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, true);
+  log("HF03 kafuka height 156cm / adult age kept / formal romance enabled (#442)");
 
   // ================================================================ HF04/HF05 途中の質問と締めくくり
   // つむぎ: 友情寄りの答え → 締めくくりは友情の着地、贈り物あり、告白なし。再読で恋愛値を稼げない

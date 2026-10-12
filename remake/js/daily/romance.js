@@ -26,6 +26,12 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  */
 export function romanceRouteOpen(id) {
   if (id === "hiyori" && (!DB.hiyori?.route?.enabled || state.chapter > 3)) return false;
+  if (id === "kafuka" && (!(state.chapter >= 2 && state.chapter <= 3)
+    || !state.flags._kafuka_bond_question_done
+    || state.romanceChoices?.bond_q1_kafuka?.char !== id
+    || state.romanceChoices?.bond_q2_kafuka?.char !== id
+    || !(state.romanceChoices?.bond_q1_kafuka?.value > 0)
+    || !(state.romanceChoices?.bond_q2_kafuka?.value > 0))) return false;
   const answers = Object.values(state.romanceChoices || {}).filter((a) => a?.char === id);
   return !!id && state.finales?.[id]?.route === "romance" && answers.length > 0 && answers.every((a) => a.value > 0)
     && !isLover(id) && !state.flags[`_friend_${id}`] && !!DB.dialogues[`confession_${id}`];
@@ -48,6 +54,8 @@ function becomeLovers(id) {
 export function onDialogueEnter(id, dlg) {
   const m = /^confession_(\w+)_(accept|reject)$/.exec(id || "");
   if (m) {
+    // この新規ルートは正式な締めくくりからだけ成立。既存の友人/恋人を再読で変更しない。
+    if (m[1] === "kafuka" && !romanceRouteOpen("kafuka")) return;
     if (m[2] === "accept") becomeLovers(m[1]);
     else state.flags[`_friend_${m[1]}`] = true; // 友達のまま（以後この告白は出ない）
   }
@@ -261,7 +269,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const last = state.lastDate[id] ?? -9;
     const invId = `_date_inv_${id}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
-    if (schedule && state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)) {
+    if (schedule && (id !== "kafuka" || L().dates?.kafuka)
+      && state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,
         ...schedule,
