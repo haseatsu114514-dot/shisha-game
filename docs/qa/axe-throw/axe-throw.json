@@ -36,6 +36,10 @@
       "status": "passed"
     },
     {
+      "label": "art-catalog-names-and-retry",
+      "status": "passed"
+    },
+    {
       "label": "api-friend-legacy",
       "status": "passed"
     },

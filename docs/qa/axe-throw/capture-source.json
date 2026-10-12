@@ -1,16 +1,16 @@
 {
-  "captured_at": "2026-10-12T23:05:57.061105+00:00",
-  "local_browser_cases": 11,
+  "captured_at": "2026-10-12T23:12:14.403477+00:00",
+  "local_browser_cases": 12,
   "save_cases": 6,
   "model_cases": 9,
   "files_sha256": {
     "remake/js/minigames/axe-model.js": "08cba795c9b3662168951b31ba358b9a123d9782eda59374eaf4d052dc42e399",
-    "remake/js/minigames/axe-companions.js": "0fadd2d7617a0ecd197bba35f9880b2bf79c574b291bc9969885478beb1f262a",
-    "remake/js/minigames/axe.js": "2af95f05f46d912819246b6d6cf2ac1d8ca316f9eb05a58c5ea93a3831334b37",
+    "remake/js/minigames/axe-companions.js": "b05d745069f1d349e45b2cafb2fa494df73e24f712fdca5ab17949aa0d5231a1",
+    "remake/js/minigames/axe.js": "520ebf779e8721efbcbdd9965b49aa3a1393cbf94233cbfb18c6e574ef2471b3",
     "remake/js/axe-throw-page.js": "2b2a2c21c27e20cb4ad651913222875e19501a0d4127265f24056fb9eb2bcb37",
     "remake/css/axe-throw.css": "f4d169462aa18db611e54e08219e4e218ec9187b2a7880104c921abd57afe04a",
     "remake/index.html": "d63d954e4d382e176bfe881434a84b915144069e77bf489e630af00d2df516c9",
-    "remake/test/axe_throw.mjs": "e0051c370e8418c5ca16d6dbbafbd86ace3fd29211545dc4a0b26902537ac9c8",
-    "remake/test/browser/axe_throw.mjs": "bc363a7b7116ef5dc4080a6bd9002f8a4011896acccbf46c9c24a3df2c1d3a49"
+    "remake/test/axe_throw.mjs": "c64e2bd2242c8eb4f447ed131b4b40bd447df6eb3bf4afedaef5abedb87dabc5",
+    "remake/test/browser/axe_throw.mjs": "de1a9f9b4d203616b194f1769d777abde9b111ef2660fd8a1ae75e9b24db048f"
   }
 }

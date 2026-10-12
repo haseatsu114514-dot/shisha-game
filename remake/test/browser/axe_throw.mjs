@@ -81,7 +81,7 @@ await suite("axe-throw", async check => {
     assert.deepEqual(await storageSnapshot(page),before,"Practice must preserve raw legacy saves and LIME");
   },options);
   await check("ten-throws-killshots-and-companion",async page => {
-    await standalone(page,{league:true,opponent:"kafuka"}); const before=await storageSnapshot(page);
+    await standalone(page,{league:true,opponent:"shark"}); const before=await storageSnapshot(page);
     assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
     await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
     // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
@@ -101,7 +101,7 @@ await suite("axe-throw", async check => {
     }
     await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
     await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
-    if(shotsPath) await page.screenshot({path:shotsPath + "/league-kafuka-summary.png"});
+    if(shotsPath) await page.screenshot({path:shotsPath + "/league-shark-summary.png"});
     await pressReady(page); assert.deepEqual(await storageSnapshot(page),before);
     assert.match(await page.locator(".axe-intro > p").first().textContent(),/前回の記録/);
   });
@@ -141,6 +141,30 @@ await suite("axe-throw", async check => {
     });
     const result=await page.evaluate(async()=>[cancelledGame,await detachedGame]);
     assert(result.every(r=>r.cancelled&&!r.completed&&r.throws.length===0));assert(await page.evaluate(()=>invalidMode));assert.equal(await game(page).count(),0);
+  });
+  await check("art-catalog-names-and-retry",async page => {
+    const manifest = await (await page.request.get(new URL("data/manifest.json",page.url()).href)).json();
+    const sourceKey = manifest.portraits.samechan ? "samechan" : "kafuka";
+    for (const key of ["kafuka","samechan"]) {
+      await page.unrouteAll();
+      const catalogue = structuredClone(manifest);
+      const portrait = catalogue.portraits[sourceKey];
+      delete catalogue.portraits.kafuka; delete catalogue.portraits.samechan; catalogue.portraits[key]=portrait;
+      await page.route("**/remake/data/manifest.json",route=>route.fulfill({json:catalogue}));
+      if(key!==sourceKey) await page.route("**/img/sprites/characters/" + key + "/*",async route=>{
+        const url=route.request().url().replace("/" + key + "/chr_" + key + "_","/" + sourceKey + "/chr_" + sourceKey + "_");
+        await route.fulfill({response:await route.fetch({url})});
+      });
+      await standalone(page,{opponent:"shark"}); const before=await storageSnapshot(page);
+      assert.match(await page.locator(".axe-portrait").getAttribute("src"),new RegExp("/" + key + "/chr_" + key + "_normal"));
+      assert(await page.locator(".axe-portrait").evaluate(img=>img.complete&&img.naturalWidth>0));
+      await page.keyboard.press("Escape"); assert.deepEqual(await storageSnapshot(page),before);
+    }
+    await page.unrouteAll();
+    await page.route("**/remake/data/manifest.json",route=>route.fulfill({json:{portraits:{}}}));
+    await page.locator('[data-test="axe-start"]').click(); await phase(page,"failed");
+    assert.match(await page.locator(".axe-note").textContent(),/読み込めません/);
+    await page.unrouteAll(); await pressReady(page); await phase(page,"choice"); await page.keyboard.press("Escape");
   });
   for (const relationship of ["friend-legacy", "friend", "lover"]) await check("api-" + relationship, async page => {
     await page.evaluate(async relationship => {

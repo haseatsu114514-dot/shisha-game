@@ -1,6 +1,6 @@
 // Practice dialogue only. No romance, real-self reveal or character progression.
 export const COMPANIONS = {
-  hiyori: { name: "ひより", faces: ["axe_normal", "axe_laugh", "axe_shout"],
+  hiyori: { name: "ひより", portraitKeys: ["hiyori"], faces: ["axe_normal", "axe_laugh", "axe_shout"],
     before: ["……横、縦、力の順。焦らず止めてみて。", "青い小さな的、狙ってみる？ 宣言してからね。", "……次、どう狙う？ 見てるね。"],
     call: "……キルショット。小さいけど、当たれば大きいね。",
     bull: "……真ん中。うん、今のきれいだった。",
@@ -10,7 +10,8 @@ export const COMPANIONS = {
     miss: "……もう少しだったね。次の一投、いこう。",
     drop: "……力の加減かな。強すぎると、回転も合わないね。",
     summary: "……楽しかった。また一緒に投げようね。" },
-  kafuka: { name: "サメちゃん", faces: ["normal", "smile", "excited"],
+  // Saved artwork before/after the separate naming cleanup. Never rename assets here.
+  shark: { name: "サメちゃん", portraitKeys: ["samechan", "kafuka"], faces: ["normal", "smile", "excited"],
     before: ["お主の番じゃ。わしはここで見ておるぞ。", "青い的は先に宣言するのじゃな。忘れるでないぞ。", "どこを狙うのじゃ？ お主の好きなところでよいぞ。"],
     call: "おお、キルショットか！ わしもよく見ておくのじゃ。",
     bull: "真ん中じゃ！ お主、上手いのう。", hit: "ちゃんと刺さったのう。わしまで嬉しくなるぞ。",

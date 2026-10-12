@@ -53,14 +53,14 @@ test("horizontal, vertical and strength gauges traverse both directions", () => 
     assert.equal(gaugeAt(cycle*fraction,cycle),value);
 });
 test("companion reacts to actual result, with canonical voice and distinct expressions", () => {
-  for (const id of ["hiyori","kafuka"]) {
+  for (const id of ["hiyori","shark"]) {
     assert.notEqual(reaction(id,"choice",[],null).text,reaction(id,"choice",[],KILLS[0].id).text);
     for (const outcome of ["bull","hit","killshot","killshot-miss","miss","drop"])
       assert.equal(typeof reaction(id,"result",[{outcome}],null).text,"string");
     assert.notEqual(reaction(id,"result",[{outcome:"bull"}],null).face,reaction(id,"result",[{outcome:"drop"}],null).face);
   }
-  assert.match(reaction("kafuka","summary",[],null).text,/お主/);
-  assert.doesNotMatch(reaction("kafuka","summary",[],null).text,/波多野|なぎさ|泳/);
+  assert.match(reaction("shark","summary",[],null).text,/お主/);
+  assert.doesNotMatch(reaction("shark","summary",[],null).text,/波多野|なぎさ|泳/);
 });
 test("invalid input cannot produce NaN or illegally call a closed target", () => {
   for (const input of [{x:NaN,y:0,power:.6},{x:0,y:Infinity,power:.6},{x:0,y:0,power:2},{x:2,y:0,power:.6},{x:0,y:0,power:.6,called:"fake"}])

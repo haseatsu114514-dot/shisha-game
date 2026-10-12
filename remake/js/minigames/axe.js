@@ -31,6 +31,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const previousFocus = document.activeElement, lifetime = new AbortController();
   let phase = "loading", elapsed = 0, stamp = null, frame = 0, aim = { x: 0, y: 0 }, power = POWER.ideal;
   let shots = [], pending = null, called = null, lastAction = -Infinity;
+  let portraitKey = null;
   const root = el("section.axe-game", { role: "dialog", "aria-modal": "true", "aria-label": "斧投げ・" + rules.throws + "投",
     tabindex: "-1", dataset: { test: "axe-game" }, style: { "--axe-bg": "url('" + ART.bg + "')" } });
   if (host.id === "stage") root.classList.add("axe-in-stage");
@@ -38,7 +39,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const heading = el("header.axe-header", [el("div", [el("h1", { text: "AXE THROW" }),
     el("p", { text: mode === "league" ? "10投の競技練習" : "3投の練習" })]), round,
     el("button.axe-button.axe-close", { text: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) })]);
-  const portrait = el("img.axe-portrait", { alt: companion.name, src: faceArt(opponent, companion.faces[0]), dataset: { test: "axe-portrait" } });
+  const portrait = el("img.axe-portrait", { alt: companion.name, dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
   const companionCard = el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]);
   const board = svg("svg", { viewBox: "0 0 660 520", class: "axe-target", role: "img",
@@ -100,8 +101,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   loadArt(); frame = requestAnimationFrame(tick); return promise;
   function loadArt() {
     setPhase("loading");
-    Promise.all([...Object.values(ART), ...companion.faces.map(face => faceArt(opponent, face))].map(decodeArt))
-      .then(() => { if (phase !== "closed") setPhase("choice"); }, () => { if (phase !== "closed") setPhase("failed"); });
+    const timeout = new AbortController(), timer = setTimeout(() => timeout.abort(), 15000);
+    const stopTimer = () => clearTimeout(timer);
+    lifetime.signal.addEventListener("abort", stopTimer, { once: true });
+    fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache", signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
+      .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
+      .then(manifest => {
+        if (phase === "closed") return;
+        portraitKey = companion.portraitKeys.find(key => companion.faces.every(face => manifest.portraits?.[key]?.faces?.includes(face)));
+        if (!portraitKey) throw new Error("Companion artwork missing from catalogue");
+        portrait.src = faceArt(portraitKey, companion.faces[0]);
+        return Promise.all([...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face))].map(decodeArt));
+      })
+      .then(() => { if (phase !== "closed") setPhase("choice"); }, () => { if (phase !== "closed") setPhase("failed"); })
+      .finally(() => { stopTimer(); lifetime.signal.removeEventListener("abort", stopTimer); });
   }
   function selectCall(id) {
     if (phase !== "choice" || document.hidden || performance.now() - lastAction < 250 || id && !canCall(id, shots)) return;
@@ -164,7 +177,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     const line = reaction(opponent, phase, shots, called);
     if (comment.textContent !== line.text) comment.textContent = line.text;
-    const url = faceArt(opponent, line.face); if (portrait.src !== url) portrait.src = url;
+    if (portraitKey) { const url = faceArt(portraitKey, line.face); if (portrait.src !== url) portrait.src = url; }
     crosshair.setAttribute("transform", "translate(" + (CX + aim.x * R) + " " + (CY + aim.y * R) + ")");
     crosshair.style.opacity = ["choice", "horizontal", "vertical", "power"].includes(phase) ? "1" : "0";
     xNeedle.setAttribute("transform", "translate(" + (CX + aim.x * R) + " 462)");

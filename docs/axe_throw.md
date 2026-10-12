@@ -30,11 +30,12 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 ## 本編から呼ぶ
 
 前段VNが終わってから js/minigames/axe.js の
-runAxeThrow({host, signal, reducedMotion, mode: "practice"|"league", opponent: "hiyori"|"kafuka"}) をawaitする。
+runAxeThrow({host, signal, reducedMotion, mode: "practice"|"league", opponent: "hiyori"|"shark"}) をawaitする。
 host省略時は既存stage、練習ページではaxe-app。同じhostへの二重呼び出しは同じPromiseを返す。
 hostの既存DOMを消さず一時画面を重ね、終了・AbortSignal・host撤去で時計と入力を片付ける。
 キーボードの焦点を画面に収め、閉じると元の操作へ戻す。
 背景タブでは針・投擲時間を止め、復帰時に大きく進まない。動き軽減時は飛行回転を省く。
+素材目録から既存のキャラ画像を選び、サメちゃんの改名前／改名後の登録に対応する。
 画像の実デコードを待ってから操作を開き、失敗時は再読込／中断ができる。
 
 返り値は {completed, cancelled, throws, total, grade, ruleset, mode, opponent, throwCount, maximum}。
