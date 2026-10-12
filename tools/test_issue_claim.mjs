@@ -332,7 +332,7 @@ for (const recovery of [null, {}, {claim_comment: '10', released_comment: 20},
 }
 
 for (const change of ['missing-claim', 'claim-id', 'release-id', 'owner', 'human-claim', 'human-release',
-  'claim-run-metadata', 'release-run-metadata', 'intervening-bot', 'active-claim']) {
+  'claim-run-metadata', 'release-run-metadata', 'malformed-release-metadata', 'intervening-bot', 'active-claim']) {
   test(`legacy recovery refuses a different reservation history: ${change}`, async () => {
     const s = legacyTransferSetup(), history = s.comments[1];
     if (change === 'missing-claim') history.shift();
@@ -343,6 +343,7 @@ for (const change of ['missing-claim', 'claim-id', 'release-id', 'owner', 'human
     if (change === 'human-release') history[1].user.login = 'admin';
     if (change === 'claim-run-metadata') history[0].body += '\n<!-- issue-claim-run:v1 id=800 request=old -->';
     if (change === 'release-run-metadata') history[1].body += '\n<!-- issue-claim-run:v1 id=801 request=old -->';
+    if (change === 'malformed-release-metadata') history[1].body += '\n<!-- issue-claim-run:v1 id=unknown -->';
     if (change === 'intervening-bot') history.splice(1, 0, entry('claimed', 'worker-C', {id: 12}));
     if (change === 'active-claim') history.push(entry('claimed', 'worker-A', {id: 21}));
     await assert.rejects(transfer(s), /last bot claim\/release pair/);

@@ -144,6 +144,7 @@ jobs:
                   const original = originalLegacyClaim?.body.match(marker);
                   if (claim.state !== 'released' || claim.owner !== handoff.from || claim.run_id !== null ||
                       claim.comment_id !== recovery.released_comment || ledger.at(-1)?.id !== recovery.released_comment ||
+                      ledger.at(-1)?.body.includes('<!-- issue-claim-run:') ||
                       originalLegacyClaim?.id !== recovery.claim_comment || original?.[1] !== 'claimed' ||
                       original?.[2] !== handoff.from || originalLegacyClaim.body.includes('<!-- issue-claim-run:')) {
                     throw Error('Legacy recovery does not match the last bot claim/release pair');
