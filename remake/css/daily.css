@@ -940,7 +940,7 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .co-smoke-close { position: absolute; inset: 0; overflow: hidden; opacity: .85; transition: opacity 1.2s ease, transform 2.8s ease; }
 .co-smoke-close img { position: absolute; max-width: none; width: 1680px; left: -390px; top: -430px; opacity: .4; filter: grayscale(.85) brightness(.85) blur(2.5px); transform: rotate(-15deg); mix-blend-mode: screen; animation: co-breathe 18s ease-in-out infinite alternate; }
 .co-smoke-close img + img { width: 1450px; left: 320px; top: -90px; opacity: .15; transform: rotate(18deg); animation-delay: -8s; }
-.co-hand-close { position: absolute; left: 180px; top: 130px; width: 1060px; height: 330px; overflow: hidden; opacity: 0; transform: translateY(8px); transition: opacity .9s ease, transform 1.6s ease; mask-image: radial-gradient(ellipse 72% 80% at 55% 50%, #000 38%, transparent 85%); }
+.co-hand-close { position: absolute; left: 180px; top: 130px; width: 1060px; height: 330px; overflow: hidden; opacity: 0; transform: translateY(8px); transition: opacity .9s ease, transform 1.6s ease; mask-image: radial-gradient(ellipse 72% 50% at 55% 50%, #000 38%, transparent 85%); }
 .co-hand-close img { position: absolute; max-width: none; width: 1792px; left: -550px; top: -690px; filter: saturate(.65) brightness(.7); }
 .co-ember { position: absolute; left: 75%; top: 41%; width: 230px; height: 130px; background: radial-gradient(ellipse, #da914719, transparent 70%); opacity: 0; transition: opacity .9s ease; }
 .cold-open[data-shot="hand"] .co-hand-close { opacity: 1; transform: translateY(0); }
