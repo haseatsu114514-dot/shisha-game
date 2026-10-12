@@ -108,15 +108,14 @@ function peopleTab() {
     const lv = affinityLevel(id);
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
-    const bondLv = state.loveLevel?.[id] || 1;
-    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < (lover ? bondLv : lv) ? 100 : 0), {
-      className: "heart-row", bond: lover, label: lover ? "恋人との絆" : "好感度",
+    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < lv ? 100 : 0), {
+      className: "heart-row", bond: lover, label: lover ? "恋人（♥5）" : "好感度",
     });
     return el(`div.pp-row${lover ? ".lover" : ""}`, [
       face ? el("img.pp-face", { src: face, alt: "" }) : el("span.pp-face.ph", { text: displayName(id, state)[0] }),
       el("span.pp-name", { text: displayName(id, state) }),
       el("span.pp-hearts", [
-        lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
+        lover ? el("span.pp-relation", { text: "恋人" }) : null,
         hearts,
         !lover && lv >= 3 && affinityGateWaiting(id)
           ? el("span.pp-relation", { text: id === "hiyori" ? "スミさんとの再会待ち" : "関係を考える会話待ち" }) : null,
