@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: Claim next eligible issue, claim a specified issue, or release a claim
+        description: Claim, release, select next issue, or inspect/validate a current claim
         required: true
         type: choice
         options: [next, claim, release, status]
       issue:
-        description: Issue number (required for claim/release)
+        description: Issue number (required for claim/release/status)
         required: false
         type: string
       owner:
@@ -35,7 +35,7 @@ permissions:
   pull-requests: read
   actions: read
 concurrency:
-  group: issue-claim-coordinator-350-isolated-test
+  group: issue-claim-coordinator
   cancel-in-progress: false
 jobs:
   coordinate:
@@ -57,9 +57,6 @@ jobs:
             const op = process.env.OPERATION;
             const worker = process.env.OWNER;
             const agent = process.env.AGENT;
-            // Temporary isolated #350 test harness; removed before final PR.
-            if (!['418', '419'].includes(process.env.ISSUE)) throw Error('Test fixture only');
-            if (op === 'claim' && worker.endsWith('-hold')) await new Promise(resolve => setTimeout(resolve, 60000));
             const request = process.env.REQUEST_ID || '';
             const expectedRun = process.env.CLAIM_RUN || '';
             if (!['next', 'claim', 'release', 'status'].includes(op)) throw Error('Invalid operation');
@@ -169,7 +166,3 @@ jobs:
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
               await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
             }
-
-      - name: Temporary cancellation window after ledger write
-        if: inputs.operation == 'claim' && endsWith(inputs.owner, '-cancelafter')
-        run: sleep 90
