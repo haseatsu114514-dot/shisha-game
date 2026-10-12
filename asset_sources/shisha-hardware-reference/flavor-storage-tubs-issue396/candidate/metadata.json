@@ -92,7 +92,7 @@
     ],
     "mode": "RGB",
     "sha256": "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496",
-    "status": "候補保存のみ・最終比較案",
+    "status": "要修正・オーナー指摘の比較前",
     "approved": false,
     "runtime_paths": [],
     "prompt": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.prompt.txt",
@@ -111,7 +111,36 @@
       "identity": "黒長髪、緑目、角・蝙蝠、黒緑衣装、ハート、ポーズ・手元を元候補と比較。大きな同一性変化なし。",
       "hardware": "準備中の脚付きボウル・冷たいHMD、炭・煙・ホースなし。精密なモデル再検証は未完。",
       "texture": "細かい粒子感と陰影を保持。新しい植物・UI・ブランド・広告文字なし。"
-    }
+    },
+    "owner_feedback": "シールの文字は読めない程度でよい。手前容器が横向きで横／短い端面にシールがある不自然さを直す。"
   },
-  "followup_claim_run": 38180999574
+  "followup_claim_run": 38180999574,
+  "v5": {
+    "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v5.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "sha256": "df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60",
+    "status": "候補保存・最新比較案",
+    "approved_for_runtime": false,
+    "runtime_paths": [],
+    "prompt": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v5.prompt.txt",
+    "generated_original": "/workspace/generated_images/exec-00f7e845-60d8-4e8a-bb7e-5701d9ac65d9.png",
+    "reference_paths": [
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.png",
+      "assets/sprites/characters/minto/chr_minto_normal.png",
+      "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/04-stacked-shop-storage.jpg"
+    ],
+    "qa": {
+      "foreground": "元の手前サイズと場所を保ち、長く広い前面をカメラへ向ける。シールはその前面の中央、蓋の縁より下、底より上。短い右端面には置かない。葉・外した蓋を保持。",
+      "lettering": "手前・背景とも読めない程度の小さな柔らかい黒い筆跡。全体のドット感をぼかさず、白系のシールは見える。",
+      "background": "小さい容器の3列×2段、同じ底面が真上に接触。各段のラベル位置と向き・間隔を揃える。巨大化なし。",
+      "identity_hardware": "黒長髪・緑目・角と蝙蝠・黒緑衣装・ハート・手元を比較。準備中の脚付きボウルと冷たいHMD、炭・煙・ホース0を維持。モデル精密QAは未完。",
+      "limitations": "生成編集による顔・手・周辺画素の微変化あり。本編登録・配信変換・実画面QAはこの保存PRに含めない。"
+    }
+  }
 }
