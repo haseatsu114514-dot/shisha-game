@@ -108,13 +108,14 @@ jobs:
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
           node remake/test/browser/tutorial_transition.mjs
-      - name: Continue asset readiness, clock and audio
+      - name: Continue captions, asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: |
           node remake/test/continue_readiness.mjs
           node --experimental-vm-modules remake/test/continue_audio.mjs
           node remake/test/continue_neon.mjs
+          SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs
       - name: Steam slash, recharge and PC/mobile controls
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
