@@ -5,8 +5,8 @@ async function setup(page) {
   await page.evaluate(async () => {
     window.H = { core: await import("./js/core/state.js"), stats: await import("./js/core/stats.js"),
       ui: await import("./js/core/ui.js"), status: await import("./js/daily/status.js"),
-      romance: await import("./js/daily/romance.js"), vn: await import("./js/vn/engine.js"),
-      ch1: await import("./js/chapters/ch1.js") };
+      romance: await import("./js/daily/romance.js"), bonds: await import("./js/daily/bonds.js"),
+      vn: await import("./js/vn/engine.js"), ch1: await import("./js/chapters/ch1.js") };
     H.ch1.setupHooks(); H.vn.vnTest.turbo = true;
     H.fresh = () => {
       const s = H.core.newGame(); Object.assign(s, { phase: "daily", day: 8, slot: 1 });
@@ -17,6 +17,34 @@ async function setup(page) {
 }
 
 await suite("lover-hidden-growth", async check => {
+  await check("tsumugi-finale-waits-for-chapter1-submission", async page => {
+    await setup(page);
+    const result = await page.evaluate(() => {
+      const s = H.fresh();
+      s.affinity.tsumugi = 66;
+      s.story.tsumugi = 99;
+      s.romanceChoices.bond_q1_tsumugi = { char: "tsumugi", value: 1, day: 4 };
+      const day8 = H.bonds.finaleDue("tsumugi");
+      s.day = 11;
+      const day11BeforeStory = H.bonds.finaleDue("tsumugi");
+      s.flags._tsumugi_contest_submitted = true;
+      const day11AfterStory = H.bonds.finaleDue("tsumugi");
+      delete s.flags._tsumugi_contest_submitted;
+      s.day = 12;
+      const legacyDay12Fallback = H.bonds.finaleDue("tsumugi");
+      s.chapter = 2; s.day = 3;
+      const laterChapter = H.bonds.finaleDue("tsumugi");
+      return { day8, day11BeforeStory, day11AfterStory, legacyDay12Fallback, laterChapter };
+    });
+    assert.deepEqual(result, {
+      day8: false,
+      day11BeforeStory: false,
+      day11AfterStory: true,
+      legacyDay12Fallback: true,
+      laterChapter: true,
+    });
+  });
+
   for (const [mode, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${mode}-status-and-legacy-save`, async page => {
       await setup(page);
