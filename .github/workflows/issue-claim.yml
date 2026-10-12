@@ -1,4 +1,5 @@
 name: Issue claim coordinator
+run-name: "${{ inputs.operation }} #${{ inputs.issue }} / ${{ inputs.owner }} / ${{ inputs.request_id }}"
 on:
   workflow_dispatch:
     inputs:
@@ -6,7 +7,7 @@ on:
         description: Claim next eligible issue, claim a specified issue, or release a claim
         required: true
         type: choice
-        options: [next, claim, release]
+        options: [next, claim, release, status]
       issue:
         description: Issue number (required for claim/release)
         required: false
@@ -14,6 +15,14 @@ on:
       owner:
         description: Unique worker session ID (e.g. codex-a-20261011)
         required: true
+        type: string
+      request_id:
+        description: Unique dispatch ID for identifying this exact run
+        required: false
+        type: string
+      claim_run:
+        description: For status, require this successful claim run to still own the issue
+        required: false
         type: string
       agent:
         description: Worker type
@@ -23,6 +32,8 @@ on:
 permissions:
   issues: write
   contents: read
+  pull-requests: read
+  actions: read
 concurrency:
   group: issue-claim-coordinator-350-isolated-test
   cancel-in-progress: false
@@ -37,6 +48,8 @@ jobs:
           ISSUE: ${{ inputs.issue }}
           OWNER: ${{ inputs.owner }}
           AGENT: ${{ inputs.agent }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          CLAIM_RUN: ${{ inputs.claim_run }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -46,7 +59,13 @@ jobs:
             const agent = process.env.AGENT;
             // Temporary isolated #350 test harness; removed before final PR.
             if (!['418', '419'].includes(process.env.ISSUE)) throw Error('Test fixture only');
-            if (worker.endsWith('-hold')) await new Promise(resolve => setTimeout(resolve, 60000));
+            if (op === 'claim' && worker.endsWith('-hold')) await new Promise(resolve => setTimeout(resolve, 60000));
+            const request = process.env.REQUEST_ID || '';
+            const expectedRun = process.env.CLAIM_RUN || '';
+            if (!['next', 'claim', 'release', 'status'].includes(op)) throw Error('Invalid operation');
+            if (!['codex', 'claude', 'any'].includes(agent)) throw Error('Invalid agent');
+            if (request && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(request)) throw Error('Invalid request ID');
+            if (expectedRun && (op !== 'status' || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
             if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
             const rawIssue = (process.env.ISSUE || '').trim();
             if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
@@ -55,33 +74,54 @@ jobs:
               const comments = await github.paginate(github.rest.issues.listComments, {owner:repoOwner,repo,issue_number:number,per_page:100});
               const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && marker.test(c.body || ''));
               const match = ledger.at(-1)?.body.match(marker);
-              return match ? {state:match[1], owner:match[2]} : {state:'released',owner:null};
+              const entry = ledger.at(-1);
+              const source = entry?.body.match(/^<!-- issue-claim-run:v1 id=([1-9][0-9]*) request=([a-zA-Z0-9._-]*) -->$/m);
+              return match ? {state:match[1], owner:match[2], run_id:source?.[1] || null, comment_id:entry.id} : {state:'released',owner:null,run_id:null,comment_id:null};
             }
             async function comment(number,state) {
               const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
+                '<!-- issue-claim-run:v1 id=' + context.runId + ' request=' + request + ' -->\n' +
                 (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.');
               await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
             }
             async function issue(number) {
               const {data} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
+              if (data.labels.some(l => ['blocked','status:blocked'].includes(typeof l === 'string' ? l : l.name))) throw Error('Blocked issue: #' + number);
               if (data.pull_request || data.state !== 'open') throw Error('Not an open issue: #' + number);
               return data;
             }
             async function ensureNoOpenPR(number) {
               const prs = await github.paginate(github.rest.pulls.list,{owner:repoOwner,repo,state:'open',per_page:100});
               const references = new RegExp('(?:^|[^0-9])#' + number + '(?![0-9])');
-              if (prs.some(p => references.test(p.body || '') || references.test(p.title || ''))) {
+              const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const url = new RegExp(escape(context.serverUrl || 'https://github.com') + '/' + escape(repoOwner + '/' + repo) + '/issues/' + number + '(?![0-9])');
+              const qualified = new RegExp('(?:^|[^a-zA-Z0-9_.-])' + escape(repoOwner + '/' + repo) + '#' + number + '(?![0-9])');
+              if (prs.some(p => [p.body || '',p.title || ''].some(text => references.test(text) || url.test(text) || qualified.test(text)))) {
                 throw Error('Open PR already references issue #' + number);
               }
             }
-            if (op === 'release') {
+            if (op === 'status') {
+              const number = Number(rawIssue);
+              const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
+              if (existing.pull_request) throw Error('Not an issue');
+              const claim = await status(number);
+              core.notice('CLAIM_STATUS=' + JSON.stringify({number,...claim}));
+              if (expectedRun) {
+                await issue(number);
+                if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run; do not start work');
+                const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
+                if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Claim run did not succeed; release or inspect before retrying');
+                core.notice('CLAIM_VALIDATED_ISSUE=' + number + ' OWNER=' + worker + ' RUN=' + expectedRun);
+              }
+              await core.summary.addRaw('Current claim: ' + JSON.stringify({number,...claim})).write();
+            } else if (op === 'release') {
               const number = Number(rawIssue);
               const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
               if (existing.pull_request) throw Error('Not an issue');
               const claim = await status(number);
               if (claim.state !== 'claimed' || claim.owner !== worker) throw Error('Only the current owner can release #' + number);
               await comment(number,'released');
-              core.summary.addRaw('Released #' + number).write();
+              await core.summary.addRaw('Released #' + number).write();
             } else {
               let candidates = [];
               if (op === 'claim') candidates = [Number(rawIssue)];
@@ -112,7 +152,7 @@ jobs:
                 } catch(e) { if(op === 'claim') throw e; core.info('Skip #' + number + ': ' + e.message); }
               }
               if (!selected) throw Error('No available issue; inspect reservations or add eligible work.');
-              // Enforce one active claim per worker ID across all open issues.
+              // Enforce one active claim per worker ID, including closed issues.
               const allOpen = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
               for (const item of allOpen) {
                 if (item.pull_request || item.number === selected) continue;
@@ -121,14 +161,15 @@ jobs:
               }
               // Recheck immediately before writing the reservation. All successful workflow runs
               // share a concurrency group; a canceled pending run must be retried by its caller.
+              await issue(selected);
+              await ensureNoOpenPR(selected);
               const latest = await status(selected);
               if (latest.state === 'claimed') throw Error('Issue claimed during selection; retry with a new run.');
               await comment(selected,'claimed');
-              core.summary.addRaw('Reserved #' + selected + ' for ' + worker).write();
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
               await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
             }
 
       - name: Temporary cancellation window after ledger write
-        if: endsWith(inputs.owner, '-cancelafter')
+        if: inputs.operation == 'claim' && endsWith(inputs.owner, '-cancelafter')
         run: sleep 90
