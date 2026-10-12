@@ -1,0 +1,23 @@
+{
+  "name": "issue375-background-plants",
+  "baseURL": "https://haseatsu114514-dot.github.io/shisha-game/remake/",
+  "ref": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+  "results": [
+    {
+      "label": "minto-night-ci97-pc",
+      "status": "passed"
+    },
+    {
+      "label": "minto-night-ci97-mobile",
+      "status": "passed"
+    },
+    {
+      "label": "minto-prep-ci97-pc",
+      "status": "passed"
+    },
+    {
+      "label": "minto-prep-ci97-mobile",
+      "status": "passed"
+    }
+  ]
+}
