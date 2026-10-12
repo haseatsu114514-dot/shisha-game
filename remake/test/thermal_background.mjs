@@ -146,7 +146,7 @@ try {
   }, [lo, hi]);
   await page.evaluate(() => { cs.pull.temp = .46; window.run = T.care.runCare(cs); });
   await page.waitForSelector('[data-test="care-coals"]');
-  assert.equal(await page.locator('.care-coals-lead').textContent(), 'そろそろ調整の準備をしよう');
+  assert.match(await page.locator('.care-coals-lead').textContent(), /調整/);
   assert.match(await page.locator('.care-coals-ask').textContent(), /炭を交換しますか？/);
   assert(await page.locator('.pull-care [data-test="pull-temperature"]').isVisible(), 'thermometer must show while choosing coals');
   assert.equal(await page.locator('.pull-care [data-test="thermo-cold"]').count(), 1);

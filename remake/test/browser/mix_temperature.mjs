@@ -143,6 +143,27 @@ await suite("mix-temperature", async check => {
     }, options);
   }
 
+  await check("highest-tolerance-green-does-not-strain", async page => {
+    await prepare(page, "drill");
+    await page.evaluate(async () => {
+      const { DB } = await import("./js/core/data.js");
+      const flavor = DB.flavors.reduce((best, item) => item.heat_tolerance > best.heat_tolerance ? item : best);
+      QA.cs.mix = { [flavor.id]: 12 };
+      const bands = QA.conditions.temperatureBands(QA.cs);
+      QA.cs.steam = { temp: bands.ideal[1] - .02, score: 100 };
+      QA.session.craftTest.auto = null;
+      QA.run = QA.pull.runPull(QA.cs);
+    });
+    await page.locator('[data-test="pull-stop"]:enabled').waitFor(); await expectBands(page, 1.3);
+    await keep(page); await keep(page); await page.locator('[data-test="pull-serve"]').click();
+    await page.locator('[data-test="step-next"]:enabled').waitFor();
+    const result = await page.evaluate(() => ({ actual: QA.cs.pull, strain: QA.cs.strain || 0,
+      effect: document.querySelector(".bench").dataset.thermalBand, haze: document.querySelector(".bench").dataset.thermalHaze }));
+    assert(result.actual.temp > .80 && result.actual.inZone && !result.actual.over && !result.actual.optimal);
+    assert.equal(result.strain, 0); assert.equal(result.effect, "ready"); assert.equal(result.haze, "0");
+    await finishResult(page);
+  });
+
   await check("all-bands-boundaries-and-session-isolation", async page => {
     await prepare(page, "drill");
     const results = await page.evaluate(async () => {
