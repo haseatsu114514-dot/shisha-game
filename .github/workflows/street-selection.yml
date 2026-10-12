@@ -71,6 +71,7 @@ jobs:
       - name: Validate selection, saves and input on PC and touch
         if: matrix.route == 'selection'
         run: |
+          node remake/test/street_projection.mjs
           node remake/test/browser/street_selection.mjs
           node --experimental-vm-modules remake/test/illness.mjs
       - name: Complete chapter with direct pins

@@ -71,25 +71,27 @@ try {
     // 入口ボタンのクリックだけでキーが届く。テスト側からframeをfocusしない。
     const initial = await frame.evaluate(() => __street.state());
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(800); await page.keyboard.up('ArrowRight');
-    assert((await frame.evaluate(() => __street.state())).x > initial.x + 20);
+    assert((await frame.evaluate(() => __street.state())).worldX > initial.worldX + 20);
     await page.keyboard.down('ArrowUp'); await page.waitForTimeout(800); await page.keyboard.up('ArrowUp');
     const deeper = await frame.evaluate(() => __street.state());
-    assert(deeper.z > initial.z && deeper.scale < initial.scale, 'walking into depth must reduce projected character size');
+    assert(deeper.z > initial.z && deeper.cameraZoom > initial.cameraZoom && deeper.renderHeight >= 90,
+      'camera must follow depth while character stays readable');
     await tap(frame, 800, 615); await page.waitForTimeout(600);
-    assert((await frame.evaluate(() => __street.state())).y > deeper.y);
+    const tapped = await frame.evaluate(() => __street.state());
+    assert(Math.hypot(tapped.worldX-deeper.worldX,tapped.worldY-deeper.worldY)>15);
     await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);
-    const talkingX = (await frame.evaluate(() => __street.state())).x;
+    const talkingX = (await frame.evaluate(() => __street.state())).worldX;
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(200);
     await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !__street.state().msg); await page.waitForTimeout(100);
-    assert.equal((await frame.evaluate(() => __street.state())).x, talkingX, 'inspect dialogue left a held movement key');
+    assert.equal((await frame.evaluate(() => __street.state())).worldX, talkingX, 'inspect dialogue left a held movement key');
     await page.keyboard.up('ArrowRight');
     await unchanged();
     await page.locator('[data-test="street-back"]').click(); await page.waitForSelector('.map:not(.done)');
     assert.equal(await page.evaluate(() => T.result), 'pending'); await unchanged();
-    pass(`${label}: native arcade, Hajime, actual depth/scale, keyboard/${touch ? 'touch' : 'pointer'}, inspect/back cost zero`);
+    pass(`${label}: native arcade, Hajime, following camera/readable size, keyboard/${touch ? 'touch' : 'pointer'}, inspect/back cost zero`);
 
     for (const [kind, id, door, why] of [
       ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
@@ -113,12 +115,14 @@ try {
       assert.equal(await page.locator('[data-test="street-frame"]').count(), 0);
     }
     pass(`${label}: 3 doors return only correct main IDs, no prototype interior or rewards`);
-    await reset(); frame = await walk();
-    await frame.evaluate(() => __street.place(300, 600, 'up'));
-    const doorRect = await frame.evaluate(() => __street.layout().doors.find(d => d.id === 'cafe').rect);
-    await tap(frame, doorRect[0] + doorRect[2]/2, doorRect[1] + doorRect[3]/2);
-    await page.waitForFunction(() => T.result === 'cafe'); await unchanged();
-    pass(`${label}: ${touch ? 'real touch' : 'pointer'} door hit walks to cafe and resolves main ID`);
+    for (const [door,id,x,y] of [['cafe','cafe',300,600],['peppermint','minto',1000,600],['kemurikusa','naru',640,450]]) {
+      await reset(); frame = await walk();
+      await frame.evaluate(([x,y]) => __street.place(x,y,'up'),[x,y]);
+      const doorRect = await frame.evaluate(id => __street.layout().doors.find(d => d.id === id).rect,door);
+      await tap(frame, doorRect[0] + doorRect[2]/2, doorRect[1] + doorRect[3]/2);
+      await page.waitForFunction(id => T.result === id,id); await unchanged();
+    }
+    pass(`${label}: ${touch ? 'real touch' : 'pointer'} hits all 3 doors through camera, walks there and resolves main IDs`);
 
     await reset('delivery', { guide: { pin: 'minto', free: '配達（代金なし）', text: '店先へ配達' } });
     frame = await walk(); await pressDoor(frame, 'peppermint');
@@ -136,7 +140,8 @@ try {
     assert(Math.abs((await frame.evaluate(() => __street.state())).x-expectedX)<.01);
     assert.equal(await page.evaluate(() => T.result), 'pending');
     await frame.evaluate(() => __street.place(640, 679, 'down'));
-    await frame.locator('#view').focus(); await page.keyboard.down('ArrowDown'); await page.waitForTimeout(300); await page.keyboard.up('ArrowDown');
+    if(touch) await tap(frame,640,705);
+    else { await frame.locator('#view').focus(); await page.keyboard.down('ArrowDown'); await page.waitForTimeout(300); await page.keyboard.up('ArrowDown'); }
     await page.waitForSelector('.map:not(.done)'); assert.equal(await page.evaluate(() => T.result), 'pending');
     assert.equal(await page.evaluate(() => localStorage.getItem('shisha_proto_street_v1')), await page.evaluate(() => T.protoBefore));
     pass(`${label}: old prototype visit/dash storage ignored; near exit keeps chooseSpot pending`);
@@ -151,13 +156,13 @@ try {
     await frame.locator('#view').focus(); await page.keyboard.down('ArrowRight'); await page.waitForTimeout(200);
     await page.locator('[data-test="hud-phone"]').click(); await page.waitForSelector('.phone-overlay');
     await frame.waitForFunction(() => __street.state().paused);
-    const x = (await frame.evaluate(() => __street.state())).x; await page.waitForTimeout(350);
-    assert.equal((await frame.evaluate(() => __street.state())).x, x);
+    const x = (await frame.evaluate(() => __street.state())).worldX; await page.waitForTimeout(350);
+    assert.equal((await frame.evaluate(() => __street.state())).worldX, x);
     await page.keyboard.up('ArrowRight'); await page.locator('[data-test="phone-close"]').click();
     await frame.waitForFunction(() => !__street.state().paused); await page.waitForTimeout(250);
-    assert.equal((await frame.evaluate(() => __street.state())).x, x);
+    assert.equal((await frame.evaluate(() => __street.state())).worldX, x);
     await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(150); await page.keyboard.up('ArrowLeft');
-    assert((await frame.evaluate(() => __street.state())).x < x, 'keyboard focus was not restored after LIME');
+    assert((await frame.evaluate(() => __street.state())).worldX < x, 'keyboard focus was not restored after LIME');
     await page.evaluate(() => {
       const s = T.core.state;
       const msg = { id: 'qa_street_invite', sender: 'sumi', type: 'invitation', time_slot: 'night',

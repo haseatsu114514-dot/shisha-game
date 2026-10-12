@@ -2,10 +2,12 @@
 export const VIEW = { w: 1280, h: 720 };
 export const FLOOR = { cx: 640, horizon: 350, rise: 330, halfWidth: 600, depth: 1.3 };
 export const SPAWN = { x: 0, z: .04, dir: 'up' };
+// 3入口の足元で人物高が扉高の約83%になるよう、同じ世界縮尺で校正。
+export const CHARACTER_HEIGHT = 302.4;
 export const DOORS = [
   { id: 'cafe', rect: [54, 270, 150, 270], foot: [235, 592], label: [160, 252] },
   { id: 'peppermint', rect: [1116, 280, 100, 274], foot: [1060, 592], label: [1110, 258] },
-  { id: 'kemurikusa', rect: [662, 335, 52, 52], foot: [678, 408], label: [720, 307] },
+  { id: 'kemurikusa', rect: [662, 335, 52, 52], foot: [678, 397], label: [720, 307] },
 ];
 export function project({ x, z }) {
   const scale = 1 / (1 + 5 * z);
@@ -18,6 +20,15 @@ export function unproject(x, y) {
 export function constrain(p) {
   return { x: Math.max(-.98, Math.min(.98, p.x)), z: Math.max(0, Math.min(FLOOR.depth, p.z)) };
 }
+export function camera(player) {
+  const p = project(player), zoom = 1 + 1.4 * Math.max(0, Math.min(1, (player.z - SPAWN.z) / .95));
+  // 背景の端を超えない。屋根/床/扉と人物を同じカメラで動かす。
+  const tx = Math.max(VIEW.w * (1 - zoom), Math.min(0, VIEW.w / 2 - p.x * zoom));
+  const ty = Math.max(VIEW.h * (1 - zoom), Math.min(0, 625 - p.y * zoom));
+  return { zoom, tx, ty };
+}
+export function toScreen(x, y, cam) { return { x: x * cam.zoom + cam.tx, y: y * cam.zoom + cam.ty }; }
+export function fromScreen(x, y, cam) { return { x: (x - cam.tx) / cam.zoom, y: (y - cam.ty) / cam.zoom }; }
 export function inRect(x, y, [rx, ry, w, h]) { return x >= rx && x <= rx + w && y >= ry && y <= ry + h; }
 export function direction(dx, dy) {
   return ['right', 'down_right', 'down', 'down_left', 'left', 'up_left', 'up', 'up_right'][(Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 8) % 8];
