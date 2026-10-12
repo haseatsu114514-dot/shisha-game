@@ -1,0 +1,26 @@
+{
+  "worker": "codex-cg360-20261012-7242bf5ca07e",
+  "transferRun": 38301926910,
+  "statusRun": 38302093214,
+  "id": "cg_minto_cheki",
+  "event": "interaction_minto_noon_01",
+  "generator": "image_gen.imagegen",
+  "records": [
+    {
+      "file": "generated/rejected/initial-with-background-hardware.png",
+      "prompt": "Transform and combine the attached two CANONICAL character portrait references into a newly drawn full-frame landscape 16:9 event CG for a Japanese shisha visual novel, ideally 1920x1080. Image 1 is Minto's absolute character reference: the same green eyes, youthful adult face, long straight black hair and bangs, little black horns and bat-wing hair accessories, black off-shoulder dress with green ruffles, large green ribbon and gold-edged black heart brooch, black choker with small green heart. She is an adult age 29, not a teenager, while preserving exactly the portrait's adopted facial appearance. Image 2 is Hajime's absolute reference: adult age 22, same youthful dark eyes and black hair, black baseball cap with subtle smoke emblem, black hoodie over black shirt and silver dog-tag necklace. Preserve both characters' identities; do not replace them with generic faces or combine their features. Image 3 is ONLY the latest adopted PEPPERMINT place reference: pastel sage/mint trim, cream and pale pink walls, heart details, curved niches and modest pendant lamps. Image 4 is PIXEL-PAINTER TEXTURE only, not its girl, plants, smoking or hookah. Scene is the real existing interaction_minto_noon_01, after tasting her new mix: she cheerfully pulls Hajime into a spontaneous two-person cheki photograph. Camera is the instant camera's viewpoint. Both sit or lean together shoulder-to-shoulder in front of the shop's quiet mint-and-pink booth, Minto at left smiling naturally rather than her polished advertising wink, Hajime at right pleasantly surprised with a small embarrassed smile. Warm friendship with a slightly playful closeness, not a kiss or confession and not a couple-only/romance-exclusive scene. Faces are the main subject in the upper half with their distinctive hair and cap fully inside the frame. Medium waist-up two-shot, both characters and a few recognizable shop details, leave the bottom 25 percent calm and unobtrusive for the existing VN dialogue overlay. One of Minto's hands can make a relaxed small V sign near shoulder level; keep realistic correct fingers. Hajime's hands can be outside the crop. No floating hand or third arm, no extra people or crowd. This is the finished photograph's scene, so no instant-photo border, handwriting, captions, logos, readable words, menus, phone interface, app UI or watermark. Do not duplicate the existing single-person first-visit cheki artwork. No hookah, hose, mouthpiece, HMD, charcoal, storage tubs or smoking in this camera crop: the smoking apparatus is outside the photograph. No extra plants. Match the finely stepped pixel contours and disciplined square pixel-cluster shading of the adopted game's image 4, rich purposeful hair/cloth shading and warm readable skin tones, not smooth anime painting or photorealism. Render a complete newly composed playable event illustration, not an upscale, montage of portrait cutouts or reference sheet.",
+      "references": [
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/backgrounds/peppermint.png",
+        "assets/ui/title_arts/title_art_tsumugi_01_smoke_colors.png"
+      ],
+      "accepted": false,
+      "reason": "New two-person composition is correct, but the background contains display hookah stems despite a hardware-free crop instruction; remove those in a focused correction.",
+      "nativeSize": [
+        1672,
+        941
+      ]
+    }
+  ]
+}
