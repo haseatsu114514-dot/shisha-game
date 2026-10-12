@@ -73,7 +73,7 @@ await suite('reunion-readiness', async check => {
           known: !!s.flags._hiyori_real_self_known, work: !!s.flags._hiyori_work_talk_done,
           reunion: R.route.hiyoriEventStatus('tonari_return'), axe: R.route.hiyoriEventStatus('axe_reveal') };
       });
-      assert.deepEqual(old, { loaded: true, schema: 11, points: 66, inferred: false, known: false, work: false,
+      assert.deepEqual(old, { loaded: true, schema: 12, points: 66, inferred: false, known: false, work: false,
         reunion: 'prerequisites', axe: 'missing_script' });
     }, options);
   }

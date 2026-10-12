@@ -1,5 +1,26 @@
 # #341 ひより・公開版の序盤QA
 
+## 正式引き継ぎと最新公開版（2026-10-12）
+
+新worker `codex-romance-20261012-c9053659` が既存PR #410とブランチを正式に継承。
+[管理者承認6131313521](https://github.com/haseatsu114514-dot/shisha-game/issues/341#issuecomment-6131313521)、[transfer38298981423](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38298981423)、[status38299135629](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38299135629) はSUCCESSで、実CLAIMED/TRANSFERRED/CLAIM_VALIDATED noticeを確認した。旧workerの停止は#404の停止記録、成果回収は#411の引き継ぎで確認し、元のhead `7570fb27` の成果を保持した。予約復旧は独立PR #476で対応した。
+
+最新main `e40664019ea79c0c18a2acf29cdbf44d2df17404` を通常merge。一時の自動publisher workflowとtriggerだけを撤去し、ゲーム・台本・素材を変更していない。現在の公開[Pages deployment38297027528](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38297027528)（`4c897e66dff8882a0860b199ab26ef99e2c4f6a2`）はSUCCESS。[9ファイルのSHA256照合](latest-public-20261012/public-hashes.json)で最新mainのゲームデータと一致する。e4066401は予約基盤だけの差分で、公開ゲームの対象commitは4c897e66として記録する。
+
+| 最新公開版の再検証 | 件数・結果 | 証拠 |
+|---|---|---|
+| ♥3停止・救済・旧セーブ・LIME予約/料金 | 4 PASS | [gate](latest-public-20261012/gate/hiyori-gate.json) |
+| 5店・報告・伝言・再会・支払・画像/保存 | 8 PASS | [encounters](latest-public-20261012/encounters/hiyori-encounters.json) |
+| ひよりの実カットイン・PC/タッチ/動きを減らす | 3 PASS | [intro](latest-public-20261012/intro/hiyori-intro.json) |
+| オート/手動・旧スキーマ・破損・PC/タッチ/回転 | 6 PASS | [save/load](latest-public-20261012/save/save-load.json) |
+| 再会の中断・実SKIP・旧schema5と未読保持 | 2 PASS | [reunion](latest-public-20261012/reunion-schema12/reunion-readiness.json) |
+
+追加2件は旧QAの期待値schema11だけで初回FAILした。現行 `state.js` の正式SCHEMAは12（当日休養と夜予定延期）なので、QAの期待値を12へ更新して再実行した。ゲームの移行処理は変更せず、未読の33点保持→読了で最大15点救済、旧66点保持、素顔/仕事相談の未発火などの厳密な確認は維持する。[初回の期待値不一致](latest-public-20261012/reunion-schema11-expectation/reunion-readiness.json)も履歴として残す。
+
+新規ゲームからの通常操作は、現時点でPCがDAY9・好感度51・実救済1点で再会後の仕事入口までPASS、タッチは実行中。日付・好感度・既読を注入しない既存runnerを使い、初対面→報告/学生時代→伝言→仕事疲れ→LIME→tonari再会→三人→仕事入口と、実キャッシュ再利用を記録する。ひよりのPC初登場画像も実画面で確認した。自然な新規プレイ2件と資料保存が揃うまではDraft。
+
+### 旧workerの実行履歴（保持）
+
 公開URLの既存修正を実ブラウザで確認する。ひよりのシナリオ・素材・共通のLIME/マップ/関係APIは変更しない。
 
 WORKER: `codex-set2-20261012-1ad27b34`。claim [run 38201903908](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38201903908) の coordinate job SUCCESS と同workerのbot予約記録を確認済み。検証開始時mainは `134b1a5a327cf25ddab94b6ab4ed18d604735bbf`、公開 [Pages run 38199885108](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38199885108) はSUCCESS。
