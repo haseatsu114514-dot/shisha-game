@@ -3,6 +3,7 @@ import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
 import { artImg, artHeight } from "./art.js";
+import { buildWorkerActions, workerSceneKey } from "./worker-scenes.js";
 
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
@@ -34,6 +35,7 @@ export function buildWorkerScene(cs) {
     if (p) { const warm = new Image(); warm.src = p.src; }
   }
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
+  const actions = buildWorkerActions();
   const equipment = buildHookahRig("worker-equipment");
   const baseH = artHeight("hookah_base.png", 90);
   const water = el("div.worker-water", { "aria-hidden": "true", dataset: { test: "worker-bubbles" },
@@ -47,6 +49,7 @@ export function buildWorkerScene(cs) {
     actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
     equipment,
+    actions.root,
     el("div.worker-vignette"),
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
@@ -69,12 +72,24 @@ export function buildWorkerScene(cs) {
     if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
     root.dataset.face = face;
     root.dataset.waiting = String(!!calm);
+    const sceneKey = workerSceneKey(root.dataset.step, root.dataset.draw);
+    const scene = actions.show(sceneKey);
+    root.dataset.scene = scene ? sceneKey : waiting ? "focus" : "fallback";
+    root.dataset.artFallback = String(!!sceneKey && !scene);
+    stage.setAttribute("aria-label", scene?.description || `はじめの作業風景：${WORKER_STEPS[root.dataset.step] || "一台を仕上げる"}`);
     if (waiting) {
       caption.textContent = WORKER_STEPS.steam;
-      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて蒸らしを待つ" : "蒸らしを待つはじめの表情に動揺が出ている");
+      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : "蒸らしを待つはじめの目元に動揺が出ている");
     }
   };
-  return { caption, footer, root, setMental(level) {
+  const ready = actions.ready.then(applyFace);
+  return { caption, footer, root, ready, setStep(step) {
+    root.dataset.step = step;
+    delete root.dataset.draw;
+    mental = "steady"; root.dataset.mental = mental;
+    caption.textContent = WORKER_STEPS[step] || "一台を仕上げる";
+    applyFace();
+  }, setMental(level) {
     if (mental === level && root.dataset.mental === level) return;
     mental = level; root.dataset.mental = level;
     applyFace();
@@ -87,12 +102,13 @@ export function buildWorkerScene(cs) {
     if (kind) {
       root.dataset.draw = kind;
       root.style.setProperty("--draw-duration", `${duration}ms`);
+      applyFace();
       caption.textContent = kind === "up" ? "上げ吸い…" : kind === "down" ? "下げ吸い…" : "温度を保ちながら吸う…";
       stage.setAttribute("aria-label", `はじめの作業風景：${caption.textContent}。ベースの水が泡立っている`);
     } else {
       delete root.dataset.draw;
+      applyFace();
       caption.textContent = WORKER_STEPS[root.dataset.step] || "一台を仕上げる";
-      stage.setAttribute("aria-label", "はじめとシーシャの作業台を描いた静止イメージ");
     }
   } };
 }

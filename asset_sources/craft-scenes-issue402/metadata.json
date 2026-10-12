@@ -1,0 +1,48 @@
+{
+  "issue": 402,
+  "worker": "codex-craft402-20261012-6be8a561d8",
+  "claim_run": 38258703042,
+  "status_run": 38258875454,
+  "assets": [
+    {
+      "id": "mix",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v1.png",
+      "sha256": "c626a058d7c4421c7b317b506685e3cdb7bb9d1824398d684e3601d3ee39047a",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_mix.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
+      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
+      "status": "implemented_in_draft"
+    },
+    {
+      "id": "pack",
+      "original": "asset_sources/craft-scenes-issue402/originals/pack-v1.png",
+      "sha256": "cc715ffc1d53106d80919645cec55373ec1b5fa86a4c332c7e50e3963a19c718",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pack-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pack.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pack.webp",
+      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
+      "status": "implemented_in_draft"
+    },
+    {
+      "id": "holes",
+      "original": "asset_sources/craft-scenes-issue402/originals/holes-v1.png",
+      "sha256": "a4c0dce36ef60cbdf87219a163323b336f4fe64349629c15080a74430900568e",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_holes.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_holes.webp",
+      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
+      "status": "implemented_in_draft"
+    },
+    {
+      "id": "heat",
+      "original": "asset_sources/craft-scenes-issue402/originals/heat-v1.png",
+      "sha256": "a002c650456b8d3a260bf7c3b5d02ac6c4621aa15ec6f606ca2828c46c64c189",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/heat-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_heat.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_heat.webp",
+      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
+      "status": "implemented_in_draft"
+    }
+  ]
+}

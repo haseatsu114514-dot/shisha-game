@@ -1,0 +1,29 @@
+/* #402: 工程の前景。既存背景・弾幕・操作パネルには触れない。 */
+.worker-actions { position: absolute; inset: 32px 0 0; pointer-events: none; }
+.worker-action { width: 100%; height: 100%; object-fit: contain; object-position: center 75%; pointer-events: none; }
+.worker-action[hidden] { display: none; }
+.bench-worker[data-scene]:not([data-scene="fallback"]):not([data-scene="focus"]) .worker-actor { visibility: hidden; }
+.bench-worker:is([data-scene="mix"], [data-scene="pack"], [data-scene="holes"], [data-scene="heat"]) .worker-equipment { visibility: hidden; }
+.bench-worker:is([data-scene="pack"], [data-scene="holes"]) .worker-actions { inset: 20px 0 0; }
+.bench-worker[data-scene="heat"] .worker-actions { inset: 22px 0 0; }
+/* 一口の間だけ吸う姿へ切り替える。泡の長さは既存 setDraw の期間を使う。 */
+.bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-actions { right: 72px; }
+.bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-equipment {
+  right: 8px; bottom: 8%; width: 112px; height: 130px; overflow: hidden;
+  border: 1px solid #d8d7ef33; border-radius: 12px;
+  background: linear-gradient(160deg, #1b142dcc, #130c1bb3);
+}
+/* 別アングルのボトル寄り。上部のHMD/炭を固定数で描き足さない。 */
+.bench-worker:is([data-scene="pull"], [data-scene="inhale"]) :is(.worker-tray, .worker-bowl, .thermal-picture) { visibility: hidden; }
+.bench-worker[data-scene="focus"] .worker-actor {
+  width: 220%; height: auto; left: -82%; top: -14%; bottom: auto;
+}
+.bench-worker[data-scene="focus"] :is(.worker-equipment, .worker-counter) { visibility: hidden; }
+.bench-worker[data-scene="focus"] .worker-sweat { left: 66%; top: 44%; }
+.bench-worker[data-scene="focus"] .worker-breath { left: 48%; top: 65%; }
+.bench-worker.flinch .worker-actions { animation: worker-flinch .45s ease-out; }
+.bench-worker[data-draw] .worker-actions { animation: worker-inhale var(--draw-duration) ease-in-out; transform-origin: 45% 50%; }
+.bench-worker[data-art-fallback="true"] .bench-worker-caption { display: inline; font-size: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .bench-worker.flinch .worker-actions, .bench-worker[data-draw] .worker-actions { animation: none; }
+}

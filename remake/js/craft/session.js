@@ -116,7 +116,7 @@ export function openBench(cs, { steps = [] } = {}) {
   root.append(loading);
   root.inert = true;
   root.setAttribute("aria-busy", "true");
-  const ready = Promise.all([bg(), warmCraftAssets(cs.mode)]).finally(() => {
+  const ready = Promise.all([bg(), warmCraftAssets(cs.mode), worker.ready]).finally(() => {
     root.inert = false;
     root.removeAttribute("aria-busy");
     loading.remove();
@@ -151,9 +151,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
-  b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
-  b.worker.setDraw(null);
-  b.worker.setMental("steady");
+  b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
@@ -325,7 +323,7 @@ export function refreshBench() {
     bench.guide.root.open = false;
     bench.guide.root.hidden = true;
     bench.root.dataset.step = "serve";
-    bench.worker.root.dataset.step = "serve";
+    bench.worker.setStep("serve");
     bench.worker.caption.textContent = "シーシャを提供した";
   }
 }
