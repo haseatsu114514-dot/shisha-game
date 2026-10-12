@@ -126,17 +126,20 @@ await suite("issue439", async (check) => {
     await setup(page);
     const result = await page.evaluate(async () => {
       I.core.markMet("minto");
-      const before = I.core.state.money, timeline = [];
+      const before = I.core.state.money, timeline = [], backgrounds = [];
+      I.vn.hooks.onEnter = (_, dlg) => backgrounds.push(dlg.metadata?.bg);
       I.vn.hooks.onCg = id => timeline.push({ id, owned: I.core.state.keepsakes.includes("minto_first_cheki"), money: I.core.state.money });
       I.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(label => label.includes("チェキ（")));
       await I.vn.play("ch1_minto_first");
       I.vn.hooks.onCg = null;
-      const bought = { before, timeline, after: I.core.state.money, owned: I.core.state.keepsakes.includes("minto_first_cheki") };
+      I.vn.hooks.onEnter = null;
+      const bought = { before, timeline, backgrounds, after: I.core.state.money, owned: I.core.state.keepsakes.includes("minto_first_cheki") };
       await I.vn.play("ch1_minto_first");
       return { ...bought, afterReplay: I.core.state.money };
     });
     assert(result.owned); assert.equal(result.after, result.before - 1000); assert.equal(result.afterReplay, result.after);
     assert(result.timeline.some(item => item.id === "cg_minto_first_cheki" && !item.owned && item.money === result.before));
+    assert.equal(result.backgrounds[0], "res://assets/backgrounds/peppermint.png", "初来店も店内で始まる");
   });
 
   await check("lime-exchange-once", async page => {
