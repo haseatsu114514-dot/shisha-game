@@ -1,0 +1,17 @@
+{
+  "source": "OpenAI built-in image_gen",
+  "outputs": [
+    {
+      "variant": "throwing_axe",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-source.png",
+      "sha256": "74758118ee6800182358bb58f605393240445370c4da55704259351a48fceed9",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
+    }
+  ]
+}
