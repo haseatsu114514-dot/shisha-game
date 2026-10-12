@@ -47,15 +47,21 @@ const values = {
   "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async () => false, visitKafuka: async () => false, kafukaSpot: () => null },
 };
 const files = { "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "spots.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
-const modules = new Map();
-async function load(name) {
-  if (modules.has(name)) return modules.get(name);
-  const exports = values[name];
-  const module = exports ? new vm.SyntheticModule(Object.keys(exports), function () { for (const [key, val] of Object.entries(exports)) this.setExport(key, val); }, { context })
-    : new vm.SourceTextModule(await fs.readFile(new URL(`../js/${files[name]}/${name}`, import.meta.url), "utf8"), { context });
-  modules.set(name, module); await module.link((s) => load(s.split("/").at(-1))); return module;
+const modules = new Map(), pending = new Map();
+function load(name) {
+  if (!pending.has(name)) pending.set(name, (async () => {
+    const exports = values[name];
+    const module = exports ? new vm.SyntheticModule(Object.keys(exports), function () { for (const [key, val] of Object.entries(exports)) this.setExport(key, val); }, { context })
+      : new vm.SourceTextModule(await fs.readFile(new URL(`../js/${files[name]}/${name}`, import.meta.url), "utf8"), { context });
+    modules.set(name, module);
+    return module;
+  })());
+  return pending.get(name);
 }
-const calendarModule = await load("calendar.js"); await calendarModule.evaluate();
+const calendarModule = await load("calendar.js");
+// Nodeに依存グラフ全体をリンクさせる。共有するrules/stateを途中で重複リンクしない。
+await calendarModule.link((s) => load(s.split("/").at(-1)));
+await calendarModule.evaluate();
 const stats = modules.get("stats.js").namespace;
 async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [] } = {}) {
   Object.keys(state).forEach((key) => delete state[key]);
