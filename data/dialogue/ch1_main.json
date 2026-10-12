@@ -814,9 +814,11 @@
           "text": "誰にどう届いたか……"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "大会まであと{daysLeft}日だ。明日からもっと意識して作れ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_rest_after_tournament",
+          "next_true": "rest_after_tournament",
+          "next_false": "rest_before_tournament"
         },
         {
           "speaker": "hajime",
@@ -902,6 +904,20 @@
             "speaker": "sumi",
             "face": "normal",
             "text": "顔に出てるぞ。……悔しさは、いい燃料だ"
+          }
+        ],
+        "rest_before_tournament": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "大会まであと{daysLeft}日だ。明日からもっと意識して作れ"
+          }
+        ],
+        "rest_after_tournament": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "大会は終わったが、ここからだ。明日からも意識して作れ"
           }
         ]
       }

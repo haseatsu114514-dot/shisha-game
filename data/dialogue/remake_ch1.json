@@ -913,7 +913,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ"
+          "text": "大会まであと{daysLeft}日だ。どこを磨くかは、お前が決めろ"
         },
         {
           "speaker": "sumi",
@@ -1291,6 +1291,20 @@
           "stats": {
             "guts": 1
           }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest_day",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "家に帰り、今日の残りの時間を休養にあてる。水を飲んで、布団に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（外せない予定だけは、時間になったら出かけよう）"
         }
       ]
     },
@@ -2310,7 +2324,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "大会まで折り返しだ。今日は持っていく香りを選んで、１台作ってみろ"
+          "text": "大会まであと{daysLeft}日だ。今日は持っていく香りを選んで、１台作ってみろ"
         },
         {
           "speaker": "sumi",
