@@ -282,7 +282,9 @@ try {
     await p.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
     const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
-    assert(await p.locator('.bench-guide').isHidden(), 'Steam guide was not removed');
+    // #394 keeps the attack explanation in a closed help control outside the dodge field.
+    assert(await p.locator('.bench-guide').isVisible(), 'Steam help control disappeared');
+    assert.equal(await p.locator('.bench-guide').getAttribute('open'), null, 'Steam help opened during play');
     assert.equal(await p.locator('.dodge-refresh').getAttribute('data-remaining'), '1');
     assert.equal(await p.locator('.bench-title').textContent(), '蒸らし');
     await p.waitForTimeout(1000);
