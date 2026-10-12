@@ -47,7 +47,7 @@ export function newState() {
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
     usedBaito: [],
-    contacts: [],              // LIME を交換した相手
+    contacts: ["sumi"],        // 上司のスミさんとは勤務開始時からLIME交換済み
     limeRead: [],              // 既読の LIME id
     pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
@@ -168,6 +168,9 @@ function migrate(s) {
   }
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
+  // 旧/現行セーブで欠落した上司の連絡先だけを補い、交流やひよりの読了は推測しない。
+  if (!Array.isArray(s.contacts)) s.contacts = [];
+  if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
