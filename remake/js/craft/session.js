@@ -277,7 +277,9 @@ export function scoreStep(cs, key, score, label = "") {
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
   cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
-  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, label);
+  // 回数は得点キーに保持し、ヘッダーのポップだけ「調整」に揃える。
+  const displayLabel = ["care", "care1", "care2"].includes(step) ? "調整" : label;
+  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, displayLabel);
   return cs.arcade.total;
 }
 
