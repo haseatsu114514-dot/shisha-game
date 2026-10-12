@@ -18,6 +18,16 @@ for (const [count, reach, recharge] of [[0,80,1.8],[2,80,1.8],[3,90,1.5],[5,90,1
 const browser = await chromium.launch({headless:true, ...(process.env.CHROME_EXECUTABLE_PATH ? {executablePath:process.env.CHROME_EXECUTABLE_PATH} : {})});
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots,{recursive:true});
+const shot=async(page,name)=>{
+  if(!shots)return;
+  // Freeze a representative visual frame, not the game's collision/count state.
+  await page.evaluate(()=>{
+    window.shotAnimations=[...document.querySelectorAll('.dodge-word-cut,.dodge-slash-fx,.dodge-slash-impact')].flatMap(n=>n.getAnimations({subtree:true}));
+    for(const animation of shotAnimations){animation.pause();animation.currentTime=100;}
+  });
+  await page.screenshot({path:`${shots}/${name}.png`});
+  await page.evaluate(()=>shotAnimations.forEach(a=>a.play()));
+};
 try {
   for (const mobile of [false,true]) {
     const page = await browser.newPage({viewport:mobile?{width:844,height:390}:{width:1280,height:720},hasTouch:mobile,isMobile:mobile,reducedMotion:mobile?'reduce':'no-preference'});
@@ -82,6 +92,18 @@ try {
     const dodgeFrames=async count=>{for(let i=0;i<count;i+=5){await shelter();await page.evaluate(n=>{for(let i=0;i<n;i++)advance();},Math.min(5,count-i));}};
     const seekShot=async()=>{for(let i=0;i<250;i++){const point=await page.evaluate(()=>wordShot());if(point)return point;await dodgeFrames(5);}return null;};
     await shelter();
+    // Visual fixture only: preserve a word's own rotation and cut in world stroke direction.
+    const rotated=await page.evaluate(()=>{
+      const node=document.createElement('div');node.className='dodge-word';node.textContent='斜めに来る言葉';
+      node.style.transform='translate(320px, 120px) rotate(30deg)';document.querySelector('.dodge').append(node);
+      const b={node,x:320,y:120,w:node.offsetWidth,h:node.offsetHeight};
+      window.rotatedCut=geometry.buildWordCutFx(b,392,207,-Math.PI/2,80);node.remove();document.querySelector('.dodge').append(rotatedCut);
+      const matrix=new DOMMatrix(rotatedCut.style.transform);
+      return {angle:Math.atan2(matrix.b,matrix.a),clips:[...rotatedCut.children].map(n=>n.style.clipPath)};
+    });
+    assert(Math.abs(rotated.angle-Math.PI/6)<1e-6);assert(rotated.clips.every(p=>p.startsWith('polygon(')));assert.notEqual(rotated.clips[0],rotated.clips[1]);
+    await shot(page,`cut-rotated-${mobile?'mobile-reduced':'desktop'}`);
+    await page.evaluate(()=>rotatedCut.remove());
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),'0');
     // Empty shot starts cooldown but gives no growth. A repeated pointer can't attack again.
     const empty=await page.evaluate(()=>{const r=strike();strike();return {...r,uses:button().dataset.uses};});
@@ -99,12 +121,12 @@ try {
       const p=slashProfile(total),newTier=!tiers.has(p.tier);tiers.add(p.tier);
       assert.equal(result.reach,p.reach);assert(result.recharge>=p.recharge && result.recharge<=p.recharge+.1+1e-9);
       assert.match(result.feedback,/個斬った/);
-      if(shots&&newTier)await page.screenshot({path:`${shots}/tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}.png`});
+      if(newTier)await shot(page,`tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}`);
       await shelter();
     }
     assert(total>=6);assert(tiers.has(1)&&tiers.has(2),'Both approved growth thresholds must be exercised');
     await page.evaluate(()=>document.fonts.ready);
-    if(shots)await page.screenshot({path:`${shots}/strike-${mobile?'mobile-reduced':'desktop'}.png`});
+    await shot(page,`strike-${mobile?'mobile-reduced':'desktop'}`);
     assert.equal(await page.locator('[data-test="dodge-refresh"]').getAttribute('data-remaining'),'1');
     const refresh=await page.evaluate(()=>{
       const before=button().dataset.cutWords;
@@ -142,24 +164,30 @@ try {
           for(const [dx,dy] of [[0,25],[30,40],[-30,40],[55,55],[-55,55],[0,70]]) {
             const hx=target.x+target.w/2+dx,hy=target.y+target.h/2+dy;
             if(hx<16||hx>768||hy<16||hy>398)continue;
-            const near=all.filter(b=>geometry.slashTouchesBullet(b,hx,hy,-Math.PI/2,reach));
-            if(!near.includes(target)||near.some(b=>b.word))continue;
-            const box=document.querySelector('.dodge'),r=box.getBoundingClientRect();
+            // Touch coordinates round to device pixels: require a small robust margin.
+            const stable=[-4,0,4].every(dx=>[-4,0,4].every(dy=>
+              geometry.slashTouchesBullet(target,hx+dx,hy+dy,-Math.PI/2,reach)&&
+              !all.some(b=>b.word&&geometry.slashTouchesBullet(b,hx+dx,hy+dy,-Math.PI/2,reach))));
+            if(!stable)continue;
+            const p=screenPoint(hx,hy),box=document.querySelector('.dodge');
+            if(document.elementFromPoint(p.x,p.y)?.closest('.dodge')!==box)continue;
             window.smallTarget=target.node;
-            return {x:r.left+hx*r.width/784,y:r.top+hy*r.height/414};
+            return {hx,hy};
           }
         }
       }
       return null;
     });
     assert(smallPosition,'No isolated real small-object shot found');
-    if(mobile)await page.touchscreen.tap(smallPosition.x,smallPosition.y);else await page.mouse.click(smallPosition.x,smallPosition.y);
-    const small=await page.evaluate(()=>{const r=strike();return {...r,removed:!smallTarget.isConnected};});
-    assert(small.removed&&small.near>0);assert.equal(small.after,small.before);objectOnly=true;
+    await page.waitForFunction(()=>!document.querySelector('.dodge').classList.contains('shake'),null,{polling:20});
+    await page.evaluate(()=>{window.lastTouch=null;document.addEventListener('pointerdown',e=>{const r=document.querySelector('.dodge').getBoundingClientRect();window.lastTouch={type:e.pointerType,target:e.target.className,x:e.clientX,y:e.clientY,left:r.left,top:r.top,width:r.width,height:r.height};},{capture:true,once:true});});
+    await move(await page.evaluate(({hx,hy})=>screenPoint(hx,hy),smallPosition));
+    const small=await page.evaluate(()=>{const r=strike();const heart=new DOMMatrix(document.querySelector('.dodge-heart').style.transform);return {...r,removed:!smallTarget.isConnected,hx:heart.e+14,hy:heart.f+14,touch:lastTouch};});
+    assert(small.removed&&small.near>0,JSON.stringify({small,smallPosition,errors}));assert.equal(small.after,small.before);objectOnly=true;
     await dodgeFrames(95);
     assert.equal(await page.locator('[data-test="dodge-slash"]').isEnabled(),true);
     await page.evaluate(()=>document.fonts.ready);
-    if(shots)await page.screenshot({path:`${shots}/growth-${mobile?'mobile-reduced':'desktop'}.png`});
+    await shot(page,`growth-${mobile?'mobile-reduced':'desktop'}`);
     await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
     await page.waitForSelector('.result-card.show');
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);

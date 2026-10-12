@@ -145,6 +145,11 @@ try {
     const guide = page.locator('.bench-guide');
     assert(await guide.isVisible(), 'Optional help button should be available');
     assert.equal(await guide.getAttribute('open'), null, 'Help must not cover the playfield by default');
+    const helpOutsideField = await guide.locator('summary').evaluate(n => {
+      const help = n.getBoundingClientRect(), field = document.querySelector('.dodge').getBoundingClientRect();
+      return help.right <= field.left || help.left >= field.right || help.bottom <= field.top || help.top >= field.bottom;
+    });
+    assert(helpOutsideField, 'Help must not intercept taps inside the playfield');
     await guide.locator('summary').click();
     assert(await guide.locator('.bench-guide-tip').isVisible());
     assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
