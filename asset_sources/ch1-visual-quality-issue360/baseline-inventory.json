@@ -675,8 +675,8 @@
     },
     {
       "kind": "title",
-      "source": "assets/ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
-      "runtime": "remake/img/ui/title_arts/title_art_kafuka_01_shishark_test_run.webp",
+      "source": "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+      "runtime": "remake/img/ui/title_arts/title_art_samechan_01_shishark_test_run.webp",
       "width": 1024,
       "height": 1536,
       "ratio": 0.6667,
@@ -691,8 +691,8 @@
     },
     {
       "kind": "title",
-      "source": "assets/ui/title_arts/title_art_kafuka_02_shark_movie.png",
-      "runtime": "remake/img/ui/title_arts/title_art_kafuka_02_shark_movie.webp",
+      "source": "assets/ui/title_arts/title_art_samechan_02_shark_movie.png",
+      "runtime": "remake/img/ui/title_arts/title_art_samechan_02_shark_movie.webp",
       "width": 1024,
       "height": 1536,
       "ratio": 0.6667,
@@ -707,8 +707,8 @@
     },
     {
       "kind": "title",
-      "source": "assets/ui/title_arts/title_art_kafuka_03_aquarium.png",
-      "runtime": "remake/img/ui/title_arts/title_art_kafuka_03_aquarium.webp",
+      "source": "assets/ui/title_arts/title_art_samechan_03_aquarium.png",
+      "runtime": "remake/img/ui/title_arts/title_art_samechan_03_aquarium.webp",
       "width": 1024,
       "height": 1536,
       "ratio": 0.6667,
@@ -1027,8 +1027,8 @@
     },
     {
       "kind": "intro",
-      "source": "assets/ui/character_intros/kafuka.png",
-      "runtime": "remake/img/ui/character_intros/kafuka.webp",
+      "source": "assets/ui/character_intros/samechan.png",
+      "runtime": "remake/img/ui/character_intros/samechan.webp",
       "width": 1672,
       "height": 941,
       "ratio": 1.7768,

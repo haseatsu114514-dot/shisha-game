@@ -27,7 +27,7 @@ function startAnimation(){
  animate(".halftone", [{opacity:0},{opacity:id === "dr_kemuri" ? .7 : .18}], {duration:450,delay:100});
  animate(".ribbon", [{transform:"translateX(1480px) rotate(4deg)"},{transform:"translateX(0) rotate(4deg)"}], {duration:id === "adam" ? 340 : 480,delay:130});
  animate(".accent-line", [{transform:"translateX(-1480px) rotate(4deg)"},{transform:"translateX(0) rotate(4deg)"}], {duration:510,delay:180});
- const portraitFrames = ["kafuka","pakki"].includes(id) ? [{opacity:0,transform:"translate(-100px,20px)"},{opacity:1,transform:"translate(5px,-4px)",offset:.8},{opacity:1,transform:"none"}] : [{opacity:0,transform:"translateX(-130px)"},{opacity:1,transform:"none"}];
+ const portraitFrames = ["samechan","pakki"].includes(id) ? [{opacity:0,transform:"translate(-100px,20px)"},{opacity:1,transform:"translate(5px,-4px)",offset:.8},{opacity:1,transform:"none"}] : [{opacity:0,transform:"translateX(-130px)"},{opacity:1,transform:"none"}];
  animate("#portrait",portraitFrames,{duration:id === "adam" ? 430 : 620,delay:160});
  animate(".motif",[{opacity:0,transform:id === "naru" ? "translateX(100px)" : "scale(1.06)"},{opacity:1,transform:"none"}],{duration:1000,delay:80});
  animate(".floor-lines",[{opacity:0},{opacity:.68}],{duration:650,delay:350});

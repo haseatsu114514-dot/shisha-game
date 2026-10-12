@@ -68,7 +68,7 @@
    "ax": 0.4685,
    "aspect": 0.7467
   },
-  "kafuka": {
+  "samechan": {
    "faces": [
     "excited",
     "normal",
@@ -259,7 +259,7 @@
   "face_dr_kemuri.png",
   "face_hajime.png",
   "face_hiyori.png",
-  "face_kafuka.png",
+  "face_samechan.png",
   "face_maezono.png",
   "face_mashiro.png",
   "face_minto.png",
@@ -527,7 +527,7 @@
     "size": 0.16833
    }
   },
-  "kafuka": {
+  "samechan": {
    "excited": {
     "cx": 0.50446,
     "top": 0.245,
@@ -860,11 +860,11 @@
     }
    }
   },
-  "kafuka": {
+  "samechan": {
    "color": "#298bdb",
    "secondary": "#a6ddff",
    "shadow": "#082a48",
-   "background": "ui/character_intros/kafuka.png",
+   "background": "ui/character_intros/samechan.png",
    "frames": {
     "ventriloquism": {
      "width": 1122.462,
@@ -1128,16 +1128,16 @@
    "file": "title_art_hiyori_03_after_rain.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_01_shishark_test_run.png"
+   "character": "samechan",
+   "file": "title_art_samechan_01_shishark_test_run.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_02_shark_movie.png"
+   "character": "samechan",
+   "file": "title_art_samechan_02_shark_movie.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_03_aquarium.png"
+   "character": "samechan",
+   "file": "title_art_samechan_03_aquarium.png"
   },
   {
    "character": "mashiro",
@@ -1538,12 +1538,12 @@
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
   "sprites/characters/hiyori/chr_hiyori_tears.png",
-  "sprites/characters/kafuka/chr_kafuka_excited.png",
-  "sprites/characters/kafuka/chr_kafuka_normal.png",
-  "sprites/characters/kafuka/chr_kafuka_serious.png",
-  "sprites/characters/kafuka/chr_kafuka_smile.png",
-  "sprites/characters/kafuka/chr_kafuka_surprise.png",
-  "sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+  "sprites/characters/samechan/chr_samechan_excited.png",
+  "sprites/characters/samechan/chr_samechan_normal.png",
+  "sprites/characters/samechan/chr_samechan_serious.png",
+  "sprites/characters/samechan/chr_samechan_smile.png",
+  "sprites/characters/samechan/chr_samechan_surprise.png",
+  "sprites/characters/samechan/chr_samechan_ventriloquism.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -1603,7 +1603,7 @@
   "ui/character_intros/dr_kemuri.png",
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
-  "ui/character_intros/kafuka.png",
+  "ui/character_intros/samechan.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/minto.png",
   "ui/character_intros/nagumo.png",
@@ -1667,9 +1667,9 @@
   "ui/title_arts/title_art_hiyori_01_twilight_walk.png",
   "ui/title_arts/title_art_hiyori_02_window_pause.png",
   "ui/title_arts/title_art_hiyori_03_after_rain.png",
-  "ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
-  "ui/title_arts/title_art_kafuka_02_shark_movie.png",
-  "ui/title_arts/title_art_kafuka_03_aquarium.png",
+  "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+  "ui/title_arts/title_art_samechan_02_shark_movie.png",
+  "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_keyvisual_01.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",

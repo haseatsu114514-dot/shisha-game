@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 12; // 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 13; // 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -90,9 +90,30 @@ export function newState() {
   };
 }
 
+/** スキーマ12以前のキャラIDを、予約内の台本・選択肢・読了記録も含めて引き継ぐ。 */
+function migrateSamechanIdentity(value) {
+  // 旧名はこのセーブ互換処理だけで扱う。新しく届く台本や素材には使わない。
+  const rename = text => text.replace(/kafuka/g, "samechan").replace(/Kafuka/g, "Samechan")
+    .replace(/KAFUKA/g, "SAMECHAN").replace(/カフカ|かふか/g, "サメちゃん");
+  if (typeof value === "string") return rename(value);
+  if (Array.isArray(value)) return value.map(migrateSamechanIdentity);
+  if (!value || typeof value !== "object") return value;
+  const entries = Object.entries(value);
+  // 移行途中のデータに新旧キーが同居していても、明示された現行キーを優先する。
+  const legacy = entries.filter(([key]) => rename(key) !== key);
+  const current = entries.filter(([key]) => rename(key) === key);
+  return Object.fromEntries([...legacy, ...current].map(([key, item]) => [rename(key), migrateSamechanIdentity(item)]));
+}
+
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
+  if (oldSchema < 13) {
+    s = migrateSamechanIdentity(s);
+    for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
+      if (Array.isArray(s[key])) s[key] = [...new Set(s[key])];
+    }
+  }
   if (oldSchema < 9) {
     // 以前の経験値は★帯のコストを割って、次の1Pまでの進捗率として引き継ぐ。
     // 能力の現在値は減らさず、ロードだけで増やさない。旧端数が通常1Pを膨らませない。
@@ -138,7 +159,7 @@ function migrate(s) {
   }
   s.inbox = (Array.isArray(s.inbox) ? s.inbox : []).filter((i) => i && typeof i.id === "string" && i.msg && typeof i.msg === "object");
   for (const item of s.inbox) {
-    item.originId ||= item.id;
+    item.originId ||= item.msg.origin_id || item.id;
     if (!["waiting", "replied", "expired", "none"].includes(item.replyState)) {
       const replyable = item.msg.type === "invitation" || !!item.msg.replies?.length;
       item.replyState = !replyable ? "none" : !item.done ? "waiting"

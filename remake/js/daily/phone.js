@@ -74,12 +74,72 @@ function scheduledInvitation(m, opts = {}) {
 /** 期限切れは既読とは別。未読のままでも、重要な誘いの再案内を止めない */
 const replySlot = (m) => m.time_slot === "night" ? 1 : storeInvitationSpot(m) ? Math.min(1, state.slot) : 0;
 
+const bookedInvitation = (invite) => [...(state.inbox || [])].reverse().find((item) => item.result === "accepted"
+  && (invite.originId ? originId(item) === invite.originId : item.msg?.accept_event === invite.event && item.msg?.sender === invite.sender));
+const invitationSource = (invite, item) => DB.lime.find((m) => m.id === (invite.originId || (item && originId(item))))
+  || item?.msg || DB.lime.find((m) => m.accept_event === invite.event && m.sender === invite.sender);
+
+/** 会えなかった予約は、既読や返信報酬を戻さず、次の誘いを受け取れる履歴へ変える。 */
+export function rescheduleInvitation(invite, note) {
+  let item = bookedInvitation(invite);
+  const source = invitationSource(invite, item);
+  if (!item) {
+    const id = invite.originId || source?.id || `_rescheduled_${invite.event}_d${invite.day ?? state.day}`;
+    item = { id, originId: id, day: invite.day ?? state.day,
+      msg: source || { id, sender: invite.sender, type: "invitation", accept_event: invite.event,
+        time_slot: invite.slot ? "night" : "noon", messages: ["会う約束をしていた"] },
+      read: true, done: true, log: [] };
+    (state.inbox ||= []).push(stampAccount(item));
+  }
+  item.done = true;
+  item.result = "expired";
+  item.replyState = "expired";
+  item.needsResend = true;
+  (item.log ||= []).push({ note });
+  delete state.flags[`_invited_${originId(item)}`];
+  if (state.pendingInvite === invite) state.pendingInvite = null;
+  return item;
+}
+
+/** 承諾と面会の完了は別に記録する。旧来の accepted 履歴もそのまま残す。 */
+export function completeInvitation(invite) {
+  const item = bookedInvitation(invite);
+  if (item) { item.completed = true; delete item.needsResend; }
+}
+
+function completedStoryInvitation(item, source) {
+  if (item.completed || source.exclude_flag && state.flags[source.exclude_flag]) return true;
+  const event = source.accept_event;
+  if (event === `outing_${source.sender}_1`) return !!state.flags[`_outing_done_${source.sender}`];
+  if (event === "ch1_minto_fifth") return !!state.flags._minto_fifth_done;
+  if (event === "ch1_minto_private_1") return !!state.flags._minto_private_done;
+  if (event === "ch1_adam_outing_dagurikura") return !!state.flags._adam_arcade_done;
+  if (event === "ch1_minto_bond_finale") return !!state.finales?.minto;
+  return false;
+}
+
+// 所持金不足で予約だけ消えた旧セーブを救済する。完了済みの物語は再案内しない。
+function repairLostStoryInvitations() {
+  const checked = new Set();
+  for (const item of [...(state.inbox || [])].reverse()) {
+    const id = originId(item);
+    if (checked.has(id)) continue;
+    checked.add(id);
+    const source = DB.lime.find((m) => m.id === id);
+    if (item.result !== "accepted" || !source || !importantInvite(source) || completedStoryInvitation(item, source)) continue;
+    const invite = { originId: id, event: source.accept_event, sender: source.sender, day: item.day };
+    const pending = state.pendingInvite;
+    if (pending && (pending.originId ? pending.originId === id
+      : pending.event === invite.event && pending.sender === invite.sender)) continue;
+    rescheduleInvitation(invite, "約束を果たせなかったため、また都合の合う日に会うことにした");
+  }
+}
+
 export function expireInvitations(opts = {}) {
   const pending = state.pendingInvite;
   if (pending) {
-    let booked = [...(state.inbox || [])].reverse().find((item) => item.result === "accepted"
-      && (pending.originId ? originId(item) === pending.originId : item.msg?.accept_event === pending.event && item.msg?.sender === pending.sender));
-    const source = DB.lime.find((m) => m.id === (pending.originId || (booked && originId(booked)))) || booked?.msg;
+    const booked = bookedInvitation(pending);
+    const source = invitationSource(pending, booked);
     const dueDay = pending.day ?? booked?.day ?? state.day;
     const schedule = pending.temporaryClosed ? { time_slot: "noon", temporary_closed: true }
       : /^date_/.test(pending.event) ? dateSchedule(pending.sender, { ...opts, day: dueDay })
@@ -92,25 +152,12 @@ export function expireInvitations(opts = {}) {
     const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && !storeVisit && opts.fixedNight?.(dueDay) || schedule === null
       || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule)));
     if (past || conflict) {
-      // 旧セーブに残った予約も、消す前に経緯をトークへ残す。既読記録は戻さない。
-      if (!booked) {
-        const id = pending.originId || source?.id || `_rescheduled_${pending.event}_d${dueDay}`;
-        booked = { id, originId: id, day: dueDay, msg: source || { id, sender: pending.sender, type: "invitation",
-          accept_event: pending.event, time_slot: pending.slot ? "night" : "noon", messages: ["会う約束をしていた"] },
-          read: true, done: true, log: [] };
-        state.inbox.push(stampAccount(booked));
-      }
-      booked.done = true;
-      booked.result = "expired";
-      booked.replyState = "expired";
-      booked.needsResend = true;
-      (booked.log ||= []).push({ note: conflict
+      rescheduleInvitation(pending, conflict
         ? "仕事や別の予定と重なったため、約束を別の日に改めることにした"
-        : "約束の時間を過ぎてしまった。また都合の合う日に会うことにした" });
-      delete state.flags[`_invited_${originId(booked)}`];
-      state.pendingInvite = null;
+        : "約束の時間を過ぎてしまった。また都合の合う日に会うことにした");
     } else if (schedule?.after_close) pending.afterClose = true;
   }
+  repairLostStoryInvitations();
   for (const item of state.inbox || []) {
     // 旧版が昼の終了時に失効させた未返信の店LIMEも、当日・営業時間内だけ救済する。
     if (item.result === "expired" && !item.needsResend && item.day === state.day

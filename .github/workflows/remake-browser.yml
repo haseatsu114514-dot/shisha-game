@@ -91,9 +91,9 @@ jobs:
           node remake/test/hiyori.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
-          node remake/test/kafuka_portrait.mjs
-          node remake/test/browser/kafuka_entry.mjs
-          node remake/test/browser/kafuka_confession.mjs
+          node remake/test/samechan_portrait.mjs
+          node remake/test/browser/samechan_entry.mjs
+          node remake/test/browser/samechan_confession.mjs
           node remake/test/browser/affinity_gates.mjs
       - name: Tsumugi fixed events, legacy saves and continuous chapter days
         env:

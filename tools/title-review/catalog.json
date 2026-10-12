@@ -3,7 +3,7 @@
   "characters": {
     "ageha": "アゲハ",
     "hiyori": "ひより",
-    "kafuka": "サメちゃん／波多野なぎさ",
+    "samechan": "サメちゃん／波多野なぎさ",
     "mashiro": "ましろ",
     "minto": "みんと",
     "rin": "凛",
@@ -199,15 +199,15 @@
     {
       "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "コロちゃんとサメ映画",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kafuka_02_shark_movie.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png"
+        "assets/ui/title_arts/title_art_samechan_02_shark_movie.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.png"
       ],
       "groups": [
         "正式タイトル",
@@ -218,7 +218,7 @@
         "adopted-title"
       ],
       "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.prompt.txt"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.prompt.txt"
       ],
       "current": true,
       "related": [],
@@ -228,15 +228,15 @@
     {
       "id": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
       "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "シーシャークの試運転",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png"
+        "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.png"
       ],
       "groups": [
         "正式タイトル",
@@ -247,8 +247,8 @@
         "adopted-title"
       ],
       "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.revision-3.prompt.txt",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.prompt.txt"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.revision-3.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.prompt.txt"
       ],
       "current": true,
       "related": [
@@ -262,15 +262,15 @@
     {
       "id": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
       "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "水族館でコロちゃんと",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_kafuka_03_aquarium.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png"
+        "assets/ui/title_arts/title_art_samechan_03_aquarium.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.png"
       ],
       "groups": [
         "正式タイトル",
@@ -281,7 +281,7 @@
         "adopted-title"
       ],
       "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.prompt.txt"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.prompt.txt"
       ],
       "current": true,
       "related": [],
@@ -1007,14 +1007,14 @@
     {
       "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
       "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "01-shishark-test-run-first",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-first.png"
       ],
       "groups": [
         "新版19案",
@@ -1032,14 +1032,14 @@
     {
       "id": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
       "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "01-shishark-test-run-revision-1",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-1.png"
       ],
       "groups": [
         "新版19案",
@@ -1057,14 +1057,14 @@
     {
       "id": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
       "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
-      "character": "kafuka",
+      "character": "samechan",
       "label": "01-shishark-test-run-revision-2",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-2.png"
       ],
       "groups": [
         "新版19案",
@@ -2578,16 +2578,16 @@
         "url": "../../assets/ui/face_icons/face_hiyori.png"
       }
     ],
-    "kafuka": [
+    "samechan": [
       {
-        "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "path": "assets/sprites/characters/samechan/chr_samechan_normal.png",
         "label": "正式立ち絵",
-        "url": "../../assets/sprites/characters/kafuka/chr_kafuka_normal.png"
+        "url": "../../assets/sprites/characters/samechan/chr_samechan_normal.png"
       },
       {
-        "path": "assets/ui/face_icons/face_kafuka.png",
+        "path": "assets/ui/face_icons/face_samechan.png",
         "label": "正式顔",
-        "url": "../../assets/ui/face_icons/face_kafuka.png"
+        "url": "../../assets/ui/face_icons/face_samechan.png"
       }
     ],
     "mashiro": [

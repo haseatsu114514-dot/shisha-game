@@ -18,7 +18,7 @@ function packageHTML(){
  const cards=records.map(c=>'<a href="index.html?character='+c.id+'" aria-label="'+(c.select_label||c.name)+'"><img src="'+c.id+'/preview.png" alt="'+(c.select_label||c.name)+'"></a>').join("");
  fs.writeFileSync(path.join(base,"gallery.html"),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>一章 登場カット一覧</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px);gap:0}a,img{display:block;width:640px;height:360px}</style><main class="grid">'+cards+"</main></html>");
  for(const style of ['geometric','illustrated']){
-  const six=['adam','tsumugi','ageha','minto','kafuka','naru'].map(id=>'<img src="'+id+'/'+(style==='geometric'?'geometric':'illustrated')+'.png" alt="'+records.find(c=>c.id===id).name+'">').join('');
+  const six=['adam','tsumugi','ageha','minto','samechan','naru'].map(id=>'<img src="'+id+'/'+(style==='geometric'?'geometric':'illustrated')+'.png" alt="'+records.find(c=>c.id===id).name+'">').join('');
   fs.writeFileSync(path.join(base,style+'-six.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>6人の登場カット</title><style>body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px)}img{display:block;width:640px;height:360px}</style><main class="grid">'+six+'</main></html>');
  }
  const comparisonCards=[
@@ -103,7 +103,7 @@ function composition(){
    const rows=illustrated.map(c=>'<img src="'+c.id+'/geometric.png" alt="'+c.name+' 幾何学"><img src="'+c.id+'/illustrated.png" alt="'+c.name+' イラスト">').join("");
    fs.writeFileSync(path.join(base,"styles.html"),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>幾何学とイラストの比較</title><style>body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(2,640px)}img{width:640px;height:360px;display:block}</style><main class="grid">'+rows+"</main></html>");
   }
-  for(const c of ["adam","kafuka"]){
+  for(const c of ["adam","samechan"]){
    await page.evaluate(id=>window.introPreview.showCharacter(id),c);
    for(const ms of [0,400,1600]){
     await page.evaluate(t=>window.introPreview.seek(t),ms);

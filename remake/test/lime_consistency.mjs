@@ -127,6 +127,48 @@ state.day = 6; assert.equal(phone.deliverMorning({ fixedNight: () => false }), 1
 reset(); db.lime = []; state.pendingInvite = { day: 5, event: "date_minto", sender: "minto", slot: 1 };
 phone.expireInvitations(); assert.equal(state.pendingInvite, null); assert.equal(state.inbox.length, 1); assert(state.inbox[0].log.some((l) => /約束/.test(l.note || "")));
 
+// #485: 承諾後の所持金不足は、予約と再案内の抑止を一緒に解除する。既読・報酬は戻さない。
+reset(); const moneyInvite = invitation("money", "minto", { important: true }); db.lime = [moneyInvite];
+phone.deliverMorning(); session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session);
+const moneyBooking = state.pendingInvite, moneyHistory = state.inbox[0], moneyGains = gains.length;
+state.money = 0; phone.rescheduleInvitation(moneyBooking, "所持金が足りなかったため、約束を別の日に改めることにした");
+assert.equal(state.pendingInvite, null); assert.equal(moneyHistory.result, "expired"); assert(moneyHistory.needsResend);
+assert(!state.flags._invited_money); assert(moneyHistory.read); assert(state.limeRead.includes("money"));
+assert(moneyHistory.log.some((l) => /所持金が足りなかった/.test(l.note || ""))); assert.equal(gains.length, moneyGains);
+state.day = 7; state.money = 30000; assert.equal(phone.deliverMorning(), 1); assert.equal(phone.deliverMorning(), 0);
+assert.equal(state.inbox.at(-1).originId, "money");
+session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session);
+const retriedBooking = state.pendingInvite, retriedHistory = state.inbox.at(-1);
+phone.completeInvitation(retriedBooking); state.pendingInvite = null;
+assert(retriedHistory.completed); assert.equal(retriedHistory.result, "accepted"); assert(!retriedHistory.needsResend);
+state.day = 8; phone.deliverMorning(); assert.equal(state.inbox.filter(i => i.originId === "money").length, 2); assert.equal(retriedHistory.log.length, 2);
+
+// 予約だけ消えていた旧セーブは、未完了の重要な招待だけを救済する。後の辞退や再案内を上書きしない。
+for (const event of ["ch1_minto_fifth", "ch1_minto_private_1", "ch1_adam_outing_dagurikura", "outing_tsumugi_1", "ch1_minto_bond_finale", "hiyori_tonari_return"]) {
+  reset({ day: 7 }); const source = allMessages.find(m => m.accept_event === event);
+  db.lime = [source]; const history = item({ ...source, important: false }, { day: 6, read: true, done: true, result: "accepted" });
+  state.inbox.push(history); state.limeRead.push(source.id); state.flags[`_invited_${source.id}`] = true;
+  phone.expireInvitations(); assert.equal(history.result, "expired", event); assert(history.needsResend, event);
+  assert(!state.flags[`_invited_${source.id}`], event); assert(history.read, event); assert(state.limeRead.includes(source.id), event);
+  const logs = history.log.length; phone.expireInvitations(); assert.equal(history.log.length, logs, event);
+}
+for (const [event, done] of [
+  ["ch1_minto_fifth", () => state.flags._minto_fifth_done = true],
+  ["ch1_minto_private_1", () => state.flags._minto_private_done = true],
+  ["ch1_adam_outing_dagurikura", () => state.flags._adam_arcade_done = true],
+  ["outing_tsumugi_1", () => state.flags._outing_done_tsumugi = true],
+  ["ch1_minto_bond_finale", () => state.finales = { minto: { route: "friend" } }],
+  ["hiyori_tonari_return", () => state.flags._hiyori_tonari_return_done = true],
+]) {
+  reset({ day: 7 }); const source = allMessages.find(m => m.accept_event === event); db.lime = [source]; done();
+  const history = item(source, { day: 6, read: true, done: true, result: "accepted" }); state.inbox.push(history);
+  state.flags[`_invited_${source.id}`] = true; phone.expireInvitations();
+  assert.equal(history.result, "accepted", event); assert(!history.needsResend, event); assert(state.flags[`_invited_${source.id}`], event);
+}
+reset(); db.lime = [moneyInvite]; state.inbox.push(item(moneyInvite, { day: 5, done: true, result: "accepted" }),
+  item({ ...moneyInvite, id: "money_retry_c1_d6", origin_id: "money" }, { originId: "money", done: true, result: "declined" }));
+state.flags._invited_money = true; phone.expireInvitations(); assert.equal(state.inbox[0].result, "accepted"); assert(state.flags._invited_money);
+
 // 閉店待ちとしてslot2へ送った予約は、当日は過去slotや固定営業イベントとの衝突で消さない。
 for (const event of ["outing_minto", "date_minto"]) {
   reset({ slot: 2 }); const msg = invitation("queued", "minto", { accept_event: event, after_close: true }); db.lime = [msg];

@@ -35,7 +35,7 @@ try {
     assert.equal(catalog.items.filter(a=>a.groups.includes('アゲハ修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.groups.includes('タッパー修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,3);
-    assert.equal(catalog.characters.kafuka,'サメちゃん／波多野なぎさ');
+    assert.equal(catalog.characters.samechan,'サメちゃん／波多野なぎさ');
     const urls=[...catalog.items.flatMap(a=>[a.image,a.thumbnail]),...Object.values(catalog.references).flat().map(a=>a.url)];
     const failures=await page.evaluate(async urls=>{
       const failures=[];

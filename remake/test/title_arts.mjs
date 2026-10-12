@@ -53,7 +53,7 @@ await suite("title-arts", async (check) => {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
       assert.equal(arts.length, 21);
-      assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", "kafuka", "mashiro", "minto", "rin", "tsumugi"]);
+      assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi"]);
       assert.deepEqual(arts.filter(art => art.character === "hiyori").map(art => art.file).sort(), [
         "title_art_hiyori_01_twilight_walk.png", "title_art_hiyori_02_window_pause.png", "title_art_hiyori_03_after_rain.png",
       ]);

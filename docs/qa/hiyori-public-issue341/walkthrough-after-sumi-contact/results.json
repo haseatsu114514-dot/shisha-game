@@ -984,11 +984,11 @@
             "_hiyori_affinity_waiting_released": true,
             "_hiyori_affinity_released_pts": 1,
             "_hiyori_tonari_followup_done": true,
-            "_kafuka_nickname_known": true,
-            "_intro_kafuka": true,
-            "_lime_contact_kafuka": true,
-            "_met_kafuka": true,
-            "_kafuka_first_encounter": true,
+            "_samechan_nickname_known": true,
+            "_intro_samechan": true,
+            "_lime_contact_samechan": true,
+            "_met_samechan": true,
+            "_samechan_first_encounter": true,
             "_morning_9": true
           }
         }
@@ -1126,11 +1126,11 @@
           "_hiyori_affinity_waiting_released": true,
           "_hiyori_affinity_released_pts": 1,
           "_hiyori_tonari_followup_done": true,
-          "_kafuka_nickname_known": true,
-          "_intro_kafuka": true,
-          "_lime_contact_kafuka": true,
-          "_met_kafuka": true,
-          "_kafuka_first_encounter": true,
+          "_samechan_nickname_known": true,
+          "_intro_samechan": true,
+          "_lime_contact_samechan": true,
+          "_met_samechan": true,
+          "_samechan_first_encounter": true,
           "_morning_9": true,
           "_hiyori_tonari_afterwork_done": true,
           "_tsumugi_affinity_waiting_pts": 1
@@ -1143,7 +1143,7 @@
           "adam": true,
           "minto": true,
           "hiyori": true,
-          "kafuka": true
+          "samechan": true
         },
         "affinityCarry": {
           "naru": 0,
@@ -1151,7 +1151,7 @@
           "hiyori": 0,
           "tsumugi": 0.5,
           "minto": 0.5,
-          "kafuka": 0.85
+          "samechan": 0.85
         },
         "loveCarry": {},
         "baitoRecent": [],
@@ -1161,7 +1161,7 @@
           "adam": 34,
           "hiyori": 51,
           "minto": 8,
-          "kafuka": 0
+          "samechan": 0
         },
         "story": {
           "naru": 4,
@@ -1216,7 +1216,7 @@
           "hiyori",
           "minto",
           "adam",
-          "kafuka"
+          "samechan"
         ],
         "limeRead": [
           "_sumi_baito_inv_d3",
@@ -2882,11 +2882,11 @@
             "_hiyori_affinity_waiting_released": true,
             "_hiyori_affinity_released_pts": 1,
             "_hiyori_tonari_followup_done": true,
-            "_kafuka_nickname_known": true,
-            "_intro_kafuka": true,
-            "_lime_contact_kafuka": true,
-            "_met_kafuka": true,
-            "_kafuka_first_encounter": true,
+            "_samechan_nickname_known": true,
+            "_intro_samechan": true,
+            "_lime_contact_samechan": true,
+            "_met_samechan": true,
+            "_samechan_first_encounter": true,
             "_morning_9": true
           }
         }
@@ -3024,11 +3024,11 @@
           "_hiyori_affinity_waiting_released": true,
           "_hiyori_affinity_released_pts": 1,
           "_hiyori_tonari_followup_done": true,
-          "_kafuka_nickname_known": true,
-          "_intro_kafuka": true,
-          "_lime_contact_kafuka": true,
-          "_met_kafuka": true,
-          "_kafuka_first_encounter": true,
+          "_samechan_nickname_known": true,
+          "_intro_samechan": true,
+          "_lime_contact_samechan": true,
+          "_met_samechan": true,
+          "_samechan_first_encounter": true,
           "_morning_9": true,
           "_hiyori_tonari_afterwork_done": true,
           "_tsumugi_affinity_waiting_pts": 1
@@ -3041,7 +3041,7 @@
           "adam": true,
           "minto": true,
           "hiyori": true,
-          "kafuka": true
+          "samechan": true
         },
         "affinityCarry": {
           "naru": 0,
@@ -3049,7 +3049,7 @@
           "hiyori": 0,
           "tsumugi": 0.5,
           "minto": 0.5,
-          "kafuka": 0.85
+          "samechan": 0.85
         },
         "loveCarry": {},
         "baitoRecent": [],
@@ -3059,7 +3059,7 @@
           "adam": 34,
           "hiyori": 51,
           "minto": 8,
-          "kafuka": 0
+          "samechan": 0
         },
         "story": {
           "naru": 4,
@@ -3114,7 +3114,7 @@
           "hiyori",
           "minto",
           "adam",
-          "kafuka"
+          "samechan"
         ],
         "limeRead": [
           "_sumi_baito_inv_d3",
