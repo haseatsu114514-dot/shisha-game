@@ -1,0 +1,334 @@
+{
+  "worker": "codex-cg360-20261012-7242bf5ca07e",
+  "transferRun": 38301926910,
+  "statusRun": 38302093214,
+  "originalPrHead": "8bea7f994eaebce7f1b996cb3972941e5f636f89",
+  "testedSourceHead": "f145263f6f0c854e2778094d737571f14c044333",
+  "integratedMain": "ed022833e826fc408d505b9d225f7e52d2a12b81",
+  "tests": {
+    "cgArt": {
+      "passed": 24,
+      "failed": 0
+    },
+    "saveLoad": {
+      "passed": 6,
+      "failed": 0
+    },
+    "vnReadiness": {
+      "passed": 4,
+      "failed": 0
+    },
+    "mintoProgression": {
+      "passed": 3,
+      "failed": 0
+    },
+    "naturalProgress": {
+      "chapterCleared": true,
+      "defeatRetryWin": true,
+      "targetCGsRecorded": 6,
+      "manualSaveLoad": true
+    }
+  },
+  "comparisonScope": "CG-only original registration/art rendered with the current renderer/backgrounds; same actual canonical show_cg commands and following lines as after fixtures",
+  "codeHashes": {
+    "remake/js/vn/engine.js": "a8a12d406cdfe44cca913e74057829c34a09713e2ab777224af91d762f53bd95",
+    "remake/test/ch1_cg_art.mjs": "a52e067aa6fc0c2318074dc8fa28516a2597278049a0d9c8f691867d7045df1e",
+    "remake/test/playthrough.mjs": "ffb53fe5a71dbab4d2baa5502311bd602b48a6e28b726d9190389d26960301d9"
+  },
+  "files": [
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_sumi_training.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "7cca9617d2967bfb86fff94173d3f89788113c2d12d17f0f0c87ac89319b995d"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_tsumugi_heart_art.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "03314edbc4e3b1514d6d34d65161f73ef7ddc52797c51c56b7ba0c6eba2b00c0"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_minto_casual_reveal.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "5b61f4a0696dcc8f324d67db0b67284101008ba7478aade2a49b777980a617d6"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_dr_kemuri_hook.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "6b0080c264005a3d456cfc24a13afbdb0f9b6073619b3197e43e8f9baf8a9722"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_nagumo_smile.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "ea8913407361069435b5c383d45e9991a45efa442f4cf0e229faba686d81ebbb"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_ch1_tournament_battle.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "6a6854fcd850ba67e86711389e98cda83e7902ac1355c094fd410b64e9fc3e87"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_minto_casual.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "dfb4fb66961a8f565c4f74ff86ea2236b9c49e4edc587b37c9436283a01200fe"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_tsumugi_smoke_color.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "bdb72945f86f51c41fbd5d57f890817fed30268a8db141330a2d08cab7240ba3"
+    },
+    {
+      "file": "review/comparisons/before-pc-cg_oneesan_first_smoke.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "f417c1957040323b576741bacf29d8e4394afff88162b5b86e7fe7dfb3c7873f"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_sumi_training.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "20d5f248fc35b630bc90a1adfc6c294af4663b360e48d7f7c3a9eaa7c1d24c79"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_tsumugi_heart_art.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "5731788e335b6f4a7972e019794280e0f797617ce6e9b073fb34ab9e7903c7e3"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_minto_casual_reveal.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "9a148ffbd44683d10fc02052dce54b9774dbd9831406bc9022c81f3327b77abc"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_dr_kemuri_hook.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "de9211d237086bbc737b3011fa838c10d292d9d3c005e2a07da931896fa41e56"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_nagumo_smile.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "6fac9df6949359189542d8627b75ae7a180e5680baa07ee02d2e952eeb1b860b"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_ch1_tournament_battle.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "c9d905d11973ef24e17bed092526eb1d8d565fdd03bd6b94eb3c96e2e3b4e0d7"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_minto_casual.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "e91afaab7c4866e025286f3c16447310ae4cc9f35e1c47f0f5d25ea65037aa0a"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_tsumugi_smoke_color.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "c25cf8fb0a15bdde41ae0080998eb6c981c6375cd69fbba6db79273780764e91"
+    },
+    {
+      "file": "review/comparisons/before-touch-cg_oneesan_first_smoke.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "b0076cd45f5dcc1e641ed8f615d294f140906257d7a947a16e78279cac4a853d"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_sumi_training.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "a6c2c527ba3b0e7a9bb3f1a14032cd6db6a572861b73ee5bd82090407c86aa34"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_tsumugi_heart_art.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "716de32d7c63ce281f422889fcf3e31b90e96b2b1ece97e2d165b2e9181a8725"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_minto_casual_reveal.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "85a63e86ff3d74ac83074274ddd799ab703b2a1270cbdc1d7e8bb4bfe9759820"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_dr_kemuri_hook.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "6ea73c7f3a3c121fb84385b72a30655f6ef003eaa6b8083ad625846d4ccaf996"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_nagumo_smile.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "81c8a9bc083bcf37b091a2e63c6ca48776210f62f63a0eb151de25d169cff791"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_ch1_tournament_battle.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "17c246eb0236335db36179d3578f123f02ba9e781609f8b914270b80486e3447"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_minto_casual.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "3b1eb15a51b149956b714140dc53891b56274f1215745f49d4ad8499ce9b0c6c"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_tsumugi_smoke_color.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "77ec2daf5eeed9d79a1c3aa2b8f50ed4b415dd8c7b8aa3676a37ed86c4f30e76"
+    },
+    {
+      "file": "review/comparisons/after-pc-cg_oneesan_first_smoke.webp",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "7b608795dbc39d598f36d1c8952ea0b58b548f464cfc18826e5453352255216a"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_sumi_training.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "ba857e4ea0845ee38bfd9eddadc3c7cbfacec871fafe96d6aac841830b38ce90"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_tsumugi_heart_art.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "8f22866c70816ce563df75a1e3a4cd7fa7d89d270be3ee22fb38130ecd6d212d"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_minto_casual_reveal.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "ebf30a2d5746175543898790b02a8a150caf0a5c5c243e135a16b54fa7149b24"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_dr_kemuri_hook.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "b1c09c05bb946648cdf93f8cb40ccbdef2739b48906e2feb7ad355d5020d2243"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_nagumo_smile.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "88cb2fb2d6a7f5a598cfea218a1778cecd53ab2a5e44c9c0793f8f76e21621b1"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_ch1_tournament_battle.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "4af2fed7ae9fb5cac9bf718a63b8f224f371cfd8db2852ac96e4fbfc5e266184"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_minto_casual.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "978acbf4d563f3d011d83bd45dd9be426e72892670df43519ffa75c9093a3901"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_tsumugi_smoke_color.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "e47129091e3f671d126c9ce11fd218aae7604ca9e6de8b8981270e9a4c192d50"
+    },
+    {
+      "file": "review/comparisons/after-touch-cg_oneesan_first_smoke.webp",
+      "size": [
+        844,
+        390
+      ],
+      "sha256": "a00cb92cc7b5e469729f837e15e11154c0007c42e716c80f3c02fce85b5c53bb"
+    }
+  ],
+  "newImageGeneration": false,
+  "humanImageApprovalClaimed": false,
+  "pendingOutsideThisPR": [
+    "cg_minto_cheki for interaction_minto_noon_01; separate new-image unit",
+    "Issue360 broader additional background/title/daily still requirements"
+  ]
+}
