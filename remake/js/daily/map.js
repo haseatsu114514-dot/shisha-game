@@ -8,11 +8,13 @@ import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isClosed, isTemporaryClosed, visitedToday, isUnlocked, hasNewEvent } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
+import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 
 /** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
 function spotFace(s) {
@@ -42,6 +44,8 @@ function pinCaption(s, locked) {
 }
 
 let interrupt = null;
+/** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
+export const isChoosingDestination = () => !!document.querySelector("#screen [data-destination-selection]:not(.done)");
 /** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
 export function interruptMap(value) {
   if (!interrupt) return false;
@@ -67,7 +71,13 @@ export async function chooseSpot(opts = {}) {
   try {
     await Promise.all([uiArtReady(), setBg(bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
-  return openMap(opts);
+  let walking = false;
+  for (;;) {
+    const value = walking ? await openStreet(opts, (handler) => { interrupt = handler; }) : await openMap(opts);
+    if (value === WALK_STREET) { walking = true; continue; }
+    if (value === BACK_TO_MAP) { walking = false; continue; }
+    return value;
+  }
 }
 
 /** 行き先の場面を「移動」の幕で開く。押したピンの位置と、看板に出ている行き先の名前を渡す（core/transition-moves.js） */
@@ -98,20 +108,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
     const pins = el("div.map-pins");
     let selected = null;
 
-    const freeGuide = (s) => !!guide?.free && guide.pin === s.id;
-    const availability = (s) => {
-      if (!isUnlocked(s)) return { ok: false, why: "locked" };
-      if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
-      if (s.kind === "fortune" && state.fortuneDay === state.day) return { ok: false, why: "今日はもう占ってもらった", tag: "今日はもう占った" };
-      if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
-      if (isClosed(s)) {
-        const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
-        return { ok: false, why: tag, tag };
-      }
-      if (s.kind !== "shop" && s.kind !== "rest" && s.kind !== "tonari" && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
-      if (s.cost && !freeGuide(s) && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
-      return { ok: true };
-    };
+    const freeGuide = (s) => isFreeGuide(s, guide);
+    const availability = (s) => spotAvailability(s, { guide });
 
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
@@ -184,6 +182,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
     };
 
     const go = (s) => {
+      if (!availability(s).ok) { renderInfo(s); return; }
       SE.select();
       cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
       retire(root);
@@ -223,9 +222,12 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
 
     idleInfo();
     const rainy = isRainy();
-    const root = el("div.map", { dataset: { night: String(night), rain: String(rainy) } }, [
+    const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
+      canWalkStreet({ guide }) ? el("button.map-walk", { text: "繁華街を歩く（仮導入）", dataset: { test: "map-walk" }, onclick: () => {
+        SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
+      } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,

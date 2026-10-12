@@ -1,0 +1,1 @@
+[temporary closures] PASS: all three shop owners, real delivery/map/save/reload, preserved appointment, day/chapter expiry, regular holiday and ordinary dates
