@@ -108,7 +108,7 @@ const NIGHT_STORIES = new Set([
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
 /** 店に通って親しくなってから、いつもの入店に代わる道端の一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
-  && storyCount("minto") >= 2 && affinityLevel("minto") >= 2;
+  && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
