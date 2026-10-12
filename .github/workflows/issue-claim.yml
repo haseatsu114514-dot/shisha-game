@@ -7,9 +7,9 @@ on:
         description: Claim, release, select next issue, or inspect/validate a current claim
         required: true
         type: choice
-        options: [next, claim, release, status]
+        options: [next, claim, release, status, transfer]
       issue:
-        description: Issue number (required for claim/release/status)
+        description: Issue number (required except next)
         required: false
         type: string
       owner:
@@ -21,7 +21,11 @@ on:
         required: false
         type: string
       claim_run:
-        description: For status, require this successful claim run to still own the issue
+        description: Successful current claim run (required for transfer; optional for status)
+        required: false
+        type: string
+      handoff_comment:
+        description: Admin approval comment ID on the Issue (required for transfer)
         required: false
         type: string
       agent:
@@ -50,6 +54,7 @@ jobs:
           AGENT: ${{ inputs.agent }}
           REQUEST_ID: ${{ inputs.request_id }}
           CLAIM_RUN: ${{ inputs.claim_run }}
+          HANDOFF_COMMENT: ${{ inputs.handoff_comment }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -59,11 +64,14 @@ jobs:
             const agent = process.env.AGENT;
             const request = process.env.REQUEST_ID || '';
             const expectedRun = process.env.CLAIM_RUN || '';
-            if (!['next', 'claim', 'release', 'status'].includes(op)) throw Error('Invalid operation');
+            const handoffComment = process.env.HANDOFF_COMMENT || '';
+            if (!['next', 'claim', 'release', 'status', 'transfer'].includes(op)) throw Error('Invalid operation');
             if (!['codex', 'claude', 'any'].includes(agent)) throw Error('Invalid agent');
             if (request && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(request)) throw Error('Invalid request ID');
-            if (expectedRun && (op !== 'status' || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
+            if (expectedRun && (!['status', 'transfer'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
             if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
+            if (op === 'transfer' && (!expectedRun || !/^[1-9][0-9]*$/.test(handoffComment))) throw Error('Transfer requires claim run and approval comment');
+            if (op !== 'transfer' && handoffComment) throw Error('Approval comment is only for transfer');
             const rawIssue = (process.env.ISSUE || '').trim();
             if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
             const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
@@ -75,10 +83,10 @@ jobs:
               const source = entry?.body.match(/^<!-- issue-claim-run:v1 id=([1-9][0-9]*) request=([a-zA-Z0-9._-]*) -->$/m);
               return match ? {state:match[1], owner:match[2], run_id:source?.[1] || null, comment_id:entry.id} : {state:'released',owner:null,run_id:null,comment_id:null};
             }
-            async function comment(number,state) {
+            async function comment(number,state,detail = '') {
               const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
                 '<!-- issue-claim-run:v1 id=' + context.runId + ' request=' + request + ' -->\n' +
-                (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.');
+                (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.') + detail;
               await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
             }
             async function issue(number) {
@@ -87,17 +95,71 @@ jobs:
               if (data.pull_request || data.state !== 'open') throw Error('Not an open issue: #' + number);
               return data;
             }
-            async function ensureNoOpenPR(number) {
+            async function referencingPRs(number) {
               const prs = await github.paginate(github.rest.pulls.list,{owner:repoOwner,repo,state:'open',per_page:100});
               const references = new RegExp('(?:^|[^0-9])#' + number + '(?![0-9])');
               const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               const url = new RegExp(escape(context.serverUrl || 'https://github.com') + '/' + escape(repoOwner + '/' + repo) + '/issues/' + number + '(?![0-9])');
               const qualified = new RegExp('(?:^|[^a-zA-Z0-9_.-])' + escape(repoOwner + '/' + repo) + '#' + number + '(?![0-9])');
-              if (prs.some(p => [p.body || '',p.title || ''].some(text => references.test(text) || url.test(text) || qualified.test(text)))) {
+              return prs.filter(p => [p.body || '',p.title || ''].some(text => references.test(text) || url.test(text) || qualified.test(text)));
+            }
+            async function ensureNoOpenPR(number) {
+              if ((await referencingPRs(number)).length) {
                 throw Error('Open PR already references issue #' + number);
               }
             }
-            if (op === 'status') {
+            if (op === 'transfer') {
+              const number = Number(rawIssue);
+              const existing = await issue(number);
+              async function requireAdmin(username) {
+                const {data} = await github.rest.repos.getCollaboratorPermissionLevel({owner:repoOwner,repo,username});
+                if (data.permission !== 'admin') throw Error('Transfer requires repository admin approval and dispatch');
+              }
+              await requireAdmin(context.actor);
+              const {data: approval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+              if (approval.issue_url !== existing.url) throw Error('Approval must belong to the target Issue');
+              await requireAdmin(approval.user?.login);
+              const record = approval.body?.match(/^<!-- issue-handoff:v1 (.+) -->$/m);
+              if (!record) throw Error('Missing structured admin handoff approval');
+              const handoff = JSON.parse(record[1]);
+              if (handoff.issue !== number || handoff.to !== worker || handoff.claim_run !== expectedRun ||
+                  typeof handoff.from !== 'string' || handoff.from === worker ||
+                  handoff.stopped !== true || handoff.pushed !== true || !Array.isArray(handoff.prs) || !handoff.prs.length) {
+                throw Error('Approval does not match stopped/pushed owner, Issue, worker and claim run');
+              }
+              async function validateTransfer() {
+                await issue(number);
+                const claim = await status(number);
+                if (claim.state !== 'claimed' || claim.owner !== handoff.from || claim.run_id !== expectedRun) {
+                  throw Error('Current reservation does not match approved original owner/run');
+                }
+                const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
+                if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Original claim run did not succeed');
+                const prs = await referencingPRs(number);
+                if (prs.length !== handoff.prs.length || new Set(handoff.prs.map(p => p.number)).size !== handoff.prs.length ||
+                    handoff.prs.some(saved => !Number.isSafeInteger(saved.number) || !/^[a-f0-9]{40}$/.test(saved.head) ||
+                      !prs.some(pr => pr.number === saved.number && pr.head.sha === saved.head &&
+                        pr.head.repo?.full_name === repoOwner + '/' + repo))) {
+                  throw Error('Referencing Open PR set/head changed or approval is incomplete');
+                }
+                const {data: currentApproval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+                if (currentApproval.body !== approval.body || currentApproval.user?.login !== approval.user?.login ||
+                    currentApproval.issue_url !== existing.url) throw Error('Admin approval changed during transfer');
+              }
+              await validateTransfer();
+              const all = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
+              for (const item of all) {
+                if (item.pull_request || item.number === number) continue;
+                const active = await status(item.number);
+                if (active.state === 'claimed' && active.owner === worker) throw Error('Worker already owns #' + item.number);
+              }
+              await validateTransfer();
+              // One bot ledger write replaces ownership without an unreserved release/claim gap.
+              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' after admin approval: ' + approval.html_url);
+              core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+              core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + handoff.from + ' APPROVAL=' + handoffComment);
+              await core.summary.addRaw('Transferred #' + number + ' to ' + worker + '; validate this successful run with status before editing.').write();
+            } else if (op === 'status') {
               const number = Number(rawIssue);
               const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
               if (existing.pull_request) throw Error('Not an issue');
