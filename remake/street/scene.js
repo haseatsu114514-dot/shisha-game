@@ -1,12 +1,13 @@
-// 旧ハリボテ試作の8方向・足元基準・2コマ・反転・タップ/ダッシュを本編用の遠近通りへ。
+// 旧ハリボテ試作の8方向・反転・タップ/ダッシュを本編用の遠近通り/4コマへ。
 // 親のinfo/enter/visited/back/pausedだけを使用し、保存・訪問・報酬を変更しない。
-import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, camera, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
+import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, WALK_SPEED, RUN_SPEED, STRIDE_LENGTH, camera, followCamera, groundDistance, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
 const $ = (s) => document.querySelector(s), canvas = $('#view'), ctx = canvas.getContext('2d');
 const params = new URLSearchParams(location.search), night = params.get('night') === '1';
 const dirs = ['down', 'down_right', 'right', 'up_right', 'up'];
 const mirror = { down_left: 'down_right', left: 'right', up_left: 'up_right' };
 let host, ready = false, wasPaused = true, alwaysRun = false, target = null, message = '', travel = false, dragging = false;
-let player = { ...SPAWN }, clock = 0, moving = false, last = performance.now();
+let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, moving = false, last = performance.now();
+const gaitFrame = () => moving ? Math.floor(walked/STRIDE_LENGTH*(meta?.rows||4))%(meta?.rows||4) : 1;
 const keys = new Set();
 const stop = () => { keys.clear(); target = null; moving = false; dragging = false; };
 const paused = () => !host || host.paused() || document.hidden;
@@ -16,8 +17,8 @@ fit(); addEventListener('resize', fit);
 $('#standalone').hidden = window.parent !== window;
 function image(src) { return new Promise(resolve => { const i = new Image(); i.onload = () => resolve(i); i.onerror = () => resolve(null); i.src = src; }); }
 const bgPromise = image(`../img/street/arcade-${night ? 'night' : 'day'}.webp`);
-const spritePromise = image('../../assets/street_walk/hajime_walk_144.png');
-const metaPromise = fetch('../../assets/street_walk/hajime_walk_144.json').then(r => { if (!r.ok) throw Error('sprite metadata'); return r.json(); }).catch(() => null);
+const spritePromise = image('../../assets/street_walk/hajime_walk_cycle_144.png');
+const metaPromise = fetch('../../assets/street_walk/hajime_walk_cycle_144.json').then(r => { if (!r.ok) throw Error('sprite metadata'); return r.json(); }).catch(() => null);
 let bg, sprite, meta;
 Promise.all([bgPromise, spritePromise, metaPromise]).then(values => { [bg, sprite, meta] = values; ready = true; });
 function say(text) { stop(); message = text; $('#msg').textContent = text; $('#msg').hidden = false; }
@@ -43,7 +44,7 @@ function setTravel(open) {
     if (door) b.dataset.door = door;
     b.onclick = () => { if (paused()) return; callback(); setTravel(false); }; list.append(b);
   };
-  button('通りの入口', null, true, () => { player = { ...SPAWN }; });
+  button('通りの入口', null, true, () => { player = { ...SPAWN }; cam=camera(player); walked=0; });
   for (const d of DOORS) button(host.visited(d.id) ? host.info(d.id).label : '？？？', d.id, host.visited(d.id), () => place(...d.foot, 'up'));
 }
 $('#btn-act').onclick = act;
@@ -65,16 +66,16 @@ const pointer = (e) => { const r=canvas.getBoundingClientRect(); return { x:(e.c
 function aim(e) {
   if (paused() || !ready || travel) return;
   if (message) { dismiss(); return; }
-  const raw = pointer(e), p = fromScreen(raw.x,raw.y,camera(player)), d = DOORS.find(d => inRect(p.x,p.y,d.rect));
+  const raw = pointer(e), p = fromScreen(raw.x,raw.y,cam), d = DOORS.find(d => inRect(p.x,p.y,d.rect));
   const point = d ? {x:d.foot[0],y:d.foot[1]} : project(constrain(unproject(p.x,p.y)));
   if (!d && p.y < FLOOR.horizon + 40) return;
   keys.clear(); target = { ...point, door:d, back:!d&&p.y>=FLOOR.horizon+FLOOR.rise,
-    run:Math.hypot(point.x-foot().x,point.y-foot().y)*camera(player).zoom>144 }; focus();
+    run:Math.hypot(point.x-foot().x,point.y-foot().y)*cam.zoom>144 }; focus();
 }
 canvas.addEventListener('pointerdown', e => { dragging = true; canvas.setPointerCapture(e.pointerId); aim(e); });
 canvas.addEventListener('pointermove', e => { if (dragging && !target?.door) aim(e); });
 canvas.addEventListener('pointerup', () => dragging = false); canvas.addEventListener('pointercancel', () => { dragging = false; stop(); });
-function place(x,y,dir='up') { stop(); player = {...constrain(unproject(x,y)),dir}; }
+function place(x,y,dir='up') { stop(); player = {...constrain(unproject(x,y)),dir}; cam=camera(player); walked=0; }
 function update(dt) {
   const isPaused=paused();
   if (isPaused) { stop(); wasPaused=true; return; }
@@ -83,19 +84,20 @@ function update(dt) {
   if (!ready || message || travel) { stop(); return; }
   let dx=Number(keys.has('ArrowRight')||keys.has('KeyD'))-Number(keys.has('ArrowLeft')||keys.has('KeyA'));
   let dy=Number(keys.has('ArrowDown')||keys.has('KeyS'))-Number(keys.has('ArrowUp')||keys.has('KeyW'));
-  const p=foot();
-  if (target) { dx=target.x-p.x; dy=target.y-p.y; }
+  let goal;
+  if (target) { goal=unproject(target.x,target.y); dx=goal.x-player.x; dy=-5*(goal.z-player.z); }
   const len=Math.hypot(dx,dy), run=alwaysRun||keys.has('ShiftLeft')||keys.has('ShiftRight')||target?.run;
-  const step=(run?140:80)*dt/camera(player).zoom; moving=len>.5;
+  const step=(run?RUN_SPEED:WALK_SPEED)*dt; moving=len>.0001;
   if (!moving) { if (target) { const {door:d,back}=target; target=null; if(back)host.back();else if(d)enter(d); } return; }
   player.dir=direction(dx,dy);
   if (target && len<=step) { const {door:d,back}=target; place(target.x,target.y,player.dir); if(back)host.back();else if(d)enter(d); return; }
-  const next=unproject(p.x+dx/len*step,p.y+dy/len*step);
+  const next={x:player.x+dx/len*step,z:player.z-dy/len*step/5};
   if (next.z<0 && dy>0) { stop(); host.back(); return; }
-  Object.assign(player,constrain(next)); clock+=dt;
+  const bounded=constrain(next), distance=groundDistance(player,bounded);
+  Object.assign(player,bounded); moving=distance>1e-6; walked+=distance;
 }
 function draw() {
-  const cam=camera(player); ctx.save();ctx.translate(cam.tx,cam.ty);ctx.scale(cam.zoom,cam.zoom);
+  ctx.save();ctx.translate(cam.tx,cam.ty);ctx.scale(cam.zoom,cam.zoom);
   ctx.imageSmoothingEnabled=true;
   if(bg) ctx.drawImage(bg,0,0,VIEW.w,VIEW.h);
   else { ctx.fillStyle=night?'#262439':'#bbb6a6'; ctx.fillRect(0,0,VIEW.w,VIEW.h); ctx.fillStyle='#686479';
@@ -105,9 +107,12 @@ function draw() {
   const raw=foot(), p=toScreen(raw.x,raw.y,cam), h=CHARACTER_HEIGHT*raw.scale*cam.zoom;
   const size=h/(meta?.charHeight||144);
   ctx.fillStyle='#17111a66';ctx.beginPath();ctx.ellipse(p.x,p.y-1,h*.2,h*.035,0,0,Math.PI*2);ctx.fill();
-  if(sprite&&meta){const mirrored=!!mirror[player.dir],col=dirs.indexOf(mirror[player.dir]||player.dir),row=moving?Math.floor(clock/.16)%2:0;
-    const [cw,ch]=meta.cell,[ax,ay]=meta.anchor;ctx.save();ctx.translate(p.x,p.y);ctx.scale(mirrored?-size:size,size);ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(sprite,col*cw,row*ch,cw,ch,-ax,-ay,cw,ch);ctx.restore();
+  if(sprite&&meta){const mirrored=!!mirror[player.dir],col=dirs.indexOf(mirror[player.dir]||player.dir),row=gaitFrame();
+    const [cw,ch]=meta.cell,[ax,ay]=meta.anchor,torso=Math.round(meta.charHeight*.69);
+    ctx.save();ctx.translate(p.x,p.y);ctx.scale(mirrored?-size:size,size);ctx.imageSmoothingEnabled=false;
+    // 上半身は同じ登録済み姿勢を使う。歩くたびに帽子/胴体を縮めない。
+    ctx.drawImage(sprite,col*cw,row*ch+torso,cw,ch-torso,-ax,-ay+torso,cw,ch-torso);
+    ctx.drawImage(sprite,col*cw,ch,cw,torso,-ax,-ay,cw,torso);ctx.restore();
   }else{ctx.fillStyle='#15111c';ctx.fillRect(p.x-h*.18,p.y-h,h*.36,h);ctx.fillStyle='#dbc3a9';ctx.fillRect(p.x-h*.13,p.y-h*.93,h*.26,h*.2);}
   for(const d of DOORS){const i=host.info(d.id),{x,y}=toScreen(...d.label,cam);if(x<-120||x>VIEW.w+120||y<-40||y>VIEW.h+40)continue;ctx.font='bold 19px system-ui';ctx.textAlign='center';
     const text=i.label,w=Math.max(108,ctx.measureText(text).width+24);ctx.fillStyle='#19131cdb';ctx.fillRect(x-w/2,y-21,w,48);
@@ -115,13 +120,13 @@ function draw() {
     ctx.font='14px system-ui';ctx.fillText(i.tag||'',x,y+19);if(i.event){ctx.fillStyle='#f9dc73';ctx.font='bold 24px system-ui';ctx.fillText('!',x,y-30);}}
   const d=nearest();if(d&&!message&&!travel){ctx.fillStyle='#ffe29d';ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.fillText('!',p.x,p.y-h-12);}
 }
-function tick(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+function tick(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);if(!paused())cam=followCamera(cam,player,dt);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
 window.streetScene={connect(adapter){host=adapter;stop();wasPaused=true;focus();}};
 window.__street={
-  state:()=>({ready,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,camera(player)),z:player.z,
-    worldX:foot().x,worldY:foot().y,worldScale:foot().scale,cameraZoom:camera(player).zoom,
-    renderHeight:CHARACTER_HEIGHT*foot().scale*camera(player).zoom,camX:camera(player).tx,msg:message,busy:false,
+  state:()=>({ready,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,cam),z:player.z,
+    worldX:foot().x,worldY:foot().y,worldScale:foot().scale,cameraZoom:cam.zoom,
+    renderHeight:CHARACTER_HEIGHT*foot().scale*cam.zoom,camX:cam.tx,vanishing:toScreen(FLOOR.cx,FLOOR.horizon,cam),dir:player.dir,gaitFrame:gaitFrame(),walked,moving,frames:meta?.rows,msg:message,busy:false,
     travel:DOORS.map(d=>({id:d.id,off:!host?.visited(d.id)})),character:'hajime'}),
-  layout:()=>({kind:'arcade',projection:'depth',view:VIEW,doors:DOORS.map(d=>{const c=camera(player),a=toScreen(d.rect[0],d.rect[1],c),f=toScreen(...d.foot,c);return {...d,rect:[a.x,a.y,d.rect[2]*c.zoom,d.rect[3]*c.zoom],foot:[f.x,f.y]};}),spawn:project(SPAWN),setSource:bg?'image':'placeholder'}),
+  layout:()=>({kind:'arcade',projection:'depth',view:VIEW,doors:DOORS.map(d=>{const a=toScreen(d.rect[0],d.rect[1],cam),f=toScreen(...d.foot,cam);return {...d,rect:[a.x,a.y,d.rect[2]*cam.zoom,d.rect[3]*cam.zoom],foot:[f.x,f.y]};}),spawn:project(SPAWN),setSource:bg?'image':'placeholder'}),
   warp(id){const d=DOORS.find(d=>d.id===id);if(d)place(...d.foot,'up');},place,
 };

@@ -67,6 +67,7 @@ try {
     await reset(); let frame = await walk();
     assert.equal((await frame.evaluate(() => __street.layout())).kind, 'arcade');
     assert.equal((await frame.evaluate(() => __street.state())).character, 'hajime');
+    assert.equal((await frame.evaluate(() => __street.state())).frames, 4);
     assert.equal((await frame.evaluate(() => __street.state())).alwaysRun, false);
     // 入口ボタンのクリックだけでキーが届く。テスト側からframeをfocusしない。
     const initial = await frame.evaluate(() => __street.state());
@@ -76,9 +77,33 @@ try {
     const deeper = await frame.evaluate(() => __street.state());
     assert(deeper.z > initial.z && deeper.cameraZoom > initial.cameraZoom && deeper.renderHeight >= 90,
       'camera must follow depth while character stays readable');
+    assert(Math.hypot(deeper.vanishing.x-initial.vanishing.x,deeper.vanishing.y-initial.vanishing.y)<1e-9,
+      'following camera must keep the arcade horizon fixed');
+    assert(deeper.walked>initial.walked,'gait must advance with ground travel');
+    await page.waitForTimeout(350);
+    assert.equal((await frame.evaluate(()=>__street.state())).walked,deeper.walked,'idle character must not keep stepping');
     await tap(frame, 800, 615); await page.waitForTimeout(600);
     const tapped = await frame.evaluate(() => __street.state());
     assert(Math.hypot(tapped.worldX-deeper.worldX,tapped.worldY-deeper.worldY)>15);
+    // 全8方向を実キーで歩く。停止/4姿勢/斜めの速度も毎回確認する。
+    const distances=[];
+    for(const [dir,keys] of [['down',['ArrowDown']],['down_right',['ArrowDown','ArrowRight']],
+      ['right',['ArrowRight']],['up_right',['ArrowUp','ArrowRight']],['up',['ArrowUp']],
+      ['up_left',['ArrowUp','ArrowLeft']],['left',['ArrowLeft']],['down_left',['ArrowDown','ArrowLeft']]]) {
+      await frame.evaluate(()=>__street.place(640,432.5,'up'));await frame.locator('#view').focus();
+      for(const key of keys)await page.keyboard.down(key);
+      const seen=new Set(),began=Date.now();
+      while(Date.now()-began<1150){const s=await frame.evaluate(()=>__street.state());if(s.moving&&s.dir===dir)seen.add(s.gaitFrame);await page.waitForTimeout(20);}
+      assert.equal((await frame.evaluate(()=>__street.state())).dir,dir);
+      for(const key of keys)await page.keyboard.up(key);
+      await page.waitForTimeout(100);
+      const s=await frame.evaluate(()=>__street.state());
+      assert.equal(seen.size,4,`${dir}: all gait poses must appear`);
+      assert.equal(s.moving,false,`${dir}: key release must stop`);
+      assert(s.walked>.7&&s.walked<1,`${dir}: ground speed outside expected range`);
+      distances.push(s.walked);
+    }
+    assert(Math.max(...distances)/Math.min(...distances)<1.12,'diagonal movement must not be faster');
     await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);
@@ -91,7 +116,7 @@ try {
     await unchanged();
     await page.locator('[data-test="street-back"]').click(); await page.waitForSelector('.map:not(.done)');
     assert.equal(await page.evaluate(() => T.result), 'pending'); await unchanged();
-    pass(`${label}: native arcade, Hajime, following camera/readable size, keyboard/${touch ? 'touch' : 'pointer'}, inspect/back cost zero`);
+    pass(`${label}: arcade/Hajime, fixed horizon/readable size, all 8 actual key directions/4 poses/equal speed/stop, ${touch ? 'touch' : 'pointer'}, cost zero`);
 
     for (const [kind, id, door, why] of [
       ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
