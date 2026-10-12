@@ -300,14 +300,15 @@ function next() {
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (line.next_id && jumpTo(line.next_id)) return; continue; }
     if (type === "set_flag") {
+      const contact = /^_lime_contact_(.+)$/.exec(line.flag || "");
+      const alreadyConnected = contact && (state.flags[line.flag] || state.contacts.includes(contact[1]));
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
       if (m) {
         markMet(m[1]);
         if (needsIntro(m[1])) queueIntro({ id: m[1] });
       }
-      const contact = /^_lime_contact_(.+)$/.exec(line.flag || "");
-      if (contact && !vnTest.turbo) {
+      if (contact && !alreadyConnected && !vnTest.turbo) {
         const id = contact[1];
         const key = `_lime_exchange_shown_${id}`;
         if (!state.flags[key]) {

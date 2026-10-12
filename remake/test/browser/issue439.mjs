@@ -158,7 +158,12 @@ await suite("issue439", async (check) => {
     await page.screenshot({ path: ".codex/artifacts/remake-browser/issue439-lime.png" });
     await page.locator(".mo-lime").waitFor({ state: "detached" });
     await page.locator(".vn-next.show").waitFor(); await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);
-    const replay = await page.evaluate(async () => { I.vn.vnTest.turbo = true; await I.vn.play(I.dlg); return document.querySelectorAll(".mo-lime").length; });
-    assert.equal(replay, 0);
+    // 交換演出の既読キーを持たない旧セーブでも、既存の連絡先を交換し直さない。
+    await page.evaluate(() => { delete I.core.state.flags._lime_exchange_shown_naru; I.talk = I.vn.play(I.dlg); });
+    await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent.includes("交換しよう"));
+    await page.locator("#vn.active .vn-next.show").waitFor(); await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("よろしくお願いします"));
+    assert.equal(await page.locator(".mo-lime").count(), 0);
+    await page.locator(".vn-next.show").waitFor(); await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);
   });
 });
