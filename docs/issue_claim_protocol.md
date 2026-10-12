@@ -62,7 +62,49 @@ BLOCKERS: <specific constraints>
 NEXT: <first safe action for the next session>
 ```
 
-**Resuming:** The same worker may continue its reserved branch after verifying the latest Issue/PR status. A different worker must wait for the original session to stop and push its work; then the original owner releases the reservation and the new worker claims the same Issue successfully. Do not transfer ownership by posting a forged claim marker or by reusing another worker's ID.
+**Resuming:** The same worker may continue its reserved branch after verifying the latest Issue/PR status. For a different worker with no referencing Open PR, stop the original session and push its work, then release by the original owner and claim by the new worker. For saved Open PRs, use the explicit admin transfer below; ordinary claim still rejects Open PRs. Never reuse another session's ID or manually write claim markers.
+
+### Admin handoff of saved Open PRs
+
+A repository administrator may use `operation=transfer` after independently
+confirming the original session stopped, the saved work to be handed off was pushed, and
+the handoff scope and unfinished work were recorded on the Issue. A failed chat
+message alone is not proof of a stopped worker. Inspect the session's live status
+and the current GitHub branches/PR heads. Preserve unrelated pending PRs.
+
+The admin posts a human approval comment on that same Issue containing this
+single-line record (replace every value with verified evidence):
+
+```text
+<!-- issue-handoff:v1 {"issue":325,"from":"old-worker","to":"new-worker","claim_run":"123456","stopped":true,"pushed":true,"prs":[{"number":326,"head":"0123456789012345678901234567890123456789"}]} -->
+```
+
+List **all** referencing Open PR numbers and their current full head SHAs,
+including Drafts; describe which PR may be edited and which must be preserved
+in the prose of the comment. Both the approval author and dispatch actor must
+have repository admin permission. The coordinator verifies the active old
+owner/claim run, the source run's success, the Issue's open/unblocked state,
+the exact Open PR set and same-repository heads, and that the new worker owns
+no other Issue, including closed Issues. It rechecks the record and mutable
+state before writing. Unknown permissions, changed PR heads, an edited approval,
+missing PRs or stale/failed reservations cause refusal without a ledger write.
+
+```sh
+gh workflow run issue-claim.yml --ref main -f operation=transfer -f issue=325 \
+  -f owner=new-worker -f agent=codex -f claim_run=123456 \
+  -f handoff_comment=987654 -f request_id=<fresh-unique-request-id>
+```
+
+The serialized coordinator writes one new bot claim record for the new worker,
+with the original owner and approval URL in its audit text. This explicitly
+relinquishes the old ownership and avoids an unreserved release/claim gap;
+do **not** run release first for this path. Wait for that exact transfer run to
+succeed and confirm `CLAIMED_ISSUE`, then run `status` with the **transfer run ID**
+as `claim_run` and confirm `CLAIM_VALIDATED_ISSUE` before editing. Cancellation
+or failure after the write retains the reservation and cannot authorize work;
+inspect it and obtain a fresh admin handoff or formal release by the new owner.
+This validates snapshots, not an atomic lock on PR branches: recheck live heads
+before editing and retain all existing Git Safety, test, CI and merge gates.
 
 **Finishing:** Only merge a complete PR after required checks/reviews and conflict checks pass; never use a claim as merge permission. After merge, release with the original worker ID (release supports closed Issues). If a claim is stale and the owner cannot run release, flag it for manual review rather than taking it over silently.
 
@@ -116,7 +158,7 @@ workers' handoffs, and check blocking Issues/dependent PRs manually. The present
 coordinator does **not** compute file overlap or parse dependency graphs.
 Unpushed work is invisible. If resuming an existing Draft PR, stop and arrange
 an explicit owner handoff; do not change `#number` to a URL to bypass its guard.
-There is no automatic takeover exemption in this workflow.
+There is no automatic takeover exemption; saved Open PRs require the explicit admin transfer above.
 
 This workflow does not merge PRs. For each merge, fetch latest main; compare
 base/head and changed files; check mergeability, required CI and tests on the
