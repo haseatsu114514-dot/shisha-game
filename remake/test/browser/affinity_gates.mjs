@@ -1,4 +1,4 @@
-// #327: production questions/finales, capped rescue, old saves and existing lovers.
+// #327 gates and #381 friend STATUS: production events, old saves and existing lovers.
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 
@@ -173,6 +173,108 @@ await suite("affinity-gates", async check => {
       await page.locator('[data-tab="people"]').click();
       await page.getByText("関係を考える会話待ち", { exact: true }).waitFor();
       await assertFits(page, ".st-people, .pp-row, .pp-relation");
+    }, { ...options, reducedMotion: "reduce" });
+    await check(`${label}-friend-status`, async page => {
+      await setup(page);
+      const ids = ["sumi", "naru", "adam", "tsumugi", "minto", "rin", "hiyori"];
+      await page.evaluate(ids => {
+        const s = G.fresh();
+        for (const id of ids) {
+          s.met[id] = true; s.affinity[id] = 66;
+          s.finales[id] = { route: "friend", day: 7, chapter: 1 };
+        }
+        // A pre-schema-8 save keeps recorded finales, legacy flags and acquired rewards.
+        s.schema = 7; s.flags._friend_rin = true;
+        s.owned.push("suyaki_sumi", "suyaki_naru", "suyaki_adam");
+        G.core.save(); G.core.load();
+        G.beforeStatus = JSON.stringify(G.core.state);
+        G.beforeSave = localStorage.getItem(G.core.SAVE_KEY);
+        G.status.openStatus();
+      }, ids);
+      await page.locator('[data-tab="people"]').click();
+      const friends = await page.locator(".pp-row").evaluateAll(rows => rows.map(row => ({
+        name: row.querySelector(".pp-name").textContent,
+        friend: [...row.querySelectorAll(".pp-relation")].some(n => n.textContent === "友達"),
+      })));
+      assert.equal(friends.length, ids.length);
+      assert(friends.every(row => row.friend), JSON.stringify(friends));
+      await assertFits(page, ".st-people, .pp-row, .pp-relation");
+      await page.locator('[data-test="status-close"]').click();
+      const preserved = await page.evaluate(() => ({
+        state: JSON.stringify(G.core.state) === G.beforeStatus,
+        save: localStorage.getItem(G.core.SAVE_KEY) === G.beforeSave,
+        legacy: G.core.state.flags._friend_rin,
+        gifts: G.core.state.owned.filter(id => ["suyaki_sumi", "suyaki_naru", "suyaki_adam"].includes(id)),
+      }));
+      assert(preserved.state && preserved.save && preserved.legacy);
+      assert.deepEqual(preserved.gifts, ["suyaki_sumi", "suyaki_naru", "suyaki_adam"]);
+
+      for (const [label, route, flag, lover, registered, expected] of [
+        ["pending-romance", "romance", false, false, true, false],
+        ["rejected-confession", "romance", true, false, true, true],
+        ["existing-lover", "friend", true, true, true, false],
+        ["unread-finale", null, false, false, true, false],
+        ["legacy-flag-without-finale", null, true, false, true, false],
+        ["unregistered-character", "friend", true, false, false, false],
+      ]) {
+        await page.evaluate(({ route, flag, lover, registered }) => {
+          const s = G.fresh();
+          s.affinity.rin = 66;
+          if (route) s.finales.rin = { route, day: 7, chapter: 1 };
+          if (flag) s.flags._friend_rin = true;
+          if (lover) { s.lovers = ["rin"]; s.loveLevel.rin = 2; s.lovePts.rin = 20; }
+          G.friendData = window.__remake.DB.friends.friends.rin;
+          if (!registered) delete window.__remake.DB.friends.friends.rin;
+          G.beforeStatus = JSON.stringify(s);
+          G.status.openStatus();
+        }, { route, flag, lover, registered });
+        await page.locator('[data-tab="people"]').click();
+        const result = await page.evaluate(() => {
+          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === "凛");
+          return {
+            friend: [...row.querySelectorAll(".pp-relation")].some(n => n.textContent === "友達"),
+            settled: G.bonds.settledFriend("rin"),
+            lover: row.classList.contains("lover"),
+            unchanged: JSON.stringify(G.core.state) === G.beforeStatus,
+          };
+        });
+        assert.equal(result.friend, expected, label);
+        assert.equal(result.settled, expected, label);
+        assert.equal(result.lover, lover, label);
+        assert(result.unchanged, label);
+        await page.locator('[data-test="status-close"]').click();
+        await page.evaluate(() => { window.__remake.DB.friends.friends.rin = G.friendData; });
+      }
+    }, { ...options, reducedMotion: "reduce" });
+
+    await check(`${label}-male-finales-and-status`, async page => {
+      await setup(page);
+      for (const id of ["sumi", "naru", "adam"]) {
+        const event = await page.evaluate(async id => {
+          const s = G.fresh();
+          s.met[id] = true; s.flags[`_intro_${id}`] = true;
+          s.story[id] = (G.spots.VISIT_SEQ[id] || []).length;
+          s.affinity[id] = 66;
+          await G.spots.visitChar(id); // actual finale/gift path, not an injected route
+          const gift = G.bonds.BOND_FINALES[id].gift;
+          const before = JSON.stringify(s);
+          const replay = await G.bonds.playFinale(id);
+          G.status.openStatus();
+          return { route: s.finales[id]?.route, gift, count: s.owned.filter(x => x === gift).length,
+            replay, unchanged: JSON.stringify(s) === before };
+        }, id);
+        assert.equal(event.route, "friend", id); assert.equal(event.count, 1, id);
+        assert(!event.replay && event.unchanged, id);
+        await page.locator('[data-tab="people"]').click();
+        const shown = await page.evaluate(id => {
+          const expected = id === "sumi" ? "スミさん" : id === "naru" ? "なる" : "アダム";
+          const row = [...document.querySelectorAll(".pp-row")].find(n => n.querySelector(".pp-name").textContent === expected);
+          return !!row && [...row.querySelectorAll(".pp-relation")].some(n => n.textContent === "友達");
+        }, id);
+        assert(shown, `${id}: actual finale is missing friend STATUS`);
+        await assertFits(page, ".pp-row, .pp-relation");
+        await page.locator('[data-test="status-close"]').click();
+      }
     }, { ...options, reducedMotion: "reduce" });
   }
 });
