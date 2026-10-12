@@ -40,7 +40,7 @@
     ],
     "mode": "RGB",
     "sha256": "13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b",
-    "status": "候補保存のみ・承認待ち",
+    "status": "要修正・オーナー指摘の比較前",
     "approved": false,
     "runtime_paths": [],
     "prompt": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v2.prompt.txt",
@@ -60,6 +60,58 @@
       "assets/sprites/characters/minto/chr_minto_normal.png",
       "assets/ui/title_arts/title_art_keyvisual_01.png",
       "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg"
+    ],
+    "owner_feedback": "手前はよいが背景の容器が大きすぎる。全員規則的な保管、2段積み、本体側面のシールとペンで書いたフレーバー名を描く。"
+  },
+  "v3": {
+    "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v3.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "sha256": "b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983",
+    "status": "途中履歴・背景の縮尺と列を修正",
+    "approved": false,
+    "runtime_paths": [],
+    "prompt": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v3.prompt.txt",
+    "generated_original": "/workspace/generated_images/exec-7839e48b-1928-4b37-8e88-8fe4321ba1f7.png",
+    "reference_paths": [
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v2.png",
+      "assets/sprites/characters/minto/chr_minto_normal.png",
+      "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/04-stacked-shop-storage.jpg",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg"
     ]
-  }
+  },
+  "v4": {
+    "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "sha256": "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496",
+    "status": "候補保存のみ・最終比較案",
+    "approved": false,
+    "runtime_paths": [],
+    "prompt": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.prompt.txt",
+    "generated_original": "/workspace/generated_images/exec-d3e6fbbb-62cd-442d-ad1a-cbeca3ed3cd1.png",
+    "reference_paths": [
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v3.png",
+      "assets/sprites/characters/minto/chr_minto_normal.png",
+      "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/04-stacked-shop-storage.jpg",
+      "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg"
+    ],
+    "qa": {
+      "foreground": "容器は近景として従来のサイズ・位置・奥行きを保つ。葉と外した蓋を維持。側面のミントを原寸で読める。生成編集による微変化はある。",
+      "background": "各棚3列×2段、同一底面で真上に積み、棚に底面が接する。前面・ラベル位置・間隔を揃える。各容器は手前の約1/4の見かけ幅、人物の頭ほどの大型箱を除去。数値はこの絵の目視目安で実寸規格ではない。",
+      "stickers": "本体側面、蓋の密閉縁より下、底より上。上下段で見える。ミント・バニラ・ベリーのペン風筆跡、実ブランドなし。",
+      "identity": "黒長髪、緑目、角・蝙蝠、黒緑衣装、ハート、ポーズ・手元を元候補と比較。大きな同一性変化なし。",
+      "hardware": "準備中の脚付きボウル・冷たいHMD、炭・煙・ホースなし。精密なモデル再検証は未完。",
+      "texture": "細かい粒子感と陰影を保持。新しい植物・UI・ブランド・広告文字なし。"
+    }
+  },
+  "followup_claim_run": 38180999574
 }
