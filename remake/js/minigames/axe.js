@@ -108,8 +108,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
       .then(manifest => {
         if (phase === "closed") return;
-        portraitKey = companion.portraitKeys.find(key => companion.faces.every(face => manifest.portraits?.[key]?.faces?.includes(face)));
-        if (!portraitKey) throw new Error("Companion artwork missing from catalogue");
+        portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
+        if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
+          throw new Error("Companion artwork missing from catalogue");
         portrait.src = faceArt(portraitKey, companion.faces[0]);
         return Promise.all([...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face))].map(decodeArt));
       })

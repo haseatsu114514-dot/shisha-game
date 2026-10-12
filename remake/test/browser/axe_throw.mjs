@@ -144,12 +144,15 @@ await suite("axe-throw", async check => {
   });
   await check("art-catalog-names-and-retry",async page => {
     const manifest = await (await page.request.get(new URL("data/manifest.json",page.url()).href)).json();
-    const sourceKey = manifest.portraits.samechan ? "samechan" : "kafuka";
-    for (const key of ["kafuka","samechan"]) {
+    const sourceKey = manifest.titleArts.find(entry=>entry.file.endsWith("_01_shishark_test_run.png")).character;
+    for (const key of new Set([sourceKey,"samechan","renamed_catalogue_fixture"])) {
       await page.unrouteAll();
       const catalogue = structuredClone(manifest);
       const portrait = catalogue.portraits[sourceKey];
-      delete catalogue.portraits.kafuka; delete catalogue.portraits.samechan; catalogue.portraits[key]=portrait;
+      delete catalogue.portraits[sourceKey]; catalogue.portraits[key]=portrait;
+      for(const entry of catalogue.titleArts) if(entry.character===sourceKey) {
+        entry.character=key; entry.file=entry.file.replace("title_art_" + sourceKey + "_","title_art_" + key + "_");
+      }
       await page.route("**/remake/data/manifest.json",route=>route.fulfill({json:catalogue}));
       if(key!==sourceKey) await page.route("**/img/sprites/characters/" + key + "/*",async route=>{
         const url=route.request().url().replace("/" + key + "/chr_" + key + "_","/" + sourceKey + "/chr_" + sourceKey + "_");
