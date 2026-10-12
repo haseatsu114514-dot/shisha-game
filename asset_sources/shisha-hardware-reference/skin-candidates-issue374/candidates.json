@@ -1,0 +1,154 @@
+{
+  "issue": 374,
+  "worker": "codex-e-visual-20261011-01",
+  "claim_run": 38179073060,
+  "base_sha": "73cd85e0c2f40f18361a6174b9cb9c1064eaab56",
+  "items": [
+    {
+      "id": "handle-01-yoshio",
+      "name": "夜潮",
+      "category": "handle",
+      "status": "candidate_owner_selection_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-01-yoshio.png",
+      "generated_original": "/workspace/generated_images/exec-73f08ee1-55a5-4143-94a3-edb8e2bc6c74.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-01-yoshio.prompt.txt",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "sha256": "ac2dd4113ca38e5b599a7aad206e4a512a1048bfb67b18dafaef846e6314e9b2",
+      "concept_length_cm": 30,
+      "dimensional_status": "候補上の目安。元写真の商品寸法の確認値でも普遍規格でもない。実機適合径は未決。",
+      "reference_images": [
+        "asset_sources/shisha-hardware-reference/handles-extra-20261009.webp"
+      ],
+      "texture_reference": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "qa": {
+        "shape": "両端の中空開口、単一軸、分岐なしを原寸で目視。長い硬質ハンドル／短いチップを縮尺比較で区別。",
+        "material": "墨黒+紺と銀／海青+銀／半透明淡青／真鍮色+黒い接続材を区別。",
+        "necklace": "首掛け使用シーンは未制作。星月のリングは外付け携帯用、通気路から独立。鎖なし。",
+        "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
+        "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
+        "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
+      }
+    },
+    {
+      "id": "handle-02-shishark-blue",
+      "name": "SHISHARKブルー",
+      "category": "handle",
+      "status": "candidate_owner_selection_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-02-shishark-blue.png",
+      "generated_original": "/workspace/generated_images/exec-bffbeb78-a529-4042-9f60-4bbc646acf9a.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/handle-02-shishark-blue.prompt.txt",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "sha256": "75412fc6b66669567f4950cfd88757840d6ab4537a0a25eb8a15ea062b9ed47e",
+      "concept_length_cm": 30,
+      "dimensional_status": "候補上の目安。元写真の商品寸法の確認値でも普遍規格でもない。実機適合径は未決。",
+      "reference_images": [
+        "asset_sources/shisha-hardware-reference/handles-extra-20261009.webp"
+      ],
+      "texture_reference": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "qa": {
+        "shape": "両端の中空開口、単一軸、分岐なしを原寸で目視。長い硬質ハンドル／短いチップを縮尺比較で区別。",
+        "material": "墨黒+紺と銀／海青+銀／半透明淡青／真鍮色+黒い接続材を区別。",
+        "necklace": "首掛け使用シーンは未制作。星月のリングは外付け携帯用、通気路から独立。鎖なし。",
+        "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
+        "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
+        "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
+      }
+    },
+    {
+      "id": "mouthpiece-01-crystal-drop",
+      "name": "水晶のしずく",
+      "category": "mouthpiece",
+      "status": "candidate_owner_selection_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-01-crystal-drop.png",
+      "generated_original": "/workspace/generated_images/exec-f675a703-67aa-4e6f-ba9c-20e039148bfa.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-01-crystal-drop.prompt.txt",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "sha256": "3b57c4ef40a0b582a900eff337310402e7a5875b49195c98165068ad83d5483d",
+      "concept_length_cm": 4,
+      "dimensional_status": "候補上の目安。元写真の商品寸法の確認値でも普遍規格でもない。実機適合径は未決。",
+      "reference_images": [
+        "asset_sources/shisha-hardware-reference/mouthpieces-extra-20261009.webp",
+        "asset_sources/shisha-hardware-reference/hose-mouthpiece-reference-20261009.webp"
+      ],
+      "texture_reference": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "qa": {
+        "shape": "両端の中空開口、単一軸、分岐なしを原寸で目視。長い硬質ハンドル／短いチップを縮尺比較で区別。",
+        "material": "墨黒+紺と銀／海青+銀／半透明淡青／真鍮色+黒い接続材を区別。",
+        "necklace": "首掛け使用シーンは未制作。星月のリングは外付け携帯用、通気路から独立。鎖なし。",
+        "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
+        "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
+        "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
+      }
+    },
+    {
+      "id": "mouthpiece-02-starmoon-charm",
+      "name": "星月のチャーム",
+      "category": "mouthpiece",
+      "status": "candidate_owner_selection_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "original_path": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-02-starmoon-charm.png",
+      "generated_original": "/workspace/generated_images/exec-7d69537d-4884-4baf-8eb1-1e1ef78c8675.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/shisha-hardware-reference/skin-candidates-issue374/mouthpiece-02-starmoon-charm.prompt.txt",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "sha256": "475a79e3aaa9cee52b20bcacd4b76dfa8888ca1d26cfac3bb9bc91e1408a1bf6",
+      "concept_length_cm": 4,
+      "dimensional_status": "候補上の目安。元写真の商品寸法の確認値でも普遍規格でもない。実機適合径は未決。",
+      "reference_images": [
+        "asset_sources/shisha-hardware-reference/mouthpieces-extra-20261009.webp",
+        "asset_sources/shisha-hardware-reference/hose-mouthpiece-reference-20261009.webp"
+      ],
+      "texture_reference": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "qa": {
+        "shape": "両端の中空開口、単一軸、分岐なしを原寸で目視。長い硬質ハンドル／短いチップを縮尺比較で区別。",
+        "material": "墨黒+紺と銀／海青+銀／半透明淡青／真鍮色+黒い接続材を区別。",
+        "necklace": "首掛け使用シーンは未制作。星月のリングは外付け携帯用、通気路から独立。鎖なし。",
+        "branding": "実在ロゴ・宣伝文なし。固有製品の意匠トレースなし。",
+        "alpha": "RGBA、角透明。灰背景合成で周囲の大きな黒い矩形・白縁なし。alpha最大254のため完全不透明な画素は無い。採用時の輪郭・alpha正規化を別工程で確認する。",
+        "not_verified": "実際の手持ち・ホース装着・ハンドルへのチップ嵌合・キャラ実使用の画面QAは未実施。コンセプト単体なので装着済みとは扱わない。"
+      }
+    }
+  ]
+}
