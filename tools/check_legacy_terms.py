@@ -89,6 +89,7 @@ EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
 IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 
 
 def scan_character_identity(errors: list):
@@ -116,6 +117,10 @@ def scan_character_identity(errors: list):
         for number, line in enumerate(text.splitlines(), 1):
             if LEGACY_CHARACTER_RE.search(line):
                 errors.append(f"{rel}:{number}: 旧キャラ名・ID → サメちゃん / samechan に統一")
+            if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
+                # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
+                if not ("旧" in line and "誤" in line):
+                    errors.append(f"{rel}:{number}: みんとの旧髪型・髪色の指示 → 黒髪のストレートロングに統一")
 
     minto = next(c for c in json.loads((REPO / "data/characters.json").read_text(encoding="utf-8"))
                  if c["id"] == "minto")

@@ -159,7 +159,8 @@ function migrate(s) {
   }
   s.inbox = (Array.isArray(s.inbox) ? s.inbox : []).filter((i) => i && typeof i.id === "string" && i.msg && typeof i.msg === "object");
   for (const item of s.inbox) {
-    item.originId ||= item.msg.origin_id || item.id;
+    // 再案内の一意IDを元の約束IDとして保存した旧ロードの誤記録も修復する。
+    item.originId = item.msg.origin_id || item.originId || item.id;
     if (!["waiting", "replied", "expired", "none"].includes(item.replyState)) {
       const replyable = item.msg.type === "invitation" || !!item.msg.replies?.length;
       item.replyState = !replyable ? "none" : !item.done ? "waiting"
@@ -176,9 +177,12 @@ function migrate(s) {
   }
   if (s.pendingInvite && typeof s.pendingInvite === "object") {
     const inv = s.pendingInvite;
-    const item = [...s.inbox].reverse().find((i) => i.msg.sender === inv.sender && i.msg.accept_event === inv.event);
+    const candidates = [...s.inbox].reverse().filter((i) => i.msg.sender === inv.sender && i.msg.accept_event === inv.event);
+    const item = inv.originId
+      ? candidates.find((i) => i.id === inv.originId || i.originId === inv.originId)
+      : candidates[0];
     inv.day ??= s.day;
-    inv.originId ||= item?.originId || null;
+    inv.originId = item?.originId || inv.originId || null;
     inv.afterClose ??= !!item?.msg.after_close;
   }
   // 隠し恋愛値・締めくくり（スキーマ8）。壊れた値は捨て、無いものは空から始める（読んでいない質問を埋めない）

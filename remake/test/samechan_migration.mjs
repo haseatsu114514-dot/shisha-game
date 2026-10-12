@@ -123,13 +123,25 @@ assert.deepEqual(loaded.contacts, ["sumi", "samechan"]); assert.deepEqual(loaded
 assert.equal(loaded.affinity.samechan, 90);
 
 // 再案内だけに新しい受信箱IDが付いた旧保存では、台本に残った元の約束IDを保持する。
-const retry = legacySave(12);
-retry.inbox[0].id = "lover_invite_kafuka_c2_6_retry1";
-delete retry.inbox[0].originId;
-retry.inbox[0].msg.origin_id = "lover_invite_kafuka_c2";
-storage.set(core.SAVE_KEY, JSON.stringify(retry));
-const retryLoaded = copy(core.load());
-assert.equal(retryLoaded.inbox[0].originId, "lover_invite_samechan_c2");
-assert.equal(retryLoaded.pendingInvite.originId, retryLoaded.inbox[0].originId);
-core.save(); assert.deepEqual(normalized(core.load()), normalized(retryLoaded));
+for (const alreadySaved of [false, true]) {
+  const retry = legacySave(12);
+  retry.inbox[0].id = "lover_invite_kafuka_c2_6_retry1";
+  if (alreadySaved) {
+    retry.inbox[0].originId = retry.inbox[0].id;
+    retry.pendingInvite.originId = retry.inbox[0].id;
+  } else delete retry.inbox[0].originId;
+  retry.inbox[0].msg.origin_id = "lover_invite_kafuka_c2";
+  // 同じ相手・イベントの後続トークで、既に承諾した予約を付け替えない。
+  retry.inbox.push({ ...copy(retry.inbox[0]), id: "later_kafuka_retry", originId: "later_kafuka",
+    msg: { ...copy(retry.inbox[0].msg), origin_id: "later_kafuka" } });
+  storage.set(core.SAVE_KEY, JSON.stringify(retry));
+  const retryLoaded = copy(core.load());
+  assert.equal(retryLoaded.inbox[0].originId, "lover_invite_samechan_c2");
+  assert.equal(retryLoaded.pendingInvite.originId, retryLoaded.inbox[0].originId);
+  assert.equal(retryLoaded.inbox[1].originId, "later_samechan");
+  core.save(); assert.deepEqual(normalized(core.load()), normalized(retryLoaded));
+  retry.pendingInvite.originId = "separate_kafuka";
+  storage.set(core.SAVE_KEY, JSON.stringify(retry));
+  assert.equal(core.load().pendingInvite.originId, "separate_samechan");
+}
 console.log("[samechan migration] PASS: all save slots, old schemas, invitations, romance, receipts, read milestones and repeated loads");

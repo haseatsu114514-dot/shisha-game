@@ -110,6 +110,38 @@ await suite("lime-appointment-recovery", async check => {
     assert.equal(result.invited, completed); assert(result.read && result.item.read); assert.equal(result.pending, null);
   }, { reducedMotion: "reduce" });
 
+  await check("legacy-persisted-retry-origin", async page => {
+    await setup(page, 6, 1);
+    const loadedOrigin = await page.evaluate(() => {
+      const s = QA.core.state, item = s.inbox[0], canonical = item.id;
+      const retryId = `${canonical}_retry_c1_d5`;
+      Object.assign(item, { id: retryId, originId: retryId, day: 5, read: true, done: true,
+        result: "accepted", replyState: "replied" });
+      item.msg.id = retryId; item.msg.origin_id = canonical;
+      s.limeRead.push(canonical, retryId); s.flags[`_invited_${canonical}`] = true;
+      // 以前のロード処理が誤ったoriginIdを書き込んだまま保存した状態を再現する。
+      s.schema = 12;
+      localStorage.setItem("suien_remake_slot2", JSON.stringify(s));
+      QA.core.loadFromSlot("suien_remake_slot2");
+      const origin = QA.core.state.inbox[0].originId; QA.run(); return origin;
+    });
+    assert.equal(loadedOrigin, "lime_minto_first_holiday");
+    await mapAt(page, 6, 1);
+    const repaired = await page.evaluate(() => {
+      const s = QA.core.state;
+      return { item: s.inbox[0], pending: s.pendingInvite, invited: !!s.flags._invited_lime_minto_first_holiday,
+        read: s.limeRead.includes("lime_minto_first_holiday_retry_c1_d5") };
+    });
+    assert.equal(repaired.item.result, "expired"); assert(repaired.item.needsResend && repaired.item.read && repaired.read);
+    assert(!repaired.invited); assert.equal(repaired.pending, null);
+    await go(page, "rest"); await mapAt(page, 7, 0);
+    const retries = await page.evaluate(() => QA.core.state.inbox.filter(i => i.originId === "lime_minto_first_holiday"));
+    assert.equal(retries.length, 2); assert.equal(retries[1].day, 7); assert.equal(retries[1].msg.origin_id, "lime_minto_first_holiday");
+    assert(!retries[1].read && !retries[1].done);
+    await page.evaluate(() => QA.phone.deliverMorning());
+    assert.equal(await page.evaluate(() => QA.core.state.inbox.filter(i => i.originId === "lime_minto_first_holiday").length), 2);
+  }, { reducedMotion: "reduce" });
+
   await check("successful-meeting-survives-load", async page => {
     await setup(page, 6, 0);
     await page.evaluate(() => {

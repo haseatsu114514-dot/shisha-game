@@ -197,98 +197,6 @@
       "thumbnail": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6-thumb.webp"
     },
     {
-      "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
-      "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
-      "character": "samechan",
-      "label": "コロちゃんとサメ映画",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_samechan_02_shark_movie.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.prompt.txt"
-      ],
-      "current": true,
-      "related": [],
-      "image": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d.webp",
-      "thumbnail": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d-thumb.webp"
-    },
-    {
-      "id": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
-      "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
-      "character": "samechan",
-      "label": "シーシャークの試運転",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.revision-3.prompt.txt",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.prompt.txt"
-      ],
-      "current": true,
-      "related": [
-        "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
-        "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
-        "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102"
-      ],
-      "image": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257.webp",
-      "thumbnail": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257-thumb.webp"
-    },
-    {
-      "id": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
-      "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
-      "character": "samechan",
-      "label": "水族館でコロちゃんと",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_samechan_03_aquarium.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.prompt.txt"
-      ],
-      "current": true,
-      "related": [],
-      "image": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334.webp",
-      "thumbnail": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334-thumb.webp"
-    },
-    {
       "id": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "character": "mashiro",
@@ -572,6 +480,98 @@
       ],
       "image": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19.webp",
       "thumbnail": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19-thumb.webp"
+    },
+    {
+      "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "character": "samechan",
+      "label": "コロちゃんとサメ映画",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_02_shark_movie.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d.webp",
+      "thumbnail": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d-thumb.webp"
+    },
+    {
+      "id": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "character": "samechan",
+      "label": "シーシャークの試運転",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.revision-3.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+        "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+        "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102"
+      ],
+      "image": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257.webp",
+      "thumbnail": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257-thumb.webp"
+    },
+    {
+      "id": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "character": "samechan",
+      "label": "水族館でコロちゃんと",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_03_aquarium.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334.webp",
+      "thumbnail": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334-thumb.webp"
     },
     {
       "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
@@ -1003,81 +1003,6 @@
       ],
       "image": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f.webp",
       "thumbnail": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f-thumb.webp"
-    },
-    {
-      "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
-      "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
-      "character": "samechan",
-      "label": "01-shishark-test-run-first",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-first.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
-      ],
-      "image": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea.webp",
-      "thumbnail": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea-thumb.webp"
-    },
-    {
-      "id": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
-      "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
-      "character": "samechan",
-      "label": "01-shishark-test-run-revision-1",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-1.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
-      ],
-      "image": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f.webp",
-      "thumbnail": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f-thumb.webp"
-    },
-    {
-      "id": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
-      "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
-      "character": "samechan",
-      "label": "01-shishark-test-run-revision-2",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-2.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
-      ],
-      "image": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102.webp",
-      "thumbnail": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102-thumb.webp"
     },
     {
       "id": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
@@ -2234,6 +2159,81 @@
       "related": [],
       "image": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7.webp",
       "thumbnail": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7-thumb.webp"
+    },
+    {
+      "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "character": "samechan",
+      "label": "01-shishark-test-run-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea.webp",
+      "thumbnail": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea-thumb.webp"
+    },
+    {
+      "id": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+      "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+      "character": "samechan",
+      "label": "01-shishark-test-run-revision-1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-1.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f.webp",
+      "thumbnail": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f-thumb.webp"
+    },
+    {
+      "id": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "character": "samechan",
+      "label": "01-shishark-test-run-revision-2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-2.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102.webp",
+      "thumbnail": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102-thumb.webp"
     },
     {
       "id": "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524",
