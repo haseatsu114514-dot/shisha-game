@@ -4,7 +4,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -225,6 +225,9 @@ export async function runHoles(cs) {
       SE.miss();
     }
     addHoleDot(a, ring.r, kind);
+    setBenchHoleAction(cs, {
+      dots: state.flatMap(rg => rg.holes.map(h => posOf(h.a, rg.r))), target: posOf(a, ring.r),
+    });
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((h) => h.d <= perfWin) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");

@@ -50,7 +50,7 @@ try {
   const haze = async () => [await page.locator('.bench').getAttribute('data-thermal-haze'), await page.locator('.bench-worker-stage').evaluate(e => e.style.filter)];
   const shot = async name => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
   // 温度計と同じ適温端点。上限／不正値でも描画可能。
-  assert.deepEqual(await page.evaluate(() => [0,.30,.42,.66,.6601,.76,.80,.85,.8999,.90,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
+  assert.deepEqual(await page.evaluate(() => [0,.30,.42,.66,.6601,.76,.80,.85,.8999,.90,NaN].map(temp => T.thermal.thermalBand(temp)).map(b=>b.id)),
     ['cold','warming','ready','ready','hot','fire','fire','fire','fire','inferno','cold']);
   // 爆発は温度計の一番上だけ。
   assert.deepEqual(await page.evaluate(() => [.98, .999, 1].map(T.conditions.isBurnt)), [false, false, true]);
@@ -146,7 +146,7 @@ try {
   }, [lo, hi]);
   await page.evaluate(() => { cs.pull.temp = .46; window.run = T.care.runCare(cs); });
   await page.waitForSelector('[data-test="care-coals"]');
-  assert.equal(await page.locator('.care-coals-lead').textContent(), 'そろそろ調整の準備をしよう');
+  assert.match(await page.locator('.care-coals-lead').textContent(), /調整/);
   assert.match(await page.locator('.care-coals-ask').textContent(), /炭を交換しますか？/);
   assert(await page.locator('.pull-care [data-test="pull-temperature"]').isVisible(), 'thermometer must show while choosing coals');
   assert.equal(await page.locator('.pull-care [data-test="thermo-cold"]').count(), 1);

@@ -270,11 +270,16 @@ body {
   transition: opacity 0.25s linear;
 }
 #fade.on { opacity: 1; pointer-events: auto; }
+/* 本編では共通HUDを使い、操作ボタンと筐体を歩道の上から外す。 */
+body.embedded #hud { display: none; }
+body.embedded #pad { top: 185px; bottom: auto; }
+body.embedded #travel { top: 290px; }
+body.embedded #help { left: 240px; bottom: 16px; font-size: 18px; }
 </style>
 </head>
 <body>
 <div id="stage">
-  <canvas id="view" width="1280" height="720"></canvas>
+  <canvas tabindex="0" aria-label="矢印キーまたはタップで移動" id="view" width="1280" height="720"></canvas>
   <div id="hud" class="win hidden"><span id="hud-name">繁華街</span><small>（試作）</small><span id="hud-ph" class="ph hidden">仮素材</span></div>
   <div id="help" class="hidden">移動: 矢印 / WASD・タップ　Shift: ダッシュ　Z: 決定　M: マップ</div>
   <div id="pad" class="hidden">

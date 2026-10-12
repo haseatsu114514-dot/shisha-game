@@ -4,21 +4,15 @@ import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 import { steamClimate } from "./steam-climate.js";
 import { coalWarmth } from "./coals.js";
+import { temperatureBands, isIdealTemperature, isOptimalTemperature } from "./temperature-model.js";
+import { BURST_TEMP, COLD_OUT } from "./temperature-model.js";
 
-// TH83: 適温（緑）を約1.5倍の0.42〜0.66へ広げる。中心0.54は維持。
-export const IDEAL = [0.42, 0.66];
-// TH66・TH84: 狙いたくなる広い虹色（約1.7倍）。見た目と最適温の判定に同じ範囲を使う。
-export const OPTIMAL = [0.49, 0.59];
+export { IDEAL, OPTIMAL, DANGER_TEMP, BURST_TEMP, COLD_OUT, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
 // 熱い構成・長い蒸らしは過熱する。吸い出しで実温度を見て調整する。
 export const STEAM_LIMIT = .88;
-export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
 /** 温度計の一番上に届くと爆発して焦げる。 */
-export const BURST_TEMP = 1;
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
-/** ここから上は「焦げる寸前」。温度計の約10%を危険帯にする。爆発は1、蒸らしはSTEAM_LIMITで止まる。 */
-export const DANGER_TEMP = 0.90;
 /** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
-export const COLD_OUT = 0.06;
 export const isColdOut = (temp) => temp <= COLD_OUT + 1e-6;
 
 /** 温まり方は経過時間・気候・その一台の熱の入り方で決まる。雑念のミスは入れない。 */
@@ -83,11 +77,11 @@ export function heatDelta(cs, delta) {
 }
 
 /** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
-export function pullResult(temp, pulls, _justs, ideal = IDEAL, safePulls = 3) {
-  const center = (ideal[0] + ideal[1]) / 2;
-  const inZone = temp >= ideal[0] && temp <= ideal[1];
-  const optimal = isOptimalTemperature(temp);
-  const distance = Math.abs(temp - center), narrow = (OPTIMAL[1] - OPTIMAL[0]) / 2;
+export function pullResult(temp, pulls, _justs, bands = temperatureBands(), safePulls = 3) {
+  const { ideal, optimal: optimalBand, center } = bands;
+  const inZone = isIdealTemperature(temp, bands);
+  const optimal = isOptimalTemperature(temp, bands);
+  const distance = Math.abs(temp - center), narrow = (optimalBand[1] - optimalBand[0]) / 2;
   const safe = (ideal[1] - ideal[0]) / 2;
   const leafPenalty = Math.max(0, pulls - safePulls) * 8;
   const thermal = optimal ? 96 + 4 * (1 - distance / narrow)

@@ -280,7 +280,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "……今の、もう一回刺さるかな"
+          "text": "……今の、もう１回刺さるかな"
         }
       ]
     },
@@ -372,7 +372,7 @@
         {
           "speaker": "hiyori",
           "face": "excited",
-          "text": "そう！三分だけ。ラーメン来るまで！"
+          "text": "そう！３分だけ。ラーメン来るまで！"
         },
         {
           "speaker": "hiyori",
@@ -523,7 +523,7 @@
         },
         {
           "speaker": "sumi",
-          "text": "十二月まで鳴いてそうなくらい、しぶといぞ",
+          "text": "１２月まで鳴いてそうなくらい、しぶといぞ",
           "face": "normal"
         },
         {
@@ -544,6 +544,10 @@
           "char_id": "sumi"
         },
         {
+          "type": "fx",
+          "id": "flashback"
+        },
+        {
           "speaker": "hiyori",
           "text": "スミさーん！今日のピーチ、絶対いい出来！",
           "face": "student_smile"
@@ -559,12 +563,16 @@
         },
         {
           "speaker": "hiyori",
-          "text": "もう一台いける！混む前に、準備しとこ！",
+          "text": "もう１台いける！混む前に、準備しとこ！",
           "face": "student_smile"
         },
         {
           "type": "hide_portrait",
           "char_id": "hiyori"
+        },
+        {
+          "type": "fx",
+          "id": "flashback_off"
         },
         {
           "speaker": "",
@@ -881,7 +889,7 @@
         },
         {
           "speaker": "",
-          "text": "三人の間に、小さな笑いが戻った。"
+          "text": "３人の間に、小さな笑いが戻った。"
         },
         {
           "speaker": "hiyori",
@@ -895,7 +903,7 @@
         },
         {
           "speaker": "",
-          "text": "元スタッフの席から、今の三人の話が始まる。"
+          "text": "元スタッフの席から、今の３人の話が始まる。"
         }
       ]
     },
@@ -947,7 +955,7 @@
         },
         {
           "speaker": "hiyori",
-          "text": "今度は、はじめくんの一台を吸ってみたいな",
+          "text": "今度は、はじめくんの１台を吸ってみたいな",
           "face": "normal"
         },
         {

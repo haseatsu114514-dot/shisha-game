@@ -46,7 +46,9 @@ try {
   }));
   assert.deepEqual(perks,[{radius:180,recovery:false,stock:1},{radius:220,recovery:false,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
   const finish=async()=>{
-    await page.waitForSelector('.result-card.show',{timeout:20000});
+    // The 20-second simulation caps RAF dt at 50ms; slow frames take longer in
+    // wall time, then the result needs another 400ms and a presentation frame.
+    await page.waitForSelector('.result-card.show',{timeout:60000});
     await page.locator('[data-test="step-details"]').click();
     const result=await page.locator('.rc-lines').textContent();
     const stats=await page.evaluate(()=>({...cs.steam}));
@@ -118,6 +120,8 @@ try {
   console.log('[refresh] PASS: actual 8-second recharge and second use, medium range, no base healing/invulnerability/spawn delay, repeat/cooldown guards and hit-based score');
 
   await page.evaluate(()=>startSteam(41));
+  // 新しい作業台は素材decode後に蒸らし画面を作る。未生成のtraceを参照しない。
+  await page.locator('[data-test="mental-trace"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('[data-test="mental-trace"]').dataset.level==='shaken',null,{timeout:10000});
   const recovered=await page.evaluate(()=>consume('x'));
   assert.equal(recovered.levelBefore,'shaken');assert.equal(recovered.levelAfter,'unsteady','Growth refresh must recover exactly one mental level');
@@ -126,6 +130,7 @@ try {
   await finish();
 
   await page.evaluate(()=>startSteam(81));
+  await page.locator('[data-test="mental-trace"]').waitFor();
   await page.waitForFunction(()=>enemies().length>=3);
   const full=await page.evaluate(()=>consume('x'));
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);

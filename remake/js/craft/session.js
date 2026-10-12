@@ -110,13 +110,13 @@ export function openBench(cs, { steps = [] } = {}) {
   ]);
   root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
-  const thermal = buildThermalAtmosphere(root, worker);
+  const thermal = buildThermalAtmosphere(root, worker, cs);
   showScreen("bench", root);
   const loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
   root.append(loading);
   root.inert = true;
   root.setAttribute("aria-busy", "true");
-  const ready = Promise.all([bg(), warmCraftAssets(cs.mode)]).finally(() => {
+  const ready = Promise.all([bg(), warmCraftAssets(cs.mode), worker.ready]).finally(() => {
     root.inert = false;
     root.removeAttribute("aria-busy");
     loading.remove();
@@ -151,9 +151,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
-  b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
-  b.worker.setDraw(null);
-  b.worker.setMental("steady");
+  b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
@@ -172,6 +170,10 @@ export function setBenchTemperature(cs, temp) {
 /** 吸い出し・熱管理の一口を左の作業風景へつなぐ。今後の吸引動画もこの状態を読む。 */
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
+}
+/** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
+export function setBenchHoleAction(cs, event) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
 }
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
@@ -277,7 +279,9 @@ export function scoreStep(cs, key, score, label = "") {
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
   cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
-  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, label);
+  // 回数は得点キーに保持し、ヘッダーのポップだけ「調整」に揃える。
+  const displayLabel = ["care", "care1", "care2"].includes(step) ? "調整" : label;
+  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, displayLabel);
   return cs.arcade.total;
 }
 
@@ -314,6 +318,18 @@ export const burstBench = (cs) => failBench(cs, "burnt");
 export function refreshBench() {
   if (!bench) return;
   bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
+  // panelの工程IDは結果評価が参照するためpullのまま保持する。
+  if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {
+    bench.phaseProgress.update("serve", "提供");
+    bench.title.textContent = "提供";
+    bench.hint.textContent = "お客さんへシーシャを提供した。しばらく吸ってもらおう";
+    bench.guide.root.open = false;
+    bench.guide.root.hidden = true;
+    bench.root.dataset.step = "serve";
+    bench.worker.setStep("serve");
+    bench.worker.caption.textContent = "シーシャを提供した";
+  }
 }
 
 /** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */

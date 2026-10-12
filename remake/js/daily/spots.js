@@ -244,12 +244,12 @@ export async function visitSpot(spot) {
   earnStat(spot.stat, 4);
 }
 
-export async function restAtHome(spot) {
+export async function restAtHome(spot, { fullDay = false } = {}) {
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  await play("remake_rest");
+  await play(fullDay ? "remake_rest_day" : "remake_rest");
 }
 
 /** 好感度の段階（♥の数） */

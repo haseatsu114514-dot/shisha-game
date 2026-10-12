@@ -1,0 +1,27 @@
+name: Issue claim regressions
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/issue-claim.yml'
+      - '.github/workflows/issue-claim-checks.yml'
+      - 'tools/test_issue_claim.mjs'
+      - 'docs/issue_claim_protocol.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/issue-claim.yml'
+      - '.github/workflows/issue-claim-checks.yml'
+      - 'tools/test_issue_claim.mjs'
+      - 'docs/issue_claim_protocol.md'
+permissions:
+  contents: read
+jobs:
+  coordinator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute coordinator contract tests
+        run: node --test tools/test_issue_claim.mjs

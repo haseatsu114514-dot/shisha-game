@@ -202,6 +202,15 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 15px; color: var(--gold-hi); min-height: 22px; }
 .mix-hint { font-size: 14px; color: #9fe3ff; line-height: 1.5; padding: 8px 10px; border: 1px dashed rgba(159, 227, 255, 0.4); border-radius: 6px; }
+.mix-overview { display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; flex: none; }
+.mix-overview .mix-bowl { width: 170px; height: 150px; flex: none; }
+.mix-overview .mix-temperature { height: 200px; flex: none; }
+.mix-temperature-preview { width: 100%; text-align: center; }
+.mix-temperature-preview > b { font-size: 14px; color: var(--text-dim); }
+.mix-temperature-legend { display: flex; flex-direction: column; gap: 4px; margin-top: 5px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-ideal { color: #74e0b0; }
+.mix-optimal { color: #ffe5ff; }
+.mix-temperature [hidden] { display: none; }
 
 /* ---------------------------------------------------------------- 穴あけ */
 .holes { display: flex; gap: 24px; align-items: center; height: 100%; }
@@ -727,10 +736,10 @@
    文字の目盛りは置かず、管の中の印で示す。適温の両端に白い刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
-.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
+.thermo-scale { position: absolute; inset: 0; background: var(--thermo-gradient, linear-gradient(0deg,
   #fff4d2 0%, #ffedb0 13%, #ffe270 26%, #ffd12a 37%, #f6d559 40%, #67d2a3 42%,
   #4fcf98 44%, #74e0b0 54%, #4fcf98 64%,
-  #79d9a9 66%, #ffb247 71%, #ff8a2a 76%, #ff3f17 83%, #eb210d 89%, #b0140a 94%, #650609 100%); }
+  #79d9a9 66%, #ffb247 71%, #ff8a2a 76%, #ff3f17 83%, #eb210d 89%, #b0140a 94%, #650609 100%)); }
 .thermo-scale::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, #783c191f 0 .5px, #fff3d322 .5px 1px, transparent 1px 1.5%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
@@ -907,11 +916,11 @@
 /* 制作ウインドウの比率と吸引中の接続（TH47〜51）。背景アニメーションは既存の層を使う。 */
 .bench-left .bench-worker { border-radius: 6px; }
 .bench-left .bench-audience { border-radius: 6px; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-equipment { right: 100px; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-actor { left: -140px; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-scene-tag { color: #eddbb5; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name { padding-left: 12px; padding-right: 12px; }
-.bench:is([data-step="pull"], [data-step="care"]) .thermal-label { display: none; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-equipment { right: 100px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-actor { left: -140px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-scene-tag { color: #eddbb5; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-worker-name { padding-left: 12px; padding-right: 12px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .thermal-label { display: none; }
 .pull { gap: 0; align-items: center; }
 /* 同じ温度計DOMを左の作業風景の右端へ重ねる。炭交換の準備中も見える。 */
 .pull > .thermo { position: absolute; left: -128px; top: -44px; height: 408px; z-index: 3; }
@@ -956,22 +965,22 @@
 .bench-left { left: 12px; width: 432px; gap: 3px; padding: 10px 5px 11px; }
 .bench-right { left: 450px; right: 12px; padding: 18px 22px 16px; }
 /* TH72: 下の外側30→18px、操作ボタン下24→12px。左右のウインドウの下端をそろえる。 */
-.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { bottom: 12px; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-right { padding-bottom: 12px; background: radial-gradient(ellipse at 100% 100%, #382a3c33, transparent 70%), linear-gradient(145deg, #191121, #100b18); }
-.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: #a18a666b; box-shadow: inset 0 0 0 2px #ebd3a309, 0 5px 20px #0005; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-heading { padding-left: 12px; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-title { position: relative; width: fit-content; font-family: "Craft Mincho", var(--font); font-size: 40px; letter-spacing: .10em; color: #f6e4c8; text-shadow: 0 0 6px #eb9b6233, 0 1px 2px #8f4927; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { content: ""; position: absolute; left: calc(100% + 12px); top: -4px; width: 42px; height: 56px; opacity: .45; filter: blur(1px); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 56'%3E%3Cpath d='M23 2C3 17 4 22 23 26s21 10-7 22' fill='none' stroke='%23c8b5c9' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-hint { font-size: 15px; margin-top: 14px; color: #c9bca8; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-head { position: relative; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-guide { align-self: flex-start; margin-top: 10px; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-worker { position: relative; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; min-height: 38px; padding: 3px 12px; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name .bench-condition { display: none; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-equipment { right: 92px; bottom: 7%; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-actor { height: calc(100% + 150px); left: -114px; bottom: -135px; }
-.bench:is([data-step="pull"], [data-step="care"]) .worker-counter { top: 68%; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) :is(.bench-left, .bench-right) { bottom: 12px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { padding-bottom: 12px; background: radial-gradient(ellipse at 100% 100%, #382a3c33, transparent 70%), linear-gradient(145deg, #191121, #100b18); }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: #a18a666b; box-shadow: inset 0 0 0 2px #ebd3a309, 0 5px 20px #0005; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-heading { padding-left: 12px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-title { position: relative; width: fit-content; font-family: "Craft Mincho", var(--font); font-size: 40px; letter-spacing: .10em; color: #f6e4c8; text-shadow: 0 0 6px #eb9b6233, 0 1px 2px #8f4927; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-title::after { content: ""; position: absolute; left: calc(100% + 12px); top: -4px; width: 42px; height: 56px; opacity: .45; filter: blur(1px); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 56'%3E%3Cpath d='M23 2C3 17 4 22 23 26s21 10-7 22' fill='none' stroke='%23c8b5c9' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-hint { font-size: 15px; margin-top: 14px; color: #c9bca8; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-head { position: relative; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-guide { align-self: flex-start; margin-top: 10px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-worker { position: relative; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; min-height: 38px; padding: 3px 12px; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-worker-name .bench-condition { display: none; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-equipment { right: 92px; bottom: 7%; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-actor { height: calc(100% + 150px); left: -114px; bottom: -135px; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .worker-counter { top: 68%; }
 .bench-left .bench-audience { position: relative; height: 112px; margin: 5px 6px 0; border: 1px solid #a98d654a; border-radius: 8px; background: linear-gradient(145deg, #1b1522, #100c18); box-shadow: inset 0 0 0 3px #090710b0, inset 0 0 0 4px #9b806317; }
 .bench[data-art-skin] :is(.bench-worker, .bench-audience) { border-image: none; border: 1px solid #a98d654a; box-shadow: inset 0 0 0 2px #08060e99, inset 0 0 0 3px #8c725319, 0 3px 12px #0004; }
 .audience-single { gap: 18px; padding: 12px; }
@@ -1081,8 +1090,8 @@
 .pull > .thermo .pull-read:is([data-tone="danger"], [data-tone="cold"]) { border-color: #ff4a2a99; }
 /* 右ウインドウの奥に漂う煙。立ちのぼって薄れる2枚を半周期ずらし、途切れずに流れて見せる。 */
 .panel-smoke { display: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
-.bench:is([data-step="pull"], [data-step="care"]) .bench-right { isolation: isolate; }
-.bench:is([data-step="pull"], [data-step="care"]) .panel-smoke { display: block; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { isolation: isolate; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .panel-smoke { display: block; }
 /* TH93: 煙は温度が危なくなってきた時だけ。過熱で薄く、焦げる寸前・焦げで濃く速く。適温以下では出さない。 */
 .bench[data-thermal-band="fire"] .panel-smoke.ready { opacity: .6; }
 .bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke.ready { opacity: 1; }
@@ -1099,10 +1108,10 @@
 @keyframes panel-smoke-rise { 0% { opacity: 0; transform: translateY(40px) scale(.94); } 30% { opacity: .62; } 70% { opacity: .5; } 100% { opacity: 0; transform: translateY(-50px) scale(1.1); } }
 @keyframes panel-smoke-rise-flip { 0% { opacity: 0; transform: translateY(40px) scaleX(-1) scale(.94); } 30% { opacity: .5; } 70% { opacity: .42; } 100% { opacity: 0; transform: translateY(-50px) scaleX(-1) scale(1.1); } }
 /* 見出し横の煙も、細い線から本物の煙の一筋へ。 */
-.bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { left: calc(100% + 2px); top: -22px; width: 76px; height: 100px; opacity: .9; filter: none;
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-title::after { left: calc(100% + 2px); top: -22px; width: 76px; height: 100px; opacity: .9; filter: none;
   background: var(--smoke-title, none) center / contain no-repeat; animation: title-smoke 6s ease-in-out infinite alternate; transform-origin: 50% 100%;
   visibility: hidden; }
-.bench:is([data-step="pull"], [data-step="care"]):is([data-thermal-band="fire"], [data-thermal-band="inferno"], [data-thermal-band="burnt"]) .bench-title::after { visibility: visible; }
+.bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]):is([data-thermal-band="fire"], [data-thermal-band="inferno"], [data-thermal-band="burnt"]) .bench-title::after { visibility: visible; }
 @keyframes title-smoke { from { transform: translateY(2px) scaleY(.96); opacity: .75; } to { transform: translateY(-4px) scaleY(1.04) skewX(-4deg); opacity: .95; } }
 .pull-btn-icon .hose-core { stroke: #2b1a26; }
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,34 @@
+{
+  "issue": 375,
+  "worker": "codex-visual-20261012-e492484f3b",
+  "base_sha": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+  "claim_run": 38259990012,
+  "status_run": 38260249119,
+  "scope": "みんとの未採用2原画にある室内植物の背景修正。未採用・本編未登録。アゲハ5修正案の選定保留を維持。",
+  "plans": [
+    {
+      "id": "minto-night-ci97",
+      "person": "minto / 採用normalを添付",
+      "scene": "完成・喫煙",
+      "hookah": "元原画の黒/真鍮の伝統金属台を維持",
+      "hmd": "ONMO従来アルミ・蓋なし、実写を添付",
+      "charcoal": "HMD内の小角炭2個を維持",
+      "hose": "側面ポート→一つのU字たわみ→硬質ハンドル根元、2端のみ",
+      "mouthpiece": "既存の小さい緑の先端。首のハートは通常の装飾",
+      "composition": "同じ夜の窓際ソファ・人物と台の位置、距離を維持。遠景の小鉢だけ除去",
+      "source": "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png"
+    },
+    {
+      "id": "minto-prep-ci97",
+      "person": "minto / 採用normalを添付",
+      "scene": "ボウルの縁を清掃・HMDは冷たい別置き",
+      "hookah": "完成台なし",
+      "hmd": "ONMO従来アルミ・蓋なしを机上で維持、実写を添付",
+      "charcoal": "なし",
+      "hose": "なし",
+      "mouthpiece": "なし。首のハートは通常の装飾",
+      "composition": "同じ朝の作業台、手/ボウル/HMDの奥行きを維持。窓と上部の蔦を除去",
+      "source": "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png"
+    }
+  ]
+}

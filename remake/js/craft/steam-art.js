@@ -89,9 +89,9 @@ export function buildSteamWorld(width, height) {
     }
   };
   draw(0, width / 2, height / 2);
-  return { root, draw, dissolve(time, cleared) {
+  return { root, draw, dissolve(time, cleared, { echoWords = true } = {}) {
     burst?.echoes.forEach(n => n.remove());
-    const echoes = cleared.filter(b => b.word).map(b => el("span.dodge-thought-echo", {
+    const echoes = cleared.filter(b => echoWords && b.word).map(b => el("span.dodge-thought-echo", {
       text: b.node.textContent, style: { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` },
     }));
     root.append(...echoes);

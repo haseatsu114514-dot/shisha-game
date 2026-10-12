@@ -37,9 +37,11 @@ export function initLayers() {
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
-        ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
+        ? (levelUp ? "恋人との絆が深まった" : "心の距離が少し近づいた")
         : levelUp ? `仲が深まった（♥${level}）` : "好感度が少し上がった",
-      hearts: { from: heartState(prevPts), to: heartState(pts) },
+      // The private growth remains hidden; lovers' ordinary hearts stay full.
+      hearts: bond ? { from: Array(5).fill(100), to: Array(5).fill(100) }
+        : { from: heartState(prevPts), to: heartState(pts) },
     });
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
@@ -116,12 +118,12 @@ export function uiArtReady(ms = 2000) {
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
  */
-export function setBg(url, { instant = false, tint = null, fast = false, ready = [] } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
   if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
-  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: document.body.classList.contains("vn-skip") }) : null;
+  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip") }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
@@ -152,7 +154,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, ready =
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
-function refreshWeather() {
+export function refreshWeather() {
   if (!layers.weather) return;
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   document.body.dataset.weather = scene?.mode || "none";
@@ -300,14 +302,13 @@ function pumpBanners() {
     const o = bannerQueue.shift();
     if (o.owner !== state) continue;
     bannerBusy++;
-    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
+    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.kind === "stat" && o.points > 0 ? el("small.gc-earned", { text: "今回" }) : null,
           o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),

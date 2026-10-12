@@ -65,12 +65,12 @@ try {
     assert.deepEqual(result.levels, [1, 1, 2, 2]);
     assert.equal(result.pts, 20); assert(result.sameResources);
     assert.deepEqual(result.fortune, { char: "tsumugi" });
-    assert.deepEqual(result.contacts, ["tsumugi"]);
+    assert.deepEqual(result.contacts, ["sumi", "tsumugi"]);
     assert.equal(result.visits, 0); assert.equal(result.stories, 0);
     assert.deepEqual(result.lovers, []); assert.deepEqual(result.answers, {});
     assert.deepEqual(result.memories, ["tsumugi_research", "tsumugi_progress", "tsumugi_submission"]);
     assert(result.lines.includes("うちの店の宣伝になるなら、交換しとけ"));
-    assert(result.lines.some(t => t.includes("日常の風景")));
+    assert(result.lines.some(t => t.includes("記憶と気配の交差")));
     assert(result.lines.some(t => t.includes("応募完了")));
     assert(!result.lines.some(t => /共感覚|約[5５]万|\{tsumugiContestTheme\}/.test(t)));
     assert.deepEqual(result.reread, [], "Loading replayed or rewarded the fixed story");
@@ -125,7 +125,7 @@ try {
       const s = T.fresh(); s.day = 12;
       await T.story.playTsumugiStory(12); T.vn.backlog().length = 0;
       T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => friend
-        ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|二人|想いを伝え|付き合/.test(l)));
+        ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|２人|想いを伝え|付き合/.test(l)));
       for (let i = 0; i < 6; i++) await T.spots.visitChar("tsumugi");
       const visits = T.lines();
       s.affinity.tsumugi = 80; s.slot = 2; s.day = 13;
@@ -139,7 +139,7 @@ try {
     assert(!route.visits.some(t => t.includes("ああ、つむぎか") || t.includes("QRコード")));
     assert(route.visits.some(t => /約[5５]万/.test(t)), "Optional SNS scene became inaccessible");
     assert(route.visits.some(t => t.includes("応募の絵、また見せてくれる")));
-    assert(route.lines.some(t => t.includes("別の一枚")));
+    assert(route.lines.some(t => t.includes("別の１枚")));
     assert.equal(route.q1, friend ? 0 : 1); assert.equal(route.finale, friend ? "friend" : "romance");
     assert.equal(route.confessed, !friend); assert.deepEqual(route.lovers, friend ? [] : ["tsumugi"]);
   }
