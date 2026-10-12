@@ -36,7 +36,7 @@ concurrency:
 jobs:
   chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
     steps:
@@ -78,6 +78,10 @@ jobs:
           node remake/test/browser/save_load.mjs
           node remake/test/browser/sumi_contact.mjs
           node remake/test/browser/lover_hidden_growth.mjs
+      - name: Saved-lover date UI routes and legacy invitation boundaries
+        run: |
+          node remake/test/lover_dates.mjs
+          node remake/test/browser/lover_date_route.mjs
       - name: Hiyori encounters, LIME, saves and PC/mobile portraits
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

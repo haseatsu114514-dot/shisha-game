@@ -1,0 +1,2661 @@
+{
+  "version": 1,
+  "characters": {
+    "ageha": "アゲハ",
+    "hiyori": "ひより",
+    "kafuka": "サメちゃん／波多野なぎさ",
+    "mashiro": "ましろ",
+    "minto": "みんと",
+    "rin": "凛",
+    "tsumugi": "つむぎ",
+    "other": "その他"
+  },
+  "items": [
+    {
+      "id": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "character": "ageha",
+      "label": "ピンクの試香席",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_ageha_01_professional_taste.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/01-professional-taste.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/01-professional-taste.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+        "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83"
+      ],
+      "image": "media/de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde.webp",
+      "thumbnail": "media/de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde-thumb.webp"
+    },
+    {
+      "id": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+      "sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+      "character": "ageha",
+      "label": "撮影スタジオの一瞬",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_ageha_03_model_moment.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/03-model-moment.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/03-model-moment.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+        "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd"
+      ],
+      "image": "media/eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06.webp",
+      "thumbnail": "media/eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06-thumb.webp"
+    },
+    {
+      "id": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+      "sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+      "character": "ageha",
+      "label": "昼の商店街で",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_ageha_02_grocery_smile.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/02-grocery-smile.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/02-grocery-smile.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+        "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced"
+      ],
+      "image": "media/af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158.webp",
+      "thumbnail": "media/af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158-thumb.webp"
+    },
+    {
+      "id": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
+      "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
+      "character": "hiyori",
+      "label": "夕暮れの帰路",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_01_twilight_walk.png",
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "ひより候補"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "採用済み・本編接続済み"
+      ],
+      "prompts": [
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3.webp",
+      "thumbnail": "media/01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3-thumb.webp"
+    },
+    {
+      "id": "346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c",
+      "sha256": "346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c",
+      "character": "hiyori",
+      "label": "雨上がりの街角",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_03_after_rain.png",
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "ひより候補"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "採用済み・本編接続済み"
+      ],
+      "prompts": [
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c.webp",
+      "thumbnail": "media/346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c-thumb.webp"
+    },
+    {
+      "id": "2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6",
+      "sha256": "2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6",
+      "character": "hiyori",
+      "label": "静かな窓際で一服",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_02_window_pause.png",
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "ひより候補"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "採用済み・本編接続済み"
+      ],
+      "prompts": [
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v2.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f"
+      ],
+      "image": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6.webp",
+      "thumbnail": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6-thumb.webp"
+    },
+    {
+      "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "character": "kafuka",
+      "label": "コロちゃんとサメ映画",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_kafuka_02_shark_movie.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d.webp",
+      "thumbnail": "media/bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d-thumb.webp"
+    },
+    {
+      "id": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "character": "kafuka",
+      "label": "シーシャークの試運転",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.revision-3.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+        "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+        "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102"
+      ],
+      "image": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257.webp",
+      "thumbnail": "media/f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257-thumb.webp"
+    },
+    {
+      "id": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "character": "kafuka",
+      "label": "水族館でコロちゃんと",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_kafuka_03_aquarium.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334.webp",
+      "thumbnail": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334-thumb.webp"
+    },
+    {
+      "id": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+      "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+      "character": "mashiro",
+      "label": "レトロ喫茶の一服",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke.revision-1.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+        "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd"
+      ],
+      "image": "media/8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559.webp",
+      "thumbnail": "media/8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559-thumb.webp"
+    },
+    {
+      "id": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "character": "mashiro",
+      "label": "小さな台所でお茶",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_02_tea_break.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/02-tea-break.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/02-tea-break.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5"
+      ],
+      "image": "media/0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658.webp",
+      "thumbnail": "media/0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658-thumb.webp"
+    },
+    {
+      "id": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+      "sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+      "character": "mashiro",
+      "label": "雨の駅で待ち合わせ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_03_after_rain.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/03-after-rain.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/03-after-rain.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7"
+      ],
+      "image": "media/1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9.webp",
+      "thumbnail": "media/1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9-thumb.webp"
+    },
+    {
+      "id": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "character": "minto",
+      "label": "チェキ撮影コーナー",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_02_instant_photo.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/02-instant-photo.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/02-instant-photo.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9"
+      ],
+      "image": "media/689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b.webp",
+      "thumbnail": "media/689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b-thumb.webp"
+    },
+    {
+      "id": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+      "sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+      "character": "minto",
+      "label": "ミント色のお出迎え",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_01_cafe_welcome.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.revision-1.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+        "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d"
+      ],
+      "image": "media/b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a.webp",
+      "thumbnail": "media/b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a-thumb.webp"
+    },
+    {
+      "id": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "character": "minto",
+      "label": "休日の窓辺",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_03_private_window.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/03-private-window.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/03-private-window.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a"
+      ],
+      "image": "media/10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96.webp",
+      "thumbnail": "media/10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96-thumb.webp"
+    },
+    {
+      "id": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "character": "minto",
+      "label": "閉店後の素顔",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_04_after_hours.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/04-after-hours.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/04-after-hours.prompt.txt"
+      ],
+      "current": true,
+      "related": [],
+      "image": "media/7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53.webp",
+      "thumbnail": "media/7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53-thumb.webp"
+    },
+    {
+      "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "character": "rin",
+      "label": "深夜の窓辺",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rin_03_late_coffee.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553"
+      ],
+      "image": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea.webp",
+      "thumbnail": "media/905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea-thumb.webp"
+    },
+    {
+      "id": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "character": "rin",
+      "label": "黒い試香室",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rin_01_night_tasting.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.revision-3.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+        "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+        "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+        "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0"
+      ],
+      "image": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19.webp",
+      "thumbnail": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19-thumb.webp"
+    },
+    {
+      "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "character": "tsumugi",
+      "label": "タブレットの猫",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90"
+      ],
+      "image": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489.webp",
+      "thumbnail": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489-thumb.webp"
+    },
+    {
+      "id": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "character": "tsumugi",
+      "label": "川辺のスケッチ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed"
+      ],
+      "image": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1.webp",
+      "thumbnail": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1-thumb.webp"
+    },
+    {
+      "id": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+      "sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+      "character": "tsumugi",
+      "label": "煙の色と木のぬくもり",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.png"
+      ],
+      "groups": [
+        "正式タイトル",
+        "新版19案"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中",
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.revision-2.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.prompt.txt"
+      ],
+      "current": true,
+      "related": [
+        "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+        "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+        "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41"
+      ],
+      "image": "media/d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4.webp",
+      "thumbnail": "media/d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4-thumb.webp"
+    },
+    {
+      "id": "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc",
+      "sha256": "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc",
+      "character": "ageha",
+      "label": "セルフィー・顔修正",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png"
+      ],
+      "groups": [
+        "アゲハ修正"
+      ],
+      "history": [
+        "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38"
+      ],
+      "image": "media/0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc.webp",
+      "thumbnail": "media/0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc-thumb.webp"
+    },
+    {
+      "id": "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced",
+      "sha256": "b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced",
+      "character": "ageha",
+      "label": "商店街・顔修正",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png"
+      ],
+      "groups": [
+        "アゲハ修正"
+      ],
+      "history": [
+        "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158"
+      ],
+      "image": "media/b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced.webp",
+      "thumbnail": "media/b26136e0a318160012feb551e9565c7b63e5fae27ee5ae734cc0e7bf46b06ced-thumb.webp"
+    },
+    {
+      "id": "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd",
+      "sha256": "a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd",
+      "character": "ageha",
+      "label": "撮影スタジオ・顔修正",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png"
+      ],
+      "groups": [
+        "アゲハ修正"
+      ],
+      "history": [
+        "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06"
+      ],
+      "image": "media/a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd.webp",
+      "thumbnail": "media/a9810bd85aa1f66ffe8604d03bdf3d07d6f1bbb04b00341ac6d23f8f2965cccd-thumb.webp"
+    },
+    {
+      "id": "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83",
+      "sha256": "18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83",
+      "character": "ageha",
+      "label": "試香席・顔修正",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png"
+      ],
+      "groups": [
+        "アゲハ修正"
+      ],
+      "history": [
+        "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde"
+      ],
+      "image": "media/18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83.webp",
+      "thumbnail": "media/18b145af29181d868413142567676f96b1f020077bedbda6c758b9fff2594a83-thumb.webp"
+    },
+    {
+      "id": "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98",
+      "sha256": "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98",
+      "character": "ageha",
+      "label": "閉店後の乾燥ラック",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png"
+      ],
+      "groups": [
+        "アゲハ修正"
+      ],
+      "history": [
+        "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7"
+      ],
+      "image": "media/e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98.webp",
+      "thumbnail": "media/e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98-thumb.webp"
+    },
+    {
+      "id": "8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38",
+      "sha256": "8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38",
+      "character": "ageha",
+      "label": "楽屋のセルフィー",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "要修正：蜂蜜色ツインテール・熊2個・豹柄・ピンクトップ・黒スカートを維持。スマホ撮影とVサイン。鏡照明の反復は舞台裏という場面に根拠あり。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "0061c86a41317ee9cb9feb11c713a1147fbb0a118b05e14d66b597d3167baddc"
+      ],
+      "image": "media/8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38.webp",
+      "thumbnail": "media/8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38-thumb.webp"
+    },
+    {
+      "id": "bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7",
+      "sha256": "bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7",
+      "character": "ageha",
+      "label": "閉店後のボウル洗い",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "要修正：本人の髪・熊・衣装を維持。脚付きボウルをブラシで清掃、別の冷たいONMO、炭・完成台なし。窓左側の室内蔦はCI97で除去対象。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "e493e76b3eb741940ff64c4d5e73399ae50f092ed3e4274efc26ae6263a76b98"
+      ],
+      "image": "media/bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7.webp",
+      "thumbnail": "media/bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7-thumb.webp"
+    },
+    {
+      "id": "036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001",
+      "sha256": "036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001",
+      "character": "ageha",
+      "label": "01-professional-taste-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste-first.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda"
+      ],
+      "image": "media/036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001.webp",
+      "thumbnail": "media/036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001-thumb.webp"
+    },
+    {
+      "id": "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+      "sha256": "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+      "character": "ageha",
+      "label": "プロの顔",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste.revision1.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001",
+        "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde"
+      ],
+      "image": "media/da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda.webp",
+      "thumbnail": "media/da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda-thumb.webp"
+    },
+    {
+      "id": "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+      "sha256": "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+      "character": "ageha",
+      "label": "モデルのひとコマ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/03-model-moment.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/03-model-moment.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06"
+      ],
+      "image": "media/7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde.webp",
+      "thumbnail": "media/7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde-thumb.webp"
+    },
+    {
+      "id": "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+      "sha256": "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+      "character": "ageha",
+      "label": "買い出しの笑顔",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/02-grocery-smile.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/02-grocery-smile.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158"
+      ],
+      "image": "media/96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e.webp",
+      "thumbnail": "media/96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e-thumb.webp"
+    },
+    {
+      "id": "1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f",
+      "sha256": "1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f",
+      "character": "hiyori",
+      "label": "静かな窓際で一服・修正前",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v1.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "要修正・選定対象外：指定した短い衛生チップが金属先端と描き分けられていないためv2で修正"
+      ],
+      "prompts": [
+        "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6"
+      ],
+      "image": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f.webp",
+      "thumbnail": "media/1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f-thumb.webp"
+    },
+    {
+      "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "character": "kafuka",
+      "label": "01-shishark-test-run-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea.webp",
+      "thumbnail": "media/02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea-thumb.webp"
+    },
+    {
+      "id": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+      "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+      "character": "kafuka",
+      "label": "01-shishark-test-run-revision-1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f.webp",
+      "thumbnail": "media/77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f-thumb.webp"
+    },
+    {
+      "id": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "character": "kafuka",
+      "label": "01-shishark-test-run-revision-2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257"
+      ],
+      "image": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102.webp",
+      "thumbnail": "media/1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102-thumb.webp"
+    },
+    {
+      "id": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
+      "sha256": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
+      "character": "mashiro",
+      "label": "ダークリーフの準備",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：ボウル準備で炭なし。小さな凸金属ポスト、片手で持つ脚付き器。暖色窓際の反復と頬の濃さは選定時の比較点。窓の外の葉は室内鉢植えと区別。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "f96e66f2e29b93ebd9501b7230fb9cf341bc8297d681fdca2d8fad670845b914"
+      ],
+      "image": "media/7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed.webp",
+      "thumbnail": "media/7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed-thumb.webp"
+    },
+    {
+      "id": "c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c",
+      "sha256": "c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c",
+      "character": "mashiro",
+      "label": "猫のてつこと休憩",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_03_tetsuko.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：屋外で猫と休憩。三つ編み・衣装一致。屋外植栽と猫を題材にした日常。過密な植栽は好みの比較点。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_03_tetsuko.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c.webp",
+      "thumbnail": "media/c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c-thumb.webp"
+    },
+    {
+      "id": "71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48",
+      "sha256": "71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48",
+      "character": "mashiro",
+      "label": "窓際の一服",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：金髪三つ編み・カーディガン・緑スカートを維持。Provost IIの葉型取手と上下部品。ホース両端を確認、膝裏は遮蔽。元の巨大版を再採用しない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "89534004991b8b5a1b7c17ee365ca9d866d0efcea03de71d62bd46ae67ae52c1"
+      ],
+      "image": "media/71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48.webp",
+      "thumbnail": "media/71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48-thumb.webp"
+    },
+    {
+      "id": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+      "sha256": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+      "character": "mashiro",
+      "label": "01-heavy-smoke-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559"
+      ],
+      "image": "media/f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72.webp",
+      "thumbnail": "media/f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72-thumb.webp"
+    },
+    {
+      "id": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+      "sha256": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+      "character": "mashiro",
+      "label": "01-heavy-smoke-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke-first.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd"
+      ],
+      "image": "media/c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7.webp",
+      "thumbnail": "media/c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7-thumb.webp"
+    },
+    {
+      "id": "397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5",
+      "sha256": "397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5",
+      "character": "mashiro",
+      "label": "お茶とひと息",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/02-tea-break.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/02-tea-break.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658"
+      ],
+      "image": "media/397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5.webp",
+      "thumbnail": "media/397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5-thumb.webp"
+    },
+    {
+      "id": "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd",
+      "sha256": "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd",
+      "character": "mashiro",
+      "label": "重い一服",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke.revision1.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+        "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559"
+      ],
+      "image": "media/8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd.webp",
+      "thumbnail": "media/8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd-thumb.webp"
+    },
+    {
+      "id": "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7",
+      "sha256": "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7",
+      "character": "mashiro",
+      "label": "雨上がりの帰り道",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/03-after-rain.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/03-after-rain.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9"
+      ],
+      "image": "media/f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7.webp",
+      "thumbnail": "media/f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7-thumb.webp"
+    },
+    {
+      "id": "89534004991b8b5a1b7c17ee365ca9d866d0efcea03de71d62bd46ae67ae52c1",
+      "sha256": "89534004991b8b5a1b7c17ee365ca9d866d0efcea03de71d62bd46ae67ae52c1",
+      "character": "mashiro",
+      "label": "title_art_mashiro_01_window_smoke",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_01_window_smoke.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_01_window_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48"
+      ],
+      "image": "media/89534004991b8b5a1b7c17ee365ca9d866d0efcea03de71d62bd46ae67ae52c1.webp",
+      "thumbnail": "media/89534004991b8b5a1b7c17ee365ca9d866d0efcea03de71d62bd46ae67ae52c1-thumb.webp"
+    },
+    {
+      "id": "f96e66f2e29b93ebd9501b7230fb9cf341bc8297d681fdca2d8fad670845b914",
+      "sha256": "f96e66f2e29b93ebd9501b7230fb9cf341bc8297d681fdca2d8fad670845b914",
+      "character": "mashiro",
+      "label": "title_art_mashiro_02_dark_leaf_prep",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_02_dark_leaf_prep.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_02_dark_leaf_prep.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed"
+      ],
+      "image": "media/f96e66f2e29b93ebd9501b7230fb9cf341bc8297d681fdca2d8fad670845b914.webp",
+      "thumbnail": "media/f96e66f2e29b93ebd9501b7230fb9cf341bc8297d681fdca2d8fad670845b914-thumb.webp"
+    },
+    {
+      "id": "11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e",
+      "sha256": "11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e",
+      "character": "minto",
+      "label": "私服パフェ・植物修正",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/minto-private-parfait-ci97.png"
+      ],
+      "groups": [
+        "みんと修正"
+      ],
+      "history": [
+        "候補保存のみ：原寸で目視。背景の室内鉢植え3領域が消え、可食ミントの飾りを維持。顔・髪・服・手・パフェの大きな破綻は見られず細かな粒子感を維持。ただし生成編集で全体の画素は微変化、完全同一画素ではない。主観的な顔一致の最終判断はオーナーへ。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/review-issue375/minto-private-parfait-ci97.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef"
+      ],
+      "image": "media/11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e.webp",
+      "thumbnail": "media/11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e-thumb.webp"
+    },
+    {
+      "id": "d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82",
+      "sha256": "d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82",
+      "character": "minto",
+      "label": "開店準備・タッパー v1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v1.png"
+      ],
+      "groups": [
+        "タッパー修正"
+      ],
+      "history": [
+        "要修正・途中履歴：開いた容器の内容が均一な角片になりチョコ／角炭のように見える。葉の折れ・巻き・不揃いな薄片へ局所修正。"
+      ],
+      "prompts": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb",
+        "13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b"
+      ],
+      "image": "media/d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82.webp",
+      "thumbnail": "media/d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82-thumb.webp"
+    },
+    {
+      "id": "13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b",
+      "sha256": "13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b",
+      "character": "minto",
+      "label": "開店準備・タッパー v2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v2.png"
+      ],
+      "groups": [
+        "タッパー修正"
+      ],
+      "history": [
+        "要修正・オーナー指摘の比較前：手前はよいが背景の容器が大きすぎる。全員規則的な保管、2段積み、本体側面のシールとペンで書いたフレーバー名を描く。\n{\"identity\": \"営業立ち絵の黒長髪・緑目・角と蝙蝠・黒緑衣装・ハートを維持。顔や手等は生成編集で微変化するためオーナー比較待ち。\", \"storage\": \"低い角丸矩形・透明側壁・白い無地ラベル。開いた手元の蓋が左、棚は閉じた少数容器。無理な大壁の反復なし。\", \"leaves\": \"v1の均一角片を、不揃いな薄片と折れ・巻きのある湿った茶系の葉へ修正。実写03と原寸比較。\", \"hardware\": \"準備中の片手サイズの脚付きボウルと別の冷たい低いONMO型を保持。炭0、ホース0、煙0、蓋や取手の追加なし。通気スリット等は生成で微変化、実機完全一致を保証する検品は未実施。\", \"plants\": \"室内の蔦・鉢0。窓・壁を継続。\", \"texture\": \"細かい粒子／段階的な陰影を維持。3D化・ブランド・擬似文字なし。\", \"not_completed\": \"オーナーの画像採用、精密なモデル検証、本編登録・配信変換・実画面QA。\"}"
+      ],
+      "prompts": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v2.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82",
+        "b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983"
+      ],
+      "image": "media/13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b.webp",
+      "thumbnail": "media/13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b-thumb.webp"
+    },
+    {
+      "id": "b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983",
+      "sha256": "b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983",
+      "character": "minto",
+      "label": "開店準備・タッパー v3",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v3.png"
+      ],
+      "groups": [
+        "タッパー修正"
+      ],
+      "history": [
+        "途中履歴・背景の縮尺と列を修正："
+      ],
+      "prompts": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v3.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "13a4dd3094a4fb7292765f74380f2d3b06701e5db4a9a90f7964130111e23d0b",
+        "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496"
+      ],
+      "image": "media/b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983.webp",
+      "thumbnail": "media/b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983-thumb.webp"
+    },
+    {
+      "id": "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496",
+      "sha256": "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496",
+      "character": "minto",
+      "label": "開店準備・タッパー v4",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.png"
+      ],
+      "groups": [
+        "タッパー修正"
+      ],
+      "history": [
+        "要修正・オーナー指摘の比較前：シールの文字は読めない程度でよい。手前容器が横向きで横／短い端面にシールがある不自然さを直す。\n{\"foreground\": \"容器は近景として従来のサイズ・位置・奥行きを保つ。葉と外した蓋を維持。側面のミントを原寸で読める。生成編集による微変化はある。\", \"background\": \"各棚3列×2段、同一底面で真上に積み、棚に底面が接する。前面・ラベル位置・間隔を揃える。各容器は手前の約1/4の見かけ幅、人物の頭ほどの大型箱を除去。数値はこの絵の目視目安で実寸規格ではない。\", \"stickers\": \"本体側面、蓋の密閉縁より下、底より上。上下段で見える。ミント・バニラ・ベリーのペン風筆跡、実ブランドなし。\", \"identity\": \"黒長髪、緑目、角・蝙蝠、黒緑衣装、ハート、ポーズ・手元を元候補と比較。大きな同一性変化なし。\", \"hardware\": \"準備中の脚付きボウル・冷たいHMD、炭・煙・ホースなし。精密なモデル再検証は未完。\", \"texture\": \"細かい粒子感と陰影を保持。新しい植物・UI・ブランド・広告文字なし。\"}"
+      ],
+      "prompts": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v4.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "b344fce548bf814931333b16664da4ece31b9f8694d6493d54a8fc1ebe748983",
+        "df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60"
+      ],
+      "image": "media/41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496.webp",
+      "thumbnail": "media/41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496-thumb.webp"
+    },
+    {
+      "id": "df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60",
+      "sha256": "df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60",
+      "character": "minto",
+      "label": "開店準備・タッパー v5",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v5.png"
+      ],
+      "groups": [
+        "タッパー修正"
+      ],
+      "history": [
+        "候補保存・最新比較案：\n{\"foreground\": \"元の手前サイズと場所を保ち、長く広い前面をカメラへ向ける。シールはその前面の中央、蓋の縁より下、底より上。短い右端面には置かない。葉・外した蓋を保持。\", \"lettering\": \"手前・背景とも読めない程度の小さな柔らかい黒い筆跡。全体のドット感をぼかさず、白系のシールは見える。\", \"background\": \"小さい容器の3列×2段、同じ底面が真上に接触。各段のラベル位置と向き・間隔を揃える。巨大化なし。\", \"identity_hardware\": \"黒長髪・緑目・角と蝙蝠・黒緑衣装・ハート・手元を比較。準備中の脚付きボウルと冷たいHMD、炭・煙・ホース0を維持。モデル精密QAは未完。\", \"limitations\": \"生成編集による顔・手・周辺画素の微変化あり。本編登録・配信変換・実画面QAはこの保存PRに含めない。\"}"
+      ],
+      "prompts": [
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/minto-opening-tubs-v5.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "41c859d05bbf7c2fc041a846c8997f5527ce121e11693b9fa9ab85a657120496"
+      ],
+      "image": "media/df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60.webp",
+      "thumbnail": "media/df0db16c00a30c9160225d8f67748d56146b76b07470d86e8f6093464807ab60-thumb.webp"
+    },
+    {
+      "id": "ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef",
+      "sha256": "ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef",
+      "character": "minto",
+      "label": "私服でパフェ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/minto/minto_03_private_parfait.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "要修正：正式私服立ち絵と黒髪・緑目・白系カーディガン・黒トップ・緑のペンダントを照合。窓際・右下の室内鉢植えの反復をCI97で修正。修正候補を本レビュー内に別名保存。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/minto/minto_03_private_parfait.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e"
+      ],
+      "image": "media/ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef.webp",
+      "thumbnail": "media/ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef-thumb.webp"
+    },
+    {
+      "id": "270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47",
+      "sha256": "270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47",
+      "character": "minto",
+      "label": "閉店後の一服",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛NGと同一とは断定しない）。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47.webp",
+      "thumbnail": "media/270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47-thumb.webp"
+    },
+    {
+      "id": "db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb",
+      "sha256": "db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb",
+      "character": "minto",
+      "label": "開店前の準備",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "要修正：本人の黒髪・角・蝙蝠・黒緑衣装を維持。手持ちボウルと冷たいONMOは準備状態。窓・上部の大量の蔦がCI97と不一致。人物と器具を保ち背景だけ修正する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "d6fc518db2f78b4f56da9dcf1fb8b9a8c178e3f9f13ce73d30eba6f3c130ea82"
+      ],
+      "image": "media/db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb.webp",
+      "thumbnail": "media/db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb-thumb.webp"
+    },
+    {
+      "id": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+      "sha256": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+      "character": "minto",
+      "label": "01-cafe-welcome-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a"
+      ],
+      "image": "media/927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a.webp",
+      "thumbnail": "media/927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a-thumb.webp"
+    },
+    {
+      "id": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+      "sha256": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+      "character": "minto",
+      "label": "01-cafe-welcome-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome-first.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d"
+      ],
+      "image": "media/f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8.webp",
+      "thumbnail": "media/f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8-thumb.webp"
+    },
+    {
+      "id": "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d",
+      "sha256": "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d",
+      "character": "minto",
+      "label": "ぺぱーみんとのお出迎え",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome.revision1.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+        "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a"
+      ],
+      "image": "media/0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d.webp",
+      "thumbnail": "media/0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d-thumb.webp"
+    },
+    {
+      "id": "dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9",
+      "sha256": "dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9",
+      "character": "minto",
+      "label": "チェキの瞬間",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/02-instant-photo.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/02-instant-photo.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b"
+      ],
+      "image": "media/dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9.webp",
+      "thumbnail": "media/dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9-thumb.webp"
+    },
+    {
+      "id": "5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a",
+      "sha256": "5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a",
+      "character": "minto",
+      "label": "私服の窓辺",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/03-private-window.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/minto/03-private-window.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96"
+      ],
+      "image": "media/5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a.webp",
+      "thumbnail": "media/5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a-thumb.webp"
+    },
+    {
+      "id": "93deceb36f1d2684f5dc86e5b889059576fadcac0d1cd5064b5d8c8012a3bf9a",
+      "sha256": "93deceb36f1d2684f5dc86e5b889059576fadcac0d1cd5064b5d8c8012a3bf9a",
+      "character": "minto",
+      "label": "minto-hose-fork-20261009",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/ng-examples/minto-hose-fork-20261009.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。"
+      ],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/93deceb36f1d2684f5dc86e5b889059576fadcac0d1cd5064b5d8c8012a3bf9a.webp",
+      "thumbnail": "media/93deceb36f1d2684f5dc86e5b889059576fadcac0d1cd5064b5d8c8012a3bf9a-thumb.webp"
+    },
+    {
+      "id": "77968de478719c8cc4aa2c5b10b00d621f0d2448569addbdf90074e3b25ef880",
+      "sha256": "77968de478719c8cc4aa2c5b10b00d621f0d2448569addbdf90074e3b25ef880",
+      "character": "minto",
+      "label": "チェキ・ハート",
+      "size": [
+        993,
+        1584
+      ],
+      "sources": [
+        "asset_sources/minto-cheki-variants-v1/minto-cheki-heart.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/77968de478719c8cc4aa2c5b10b00d621f0d2448569addbdf90074e3b25ef880.webp",
+      "thumbnail": "media/77968de478719c8cc4aa2c5b10b00d621f0d2448569addbdf90074e3b25ef880-thumb.webp"
+    },
+    {
+      "id": "559138b32b30e1ecb396220333afd3af1ac66d40fc316a49dd347266c89d9d17",
+      "sha256": "559138b32b30e1ecb396220333afd3af1ac66d40fc316a49dd347266c89d9d17",
+      "character": "minto",
+      "label": "チェキ・手を振る",
+      "size": [
+        993,
+        1584
+      ],
+      "sources": [
+        "asset_sources/minto-cheki-variants-v1/minto-cheki-wave.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/559138b32b30e1ecb396220333afd3af1ac66d40fc316a49dd347266c89d9d17.webp",
+      "thumbnail": "media/559138b32b30e1ecb396220333afd3af1ac66d40fc316a49dd347266c89d9d17-thumb.webp"
+    },
+    {
+      "id": "b2344acb2695cb150a598d896c98f3908bc24189c8bdf6170b9c91f724c79fff",
+      "sha256": "b2344acb2695cb150a598d896c98f3908bc24189c8bdf6170b9c91f724c79fff",
+      "character": "minto",
+      "label": "チェキ・頬に指",
+      "size": [
+        993,
+        1584
+      ],
+      "sources": [
+        "asset_sources/minto-cheki-variants-v1/minto-cheki-cheek.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/b2344acb2695cb150a598d896c98f3908bc24189c8bdf6170b9c91f724c79fff.webp",
+      "thumbnail": "media/b2344acb2695cb150a598d896c98f3908bc24189c8bdf6170b9c91f724c79fff-thumb.webp"
+    },
+    {
+      "id": "25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be",
+      "sha256": "25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be",
+      "character": "minto",
+      "label": "初来店チェキ・v2",
+      "size": [
+        993,
+        1584
+      ],
+      "sources": [
+        "asset_sources/minto-first-cheki-v2/original.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be.webp",
+      "thumbnail": "media/25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be-thumb.webp"
+    },
+    {
+      "id": "385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900",
+      "sha256": "385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900",
+      "character": "minto",
+      "label": "初来店チェキ・旧原画",
+      "size": [
+        1672,
+        941
+      ],
+      "sources": [
+        "asset_sources/minto-first-cheki/original.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900.webp",
+      "thumbnail": "media/385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900-thumb.webp"
+    },
+    {
+      "id": "fe7c95108ee68bb87900f8007f6c450a238f41961f97fd999e351ac5b44c53b7",
+      "sha256": "fe7c95108ee68bb87900f8007f6c450a238f41961f97fd999e351ac5b44c53b7",
+      "character": "minto",
+      "label": "初来店チェキ・背景修正前",
+      "size": [
+        993,
+        1584
+      ],
+      "sources": [
+        "asset_sources/minto-first-cheki-v2/portrait-before-background-edit.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/fe7c95108ee68bb87900f8007f6c450a238f41961f97fd999e351ac5b44c53b7.webp",
+      "thumbnail": "media/fe7c95108ee68bb87900f8007f6c450a238f41961f97fd999e351ac5b44c53b7-thumb.webp"
+    },
+    {
+      "id": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+      "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+      "character": "other",
+      "label": "title_art_keyvisual_01",
+      "size": [
+        1023,
+        1537
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png"
+      ],
+      "groups": [
+        "キービジュアル"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f.webp",
+      "thumbnail": "media/27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f-thumb.webp"
+    },
+    {
+      "id": "79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789",
+      "sha256": "79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789",
+      "character": "other",
+      "label": "第1章キービジュアル",
+      "size": [
+        1672,
+        941
+      ],
+      "sources": [
+        "asset_sources/ch1-keyart/original.png"
+      ],
+      "groups": [
+        "関連CG"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789.webp",
+      "thumbnail": "media/79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789-thumb.webp"
+    },
+    {
+      "id": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
+      "sha256": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
+      "character": "rin",
+      "label": "深夜のコーヒー",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：長いウルフ・半目・白シャツ・フープピアスを維持。深夜の黒縁眼鏡はcharacters.jsonの正規設定、別人化として除去しない。コーヒーミルの手の握りを選定時に拡大確認。PRT34の修正版立ち絵ではない。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0.webp",
+      "thumbnail": "media/b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0-thumb.webp"
+    },
+    {
+      "id": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
+      "sha256": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
+      "character": "rin",
+      "label": "香りのブレンド",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛02（葉の色修正待ち）とは別ファイル。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe.webp",
+      "thumbnail": "media/b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe-thumb.webp"
+    },
+    {
+      "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "character": "rin",
+      "label": "01-night-tasting-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360.webp",
+      "thumbnail": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360-thumb.webp"
+    },
+    {
+      "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "character": "rin",
+      "label": "01-night-tasting-revision-1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4.webp",
+      "thumbnail": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4-thumb.webp"
+    },
+    {
+      "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "character": "rin",
+      "label": "01-night-tasting-revision-2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20.webp",
+      "thumbnail": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20-thumb.webp"
+    },
+    {
+      "id": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+      "sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+      "character": "rin",
+      "label": "輸入サンプルを選ぶ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/02-flavor-samples.png"
+      ],
+      "groups": [
+        "新版19案"
+      ],
+      "history": [
+        "reviewed-requires-dark-leaf-refinement"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/02-flavor-samples.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db"
+      ],
+      "image": "media/abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82.webp",
+      "thumbnail": "media/abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82-thumb.webp"
+    },
+    {
+      "id": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+      "sha256": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+      "character": "rin",
+      "label": "01-night-tasting-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/01-night-tasting.png",
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/01-night-tasting-first.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [
+        "equipment-revision-needed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/01-night-tasting.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0.webp",
+      "thumbnail": "media/9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0-thumb.webp"
+    },
+    {
+      "id": "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db",
+      "sha256": "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db",
+      "character": "rin",
+      "label": "サンプルを選ぶ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/02-flavor-samples.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/02-flavor-samples.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82"
+      ],
+      "image": "media/0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db.webp",
+      "thumbnail": "media/0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db-thumb.webp"
+    },
+    {
+      "id": "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553",
+      "sha256": "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553",
+      "character": "rin",
+      "label": "夜更けのコーヒー",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/03-late-coffee.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/rin/03-late-coffee.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea"
+      ],
+      "image": "media/a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553.webp",
+      "thumbnail": "media/a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553-thumb.webp"
+    },
+    {
+      "id": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
+      "sha256": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
+      "character": "rin",
+      "label": "rin-short-bowl-20261009",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/ng-examples/rin-short-bowl-20261009.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "要修正：CI98のオーナーNG。承認できる修正版なし。",
+        "機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。"
+      ],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab.webp",
+      "thumbnail": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab-thumb.webp"
+    },
+    {
+      "id": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
+      "sha256": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
+      "character": "rin",
+      "label": "title_art_rin_01_showroom_smoke",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7.webp",
+      "thumbnail": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7-thumb.webp"
+    },
+    {
+      "id": "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524",
+      "sha256": "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524",
+      "character": "tsumugi",
+      "label": "ボウルの準備",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：ボブ・紫の花刺繍パーカーを維持。掌で保持できる脚付きボウル。冷たいLotus I+が机上、炭・ホースなし。旧巨大版とは別ファイル。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "1bfb31cee9e0000b97296797dca0df99846f55ccb09159349e42b4d97ace9ed9"
+      ],
+      "image": "media/604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524.webp",
+      "thumbnail": "media/604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524-thumb.webp"
+    },
+    {
+      "id": "659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb",
+      "sha256": "659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb",
+      "character": "tsumugi",
+      "label": "雨の日の絵描き",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_03_rain_drawing.png"
+      ],
+      "groups": [
+        "別タイトル候補"
+      ],
+      "history": [
+        "候補保存のみ：雨の屋外スケッチ。紫パーカー・ボブ・タブレットは本人と整合。屋外植栽が多いが植物好きという文脈あり。室内鉢植え削減の対象外。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_03_rain_drawing.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb.webp",
+      "thumbnail": "media/659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb-thumb.webp"
+    },
+    {
+      "id": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+      "sha256": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+      "character": "tsumugi",
+      "label": "01-smoke-colors-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-first.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4"
+      ],
+      "image": "media/5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad.webp",
+      "thumbnail": "media/5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad-thumb.webp"
+    },
+    {
+      "id": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+      "sha256": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+      "character": "tsumugi",
+      "label": "01-smoke-colors-revision-1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-revision-1.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4"
+      ],
+      "image": "media/6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7.webp",
+      "thumbnail": "media/6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7-thumb.webp"
+    },
+    {
+      "id": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
+      "sha256": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
+      "character": "tsumugi",
+      "label": "01-smoke-colors-first",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors-first.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41"
+      ],
+      "image": "media/ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a.webp",
+      "thumbnail": "media/ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a-thumb.webp"
+    },
+    {
+      "id": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+      "sha256": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+      "character": "tsumugi",
+      "label": "01-smoke-colors-revision1",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors-revision1.png"
+      ],
+      "groups": [
+        "旧15案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60.webp",
+      "thumbnail": "media/830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60-thumb.webp"
+    },
+    {
+      "id": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90",
+      "sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90",
+      "character": "tsumugi",
+      "label": "タブレットの猫",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/02-tablet-cat.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/02-tablet-cat.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489"
+      ],
+      "image": "media/4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90.webp",
+      "thumbnail": "media/4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90-thumb.webp"
+    },
+    {
+      "id": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed",
+      "sha256": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed",
+      "character": "tsumugi",
+      "label": "夕暮れのスケッチ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/03-twilight-sketch.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/03-twilight-sketch.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1"
+      ],
+      "image": "media/7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed.webp",
+      "thumbnail": "media/7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed-thumb.webp"
+    },
+    {
+      "id": "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41",
+      "sha256": "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41",
+      "character": "tsumugi",
+      "label": "煙の色を眺めて",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors.png"
+      ],
+      "groups": [
+        "旧15案"
+      ],
+      "history": [
+        "reviewed"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors.revision2.prompt.txt",
+        "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
+        "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4"
+      ],
+      "image": "media/a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41.webp",
+      "thumbnail": "media/a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41-thumb.webp"
+    },
+    {
+      "id": "59bbfab48102c952d631a65b7d7efbc560ebff894a61959d3147b52915fd7953",
+      "sha256": "59bbfab48102c952d631a65b7d7efbc560ebff894a61959d3147b52915fd7953",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_01_window_smoke",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_tsumugi_01_window_smoke.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_tsumugi_01_window_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/59bbfab48102c952d631a65b7d7efbc560ebff894a61959d3147b52915fd7953.webp",
+      "thumbnail": "media/59bbfab48102c952d631a65b7d7efbc560ebff894a61959d3147b52915fd7953-thumb.webp"
+    },
+    {
+      "id": "1bfb31cee9e0000b97296797dca0df99846f55ccb09159349e42b4d97ace9ed9",
+      "sha256": "1bfb31cee9e0000b97296797dca0df99846f55ccb09159349e42b4d97ace9ed9",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_02_bowl_prep",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_tsumugi_02_bowl_prep.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_tsumugi_02_bowl_prep.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524"
+      ],
+      "image": "media/1bfb31cee9e0000b97296797dca0df99846f55ccb09159349e42b4d97ace9ed9.webp",
+      "thumbnail": "media/1bfb31cee9e0000b97296797dca0df99846f55ccb09159349e42b4d97ace9ed9-thumb.webp"
+    },
+    {
+      "id": "ebb3176873f7343a40e7a84ced7132d4a466ef335db3615f5b2d3120153ba829",
+      "sha256": "ebb3176873f7343a40e7a84ced7132d4a466ef335db3615f5b2d3120153ba829",
+      "character": "tsumugi",
+      "label": "tsumugi-short-bowl-hose-route-20261009",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/ng-examples/tsumugi-short-bowl-hose-route-20261009.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "要修正：CI98/99のオーナーNG。承認できる修正版なし。",
+        "機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。"
+      ],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/ebb3176873f7343a40e7a84ced7132d4a466ef335db3615f5b2d3120153ba829.webp",
+      "thumbnail": "media/ebb3176873f7343a40e7a84ced7132d4a466ef335db3615f5b2d3120153ba829-thumb.webp"
+    }
+  ],
+  "references": {
+    "ageha": [
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/ageha/chr_ageha_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_ageha.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_ageha.png"
+      }
+    ],
+    "hiyori": [
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/hiyori/chr_hiyori_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_hiyori.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_hiyori.png"
+      }
+    ],
+    "kafuka": [
+      {
+        "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/kafuka/chr_kafuka_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_kafuka.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_kafuka.png"
+      }
+    ],
+    "mashiro": [
+      {
+        "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/mashiro/chr_mashiro_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_mashiro.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_mashiro.png"
+      }
+    ],
+    "minto": [
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/minto/chr_minto_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_minto.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_minto.png"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "label": "正式私服",
+        "url": "../../assets/sprites/characters/minto/chr_minto_ura_normal.png"
+      }
+    ],
+    "rin": [
+      {
+        "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/rin/chr_rin_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_rin.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_rin.png"
+      }
+    ],
+    "tsumugi": [
+      {
+        "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/tsumugi/chr_tsumugi_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_tsumugi.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_tsumugi.png"
+      }
+    ]
+  },
+  "summary": {
+    "originalPaths": 114,
+    "uniqueArt": 92,
+    "duplicatePaths": 22,
+    "current": 21,
+    "missingHistoricalSlots": [
+      {
+        "slot": "ageha01",
+        "status": "素材待ち",
+        "source": null,
+        "reason": "この別候補系に原画なし。正式系タイトル01で代用しない。"
+      }
+    ]
+  }
+}
