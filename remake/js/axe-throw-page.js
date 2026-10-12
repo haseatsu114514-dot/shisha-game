@@ -17,5 +17,6 @@ function menu(result = null) {
       el("li", { text: "3投の合計は最大18点。何度でも挑戦できる" }),
     ]), start, el("a.axe-back", { href: "./", text: "本編へ" }),
   ]));
+  if (result) start.focus();
 }
 menu();

@@ -5,6 +5,9 @@ const shotsPath = process.env.COMPARISON_DIR;
 if (shotsPath) await fs.mkdir(shotsPath, { recursive: true });
 const game = page => page.locator('[data-test="axe-game"]');
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="axe-game"]')?.dataset.phase === value, value);
+async function press(page, selector, touch = false) {
+  if (touch) await page.locator(selector).tap(); else await page.locator(selector).click();
+}
 async function fit(page) {
   const results = await game(page).locator(".axe-header, .axe-panel, .axe-button, .axe-note, .axe-legend").evaluateAll(nodes => {
     const game = document.querySelector(".axe-game").getBoundingClientRect();
@@ -29,16 +32,16 @@ async function aimAt(page, x = 0, y = 0, touch = false) {
 async function shoot(page, { touch = false, x = 0, y = 0, keyboard = false } = {}) {
   await phase(page, "aim"); await aimAt(page, x, y, touch);
   await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
-  if (keyboard) await page.keyboard.press("Space"); else await page.locator('[data-test="axe-action"]').click();
+  if (keyboard) await page.keyboard.press("Space"); else await press(page, '[data-test="axe-action"]', touch);
   await phase(page, "timing"); await fit(page);
   await page.waitForFunction(() => {
     const root = document.querySelector('[data-test="axe-game"]');
     return Number(root.dataset.timing) >= .48 && Number(root.dataset.timing) <= .52;
   });
-  if (keyboard) await page.keyboard.press("Space"); else await page.locator('[data-test="axe-action"]').click();
+  if (keyboard) await page.keyboard.press("Space"); else await press(page, '[data-test="axe-action"]', touch);
   await page.waitForFunction(() => ["result","summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
 }
-async function standalone(page) {
+async function standalone(page, { touch = false, keyboard = false } = {}) {
   await page.evaluate(() => {
     localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
       lovers: ["rin"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
@@ -46,7 +49,9 @@ async function standalone(page) {
     localStorage.setItem("unrelated", "keep"); sessionStorage.setItem("unrelated", "keep");
   });
   await page.goto(new URL("axe-throw.html", page.url()).href);
-  await page.locator('[data-test="axe-start"]').click(); await phase(page, "aim");
+  if (keyboard) { await page.locator('[data-test="axe-start"]').focus(); await page.keyboard.press("Enter"); }
+  else await press(page, '[data-test="axe-start"]', touch);
+  await phase(page, "aim");
 }
 await suite("axe-throw", async check => {
   for (const [label, options, touch] of [
@@ -55,19 +60,25 @@ await suite("axe-throw", async check => {
     ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true],
     ["keyboard-reduced", { viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" }, false],
   ]) await check(label, async page => {
-    await standalone(page); const before = await storageSnapshot(page); await fit(page);
+    const keyboard = label === "keyboard-reduced";
+    await standalone(page, { touch, keyboard }); const before = await storageSnapshot(page); await fit(page);
     for (let n = 0; n < 3; n++) {
-      await shoot(page, { touch, x: n === 1 ? 1 : 0, y: n === 1 ? 1 : 0, keyboard: label === "keyboard-reduced" });
+      await shoot(page, { touch, x: n === 1 ? 1 : 0, y: n === 1 ? 1 : 0, keyboard });
       await fit(page);
-      if (n < 2) await page.locator('[data-test="axe-action"]').click();
+      if (n < 2) await press(page, '[data-test="axe-action"]', touch);
     }
     assert.equal(await game(page).getAttribute("data-phase"), "summary");
     assert.match(await page.locator('[data-test="axe-note"]').textContent(), /合計 .*18点/);
     if (shotsPath) await page.screenshot({ path: shotsPath + "/" + label + "-summary.png" });
-    await page.locator('[data-test="axe-retry"]').click(); await phase(page, "aim");
+    await press(page, '[data-test="axe-retry"]', touch); await phase(page, "aim");
     assert.equal(await page.locator('[data-test="axe-round"]').textContent(), "1 / 3 投");
-    await page.locator('[data-test="axe-cancel"]').click();
+    for (let n = 0; n < 3; n++) {
+      await shoot(page, { touch, keyboard });
+      if (n < 2) await press(page, '[data-test="axe-action"]', touch);
+    }
+    await press(page, '[data-test="axe-action"]', touch);
     await page.locator('[data-test="axe-start"]').waitFor();
+    assert.match(await page.locator(".axe-intro p").textContent(), /前回の記録/);
     assert.deepEqual(await storageSnapshot(page), before, "Practice must preserve raw legacy saves and LIME");
   }, options);
   await check("pause-reaim-and-repeat", async page => {
@@ -93,27 +104,54 @@ await suite("axe-throw", async check => {
     assert(await game(page).evaluate(root => root.contains(document.activeElement)));
     await page.keyboard.press("Escape"); assert.equal(await game(page).count(), 0);
   });
-  for (const relationship of ["friend-legacy", "lover"]) await check("api-" + relationship, async page => {
+  await check("pointer-double-click", async page => {
+    await standalone(page); await aimAt(page);
+    await page.locator('[data-test="axe-action"]').dblclick(); await phase(page, "timing");
+    await page.waitForFunction(() => Number(document.querySelector(".axe-game").dataset.timing) >= .48
+      && Number(document.querySelector(".axe-game").dataset.timing) <= .52);
+    await page.locator('[data-test="axe-action"]').dblclick(); await phase(page, "result");
+    assert.equal(await page.locator('[data-test="axe-round"]').textContent(), "2 / 3 投");
+    assert.equal(await page.locator(".axe-scores span").nth(1).textContent(), "2投目  —");
+    await page.keyboard.press("Escape");
+  });
+  await check("pre-abort-and-host-detach", async page => {
+    await page.evaluate(async () => {
+      const mini = await import("./js/minigames/axe.js");
+      const signal = new AbortController(); signal.abort();
+      window.cancelledGame = await mini.runAxeThrow({ signal: signal.signal });
+      const host = document.createElement("div"); document.body.append(host);
+      window.detachedGame = mini.runAxeThrow({ host }); host.remove();
+    });
+    const result = await page.evaluate(async () => [cancelledGame, await detachedGame]);
+    assert(result.every(r => r.cancelled && !r.completed && r.throws.length === 0));
+    assert.equal(await game(page).count(), 0);
+  });
+  for (const relationship of ["friend-legacy", "friend", "lover"]) await check("api-" + relationship, async page => {
     await page.evaluate(async relationship => {
       const core = await import("./js/core/state.js");
-      window.A = { core, mini: await import("./js/minigames/axe.js") };
+      window.A = { core, mini: await import("./js/minigames/axe.js"), route: await import("./js/core/hiyori-route.js") };
       const s = core.newGame(); s.phase = "daily"; s.money = 45678; s.stamina = 71;
       s.flags._hiyori_real_self_known = false; s.contacts.push("hiyori");
       s.inbox = [{ id: "keep", read: true, log: ["keep"] }]; s.pendingInvite = { sender: "hiyori", day: 10, slot: 1 };
       if (relationship === "friend-legacy") { s.schema = 5; s.flags._friend_hiyori = true; s.affinity.hiyori = 66; }
+      else if (relationship === "friend") { s.met.hiyori = true; s.flags._friend_hiyori = true;
+        s.finales.hiyori = { route: "friend", chapter: 1, day: 4 }; s.affinity.hiyori = 66; }
       else { s.lovers = ["hiyori","rin"]; s.lovePts.hiyori = 12; s.loveLevel.hiyori = 2; }
       localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); core.load();
       A.before = JSON.stringify(core.state); A.abort = new AbortController();
       A.flow = A.mini.runAxeThrow({ signal: A.abort.signal });
       A.duplicate = A.flow === A.mini.runAxeThrow();
+      A.friendBefore = A.route.hiyoriIsFriend();
     }, relationship);
     assert(await page.evaluate(() => A.duplicate)); assert.equal(await game(page).count(), 1);
+    if (relationship === "friend") assert(await page.evaluate(() => A.friendBefore));
     await phase(page, "aim"); await fit(page);
     await shoot(page); await fit(page);
     await page.evaluate(() => A.abort.abort()); const result = await page.evaluate(() => A.flow);
     assert(!result.completed && result.cancelled && result.throws.length === 1);
     assert.equal(await game(page).count(), 0);
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
+    assert(await page.evaluate(() => A.route.hiyoriIsFriend() === A.friendBefore));
     await page.evaluate(() => { A.flow = A.mini.runAxeThrow({ reducedMotion: true }); });
     for (let n = 0; n < 3; n++) { await shoot(page); if (n < 2) await page.locator('[data-test="axe-action"]').click(); }
     await page.locator('[data-test="axe-action"]').click(); const complete = await page.evaluate(() => A.flow);

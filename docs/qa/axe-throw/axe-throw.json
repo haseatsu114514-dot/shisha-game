@@ -1,0 +1,47 @@
+{
+  "name": "axe-throw",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "pc",
+      "status": "passed"
+    },
+    {
+      "label": "touch-landscape",
+      "status": "passed"
+    },
+    {
+      "label": "touch-portrait",
+      "status": "passed"
+    },
+    {
+      "label": "keyboard-reduced",
+      "status": "passed"
+    },
+    {
+      "label": "pause-reaim-and-repeat",
+      "status": "passed"
+    },
+    {
+      "label": "pointer-double-click",
+      "status": "passed"
+    },
+    {
+      "label": "pre-abort-and-host-detach",
+      "status": "passed"
+    },
+    {
+      "label": "api-friend-legacy",
+      "status": "passed"
+    },
+    {
+      "label": "api-friend",
+      "status": "passed"
+    },
+    {
+      "label": "api-lover",
+      "status": "passed"
+    }
+  ]
+}

@@ -67,6 +67,10 @@
 
 ## 遊び方（ローカル）
 
+斧投げ3投の練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
+生成素材を使い、照準＋タイミングで最大18点を狙う。PC・スマホ縦横で遊べる。
+本編セーブや好感度・恋人/友人状態は変更しない。[操作・API・検証](../docs/axe_throw.md)。
+
 ```bash
 # リポジトリのルートで
 python3 remake/tools/serve_preview.py --port 8123
