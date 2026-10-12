@@ -40,6 +40,7 @@ async function setup(page, day = 4, slot = 1) {
     C.afterTimer = setInterval(() => {
       document.querySelector('[data-test="after-none"]')?.click();
       document.querySelector('[data-test="reel-intro"]')?.click();
+      document.querySelector('[data-test="drill-heat"]')?.click();
     }, 20);
     C.start = () => C.ch1.resumeGame().catch(e => { window.calendarError = e.stack; });
   }, { day, slot });
@@ -138,7 +139,7 @@ await suite('action-context', async check => {
       if (action === 'baito') assert(r.money >= (day === 4 ? 43000 : 38000));
     }, options);
   }
-  for (const [index, branch] of ['practice', 'talk_sumi', 'sleep_early'].entries()) {
+  for (const [index, branch] of ['practice', 'drill', 'talk_sumi', 'sleep_early'].entries()) {
     await run(`eve-${branch}`, async page => {
       await setup(page, 13, 2);
       await page.evaluate(async index => {
@@ -150,9 +151,15 @@ await suite('action-context', async check => {
       assert.equal(r.flags._last_night, branch);
       assert.equal(r.trace.filter(id => id === 'ch1_day7_last_night').length, 1);
       assert.equal(r.trace.filter(id => /^remake_homecoming_/.test(id)).length, branch === 'sleep_early' ? 0 : 1);
-      if (branch !== 'sleep_early') assert(r.lines.some(l => l.id === 'ch1_day7_last_night'
-        && /もう一度.*tonari/.test(l.text) && /bg_tonari_inside(?:_overcast)?_night/.test(l.bg)),
-      JSON.stringify(r.lines.filter(l => l.id === 'ch1_day7_last_night')));
+      const menu = r.lines.filter(l => l.id === 'ch1_day7_last_night');
+      assert.match(menu[0].text, /閉店後のtonari/);
+      assert(menu.every(l => /bg_tonari_inside(?:_overcast)?_night/.test(l.bg)), JSON.stringify(menu));
+      const ending = r.lines.filter(l => l.id === `ch1_day7_last_night_${branch}`);
+      assert(ending.length > 0, '選んだ過ごし方の会話を落とさない');
+      if (branch === 'sleep_early') assert(ending.some(l => /bg_home(?:_overcast)?_night/.test(l.bg)), JSON.stringify(ending));
+      else assert(ending.every(l => /bg_tonari_inside(?:_overcast)?_night/.test(l.bg)), JSON.stringify(ending));
+      assert(!r.lines.some(l => /もう一度.*tonari/.test(l.text)), '前夜の二重往復を作らない');
+      if (branch === 'drill') assert.equal(await page.evaluate(() => C.core.state.best.heat), 2);
     }, index % 2 ? touch : {});
   }
 });
