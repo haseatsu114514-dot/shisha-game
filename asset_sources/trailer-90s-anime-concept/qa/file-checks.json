@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "shot": "01-sumi-silence",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "fa2cf775d6cdff26afdaf74c142aa55ce887023c80abda0faaa731ed7170883d",
+      "original_sha256": "30758ef5bf5f57c7842e663763003e5d55ca4cdcba8b567ebea7452b28dad9fa"
+    },
+    {
+      "shot": "02-naru-confrontation",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "6f4d76569564b994ee16c49793259b2b40e917e51645e6495a17faad4ace6783",
+      "original_sha256": "b61d60429096d7b4ef6f7244283555e64688fc6dd2ac3eb14d07870a0cbcbd10"
+    },
+    {
+      "shot": "03-minto-warning",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "09313de64f2a39ce125f23762145017c3564dc2f51d918dbeb61f97aa67b6b58",
+      "original_sha256": "7dbf9561e8d1e6645442e32bb7f4d9bb6fe5fa03c3bb36daa0097bfee75c560e"
+    },
+    {
+      "shot": "04-tsumugi-water",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "e2c74c801c21d930fd7bbd4964a9aa0cce535eed6ca4e065f4d5a552053724c3",
+      "original_sha256": "4bc97c61314c0d99ab450dd01b2e4d8f3ea7b12d6d6d505eb9d1be901f260adf"
+    },
+    {
+      "shot": "05-ageha-departure",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "8231d9b76e81bef58af0c7ca07990e8df8ceb79cf3af09c804f09463b0c901f3",
+      "original_sha256": "b542bd7db6faf639d1bf1058d9a59adb68c22f7fda4b6a2d5482e96abbcaf8b1"
+    },
+    {
+      "shot": "06-empty-victory",
+      "image_dimensions": [
+        1664,
+        936
+      ],
+      "original_dimensions": [
+        1672,
+        941
+      ],
+      "exact_16_9": true,
+      "minimum_resolution_pass": true,
+      "crop_pixel_equality_pass": true,
+      "crop_origin": [
+        4,
+        2
+      ],
+      "image_sha256": "cb5ee7d99f5d09f0d7a63ed33aeba3154ba93986d2391c6baa216aafe76da9eb",
+      "original_sha256": "e83d2264d6f945cddcecab1c33909a93b6e10a3d047412371358ff214a1acc55"
+    }
+  ],
+  "reference_copies_match": true
+}
