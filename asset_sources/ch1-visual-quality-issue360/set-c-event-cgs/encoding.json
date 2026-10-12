@@ -1,0 +1,51 @@
+{
+  "quality": 74,
+  "method": 6,
+  "rows": [
+    {
+      "id": "cg_ch1_sumi_training",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 111968,
+      "afterBytes": 132900,
+      "sourceSha256": "b5ff2043af2c7a2a9d6097222d247911ff684709a65933dfd3c6c3fa5925f12e",
+      "runtimeSha256": "fde5c824de0253c7c4248d66ce10d5cb3535ceb002c28453f8303cd40c42ec59"
+    },
+    {
+      "id": "cg_ch1_tsumugi_heart_art",
+      "native": [
+        1672,
+        940
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 80800,
+      "afterBytes": 148742,
+      "sourceSha256": "c2030bf7f3815ab8fc453600b53e6b55f0424ef0b38c2ce9aa12d6d5134d9370",
+      "runtimeSha256": "bb8be84db53eec6836e22c778cfc03e3db4cabccfd1dfb64b1545b4151a0ff2d"
+    },
+    {
+      "id": "cg_ch1_minto_casual_reveal",
+      "native": [
+        1672,
+        941
+      ],
+      "delivery": [
+        1920,
+        1080
+      ],
+      "beforeBytes": 133652,
+      "afterBytes": 229754,
+      "sourceSha256": "4bcbb723c1b666fd72974396287bf721561972eaeffbfe6a30ca0c3185fbc2ba",
+      "runtimeSha256": "2146ea7cc3293f837ef9013a56a3e2b674a1986df086357e24b4a8f71fddaef7"
+    }
+  ]
+}

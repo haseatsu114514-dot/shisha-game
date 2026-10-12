@@ -1,0 +1,57 @@
+{
+  "generator": "image_gen.imagegen",
+  "worker": "codex-visual360-20261012-ac3264e05686",
+  "records": [
+    {
+      "key": "sumi",
+      "id": "cg_ch1_sumi_training",
+      "file": "exec-77227f43-5315-4e0f-8daf-64c5fceeafbd.png",
+      "prompt": "Create a newly redrawn landscape16:9 event CG for chapter1 day5 of a Japanese shisha visual novel, ideally1920x1080. Image1 is the CANONICAL Sumi character: exactly preserve his face, age46, black short hair, black newsboy cap, rectangular black glasses, short dark moustache/beard, black collared rolled-sleeve shirt and brown waist apron. Do not turn him into a generic handsome young man. Image2 is current tonari NIGHT interior; use its warm wood, left blue-night windows, amber light and olive upholstery for place identity, but intimate closer viewpoint at the work counter after closing, most lights dimmed. Image3 is ONLY pixel-art texture reference, not the woman, smoke or incorrect coal hardware to copy. Scene: Sumi has just taken out a cherished SMALL palm-sized scratched amber glass flavour bottle from his private shelf and is showing it to Hajime. Draw Sumi waist-up left/centre, quiet nostalgic slightly guarded expression, one hand holding the little bottle at chest/lower-chest height, other hand touching its small lid, almost imperceptible hesitation. Worn pale paper band with indistinct abstract marks, no readable brand or text; deep amber moist flavour material inside. Bottle comfortably fits one hand, far smaller than his head, not a giant jar. A subtle black-hoodied shoulder/partial hand of Hajime may appear at far right without invented face. No actual assembled shisha device, HMD, coal or hose in this close framing; the scene is BEFORE their joint preparation. Counter foreground is quiet, main face and small bottle above bottom25% where dialogue UI overlays. Background shelves suggest spare empty glass BASES only, not tall erroneous connectors; no unnecessary plants. Rich precisely stepped pixel clusters and carefully controlled wood/glass/cloth shading matching game's pixel-painter title art, not smooth anime illustration or photorealistic texture. No caption, UI, watermark, logos, extra people or floating magical smoke. One cinematic playable event image.",
+      "event": "ch1_day5_sumi_story",
+      "accepted": true,
+      "plan": {
+        "person": "sumi",
+        "state": "no assembled hookah in frame",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none",
+        "scale": "hand-sized objects; portrait face and story-specific outfit"
+      }
+    },
+    {
+      "key": "tsumugi",
+      "id": "cg_ch1_tsumugi_heart_art",
+      "file": "exec-16b1525d-c1c7-49ac-be9d-043ff291adf8.png",
+      "prompt": "Newly redraw a chapter1 event CG, full-frame landscape16:9 refined pixel art, ideally1920x1080. Image1 is CANONICAL Tsumugi: preserve her same youthful21-year-old face, reddish-brown eyes, short straight brown bob with bangs, little silver earrings, purple floral-embroidered hoodie, black pleated skirt. Do not add long hair, mature glamour or another girl's features. Image2 is current tonari NIGHT identity: warm wood/amber lights/blue windows/olive sofa. Image3 is OLD composition reference only; image4 is PIXEL TEXTURE ONLY, not its girl/smoking/hardware. Scene: a shy but quietly proud Tsumugi seated by the counter, showing her battered iPad to Hajime. Close mid-shot with face in upper middle/right and LANDSCAPE tablet held at chest level in both hands, completely visible ABOVE bottom25% dialogue area. It is an actual modest12inch black-bezel tablet, not a framed print or giantTV. A few thin diagonal glass cracks lie ON TOP of the screen artwork, visibly separated from the picture. On tablet: small luminous illustration of tonari's warm interior, white smoke gently rising, Hajime's recognizable black cap and black hoodie FROM BEHIND facing customers outside the painted crop, little cat on a window ledge. Spare empty glass bases on a shelf; keep any complete smoking apparatus OUT of this screen crop, no tiny malformed coals/bowls/hose. Her hands grip tablet edges naturally with correct fingers. Real room has no visible hookah, burning charcoal, HMD or hose in this close framing, no extra plants. Hajime's black shoulder silhouette at far-left edge gives her eye line; no extra face. No readable words, app buttons, dialogue/UI/logos/watermarks anywhere, no copiedforeignlabels. Match finely stepped square-pixel contours and intentional pixel clusters, rich glass/cloth/wood material shading, warm/cool colour contrast of game; not smooth anime art or photo. Face and tablet must remain readable with lower dialogue overlay, quiet dark lowerquarter.",
+      "event": "ch1_tsumugi_fifth / ch1_tsumugi_sketch",
+      "accepted": true,
+      "plan": {
+        "person": "tsumugi",
+        "state": "no assembled hookah in frame",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none",
+        "scale": "hand-sized objects; portrait face and story-specific outfit"
+      }
+    },
+    {
+      "key": "minto_reveal",
+      "id": "cg_ch1_minto_casual_reveal",
+      "file": "exec-f4a80357-316f-4fa3-888c-c2fe823eaa02.png",
+      "prompt": "Produce a newly redrawn full-frame landscape16:9 pixel-art event CG for Minto's FIFTH private chapter1 meeting at the station, ideally1920x1080. Image1 CANONICAL PRIVATE Minto is absolute for her same face, green eyes, straight long black hair with bangs, modest expression, face age appearance and small green pendant. She is29 but do not make her look older/different than the portrait. Image2 is OLD station camera/location reference only; image3 is pixel-art texture only, not its girl/equipment. Crucial story-specific outfit CHANGE from old CG: actual beige CABLE-KNIT PULLOVER sweater with visible knitted cable structure, no cardigan buttons and no black top showing, calm charcoal long skirt, same simple dark shoulder bag with small green heart charm. Hair down, restrained makeup, no work horns, wings, devil accessories, costume dress or choker. Scene: she has just arrived saying 'sorry to keep you waiting', shy smile and slightly lowered gaze, hands lightly holding bag strap near chest. Medium three-quarter portrait around centre/right, face and bag hand above bottom25%, skirt can extend below. The recognizable modest Japanese station frontage/grey columns and covered entrance on left, local shopping district behind right in gentle daylight, controlled blue/cream/earth palette matching chapter1. No extra commuters/human silhouettes, readable signs, invented lettering, logos, menus, UI or watermark. No hookah, smoke, coal or containers. Fine stepped pixel contours, deliberate pixel-cluster shading for knit/hair/paving, detailed and warm rather than smooth anime or photographic painting. Quiet lowerquarter for existing VN text. One scene, not a character sheet.",
+      "event": "ch1_minto_fifth",
+      "accepted": true,
+      "plan": {
+        "person": "minto_reveal",
+        "state": "no assembled hookah in frame",
+        "HMD": "none",
+        "coals": 0,
+        "hose": "none",
+        "mouthpiece": "none",
+        "scale": "hand-sized objects; portrait face and story-specific outfit"
+      }
+    }
+  ]
+}
