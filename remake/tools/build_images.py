@@ -20,7 +20,7 @@ OUT = ROOT / "remake" / "img"
 MANIFEST = ROOT / "remake" / "data" / "manifest.json"
 MAX_EDGE = {"ui/making": 1280}
 # 再描画した自宅は輪郭を保ちながら、晴れ昼夜の合計を旧WebP容量内に収める。
-WEBP_QUALITY = {"backgrounds/bg_home_": 74, "backgrounds/bg_tonari_inside_": 62}
+WEBP_QUALITY = {"backgrounds/bg_home_": 74, "backgrounds/bg_tonari_inside_": 62, "backgrounds/bg_street_": 62}
 
 
 def targets(m):

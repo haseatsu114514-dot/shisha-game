@@ -1,0 +1,38 @@
+{
+  "generator": "image_gen.imagegen",
+  "worker": "codex-visual360-20261012-ac3264e05686",
+  "nativeSize": [
+    1672,
+    941
+  ],
+  "deliverySize": [
+    1920,
+    1080
+  ],
+  "records": [
+    {
+      "id": "bg_street_day",
+      "file": "/workspace/generated_images/exec-ddcaa8c6-27de-455d-b9b6-d284fd1606c1.png",
+      "prompt": "Create a newly redrawn production background for a Japanese pixel-art visual novel, landscape 16:9 at the highest available resolution, ideally 1920x1080. Use the attached CURRENT DAY STREET image as the authoritative geographical and composition reference, not as an image to enlarge. This is a narrow traditional shopping street in Nagoya Osu in chapter one of an indie shisha story. Improve the drawing, coherent perspective, lighting and materials substantially while preserving this recognizable street: same camera at pedestrian eye height, same central road and vanishing point slightly right of center, same two-storey shop buildings, awnings, doors, shutters, street lamps, electric poles and overhead cables. Left front shop has a dark brown/charcoal storefront and deep muted wine awning; beside it a recessed shutter and wood-framed entrance, then green awnings recede. Right front cafe has a muted forest green awning, a warm brown wooden storefront, and its entrance on the right edge. Keep shop architecture fixed for later weather/night variants. Give neighboring businesses individual restrained shop displays rather than repeating hookah shops or identical plants. Put NO actual shisha hardware in windows: decorative ceramics, tiny abstract retail items or silhouettes of merchandise only. Replace every sign, menu, logo and scribbled character with elegant plain panels or simple non-letter geometric motifs; no readable or pseudo text anywhere. No people, human silhouettes, character art, cars, interface, watermark or title. Refined Japanese game pixel-art background with clearly controlled crisp square-pixel clusters, fine stepped edges, rich but disciplined dithering, no blurry paint strokes or photo texture, no coarse grain. Match the source's warm earth tones and restrained saturation: charcoal and warm grey plaster, honey-brown wood, desaturated green awnings, pale blue afternoon sky. Sunny early afternoon with warm light from high camera-right, cast shadows directed left and into the road, warm amber practical lamps under awnings but not glowing excessively in daytime. Improve architectural joins, rooflines, depth and material distinction. Maintain a quiet uncluttered foreground road and lower 25 percent for the dialogue window, and moderate contrast across the central midground where character portraits overlay. Avoid giant foreground props, flower masses and ornamental repetition. This is one full-frame street background, not a contact sheet or a framed picture.",
+      "reference": "assets/backgrounds/bg_street_day.png (baseline)"
+    },
+    {
+      "id": "bg_street_night",
+      "file": "/workspace/generated_images/exec-636e4444-154a-4bb0-a76d-376eb10e4d45.png",
+      "prompt": "Edit this exact adopted sunny DAY street background into a NIGHT counterpart for the same pixel-art Japanese visual novel. This is a strict time-of-day variation, landscape 16:9. Keep the camera, perspective, EVERY facade, window, doorway, shutter, awning, sign panel, sidewalk slab, planter, merchandise, overhead wire, pole, hanging lamp and furniture in exactly the same position and shape. Do not change shop types or substitute a bakery, florist, convenience store or different buildings. Maintain all plain panels and geometric sign motifs with NO text. Change only environmental illumination: deep indigo clear evening sky with a few discreet stars behind the same existing clouds, soft cool ambient moon/sky illumination, warm amber light from the already existing street lanterns and shop lamps and windows. The left ceramics/retail shop and right cafe stay recognizable and open, no new light fixtures. Make warm lamp pools on the road plausible, restrained rather than broad neon. Preserve detail and legibility in dark plaster, wood doors and awnings; do not crush everything into black. Lower foreground road remains quiet for dialogue UI. Match the adopted day image's crisp square-pixel clusters, stepped outlines, sophisticated material rendering and earthy warm/cool palette. No people, readable text, logos, UI, smoke, vehicles, rain, puddles, reflections of missing objects, added hookahs or equipment. Produce one full-frame NIGHT background with exactly the same street geometry.",
+      "reference": "generated/bg_street_day.png"
+    },
+    {
+      "id": "bg_street_overcast_day",
+      "file": "/workspace/generated_images/exec-e6817818-d251-462d-8c43-bdc3929ac114.png",
+      "prompt": "Edit this exact adopted SUNNY DAY street into an OVERCAST DAY weather variation, for the same 16:9 pixel-art visual novel background. Keep camera and all geometry pixel-aligned: every building, awning, plain sign panel with its simple non-letter motif, hanging lamp, window, door, shutter, pavement slab, pole, wire, plant and retail item stays in the exact same place and shape. Change ONLY atmospheric illumination and sky. Soft pale cool grey cloud ceiling replaces the blue sky, diffused daylight removes the strong sunny directional shadow edges and golden facade highlights. Natural muted earthy colours, charcoal plaster and forest green awnings; street remains comfortably visible, daytime shop practical lights warm but restrained. No sunbeams. Preserve depth, crisp square-pixel clusters and controlled stepped edges; no blur, filter-only grey wash, photography or new drawing style. This background is also the base under the game's existing animated rain layer: DO NOT paint raindrops, rain streaks, puddles or wet sheen into this image, since it must work for cloudy dry days too. Leave the foreground road quiet for dialogue overlay. No people, characters, vehicles, text, pseudo lettering, logos, UI, smoke, new props or shisha equipment. One full-frame OVERCAST DAY counterpart, with the adopted day's street identity and exact layout.",
+      "reference": "generated/bg_street_day.png"
+    },
+    {
+      "id": "bg_street_overcast_night",
+      "file": "/workspace/generated_images/exec-19faca10-480b-43b5-b2ce-0e3f591d75a1.png",
+      "prompt": "Edit this exact adopted CLEAR NIGHT street background into its OVERCAST NIGHT counterpart for the same 16:9 pixel-art visual novel. Keep camera and all street geometry exactly pixel-aligned with this reference: every shop, awning, door, sign panel, decorative non-letter geometric motif, planter, item on a shelf, street lamp, pavement slab, electric pole and overhead cable retains its shape, size and position. Change only sky and ambient illumination: replace stars and clear sky with layered dim indigo-grey clouds, diffuse slightly cooler night ambient light. Keep the same existing warm amber practical shop and street lamps, readable doorways and all dark wood/plaster details. Darker mood than the clear evening without crushed black shadows, neon, extra lights or lost central-road legibility. Preserve the reference's crisp square-pixel detail, stepped edges and refined warm-earth/cool-indigo palette. The game adds animated rain ONLY on rainy days, so do NOT draw fixed rain, puddles, raindrops, streaks or wet sheen: the same art must work for dry cloudy nights. No added people, figures, cars, readable or pseudo text, logos, UI, smoke, furniture, plants, hookahs or equipment. One full-frame OVERCAST NIGHT background; recognizable unchanged shopping street, quiet lower foreground for dialogue UI.",
+      "reference": "generated/bg_street_night.png"
+    }
+  ]
+}
