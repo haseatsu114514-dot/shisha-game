@@ -664,10 +664,14 @@
   }
 
   // ---------------------------------------------------------------- 更新
+  let wasHostPaused = EMBED;
   function update(dt) {
-    if (hostPaused()) { resetInput(); return; }
+    if (hostPaused()) { resetInput(); wasHostPaused = true; return; }
+    if (EMBED && wasHostPaused) canvas.focus({ preventScroll: true });
+    wasHostPaused = false;
     const now = performance.now();
     const frozen = mode !== "walk" || busy || msg.active;
+    if (EMBED && frozen) resetInput();
     if (!frozen) updatePlayer(dt);
     else if (player.moving) { player.moving = false; player.running = false; player.frame = 0; player.animT = 0; }
     if (mode === "walk" || mode === "menu") updateNpcs(dt, now);
@@ -1667,6 +1671,7 @@
       if (!EMBED) return;
       host = adapter;
       resetInput();
+      if (!hostPaused()) canvas.focus({ preventScroll: true });
     },
   };
 

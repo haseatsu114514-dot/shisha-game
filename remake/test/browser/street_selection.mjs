@@ -66,13 +66,20 @@ try {
     await reset(); let frame = await walk();
     assert.equal((await frame.evaluate(() => __street.layout())).kind, 'set');
     assert.equal((await frame.evaluate(() => __street.state())).alwaysRun, false);
-    await frame.locator('#view').focus(); await page.keyboard.down('ArrowRight'); await page.waitForTimeout(800); await page.keyboard.up('ArrowRight');
+    // 入口ボタンのクリックだけでキーが届く。テスト側からframeをfocusしない。
+    await page.keyboard.down('ArrowRight'); await page.waitForTimeout(800); await page.keyboard.up('ArrowRight');
     assert((await frame.evaluate(() => __street.state())).x > 150);
     await tap(frame, 300, 310); await page.waitForTimeout(600);
     assert((await frame.evaluate(() => __street.state())).x > 200);
     await frame.evaluate(() => __street.place(716, 300, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);
+    const talkingX = (await frame.evaluate(() => __street.state())).x;
+    await page.keyboard.down('ArrowRight'); await page.waitForTimeout(200);
+    await page.keyboard.press('KeyZ'); await page.keyboard.press('KeyZ');
+    await frame.waitForFunction(() => !__street.state().msg); await page.waitForTimeout(100);
+    assert.equal((await frame.evaluate(() => __street.state())).x, talkingX, 'inspect dialogue left a held movement key');
+    await page.keyboard.up('ArrowRight');
     await unchanged();
     await page.locator('[data-test="street-back"]').click(); await page.waitForSelector('.map:not(.done)');
     assert.equal(await page.evaluate(() => T.result), 'pending'); await unchanged();
@@ -142,6 +149,8 @@ try {
     await page.keyboard.up('ArrowRight'); await page.locator('[data-test="phone-close"]').click();
     await frame.waitForFunction(() => !__street.state().paused); await page.waitForTimeout(250);
     assert.equal((await frame.evaluate(() => __street.state())).x, x);
+    await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(150); await page.keyboard.up('ArrowLeft');
+    assert((await frame.evaluate(() => __street.state())).x < x, 'keyboard focus was not restored after LIME');
     await page.evaluate(() => {
       const s = T.core.state;
       const msg = { id: 'qa_street_invite', sender: 'sumi', type: 'invitation', time_slot: 'night',
