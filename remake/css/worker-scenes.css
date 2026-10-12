@@ -9,14 +9,18 @@
 /* 一口の間だけ吸う姿へ切り替える。泡の長さは既存 setDraw の期間を使う。 */
 .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-actions { right: 72px; }
 .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-equipment {
-  right: 8px; bottom: 8%; width: 112px; height: 130px; overflow: hidden;
+  right: 104px; bottom: 8%; width: 102px; height: 130px; overflow: hidden;
+  z-index: 1;
   border: 1px solid #d8d7ef33; border-radius: 12px;
   background: linear-gradient(160deg, #1b142dcc, #130c1bb3);
+}
+.bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-water i {
+  width: 6px; height: 7px; border-color: #f0f6ff; background: #c4e9ff66; box-shadow: 0 0 4px #b8dcff99;
 }
 /* 別アングルのボトル寄り。上部のHMD/炭を固定数で描き足さない。 */
 .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) :is(.worker-tray, .worker-bowl, .thermal-picture) { visibility: hidden; }
 .bench-worker[data-scene="focus"] .worker-actor {
-  width: 220%; height: auto; left: -82%; top: -14%; bottom: auto;
+  width: 320%; height: auto; left: -145%; top: -45%; bottom: auto;
 }
 .bench-worker[data-scene="focus"] :is(.worker-equipment, .worker-counter) { visibility: hidden; }
 .bench-worker[data-scene="focus"] .worker-sweat { left: 66%; top: 44%; }

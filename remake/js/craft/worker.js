@@ -3,7 +3,8 @@ import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
 import { artImg, artHeight } from "./art.js";
-import { buildWorkerActions, workerSceneKey } from "./worker-scenes.js";
+import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-scenes.js";
+import { imageReady } from "../core/ui.js";
 
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
@@ -30,10 +31,6 @@ export function buildHookahRig(cls) {
 export function buildWorkerScene(cs) {
   const portrait = portraitInfo("hajime", "serious");
   const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
-  for (const face of ["sad", "surprise"]) {
-    const p = portraitInfo("hajime", face);
-    if (p) { const warm = new Image(); warm.src = p.src; }
-  }
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
   const actions = buildWorkerActions();
   const equipment = buildHookahRig("worker-equipment");
@@ -63,12 +60,24 @@ export function buildWorkerScene(cs) {
   ]);
   // 表情: 蒸らしの雑念（揺れ）を優先し、落ち着いているときは疲れ具合で変える（TH43）。
   let mental = "steady", fatigue = 0;
+  let facesChecked = false;
+  const usableFaces = new Set();
+  const faceUrls = [...new Set([
+    ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src),
+    makingUrl("hajime_steam_wait.png"),
+  ].filter(Boolean))];
+  const warmFaces = Promise.all(faceUrls.map(async url => {
+    if (await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+  }));
+  const usable = url => url && (!facesChecked || usableFaces.has(url));
   const applyFace = () => {
     const waiting = root.dataset.step === "steam";
     const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
     const p = portraitInfo("hajime", face);
-    const calm = waiting && mental === "steady" && fatigue < 2 && makingUrl("hajime_steam_wait.png");
-    const src = calm || p?.src;
+    const calmUrl = makingUrl("hajime_steam_wait.png");
+    const calm = waiting && mental === "steady" && fatigue < 2 && usable(calmUrl) && calmUrl;
+    const src = calm || (usable(p?.src) ? p.src : faceUrls.find(usable));
+    if (actor) actor.hidden = !src;
     if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
     root.dataset.face = face;
     root.dataset.waiting = String(!!calm);
@@ -79,10 +88,17 @@ export function buildWorkerScene(cs) {
     stage.setAttribute("aria-label", scene?.description || `はじめの作業風景：${WORKER_STEPS[root.dataset.step] || "一台を仕上げる"}`);
     if (waiting) {
       caption.textContent = WORKER_STEPS.steam;
-      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : "蒸らしを待つはじめの目元に動揺が出ている");
+      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
-  const ready = actions.ready.then(applyFace);
+  const ready = Promise.all([actions.ready, warmFaces]).then(async () => {
+    facesChecked = true;
+    applyFace();
+    if (actor && !actor.hidden && !await readyWorkerImage(actor, actor.getAttribute("src"))) {
+      usableFaces.delete(actor.getAttribute("src"));
+      applyFace();
+    }
+  });
   return { caption, footer, root, ready, setStep(step) {
     root.dataset.step = step;
     delete root.dataset.draw;

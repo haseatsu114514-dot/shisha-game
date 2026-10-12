@@ -11,8 +11,27 @@
       "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v1.txt",
       "runtime_png": "assets/ui/making/hajime_craft_mix.png",
       "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
-      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
-      "status": "implemented_in_draft"
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 202858,
+      "runtime_webp_sha256": "2ced967aad3b6051231e1cc36d3068b2ca3c775f2da3ed677adac56c5cb5303d"
     },
     {
       "id": "pack",
@@ -21,8 +40,27 @@
       "prompt": "asset_sources/craft-scenes-issue402/prompts/pack-v1.txt",
       "runtime_png": "assets/ui/making/hajime_craft_pack.png",
       "runtime_webp": "remake/img/ui/making/hajime_craft_pack.webp",
-      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
-      "status": "implemented_in_draft"
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 287126,
+      "runtime_webp_sha256": "cc530a326ce4e11601e4769e0be3988e34cf0a22ff936ca32c650cf3a16042c8"
     },
     {
       "id": "holes",
@@ -31,8 +69,27 @@
       "prompt": "asset_sources/craft-scenes-issue402/prompts/holes-v1.txt",
       "runtime_png": "assets/ui/making/hajime_craft_holes.png",
       "runtime_webp": "remake/img/ui/making/hajime_craft_holes.webp",
-      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
-      "status": "implemented_in_draft"
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 161028,
+      "runtime_webp_sha256": "bbdbd8624fc2e6ae6ef1014a091504d5ed3010fa9d36549fe870f849ee0b0edc"
     },
     {
       "id": "heat",
@@ -41,8 +98,174 @@
       "prompt": "asset_sources/craft-scenes-issue402/prompts/heat-v1.txt",
       "runtime_png": "assets/ui/making/hajime_craft_heat.png",
       "runtime_webp": "remake/img/ui/making/hajime_craft_heat.webp",
-      "visual_qa": "First full-size inspection passed; PC/touch layout QA remains in progress",
-      "status": "implemented_in_draft"
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 197500,
+      "runtime_webp_sha256": "b4cdfd183972f1c3525b2be6596d9207de48069998758b959e52ab0ef2170247"
+    },
+    {
+      "id": "pull",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-v1.png",
+      "sha256": "bc88b5cd87167f2b4968ad77ed32f0ae01e90195d3b58d15474eaf7ecca1ef73",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-v1.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 145586,
+      "runtime_webp_sha256": "1248bd6fc7d93db84dd4d2f64937e44b846caf9b12e7b3f9be581da1d985a81b"
+    },
+    {
+      "id": "pull-rest",
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-rest-v2.png",
+      "sha256": "a0b3ac4b1004b02c201c1032ce49efcda9c92f89ba5f9cdf9bba17b44e6846a9",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-rest-v2.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_pull_rest.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_pull_rest.webp",
+      "visual_qa": "Full-size character/hand/hardware QA passed; PC1280x720 and Chromium touch844x390 compositions inspected. Hose traced both ways in pull/rest; live bottle inset is separate camera angle. Final automated regression ongoing.",
+      "status": "implemented_in_draft",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "reference_roles": {
+        "person": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "texture_only": "assets/ui/title_arts/title_art_keyvisual_01.png"
+      },
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 138708,
+      "runtime_webp_sha256": "2c2eb60fc176505032de91553ea59bb8567dbc32bc025a96d4097daaac33f2f7"
     }
-  ]
+  ],
+  "rejected": [
+    {
+      "original": "asset_sources/craft-scenes-issue402/originals/pull-rest-v1.png",
+      "sha256": "d4878aa009ad5845458bc6d0e910bf4d420ba1e8609c09c5e13a45d6c7414c8f",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/pull-rest-v1.txt",
+      "reason": "Ribbed hose and cap motif differed from the inhaling variant; not used at runtime. Edited from pull-v1 to produce v2."
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://mozeshisha.de/media/49/90/f2/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen5.jpg",
+      "role": "hand/bowl scale and wet leaf placement",
+      "download_sha256": "2b8cfdacda010ef25f193f325c4a867c202829d0df68ed0ac5103fc66eb0da14",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/14/cc/32/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen4.jpg",
+      "role": "RIGHT HALF: foil/poker contact and one-handed bowl scale",
+      "download_sha256": "8e3c8739ddc7a58463a4fa6064505c3113dadb7924bd4b228026de1ee33ca778",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/31/ca/41/1705415069/ao-kohlezange-ripper_984_2000x2000.jpg",
+      "role": "two connected metal arms and jaws, not the branded cutouts",
+      "download_sha256": "6842aa0ca6aa8ae3ee7848cae47783a2a5a8213feff72296f648aba013c36793",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/c0/fc/b5/1781696417/ao-einweg-hygienemundstucke-bunt_10507_1200x1450.jpg",
+      "role": "short plastic disposable chip",
+      "download_sha256": "9caf59f6d92ec23251308c4b9a3a71068220c4e43f3d301dbeddbf912abb6e6e",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/52/c9/2b/1784151273/wookah-mundstueck-white-nox_8589_1200x1450.jpg",
+      "role": "rigid straight handle/lower metal connector ONLY, color and branding not copied",
+      "download_sha256": "258cb567f13ddcc28d9fc2d27590c0331ebc63cadb48a20df55790e03cffb988",
+      "redistribution": "Reference only; not included in repository/game"
+    },
+    {
+      "url": "https://mozeshisha.de/media/10/28/e1/1784151949/alite-gaming-mundstuck_9638_1200x1450.jpg",
+      "role": "soft hose/connector ONLY, closed loop and gaming design not copied",
+      "download_sha256": "95a4270061e2627f9f3a82c161b893c037682d3610f3c0d8c2c269ee9b644f14",
+      "redistribution": "Reference only; not included in repository/game"
+    }
+  ],
+  "reference_order": {
+    "mix": [
+      "person",
+      "texture_only",
+      "owner open tub photo03",
+      "owner stacked tub photo04"
+    ],
+    "holes": [
+      "person",
+      "texture_only",
+      "handheld-foil.jpg",
+      "handheld-pack.jpg"
+    ],
+    "pack": [
+      "person",
+      "texture_only",
+      "handheld-pack.jpg",
+      "owner open tub photo03"
+    ],
+    "heat": [
+      "person",
+      "texture_only",
+      "tongs-photo.jpg"
+    ],
+    "pull": [
+      "person",
+      "texture_only",
+      "tips-photo.jpg",
+      "rigid-handle-photo.jpg",
+      "handle-photo.jpg"
+    ],
+    "pull-rest-v1": [
+      "person",
+      "texture_only",
+      "tips-photo.jpg",
+      "rigid-handle-photo.jpg",
+      "handle-photo.jpg"
+    ],
+    "pull-rest-v2": [
+      "originals/pull-v1.png",
+      "person"
+    ]
+  }
 }

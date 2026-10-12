@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 14:08 UTC",
+ "generated": "2026-10-12 14:19 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -295,6 +295,8 @@
   "hajime_craft_holes.png",
   "hajime_craft_mix.png",
   "hajime_craft_pack.png",
+  "hajime_craft_pull.png",
+  "hajime_craft_pull_rest.png",
   "hajime_steam_wait.png",
   "hookah_base.png",
   "hookah_stem.png",
@@ -1354,6 +1356,20 @@
    1.0,
    1.5
   ],
+  "hajime_craft_pull.png": [
+   0.0,
+   0.0,
+   0.9629,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_pull_rest.png": [
+   0.0,
+   0.0,
+   0.9518,
+   1.0,
+   1.5
+  ],
   "hajime_steam_wait.png": [
    0.3875,
    0.1323,
@@ -1677,6 +1693,8 @@
   "ui/making/hajime_craft_holes.png",
   "ui/making/hajime_craft_mix.png",
   "ui/making/hajime_craft_pack.png",
+  "ui/making/hajime_craft_pull.png",
+  "ui/making/hajime_craft_pull_rest.png",
   "ui/making/hajime_steam_wait.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",

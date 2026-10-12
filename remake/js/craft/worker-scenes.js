@@ -19,17 +19,31 @@ export function workerSceneKey(step, draw) {
 
 // 画面へ出す Image 自体も decode する。先読みの別 Image が終わっただけで
 // ミニゲームを始めない。失敗・15秒超過ではその一台の間は既存絵へ戻す。
-async function readyImage(img, url) {
+export async function readyWorkerImage(img, url) {
   if (!url || !await imageReady(url, 15000, { keep: true })) return false;
-  img.src = url;
-  if (!img.decode) return true;
+  if (img.getAttribute("src") !== url) img.src = url;
   let timer;
+  let finishLoad;
   try {
+    const decoded = typeof img.decode === "function"
+      ? Promise.resolve().then(() => img.decode()).then(() => true, () => false)
+      : new Promise(resolve => {
+        finishLoad = () => resolve(img.complete && img.naturalWidth > 0);
+        img.addEventListener("load", finishLoad);
+        img.addEventListener("error", finishLoad);
+        if (img.complete) finishLoad();
+      });
     return await Promise.race([
-      img.decode().then(() => true, () => false),
+      decoded,
       new Promise(resolve => { timer = setTimeout(() => resolve(false), 15000); }),
     ]);
-  } finally { clearTimeout(timer); }
+  } finally {
+    clearTimeout(timer);
+    if (finishLoad) {
+      img.removeEventListener("load", finishLoad);
+      img.removeEventListener("error", finishLoad);
+    }
+  }
 }
 
 export function buildWorkerActions() {
@@ -39,7 +53,7 @@ export function buildWorkerActions() {
   }));
   const root = el("div.worker-actions", { "aria-hidden": "true" }, entries.map(e => e.img));
   const ready = Promise.all(entries.map(async entry => {
-    entry.loaded = await readyImage(entry.img, makingUrl(entry.scene.file));
+    entry.loaded = await readyWorkerImage(entry.img, makingUrl(entry.scene.file));
   }));
   return { root, ready, show(key) {
     const current = entries.find(e => e.key === key && e.loaded);
