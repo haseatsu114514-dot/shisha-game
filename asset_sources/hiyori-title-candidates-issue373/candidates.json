@@ -1,0 +1,190 @@
+{
+  "issue": 373,
+  "worker": "codex-e-visual-20261011-01",
+  "claim_run": 38199919533,
+  "base_sha": "134b1a5a327cf25ddab94b6ab4ed18d604735bbf",
+  "date": "2026-10-12",
+  "tool": "image_gen.imagegen",
+  "candidates": [
+    {
+      "id": "title_art_hiyori_01_twilight_walk",
+      "scene": "夕暮れの帰路",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "approved": false,
+      "candidate": {
+        "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.png",
+        "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "identity_texture_references": [
+        {
+          "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+          "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_hiyori.png",
+          "sha256": "04e275c9cbc6be8ad5fbd7cf30f8fb403ee2f11c768bb04adbb730d5ccc71300",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_01_twilight_walk.prompt.txt",
+      "generated_original": "/workspace/generated_images/exec-db97ff5f-ed09-4b0e-b662-9f8388f38625.png",
+      "runtime_path": null
+    },
+    {
+      "id": "title_art_hiyori_02_window_pause",
+      "scene": "静かな窓際で一服",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "approved": false,
+      "candidate": {
+        "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.png",
+        "sha256": "2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "identity_texture_references": [
+        {
+          "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+          "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_hiyori.png",
+          "sha256": "04e275c9cbc6be8ad5fbd7cf30f8fb403ee2f11c768bb04adbb730d5ccc71300",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v2.prompt.txt",
+      "generated_original": "/workspace/generated_images/exec-84c2b692-83e3-4923-862e-f10996f0b659.png",
+      "runtime_path": null,
+      "prior_version": {
+        "image": {
+          "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.v1.png",
+          "sha256": "1a1c3b096e68446bf092f08a38838a75ecb2ef004c11e310f9cf6acc0872361f",
+          "size": [
+            1024,
+            1536
+          ],
+          "mode": "RGB"
+        },
+        "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_02_window_pause.prompt.txt",
+        "generated_original": "/workspace/generated_images/exec-4f6b4161-4e11-48b0-83e6-207be1d422cd.png",
+        "status": "要修正・選定対象外",
+        "reason": "指定した短い衛生チップが金属先端と描き分けられていないためv2で修正"
+      },
+      "hardware_reference": [
+        {
+          "article": "https://mozeshisha.de/en/amotion-mouthpiece-rouge/",
+          "photo": "https://mozeshisha.de/media/71/46/94/1705572637/amotion-soft-touch-mouthpiece-rouge_6940_1200x1450.jpg",
+          "sha256": "aaba40960b7cee45720d344e47c6ba56fd560fc55a449b14f50baa315b85e12f",
+          "use": "初版の硬質ハンドル形状のみ。実ロゴ・色・人物の模写なし。写真再配布なし。"
+        },
+        {
+          "article": "https://mozeshisha.de/en/ao-disposable-hygienic-mouthpieces-colored-100-pcs/",
+          "photo": "https://mozeshisha.de/media/c0/fc/b5/1781696417/ao-einweg-hygienemundstucke-bunt_10507_1200x1450.jpg",
+          "sha256": "9caf59f6d92ec23251308c4b9a3a71068220c4e43f3d301dbeddbf912abb6e6e",
+          "use": "v2の別体の短い衛生チップ形状を実写参照。写真再配布なし。"
+        }
+      ],
+      "construction": {
+        "person": "hiyori・採用normal/face",
+        "scene": "完成・一服を終え息を吐く",
+        "rig": "画角外・実際の台の接続は描かず推測で合格判定しない",
+        "hmd": "画角外。生成構成は蓋なしONMO＋脚付きファンネル",
+        "coal": "画角外・通常構成として2個を指定、画像内に強制追加しない",
+        "hose": "硬いハンドル根元→暗い柔軟ホース→手前テーブル下/左下画角外。見える区間は一本",
+        "tip": "短い淡い半透明の衛生チップ1個を上端へ外被せ。首掛けmyチップなし",
+        "camera": "夜・ベンチに座る上半身〜膝の斜め寄り、台を無理に画面内へ置かない"
+      }
+    },
+    {
+      "id": "title_art_hiyori_03_after_rain",
+      "scene": "雨上がりの街角",
+      "status": "候補保存のみ・オーナー承認待ち",
+      "approved": false,
+      "candidate": {
+        "path": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.png",
+        "sha256": "346cb5583cfd3347dd2f423f81eef5437aa96943713c4188e9dbf914a936df5c",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "identity_texture_references": [
+        {
+          "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+          "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+          "size": [
+            896,
+            1200
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/face_icons/face_hiyori.png",
+          "sha256": "04e275c9cbc6be8ad5fbd7cf30f8fb403ee2f11c768bb04adbb730d5ccc71300",
+          "size": [
+            160,
+            160
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+          "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+          "size": [
+            1023,
+            1537
+          ],
+          "mode": "RGB"
+        }
+      ],
+      "prompt": "asset_sources/hiyori-title-candidates-issue373/title_art_hiyori_03_after_rain.prompt.txt",
+      "generated_original": "/workspace/generated_images/exec-95b0868d-b057-4273-af09-8db5b3470731.png",
+      "runtime_path": null
+    }
+  ]
+}

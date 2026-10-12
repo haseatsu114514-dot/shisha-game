@@ -1,0 +1,15 @@
+{
+  "name": "hiyori-title-candidate-preview",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": "134b1a5a327cf25ddab94b6ab4ed18d604735bbf",
+  "results": [
+    {
+      "label": "pc",
+      "status": "passed"
+    },
+    {
+      "label": "mobile",
+      "status": "passed"
+    }
+  ]
+}
