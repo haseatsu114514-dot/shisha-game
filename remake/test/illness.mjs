@@ -159,4 +159,15 @@ nights.syncNightQueue(failed);
 await assert.rejects(nights.runNightPlan(failed), /Interrupted scene/);
 assert(state.deferredNightEvents.some(entry => entry.id === "failed"));
 assert(!state.flags.failed);
+// 実読了直後にロードしても同じ夜の空き枠は復活せず、後続は翌夜に送る。
+state.day = 4; delete state.flags._night_event_day; executions.length = 0;
+const budgetEvents = { 2: event("budget_a"), 3: event("budget_b") };
+state.deferredNightEvents = [2, 3].map((day, i) => ({ id: `budget_${i ? "b" : "a"}`, chapter: 1,
+  originalDay: day, deferredOn: 3, reason: "rest" }));
+await nights.runNightPlan(budgetEvents);
+const savedBudget = JSON.parse(JSON.stringify(state)); Object.assign(state, savedBudget);
+assert.equal(await nights.runNightPlan(budgetEvents), 0);
+assert.equal(executions.length, 1); assert.equal(state.deferredNightEvents.length, 1);
+state.day = 5; await nights.runNightPlan(budgetEvents);
+assert.deepEqual(executions.map(x => x.day), [4, 5]); assert.equal(state.deferredNightEvents.length, 0);
 console.log("[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy, automatic illness deferral, fixed sick attendance, accepted appointment, preparation deadlines, post-tournament order, no duplicates, other chapters and interrupted scenes");

@@ -54,7 +54,9 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   if (urgent.length) return urgent.map(({ ev }) => ev);
   if (state.day >= TOURNAMENT_DAY) return [];
   const fixed = events[state.day];
-  if (fixed && !postponeable(fixed) && !fixed.done?.()) return [fixed];
+  if (fixed && !postponeable(fixed)) return fixed.done?.() ? [] : [fixed];
+  // 会話後〜翌朝の保存から再開しても、同じ夜の通常予定をもう1件実行しない。
+  if (state.flags._night_event_day === `${state.chapter}:${state.day}`) return [];
   const bookedNight = state.flags._private_night_day === state.day
     || appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
   if (resting || bookedNight) return [];
@@ -79,6 +81,7 @@ export async function runNightPlan(events, before = async () => {}) {
     if (!ready(ev)) throw new Error(`Night event prerequisites missing: ${ev.id}`);
     await before(ev);
     await ev.run();
+    state.flags._night_event_day = `${state.chapter}:${state.day}`;
     count++;
     syncNightQueue(events, { resting: false });
     save();
