@@ -134,9 +134,9 @@ export function benchRoot(cs) {
 }
 
 /** 工程の見出しを切り替え、パネルを空にして返す */
-export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText } = {}) {
+export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
-  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[id] : null;
+  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.open = false;

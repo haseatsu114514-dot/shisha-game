@@ -821,8 +821,38 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "仕組みから確かめとくぞ。シーシャは、香り付きの葉を炭の熱で温める水たばこだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "この葉がフレーバー、葉を入れる上の器がハガルだ。葉はここに詰める"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ホースを吸うと、葉から出た煙が下の水を通って口まで届く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "葉の詰め方と、空気の通り道も大事なんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "そうだ。それに熱の加減だな。熱が足りなきゃ煙が出ないし、入れすぎれば葉が焦げる"
+        },
+        {
+          "speaker": "sumi",
           "face": "smile",
           "text": "俺が一工程ずつやって見せる。見たら、すぐ同じことをお前の手でやれ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "操作に迷ったら、作業台の右上の「？」を開け。いつでも説明を読み返せる"
         },
         {
           "speaker": "hajime",
