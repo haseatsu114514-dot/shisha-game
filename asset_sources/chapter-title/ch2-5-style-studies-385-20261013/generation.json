@@ -1,0 +1,264 @@
+{
+  "source_commit": "21e920a10a81ed85f561171bc85e77d88e9b554d",
+  "mode": "built-in image_gen",
+  "issue": 385,
+  "worker": "codex-ch1-white-walk-20261013-aa5ec922",
+  "chapters": [
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "初稿の青・ピンクを保ち、はじめのポーズを勇気を出して立ち向かう姿に変更",
+      "variant": "bright-courage-v5",
+      "original": "originals/ch2-bright-courage-v5.png",
+      "original_sha256": "ca7d74cd46d7f1d701bb386432fdd0542645aebd33dd9787c314151cca116370",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-4c217aba-1347-48ca-bc6c-7fb52af16372",
+      "prompt": "prompts/ch2-bright-courage-v5.txt"
+    },
+    {
+      "chapter": 3,
+      "title": "虚ろな王冠",
+      "english": "Hollow Crown",
+      "concept": "空洞の見える王冠、雨、空席、帰る灯り",
+      "original": "originals/ch3-crown-v2.png",
+      "original_sha256": "cb426a5fea935f65ee1ee6ae2d34c370ea5c1e15e5d2661e68c7f8e6270c711e",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-dfa2dc02-e285-47e1-9982-8d1c4ee121f4",
+      "prompt": "prompts/ch3-crown-v2.txt",
+      "variant": "crown-v2"
+    },
+    {
+      "chapter": 4,
+      "title": "継承の煙",
+      "english": "Legacy Smoke",
+      "concept": "二人の表情と手にフォーカス。ドバイは淡い背景",
+      "original": "originals/ch4-people-v2.png",
+      "original_sha256": "abaf6eba7581bc96894dce18b5946640e02ef96c9d330f18807c6427bbd831c7",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-08a049b7-0c19-4803-a763-70d9f6ebb980",
+      "prompt": "prompts/ch4-people-v2.txt",
+      "variant": "people-v2"
+    },
+    {
+      "chapter": 5,
+      "title": "機械仕掛けの神",
+      "english": "Deus Ex Machina",
+      "concept": "紫の金属と歯車、巨大な機械の顔",
+      "identity_status": "provisional design; no adopted shisha_9000 portrait found in source tree",
+      "original": "originals/ch5.png",
+      "original_sha256": "20e08027725fa06a276b2d86372b161a8b712ea8a864d0b650f968b7dd3f1260",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-c9895e60-9e4f-4a46-8db6-24e590d9cad4",
+      "prompt": "prompts/ch5.txt"
+    }
+  ],
+  "user_references": [
+    {
+      "file_name": "codex-clipboard-194db46d-1dd0-4441-9d28-e0ec3d67aa9a.png",
+      "sha256": "8b86dec03e62b1d608b282dcec64c835e661f836d7884a58f9a445cee8d73471",
+      "size": [
+        712,
+        570
+      ],
+      "purpose": "ch5 style and composition only",
+      "stored_in_repository": false
+    },
+    {
+      "file_name": "codex-clipboard-090d22b4-6213-4536-b284-f03910e3d254.png",
+      "sha256": "307f5638fbd3cae70133116f113a8ed5ab479db35a4f97153f380c95c91cd365",
+      "size": [
+        560,
+        448
+      ],
+      "purpose": "ch5 style and composition only",
+      "stored_in_repository": false
+    },
+    {
+      "file_name": "codex-clipboard-e3822d49-0327-4529-a840-d6bc63bd1fc6.png",
+      "sha256": "643c9b5b48287107918156c009370568000e49ad3345e8995da6d099b7310218",
+      "size": [
+        1200,
+        978
+      ],
+      "purpose": "ch5 style and composition only",
+      "stored_in_repository": false
+    }
+  ],
+  "references": [
+    {
+      "character": "hajime",
+      "source_path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "source_commit": "21e920a10a81ed85f561171bc85e77d88e9b554d",
+      "git_blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "local_copy": "refs/hajime.png"
+    },
+    {
+      "character": "ageha",
+      "source_path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "source_commit": "21e920a10a81ed85f561171bc85e77d88e9b554d",
+      "git_blob": "7cec73edc451f68f0173f05b8db17231afc96dbd",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "local_copy": "refs/ageha.png"
+    },
+    {
+      "character": "sumi",
+      "source_path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "source_commit": "21e920a10a81ed85f561171bc85e77d88e9b554d",
+      "git_blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49",
+      "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+      "local_copy": "refs/sumi.png"
+    },
+    {
+      "source_path": "brand/story_and_structure.md",
+      "source_commit": "21e920a10a81ed85f561171bc85e77d88e9b554d",
+      "git_blob": "f06da76356bac0e89a636bbe7613ab3200126f83",
+      "purpose": "formal game and chapter titles"
+    }
+  ],
+  "previous_variants": [
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "ポスターと才能の圧力",
+      "variant": "bright-v1",
+      "original": "originals/ch2-bright-v1.png",
+      "original_sha256": "f314c67b28c08796b3338daa1ac428149aedd66554a5aa1029652418f0ae7dbd",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-f8bb063d-81eb-47b4-9d04-7a1ca57dcdcb",
+      "status": "superseded by dark shadow direction",
+      "prompt": "prompts/ch2-bright-v1.txt"
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "影から識別できるアゲハ、才能の壁と大物感",
+      "variant": "dark-v2",
+      "original": "originals/ch2-dark-v2.png",
+      "original_sha256": "67d30486ec9dbb507c442cdf8d241aca5cdee0568148fb809e0f755fb9911a5d",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-2c691cea-a900-432b-9e39-33b391d692b4",
+      "prompt": "prompts/ch2-dark-v2.txt",
+      "status": "superseded by user refinement"
+    },
+    {
+      "chapter": 3,
+      "title": "虚ろな王冠",
+      "english": "Hollow Crown",
+      "concept": "雨、空席、帰る灯り",
+      "original": "originals/ch3.png",
+      "original_sha256": "8eab56a9b34f30422db9e33dc86b9a342d5a4d9e40c82c3ad6f885ab72f8b088",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-8e1d9392-208e-439d-9789-62ce64db5061",
+      "prompt": "prompts/ch3.txt",
+      "status": "superseded by user refinement"
+    },
+    {
+      "chapter": 4,
+      "title": "継承の煙",
+      "english": "Legacy Smoke",
+      "concept": "墨と金、師から弟子へ",
+      "original": "originals/ch4.png",
+      "original_sha256": "11f8f0faa1eab334766488d57d4c9e48bb3d42e0cd4d051dd0a64f37e9bcbb29",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-db7b0c94-f40a-4fad-8909-ca588fad8c42",
+      "prompt": "prompts/ch4.txt",
+      "status": "superseded by user refinement"
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "アゲハの強いシルエットに勇気を出して立ち向かうはじめ",
+      "variant": "silhouette-v3",
+      "original": "originals/ch2-silhouette-v3.png",
+      "original_sha256": "0301c5b609168d8a51baac12804a92224226644f35ff5c2abcee541b933f65b3",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-7af58c26-126f-4b9e-97b0-4f5a4208992a",
+      "prompt": "prompts/ch2-silhouette-v3.txt",
+      "status": "superseded; face too silhouetted"
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "english": "Jealousy Haze",
+      "concept": "アゲハの強いシルエットに勇気を出して立ち向かうはじめ",
+      "variant": "green-v4",
+      "original": "originals/ch2-green-v4.png",
+      "original_sha256": "efdb7f00911c4b6eb55a15800665d0d7c89cb158274860cc1143744273281146",
+      "original_size": [
+        1672,
+        941
+      ],
+      "generation_id": "exec-d234dd12-d326-4c0e-a0b9-8e85ec9b48b8",
+      "prompt": "prompts/ch2-green-v4.txt",
+      "status": "superseded; user selected original blue/pink",
+      "references_used": [
+        "originals/ch2-dark-v2.png",
+        "originals/ch2-silhouette-v3.png",
+        "refs/ageha.png",
+        "refs/hajime.png"
+      ]
+    }
+  ],
+  "references_used": {
+    "2": [
+      "originals/ch2-bright-v1.png",
+      "originals/ch2-silhouette-v3.png",
+      "refs/hajime.png"
+    ],
+    "3": [
+      "originals/ch3.png",
+      "refs/hajime.png"
+    ],
+    "4": [
+      "originals/ch4.png",
+      "refs/sumi.png",
+      "refs/hajime.png"
+    ],
+    "5": [
+      "codex-clipboard-194db46d-1dd0-4441-9d28-e0ec3d67aa9a.png",
+      "codex-clipboard-090d22b4-6213-4536-b284-f03910e3d254.png",
+      "codex-clipboard-e3822d49-0327-4529-a840-d6bc63bd1fc6.png"
+    ]
+  },
+  "delivery": {
+    "size": [
+      1280,
+      720
+    ],
+    "fit": "Pillow ImageOps.fit, LANCZOS, centered, preserve aspect ratio",
+    "typography": "separate RGBA layer; ch2 Gothic/Arial Narrow Bold and Italic, ch3 light Mincho/Times, ch4 Mincho W6, ch5 metallic Gothic/DIN Condensed. Placement varies by chapter.",
+    "production_adopted": false
+  }
+}

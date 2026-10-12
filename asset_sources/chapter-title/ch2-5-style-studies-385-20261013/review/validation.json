@@ -1,0 +1,71 @@
+{
+  "reference_hashes_match": true,
+  "all_original_hashes_match": true,
+  "images": [
+    {
+      "chapter": 2,
+      "size": [
+        1280,
+        720
+      ],
+      "separate_layer_recomposes_exactly": true,
+      "title_png_sha256": "e959333a6bbaec78d0ecc60d27cf861d127fd1102e30210578a4ae27c10ca028",
+      "art_png_sha256": "da0486aac018ceb7e0edfe81b9b9e229e70bcb05baddc81729f950042bbfaadc",
+      "type_bounds": [
+        54,
+        86,
+        331,
+        683
+      ]
+    },
+    {
+      "chapter": 3,
+      "size": [
+        1280,
+        720
+      ],
+      "separate_layer_recomposes_exactly": true,
+      "title_png_sha256": "eb3b555158c8c354a2cc8180299f1edd472b1719fb1b2ecea68fb53d6d157c6a",
+      "art_png_sha256": "15417a7b98f230ae0d1f828154eff062259d6d714c1b79bdf48d65b7edc1bb8c",
+      "type_bounds": [
+        57,
+        89,
+        198,
+        683
+      ]
+    },
+    {
+      "chapter": 4,
+      "size": [
+        1280,
+        720
+      ],
+      "separate_layer_recomposes_exactly": true,
+      "title_png_sha256": "8bd92665e871b0d5ef3f6b97d47f220e3eb629be3a0fd233d1327eaacd9a3f65",
+      "art_png_sha256": "82b2257312f16e4335a8aa931f4c1f0c769469d24389fe854dff506f3ada369a",
+      "type_bounds": [
+        54,
+        39,
+        343,
+        444
+      ]
+    },
+    {
+      "chapter": 5,
+      "size": [
+        1280,
+        720
+      ],
+      "separate_layer_recomposes_exactly": true,
+      "title_png_sha256": "0780d842a3332080ea11b5dcf5fb2526b0eabc48528041617ca0d9d58e030300",
+      "art_png_sha256": "83d2d7010353413372d5784339138b66bba71181d0abc5dcc732c4fc5b6f7223",
+      "type_bounds": [
+        52,
+        68,
+        451,
+        683
+      ]
+    }
+  ],
+  "manual_review": "All four final title PNGs opened at 1280x720 and comparison preview inspected. Text read, character identities checked against actual refs. Chapter5 face provisional."
+}
