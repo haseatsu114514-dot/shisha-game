@@ -23,8 +23,8 @@
         1254
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "throwing_axe_clean",
@@ -36,8 +36,9 @@
       ],
       "mode": "RGBA",
       "reference": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-source.png",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     }
-  ]
+  ],
+  "minigame_connected": false
 }

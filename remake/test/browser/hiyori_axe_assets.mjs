@@ -37,5 +37,31 @@ await suite("hiyori-axe-assets", async check => {
       }
       assert.equal(await page.evaluate(() => JSON.stringify(K.core.state)), before, "Artwork must not award relationship, money or story flags");
     }, { viewport, hasTouch: label === "touch", reducedMotion: "reduce" });
+    await check(`${label}-props`, async page => {
+      await page.evaluate(async () => {
+        const ui = await import("./js/core/ui.js");
+        ui.clearScreen();
+        await ui.setBg("img/backgrounds/bg_axe_lounge_night.webp", { instant: true });
+        const review = document.createElement("div"); review.id = "props-review";
+        for (const [key, left, height] of [["target_board", 120, 520], ["throwing_axe", 840, 500]]) {
+          const image = document.createElement("img"); image.src = `img/ui/axe_throw/${key}.webp`;
+          image.dataset.prop = key; image.alt = key === "target_board" ? "木製の的ボード" : "投擲用の斧";
+          Object.assign(image.style, { position: "absolute", top: "80px", left: `${left}px`, height: `${height}px` });
+          review.append(image);
+        }
+        ui.layers.screen.append(review);
+      });
+      for (const key of ["target_board", "throwing_axe"]) {
+        const img = page.locator(`img[data-prop="${key}"]`);
+        await img.evaluate(i => i.decode());
+        assert(await img.evaluate(i => {
+          const c = document.createElement("canvas"); c.width = i.naturalWidth; c.height = i.naturalHeight;
+          const ctx = c.getContext("2d"); ctx.drawImage(i, 0, 0);
+          return ctx.getImageData(0, 0, 1, 1).data[3] === 0;
+        }), "Actual browser image alpha must be transparent");
+      }
+      await assertFits(page, "#props-review img");
+      if (shots) await page.screenshot({ path: `${shots}/${label}-props.png` });
+    }, { viewport, hasTouch: label === "touch", reducedMotion: "reduce" });
   }
 });

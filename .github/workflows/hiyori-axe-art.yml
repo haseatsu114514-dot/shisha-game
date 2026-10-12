@@ -7,6 +7,8 @@ on:
       - 'remake/img/sprites/characters/hiyori/**'
       - 'assets/backgrounds/bg_axe_lounge_night.png'
       - 'remake/img/backgrounds/bg_axe_lounge_night.webp'
+      - 'assets/ui/axe_throw/**'
+      - 'remake/img/ui/axe_throw/**'
       - 'remake/data/manifest.json'
       - 'remake/test/browser/hiyori_axe_assets.mjs'
       - '.github/workflows/hiyori-axe-art.yml'

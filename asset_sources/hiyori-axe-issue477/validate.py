@@ -26,3 +26,16 @@ assert sha(bg) == registration["background_sha256"] == sha(HERE / "raw/axe-backg
 assert bg.name in manifest["backgrounds"]
 assert Image.open(ROOT / "remake/img/backgrounds" / bg.with_suffix(".webp").name).size == Image.open(bg).size
 print("PASS: 13 adopted files unchanged; 5 lossless poses; original dedicated background; shared framing preserved")
+props = json.loads((HERE / "props/registration.json").read_text())["props"]
+for record in props:
+    source, png, webp = [ROOT / record[key] for key in ["source", "png", "webp"]]
+    assert sha(source) == record["source_sha256"] == sha(png) == record["png_sha256"]
+    assert sha(webp) == record["webp_sha256"]
+    im = Image.open(png)
+    assert im.mode == "RGBA" and im.getchannel("A").getextrema()[0] == 0
+    assert im.tobytes() == Image.open(webp).convert("RGBA").tobytes()
+    alpha = im.getchannel("A")
+    assert all(alpha.crop(box).getextrema()[1] == 0 for box in [
+        (0, 0, im.width, 1), (0, im.height - 1, im.width, im.height),
+        (0, 0, 1, im.height), (im.width - 1, 0, im.width, im.height)])
+print("PASS: two generated transparent props, clear perimeter and lossless RGBA WebP")

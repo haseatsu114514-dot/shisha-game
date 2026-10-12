@@ -8,7 +8,15 @@
       "status": "passed"
     },
     {
+      "label": "desktop-props",
+      "status": "passed"
+    },
+    {
       "label": "touch",
+      "status": "passed"
+    },
+    {
+      "label": "touch-props",
       "status": "passed"
     }
   ]
