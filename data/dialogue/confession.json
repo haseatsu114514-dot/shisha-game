@@ -1043,7 +1043,8 @@
         "min_chapter": 2,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
-        "bgm_on_speaker": "kafuka"
+        "bgm_on_speaker": "kafuka",
+        "set_romance": "kafuka"
       },
       "lines": [
         {
