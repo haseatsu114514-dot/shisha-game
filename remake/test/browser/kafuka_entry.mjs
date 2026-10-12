@@ -112,7 +112,7 @@ await suite("kafuka-entry", async check => {
         const s = K.core.state; s.story.kafuka = 3; K.core.save();
         K.vn.vnTest.turbo = false;
         K.running = K.kafuka.visitKafuka(K.kafuka.kafukaSpot());
-        return { money: s.money, affinity: s.affinity.kafuka || 0 };
+        return { money: s.money, affinity: s.affinity.kafuka || 0, carry: s.affinityCarry.kafuka || 0 };
       });
       await page.waitForFunction(() => K.vn.isPlaying());
       const concurrent = await page.evaluate(() => K.kafuka.visitKafuka(K.kafuka.kafukaSpot()));
@@ -129,7 +129,11 @@ await suite("kafuka-entry", async check => {
       assert.equal(r.before.money, before.money);
       assert(!r.before.flags._kafuka_quiet_seat_done);
       assert.equal(r.after.money, before.money); assert(r.after.flags._kafuka_quiet_seat_done);
-      assert.equal(r.after.story.kafuka, 4); assert(r.after.affinity.kafuka > before.affinity);
+      assert.equal(r.after.story.kafuka, 4);
+      // A 1-point visit keeps its 85% growth as fractional carry, even before a visible point.
+      const gain = (r.after.affinity.kafuka || 0) + (r.after.affinityCarry.kafuka || 0)
+        - before.affinity - before.carry;
+      assert(Math.abs(gain - 0.85) < 1e-9, `Visit reward applied ${gain} times`);
       assert.deepEqual(r.repeated, r.after);
     }, options);
 
