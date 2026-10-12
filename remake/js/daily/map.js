@@ -65,7 +65,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), setBg(bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true })]);
+    await Promise.all([uiArtReady(), setBg(bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   return openMap(opts);
 }
