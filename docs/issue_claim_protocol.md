@@ -106,6 +106,35 @@ inspect it and obtain a fresh admin handoff or formal release by the new owner.
 This validates snapshots, not an atomic lock on PR branches: recheck live heads
 before editing and retain all existing Git Safety, test, CI and merge gates.
 
+#### Released legacy reservation with a saved Draft
+
+For a reservation released **before run metadata was introduced**, an admin may
+use the same transfer operation with an explicit `recovery` field in the approval:
+
+```text
+<!-- issue-handoff:v1 {"issue":325,"from":"old-worker","to":"new-worker","claim_run":"123456","stopped":true,"pushed":true,"recovery":{"claim_comment":111,"released_comment":222},"prs":[{"number":326,"head":"0123456789012345678901234567890123456789"}]} -->
+```
+
+Independently review the original stopped-session handoff, pushed PRs and source
+claim run first. List the exact last two **bot** ledger entries: the original
+claim and its release by the same owner. Both must lack run metadata. The latest
+entry must still be that released comment; an active, replaced or modern claim
+is not eligible for this recovery path. Ordinary claim and ordinary transfer
+continue to reject it without this explicit admin approval.
+
+The source run must have succeeded on its first attempt, be a `workflow_dispatch`
+of `issue-claim.yml` on the default branch, and contain the original bot claim's
+creation time within its recorded start/end times. This rejects unrelated runs
+and ambiguous reruns; it does **not** prove a stopped session. The admin must
+verify that separately from the recorded handoff and current saved work. All
+other transfer guards (admin actor/author, exact Open PR heads, open/unblocked
+Issue, one active Issue per new worker, and rechecks before writing) still apply.
+
+Dispatch with the original successful `claim_run` and that approval comment ID.
+After success, validate `status` using the **new transfer run ID** before editing.
+Do not close/reopen the Draft, reuse the old worker ID, edit/delete bot history,
+or infer permission merely because a claim was released long ago.
+
 **Finishing:** Only merge a complete PR after required checks/reviews and conflict checks pass; never use a claim as merge permission. After merge, release with the original worker ID (release supports closed Issues). If a claim is stale and the owner cannot run release, flag it for manual review rather than taking it over silently.
 
 **Manual smoke tests:** Use a dedicated disposable Issue with no referencing open PR, not a tracking Issue. Test claim → duplicate claim rejection with a *different* owner → release by the original owner → claim by the second owner → release. Confirm each workflow's run outcome and the bot ledger on the Issue. A failed duplicate attempt is expected, not a broken workflow. GitHub concurrency permits one running and one pending run; a third pending dispatch may replace the previous pending run. A canceled run does not confer a claim and must be retried.
