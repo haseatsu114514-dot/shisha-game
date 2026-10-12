@@ -12,6 +12,18 @@
       "mode": "RGBA",
       "adopted": false,
       "runtime_registered": false
+    },
+    {
+      "variant": "target_board",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/target-board-source.png",
+      "sha256": "51d054ad2e0c170145c13e036fbc4d3b6fc033d296266e4d88aacf8f1dd87bdc",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
     }
   ]
 }
