@@ -1,5 +1,6 @@
 """Copy generated prop cutouts and encode lossless WebP; no creative image edits."""
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 from PIL import Image
@@ -7,6 +8,9 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 records = []
+spec = importlib.util.spec_from_file_location("build_images", ROOT / "remake/tools/build_images.py")
+encoder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(encoder)
 for key, raw in [("target_board", "target-board-source.png"), ("throwing_axe", "throwing-axe-clean-source.png")]:
     source = HERE / "raw" / raw
     im = Image.open(source)
@@ -16,7 +20,7 @@ for key, raw in [("target_board", "target-board-source.png"), ("throwing_axe", "
     png.parent.mkdir(parents=True, exist_ok=True)
     webp.parent.mkdir(parents=True, exist_ok=True)
     png.write_bytes(source.read_bytes())
-    im.save(webp, format="WEBP", lossless=True, exact=True, method=6)
+    webp.write_bytes(encoder.encode(png, f"ui/axe_throw/{key}.png"))
     assert im.tobytes() == Image.open(webp).convert("RGBA").tobytes()
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     records.append({"key": key, "source": str(source.relative_to(ROOT)), "png": str(png.relative_to(ROOT)),

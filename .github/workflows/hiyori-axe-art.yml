@@ -10,6 +10,7 @@ on:
       - 'assets/ui/axe_throw/**'
       - 'remake/img/ui/axe_throw/**'
       - 'remake/data/manifest.json'
+      - 'remake/tools/build_images.py'
       - 'remake/test/browser/hiyori_axe_assets.mjs'
       - '.github/workflows/hiyori-axe-art.yml'
 permissions:
