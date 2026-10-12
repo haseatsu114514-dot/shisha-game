@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 15:21 UTC",
+ "generated": "2026-10-12 15:49 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1369,8 +1369,8 @@
   "hajime_craft_mix.png": [
    0.071,
    0.002,
-   0.929,
-   0.9951,
+   0.9297,
+   0.9961,
    1.5
   ],
   "hajime_craft_pack.png": [

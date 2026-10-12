@@ -2,13 +2,13 @@
   "issue": 402,
   "worker": "codex-craft402-20261012-6be8a561d8",
   "claim_run": 38258703042,
-  "status_run": 38258875454,
+  "status_run": 38271982529,
   "assets": [
     {
       "id": "mix",
-      "original": "asset_sources/craft-scenes-issue402/originals/mix-v3.png",
-      "sha256": "dd15c78ce125ad3e1687291d4361b0f939ade2a341704821cefa53c9a1950e12",
-      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v3.txt",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v4.png",
+      "sha256": "42725bef1d560682e8b5f4dfbcb53a6e9fa2967d160eae4c748f59488010d421",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v4.txt",
       "runtime_png": "assets/ui/making/hajime_craft_mix.png",
       "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
       "size": [
@@ -24,10 +24,10 @@
         1280,
         853
       ],
-      "runtime_webp_bytes": 137568,
-      "runtime_webp_sha256": "06b4395e26c768e3a93d72d14b7422334ddc1034b62c40311aa73842c80cc842",
+      "runtime_webp_bytes": 145848,
+      "runtime_webp_sha256": "2ec2bd1e111d574bfae6c5e0b6fe1e12fa081adf15ef617671be1d7932f1ec25",
       "status": "implemented_in_draft",
-      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion."
+      "visual_qa": "v4 full-size and native mix UI inspected: visibly red/russet moist chopped shisha leaf inside one closed translucent tub; short-end-only sticker and clear long wall, neutral thoughtful face and pose maintained. PC1280x720 and touch844x390 decode/selection/composition checks PASS. Generic illustration stayed the same while selecting 10g apple/2g mint. No game/CSS change; prior 19-case regression belongs to c6cc01a."
     },
     {
       "id": "pack",
@@ -364,6 +364,9 @@
     ],
     "pack-v3": [
       "originals/pack-v2.png"
+    ],
+    "mix-v4": [
+      "originals/mix-v3.png"
     ]
   },
   "superseded": [
@@ -546,6 +549,33 @@
       "runtime_webp_bytes": 138708,
       "runtime_webp_sha256": "2c2eb60fc176505032de91553ea59bb8567dbc32bc025a96d4097daaac33f2f7",
       "runtime_at_commit": "f41052d283e22d3a3380f82446f92d3d49750d55"
+    },
+    {
+      "id": "mix",
+      "original": "asset_sources/craft-scenes-issue402/originals/mix-v3.png",
+      "sha256": "dd15c78ce125ad3e1687291d4361b0f939ade2a341704821cefa53c9a1950e12",
+      "prompt": "asset_sources/craft-scenes-issue402/prompts/mix-v3.txt",
+      "runtime_png": "assets/ui/making/hajime_craft_mix.png",
+      "runtime_webp": "remake/img/ui/making/hajime_craft_mix.webp",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "runtime_webp_size": [
+        1280,
+        853
+      ],
+      "runtime_webp_bytes": 137568,
+      "runtime_webp_sha256": "06b4395e26c768e3a93d72d14b7422334ddc1034b62c40311aa73842c80cc842",
+      "status": "superseded",
+      "visual_qa": "Full-size revision and production browser QA passed: PC1280x720, touch844x390 and portrait390x844 rotation guide followed by touch play. One closed generic tub, short-end-only label and clear long walls; relaxed neutral faces; blank foil plus three registered hand frames; one-puff/rest and live bubbles; both directions of single smooth hose traced. 19 browser cases passed, including real input/needle contact, real hole coordinates, three poses, slow/decode gate, broken/timeout fallback and reduced motion.",
+      "runtime_at_commit": "c6cc01a33c43dce012483ba2fcdc0ba15e6591eb",
+      "reason": "Owner requested visibly reddish moist flavor inside the choosing-scene tub; v4 replaces the frosted gray contents of v3."
     }
   ],
   "owner_photo_reference": {
@@ -588,6 +618,10 @@
     "screens": "docs/qa/craft-scenes-issue402/screens/",
     "foil_vm": "Passed exact templates/completion/timeouts/shared thermal assertions and actual-hole notification counts.",
     "devices": "Chromium Linux browser with touch emulation; not physical iOS/Android devices.",
-    "publication": "Draft PR432; not merged or deployed."
-  }
+    "publication": "Draft PR432; not merged or deployed.",
+    "browser_results_at_commit": "c6cc01a33c43dce012483ba2fcdc0ba15e6591eb",
+    "latest_mix_visual_results": "docs/qa/craft-scenes-issue402/mix-v4-visual.json",
+    "latest_mix_visual_cases": 2
+  },
+  "resume_main": "90ae31e"
 }
