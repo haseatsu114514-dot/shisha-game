@@ -1,0 +1,232 @@
+name: Chapter titles 445 one-time edit
+run-name: "Chapter titles 445 / owner-approved / ${{ github.sha }}"
+on:
+  push:
+    branches: [codex/chapter-titles-445-20261013-chat]
+    paths: [.github/workflows/chapter-titles-445-once.yml]
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+concurrency:
+  group: chapter-titles-445-owner-approved
+  cancel-in-progress: false
+jobs:
+  titles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check issue ownership and existing PR title edits
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const issue = (await github.rest.issues.get({owner, repo, issue_number:445})).data;
+            if (issue.state !== 'open') throw Error('Issue 445 is no longer open');
+            const comments = await github.paginate(github.rest.issues.listComments, {owner, repo, issue_number:445, per_page:100});
+            const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && /^<!-- issue-claim:v1 state=/.test(c.body || ''));
+            if (/state=claimed/.test(ledger.at(-1)?.body || '')) throw Error('Another worker has claimed this issue');
+            const targets = new Set(['remake/js/chapters/ch1.js', 'data/dialogue/ch1_naru.json', 'data/dialogue/ch1_tournament.json', 'brand/story_and_structure.md']);
+            const prs = await github.paginate(github.rest.pulls.list, {owner, repo, state:'open', per_page:100});
+            for (const pr of prs) {
+              if (pr.head.ref === 'codex/chapter-titles-445-20261013-chat') continue;
+              const files = await github.paginate(github.rest.pulls.listFiles, {owner, repo, pull_number:pr.number, per_page:100});
+              const overlap = files.filter(f => targets.has(f.filename));
+              core.info(JSON.stringify({pr:pr.number, title:pr.title, overlappingFiles:overlap.map(f=>f.filename)}));
+              for (const f of overlap) {
+                if (!f.patch) throw Error('Cannot inspect overlap with PR '+pr.number+': '+f.filename);
+                const changed = f.patch.split('\n').filter(l => /^[+-]/.test(l) && !/^[+-]{3}/.test(l)).join('\n');
+                if (/一吸目|ファーストドロー|FIRST DRAW|煙がつなぐ街|Smoke & Ties|才能の壁|虚ろな王冠|継承の煙|機械仕掛けの神/.test(changed)) throw Error('Overlapping title edit in PR '+pr.number+': '+f.filename);
+              }
+            }
+            core.info('No existing title-edit PR or active Issue 445 claim. Proceeding under the explicit one-task owner exception; no claim marker is created.');
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: codex/chapter-titles-445-20261013-chat
+          fetch-depth: 0
+          sparse-checkout: |
+            .githooks
+            .github/workflows
+            tools
+            docs
+            brand
+            data
+            remake
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - name: Git safety and latest main
+        run: |
+          git config --local shisha.canonicalRoot "$(pwd -P)"
+          ./tools/enable_git_hooks.sh
+          ./tools/check_git_safety.sh
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git merge --no-edit origin/main
+          ./tools/check_git_safety.sh
+          echo "TITLE_BASE=$(git rev-parse origin/main)" >> "$GITHUB_ENV"
+          test -z "$(git status --porcelain)"
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Baseline dialogue validation
+        run: |
+          python3 tools/lint_dialogue.py > "$RUNNER_TEMP/title445-lint-before.txt"
+          tail -n 6 "$RUNNER_TEMP/title445-lint-before.txt"
+      - name: Apply only approved names, subtitles and readings
+        run: |
+          python3 - <<'PY'
+          import json, re, subprocess
+          from pathlib import Path
+          rows = [
+              ('第一章','１','煙がつなぐ街','Smoke & Ties','スモーク・アンド・タイズ'),
+              ('第二章','２','才能の壁','Jealousy Haze','ジェラシー・ヘイズ'),
+              ('第三章','３','虚ろな王冠','Hollow Crown','ホロウ・クラウン'),
+              ('第四章','４','継承の煙','Legacy Smoke','レガシー・スモーク'),
+              ('第五章','５','機械仕掛けの神','Deus Ex Machina','デウス・エクス・マキナ'),
+          ]
+          path = Path('remake/js/chapters/ch1.js')
+          before = path.read_text()
+          expected = 'name: "一吸目", read: "ファーストドロー ── FIRST DRAW"'
+          assert before.count(expected) == 1, 'Unexpected Chapter 1 title call; review before editing'
+          after = before.replace('一吸目',rows[0][2]).replace('ファーストドロー',rows[0][4]).replace('FIRST DRAW',rows[0][3])
+          assert after.replace(rows[0][2],'一吸目').replace(rows[0][4],'ファーストドロー').replace(rows[0][3],'FIRST DRAW') == before
+          path.write_text(after)
+          print(f'{path}: title-only replacement; no logic changes')
+          for name in ['ch1_naru.json','ch1_tournament.json']:
+              path = Path('data/dialogue') / name
+              before = path.read_text()
+              assert before.count('一吸目') == 1, f'Unexpected old-title count in {path}'
+              after = before.replace('一吸目',rows[0][2])
+              assert json.loads(after.replace(rows[0][2],'一吸目')) == json.loads(before)
+              path.write_text(after)
+              print(f'{path}: one chapter-ending string; IDs and structure unchanged')
+          path = Path('brand/story_and_structure.md')
+          text = path.read_text()
+          assert '一吸目' in text and '## 正式章タイトル' not in text
+          text = text.replace('一吸目',rows[0][2]).replace('ファーストドロー',rows[0][4])
+          for i, (no, wide, title, english, reading) in enumerate(rows, 1):
+              pattern = re.compile(r'^(#{1,6}\s+第['+wide+str(i)+r']章[：:]\s*)'+re.escape(title)+r'(?:（[^）\n]*）)?', re.M)
+              text, count = pattern.subn(lambda m: m[1]+title+'（'+reading+' / '+english+'）', text)
+              assert count >= 1, f'Chapter {i} heading not found'
+              print(f'Chapter {i}: {count} heading(s) normalized')
+          table = '## 正式章タイトル\n\n2026-10-13 オーナー採用決定（Issue #445）。章表示・章終了文・次章予告では以下の表記を使う。大会編名と物語・進行・セーブIDは変更しない。\n\n| 章 | 日本語タイトル | 欧文副題 | カタカナ読み |\n|---|---|---|---|\n'
+          table += ''.join('| '+no+' | '+title+' | '+english+' | '+reading+' |\n' for no,_,title,english,reading in rows)
+          table += '\n第2章以降の実装状況は従来どおり。名称の確定を、未接続の章の実装完了とは扱わない。\n\n'
+          anchor = '## ストーリー全文（全５章構成）'
+          assert text.count(anchor) == 1
+          text = text.replace(anchor, table+anchor, 1)
+          path.write_text(text)
+          for file in Path('data').rglob('*.json'):
+              json.loads(file.read_text())
+          result = subprocess.run(['git','grep','-nI','-E','一吸目|ファーストドロー|FIRST DRAW','--','remake','data','brand'], text=True, capture_output=True)
+          assert result.returncode == 1, 'Old title remains in active code/data/brand:\n'+result.stdout+result.stderr
+          print('PASS: all data JSON parses; no retired title remains in remake/data/brand')
+          PY
+          git diff --check
+          node --check remake/js/chapters/ch1.js
+          python3 tools/lint_dialogue.py > "$RUNNER_TEMP/title445-lint-after.txt"
+          tail -n 6 "$RUNNER_TEMP/title445-lint-after.txt"
+          git diff --stat
+          git diff -- remake/js/chapters/ch1.js data/dialogue/ch1_naru.json data/dialogue/ch1_tournament.json brand/story_and_structure.md
+      - name: Install existing pinned browser test dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Actual chapter-title renderer on PC and touch
+        env:
+          ARTIFACT_DIR: .codex/artifacts/chapter-titles-445
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/title445-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          cat > "$RUNNER_TEMP/title445-browser.mjs" <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { pathToFileURL } from 'node:url';
+          const root = process.cwd();
+          const {suite, assertFits, storageSnapshot} = await import(pathToFileURL(path.join(root,'remake/test/browser/support.mjs')));
+          const source = fs.readFileSync('remake/js/chapters/ch1.js','utf8');
+          const match = source.match(/await chapterTitle\(\{ no: "([^"]+)", name: "([^"]+)", read: "([^"]+)", sub: "([^"]+)" \}\)/);
+          assert(match, 'Read the real Chapter 1 call, not a separately invented fixture');
+          const first = {no:match[1], name:match[2], read:match[3], sub:match[4]};
+          assert.equal(first.name,'煙がつなぐ街');
+          assert.equal(first.read,'スモーク・アンド・タイズ ── Smoke & Ties');
+          assert.equal(first.sub,'SMOKE CROWN CUP 編');
+          const titles = [first,
+            {no:'第二章',name:'才能の壁',read:'ジェラシー・ヘイズ ── Jealousy Haze'},
+            {no:'第三章',name:'虚ろな王冠',read:'ホロウ・クラウン ── Hollow Crown'},
+            {no:'第四章',name:'継承の煙',read:'レガシー・スモーク ── Legacy Smoke'},
+            {no:'第五章',name:'機械仕掛けの神',read:'デウス・エクス・マキナ ── Deus Ex Machina'},
+          ];
+          await suite('chapter-titles-445', async check => {
+            for (const [label, options] of [
+              ['pc',{viewport:{width:1280,height:720}}],
+              ['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}],
+            ]) {
+              for (const [index, title] of titles.entries()) {
+                await check(`${label}-chapter-${index+1}`, async page => {
+                  const before = await storageSnapshot(page);
+                  await page.evaluate(async title => {
+                    const ui = await import('./js/core/ui.js');
+                    window.title445Done = false;
+                    window.title445Error = null;
+                    ui.chapterTitle(title).then(()=>window.title445Done=true).catch(e=>window.title445Error=String(e));
+                  }, title);
+                  await page.locator('.chapter-card.show .cc-name').waitFor();
+                  await page.waitForTimeout(1500);
+                  assert.equal(await page.locator('.chapter-card .cc-name').textContent(),title.name);
+                  assert.equal(await page.locator('.chapter-card .cc-read').textContent(),title.read);
+                  await assertFits(page,'.chapter-card .cc-name, .chapter-card .cc-read');
+                  if (index === 0) {
+                    const ready = await page.locator('.chapter-card .cc-art').evaluate(img=>img.complete && img.naturalWidth>0);
+                    assert(ready,'Chapter 1 key art decoded');
+                  }
+                  await page.screenshot({path:path.join(root,process.env.ARTIFACT_DIR,`${label}-chapter-${index+1}-visible.png`)});
+                  await page.waitForFunction(()=>window.title445Done || window.title445Error);
+                  assert.equal(await page.evaluate(()=>window.title445Error),null);
+                  assert.deepEqual(await storageSnapshot(page),before,'Title display must not modify save data');
+                  assert.equal(await page.locator('.chapter-card').count(),0,'No overlay left behind');
+                },options);
+              }
+            }
+          });
+          JS
+          node "$RUNNER_TEMP/title445-browser.mjs"
+      - name: Publish only the four approved file changes
+        run: |
+          ./tools/check_git_safety.sh
+          git fetch origin main
+          changed=$(git diff --name-only "$TITLE_BASE" origin/main -- remake/js/chapters/ch1.js data/dialogue/ch1_naru.json data/dialogue/ch1_tournament.json brand/story_and_structure.md)
+          if test -n "$changed"; then
+            echo "Main changed target files during testing; review required: $changed"
+            exit 1
+          fi
+          git diff --check
+          git add remake/js/chapters/ch1.js data/dialogue/ch1_naru.json data/dialogue/ch1_tournament.json brand/story_and_structure.md
+          git commit -m 'feat(story): adopt approved chapter titles and subtitles (#445)'
+          git push origin HEAD:refs/heads/codex/chapter-titles-445-20261013-chat
+          echo "EDIT_COMMIT=$(git rev-parse HEAD)"
+          git status --short
+          git log '@{u}..HEAD' --oneline
+          echo 'The temporary workflow will be removed through the connector before PR creation. No main push was performed.'
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: chapter-titles-445-validation
+          path: |
+            .codex/artifacts/chapter-titles-445/
+            ${{ runner.temp }}/title445-lint-before.txt
+            ${{ runner.temp }}/title445-lint-after.txt
+            ${{ runner.temp }}/title445-preview.log
+          retention-days: 7
