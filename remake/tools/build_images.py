@@ -63,7 +63,8 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/naru/")
             or rel.startswith("sprites/characters/dr_kemuri/")
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
-            or rel == "cgs/cg_minto_first_cheki.png"):
+            or rel == "cgs/cg_minto_first_cheki.png"
+            or rel.startswith("ui/axe_throw/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()

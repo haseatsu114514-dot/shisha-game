@@ -56,8 +56,13 @@
   },
   "hiyori": {
    "faces": [
+    "axe_laugh",
+    "axe_normal",
+    "axe_shout",
+    "love_blush",
     "normal",
     "sad",
+    "serious",
     "smile",
     "student_smile",
     "surprise",
@@ -211,6 +216,7 @@
  },
  "backgrounds": [
   "bg_ageha_shop.png",
+  "bg_axe_lounge_night.png",
   "bg_c_station_day.png",
   "bg_c_station_lobby.png",
   "bg_c_station_night.png",
@@ -1558,6 +1564,7 @@
  ],
  "webp": [
   "backgrounds/bg_ageha_shop.png",
+  "backgrounds/bg_axe_lounge_night.png",
   "backgrounds/bg_c_station_day.png",
   "backgrounds/bg_c_station_lobby.png",
   "backgrounds/bg_c_station_night.png",
@@ -1630,8 +1637,13 @@
   "sprites/characters/hajime/chr_hajime_serious.png",
   "sprites/characters/hajime/chr_hajime_smile.png",
   "sprites/characters/hajime/chr_hajime_surprise.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+  "sprites/characters/hiyori/chr_hiyori_love_blush.png",
   "sprites/characters/hiyori/chr_hiyori_normal.png",
   "sprites/characters/hiyori/chr_hiyori_sad.png",
+  "sprites/characters/hiyori/chr_hiyori_serious.png",
   "sprites/characters/hiyori/chr_hiyori_smile.png",
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
