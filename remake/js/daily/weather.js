@@ -35,6 +35,8 @@ const TONARI_WINDOWS = [[2,70,54,245],[88,91,56,237],[300,148,31,160],[351,167,3
 const HOME_WINDOWS = [[677,137,104,135],[800,137,76,135]];
 const C_STATION_WINDOWS = [[540,190,17,99],[572,183,23,118],[609,174,39,129],[741,157,53,139],[812,147,51,150],[881,139,38,146],[1061,107,65,209],[1145,91,114,220]];
 const CHOIZAP_WINDOWS = [[731,152,61,28],[815,152,50,28],[1123,156,104,24]];
+// 新カフェ店内の窓ガラスだけ。枠・室内の椅子・テーブルへ雨を重ねない。
+const CAFE_WINDOWS = [[355,167,72,140],[456,167,93,141],[581,153,143,178],[765,153,91,174],[893,145,54,186],[963,119,231,207]];
 
 /** 見えている背景と画面に対応する雨。抽選とセーブ値は既存 isRainy を使う。 */
 export function rainScene(background, screen) {
@@ -42,12 +44,13 @@ export function rainScene(background, screen) {
   const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
     .replace(/_overcast_(day|night)\.png$/, "_$1.png");
   if (!file || /(?:title|tournament)/.test(file) || !isRainy()) return null;
-  if (/^bg_(?:osu_map|map_local|street|kannon|tonari_outside|cafe|shishark|shishark_preparing)(?:_day|_night)?\.png$/.test(file)) {
+  if (/^bg_(?:osu_map|map_local|street|kannon|tonari_outside|shishark|shishark_preparing)(?:_day|_night)?\.png$/.test(file)) {
     return { mode: "outdoor", windows: [] };
   }
   const windows = /^bg_tonari_inside_(?:day|night)\.png$/.test(file) ? TONARI_WINDOWS
     : /^bg_home_(?:day|night)\.png$/.test(file) ? HOME_WINDOWS
     : /^bg_c_station_(?:day|night)\.png$/.test(file) ? C_STATION_WINDOWS
-    : file === "bg_choizap.png" ? CHOIZAP_WINDOWS : [];
+    : /^bg_choizap(?:_night)?\.png$/.test(file) ? CHOIZAP_WINDOWS
+    : /^bg_cafe_(?:day|night)\.png$/.test(file) ? CAFE_WINDOWS : [];
   return { mode: "indoor", windows };
 }

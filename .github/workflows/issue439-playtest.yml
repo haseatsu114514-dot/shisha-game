@@ -1,0 +1,54 @@
+name: Issue 439 playtest regressions
+on:
+  pull_request:
+    paths: ['remake/**', 'data/**', 'assets/backgrounds/**', '.github/workflows/issue439-playtest.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: issue439-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - name: Verify playtest fixes
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+        run: node remake/test/browser/issue439.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue439-playtest
+          path: .codex/artifacts/remake-browser/
