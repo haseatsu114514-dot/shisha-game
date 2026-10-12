@@ -1,0 +1,3 @@
+(node:86700) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[remake data] 35 JSON files, max 4 requests, hiyori foundation, progress, HTTP/network/JSON errors, headers/body timeout: PASS

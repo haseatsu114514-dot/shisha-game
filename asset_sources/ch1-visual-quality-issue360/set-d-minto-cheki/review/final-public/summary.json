@@ -1,0 +1,59 @@
+{
+  "worker": "codex-cg360-20261012-7242bf5ca07e",
+  "claimRun": 38301926910,
+  "statusRun": 38310900196,
+  "merges": {
+    "453": "c968041be4fb923dcf3975c15fceab9f4c6afda2",
+    "479": "299df3810995ea320b8d626eca7ebeca296db5b3"
+  },
+  "latestTestedHead": "57384f537365df8480c2ff06e94aa1154f2d6123",
+  "local": {
+    "cg": 26,
+    "limeRoutesAndFailures": 8,
+    "saveLoad": 6,
+    "jsonFiles": 35
+  },
+  "public": {
+    "setC": 24,
+    "actualDay4Routes": 2,
+    "platforms": "PC and 844x390 touch emulation; dedicated isolated contexts",
+    "baseURL": "https://haseatsu114514-dot.github.io/shisha-game/remake/",
+    "galleryCapture": "Viewer fade completes before screenshot; current gallery has 11 registered entries, only first-visit solo and new DAY4 photo seeded/seen in the DAY4 route context."
+  },
+  "files": [
+    {
+      "file": "pc-photo-vn.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "2130758b7848ef53c1654261b2e85edb01cf321f5639248cb3983883af154e17"
+    },
+    {
+      "file": "pc-gallery.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "ffae3b1f385ed5827e6bcd15bc1f5d9f8043da1c29da782b0ce26ca00c1cbe3b"
+    },
+    {
+      "file": "touch-photo-vn.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "530c42c075c94a47f4c3e4050e79dc086651d32ee288890295b706aabc6a561c"
+    },
+    {
+      "file": "touch-gallery.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "2ba95ee8d8ac61e0f7645693b60d16a0b729ad2eeea268a9eb8eb113b210f591"
+    }
+  ],
+  "humanApprovalClaimed": false,
+  "authIncident": "CLI API call returned 401 immediately before #479 merge; connected GitHub app verified the same haseatsu114514-dot user/admin identity, unchanged main/head and successful runs, then performed normal expected-head squash merge."
+}

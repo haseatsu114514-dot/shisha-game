@@ -1,0 +1,15 @@
+{
+  "name": "minto-cheki-cg",
+  "baseURL": "https://haseatsu114514-dot.github.io/shisha-game/remake/",
+  "ref": "299df3810995ea320b8d626eca7ebeca296db5b3",
+  "results": [
+    {
+      "label": "pc-real-lime-invitation",
+      "status": "passed"
+    },
+    {
+      "label": "touch-real-lime-invitation",
+      "status": "passed"
+    }
+  ]
+}
