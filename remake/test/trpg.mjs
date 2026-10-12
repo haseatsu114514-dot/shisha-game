@@ -113,3 +113,19 @@ test("snapshots and results are detached; equal seeds and decisions are reproduc
   const snap = a.snapshot(); snap.clues.length = 0;
   assert.equal(a.snapshot().clues.length, 3);
 });
+
+test("the three individual trumps compete for two shared teamwork cards", () => {
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 12 });
+  session.start(); session.beginCheck("listen"); session.reroll(0); session.settleCheck();
+  assert.equal(session.snapshot().teamwork, 1);
+  for (const id of ["menu", "window", "bag"]) session.inspect(id);
+  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.beginCheck("prepare", { support: true }); session.settleCheck();
+  assert.equal(session.snapshot().teamwork, 0);
+  session.plan("approach", "quiet");
+  const before = session.snapshot();
+  assert.throws(() => session.beginCheck("serve", { support: true }));
+  assert.deepEqual(session.snapshot(), before);
+  session.beginCheck("serve"); session.settleCheck();
+  assert.equal(session.result().ending, "rain");
+});

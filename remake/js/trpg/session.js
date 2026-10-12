@@ -13,7 +13,7 @@ export class TrpgSession {
     this.state = {
       scenarioId: scenario.id, version: 1, seed: Number(seed) >>> 0, phase: "cover",
       profileId: profile.id, clues: [], consulted: [], hypothesis: null,
-      plan: { aroma: null, seat: null, approach: null }, pressure: 0,
+      plan: { aroma: null, seat: null, approach: null }, pressure: 0, teamwork: 2,
       used: { hajime: false, naru: false, tsumugi: false }, checks: [], pending: null,
     };
   }
@@ -68,8 +68,8 @@ export class TrpgSession {
     if (kind === "prepare" && (!this.state.plan.aroma || !this.state.plan.seat)) throw new Error("Choose an aroma and a seat");
     if (kind === "serve" && !this.state.plan.approach) throw new Error("Choose how to speak to the traveler");
     const helper = kind === "prepare" ? "naru" : kind === "serve" ? "tsumugi" : null;
-    if (support && (!helper || this.state.used[helper])) throw new Error("This support is unavailable");
-    if (support) this.state.used[helper] = true;
+    if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
+    if (support) { this.state.used[helper] = true; this.state.teamwork--; }
     this.state.pending = {
       kind, dice: [this.die(), this.die()], bonus: 1 + (support ? 2 : 0),
       helper: support ? helper : null, rerolled: false,
@@ -86,8 +86,9 @@ export class TrpgSession {
 
   reroll(index) {
     const p = this.state.pending;
-    if (!p || ![0, 1].includes(index) || p.rerolled || this.state.used.hajime) throw new Error("Reroll unavailable");
+    if (!p || ![0, 1].includes(index) || p.rerolled || this.state.used.hajime || this.state.teamwork < 1) throw new Error("Reroll unavailable");
     this.state.used.hajime = true;
+    this.state.teamwork--;
     p.rerolled = true;
     p.dice[index] = this.die();
     return this.checkResult();
