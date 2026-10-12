@@ -11,7 +11,8 @@
       ],
       "mode": "RGBA",
       "adopted": false,
-      "runtime_registered": false
+      "runtime_registered": false,
+      "superseded_reason": "\u5916\u5468alpha=1\u306e\u753b\u7d20\u3092\u542b\u3080\u539f\u6848\u3002\u751f\u6210\u7de8\u96c6\u3057\u305f\u5916\u5468alpha=0\u306e\u7248\u3092\u63a1\u7528\u3059\u308b\u3002"
     },
     {
       "variant": "target_board",
@@ -22,6 +23,19 @@
         1254
       ],
       "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
+    },
+    {
+      "variant": "throwing_axe_clean",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-clean-source.png",
+      "sha256": "7b928966182399a175a2488a9394e3b0df6d2d89ae311aea3cd314fbf0075839",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "reference": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-source.png",
       "adopted": false,
       "runtime_registered": false
     }
