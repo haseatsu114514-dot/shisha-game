@@ -66,11 +66,22 @@
       "mode": "RGBA",
       "adopted": false,
       "runtime_registered": false
+    },
+    {
+      "variant": "axe_background",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-background-source.png",
+      "sha256": "9804d6848cc4772611f19b2f0ccb3b0be1c6f9415e66e13ea61eea6a664b311a",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "adopted": false,
+      "runtime_registered": false
     }
   ],
   "external_files_included": [],
   "remaining": [
-    "axe background",
     "normalization/encoding/manifest",
     "visual and PC/touch/save QA"
   ]
