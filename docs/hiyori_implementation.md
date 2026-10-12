@@ -49,6 +49,12 @@
 
 `remake/hiyori-preview.html` の5本は過去の表示確認サンプルで、本編の正式台本とは別。セーブや設定を読み書きしない。未制作の斧投げ背景を他店で代用しない。
 
+## 斧投げ用の素材（#477）
+
+専用夜背景 `bg_axe_lounge_night` と、キャップ/Tシャツの `axe_normal`・`axe_laugh`・`axe_shout`、現在のレース衣装の `serious`・`love_blush` を追加した。旧6表情と顔アイコンのバイナリ、全表情の共通足元・縮尺は維持する。原画・生成指示・SHA・再登録手順・表示QAは [素材記録](../asset_sources/hiyori-axe-issue477/README.md)。
+
+この素材登録だけでは `_hiyori_real_self_known` や仕事・恋愛・友情の読了を立てない。正式斧投げ台本とミニゲームは別Issue。ランダム画像5パターン、他衣装と残り表情は別の素材単位で、旧 #342全体の完了には含めない。
+
 ## tonariでの仕事の入口（後続追加）
 
 三人の初回の会話（`tonari_followup`）を実際に読み終えた後、**次にtonariでスミさんと対面したとき**、ひよりが客として手帳を鞄へしまう追加回 `hiyori_tonari_afterwork` を一度だけ再生する。総務の具体的な働きぶりと、仕事から意識を切り替えたい気持ちを描く。第1〜2章・♥3以上が条件で、読了後に `_hiyori_tonari_afterwork_done` を保存し、好感度を5点だけ付与する。

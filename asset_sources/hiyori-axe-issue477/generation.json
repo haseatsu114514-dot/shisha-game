@@ -16,8 +16,8 @@
         1451
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "axe_laugh",
@@ -28,8 +28,8 @@
         1451
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "axe_shout",
@@ -40,8 +40,8 @@
         1451
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "serious",
@@ -52,8 +52,8 @@
         1451
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "love_blush",
@@ -64,8 +64,8 @@
         1451
       ],
       "mode": "RGBA",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     },
     {
       "variant": "axe_background",
@@ -76,13 +76,15 @@
         941
       ],
       "mode": "RGB",
-      "adopted": false,
-      "runtime_registered": false
+      "adopted": true,
+      "runtime_registered": true
     }
   ],
   "external_files_included": [],
-  "remaining": [
-    "normalization/encoding/manifest",
-    "visual and PC/touch/save QA"
-  ]
+  "remaining": [],
+  "qa": {
+    "browser_poses": 22,
+    "old_files_unchanged": 13,
+    "formal_story_connected": false
+  }
 }

@@ -1,0 +1,131 @@
+{
+  "portrait_before": {
+    "faces": [
+      "normal",
+      "sad",
+      "smile",
+      "student_smile",
+      "surprise",
+      "tears"
+    ],
+    "h": 0.9625,
+    "b": 0.0208,
+    "ax": 0.4685,
+    "aspect": 0.7467
+  },
+  "portrait_after": {
+    "faces": [
+      "axe_laugh",
+      "axe_normal",
+      "axe_shout",
+      "love_blush",
+      "normal",
+      "sad",
+      "serious",
+      "smile",
+      "student_smile",
+      "surprise",
+      "tears"
+    ],
+    "h": 0.9625,
+    "b": 0.0208,
+    "ax": 0.4685,
+    "aspect": 0.7467
+  },
+  "background": "assets/backgrounds/bg_axe_lounge_night.png",
+  "background_sha256": "9804d6848cc4772611f19b2f0ccb3b0be1c6f9415e66e13ea61eea6a664b311a",
+  "normalized": [
+    {
+      "face": "axe_normal",
+      "source": "asset_sources/hiyori-axe-issue477/raw/axe-normal-source.png",
+      "source_sha256": "6820a17e0391fbb35927459c02be2cbd3df5c66b9e7abeb72f297fa644d19fc9",
+      "file": "assets/sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+      "sha256": "7bda5122026a9dc64c92a67eb1db470a759e1eb5e1af035d293493eb18d78535",
+      "scale": 0.8316473988439307,
+      "offset": [
+        -12,
+        0
+      ],
+      "measured": {
+        "top": 0.0175,
+        "bottom": 0.9775,
+        "ax": 0.4691055216482774,
+        "aspect": 0.7466666666666667
+      }
+    },
+    {
+      "face": "axe_laugh",
+      "source": "asset_sources/hiyori-axe-issue477/raw/axe-laugh-source.png",
+      "source_sha256": "1fec03d4004926588201445e6c9bf84a09677b4e1066e6526ab7d3beac8bd40f",
+      "file": "assets/sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+      "sha256": "d75a465c889c619ac26dedecefb136177d9f586a208aef82abd8833743c292c0",
+      "scale": 0.8298485940879596,
+      "offset": [
+        -12,
+        3
+      ],
+      "measured": {
+        "top": 0.018333333333333333,
+        "bottom": 0.9775,
+        "ax": 0.46836399185437155,
+        "aspect": 0.7466666666666667
+      }
+    },
+    {
+      "face": "axe_shout",
+      "source": "asset_sources/hiyori-axe-issue477/raw/axe-shout-source.png",
+      "source_sha256": "05922903da80ee9ba749469e30f54f7cfb8305ccc914e82cdfea2618328c6797",
+      "file": "assets/sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+      "sha256": "f66aa6ee30ea958ed716ff105c533e79344b46c27daec85b32c18c845ff43171",
+      "scale": 0.8274622573687994,
+      "offset": [
+        -10,
+        5
+      ],
+      "measured": {
+        "top": 0.018333333333333333,
+        "bottom": 0.9775,
+        "ax": 0.4688244092592912,
+        "aspect": 0.7466666666666667
+      }
+    },
+    {
+      "face": "serious",
+      "source": "asset_sources/hiyori-axe-issue477/raw/serious-source.png",
+      "source_sha256": "bee105eeb64a39584f465134f2ef1e2e2eb03b792e2017c30e540d8b19b50876",
+      "file": "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+      "sha256": "04736ad17b46b2b14cb5a19ebcc2b8041ce807dab3363902b6e7cbe61e494fbb",
+      "scale": 0.8262742282842785,
+      "offset": [
+        -3,
+        1
+      ],
+      "measured": {
+        "top": 0.018333333333333333,
+        "bottom": 0.9783333333333334,
+        "ax": 0.4681522520303956,
+        "aspect": 0.7466666666666667
+      }
+    },
+    {
+      "face": "love_blush",
+      "source": "asset_sources/hiyori-axe-issue477/raw/love-blush-source.png",
+      "source_sha256": "be0648d556a4a16dde377a7cffef2aa793c5516a5771dea38d7a1383a4626fa5",
+      "file": "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+      "sha256": "166b824353fe888f90d5b3c9c77bc488a8bd2e50a32f851d51e2711a68542a18",
+      "scale": 0.8233190271816881,
+      "offset": [
+        0,
+        1
+      ],
+      "measured": {
+        "top": 0.018333333333333333,
+        "bottom": 0.9775,
+        "ax": 0.46790669114073763,
+        "aspect": 0.7466666666666667
+      }
+    }
+  ],
+  "old_files_unchanged": true,
+  "lossless_portrait_rgba_equal": true
+}
