@@ -1,4 +1,4 @@
-import { STORAGE_KEY, STATES, parseImport, exportData, migrateLegacy } from './model.mjs';
+import { STORAGE_KEY, STATES, parseImport, exportData, migrateLegacy, correctionText, correctionIssueDraft } from './model.mjs';
 const $ = id => document.getElementById(id);
 const el = (tag, text, cls) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (cls) node.className = cls; return node; };
 let catalog, decisions = {}, selected = [], pending = null, storageBroken = false;
@@ -20,7 +20,7 @@ function save() {
 function filterValues() { return Object.fromEntries(['character','group','decision','current','search'].map(id => [id, $(id).value])); }
 function setDecision(id, change) {
   decisions[id] = { ...dFor(id), ...change, updatedAt: new Date().toISOString() };
-  save(); updateSummary();
+  save(); updateSummary(); updateNoteExport();
   document.querySelectorAll(`[data-decision-for="${id}"]`).forEach(badge => { badge.textContent = STATES[dFor(id).status]; badge.className = 'badge decision-badge ' + dFor(id).status; });
 }
 function image(art, thumb = false) {
@@ -66,7 +66,7 @@ function render() {
     const open = el('button', undefined, 'art-button'); open.setAttribute('aria-label', name(art) + ' ' + art.label + 'の詳細'); open.append(image(art, true)); open.onclick = () => showDetail(art);
     const body = el('div', undefined, 'card-body'); body.append(badges(art), el('h3', name(art) + ' · ' + art.label), el('p', art.groups.join(' / '), 'subtle'));
     const b = el('button', '比較に追加 ＋', 'select-art'); b.onclick = () => toggle(art); body.append(b); card.append(open, body); $('gallery').append(card);
-  }); updateSummary(); updateTray();
+  }); updateSummary(); updateTray(); updateNoteExport();
 }
 function viewport(art) {
   const box = el('div', undefined, 'image-viewport'); const button = el('button'); button.setAttribute('aria-label', '画像を拡大／縮小');
@@ -86,14 +86,41 @@ function references(art) {
   }
   section.append(row); return section;
 }
+function downloadText(text, filename) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' })), link = el('a');
+  link.href = url; link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function updateNoteExport() {
+  const count = catalog.items.filter(a => (dFor(a.id).note || '').trim()).length;
+  $('export-notes').disabled = count === 0;
+  $('export-notes').textContent = count ? `修正メモを書き出す（TXT・${count}件）` : '修正メモを書き出す（TXT）';
+}
 function controls(art) {
   const box = el('div'); const buttons = el('div', undefined, 'judgements');
   for (const [state, label] of Object.entries(STATES)) {
     const b = el('button', label); b.dataset.status = state; b.setAttribute('aria-pressed', String(dFor(art.id).status === state));
     b.onclick = () => { setDecision(art.id, { status: state }); buttons.querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', String(n === b))); }; buttons.append(b);
   }
-  const label = el('label', '選別メモ（4000文字まで）'); const input = el('textarea'); input.maxLength = 4000; input.value = dFor(art.id).note; input.setAttribute('aria-label', name(art) + ' ' + art.label + 'の選別メモ');
-  input.oninput = () => setDecision(art.id, { note: input.value }); label.append(input); box.append(buttons, label); return box;
+  const label = el('label', '修正・選別メモ（4000文字まで）'); const input = el('textarea'); input.maxLength = 4000; input.value = dFor(art.id).note; input.setAttribute('aria-label', name(art) + ' ' + art.label + 'の選別メモ');
+  const actions = el('div', undefined, 'toolbar memo-actions');
+  const text = el('button', 'この画像のメモ（TXT）'), issue = el('button', 'Issue下書きを開く');
+  text.dataset.action = 'memo-text'; issue.dataset.action = 'issue-draft';
+  const hint = el('p', undefined, 'subtle memo-hint'); hint.setAttribute('role', 'status');
+  function updateActions() {
+    const hasNote = dFor(art.id).note.trim().length > 0;
+    text.disabled = issue.disabled = !hasNote;
+    hint.textContent = hasNote ? 'IssueはGitHubで内容を確認して投稿します。TXTはAIに渡してIssue化を依頼できます。' : '修正したい点をメモに入力すると、TXT出力とIssue下書きを使えます。';
+  }
+  input.oninput = () => { setDecision(art.id, { note: input.value }); updateActions(); };
+  text.onclick = () => downloadText(correctionText(decisions, catalog, [art.id]), `title-cg-${art.character}-${art.id.slice(0,8)}-memo.txt`);
+  issue.onclick = () => {
+    const draft = correctionIssueDraft(art, dFor(art.id), catalog);
+    if (!draft.url) { hint.textContent = 'メモが長いためIssueの下書きURLに入りきりません。「この画像のメモ（TXT）」で全文を書き出し、AIに渡すかGitHubの本文へ貼り付けてください。'; return; }
+    const opened = window.open(draft.url, '_blank');
+    if (opened) opened.opener = null;
+    else hint.textContent = '新しいタブが開けませんでした。ブラウザの設定を確認するか、TXTをGitHubの本文へ貼り付けてください。';
+  };
+  updateActions(); actions.append(text, issue); label.append(input); box.append(buttons, label, actions, hint); return box;
 }
 function provenance(art) {
   const box = el('details'); box.append(el('summary', '原画・生成指示・制作履歴'));
@@ -153,6 +180,7 @@ async function start() {
     const blob = new Blob([JSON.stringify(exportData(decisions,catalog),null,2)],{type:'application/json'}), url = URL.createObjectURL(blob), link = el('a');
     link.href = url; link.download = 'title-review-decisions.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url),2000);
   };
+  $('export-notes').onclick = () => downloadText(correctionText(decisions, catalog), 'title-cg-correction-memos.txt');
   $('import').onclick = () => $('file').click();
   $('file').onchange = async () => {
     const file = $('file').files[0]; $('file').value = ''; if (!file) return;

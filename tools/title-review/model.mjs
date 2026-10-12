@@ -37,3 +37,43 @@ export function migrateLegacy(value, catalog) {
   }
   return decisions;
 }
+
+export const REVIEW_URL = 'https://haseatsu114514-dot.github.io/shisha-game/tools/title-review/';
+const githubSource = p => 'https://github.com/haseatsu114514-dot/shisha-game/blob/main/' + p.split('/').map(encodeURIComponent).join('/');
+export function correctionMemo(art, decision, catalog) {
+  const note = decision?.note || '';
+  if (!note.trim()) throw Error('修正したい点をメモに入力してください。');
+  return [
+    `## ${catalog.characters[art.character]} / ${art.label}`,
+    `- 内部ID: ${art.character}`,
+    `- 原画SHA256: ${art.sha256}`,
+    `- 選別判定: ${STATES[decision.status] || STATES.unreviewed}`,
+    `- 本編の使用: ${art.current ? '使用中' : '未使用'}`,
+    `- 系統: ${art.groups.join(' / ')}`,
+    `- 比較・選別画面: ${REVIEW_URL}`,
+    `- 表示画像: ${REVIEW_URL}${art.image}`,
+    '- 原画:', ...art.sources.map(p => `  - ${githubSource(p)}`),
+    '', '### 修正したい点', note,
+    '', '画像の正式採用と本編反映はオーナー判断。元原画は保持してください。',
+  ].join('\n');
+}
+export function correctionText(decisions, catalog, ids) {
+  const items = catalog.items.filter(a => (!ids || ids.includes(a.id)) && (decisions[a.id]?.note || '').trim());
+  if (!items.length) throw Error('書き出せるメモがありません。画像を開いて修正したい点を入力してください。');
+  return [
+    '# タイトルCGの修正依頼メモ',
+    '', '以下の画像別メモをGitHub Issueに整理してください。原画・既存Issueを確認し、同じ修正依頼があれば追記し、重複作成を避けてください。',
+    'まずIssueへの保存を行い、画像の修正・生成・本編採用は別の依頼として扱ってください。',
+    `対象リポジトリ: https://github.com/haseatsu114514-dot/shisha-game`,
+    `メモ件数: ${items.length}`, '',
+    ...items.map(a => correctionMemo(a, decisions[a.id], catalog)), '',
+  ].join('\n\n');
+}
+export function correctionIssueDraft(art, decision, catalog) {
+  const title = `[CG修正] ${catalog.characters[art.character]}：${art.label}`;
+  const body = correctionMemo(art, decision, catalog);
+  const url = new URL('https://github.com/haseatsu114514-dot/shisha-game/issues/new');
+  url.searchParams.set('title', title); url.searchParams.set('body', body);
+  // Encoded Japanese text can exceed URL limits on browsers/proxies. Never truncate a note.
+  return { title, body, url: url.href.length <= 6000 ? url.href : null };
+}
