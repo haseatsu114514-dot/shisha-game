@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 03:44 UTC",
+ "generated": "2026-10-12 15:26 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -216,7 +216,9 @@
   "bg_c_station_night.png",
   "bg_cafe_day.png",
   "bg_cafe_night.png",
+  "bg_cafe_overcast_day.png",
   "bg_choizap.png",
+  "bg_choizap_night.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
@@ -226,6 +228,8 @@
   "bg_home_overcast_day.png",
   "bg_home_overcast_night.png",
   "bg_kannon_day.png",
+  "bg_kannon_night.png",
+  "bg_kannon_overcast_day.png",
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
   "bg_ryuji_shop.png",
@@ -1478,7 +1482,9 @@
   "backgrounds/bg_c_station_night.png",
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
+  "backgrounds/bg_cafe_overcast_day.png",
   "backgrounds/bg_choizap.png",
+  "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
@@ -1488,6 +1494,8 @@
   "backgrounds/bg_home_overcast_day.png",
   "backgrounds/bg_home_overcast_night.png",
   "backgrounds/bg_kannon_day.png",
+  "backgrounds/bg_kannon_night.png",
+  "backgrounds/bg_kannon_overcast_day.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_ryuji_shop.png",

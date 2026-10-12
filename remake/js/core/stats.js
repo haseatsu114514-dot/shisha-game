@@ -101,7 +101,7 @@ export function earnStat(key, amount = 1) {
 }
 
 /** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null } = {}) {
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
@@ -110,7 +110,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
   finally { earningAction = parent; }
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
-  if (action.spent > 0) {
+  if (action.spent > 0 || consumed(value)) {
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
     const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];

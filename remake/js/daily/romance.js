@@ -140,7 +140,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
       metadata: { bg: "res://assets/backgrounds/bg_street_night.png", private_scene: true },
       lines: [
         { speaker: "", text: "仕事を終えて、私服の彼女と待ち合わせた。話し始める前に、彼女が小さく息を吸った。" },
-        { speaker: "minto", face: "ura_normal", text: "……改めて、ちゃんと名乗るね。緑川栞。お店では『みんと』だけど、二人の時は、栞って呼んでくれたら嬉しい" },
+        { speaker: "minto", face: "ura_normal", text: "……改めて、ちゃんと名乗るね。緑川栞。お店では『みんと』だけど、２人の時は、栞って呼んでくれたら嬉しい" },
         { type: "set_flag", flag: "_minto_name_known" }, // ここから名前欄も「栞」
         { speaker: "hajime", face: "normal", text: "栞さん。……教えてくれて、ありがとう" },
         { speaker: "minto", face: "ura_smile", text: "……うん。その呼び方、ちょっと照れるけど。ちゃんと、私に話しかけてくれてる感じがする" },
@@ -189,7 +189,7 @@ export async function playDate(id) {
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
-      { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
+      { speaker: "", text: "２人で１台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
       { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
       { speaker: "", text: sc.choiceQ },
       { type: "choice", choices: [{ text: sc.optA.text, next: "a" }, { text: sc.optB.text, next: "b" }] },
