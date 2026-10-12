@@ -185,6 +185,7 @@ await suite("affinity-gates", async check => {
         }
         // A pre-schema-8 save keeps recorded finales, legacy flags and acquired rewards.
         s.schema = 7; s.flags._friend_rin = true;
+        s.flags._hiyori_tonari_return_done = true;
         s.owned.push("suyaki_sumi", "suyaki_naru", "suyaki_adam");
         G.core.save(); G.core.load();
         G.beforeStatus = JSON.stringify(G.core.state);
