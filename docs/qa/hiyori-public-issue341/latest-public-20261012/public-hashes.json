@@ -57,5 +57,7 @@
       "main_sha256": "868c199ea0252c85b3a1d1f5a6808dcb1c9188fd0f346f12479aac4a52736698",
       "matches": true
     }
-  ]
+  ],
+  "checked_after_at": "2026-10-12T19:57:31.068801+00:00",
+  "unchanged_after_qa": true
 }
