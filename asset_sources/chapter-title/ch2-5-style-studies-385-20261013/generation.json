@@ -19,7 +19,8 @@
       "generation_id": "exec-c8b378ea-a699-435c-b68b-f94c86fc3b7f",
       "prompt": "prompts/ch2-light-C.txt",
       "generated_title_variant": "ch2-02-horizontal",
-      "generated_title_manifest": "type-polish/manifest.json"
+      "generated_title_manifest": "type-polish/manifest.json",
+      "chapter_title_status": "user approved 2026-10-13"
     },
     {
       "chapter": 3,
@@ -36,7 +37,8 @@
       "prompt": "type-polish/palette-v2/prompts/ch3-silver-day.txt",
       "variant": "ch3-silver-day",
       "generated_title_variant": "ch3-01-rain-mincho",
-      "generated_title_manifest": "type-polish/manifest.json"
+      "generated_title_manifest": "type-polish/manifest.json",
+      "chapter_title_status": "user approved 2026-10-13"
     },
     {
       "chapter": 4,
@@ -53,14 +55,15 @@
       "prompt": "type-polish/palette-v2/prompts/ch4-desert-sunset.txt",
       "variant": "ch4-desert-sunset",
       "generated_title_variant": "ch4-02-modern-legacy",
-      "generated_title_manifest": "type-polish/manifest.json"
+      "generated_title_manifest": "type-polish/manifest.json",
+      "chapter_title_status": "user approved 2026-10-13"
     },
     {
       "chapter": 5,
       "title": "機械仕掛けの神",
       "english": "Deus Ex Machina",
       "concept": "生成したクローム・白金の章題2案",
-      "identity_status": "provisional design; no adopted shisha_9000 portrait found in source tree",
+      "identity_status": "user-approved chapter-title artwork; runtime character portrait unchanged",
       "original": "originals/ch5.png",
       "original_sha256": "20e08027725fa06a276b2d86372b161a8b712ea8a864d0b650f968b7dd3f1260",
       "original_size": [
@@ -70,7 +73,8 @@
       "generation_id": "exec-c9895e60-9e4f-4a46-8db6-24e590d9cad4",
       "prompt": "prompts/ch5.txt",
       "generated_title_variant": "ch5-02-platinum-brush",
-      "generated_title_manifest": "type-polish/manifest.json"
+      "generated_title_manifest": "type-polish/manifest.json",
+      "chapter_title_status": "user approved 2026-10-13"
     }
   ],
   "user_references": [
@@ -399,7 +403,8 @@
     ],
     "fit": "Pillow ImageOps.fit, LANCZOS, centered, preserve aspect ratio",
     "typography": "Generated Japanese chapter-title cutout + separately typeset official game title, CHAPTER and English subtitle. Layered separately.",
-    "production_adopted": false
+    "production_adopted": false,
+    "title_art_user_approved": true
   },
   "lighting_variants": [
     {
@@ -484,5 +489,6 @@
   "current_reference_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
   "current_claim_status_run": "38294088521",
   "title_generation_authorized_by_user": true,
-  "chapter_palette_manifest": "type-polish/palette-v2/manifest.json"
+  "chapter_palette_manifest": "type-polish/palette-v2/manifest.json",
+  "user_approval_record": "type-polish/adoption.json"
 }

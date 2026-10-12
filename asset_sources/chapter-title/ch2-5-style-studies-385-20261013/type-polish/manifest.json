@@ -63,7 +63,7 @@
       "mode": "RGBA",
       "generation_id": "exec-65a90ab2-d0d2-4d38-8f90-d5be7cec21fc",
       "prompt": "prompts/ch2-02-horizontal.txt",
-      "status": "review candidate",
+      "status": "user-approved chapter-title lettering",
       "alpha_extrema": [
         0,
         255
@@ -155,7 +155,7 @@
       "mode": "RGBA",
       "generation_id": "exec-29415edd-29e3-477d-a360-6b671f8726b3",
       "prompt": "prompts/ch5-02-platinum-brush.txt",
-      "status": "review candidate",
+      "status": "user-approved chapter-title lettering",
       "alpha_extrema": [
         0,
         254
@@ -201,7 +201,7 @@
       "mode": "RGBA",
       "generation_id": "exec-1bba5cfe-7917-4988-8ad6-aba7395b2788",
       "prompt": "palette-v2/prompts/ch3-dark-lettering.txt",
-      "status": "review candidate",
+      "status": "user-approved chapter-title lettering",
       "alpha_extrema": [
         0,
         254
@@ -326,7 +326,7 @@
       "mode": "RGBA",
       "generation_id": "exec-4305bdcf-5c86-4c4f-b3d4-c2d07b449131",
       "prompt": "palette-v2/prompts/ch4-dark-lettering.txt",
-      "status": "review candidate",
+      "status": "user-approved chapter-title lettering",
       "alpha_extrema": [
         0,
         255
@@ -507,5 +507,17 @@
       2,
       5
     ]
+  },
+  "user_approval": {
+    "record": "adoption.json",
+    "date": "2026-10-13",
+    "selected_chapters": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "runtime_integrated": false
   }
 }
