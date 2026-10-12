@@ -46,7 +46,7 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps chromium
-      - name: Ring boundaries and timing
+      - name: Ring boundaries, three gauges, power, Killshot calls and character voice
         run: node --test remake/test/axe_throw.mjs
       - name: Actual PC, touch portrait/landscape, lifecycle and legacy relationship saves
         run: |

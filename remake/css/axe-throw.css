@@ -116,3 +116,13 @@
   .axe-intro .axe-pickers { gap: 8px; }
   .axe-intro .axe-pickers .axe-button { min-height: 36px; font-size: 13px; }
 }
+.axe-portrait-frame { position: relative; overflow: hidden; flex-shrink: 0; width: 85px; height: 112px; border-radius: 8px; }
+.axe-portrait-frame .axe-portrait { position: absolute; width: 180px; max-width: none; height: auto; left: 50%; top: -4px; transform: translateX(-50%); }
+@container (max-width: 650px) and (min-height: 501px) {
+  .axe-portrait-frame { width: 60px; height: 76px; }
+  .axe-portrait-frame .axe-portrait { width: 130px; top: -2px; }
+}
+@container (max-height: 500px) {
+  .axe-portrait-frame { width: 54px; height: 72px; }
+  .axe-portrait-frame .axe-portrait { width: 125px; top: -2px; }
+}

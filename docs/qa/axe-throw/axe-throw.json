@@ -20,6 +20,10 @@
       "status": "passed"
     },
     {
+      "label": "ten-throws-killshots-and-companion",
+      "status": "passed"
+    },
+    {
       "label": "pause-reaim-and-repeat",
       "status": "passed"
     },

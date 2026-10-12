@@ -10,7 +10,7 @@ async function press(page, selector, touch = false) {
 }
 async function pressReady(page, touch = false, keyboard = false) {
   await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
-  if (keyboard) { await game(page).focus(); await page.keyboard.press("Space"); }
+  if (keyboard) await page.keyboard.press("Space");
   else await press(page, '[data-test="axe-action"]', touch);
 }
 async function fit(page) {
@@ -70,7 +70,8 @@ await suite("axe-throw", async check => {
       if (n===1) assert.match(await page.locator(".axe-note").textContent(),/落下/);
       await pressReady(page,touch,keyboard);
     }
-    await phase(page,"summary"); assert.match(await page.locator(".axe-note").textContent(),/合計 .*22点/);
+    await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
+    assert.match(await page.locator(".axe-note").textContent(),/合計 .*22点/);
     if (shotsPath) await page.screenshot({path:shotsPath + "/" + label + "-summary.png"});
     await press(page,'[data-test="axe-retry"]',touch); await phase(page,"choice");
     assert.equal(await page.locator('[data-test="axe-round"]').textContent(),"1 / 3 投");
@@ -88,7 +89,7 @@ await suite("axe-throw", async check => {
     assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
     assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
     assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);
-    await pressReady(page); await phase(page,"choice");
+    await pressReady(page); await phase(page,"choice"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
     assert(await page.locator('[data-call="upper-left"]').isDisabled()); assert(await page.locator('[data-call="upper-right"]').isDisabled());
     assert(!(await page.locator('[data-call="lower-left"]').isDisabled()));
     await page.locator('[data-call="lower-left"]').click(); await shoot(page); // declaration miss at center earns zero
@@ -98,7 +99,8 @@ await suite("axe-throw", async check => {
       if(n===5) { assert.match(await page.locator(".axe-note").textContent(),/後半5投/); assert(await page.locator('[data-call="upper-left"]').isDisabled()); }
       await shoot(page,{x:n%2?.36:0,y:n%2?.24:0}); await pressReady(page);
     }
-    await phase(page,"summary"); await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
+    await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
+    await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
     if(shotsPath) await page.screenshot({path:shotsPath + "/league-kafuka-summary.png"});
     await pressReady(page); assert.deepEqual(await storageSnapshot(page),before);
     assert.match(await page.locator(".axe-intro > p").first().textContent(),/前回の記録/);
@@ -114,9 +116,13 @@ await suite("axe-throw", async check => {
     await page.locator('[data-test="axe-reaim"]').click(); await phase(page,"choice");
     assert.match(await page.locator(".axe-call-status").textContent(),/宣言中/);
     await page.locator('[data-call="normal"]').click(); assert.match(await page.locator(".axe-call-status").textContent(),/残り2回/);
-    await pressReady(page); await phase(page,"horizontal"); await page.waitForTimeout(300);
+    await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
+    await page.locator('[data-test="axe-action"]').focus(); await page.keyboard.press("Enter");
+    await phase(page,"horizontal"); await page.waitForTimeout(300);
     await game(page).evaluate(root=>root.dispatchEvent(new KeyboardEvent("keydown",{key:" ",repeat:true,bubbles:true})));
     assert.equal(await game(page).getAttribute("data-phase"),"horizontal");
+    assert(await game(page).evaluate(root=>root.contains(document.activeElement)),"Disabling the primary button must keep focus inside the game");
+    await page.keyboard.press("Space"); await phase(page,"vertical");
     for(let i=0;i<10;i++) await page.keyboard.press("Tab"); assert(await game(page).evaluate(root=>root.contains(document.activeElement)));
     await page.keyboard.press("Escape"); assert.equal(await game(page).count(),0);
   });

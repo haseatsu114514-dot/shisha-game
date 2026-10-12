@@ -40,7 +40,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     el("button.axe-button.axe-close", { text: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) })]);
   const portrait = el("img.axe-portrait", { alt: companion.name, src: faceArt(opponent, companion.faces[0]), dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
-  const companionCard = el("div.axe-companion", [portrait, el("div", [el("strong", { text: companion.name }), comment])]);
+  const companionCard = el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]);
   const board = svg("svg", { viewBox: "0 0 660 520", class: "axe-target", role: "img",
     "aria-label": "5か所の赤い得点圏と4か所の青いキルショット。横・縦ゲージを止めて照準を決める", "data-test": "axe-target" });
   board.append(svg("image", { href: ART.board, x: 135, y: 50, width: 390, height: 390 }));
@@ -78,10 +78,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     el("span.axe-sweet", { style: { left: POWER.sweetMin * 100 + "%", width: (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), needle]);
   const action = el("button.axe-button.axe-primary", { dataset: { test: "axe-action" }, onclick: act });
   const reaim = el("button.axe-button.axe-reaim", { text: "構え直す", dataset: { test: "axe-reaim" }, onclick: () => {
-    if (["horizontal", "vertical", "power"].includes(phase)) { aim = { x: 0, y: 0 }; power = POWER.ideal; setPhase("choice"); }
+    if (!document.hidden && performance.now() - lastAction >= 250 && ["horizontal", "vertical", "power"].includes(phase)) {
+      lastAction = performance.now(); aim = { x: 0, y: 0 }; power = POWER.ideal; setPhase("choice");
+    }
   } });
   const retry = el("button.axe-button.axe-retry", { text: "もう一度", dataset: { test: "axe-retry" }, onclick: () => {
-    if (phase === "summary") { shots = []; called = null; aim = { x: 0, y: 0 }; power = POWER.ideal; impacts.replaceChildren(); setPhase("choice"); }
+    if (!document.hidden && performance.now() - lastAction >= 250 && phase === "summary") {
+      lastAction = performance.now(); shots = []; called = null; aim = { x: 0, y: 0 }; power = POWER.ideal; impacts.replaceChildren(); setPhase("choice");
+    }
   } });
   root.append(heading, el("div.axe-body", [el("div.axe-board-pane", [companionCard, board,
     el("p.axe-legend", { text: "赤6点 · リング1〜5点 · 宣言した青7／8点" })]),
@@ -100,7 +104,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(() => { if (phase !== "closed") setPhase("choice"); }, () => { if (phase !== "closed") setPhase("failed"); });
   }
   function selectCall(id) {
-    if (phase !== "choice" || document.hidden || id && !canCall(id, shots)) return;
+    if (phase !== "choice" || document.hidden || performance.now() - lastAction < 250 || id && !canCall(id, shots)) return;
     called = id; render();
   }
   function setPhase(next) { phase = next; elapsed = 0; stamp = null; render(); }
@@ -132,6 +136,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
   }
   function render() {
+    const focusedButton = document.activeElement?.tagName === "BUTTON" && root.contains(document.activeElement) ? document.activeElement : null;
     if (phase === "horizontal") aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal));
     if (phase === "vertical") aim.y = axisAt(gaugeAt(elapsed, cycles.vertical));
     if (phase === "power") power = gaugeAt(elapsed, cycles.power);
@@ -150,7 +155,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : "キルショット宣言 · 残り" + ks.remaining + "回";
     for (const button of calls.children) {
       const id = button.dataset.call;
-      button.disabled = document.hidden || phase !== "choice" || id !== "normal" && !canCall(id, shots);
+      button.disabled = document.hidden || performance.now() - lastAction < 250 || phase !== "choice" || id !== "normal" && !canCall(id, shots);
       button.setAttribute("aria-pressed", String((called || "normal") === id));
     }
     for (const target of KILLS) {
@@ -167,6 +172,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : .5); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : .5);
     flying.setAttribute("opacity", phase === "flight" ? 1 : 0); needle.style.left = power * 100 + "%";
     calls.hidden = phase !== "choice"; reaim.hidden = !cycles[phase]; retry.hidden = phase !== "summary";
+    reaim.disabled = retry.disabled = document.hidden || performance.now() - lastAction < 250;
     action.disabled = document.hidden || ["loading", "flight"].includes(phase) || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: "力を止めて投げる！",
       flight: "飛んでいく…", result: shots.length === rules.throws ? "結果を見る" : "次の投へ", summary: "終了" }[phase] || "";
@@ -179,6 +185,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : last.outcome === "killshot-miss" ? "宣言した青い的から外れた · 0点" : last.score ? "命中！ " + last.score + "点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
     if (note.textContent !== nextNote) note.textContent = nextNote;
+    // Disabling a focused native button otherwise sends Space/Enter to the VN below.
+    if (focusedButton?.disabled) root.focus();
   }
   function tick(now) {
     if (phase === "closed") return;
