@@ -42,12 +42,34 @@
       "mode": "RGBA",
       "adopted": false,
       "runtime_registered": false
+    },
+    {
+      "variant": "serious",
+      "file": "asset_sources/hiyori-axe-issue477/raw/serious-source.png",
+      "sha256": "bee105eeb64a39584f465134f2ef1e2e2eb03b792e2017c30e540d8b19b50876",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
+    },
+    {
+      "variant": "love_blush",
+      "file": "asset_sources/hiyori-axe-issue477/raw/love-blush-source.png",
+      "sha256": "be0648d556a4a16dde377a7cffef2aa793c5516a5771dea38d7a1383a4626fa5",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false
     }
   ],
   "external_files_included": [],
   "remaining": [
-    "serious",
-    "love_blush",
     "axe background",
     "normalization/encoding/manifest",
     "visual and PC/touch/save QA"
