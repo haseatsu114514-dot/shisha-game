@@ -4,11 +4,11 @@
   "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
   "worker": "codex-trailer415-20261013-01a130ab",
   "claim_run": 38268614301,
-  "validated_run": 38283370451,
+  "validated_run": 38302513904,
   "style_revision": "cel-1992-v2",
   "composition_revision": "Minto solo close-up; other five layouts retained",
-  "status": "owner_review_only",
-  "merge_allowed": false,
+  "status": "concept_merge_authorized",
+  "merge_allowed": true,
   "generator": "built-in image_gen.imagegen",
   "dimensions": [
     1664,
@@ -284,7 +284,7 @@
       "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
     }
   ],
-  "synced_main": "5fec373e90cce62fbf50e49bfedea1d47b3b0899",
+  "synced_main": "ed022833e826fc408d505b9d225f7e52d2a12b81",
   "trailer": {
     "preview": "trailer/index.html",
     "video": "trailer/teaser-37s.mp4",
@@ -316,5 +316,6 @@
       "source": "assets/fonts/DotGothic16-Regular.ttf",
       "sha256": "92524cf71473014b9988fbcb63ac5cfe045e55944918b021a41f991ca0b6e329"
     }
-  }
+  },
+  "merge_authorization": "Owner explicitly requested merge on 2026-10-13 in this task; no game integration requested"
 }
