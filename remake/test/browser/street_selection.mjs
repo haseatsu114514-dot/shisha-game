@@ -103,7 +103,7 @@ try {
       assert(s.walked>.7&&s.walked<1,`${dir}: ground speed outside expected range`);
       distances.push(s.walked);
     }
-    assert(Math.max(...distances)/Math.min(...distances)<1.12,'diagonal movement must not be faster');
+    assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction ground-speed spread: ${JSON.stringify(distances)}`);
     await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);

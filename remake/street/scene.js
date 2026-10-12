@@ -120,7 +120,8 @@ function draw() {
     ctx.font='14px system-ui';ctx.fillText(i.tag||'',x,y+19);if(i.event){ctx.fillStyle='#f9dc73';ctx.font='bold 24px system-ui';ctx.fillText('!',x,y-30);}}
   const d=nearest();if(d&&!message&&!travel){ctx.fillStyle='#ffe29d';ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.fillText('!',p.x,p.y-h-12);}
 }
-function tick(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);if(!paused())cam=followCamera(cam,player,dt);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+// 20fps以下でも移動時間を毎回50msへ切り捨てない。復帰時の大飛びは100msで抑える。
+function tick(now){const dt=Math.min(.1,(now-last)/1000);last=now;update(dt);if(!paused())cam=followCamera(cam,player,dt);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
 window.streetScene={connect(adapter){host=adapter;stop();wasPaused=true;focus();}};
 window.__street={
   state:()=>({ready,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,cam),z:player.z,
