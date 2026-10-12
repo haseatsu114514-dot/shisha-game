@@ -341,6 +341,7 @@ for (;;) {
     continue;
   }
   if (snap.screen === "tonari") {
+    if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
       pendingAfter = null;
