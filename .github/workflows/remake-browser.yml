@@ -74,7 +74,9 @@ jobs:
           exit 1
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Save/load, legacy migration and PC/mobile controls
-        run: node remake/test/browser/save_load.mjs
+        run: |
+          node remake/test/browser/save_load.mjs
+          node remake/test/browser/sumi_contact.mjs
       - name: Hiyori encounters, LIME, saves and PC/mobile portraits
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
