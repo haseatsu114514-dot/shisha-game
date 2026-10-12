@@ -1,0 +1,150 @@
+{
+  "issue": 375,
+  "worker": "codex-visual-20261012-e492484f3b",
+  "base_sha": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+  "claim_run": 38259990012,
+  "status_run": 38260249119,
+  "items": [
+    {
+      "id": "minto-night-ci97",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-night-ci97.png",
+      "source_path": "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png",
+      "generated_original": "/workspace/generated_images/exec-d2a0bfbf-3fba-4e6e-99ce-5c0932549a7e.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-night-ci97.prompt.txt",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "sha256": "a0e72959159b679853efd314a2cfdbb06a0bf82be6140e28ba985c34fd2b81b6",
+      "source_sha256": "270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47",
+      "status": "background_revision_owner_review_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "protected_roi_differences": {
+        "face": {
+          "box": [
+            430,
+            320,
+            653,
+            498
+          ],
+          "mean_absolute_rgb_difference": 5.13115,
+          "max_channel_difference": 116
+        },
+        "hardware": {
+          "box": [
+            94,
+            726,
+            370,
+            1304
+          ],
+          "mean_absolute_rgb_difference": 6.9562,
+          "max_channel_difference": 172
+        },
+        "hand_handle": {
+          "box": [
+            362,
+            442,
+            516,
+            738
+          ],
+          "mean_absolute_rgb_difference": 5.52459,
+          "max_channel_difference": 139
+        }
+      },
+      "qa": {
+        "background": "原寸目視で室内鉢・蔦の除去を確認。緑の人物衣装・アクセサリーは維持。",
+        "identity": "採用normalと前後拡大を比較。顔・髪・衣装・装飾の大きな破綻なし。最終判定はオーナー。",
+        "foreground": "手・器具の前後比較を原寸で確認。全画素同一ではない。",
+        "hardware": "夜は一本のホース・HMD内2炭、準備は冷たいHMD別置き・炭/煙なしを目視。特定ボウルの実寸/型式適合は未確認。",
+        "adoption": "未承認・未登録。"
+      }
+    },
+    {
+      "id": "minto-prep-ci97",
+      "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-prep-ci97.png",
+      "source_path": "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png",
+      "generated_original": "/workspace/generated_images/exec-d84fea27-39d5-4de2-89e8-b5271f3464ff.png",
+      "tool": "image_gen.imagegen",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/minto-prep-ci97.prompt.txt",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "sha256": "5b863c089a4ba5d4249800efc8b6dc041aba67154b8f511b9842291df17eca9f",
+      "source_sha256": "db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb",
+      "status": "background_revision_owner_review_pending",
+      "approved": false,
+      "runtime_paths": [],
+      "protected_roi_differences": {
+        "face": {
+          "box": [
+            431,
+            350,
+            680,
+            600
+          ],
+          "mean_absolute_rgb_difference": 6.58356,
+          "max_channel_difference": 209
+        },
+        "hands_bowl": {
+          "box": [
+            268,
+            831,
+            613,
+            1148
+          ],
+          "mean_absolute_rgb_difference": 7.93196,
+          "max_channel_difference": 203
+        },
+        "hmd": {
+          "box": [
+            674,
+            1078,
+            879,
+            1224
+          ],
+          "mean_absolute_rgb_difference": 8.73847,
+          "max_channel_difference": 136
+        }
+      },
+      "qa": {
+        "background": "原寸目視で室内鉢・蔦の除去を確認。緑の人物衣装・アクセサリーは維持。",
+        "identity": "採用normalと前後拡大を比較。顔・髪・衣装・装飾の大きな破綻なし。最終判定はオーナー。",
+        "foreground": "手・器具の前後比較を原寸で確認。全画素同一ではない。",
+        "hardware": "夜は一本のホース・HMD内2炭、準備は冷たいHMD別置き・炭/煙なしを目視。特定ボウルの実寸/型式適合は未確認。",
+        "adoption": "未承認・未登録。"
+      }
+    }
+  ],
+  "qa_scope": "背景植物削減と人物/手/器具の比較。作業者検品は採用承認ではない。実寸/CAD/特定のボウル型式の適合は合格断定しない。",
+  "used_external_references": [
+    {
+      "file": "onmo-aluminium.jpg",
+      "url": "https://mozeshisha.de/media/54/df/05/1712740453/onmo-hmd-silber_3833_1200x1450.jpg",
+      "sha256": "94d1acd718caaa0e985ca96a9725748e76cb3d4517180a3873fd5ce91717c2fa",
+      "bytes": 284458,
+      "usage": "生成構造参照のみ。画像本体はリポジトリへ転載しない。"
+    },
+    {
+      "file": "phunnel-in-hand.jpg",
+      "url": "https://mozeshisha.de/media/8c/14/0e/1743577709/shishawissen-shisha-kopf-wissen-shisha-kopf-bauen6.jpg",
+      "sha256": "c507b1b2eb8e8f289758cb040fc814029c23bfc989ecf3a9c083ee8fcfdbdb66",
+      "bytes": 87068,
+      "usage": "生成構造参照のみ。画像本体はリポジトリへ転載しない。",
+      "observed_content": "左右の実写：ボウル縁を拭く手／同じボウルにONMOを載せる手。"
+    }
+  ],
+  "external_reference_limitation": "既存の全体装着写真Reddit 1dl3nj9の再取得はHTTP403。代わりにONMO単体とMozeの手持ち/ボウルへの装着実写を確認。実写真本体はリポジトリへ転載しない。",
+  "preview_qa": {
+    "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/qa/issue375-background-plants.json",
+    "passed": 4,
+    "failed": 0,
+    "baseURL": "https://haseatsu114514-dot.github.io/shisha-game/remake/",
+    "runtime_ref": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+    "scope": "2原画×PC/横持ちタッチの候補仮表示。正式抽選への登録なし。"
+  }
+}
