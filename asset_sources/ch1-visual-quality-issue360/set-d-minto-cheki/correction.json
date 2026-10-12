@@ -1,0 +1,10 @@
+{
+  "generator": "image_gen.imagegen",
+  "prompt": "Make one precise correction to this newly drawn two-person event CG. Preserve BOTH Minto and Hajime exactly: faces, eyes, hair, cap, expressions, outfits, hands, poses, height relationship, framing, lighting, skin colours, all fine pixel-cluster shading, and the full landscape 16:9 composition. Do not redraw the characters or change the mood. ONLY in the upper-left background shelf: remove the two display hookah stems with metal trays (the grey/blue and reddish display apparatus). Replace those two objects with modest plain empty glass bases/vases sitting naturally on the same shelf, no stems, trays, connectors, bowls, HMD, charcoal, hoses, handles or smoke. Keep the shelf, niches, tiny flavour containers, bar, pendant lamps, mint/pink wall trim and all other shop details unchanged. No new people, plants, writing, photo border, logo, caption, UI or watermark. Retain the original deliberate finely stepped pixel art throughout. One corrected complete playable event CG.",
+  "reference": "generated/rejected/initial-with-background-hardware.png",
+  "output": "generated/cg_minto_cheki.png",
+  "accepted": true,
+  "acceptedBy": "codex-cg360-20261012-7242bf5ca07e",
+  "ownerApprovalClaimed": false,
+  "reason": "Both canonical adult faces/outfits and the correct two-shot are retained. Background apparatus removed to keep this photo crop free of smoking hardware."
+}

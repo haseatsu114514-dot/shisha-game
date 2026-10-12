@@ -14,6 +14,7 @@ const cases = [
   ["cg_oneesan_first_smoke", "ch1_tutorial_oneesan"],
   ["cg_minto_casual", "outing_minto_1"],
   ["cg_tsumugi_smoke_color", "ch1_tsumugi_smoke_color"],
+  ["cg_minto_cheki", "interaction_minto_noon_01"],
 ];
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/ch1-cg-art");
 const withoutGallery = value => ({ ...value, local: Object.fromEntries(Object.entries(value.local).filter(([key]) => key !== "suien_remake_gallery")) });

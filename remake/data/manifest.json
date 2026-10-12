@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 20:11 UTC",
+ "generated": "2026-10-12 21:11 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -261,6 +261,7 @@
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
   "cg_minto_casual.png",
+  "cg_minto_cheki.png",
   "cg_minto_first_cheki.png",
   "cg_oneesan_first_smoke.png",
   "cg_tsumugi_smoke_color.png"
@@ -1605,6 +1606,7 @@
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
   "cgs/cg_minto_casual.png",
+  "cgs/cg_minto_cheki.png",
   "cgs/cg_minto_first_cheki.png",
   "cgs/cg_oneesan_first_smoke.png",
   "cgs/cg_tsumugi_smoke_color.png",
