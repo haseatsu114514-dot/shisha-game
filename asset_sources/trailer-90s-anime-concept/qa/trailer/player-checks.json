@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "video": {
+    "duration": 37,
+    "width": 1280,
+    "height": 720
+  },
+  "decoded_video_frames": [
+    {
+      "currentTime": 14.539662,
+      "readyState": 4,
+      "mediaTime": 14.541667,
+      "presentedFrames": 2
+    },
+    {
+      "currentTime": 19.530683,
+      "readyState": 4,
+      "mediaTime": 19.541667,
+      "presentedFrames": 4
+    }
+  ],
+  "game_segments": 8,
+  "typewriter_reveal": true,
+  "advance": true,
+  "keyboard": true,
+  "back": true,
+  "end_restart": true,
+  "mode_switch": true,
+  "mobile_no_overflow": true,
+  "page_errors": []
+}

@@ -29,11 +29,12 @@ footer{border-top:1px solid #30363c;margin-top:28px;padding-top:18px;font-size:1
 <div class="layout"><div><article class="scene"><a id="fullImage" target="_blank" rel="noopener" title="画像を原寸で開く"><img id="sceneImage" alt=""></a><div class="caption">
 <div class="bar"><h2 id="shotTitle"></h2><div class="nav"><button id="prev" aria-label="前のカット">←</button><button id="next" aria-label="次のカット">→</button></div></div>
 <p id="summary"></p><div class="links"><a id="download" download>16:9 PNG</a><a id="original" target="_blank" rel="noopener">生成原画</a><a id="prompt" target="_blank" rel="noopener">生成プロンプト</a></div>
-</div></article><section class="motion"><h3 id="duration"></h3><p id="camera"></p><p id="acting"></p><p id="effects"></p></section></div>
+</div></article><details style="margin-top:18px"><summary>前の画風との違いを見る</summary><img id="styleComparison" style="display:block;width:100%;margin-top:10px" alt="前の画風と新版の比較"></details><section class="motion"><h3 id="duration"></h3><p id="camera"></p><p id="acting"></p><p id="effects"></p></section></div>
 <aside><h3>正式画像との比較</h3><div class="refrow" id="references"></div><a id="faceLink" target="_blank" rel="noopener"><img class="face" id="faceComparison" alt="正式立ち絵と今回の顔の比較"></a>
 <details id="locationDetails"><summary>店舗の正式背景を確認</summary><a id="locationLink" target="_blank" rel="noopener"><img class="location" id="locationReference" alt="正式な店舗背景"></a></details>
 <p class="note" id="environment"></p><p class="note">髪・衣装・本人性を正式画像で確認し、姿勢・視線・カメラは場面から描き起こしています。画像を押すと原寸を開けます。</p></aside></div>
-<footer>全6枚 1664×936px / 16:9。画像内に字幕・ロゴ・日付なし。動画は未生成。mainへのマージ禁止。<br>
+<footer>全6枚 1664×936px / 16:9。素材画像内に字幕・ロゴ・日付なし。セル画版v2。mainへのマージ禁止。<br>
+<a href="trailer/index.html">動画とテロップ送りを見比べる</a>
 <a href="contact-sheet.jpg" target="_blank" rel="noopener">6枚一覧</a><a href="video-notes.md">動画化メモ</a><a href="qa/README.md">品質確認</a><a href="production.md">制作条件</a><a href="https://github.com/haseatsu114514-dot/shisha-game/pull/441" target="_blank" rel="noopener">Draft PR #441</a>
 </footer></main>
 <script>
@@ -41,7 +42,7 @@ const shots=[{"slug": "01-sumi-silence", "title": "スミの沈黙", "ids": ["su
 const $=id=>document.getElementById(id);
 shots.forEach((s,i)=>{const b=document.createElement('button');b.className='thumb';b.dataset.index=i;b.setAttribute('aria-pressed','false');b.setAttribute('aria-label',s.title+'を表示');const im=document.createElement('img');im.src=s.file;im.alt='';const label=document.createElement('span');label.textContent=String(i+1).padStart(2,'0')+' '+s.title;b.append(im,label);b.addEventListener('click',()=>show(i));$('filmstrip').append(b)});
 function show(i){active=(i+shots.length)%shots.length;const s=shots[active];
-$('sceneImage').src=s.file;$('sceneImage').alt=s.title;$('fullImage').href=s.file;$('shotTitle').textContent=String(active+1).padStart(2,'0')+' / '+s.title;$('summary').textContent=s.summary;
+$('styleComparison').src='qa/'+s.slug+'-style-comparison.jpg';$('sceneImage').src=s.file;$('sceneImage').alt=s.title;$('fullImage').href=s.file;$('shotTitle').textContent=String(active+1).padStart(2,'0')+' / '+s.title;$('summary').textContent=s.summary;
 $('download').href=s.file;$('original').href=s.original;$('prompt').href=s.prompts[s.prompts.length-1];
 $('duration').textContent='動画化の想定 / '+s.seconds+'秒';$('camera').textContent='カメラ: '+s.camera;$('acting').textContent='人物: '+s.motion;$('effects').textContent='光・煙: '+s.effects;
 $('references').replaceChildren();s.reference_files.forEach((path,j)=>{const f=document.createElement('figure');f.className='reference';const im=document.createElement('img');im.src=path;im.alt=s.names[j]+'の正式立ち絵';const c=document.createElement('figcaption');c.textContent=s.names[j];f.append(im,c);$('references').append(f)});

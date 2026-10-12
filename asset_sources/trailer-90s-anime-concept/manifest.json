@@ -283,5 +283,23 @@
       "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
       "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
     }
-  ]
+  ],
+  "synced_main": "478097d257bc2d544f4914a425e7df758eea9b2d",
+  "trailer": {
+    "preview": "trailer/index.html",
+    "video": "trailer/teaser-37s.mp4",
+    "sha256": "deb813ef950cbad3fb8c44c7b7e09a630249094fca409171c3bf053a1106dcb0",
+    "duration_seconds": 37,
+    "dimensions": [
+      1280,
+      720
+    ],
+    "fps": 24,
+    "frames": 888,
+    "audio": false,
+    "motion": "still image camera movement and cuts",
+    "manual_player": "typewriter; click/Space/Enter to reveal or advance",
+    "source": "trailer/timeline.js",
+    "game_integration": false
+  }
 }

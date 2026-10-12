@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>予告編の試作 / 動画とテロップ送り</title>
+<style>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;background:#101419;color:#e8e1d6}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:30px 24px}
+a{color:#cfb88c}h1{font-size:clamp(21px,3vw,29px);font-weight:550;margin:0 0 12px}.intro{color:#aeb3b6;font-size:14px;line-height:1.8;margin:0 0 24px}
+.modes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}button{font:inherit;color:inherit;background:#1a2027;border:1px solid #40474e;border-radius:6px;padding:10px 16px;cursor:pointer}
+button[aria-pressed=true]{border-color:#b9955e;color:#ead2a7;background:#2b2720}button:focus-visible,a:focus-visible{outline:2px solid #d1af75;outline-offset:3px}
+.screen{background:#07090c;border:1px solid #30373e;border-radius:8px;overflow:hidden}video,canvas{width:100%;aspect-ratio:16/9;display:block;background:#090d13}
+[hidden]{display:none!important}.dialogue{padding:18px 25px 23px;border-top:1px solid #35302a;background:#15191f;min-height:120px}
+.speaker{font-size:13px;color:#cab282;margin-bottom:10px}.line{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:clamp(18px,2.3vw,24px);line-height:1.7;min-height:1.7em}
+.game-controls{display:flex;gap:10px;align-items:center;margin-top:16px}.counter{color:#969fa4;font-size:13px;margin-left:auto}
+.hint{color:#969fa4;font-size:12px;line-height:1.8;margin-top:13px}.links{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;font-size:13px}
+@media(max-width:520px){main{padding:22px 14px}.dialogue{padding:15px 18px;min-height:125px}.game-controls{flex-wrap:wrap}.counter{width:100%;margin-left:0}.modes button{flex:1;font-size:13px;padding:10px 8px}}
+</style></head><body><main>
+<h1>同じ6カットを、2つのテンポで。</h1>
+<p class="intro">37秒の予告編と、自分のペースで台詞を送る試作を見比べられます。<br>新版のセル画・同じ台詞を使用。確認用の試作です。</p>
+<div class="modes" role="group" aria-label="見せ方を選ぶ"><button id="movieMode" aria-pressed="true">動画版 · 37秒</button><button id="gameMode" aria-pressed="false">ゲーム風 · テロップ送り</button></div>
+<div class="screen">
+<video id="movie" controls preload="metadata" playsinline poster="../images/01-sumi-silence.png" src="teaser-37s.mp4"></video>
+<div id="gameView" hidden><canvas id="trailerCanvas" width="1280" height="720" aria-label="予告編カット"></canvas>
+<div class="dialogue" role="status" aria-live="polite"><div class="speaker" id="speaker"></div><div class="line" id="line"></div></div></div>
+</div>
+<div id="gameControls" class="game-controls" hidden><button id="previous">戻る</button><button id="next">次へ ▶</button><button id="restart">最初から</button><span class="counter" id="counter"></span></div>
+<p class="hint" id="hint">静止画に小さな寄り・移動・切替を付けた無音の予告編。動画の再生ボタンで開始します。</p>
+<div class="links"><a href="teaser-37s.mp4" download>動画を保存</a><a href="../index.html">6枚と正式画像の比較</a><a href="README.md">台詞と編集メモ</a><a href="https://github.com/haseatsu114514-dot/shisha-game/pull/441">Draft PR #441</a></div>
+</main><script src="timeline.js"></script><script src="render.js"></script><script>
+const $=id=>document.getElementById(id);let mode='movie',index=0,started=performance.now(),revealed=false,ready=false;
+const spec=window.TRAILER_SPEC;let last='';let renderError=null;
+function update(){
+  if(!ready||mode!=='game')return;
+  const s=spec.segments[index],elapsed=(performance.now()-started)/1000;
+  const chars=revealed?Array.from(s.text).length:Math.floor(elapsed*26);
+  const text=Array.from(s.text).slice(0,chars).join('');
+  if(text!==last){$('line').textContent=text;last=text}
+  $('speaker').textContent=s.speaker||(s.kind==='intro'?'第2章':spec.title+' '+spec.subtitle);
+  $('counter').textContent=(index+1)+' / '+spec.segments.length;
+  $('next').textContent=index===spec.segments.length-1?'もう一度 ↻':'次へ ▶';
+  window.renderTrailerFrame(s.start+s.duration*.5,{still:true,hideSubtitle:true,noFade:true});
+}
+function resetTyping(){started=performance.now();revealed=false;last='';$('line').textContent='';update()}
+function selectMode(next){mode=next;$('movieMode').setAttribute('aria-pressed',String(mode==='movie'));$('gameMode').setAttribute('aria-pressed',String(mode==='game'));$('movie').hidden=mode!=='movie';$('gameView').hidden=mode!=='game';$('gameControls').hidden=mode!=='game';
+ if(mode==='game'){$('movie').pause();resetTyping()}
+ $('hint').textContent=mode==='game'?'クリック / Space / Enter：表示中は全文を出し、全文表示後は次のカットへ。戻る操作もできます。':'静止画に小さな寄り・移動・切替を付けた無音の予告編。動画の再生ボタンで開始します。';
+}
+function advance(){const s=spec.segments[index];const full=revealed||(performance.now()-started)/1000*26>=Array.from(s.text).length;if(!full){revealed=true;update();return}index=(index+1)%spec.segments.length;resetTyping()}
+$('movieMode').onclick=()=>selectMode('movie');$('gameMode').onclick=()=>selectMode('game');
+$('next').onclick=advance;$('previous').onclick=()=>{index=Math.max(0,index-1);resetTyping()};$('restart').onclick=()=>{index=0;resetTyping()};
+$('gameView').onclick=advance;document.addEventListener('keydown',e=>{if(mode==='game'&&[' ','Enter'].includes(e.key)){e.preventDefault();advance()}});
+window.trailerReady.then(()=>{ready=true;update()}).catch(e=>{renderError=e.message;$('hint').textContent='画像を読み込めませんでした。';console.error(e)});
+function tick(){update();requestAnimationFrame(tick)}requestAnimationFrame(tick);
+window.getTrailerState=()=>({mode,index,ready,revealed,text:$('line').textContent,renderError});
+</script></body></html>
