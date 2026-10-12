@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "text_style": {
+    "chapter": {
+      "number": 2,
+      "label": "第二章",
+      "title": "才能の壁",
+      "subtitle": "Jealousy Haze",
+      "reading": "ジェラシー・ヘイズ"
+    },
+    "fontLoaded": true,
+    "font": "TrailerDot, monospace"
+  },
+  "video": {
+    "duration": 37,
+    "width": 1280,
+    "height": 720
+  },
+  "decoded_video_frames": [
+    {
+      "currentTime": 14.550706,
+      "readyState": 4,
+      "mediaTime": 14.541667,
+      "presentedFrames": 2
+    },
+    {
+      "currentTime": 19.546387,
+      "readyState": 4,
+      "mediaTime": 19.541667,
+      "presentedFrames": 4
+    }
+  ],
+  "game_segments": 8,
+  "typewriter_reveal": true,
+  "advance": true,
+  "keyboard": true,
+  "back": true,
+  "end_restart": true,
+  "mode_switch": true,
+  "mobile_no_overflow": true,
+  "page_errors": []
+}

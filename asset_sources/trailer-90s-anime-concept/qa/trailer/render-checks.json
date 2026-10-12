@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "duration": 37,
+  "fps": 24,
+  "frames": 888,
+  "dimensions": [
+    1280,
+    720
+  ],
+  "audio": false,
+  "renderer": "shared canvas renderer + FFmpeg libx264",
+  "snapshots": 8,
+  "page_errors": []
+}
