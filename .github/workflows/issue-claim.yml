@@ -21,7 +21,7 @@ on:
         required: false
         type: string
       claim_run:
-        description: Successful current claim run (required for transfer; optional for status)
+        description: Successful original claim run (required for transfer; optional for status)
         required: false
         type: string
       handoff_comment:
@@ -127,14 +127,46 @@ jobs:
                   handoff.stopped !== true || handoff.pushed !== true || !Array.isArray(handoff.prs) || !handoff.prs.length) {
                 throw Error('Approval does not match stopped/pushed owner, Issue, worker and claim run');
               }
+              const recovery = handoff.recovery;
+              if ('recovery' in handoff && (!recovery || !Number.isSafeInteger(recovery.claim_comment) ||
+                  !Number.isSafeInteger(recovery.released_comment) || recovery.claim_comment < 1 ||
+                  recovery.released_comment < 1 || recovery.claim_comment === recovery.released_comment)) {
+                throw Error('Legacy recovery requires exact original claim and released comment IDs');
+              }
               async function validateTransfer() {
                 await issue(number);
                 const claim = await status(number);
-                if (claim.state !== 'claimed' || claim.owner !== handoff.from || claim.run_id !== expectedRun) {
+                let originalLegacyClaim;
+                if (recovery) {
+                  const comments = await github.paginate(github.rest.issues.listComments, {owner:repoOwner,repo,issue_number:number,per_page:100});
+                  const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && marker.test(c.body || ''));
+                  originalLegacyClaim = ledger.at(-2);
+                  const original = originalLegacyClaim?.body.match(marker);
+                  if (claim.state !== 'released' || claim.owner !== handoff.from || claim.run_id !== null ||
+                      claim.comment_id !== recovery.released_comment || ledger.at(-1)?.id !== recovery.released_comment ||
+                      originalLegacyClaim?.id !== recovery.claim_comment || original?.[1] !== 'claimed' ||
+                      original?.[2] !== handoff.from || originalLegacyClaim.body.includes('<!-- issue-claim-run:')) {
+                    throw Error('Legacy recovery does not match the last bot claim/release pair');
+                  }
+                } else if (claim.state !== 'claimed' || claim.owner !== handoff.from || claim.run_id !== expectedRun) {
                   throw Error('Current reservation does not match approved original owner/run');
                 }
                 const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
                 if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Original claim run did not succeed');
+                if (recovery) {
+                  // Legacy comments have no run ID: bind the exact bot claim to a first-attempt
+                  // coordinator run on the default branch by its creation time. Admin review is
+                  // still required; a timestamp does not establish stopped session status.
+                  const created = Date.parse(originalLegacyClaim.created_at);
+                  const started = Date.parse(sourceRun.run_started_at);
+                  const finished = Date.parse(sourceRun.updated_at);
+                  if (sourceRun.id !== Number(expectedRun) || sourceRun.path !== '.github/workflows/issue-claim.yml' ||
+                      sourceRun.event !== 'workflow_dispatch' || sourceRun.run_attempt !== 1 ||
+                      !context.payload?.repository?.default_branch || sourceRun.head_branch !== context.payload.repository.default_branch ||
+                      ![created, started, finished].every(Number.isFinite) || created < started || created > finished) {
+                    throw Error('Original legacy claim is not bound to the approved coordinator run');
+                  }
+                }
                 const prs = await referencingPRs(number);
                 if (prs.length !== handoff.prs.length || new Set(handoff.prs.map(p => p.number)).size !== handoff.prs.length ||
                     handoff.prs.some(saved => !Number.isSafeInteger(saved.number) || !/^[a-f0-9]{40}$/.test(saved.head) ||
@@ -155,7 +187,8 @@ jobs:
               }
               await validateTransfer();
               // One bot ledger write replaces ownership without an unreserved release/claim gap.
-              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' after admin approval: ' + approval.html_url);
+              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' after admin approval: ' + approval.html_url +
+                (recovery ? '\nRecovered legacy claim/release comments ' + recovery.claim_comment + '/' + recovery.released_comment + '.' : ''));
               core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
               core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + handoff.from + ' APPROVAL=' + handoffComment);
               await core.summary.addRaw('Transferred #' + number + ' to ' + worker + '; validate this successful run with status before editing.').write();
