@@ -92,8 +92,8 @@ export function createContinueView({ script, speaker, character, premium, layout
     }
   }
   let letters = [], shown = -1;
-  // テロップは常に1行。折り返さず、出す文字は少し小さい所から大きくなる。
-  function setCaption(text, emphasis = null, seconds = 2) {
+  // 表示済みの文字だけを中央へ並べる。文字や行を拡大せず、1行のまま出す。
+  function setCaption(text, emphasis = null) {
     const word = [emphasis, ...EMPHASIS].find(w => w && text.includes(w));
     const start = word ? text.indexOf(word) : -1;
     let offset = 0;
@@ -103,15 +103,11 @@ export function createContinueView({ script, speaker, character, premium, layout
       return el(strong ? "mark.go-letter" : "span.go-letter", { text: char });
     });
     caption.replaceChildren(...letters);
-    caption.style.setProperty("--go-line-time", `${Math.max(.8, seconds).toFixed(2)}s`);
-    caption.classList.remove("go-line-grow");
-    void caption.offsetWidth;
-    caption.classList.add("go-line-grow");
     shown = -1;
     reveal(0);
   }
   function reveal(fraction = 1) {
-    const n = Math.ceil(letters.length * fraction);
+    const n = Math.min(letters.length, Math.floor(letters.length * Math.max(0, fraction)) + 1);
     if (n === shown) return;
     const typed = shown >= 0 && n > shown && n - shown <= 4;
     letters.forEach((letter, i) => { letter.classList.toggle("go-on", i < n); });
