@@ -1,6 +1,9 @@
 // #367: production calendar, actual chapter scenes, save/load and PC/touch input.
 import assert from "node:assert/strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { suite, assertFits } from "./support.mjs";
+const artifacts = path.resolve(fileURLToPath(new URL("../../../", import.meta.url)), process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 
 async function setup(page) {
   page.setDefaultTimeout(30000);
@@ -47,6 +50,7 @@ await suite("full-day-rest", async check => {
       await mapAt(page, 2, 0); await goHome(page, touch);
       await page.locator('[data-test="rest-full"]').waitFor();
       await assertFits(page, ".rest-modal, .rest-modal .btn");
+      await page.screenshot({ path: path.join(artifacts, `full-day-rest-${label}-rest-dialog.png`) });
       const before = await page.evaluate(() => ({ day: R.core.state.day, slot: R.core.state.slot, stamina: R.core.state.stamina }));
       assert.deepEqual(before, { day: 2, slot: 0, stamina: 10 });
       await page.locator('[data-test="rest-cancel"]').click(); await mapAt(page, 2, 0);

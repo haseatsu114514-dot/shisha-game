@@ -232,7 +232,7 @@ const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includ
 const STEPS_ALL = CRAFT_STEPS;
 
 async function tournamentDay() {
-  // DAY14から始まる旧セーブでも、実際に未読の準備だけを本番の前に救済する。
+  // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
   syncNightQueue(NIGHT_EVENTS, { resting: false });
   await runNightPlan(NIGHT_EVENTS, async () => {
     await play({ dialogue_id: "remake_rest_preparation_catchup", lines: [{ speaker: "", text: "大会に出る前に、スミさんと残っていた準備を確かめた。" }] });

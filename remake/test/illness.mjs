@@ -57,9 +57,9 @@ async function load(name) {
 }
 const calendarModule = await load("calendar.js"); await calendarModule.evaluate();
 const stats = modules.get("stats.js").namespace;
-async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null } = {}) {
+async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [] } = {}) {
   Object.keys(state).forEach((key) => delete state[key]);
-  Object.assign(state, { chapter: 1, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment,
+  Object.assign(state, { chapter: 1, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
     stats: { technique: 10, sense: 10, guts, charm: 10, insight: 10 }, statXp: {}, story: {}, visitedDay: {}, met: {}, contacts: [], inbox: [], limeRead: [],
     flags: { [`_morning_${day}`]: true, _sick_once: sick, _overwork: 9, ...flags } });
   played.length = 0; saves.length = 0; guards.length = 0; shifts = 0;
@@ -125,10 +125,17 @@ result = await run({ stamina: 10, day: 12, slot: 0, paths: ["rest"], answers: ["
   appointment: { sender: "sumi", event: "__sumi_baito__", day: 12, slot: 1 } });
 rested = result.saves.find(s => s.day === 12 && s.rest?.fullDay);
 assert.equal(rested.stamina, 65); assert.equal(result.shifts, 1); assert.equal(state.pendingInvite, null);
+executions.length = 0;
+await run({ stamina: 60, day: 4, events: { 2: event("regular_2") },
+  queue: [{ id: "regular_2", chapter: 1, originalDay: 2, deferredOn: 3, reason: "rest" }],
+  appointment: { sender: "sumi", event: "__sumi_baito__", day: 4, slot: 1 } });
+assert.equal(executions[0].day, 5, "既に会った夜にも通常の延期イベントを重ねない");
 
 // 締切前の準備は休養を続けても救済。通常予定は固定日に重ねず、大会後にも順序を保持。
 executions.length = 0;
-await run({ stamina: 10, day: 12, slot: 0, paths: ["rest"], answers: ["full"], events: {
+await run({ stamina: 10, day: 12, slot: 0, paths: ["rest"], answers: ["full"],
+  queue: [2, 3, 5, 7, 10].map(day => ({ id: `${[3, 7].includes(day) ? "practice" : "regular"}_${day}`,
+    chapter: 1, originalDay: day, deferredOn: 11, reason: "rest" })), events: {
   2: event("regular_2"), 3: event("practice_3", { schedule: "preparation", deadline: 6 }),
   5: event("regular_5"), 7: event("practice_7", { schedule: "preparation", deadline: 12, prerequisites: ["practice_3"] }),
   10: event("regular_10", { prerequisites: ["regular_2"] }), 13: event("fixed_13", { schedule: "fixed" }) } });
@@ -146,7 +153,7 @@ assert.equal(JSON.stringify(state), beforeRepeat); assert.equal(executions.lengt
 // 他章・既読・失敗を予約成功に見せない。例外時は未読キューを残す。
 state.deferredNightEvents = [{ id: "other", chapter: 2, originalDay: 2, deferredOn: 2 }];
 nights.syncNightQueue(definitions); assert.equal(state.deferredNightEvents.length, 1);
-state.day = 4; state.phase = "daily"; state.restDay = null;
+state.day = 3; state.phase = "daily"; state.restDay = null;
 const failed = { 3: { id: "failed", schedule: "regular", done: () => false, run: async () => { throw Error("Interrupted scene"); } } };
 nights.syncNightQueue(failed);
 await assert.rejects(nights.runNightPlan(failed), /Interrupted scene/);

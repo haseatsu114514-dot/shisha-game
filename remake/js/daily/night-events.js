@@ -10,22 +10,37 @@ const currentQueue = () => (state.deferredNightEvents || []).filter((entry) => e
 const eventById = (events, id) => Object.values(events).find((ev) => ev.id === id);
 const ready = (ev) => (ev.prerequisites || []).every((key) => state.flags[key]);
 
-/** 旧セーブの未読も読了フラグで照合する。日付だけで完了にせず、別章の待機分は保持する。 */
+/** 保存された延期と当日の予定を照合。キューが無い旧セーブに過去の予定を推測して作らない。 */
 export function syncNightQueue(events, { resting = restingToday() } = {}) {
   state.deferredNightEvents ||= [];
   state.deferredNightEvents = state.deferredNightEvents.filter((entry) => {
     if (entry.chapter !== state.chapter) return true;
     return !eventById(events, entry.id)?.done?.();
   });
-  for (const [day, ev] of Object.entries(events)) {
-    if (!postponeable(ev) || Number(day) > state.day || ev.done?.()) continue;
+  const visiting = new Set();
+  function enqueue(day, ev, reason = "scheduled") {
+    if (!postponeable(ev) || day > state.day || ev.done?.() || visiting.has(ev.id)) return;
+    visiting.add(ev.id);
+    for (const key of ev.prerequisites || []) {
+      if (state.flags[key]) continue;
+      const prerequisite = Object.entries(events).find(([, candidate]) => candidate.doneKeys?.includes(key));
+      if (prerequisite) enqueue(Number(prerequisite[0]), prerequisite[1], "prerequisite");
+    }
     let entry = currentQueue().find((item) => item.id === ev.id);
     if (!entry) {
-      entry = { id: ev.id, chapter: state.chapter, originalDay: Number(day), deferredOn: Number(day) - 1,
-        reason: Number(day) < state.day ? "unread-save" : "scheduled", prerequisites: ev.prerequisites || [], doneKeys: ev.doneKeys || [] };
+      entry = { id: ev.id, chapter: state.chapter, originalDay: day, deferredOn: day - 1,
+        reason, prerequisites: ev.prerequisites || [], doneKeys: ev.doneKeys || [] };
       state.deferredNightEvents.push(entry);
     }
     if (resting) { entry.deferredOn = state.day; entry.reason = "rest"; }
+  }
+  for (const [day, ev] of Object.entries(events)) {
+    if (Number(day) === state.day) enqueue(Number(day), ev);
+  }
+  // 保存された後続予定にも、未読の先行条件を実際の会話で補う。
+  for (const entry of currentQueue()) {
+    const ev = eventById(events, entry.id);
+    if (ev) enqueue(entry.originalDay, ev, entry.reason);
   }
 }
 
@@ -40,7 +55,8 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   if (state.day >= TOURNAMENT_DAY) return [];
   const fixed = events[state.day];
   if (fixed && !postponeable(fixed) && !fixed.done?.()) return [fixed];
-  const bookedNight = appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
+  const bookedNight = state.flags._private_night_day === state.day
+    || appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
   if (resting || bookedNight) return [];
   const next = pending.find(({ entry, ev }) => entry.deferredOn < state.day && ready(ev));
   return next ? [next.ev] : [];
