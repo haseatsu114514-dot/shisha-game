@@ -40,7 +40,7 @@ await suite("ch1-visual-quality", async check => {
             ? (time === "day" ? "朝。喉の奥が痛い。" : "店明かりの落ちた商店街")
             : place === "street"
               ? (time === "day" ? "また来たね" : "今夜、俺と共に")
-              : (time === "day" ? "はじめ、時間があるなら一台" : "大会まで、ちょうど折り返し");
+              : (time === "day" ? "はじめ、時間があるなら一台" : "大会まであと");
           await page.locator(".vn-text").filter({ hasText: text }).waitFor();
           await page.waitForFunction(() => Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99);
           assert.equal(await page.locator("#weather .weather-drop").count(), weather === "rain" ? (place === "street" ? 34 : result.windows.length * 5) : 0);
