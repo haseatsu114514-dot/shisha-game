@@ -1,0 +1,149 @@
+{
+  "base": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+  "encoding": {
+    "webpQuality": 62,
+    "method": 6,
+    "normalization": "Redrawn native 1672x941 -> 1920x1080 Lanczos; not native FHD"
+  },
+  "clearBeforeBytes": 384740,
+  "clearAfterBytes": 454630,
+  "allAfterBytes": 817302,
+  "assets": [
+    {
+      "id": "bg_street_day",
+      "scene": "商店街の配達・占い・夜の外出・帰り道",
+      "classification": "再生成・組み込み",
+      "files": {
+        "generated": {
+          "path": "asset_sources/ch1-visual-quality-issue360/set-a-street/generated/bg_street_day.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 2825652,
+          "sha256": "e446f98024224864a2d7b003d339704a478b8ee6db1666ddb68ba92d1ebf75d1"
+        },
+        "source": {
+          "path": "assets/backgrounds/bg_street_day.png",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 3380517,
+          "sha256": "3415e5ffc69077c5417351abdc46b802bde09fe9d3df9d752aeec067a57ba824"
+        },
+        "runtime": {
+          "path": "remake/img/backgrounds/bg_street_day.webp",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 246216,
+          "sha256": "dd16845d3479f0881eb35411271f4ff75992d1a22b8012b1d9a0ab8802fdacee"
+        }
+      }
+    },
+    {
+      "id": "bg_street_night",
+      "scene": "商店街の配達・占い・夜の外出・帰り道",
+      "classification": "再生成・組み込み",
+      "files": {
+        "generated": {
+          "path": "asset_sources/ch1-visual-quality-issue360/set-a-street/generated/bg_street_night.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 2623590,
+          "sha256": "2dc0027b9c430c79694f307eb191a6474b24e796e53e65650ca77404595cd559"
+        },
+        "source": {
+          "path": "assets/backgrounds/bg_street_night.png",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 3153555,
+          "sha256": "29424b48c8ba10982a6f5e88024687bab1c0901fbcc935332f407a00beb2cc63"
+        },
+        "runtime": {
+          "path": "remake/img/backgrounds/bg_street_night.webp",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 208414,
+          "sha256": "72baac085251afee7efefa00e8ad9885621b2982b685dfb1bf934d30f7b90755"
+        }
+      }
+    },
+    {
+      "id": "bg_street_overcast_day",
+      "scene": "商店街の配達・占い・夜の外出・帰り道",
+      "classification": "再生成・組み込み",
+      "files": {
+        "generated": {
+          "path": "asset_sources/ch1-visual-quality-issue360/set-a-street/generated/bg_street_overcast_day.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 2578712,
+          "sha256": "f3c973830a63fb13232fcc710114ba65d78197581995c0dc1f1391fe1727cb0e"
+        },
+        "source": {
+          "path": "assets/backgrounds/bg_street_overcast_day.png",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 3064355,
+          "sha256": "01844683168cf35b2608f8771beab35a91c30c1499bc2a427e982aeab4403ffa"
+        },
+        "runtime": {
+          "path": "remake/img/backgrounds/bg_street_overcast_day.webp",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 174924,
+          "sha256": "3602e2ab6186a3cda4d59ba3697d9988b98d3e3d51055c231df45aa7d407e6a2"
+        }
+      }
+    },
+    {
+      "id": "bg_street_overcast_night",
+      "scene": "商店街の配達・占い・夜の外出・帰り道",
+      "classification": "再生成・組み込み",
+      "files": {
+        "generated": {
+          "path": "asset_sources/ch1-visual-quality-issue360/set-a-street/generated/bg_street_overcast_night.png",
+          "size": [
+            1672,
+            941
+          ],
+          "bytes": 2485705,
+          "sha256": "79d39b48b7ed493ba3c48025f4cbc556d2ffa6ec1911aae75f80e737145d5d4d"
+        },
+        "source": {
+          "path": "assets/backgrounds/bg_street_overcast_night.png",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 2994647,
+          "sha256": "8676827bbd6eeb5564bbf7b95264dd31ca0dc66de207eb18977db213441964fa"
+        },
+        "runtime": {
+          "path": "remake/img/backgrounds/bg_street_overcast_night.webp",
+          "size": [
+            1920,
+            1080
+          ],
+          "bytes": 187748,
+          "sha256": "7ec08b83e5dd5a08fb70810912881fbff45da0f4a7d38a00515f68aa6098e2fe"
+        }
+      }
+    }
+  ]
+}
