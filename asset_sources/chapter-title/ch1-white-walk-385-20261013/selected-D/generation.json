@@ -1,0 +1,65 @@
+{
+  "owner_direction": "Dを選定。画像生成で、参考画像のように正式ゲーム名も加える追加依頼。",
+  "status": "review-only selected D refinement; no runtime adoption or merge",
+  "tool": "built-in image_gen",
+  "source_original": "originals/D-selected-plate-v1.png",
+  "original_sha256": "23bc3aa97ecae55e6a67192545662c4b64094565629d2d63aa1761e09939cfdf",
+  "generation_prompt": "prompts/D-selected-plate-v1.txt",
+  "image_reference_roles": [
+    {
+      "path": "titles/D.png",
+      "sha256": "fa57c2fb8084be91264302fb2dc7c5415acb788aadd5cd27b3010f04592c3d54",
+      "role": "selected order and composition"
+    },
+    {
+      "path": "review/identity-comparison.png",
+      "sha256": "ad00a746cc8d44a21314ef23930ba273f785e08b1f30b6390dcba50c2c62bd93",
+      "role": "adopted identities and established walking poses"
+    },
+    {
+      "path": "references/composition-only.png",
+      "sha256": "4af76b8900afaec20ccbc3df3a24054e288ca5eb86cb3f25832f2941d2d1e80e",
+      "role": "user attachment, white composition and title hierarchy only; never identity"
+    }
+  ],
+  "text": [
+    "水煙前線 -EN:CODE-",
+    "CHAPTER 1",
+    "煙がつなぐ街",
+    "Smoke & Ties"
+  ],
+  "title_authorities": [
+    "README.md",
+    "remake/index.html",
+    "remake/js/scenes/title.js",
+    "Issue #445"
+  ],
+  "order_left_to_right": [
+    "minto",
+    "adam",
+    "naru",
+    "tsumugi",
+    "sumi",
+    "hajime"
+  ],
+  "canvas": [
+    1280,
+    720
+  ],
+  "native_crop": [
+    4,
+    2,
+    1664,
+    936
+  ],
+  "layers": {
+    "art": "selected-D/art-plate.png",
+    "type": "selected-D/type.png"
+  },
+  "final_sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972",
+  "note": "A〜Fは同じ6枚の固定素材で作った比較案として保持。本追加Dはその構図をもとに画像生成で仕上げた別プレート。元の6人の独立RGBA素材と旧レイヤーも保持。追加プレートの白背景と人物は一枚で、文字のみ別レイヤー。",
+  "typography_default": "02",
+  "typography_record": "selected-D/typography/studies.json",
+  "art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+  "typography_revision": "英字・記号と副題をベースライン基準へ変更。作品名の日欧文字を別ブロックで整列。章題に大小・高さ・字間の意図的な差を付けた3案。人物と背景は画素不変。"
+}

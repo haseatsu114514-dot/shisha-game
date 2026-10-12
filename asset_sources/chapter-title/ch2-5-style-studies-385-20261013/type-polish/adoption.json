@@ -1,0 +1,52 @@
+{
+  "approval_date": "2026-10-13",
+  "timezone": "Asia/Tokyo",
+  "authorization": "いいね　これでいく　マージして",
+  "reviewed_source_commit": "87b855e463758bc1c1772f44eb3e89cf5fe405c2",
+  "pr": "https://github.com/haseatsu114514-dot/shisha-game/pull/462",
+  "status": "user-approved chapter-title still images",
+  "runtime_integrated": false,
+  "chapter1_walk_animation_produced": false,
+  "selected_images": [
+    {
+      "chapter": 1,
+      "title": "煙がつなぐ街",
+      "path": "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png",
+      "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972",
+      "variant": "selected-D typography 02",
+      "palette": "white / walking pixel art"
+    },
+    {
+      "chapter": 2,
+      "title": "才能の壁",
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch2.png",
+      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61",
+      "variant": "ch2-02-horizontal",
+      "palette": "pink / deep shadows, selected C"
+    },
+    {
+      "chapter": 3,
+      "title": "虚ろな王冠",
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch3.png",
+      "sha256": "15068735e34b21a52987c6fdfa1c94b0efa7a3bd60b96267a2e328e13f164574",
+      "variant": "ch3-01-rain-mincho",
+      "palette": "silver grey / worn antique gold"
+    },
+    {
+      "chapter": 4,
+      "title": "継承の煙",
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch4.png",
+      "sha256": "1b758ddeec7a531ebe56f386044ecb5c2358223281ee025b07c6f224e826cf79",
+      "variant": "ch4-02-modern-legacy",
+      "palette": "desert sunset / turquoise"
+    },
+    {
+      "chapter": 5,
+      "title": "機械仕掛けの神",
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch5.png",
+      "sha256": "f0bb477424c4d486cbacf1acf926643cb3d8d559d5a402a0e57188e5bed11656",
+      "variant": "ch5-02-platinum-brush",
+      "palette": "violet / chrome"
+    }
+  ]
+}

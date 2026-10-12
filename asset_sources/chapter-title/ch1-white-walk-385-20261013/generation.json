@@ -1,0 +1,859 @@
+{
+  "canvas": [
+    1280,
+    720
+  ],
+  "base_commit": "f5bf90859d559fbfd42a98fe58b8f2439a0b195d",
+  "tool": "built-in image_gen",
+  "adoption_status": "review candidates only; not adopted into runtime",
+  "master_grid_max_height": 156,
+  "sprites": [
+    {
+      "id": "hajime",
+      "selected_original": "originals/hajime-v1.png",
+      "original_sha256": "ba2adcadac5a12c3c4c8d0786f0420c1cde0ce77a55f69e4318088f91deee365",
+      "original_size": [
+        1084,
+        1451
+      ],
+      "trim_bbox_alpha_gt_32": [
+        262,
+        119,
+        896,
+        1371
+      ],
+      "sprite_path": "sprites/hajime-walk-right.png",
+      "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+      "sprite_size": [
+        82,
+        155
+      ],
+      "content_size": [
+        74,
+        147
+      ],
+      "prompt": "prompts/hajime-v1.txt",
+      "image_reference_paths": [
+        "references/hajime-adopted-normal.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "identity_source_sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "id": "sumi",
+      "selected_original": "originals/sumi-v1.png",
+      "original_sha256": "2dffd998ebcbe48229ab3a3dbb2157966193306dddb801f04695d15db565b31f",
+      "original_size": [
+        1003,
+        1568
+      ],
+      "trim_bbox_alpha_gt_32": [
+        184,
+        116,
+        873,
+        1452
+      ],
+      "sprite_path": "sprites/sumi-walk-right.png",
+      "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+      "sprite_size": [
+        88,
+        164
+      ],
+      "content_size": [
+        80,
+        156
+      ],
+      "prompt": "prompts/sumi-v1.txt",
+      "image_reference_paths": [
+        "references/sumi-adopted-normal.png",
+        "originals/hajime-v1.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "identity_source_sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5"
+    },
+    {
+      "id": "tsumugi",
+      "selected_original": "originals/tsumugi-v1.png",
+      "original_sha256": "5bef78fb04768a0a01cb687302b0a03f870e75ae3cbeb5d00daebe2102a9fca8",
+      "original_size": [
+        1084,
+        1451
+      ],
+      "trim_bbox_alpha_gt_32": [
+        290,
+        194,
+        868,
+        1338
+      ],
+      "sprite_path": "sprites/tsumugi-walk-right.png",
+      "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+      "sprite_size": [
+        74,
+        138
+      ],
+      "content_size": [
+        66,
+        130
+      ],
+      "prompt": "prompts/tsumugi-v1.txt",
+      "image_reference_paths": [
+        "references/tsumugi-adopted-normal.png",
+        "originals/hajime-v1.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "identity_source_sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4"
+    },
+    {
+      "id": "naru",
+      "selected_original": "originals/naru-v1.png",
+      "original_sha256": "9dd0d49678154fd6bccb992e8839893622780c41643f6aacb45746e81e9e6a60",
+      "original_size": [
+        1084,
+        1451
+      ],
+      "trim_bbox_alpha_gt_32": [
+        252,
+        113,
+        943,
+        1346
+      ],
+      "sprite_path": "sprites/naru-walk-right.png",
+      "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+      "sprite_size": [
+        93,
+        159
+      ],
+      "content_size": [
+        85,
+        151
+      ],
+      "prompt": "prompts/naru-v1.txt",
+      "image_reference_paths": [
+        "references/naru-adopted-normal.png",
+        "originals/hajime-v1.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "identity_source_sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577"
+    },
+    {
+      "id": "adam",
+      "selected_original": "originals/adam-v1.png",
+      "original_sha256": "c785670dd4d9323cc7bf991385bfcb5260731f1bb136e0fd455169aa80998384",
+      "original_size": [
+        1084,
+        1451
+      ],
+      "trim_bbox_alpha_gt_32": [
+        225,
+        127,
+        906,
+        1345
+      ],
+      "sprite_path": "sprites/adam-walk-right.png",
+      "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+      "sprite_size": [
+        94,
+        161
+      ],
+      "content_size": [
+        86,
+        153
+      ],
+      "prompt": "prompts/adam-v1.txt",
+      "image_reference_paths": [
+        "references/adam-adopted-normal.png",
+        "originals/hajime-v1.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "identity_source_sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+    },
+    {
+      "id": "minto",
+      "selected_original": "originals/minto-v2.png",
+      "original_sha256": "c0818cf1465cd5583830522198c7e997b22036ded1cbaff264bf2f6f5a836c5d",
+      "original_size": [
+        1084,
+        1451
+      ],
+      "trim_bbox_alpha_gt_32": [
+        348,
+        158,
+        847,
+        1337
+      ],
+      "sprite_path": "sprites/minto-walk-right.png",
+      "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+      "sprite_size": [
+        65,
+        142
+      ],
+      "content_size": [
+        57,
+        134
+      ],
+      "prompt": "prompts/minto-v2.txt",
+      "image_reference_paths": [
+        "originals/minto-v1.png",
+        "references/minto-adopted-normal.png"
+      ],
+      "identity_source_path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "identity_source_sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    }
+  ],
+  "layouts": [
+    {
+      "id": "A",
+      "layout": "余白重視",
+      "order_number": 1,
+      "order_left_to_right": [
+        "minto",
+        "adam",
+        "naru",
+        "tsumugi",
+        "sumi",
+        "hajime"
+      ],
+      "order_names": [
+        "みんと",
+        "アダム",
+        "なる",
+        "つむぎ",
+        "スミさん",
+        "はじめ"
+      ],
+      "intent": "主人公が先頭。師匠とつむぎが近くに続く。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/A.png",
+      "placements": [
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 241,
+          "y": 449,
+          "width": 76,
+          "height": 179,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 304.5
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 357,
+          "y": 424,
+          "width": 115,
+          "height": 204,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 420.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 512,
+          "y": 427,
+          "width": 113,
+          "height": 201,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 604.5
+        },
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 665,
+          "y": 455,
+          "width": 88,
+          "height": 173,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 716.0
+        },
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 793,
+          "y": 420,
+          "width": 107,
+          "height": 208,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 854.0
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 940,
+          "y": 432,
+          "width": 99,
+          "height": 196,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 999.0
+        }
+      ],
+      "row_width": 798,
+      "gap": 40,
+      "ground_y": 628,
+      "title_y": 110,
+      "background": "#ffffff"
+    },
+    {
+      "id": "B",
+      "layout": "余白重視",
+      "order_number": 2,
+      "order_left_to_right": [
+        "sumi",
+        "tsumugi",
+        "minto",
+        "adam",
+        "naru",
+        "hajime"
+      ],
+      "order_names": [
+        "スミさん",
+        "つむぎ",
+        "みんと",
+        "アダム",
+        "なる",
+        "はじめ"
+      ],
+      "intent": "はじめとなるを前方で隣接させ、好敵手との関係を見せる。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/B.png",
+      "placements": [
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 241,
+          "y": 420,
+          "width": 107,
+          "height": 208,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 302.0
+        },
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 388,
+          "y": 455,
+          "width": 88,
+          "height": 173,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 439.0
+        },
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 516,
+          "y": 449,
+          "width": 76,
+          "height": 179,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 579.5
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 632,
+          "y": 424,
+          "width": 115,
+          "height": 204,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 695.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 787,
+          "y": 427,
+          "width": 113,
+          "height": 201,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 879.5
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 940,
+          "y": 432,
+          "width": 99,
+          "height": 196,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 999.0
+        }
+      ],
+      "row_width": 798,
+      "gap": 40,
+      "ground_y": 628,
+      "title_y": 110,
+      "background": "#ffffff"
+    },
+    {
+      "id": "C",
+      "layout": "余白重視",
+      "order_number": 3,
+      "order_left_to_right": [
+        "tsumugi",
+        "sumi",
+        "hajime",
+        "minto",
+        "adam",
+        "naru"
+      ],
+      "order_names": [
+        "つむぎ",
+        "スミさん",
+        "はじめ",
+        "みんと",
+        "アダム",
+        "なる"
+      ],
+      "intent": "日常から主人公、大会へ。なるを進行方向の先頭に置く。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/C.png",
+      "placements": [
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 241,
+          "y": 455,
+          "width": 88,
+          "height": 173,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 292.0
+        },
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 369,
+          "y": 420,
+          "width": 107,
+          "height": 208,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 430.0
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 516,
+          "y": 432,
+          "width": 99,
+          "height": 196,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 575.0
+        },
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 655,
+          "y": 449,
+          "width": 76,
+          "height": 179,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 718.5
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 771,
+          "y": 424,
+          "width": 115,
+          "height": 204,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 834.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 926,
+          "y": 427,
+          "width": 113,
+          "height": 201,
+          "uniform_scale": 1.3333333333333333,
+          "ground_y": 628,
+          "support_x": 1018.5
+        }
+      ],
+      "row_width": 798,
+      "gap": 40,
+      "ground_y": 628,
+      "title_y": 110,
+      "background": "#ffffff"
+    },
+    {
+      "id": "D",
+      "layout": "人物重視",
+      "order_number": 1,
+      "order_left_to_right": [
+        "minto",
+        "adam",
+        "naru",
+        "tsumugi",
+        "sumi",
+        "hajime"
+      ],
+      "order_names": [
+        "みんと",
+        "アダム",
+        "なる",
+        "つむぎ",
+        "スミさん",
+        "はじめ"
+      ],
+      "intent": "主人公が先頭。師匠とつむぎが近くに続く。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/D.png",
+      "placements": [
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 114,
+          "y": 386,
+          "width": 114,
+          "height": 268,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 209.0
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 259,
+          "y": 348,
+          "width": 172,
+          "height": 306,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 353.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 462,
+          "y": 352,
+          "width": 170,
+          "height": 302,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 601.0
+        },
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 663,
+          "y": 394,
+          "width": 132,
+          "height": 260,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 739.0
+        },
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 826,
+          "y": 342,
+          "width": 160,
+          "height": 312,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 917.0
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 1017,
+          "y": 360,
+          "width": 148,
+          "height": 294,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 1105.0
+        }
+      ],
+      "row_width": 1051,
+      "gap": 31,
+      "ground_y": 654,
+      "title_y": 94,
+      "background": "#ffffff"
+    },
+    {
+      "id": "E",
+      "layout": "人物重視",
+      "order_number": 2,
+      "order_left_to_right": [
+        "sumi",
+        "tsumugi",
+        "minto",
+        "adam",
+        "naru",
+        "hajime"
+      ],
+      "order_names": [
+        "スミさん",
+        "つむぎ",
+        "みんと",
+        "アダム",
+        "なる",
+        "はじめ"
+      ],
+      "intent": "はじめとなるを前方で隣接させ、好敵手との関係を見せる。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/E.png",
+      "placements": [
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 114,
+          "y": 342,
+          "width": 160,
+          "height": 312,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 205.0
+        },
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 305,
+          "y": 394,
+          "width": 132,
+          "height": 260,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 381.0
+        },
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 468,
+          "y": 386,
+          "width": 114,
+          "height": 268,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 563.0
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 613,
+          "y": 348,
+          "width": 172,
+          "height": 306,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 707.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 816,
+          "y": 352,
+          "width": 170,
+          "height": 302,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 955.0
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 1017,
+          "y": 360,
+          "width": 148,
+          "height": 294,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 1105.0
+        }
+      ],
+      "row_width": 1051,
+      "gap": 31,
+      "ground_y": 654,
+      "title_y": 94,
+      "background": "#ffffff"
+    },
+    {
+      "id": "F",
+      "layout": "人物重視",
+      "order_number": 3,
+      "order_left_to_right": [
+        "tsumugi",
+        "sumi",
+        "hajime",
+        "minto",
+        "adam",
+        "naru"
+      ],
+      "order_names": [
+        "つむぎ",
+        "スミさん",
+        "はじめ",
+        "みんと",
+        "アダム",
+        "なる"
+      ],
+      "intent": "日常から主人公、大会へ。なるを進行方向の先頭に置く。",
+      "title_text": [
+        "CHAPTER 1",
+        "煙がつなぐ街"
+      ],
+      "png": "titles/F.png",
+      "placements": [
+        {
+          "id": "tsumugi",
+          "sprite_path": "sprites/tsumugi-walk-right.png",
+          "sprite_sha256": "9922e3ca28c4cd14b268ce13e835f09901ebb4ebbd33b370acbbcb862df93227",
+          "x": 114,
+          "y": 394,
+          "width": 132,
+          "height": 260,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 190.0
+        },
+        {
+          "id": "sumi",
+          "sprite_path": "sprites/sumi-walk-right.png",
+          "sprite_sha256": "3e4000745901be2ec4e9e98884e891830da0fa8c9c88e78672bf23abdd324294",
+          "x": 277,
+          "y": 342,
+          "width": 160,
+          "height": 312,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 368.0
+        },
+        {
+          "id": "hajime",
+          "sprite_path": "sprites/hajime-walk-right.png",
+          "sprite_sha256": "8207ccfd0e6dafde3dbe0b7557725ebc232a8bbfe1387e8f41aff6847f429991",
+          "x": 468,
+          "y": 360,
+          "width": 148,
+          "height": 294,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 556.0
+        },
+        {
+          "id": "minto",
+          "sprite_path": "sprites/minto-walk-right.png",
+          "sprite_sha256": "7c8ca127eac1e2dfe00c809af25636481494fd5d21bda36edae89e8a60d7dfb3",
+          "x": 647,
+          "y": 386,
+          "width": 114,
+          "height": 268,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 742.0
+        },
+        {
+          "id": "adam",
+          "sprite_path": "sprites/adam-walk-right.png",
+          "sprite_sha256": "47acfd1f1a16e16352ce179e3c996a072c120c2269d8b751f1435e3bf478c560",
+          "x": 792,
+          "y": 348,
+          "width": 172,
+          "height": 306,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 886.0
+        },
+        {
+          "id": "naru",
+          "sprite_path": "sprites/naru-walk-right.png",
+          "sprite_sha256": "4d029cfaaca67b9cd238832a5b96bda11e46c2e3b7fd41bbad4e49d6356a87d5",
+          "x": 995,
+          "y": 352,
+          "width": 170,
+          "height": 302,
+          "uniform_scale": 2,
+          "ground_y": 654,
+          "support_x": 1134.0
+        }
+      ],
+      "row_width": 1051,
+      "gap": 31,
+      "ground_y": 654,
+      "title_y": 94,
+      "background": "#ffffff"
+    }
+  ],
+  "font_rendering": {
+    "english": "Times New Roman regular 20px, tracking 5px",
+    "japanese": "Hiragino Mincho ProN regular 72px, tracking 6px",
+    "font_files_distributed": false,
+    "text_layer": "RGBA PNG, separate from people and background"
+  },
+  "revision_history": [
+    {
+      "id": "minto-v1",
+      "status": "rejected for title study",
+      "reason": "raised heels differed from adopted platform footwear"
+    },
+    {
+      "id": "minto-v2",
+      "status": "selected for study",
+      "change": "flatter chunky platform soles and shorter stride"
+    }
+  ]
+}
