@@ -6,6 +6,7 @@ import { DB, img, portraitInfo } from "../core/data.js";
 const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反対", "カルダモンが絶滅", "まだ終わってねえ", "お前と勝ちてえ", "勝手に", "ちょっと待て", "ずっと、見てますから", "何枚も何枚も", "もう一回だけ", "ぎゅってする", "次の香り", "ワンチャン", "コンティニュー", "王命じゃ", "もう一度見たい", "もう一台", "はじめのシーシャ", "諦める"];
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
+const HEAD_PADDING = 24;
 
 export function createContinueView({ script, speaker, character, premium, layout = "neon", background = "stage", onType = null }) {
   const neon = layout === "neon";
@@ -22,9 +23,10 @@ export function createContinueView({ script, speaker, character, premium, layout
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
     const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
     const height = FACE_PX / (framing?.size || info.h * .2), width = height * info.aspect;
-    const top = framing?.top ?? 1 - info.h - info.b;
+    // 顔アイコンの上端は髪/帽子の上端と異なる。全表情の人物bboxを基準に頭を枠内へ収める。
+    const top = 1 - info.h - info.b;
     Object.assign(image.style, { height: `${height}px`, width: `${width}px`,
-      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${-top * height}px` });
+      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${HEAD_PADDING - top * height}px` });
   }
   framePortrait(portrait);
   const caption = el("p.go-speech-text", { "aria-hidden": "true" });
@@ -39,11 +41,15 @@ export function createContinueView({ script, speaker, character, premium, layout
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
   const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "大会に戻る", dataset: { test: "retry" } },
-    [...(neon ? [el("img.go-choice-frame", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })] : []),
+    [...(neon ? choiceFrames() : []),
       el("span.go-choice-label", { text: topActions ? "する" : "大会に戻る" })]);
   const quit = el("button.go-choice.go-quit", { type: "button", dataset: { test: "game-over-title" } },
-    [...(neon ? [el("img.go-choice-frame", { src: art("neon_quit_frame"), alt: "", "aria-hidden": "true", draggable: "false" })] : []),
+    [...(neon ? choiceFrames() : []),
       el("span.go-choice-label", { text: "諦める" })]);
+  function choiceFrames() {
+    return [el("img.go-choice-frame", { src: art("neon_quit_frame"), alt: "", "aria-hidden": "true", draggable: "false" }),
+      el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];
+  }
   const actions = el("div.end-actions", [retry, quit]);
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
   const heading = neon ? "コンティニューする？" : "コンティニュー？";
