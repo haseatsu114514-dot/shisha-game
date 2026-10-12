@@ -49,8 +49,9 @@ await suite("full-day-rest", async check => {
       await page.evaluate(() => { const s = R.fresh(2, 0, 10); delete s.flags._ev_salaryman; R.run(); });
       await mapAt(page, 2, 0); await goHome(page, touch);
       await page.locator('[data-test="rest-full"]').waitFor();
+      await page.getByText(/今は昼。残り2枠/).waitFor();
       await assertFits(page, ".rest-modal, .rest-modal .btn");
-      await page.screenshot({ path: path.join(artifacts, `full-day-rest-${label}-rest-dialog.png`) });
+      await page.screenshot({ path: path.join(artifacts, `full-day-rest-${label}-rest-dialog.png`), animations: "disabled" });
       const before = await page.evaluate(() => ({ day: R.core.state.day, slot: R.core.state.slot, stamina: R.core.state.stamina }));
       assert.deepEqual(before, { day: 2, slot: 0, stamina: 10 });
       await page.locator('[data-test="rest-cancel"]').click(); await mapAt(page, 2, 0);
@@ -84,6 +85,7 @@ await suite("full-day-rest", async check => {
       await page.evaluate(() => { const s = R.fresh(9, 1, 10); delete s.flags._ev_meet_rivals; R.run(); });
       await mapAt(page, 9, 1); await goHome(page, touch);
       await page.locator('[data-test="rest-full"]').waitFor();
+      await page.getByText(/今は夜。残り1枠/).waitFor();
       await page.getByText(/今日の予定：出場者説明会には参加/).waitFor();
       await assertFits(page, ".rest-modal, .rest-modal .btn");
       await page.locator('[data-test="rest-full"]').click(); await mapAt(page, 10, 0);

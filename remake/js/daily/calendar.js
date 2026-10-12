@@ -343,7 +343,7 @@ async function performSpotAction(spot) {
       const plan = nightPlan(chapterDef.nightEvents, { resting: true });
       const booked = state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1;
       const choice = await modal({ title: "家で休む", className: "rest-modal",
-        body: `残りの自由時間を休養に使えます。通常の夜の予定は後日へ。<br>${plan.length ? `今日の予定：${plan.map(ev => ev.label || "大切な予定").join("・")}には参加します。<br>` : ""}${booked ? `${displayName(state.pendingInvite.sender, state)}との今夜のLIMEの約束には参加します。<br>` : ""}回復は1枠につき体力+${spot.stamina}（上限まで）。`,
+        body: `今は${state.slot === 0 ? "昼" : "夜"}。残り${2 - state.slot}枠${booked ? "のうち夜は約束へ、それ以外" : ""}を休養に使えます。通常の夜の予定は後日へ。<br>${plan.length ? `今日の予定：${plan.map(ev => ev.label || "大切な予定").join("・")}には参加します。<br>` : ""}${booked ? `${displayName(state.pendingInvite.sender, state)}との今夜のLIMEの約束には参加します。<br>` : ""}回復は1枠につき体力+${spot.stamina}（上限まで）。`,
         options: [{ label: "半日休む（1行動）", value: "half", test: "rest-half" },
           { label: "今日は残りを全部休む", value: "full", test: "rest-full", primary: true },
           { label: "戻る", value: null, test: "rest-cancel" }] });
