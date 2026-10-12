@@ -20,7 +20,7 @@ import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
-import { newSession, openBench, tickerSay, waitBenchReady } from "../craft/session.js";
+import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
@@ -31,6 +31,7 @@ import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
+import { chooseDrill } from "../daily/tonari.js";
 import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
@@ -62,13 +63,10 @@ export function setupHooks() {
       addMoney(-4000);
       setFlag("_gym_member");
     }
-    // 大会前夜の過ごし方（練習=本番に小ボーナス／スミさん=根性／早寝=体力全快）
+    // 選択だけを保存する。報酬・補正・読了は、実際の練習/会話を終えてから。
     if (dialogueId === "ch1_day7_last_night") {
-      state.flags._last_night = branch;
-      if (branch === "sleep_early") {
-        addStamina(maxStamina() - state.stamina);
-        state.flags._home_tonight = true; // 自室で寝た後に帰り道を重ねない。
-      }
+      state.flags._ch1_eve = { choice: branch };
+      save();
     }
   };
 }
@@ -184,17 +182,48 @@ export const NIGHT_EVENTS = {
       await playTsumugiStory(11, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
       setFlag("_ev_tsumugi_sketch");
     } },
-  [TOURNAMENT_DAY - 1]: { id: "_ev_rehearsal", doneKeys: ["_ev_rehearsal", "_ev_last_night", "_tsumugi_contest_eve"], label: "大会前夜のリハーサル", pin: "tonari", teaser: "tonari", beat: "夜。最後の確認をしにtonariへ。店の作業台で、前日リハーサル──",
-    done: () => flag("_ev_rehearsal") && flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
+  [TOURNAMENT_DAY - 1]: { id: "_ev_rehearsal", doneKeys: ["_ev_last_night", "_tsumugi_contest_eve"], label: "大会前夜", pin: "tonari", teaser: "tonari", beat: "夜。大会前夜のtonariへ。今夜の過ごし方を考える──",
+    done: () => flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
     run: async () => {
       await playTsumugiStory(TOURNAMENT_DAY - 1);
-      if (!flag("_ev_rehearsal")) await once("_ev_rehearsal", rehearsal).run();
       await lastNight();
     } },
 };
 
 async function lastNight() {
-  if (!flag("_ev_last_night")) await once("_ev_last_night", nightScene("ch1_day7_last_night", BG("bg_home_night"))).run();
+  // 旧セーブの読了は維持。通し練習がなくても、過ごし方を終えた夜へ戻さない。
+  if (flag("_ev_last_night")) return;
+  const dialogue = DB.dialogues.ch1_day7_last_night;
+  if (!state.flags._ch1_eve?.choice) {
+    // 既存のVN選択を使い、分岐会話は実作業の後に読む。
+    await play({ ...dialogue, branches: {} }, { bg: TONARI_N });
+  }
+  const progress = state.flags._ch1_eve;
+  if (progress.choice === "practice") await rehearsal(progress);
+  if (progress.choice === "drill" && !progress.practiceDone) {
+    if (!progress.drill) { progress.drill = await chooseDrill(); save(); }
+    beginEvePractice(progress);
+    const tier = await runDrill(progress.drill);
+    state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
+    progress.practiceDone = true;
+    save();
+  }
+  // 報酬キューは分岐の末尾でVNが一度だけ適用する（コード側では加算しない）。
+  await play({ dialogue_id: `${dialogue.dialogue_id}_${progress.choice}`, lines: dialogue.branches[progress.choice] }, { bg: TONARI_N });
+  state.flags._last_night = progress.choice;
+  if (progress.choice === "sleep_early") {
+    addStamina(maxStamina() - state.stamina);
+    state.flags._home_tonight = true;
+  }
+  setFlag("_ev_last_night");
+  save();
+}
+
+function beginEvePractice(progress) {
+  // 中断した制作は初めから。保存途中の消耗を重ねず、完了済みの制作は呼ばない。
+  progress.staminaBefore ??= state.stamina;
+  state.stamina = progress.staminaBefore;
+  save();
 }
 
 async function earlyPractice() {
@@ -211,19 +240,32 @@ async function midPreparation() {
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
-async function rehearsal() {
-  await prepareFlavorStock();
-  await play("remake_rehearsal_intro", { bg: TONARI_N });
-  const cs = await runFullPractice({ kind: "rehearsal" });
-  if (cs.failed) {
-    state.rehearsal = "rough";
-    await play("remake_rehearsal_burnt", { bg: TONARI_N });
-    return;
+async function rehearsal(progress = null) {
+  // 旧 _ev_rehearsal は実制作・結果会話まで完了済み。二台目を強制しない。
+  if (progress && flag("_ev_rehearsal") && !progress.practiceDone) return;
+  let result = progress?.result;
+  if (!progress?.practiceDone) {
+    await prepareFlavorStock();
+    await play("remake_rehearsal_intro", { bg: TONARI_N });
+    if (progress) beginEvePractice(progress);
+    const cs = await runFullPractice({ kind: "rehearsal" });
+    if (cs.failed) {
+      state.rehearsal = "rough";
+      result = "burnt";
+    } else {
+      const shisha = computeShisha(cs);
+      const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
+      result = state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
+    }
+    if (progress) {
+      Object.assign(progress, { practiceDone: true, result });
+      setFlag("_ev_rehearsal"); // 実制作の記録。会話・睡眠・ドリルでは立てない。
+      save();
+    }
   }
-  const shisha = computeShisha(cs);
-  const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
-  state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
-  await play(`remake_rehearsal_${state.rehearsal}`, { bg: TONARI_N });
+  if (progress?.feedbackRead) return;
+  await play(`remake_rehearsal_${result}`, { bg: TONARI_N });
+  if (progress) { progress.feedbackRead = true; save(); }
 }
 
 // ---------------------------------------------------------------- 大会当日
