@@ -43,9 +43,9 @@
         1080
       ],
       "beforeBytes": 304414,
-      "afterBytes": 176198,
-      "sourceSha256": "b24c065b7da064f3f984add788445ae341c0861224ed308a91b63acb169afd52",
-      "runtimeSha256": "f284ccafdbac14c6dd700dfccacaff755c8b6f485d1f7c2b6a0e8307a6cf55fa"
+      "afterBytes": 157318,
+      "sourceSha256": "de9d99fae8454a83ffc4a0c2cf2652b44262feab1bb1de10465eabfc51b9bd5a",
+      "runtimeSha256": "6fd01452a0a6abdfc81a5418157346c37436fe92f49c6fb06f65a90781510744"
     },
     {
       "id": "bg_shop",
@@ -58,9 +58,9 @@
         1080
       ],
       "beforeBytes": 181570,
-      "afterBytes": 179796,
-      "sourceSha256": "e55580dc4e104946a410da20554d9d3b15a53d34abf0387407ac34119bec0a4c",
-      "runtimeSha256": "490015cb0d00db1007bafc40d40a20f5bdc4d520a9c17a3aafca39d98d9bba1f"
+      "afterBytes": 176036,
+      "sourceSha256": "ea52b3cd8e049ef2b87455676719af04dd8db12295017371a6d85364526c256a",
+      "runtimeSha256": "8758dcc29dfe04a87b92a7e053cfa593108f8e3f079c7f4f0662ac7a83668ffe"
     },
     {
       "id": "kemurikusa",
@@ -73,9 +73,9 @@
         1080
       ],
       "beforeBytes": 316178,
-      "afterBytes": 168612,
-      "sourceSha256": "be509283c833035ea45275d68359621c699b39c7c5dd155e8a2fb84bbd6b6d30",
-      "runtimeSha256": "163b6c411031847f07d84af9f684664f9d6211702be4b916cf72da9baaf0631f"
+      "afterBytes": 137796,
+      "sourceSha256": "fc9286709f93cf0ff475aa008d52c861c6ba8b32e80edc6739703ea5b463262e",
+      "runtimeSha256": "64713cc82a392a21482896e6b5ce06faa28ba003adf5c7aeaf1d47bedf27021b"
     },
     {
       "id": "peppermint",
@@ -88,9 +88,9 @@
         1080
       ],
       "beforeBytes": 132060,
-      "afterBytes": 133040,
-      "sourceSha256": "ff9747d0bcad3fe562c10a9d30e8b5f1172838a31e094312f6ecb8aa177b54bc",
-      "runtimeSha256": "8f6733c8e1e7e6a8ed36f4adae16bfc10c848de794398289b56d80838fd6891c"
+      "afterBytes": 140766,
+      "sourceSha256": "47829d62ec1c6f246273f31b19904d135dbf80abcbe00a5bd754b223f3f78a7d",
+      "runtimeSha256": "c53a3988356e113da26d01022698dbcd5f931bdcc7d5f470ff20d96b5162eb4a"
     },
     {
       "id": "bg_tournament_stage",
@@ -103,9 +103,9 @@
         1080
       ],
       "beforeBytes": 122962,
-      "afterBytes": 158676,
-      "sourceSha256": "1a989aa63322db22098e95c795f2aec984c53566f58ab5686b5513e3a6b500b8",
-      "runtimeSha256": "259f16ee9819f052054ce3b63de16186604de87b4c4587c52adbcb18fe2b9d92"
+      "afterBytes": 161380,
+      "sourceSha256": "5712add473bc25449ea5a589b56c35fa3c00888323e291c348fd70c287572011",
+      "runtimeSha256": "f8d3f35d5f84ecf4746025c48b4ac9716c3385d91fcc4e3a041fc603975406a6"
     },
     {
       "id": "bg_c_station_overcast_day",

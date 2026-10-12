@@ -1,5 +1,5 @@
 {
-  "utc": "2026-10-12T15:05:20.391041+00:00",
+  "utc": "2026-10-12T15:38:26.733139+00:00",
   "baseURL": "http://127.0.0.1:8360/remake/",
   "visual": {
     "name": "ch1-facility-art",
@@ -147,5 +147,6 @@
   "manifestOtherFields": "unchanged",
   "saveSchemaAndDialogue": "no edits",
   "reviewedHardware": "preparation samples: no bowls/HMD/coals/hoses; real product photo viewed and attached; external photos not redistributed",
-  "ci": "not yet run on this branch"
+  "ci": "pending new head checks; earlier B CI checked separately",
+  "ownerScale": "five adopted originals corrected; all trays retained; shallow tubs and small bare grommets inspected at full and enlarged scale"
 }
