@@ -1,0 +1,63 @@
+{
+  "reference_adoption": "オーナー指示で採用済み",
+  "issue": 396,
+  "claim_run": 38179756637,
+  "photos": [
+    {
+      "id": 1,
+      "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg",
+      "source": "作業者Eチャットへのオーナー提供写真（2026-10-11 UTC）",
+      "original_filename": "1-写真1.jpg",
+      "size": [
+        1200,
+        900
+      ],
+      "sha256": "02128730b85d7a2953592ee5caae9c151bc4e2875e1bb1c83138050e265665f1",
+      "modified": false,
+      "use": "構造・保管方法・葉の状態の制作参考。ゲームの配信画像に直接含めない。",
+      "rights_status": "オーナーが参考資料として保存・採用を依頼。撮影者・外部出典・商用再配布権は未確認。実在ブランドのラベル・文字・固有商品をCGへ模写しない。"
+    },
+    {
+      "id": 2,
+      "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/02-sealed-white-lid.jpg",
+      "source": "作業者Eチャットへのオーナー提供写真（2026-10-11 UTC）",
+      "original_filename": "2-写真2.jpg",
+      "size": [
+        800,
+        533
+      ],
+      "sha256": "2ca6c377795a358abf1da62eac90ebfbb4f187543102ce4f441d6c282b23d58f",
+      "modified": false,
+      "use": "構造・保管方法・葉の状態の制作参考。ゲームの配信画像に直接含めない。",
+      "rights_status": "オーナーが参考資料として保存・採用を依頼。撮影者・外部出典・商用再配布権は未確認。実在ブランドのラベル・文字・固有商品をCGへ模写しない。"
+    },
+    {
+      "id": 3,
+      "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/03-open-wet-leaves.jpg",
+      "source": "作業者Eチャットへのオーナー提供写真（2026-10-11 UTC）",
+      "original_filename": "3-写真3.jpg",
+      "size": [
+        1280,
+        960
+      ],
+      "sha256": "166f5b5d4b6d61db82a269dcf1b7cbfec94794ccc9b5c246b0fb7b397b44a5ca",
+      "modified": false,
+      "use": "構造・保管方法・葉の状態の制作参考。ゲームの配信画像に直接含めない。",
+      "rights_status": "オーナーが参考資料として保存・採用を依頼。撮影者・外部出典・商用再配布権は未確認。実在ブランドのラベル・文字・固有商品をCGへ模写しない。"
+    },
+    {
+      "id": 4,
+      "path": "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/04-stacked-shop-storage.jpg",
+      "source": "作業者Eチャットへのオーナー提供写真（2026-10-11 UTC）",
+      "original_filename": "4-写真4.jpg",
+      "size": [
+        233,
+        350
+      ],
+      "sha256": "5d2756d5f20617a06dca2ca60fafa53d5acbc076e48fbbe7c6dfad310e3e6a1c",
+      "modified": false,
+      "use": "構造・保管方法・葉の状態の制作参考。ゲームの配信画像に直接含めない。",
+      "rights_status": "オーナーが参考資料として保存・採用を依頼。撮影者・外部出典・商用再配布権は未確認。実在ブランドのラベル・文字・固有商品をCGへ模写しない。"
+    }
+  ]
+}
