@@ -2,7 +2,7 @@
 :root { color-scheme: dark; font-family: OvaDot, sans-serif; background: #080b10; color: #ede9df; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-.shell { width: min(100%, 1280px); min-height: 100svh; margin: auto; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 18px 20px; }
+.shell { width: min(100%, 1280px, calc((100svh - 154px) * 16 / 9 + 40px)); min-height: 100svh; margin: auto; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 18px 20px; }
 header { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; color: #c4b99f; }
 header small { font-size: .8em; }
 .screen { position: relative; aspect-ratio: 16/9; background: #05070a; overflow: hidden; }

@@ -5,10 +5,12 @@ const $ = id => document.getElementById(id);
 const canvas=$("canvas"), ctx=canvas.getContext("2d",{alpha:false}), images=new Map();
 const score=createScore(), reducedMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(new URLSearchParams(location.search).has("cinema"))document.body.classList.add("cinema");
-let ready=false, phase="loading", offset=0, epoch=0, muted=false, operation=0, lastCut="";
+let ready=false, phase="loading", offset=0, epoch=0, muted=false, operation=0, lastCut="", audioClock=false;
 const clamp = x => Math.max(0,Math.min(1,x));
 const smooth = x => {x=clamp(x);return x*x*(3-2*x);};
-const at = () => phase==="playing" ? Math.min(spec.duration,offset+(performance.now()-epoch)/1000) : offset;
+const at = () => phase==="playing"
+  ? Math.min(spec.duration,audioClock?score.state.position:offset+(performance.now()-epoch)/1000)
+  : offset;
 const font = size => size+'px "OvaDot"';
 const captionBoxes=[];
 function text(line,x,y,size,align="left",color="#f0ede4") {
@@ -84,7 +86,11 @@ async function play(from=at()) {
   offset=Math.max(0,Math.min(spec.duration,from));
   if(offset>=spec.duration)offset=0;
   $("start").disabled=true;$("replay").disabled=true;
-  try { await score.play(offset); } catch { /* 音声が使えなくても映像は進む。 */ }
+  audioClock=false;
+  try {
+    await score.play(offset);
+    audioClock=score.state.contextState==="running" && score.state.playing;
+  } catch { /* 音声が使えなくても映像は進む。 */ }
   if(ticket!==operation)return;
   epoch=performance.now();phase="playing";controls();
   $("start").disabled=false;$("replay").disabled=false;

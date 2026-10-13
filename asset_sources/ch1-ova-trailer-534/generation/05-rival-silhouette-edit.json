@@ -14,5 +14,7 @@
   "qa": {
     "pass": true,
     "notes": "植物・鉢がなくなり、髪・顔の秘匿・衣装・手とカーテン・照明を維持"
-  }
+  },
+  "source_main": "0614327",
+  "sha256": "87b746b8302eded6adaafa5a2d6c0b8f0e23c275a0bd46e422f69daedab06e48"
 }

@@ -1,0 +1,142 @@
+{
+  "output": "trailer/chapter-one-ova.mp4",
+  "url": "http://127.0.0.1:8123/asset_sources/ch1-ova-trailer-534/trailer/?cinema=1",
+  "frameCount": 2377,
+  "duration": 42.6309208984375,
+  "audioTrim": 0.8450791015625,
+  "audioContexts": 1,
+  "sampleRate": 48000,
+  "imageTimebase": "1/1000",
+  "clickInVideoSeconds": 0.837720947265625,
+  "errors": [],
+  "preload": {
+    "artworks": 6,
+    "durationMs": 40000,
+    "cuts": [
+      "city-night",
+      "sumi-teaches",
+      "sumi-rule",
+      "naru-invites",
+      "tsumugi-sketch",
+      "rival-silhouette",
+      "first-step",
+      "breath",
+      "chapter-title",
+      "question"
+    ]
+  },
+  "finalPageState": {
+    "phase": "ended",
+    "cut": "question",
+    "elapsedMs": 40000,
+    "ended": true,
+    "audio": {
+      "playing": false,
+      "muted": false,
+      "position": 40,
+      "voices": 0,
+      "contextState": "running"
+    }
+  },
+  "finalScreenshot": "qa/recording-end.png",
+  "visuals": [
+    {
+      "cut": "city-night",
+      "elapsedMs": 12,
+      "epochMs": 1791889132710.3,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "この街で、夢が動き出す。"
+    },
+    {
+      "cut": "sumi-teaches",
+      "elapsedMs": 4093,
+      "epochMs": 1791889136802.0999,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "スミ：技は盗め。"
+    },
+    {
+      "cut": "sumi-rule",
+      "elapsedMs": 8081,
+      "epochMs": 1791889140792.5,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "ただし、誰から盗んだかは忘れるな。"
+    },
+    {
+      "cut": "naru-invites",
+      "elapsedMs": 11082,
+      "epochMs": 1791889143792.5999,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "なる：うまくなりたいなら全部見てけ"
+    },
+    {
+      "cut": "tsumugi-sketch",
+      "elapsedMs": 16080,
+      "epochMs": 1791889148792.5,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "つむぎ：ここで過ごしてる時間を、\n１枚にしたいです"
+    },
+    {
+      "cut": "rival-silhouette",
+      "elapsedMs": 21580,
+      "epochMs": 1791889154292.5999,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": ""
+    },
+    {
+      "cut": "first-step",
+      "elapsedMs": 25080,
+      "epochMs": 1791889157792.5,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "初めての舞台が、待っている。"
+    },
+    {
+      "cut": "breath",
+      "elapsedMs": 30081,
+      "epochMs": 1791889162792.5,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": ""
+    },
+    {
+      "cut": "chapter-title",
+      "elapsedMs": 31080,
+      "epochMs": 1791889163792.5,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "第一章 煙がつなぐ街"
+    },
+    {
+      "cut": "question",
+      "elapsedMs": 35582,
+      "epochMs": 1791889168292.5999,
+      "canvasFits": true,
+      "captionsFit": true,
+      "caption": "あなたなら、何を込める？"
+    }
+  ],
+  "layoutFailures": [],
+  "storageUnchanged": true,
+  "recording_tool": "qa/record.mjs",
+  "source_files_sha256": {
+    "trailer/index.html": "2ffbaca29e98dab7a95e9bee5f202605cd7722b6aa95f7b1946b0830ee20c62d",
+    "trailer/player.js": "f59ff6d0c93a0cd5f10404c935733aa307d5b0d5e53bf018a3c64da1135c0ab6",
+    "trailer/score.js": "b87494d5d7a3f1852f381567aff53fab657b219da15a4a8ce08dfa989e41df58",
+    "trailer/style.css": "6ef92e0a222a145c62be4f2b013161d88fb91861e0797d272ecf0b228752c01f",
+    "trailer/timeline.js": "57e1ab221dff83be4e27a1993cd21845d6c55cea243c9b65ab8fbd3d36c3aa0d"
+  },
+  "source_art_sha256": {
+    "trailer/art/01-city-night.webp": "b5453f44fe976af93dffe23d78f41fea00e2090fc97f4a516e033cd1ad77ffe4",
+    "trailer/art/02-sumi-teaches.webp": "ca66d0030b5ed3edddea147a6e4877196ad565f0c4084e8f9595178930b2284d",
+    "trailer/art/03-naru-invites.webp": "d6ff6978c914154ccc4d81152f9dcc755ed60cf16a57456ac540525d99f7faf0",
+    "trailer/art/04-tsumugi-sketch.webp": "ba0dcaac62b5749e7316882536aa3a77d851a104802fbf3e9901bcb6a8e05348",
+    "trailer/art/05-rival-silhouette.webp": "6ca2d6be8ca25f17f445a5e4efae61bd85c5d6fe72986e1c7cab3517bc25a561",
+    "trailer/art/06-first-step.webp": "5989a8eb1c0a9209280148866c026189cecbb42a82ff656986c7b58b247299c2"
+  }
+}

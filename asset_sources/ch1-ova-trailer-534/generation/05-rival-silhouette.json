@@ -42,5 +42,9 @@
     "notes": "黒ロング・角/蝙蝠の髪アクセサリー・黒緑の衣装。背面で眼/鼻/口なし。普通の人間の縮尺、手がカーテンに接する。初稿の不要な植物を画像生成で除去。",
     "wordless": true,
     "plants": 0
-  }
+  },
+  "source_main": "0614327",
+  "original_output": "archive/05-rival-silhouette-first.png",
+  "original_sha256": "b603f33f80b82cacd9c5f96d4f7e3f21c5b2fc4711b0dfde2b42a78bc20f5e77",
+  "final_edit_record": "generation/05-rival-silhouette-edit.json"
 }
