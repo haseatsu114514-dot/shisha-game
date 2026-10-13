@@ -72,9 +72,9 @@ export const SPOTS = [
   { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     desc: "みんとに教えてもらったジム。街の人も汗を流す、気軽な寄り道先。" },
-  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
+  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
-    desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
+    desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
   // 会うまでは正体の分からない「？」の出店
   { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 78, theme: "park", glyph: "占", unknownGlyph: "？",
