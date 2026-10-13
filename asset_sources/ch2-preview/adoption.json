@@ -1,0 +1,82 @@
+{
+  "source_issue": 415,
+  "source_merge": "1b9439057c1c694d02d68e225d2eaf31e2c5bc10",
+  "request": "既存のみんとを含む90年代風サンプルをベースにする",
+  "encoding": "PNG to WebP quality90; no redraw, resize, crop or color filter",
+  "frame_policy": "16:9 source composition fully contained inside 4:3 TV frame",
+  "runtime_bytes": 881856,
+  "images": [
+    {
+      "id": "01-sumi-silence",
+      "source": "asset_sources/trailer-90s-anime-concept/images/01-sumi-silence.png",
+      "source_sha256": "9c7563040d0515d95cf11c690272ce36ca018eb5b91f7ef32912f8618b5125f8",
+      "runtime": "assets/cgs/ch2_preview/01-sumi-silence.webp",
+      "runtime_sha256": "1808e1293e903b371b1e0900f582852d9555b4043e7a48bc31a103154d5f7a6f",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 123046
+    },
+    {
+      "id": "02-naru-confrontation",
+      "source": "asset_sources/trailer-90s-anime-concept/images/02-naru-confrontation.png",
+      "source_sha256": "ddcdeaaa64505ab095619977528d9c8141e5fb724e27406d0fb19939ad8b74c5",
+      "runtime": "assets/cgs/ch2_preview/02-naru-confrontation.webp",
+      "runtime_sha256": "4eca39539a09fc7545ff3ee414be07e7fcb7071607578eee98227ec46d528339",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 129770
+    },
+    {
+      "id": "03-minto-warning",
+      "source": "asset_sources/trailer-90s-anime-concept/images/03-minto-warning.png",
+      "source_sha256": "719a7e6904f6b51efe97f21da1451f1a5b75cb1e05f362a2680360f6a013ea9f",
+      "runtime": "assets/cgs/ch2_preview/03-minto-warning.webp",
+      "runtime_sha256": "620f2ded6c2db523668e783475d718e4e5fc496994c114fb49df597fd80fa883",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 128680
+    },
+    {
+      "id": "04-tsumugi-water",
+      "source": "asset_sources/trailer-90s-anime-concept/images/04-tsumugi-water.png",
+      "source_sha256": "6e30832adf9375ee1eb0b0dc3abb67a3e44d680716aa4e4529386fbc7ec27c9f",
+      "runtime": "assets/cgs/ch2_preview/04-tsumugi-water.webp",
+      "runtime_sha256": "69e4e2c0acab99a8f319029d243c372e1c9f583b09b1ca0d570b5440b8737b53",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 154152
+    },
+    {
+      "id": "05-ageha-departure",
+      "source": "asset_sources/trailer-90s-anime-concept/images/05-ageha-departure.png",
+      "source_sha256": "3a0b1d8f136ed33db62dd1d6d0982115327bf171c635d0298b78f3cabe9282fb",
+      "runtime": "assets/cgs/ch2_preview/05-ageha-departure.webp",
+      "runtime_sha256": "250ad7d092e510116b9712ebef474a536b0eacb1aace3fa8fda2ac959b4b5d9d",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 149080
+    },
+    {
+      "id": "06-empty-victory",
+      "source": "asset_sources/trailer-90s-anime-concept/images/06-empty-victory.png",
+      "source_sha256": "34d3fa1c8a7cc15e08e7c847b5dd43519d7bcd7b8513439f55aa2f6f2ac3ba9f",
+      "runtime": "assets/cgs/ch2_preview/06-empty-victory.webp",
+      "runtime_sha256": "4f0b9825fad04f6313299b0f273d9a3010b0e20c0ff9e9875d3a48511aff082d",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 197128
+    }
+  ]
+}
