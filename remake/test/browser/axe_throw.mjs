@@ -77,6 +77,27 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
 }
 await suite("axe-throw", async run => {
   const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
+  await check('front-perspective-actual-flight-frames',async page=>{
+    await standalone(page);await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+100));
+    await pressReady(page);await phase(page,'horizontal');await page.clock.runFor(850);await pressReady(page);
+    await phase(page,'vertical');await page.clock.runFor(950);await pressReady(page);
+    await phase(page,'power');await page.clock.runFor(760);await pressReady(page);await phase(page,'flight');
+    const frames=[];
+    for(const [label,ms] of [['release',0],['quarter',250],['half',230],['three-quarter',230],['impact',250]]){
+      if(ms)await page.clock.runFor(ms);
+      const shape=page.locator(label==='impact'?'.axe-impacts>g':'.axe-flight');
+      frames.push(await shape.evaluate(n=>({pitch:Number(n.dataset.pitch),depth:Number(n.dataset.depth),
+        faces:[...n.querySelectorAll('polygon')].map(p=>p.dataset.face),transform:n.getAttribute('transform')})));
+      assert.equal(await shape.locator('image').count(),0);
+      if(shotsPath)await page.locator('.axe-target').screenshot({path:shotsPath+'/front-'+label+'.png'});
+    }
+    assert(frames[0].pitch===0&&frames[1].pitch< -80&&frames[2].pitch< -170&&frames[3].pitch< -260);
+    assert(frames[1].faces.includes('handle-end'));assert(frames[2].faces.includes('blade-front'));
+    assert(frames.every(f=>!f.transform.includes('rotate')));
+    for(let i=1;i<frames.length;i++)assert(frames[i].depth>frames[i-1].depth);
+    assert.equal(await game(page).getAttribute('data-phase'),'result');
+    if(shotsPath)await fs.writeFile(shotsPath+'/front-frames.json',JSON.stringify(frames,null,2)+'\n');
+  });
   for(const [label,options,touch] of [
     ['flight-ui-pc',{viewport:{width:1280,height:800}},false],
     ['flight-ui-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
@@ -106,10 +127,13 @@ await suite("axe-throw", async run => {
     assert.equal(await page.locator('.axe-flight').getAttribute('transform'),await page.locator('.axe-impacts>g').getAttribute('transform'),
       'The flying axe and embedded axe must share exactly the same final pose');
     const tip=await page.locator('.axe-impacts>g').evaluate(n=>{
-      const p=n.ownerSVGElement.createSVGPoint();p.x=-39;p.y=-23.1;
+      const anchor=n.querySelector('.axe-cut-contact'),p=n.ownerSVGElement.createSVGPoint();p.x=anchor.cx.baseVal.value;p.y=anchor.cy.baseVal.value;
       const actual=p.matrixTransform(n.transform.baseVal.consolidate().matrix);return {x:actual.x,y:actual.y};
     });
     assert(Math.abs(tip.x-(330+landing.x*164))<.001&&Math.abs(tip.y-(245+landing.y*164))<.001,'Rendered cutting edge must land on the visible prediction');
+    assert.equal(await page.locator('.axe-impacts>g image').count(),0,'Impact must retain the frontal 3D shape');
+    assert(await page.locator('.axe-impacts>g polygon').count()>0);
+    assert.doesNotMatch(await page.locator('.axe-flight').getAttribute('transform'),/rotate/,'No rotation in the screen plane');
     assert.deepEqual(await game(page).evaluate(n=>({x:Number(n.dataset.landingX),y:Number(n.dataset.landingY)})),landing);
     if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-result.png'});
     await pressReady(page,touch);await phase(page,'choice');
