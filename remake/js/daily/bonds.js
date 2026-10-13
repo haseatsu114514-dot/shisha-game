@@ -34,11 +34,13 @@ export const BOND_FINALES = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
   rin: { dialogue: "ch1_rin_bond_finale", gift: "suyaki_rin", question: "bond_q2_rin" },
-  kafuka: { dialogue: "kafuka_bond_finale", gift: "suyaki_kafuka", night: true, question: "bond_q2_kafuka" },
+  samechan: { dialogue: "samechan_bond_finale", gift: "suyaki_samechan", night: true, question: "bond_q2_samechan" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
     get question() { return hiyoriRoute().finale?.question || ""; },
+    get flag() { return hiyoriRoute().finale?.flag || ""; },
+    get night() { return !!hiyoriRoute().finale?.night; },
   },
 };
 
@@ -82,9 +84,9 @@ export function recordRomanceChoice(line, choice) {
 /** まだ恋愛に進める相手か（友情寄りの答えも、断った告白もない）。締めくくりの最後の質問を出す条件 */
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
-  if (id === "kafuka" && (!(state.chapter >= 2 && state.chapter <= 3)
-    || !state.flags._kafuka_bond_question_done
-    || state.romanceChoices?.bond_q1_kafuka?.char !== id)) return false;
+  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+    || !state.flags._samechan_bond_question_done
+    || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   return !!BOND_FINALES[id]?.question && !isLover(id) && !state.flags[`_friend_${id}`]
     && answers(id).every((a) => a.value > 0);
 }
@@ -105,13 +107,42 @@ export function bondCondition(line) {
 // ---------------------------------------------------------------- 途中の質問
 
 /** 固有会話（host）を読んだ直後に呼ぶ。対応する質問が残っていれば続けて出す */
-export async function afterStory(dialogueId, { bg = null } = {}) {
+export async function afterStory(dialogueId, { bg = null, signal = null, deferSave = false } = {}) {
+  if (hiyoriRoute().question?.host && dialogueId === hiyoriRoute().question.host) return playHiyoriQuestion({ bg, signal, deferSave });
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
     if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
     await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
     releaseAffinity(id);
     save();
   }
+}
+
+/** 保存済みの実回答から反応へ戻す。友人のvalue:0も回答で、再選択・再加算しない。 */
+function resumeChoice(scene, key, answer) {
+  if (!answer) return scene;
+  const rows = lines => (lines || []).flatMap(line => {
+    if (line.type !== "choice" || line.id !== key) return [line];
+    const selected = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
+    return selected ? scene.branches[selected.next] : [line];
+  });
+  return { ...scene, lines: rows(scene.lines), branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([k,v]) => [k,rows(v)])) };
+}
+
+/** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
+export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
+  const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
+  if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
+    || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
+    || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
+    || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori || signal?.aborted) return false;
+  const answer = state.romanceChoices[q.choice];
+  if (answer && (answer.char !== "hiyori" || !Number.isFinite(answer.value) || answer.value < 0)) return false;
+  const owner = state;
+  const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+  if (state !== owner || signal?.aborted || result?.cancelled || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
+  state.flags[q.flag] = true;
+  if (!deferSave) save();
+  return true;
 }
 
 const questionOpen = (id) => {
@@ -142,10 +173,10 @@ export async function playQuestionVisit(id, { bg = null } = {}) {
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
 
 export const finaleSeen = (id) => !!state.finales?.[id];
-const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "kafuka"
-  ? storyCount(id) >= 3 && !!state.flags._kafuka_quiet_seat_done && !!state.flags._kafuka_closing_check_done
-    && (isLover(id) || !!state.flags._friend_kafuka || !!state.flags._kafuka_bond_question_done
-      && state.romanceChoices?.bond_q1_kafuka?.char === id)
+const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "samechan"
+  ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
+    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
+      && state.romanceChoices?.bond_q1_samechan?.char === id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length;
 
 /**
@@ -154,7 +185,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "kafu
  */
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
-  if (id === "kafuka" && (state.chapter || 1) < 2) return false;
+  if (id === "samechan" && (state.chapter || 1) < 2) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
@@ -170,14 +201,15 @@ export const finaleAtVisit = (id) => finaleDue(id) && !BOND_FINALES[id].invite &
 export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d) => d.dialogue === dialogueId);
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
-export async function playFinale(id, { bg = null, deferSave = false } = {}) {
-  if (["hiyori", "kafuka"].includes(id) && !finaleDue(id)) return false;
+export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
+  if (["hiyori", "samechan"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
   // 中断保存に実回答が残ったサメちゃんの最終質問は、その答えの続きへ戻す。
   // 未回答を補わず、読み直しで気持ちを変更/加算しない。
-  const answer = id === "kafuka" && state.romanceChoices?.[def.question];
+  const answer = ["samechan", "hiyori"].includes(id) && state.romanceChoices?.[def.question];
+  if (id === "hiyori" && answer && (answer.char !== id || !Number.isFinite(answer.value) || answer.value < 0)) return false;
   const scene = DB.dialogues[def.dialogue];
   const resumeRows = rows => rows.flatMap(line => {
     if (line.type !== "choice" || line.id !== def.question) return [line];
@@ -186,13 +218,14 @@ export async function playFinale(id, { bg = null, deferSave = false } = {}) {
   });
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
     branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;
-  await play(script, bg && !scene.metadata?.bg ? { bg } : {});
-  if (state !== owner) return false;
+  const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+  if (state !== owner || result?.cancelled || signal?.aborted) return false;
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
   if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
   if (state !== owner) return false;
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
+  if (def.flag) state.flags[def.flag] = true;
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
   if (route === "romance" && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;

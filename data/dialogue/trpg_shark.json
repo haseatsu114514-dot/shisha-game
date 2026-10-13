@@ -1,0 +1,1563 @@
+{
+  "id": "shark-last-order",
+  "version": 3,
+  "title": "サメは閉店を待たない",
+  "subtitle": "海上ラウンジ、最後の夜",
+  "author": "青瀬マコ",
+  "collection": "唐波キネマ・一晩の冒険 02",
+  "duration": "約10分",
+  "premise": "海に浮かぶラウンジで、閉店の曲が鳴った。岸まで300メートル。窓の向こうには背びれ。三人の店番は、何を残し、どう逃げる？",
+  "fiction": {
+    "town": "ベルカ沖",
+    "shop": "海上ラウンジ「夜凪」",
+    "traveler": "港の監視員ミラ"
+  },
+  "flow": {
+    "prepare": [
+      "tool",
+      "route"
+    ],
+    "serve": [
+      "finale"
+    ]
+  },
+  "fitWeights": {
+    "tool": 1,
+    "route": 1,
+    "finale": 2
+  },
+  "fallbackEnding": "sequel",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "samechan",
+      "part": "GM",
+      "role": "案内と、海の怪物",
+      "color": "#73b8df"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "レン／新人甲板員",
+      "color": "#89bbc4",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す"
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "オット／香りの研究員",
+      "color": "#c8a375",
+      "ability": "段取りの確認",
+      "abilityType": "prepare",
+      "abilityText": "仕掛けを組むとき、判定に一度だけ＋2",
+      "alternatives": {
+        "adam": {
+          "ability": "舞台の支度",
+          "color": "#c9463a"
+        }
+      }
+    },
+    {
+      "id": "tsumugi",
+      "part": "PLAYER",
+      "role": "セラ／照明係",
+      "color": "#b8a3cc",
+      "ability": "見せ場の構図",
+      "abilityType": "serve",
+      "abilityText": "脱出するとき、判定に一度だけ＋2"
+    }
+  ],
+  "spots": [
+    {
+      "id": "radio",
+      "label": "港との無線",
+      "short": "無線",
+      "x": 11,
+      "y": 22
+    },
+    {
+      "id": "leaves",
+      "label": "香りの保管箱",
+      "short": "保管箱",
+      "x": 35,
+      "y": 43
+    },
+    {
+      "id": "fan",
+      "label": "止まった送風機",
+      "short": "送風機",
+      "x": 53,
+      "y": 40
+    },
+    {
+      "id": "lamp",
+      "label": "救難用ランプ",
+      "short": "ランプ",
+      "x": 74,
+      "y": 18
+    },
+    {
+      "id": "rope",
+      "label": "救命具とロープ",
+      "short": "救命具",
+      "x": 73,
+      "y": 52
+    },
+    {
+      "id": "chart",
+      "label": "海図と避難経路",
+      "short": "海図",
+      "x": 28,
+      "y": 79
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "scent",
+      "label": "甘い香りを追っている",
+      "description": "保管箱の中身を、こちらの逃げ道から離せそう。"
+    },
+    {
+      "id": "vibration",
+      "label": "低い振動を追っている",
+      "description": "音を止め、床を揺らさずに移動するべきかも。"
+    },
+    {
+      "id": "light",
+      "label": "点滅する光を追っている",
+      "description": "光を別の場所に置けば、こちらを見失いそう。"
+    }
+  ],
+  "options": {
+    "tool": [
+      {
+        "id": "citrus",
+        "label": "柑橘の香り箱",
+        "description": "店のフレーバーを箱ごと、おとりに使う。",
+        "response": "trpg_shark_choice_tool_citrus"
+      },
+      {
+        "id": "sealed",
+        "label": "密閉と防振のセット",
+        "description": "香りを閉じ、滑り止めで床の振動を減らす。",
+        "response": "trpg_shark_choice_tool_sealed"
+      },
+      {
+        "id": "beacon",
+        "label": "点滅する救難灯",
+        "description": "光を遠くへ運ぶ、小さな浮き仕掛け。",
+        "response": "trpg_shark_choice_tool_beacon"
+      }
+    ],
+    "route": [
+      {
+        "id": "pier",
+        "label": "救助艇の来る桟橋",
+        "description": "短い移動で岸へ。海面の近くを通る。",
+        "response": "trpg_shark_choice_route_pier"
+      },
+      {
+        "id": "roof",
+        "label": "屋根からのロープ",
+        "description": "乾いた屋根を通り、救助艇へロープで渡る。",
+        "response": "trpg_shark_choice_route_roof"
+      },
+      {
+        "id": "channel",
+        "label": "裏の保守水路",
+        "description": "光を遮る壁沿い。回り道でも見つかりにくい。",
+        "response": "trpg_shark_choice_route_channel"
+      }
+    ],
+    "finale": [
+      {
+        "id": "lure",
+        "label": "香りを遠くへ流す",
+        "description": "閉店前の最後の一箱を、海へプレゼント。",
+        "response": "trpg_shark_choice_finale_lure"
+      },
+      {
+        "id": "silence",
+        "label": "全員、静かに移動する",
+        "description": "止めた音を戻さず、互いの手で合図する。",
+        "response": "trpg_shark_choice_finale_silence"
+      },
+      {
+        "id": "signal",
+        "label": "海上に光の見せ場を作る",
+        "description": "遠い浮き灯へ目を向けさせ、その間に逃げる。",
+        "response": "trpg_shark_choice_finale_signal"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "scent",
+      "arrival": "背びれは、漂う甘い香りの方へゆっくり曲がっている",
+      "likes": {
+        "tool": [
+          "citrus"
+        ],
+        "route": [
+          "pier"
+        ],
+        "finale": [
+          "lure"
+        ]
+      },
+      "ending": "last-order",
+      "evidence": {
+        "radio": {
+          "title": "監視員の観測",
+          "text": "無線の記録では、怪物は甘い香りの箱が流れた方向へ移動していた。艇は表の桟橋へ来られる。",
+          "lines": "trpg_shark_clue_scent_radio"
+        },
+        "leaves": {
+          "title": "柑橘の箱だけが揺れる",
+          "text": "柑橘の保管箱の蓋が開いている。箱を窓から遠ざけると、背びれも少し離れた。",
+          "lines": "trpg_shark_clue_scent_leaves"
+        },
+        "fan": {
+          "title": "風と背びれ",
+          "text": "送風機は停止している。羽根が風で回った時だけ、柑橘の香りが海へ流れ、背びれが曲がった。",
+          "lines": "trpg_shark_clue_scent_fan"
+        },
+        "lamp": {
+          "title": "光は見ていない",
+          "text": "救難灯を壁へ向けても、背びれの進路は変わらなかった。灯りより別のものを追っている。",
+          "lines": "trpg_shark_clue_scent_lamp"
+        },
+        "rope": {
+          "title": "表の桟橋へ届く縄",
+          "text": "救命胴衣は三人分。ロープは表の桟橋まで届く。香りのおとりを外側へ流せば、短い移動で艇へ渡れる。",
+          "lines": "trpg_shark_clue_scent_rope"
+        },
+        "chart": {
+          "title": "沖向きの潮",
+          "text": "今夜の流れは沖向き。香りの箱を桟橋と反対へ流せる。屋根からの迂回より表の艇が近い。",
+          "lines": "trpg_shark_clue_scent_chart"
+        }
+      }
+    },
+    {
+      "id": "vibration",
+      "arrival": "背びれは、店の床が低く震えるたびに近づいている",
+      "likes": {
+        "tool": [
+          "sealed"
+        ],
+        "route": [
+          "roof"
+        ],
+        "finale": [
+          "silence"
+        ]
+      },
+      "ending": "quiet-escape",
+      "evidence": {
+        "radio": {
+          "title": "低い音の記録",
+          "text": "怪物は低い機械音がした場所へ集まるという。艇は屋根の側にも接岸できる。",
+          "lines": "trpg_shark_clue_vibration_radio"
+        },
+        "leaves": {
+          "title": "香りには無反応",
+          "text": "香り箱の蓋を開けても、背びれは曲がらない。箱を床へ置いた振動には、すぐ向きを変えた。",
+          "lines": "trpg_shark_clue_vibration_leaves"
+        },
+        "fan": {
+          "title": "床を伝う振動",
+          "text": "止まった送風機の下に滑り止めがある。机を揺らした時、背びれが近づいた。床を揺らさない工夫が要る。",
+          "lines": "trpg_shark_clue_vibration_fan"
+        },
+        "lamp": {
+          "title": "点滅は無視される",
+          "text": "救難灯が点滅しても、背びれはそのまま泳いでいる。低く軋む桟橋の方へ寄った。",
+          "lines": "trpg_shark_clue_vibration_lamp"
+        },
+        "rope": {
+          "title": "屋根へ続くロープ",
+          "text": "三人分の救命胴衣と、屋根から艇へ渡す縄がある。乾いた足場なら床の振動を減らせる。",
+          "lines": "trpg_shark_clue_vibration_rope"
+        },
+        "chart": {
+          "title": "屋根側の接岸場所",
+          "text": "表の桟橋は波で軋む。屋根の側の壁は頑丈で、艇を寄せられる。静かに移動すれば安全そうだ。",
+          "lines": "trpg_shark_clue_vibration_chart"
+        }
+      }
+    },
+    {
+      "id": "light",
+      "arrival": "背びれは、赤い灯りが点滅した瞬間に向きを変えている",
+      "likes": {
+        "tool": [
+          "beacon"
+        ],
+        "route": [
+          "channel"
+        ],
+        "finale": [
+          "signal"
+        ]
+      },
+      "ending": "premiere",
+      "evidence": {
+        "radio": {
+          "title": "赤い光の観測",
+          "text": "怪物は点滅する灯りを追う。艇は裏の保守水路へ回れる。サメの目を表へ引ければ、裏が空く。",
+          "lines": "trpg_shark_clue_light_radio"
+        },
+        "leaves": {
+          "title": "箱で遮られた灯り",
+          "text": "保管箱の影で救難灯が隠れた時、背びれが迷った。香りを出しても反応はない。",
+          "lines": "trpg_shark_clue_light_leaves"
+        },
+        "fan": {
+          "title": "止まった羽根の影",
+          "text": "送風機の羽根が救難灯を遮るたび、背びれが向きを変える。機械が鳴るだけでは動かなかった。",
+          "lines": "trpg_shark_clue_light_fan"
+        },
+        "lamp": {
+          "title": "点滅を追う目",
+          "text": "ランプを外へ向けると背びれが寄り、消すと止まった。光を浮きに載せて遠くへ運べそうだ。",
+          "lines": "trpg_shark_clue_light_lamp"
+        },
+        "rope": {
+          "title": "浮き灯と救命胴衣",
+          "text": "三人分の救命胴衣と、小さな浮きがある。ランプを縄で浮きへ固定できる。人の移動にも十分な縄が残る。",
+          "lines": "trpg_shark_clue_light_rope"
+        },
+        "chart": {
+          "title": "影になる保守水路",
+          "text": "裏の水路は壁で外の光を遮れる。表の沖へ灯りを流せば、目を引いた隙に裏から艇へ渡れる。",
+          "lines": "trpg_shark_clue_light_chart"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "last-order": {
+      "title": "海へ贈るラストオーダー",
+      "line": "最後の香り箱を沖へ。三人は艇の上で、温かいお茶を受け取った。",
+      "dialogue": "trpg_shark_ending_last-order"
+    },
+    "quiet-escape": {
+      "title": "世界一静かなエンドロール",
+      "line": "足音と、機械を静かに。背びれは空の店を探し続け、三人を乗せた艇は岸へ帰った。",
+      "dialogue": "trpg_shark_ending_quiet-escape"
+    },
+    "premiere": {
+      "title": "海上プレミア上映",
+      "line": "遠い浮き灯へ背びれが向く。三人はその反対側から艇へ。港からは、夜の小さな上映会に見えた。",
+      "dialogue": "trpg_shark_ending_premiere"
+    },
+    "sequel": {
+      "title": "そして、翌朝の予告編",
+      "line": "思い通りの仕掛けではなかった。それでも三人は救助艇へ。翌朝の海に、もう一つ背びれが見えた。",
+      "dialogue": "trpg_shark_ending_sequel"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_shark_intro",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "今夜はサメ映画じゃ。全員生還、そこは約束するぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしがGM、お主たちが店番じゃ。全員、帰すぞ",
+          "castIntro": true,
+          "smallTableText": "わしがGM、お主が店番じゃ。空いた役はわしが兼ねるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "その約束があると、逆に何が起こるか気になるな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……店にあるもので、あのサメから逃げるのね",
+          "variants": {
+            "adam": {
+              "text": "舞台装置は、この店の道具だけか。俺らの見せ場だな",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……予告編、もう見たい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "海上ラウンジ「夜凪」。岸の灯りは、まだ遠い"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "閉店の曲が鳴った瞬間、窓の向こうを背びれが横切る"
+        },
+        {
+          "speaker": "hajime",
+          "role": "レン／物語",
+          "face": "normal",
+          "text": "……閉店してから来てくれない？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "サメは営業時間を知らぬのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は続編を要求する"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "続編より先に、今ここで助かる方法を考えたいな……",
+          "variants": {
+            "adam": {
+              "text": "続編の主役は、生き残った者だけだ。まずはこの一夜を越えよう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_listen",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "無線に、港の監視員ミラの声が混じる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "救助艇を向かわせる。窓の外、何が見える？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_listen_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "背びれの動く間隔が見えた。慌てず、店内を調べよう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ちゃんと見てると、動きに癖があるんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_listen_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "波が入口を叩いた。危機が一つ進むが、道具は使える"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "足元、濡れてる……。ゆっくり行こう、転ぶと危ないから",
+          "variants": {
+            "adam": {
+              "text": "滑って退場では締まらない。足元から、落ち着いていこう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_listen_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "閉店の曲が急に大きく鳴る。全員、窓から一歩下がる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "今だけは、その曲止めて！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "危機は二つ進む。じゃが、調査はできるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_prepare_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人の手が噛み合った。仕掛けは静かに動き始める"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……うまくいった。今のうちに、みんなで渡ろう",
+          "variants": {
+            "adam": {
+              "text": "仕掛けは決まった。さあ、主役たちの退場だ",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "結び目を一つ直す間に、窓の外の波が近づく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手直しできたなら、大丈夫……。次はちゃんと動くはず",
+          "variants": {
+            "adam": {
+              "text": "修正も、物語を作る一手だ。次こそ狙いを通そう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕掛けが鳴らした音に、背びれが急に向きを変える"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "よし、気づいてはくれた！　近いけど！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "予備の留め具で直す。作戦は、まだ使えるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_serve_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "合図は一度。三人は、サメの目が外れた隙を渡った"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……今。動くなら、今だと思った"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_serve_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一人の靴がひっかかる。二人が手を伸ばして引き上げる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ありがとう。靴より俺を拾ってくれて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_serve_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "予定の道に大波が来る。救助艇が、横から灯りを向ける"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "いったん戻ろう……。店番の三人、誰も置いていかないで",
+          "variants": {
+            "adam": {
+              "text": "まだ終幕じゃない。店番三人で、あの艇へ向かおう",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "全員、生還じゃ。映画には、助けが来る場面も要る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_consult_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は調べられないのね……。手がかりを比べてみよう",
+          "variants": {
+            "adam": {
+              "text": "すべてを追うより、狙いを定めよう。二つの手がかりを比べるんだ",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "保管箱と送風機。香りなのか、音なのか、確かめられそう",
+          "variants": {
+            "adam": {
+              "text": "保管箱と送風機。香りと振動、その違いが勝負を分けそうだ",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "相談とメモは、調査回数を使わぬぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_consult_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……目が向くものを、逃げ道から遠ざけたい"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "光ならランプ。渡れる場所なら、海図と救命具かな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_preparation",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。道具と逃げ道を組み合わせよう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……仕掛けを置く場所も、ちゃんと考えた方がよさそうね",
+          "variants": {
+            "adam": {
+              "text": "仕掛けも、立つ場所で輝きが変わる。配置を考えよう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_serving",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓の外で、背びれが最後の円を描く"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……最後の合図。みんなに見えるようにするね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_epilogue",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "おしまいじゃ。三人分の救命胴衣は、最初からあったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "映画だと見落とすけど、店の準備が一番えらいな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "サメがいる海で営業するなら、開店前に避難訓練してほしい……",
+          "variants": {
+            "adam": {
+              "text": "次作は、避難訓練から幕を開けよう。俺もその方が安心だ",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……エンドロールの絵、描いてもいい？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "よいぞ。サメの目は、少し格好よく頼むのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_radio",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "香りが流れた方向へ、移動していたらしい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_leaves",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "……閉じると、背びれが離れていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_fan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "回転の音より、運ばれた香りに反応している"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_lamp",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りを変えても、進路は同じだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_rope",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人分、ちゃんとある。桟橋への縄も届く"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_scent_chart",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "香りを沖へ流せば、艇との間に距離を作れる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_radio",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "低い機械音のある場所を、追っているらしい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_leaves",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "香りより、箱を置いた振動に反応した"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_fan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "滑り止めを使えば、床の振動を減らせそうだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_lamp",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "光より、軋む桟橋に近づいている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_rope",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "屋根から縄で渡れば、濡れた床を避けられる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_vibration_chart",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "表は軋んでる。屋根の側は、しっかりしてる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_radio",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "点滅する灯りを、追っているらしい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_leaves",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "香りではなく、影に隠れた灯りを探している"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_fan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "羽根の影で光が消えると、曲がっている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_lamp",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "……ランプを、おとりの役にできる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_rope",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りを浮きへ固定しても、三人分の縄が残る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_clue_light_chart",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "表を明るく、裏は暗く。逃げる場所を隠せる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tool_citrus",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後の一箱……。香りを流す方向、間違えないようにしよう",
+          "variants": {
+            "adam": {
+              "text": "最後の一箱で、香りの幕を開ける。流す方向を確かめよう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tool_sealed",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "箱を閉めて、足元も整える。……気づかれずに行きたいね",
+          "variants": {
+            "adam": {
+              "text": "密閉して、足元を整える。静かな退場にも、準備が必要だ",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tool_beacon",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "灯りを遠くへ運んで……。私たちから、目をそらしてもらうの",
+          "variants": {
+            "adam": {
+              "text": "光の主役を、遠くへ移す。俺らは影を歩こう",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_route_pier",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……短い移動。三人が渡る間だけ、目をそらしたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_route_roof",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……乾いた足場の方が、足音を揃えやすい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_route_channel",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……壁の影。こっちを、光の反対側にしよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_finale_lure",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "閉店前の一箱、海へ。俺たちは反対へ帰ろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_finale_silence",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "足音をそろえよう。合図は、隣の手で伝える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_finale_signal",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あの灯りが見せ場だ。俺たちは、暗い方から帰る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ending_last-order",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "甘い香りの箱が沖へ流れ、背びれも遠ざかった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "艇へ渡った三人の前に、温かいお茶が置かれる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ラストオーダー、海にも一つってことか"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "その一箱が、三人を岸へ帰したのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ending_quiet-escape",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "機械を止め、三人は手の合図だけで艇へ渡った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "背びれは空のラウンジを回る。艇は静かに岸を目指す"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……足音まで消したら、海の音が聞こえた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……閉店の曲まで小さくするのね。静かな夜でよかった",
+          "variants": {
+            "adam": {
+              "text": "終幕は静かに。この海には、拍手より似合う音がある",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ending_premiere",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "赤い光が沖で瞬く。背びれは、その灯りを追っていく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人は灯りの反対側から、艇へ渡った"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……最後のカットは、海の灯りだけ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "港の人は、夜の上映会じゃと思ったそうな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ending_sequel",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕掛けに、サメは一度だけ首をかしげた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あ、そこは想定してなかった！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "その一瞬に艇の縄が届く。三人とも、岸へ帰れた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "翌朝。沖の向こうに、もう一つ小さな背びれが見える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は言った。続編が必要だ、と"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "続編でも、店番三人の救命胴衣は最初から置いておいてね……",
+          "variants": {
+            "adam": {
+              "text": "続編にも、店番三人の救命胴衣を。主役は泳げなくてもいい",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "text": "三人の合図が揃ったのう。怖くても、ちゃんと一緒じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "presentation": {
+    "theme": "shark",
+    "number": "02",
+    "genre": "サメ映画 / 脱出劇",
+    "tagline": "岸まで300m。閉店まで、あとわずか。",
+    "image": "../../img/backgrounds/trpg_shark_room.webp",
+    "sceneAlt": "海上ラウンジ。無線、保管箱、送風機、救難灯、救命具と海図。窓の外の海にサメの背びれ。",
+    "location": "ベルカ沖 / 海上ラウンジ「夜凪」",
+    "atmosphere": "濡れた床。軋む桟橋。外には、背びれ。",
+    "coverHeading": "閉店の曲が、サメを呼んだ。",
+    "coverRule": "四箇所を調べ、習性を見立て、全員で岸へ帰る。",
+    "titleLines": [
+      "サメは閉店を",
+      "待たない"
+    ],
+    "fields": {
+      "tool": "仕掛けに使う道具",
+      "route": "脱出する経路",
+      "finale": "最後の作戦"
+    },
+    "prepareTitle": "何を使い、どこから逃げる？",
+    "prepareDescription": "仕掛け一つ、逃げ道一つ。見つけた習性を作戦にしよう。",
+    "serveTitle": "いよいよ、ラストシーン。",
+    "serveDescription": "どの作戦で、三人を岸へ帰す？",
+    "hypothesisTitle": "この映画のサメは、何を追う？",
+    "arrivalRole": "無線のミラ／物語",
+    "exploreIdle": "調査は四箇所までじゃ。メモの再読と相談は、何度でもよいぞ",
+    "listenIdle": "窓の外の背びれじゃ。まずは状況をつかむのじゃ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "ここが見せ場じゃ。慌てず、全員で岸へ帰るのじゃぞ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 状況をつかむ",
+        "title": "窓の向こうに、背びれ",
+        "description": "閉店の曲に混じって、無線が鳴った。まずは全員、落ち着こう。",
+        "button": "状況をつかむ"
+      },
+      "explore": {
+        "kicker": "02 / ラウンジを調べる",
+        "title": "サメの習性を見抜く",
+        "description": "調査は四箇所まで。三つ以上の手がかりから、逃げる作戦を考えよう。",
+        "button": "見立てを話す"
+      },
+      "prepare": {
+        "kicker": "03 / 仕掛けを組む",
+        "title": "おとりと、逃げ道",
+        "description": "使えるものは、この店にあるものだけ。",
+        "button": "仕掛けを組む"
+      },
+      "serve": {
+        "kicker": "04 / 岸へ逃げる",
+        "title": "誰も、置いていかない",
+        "description": "習性を逆手に取って、三人で岸へ。ここがラストシーン。",
+        "button": "全員で脱出する"
+      },
+      "ending": {
+        "kicker": "エンドロールのあと",
+        "title": "全員、生還！",
+        "description": "大事なものを持って、岸へ帰れた。さて、この映画の感想は？"
+      }
+    },
+    "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋1。",
+    "exitText": "映画をここで中断して、本棚へ戻ります。次に遊ぶと、違う習性のサメが現れるかもしれません。",
+    "endingKicker": "TONIGHT’S FEATURE / この映画の結末"
+  },
+  "intro": "trpg_shark_intro",
+  "listen": "trpg_shark_listen",
+  "checks": {
+    "listen": {
+      "title": "背びれと波を見分ける",
+      "hint": "落ち着いて観察 ＋1。どの出目でも探索へ進みます。",
+      "success": "trpg_shark_listen_success",
+      "mixed": "trpg_shark_listen_mixed",
+      "trouble": "trpg_shark_listen_trouble"
+    },
+    "prepare": {
+      "title": "即席の仕掛けを組み立てる",
+      "hint": "手際 ＋1。見立てが合えば、さらに＋1。",
+      "success": "trpg_shark_prepare_success",
+      "mixed": "trpg_shark_prepare_mixed",
+      "trouble": "trpg_shark_prepare_trouble",
+      "helper": "hiyori"
+    },
+    "serve": {
+      "title": "三人そろって岸へ帰る",
+      "hint": "連携 ＋1。どの出目でも全員で結末へ進みます。",
+      "success": "trpg_shark_serve_success",
+      "mixed": "trpg_shark_serve_mixed",
+      "trouble": "trpg_shark_serve_trouble",
+      "helper": "tsumugi"
+    }
+  },
+  "consult": {
+    "hiyori": "trpg_shark_consult_hiyori",
+    "tsumugi": "trpg_shark_consult_tsumugi"
+  },
+  "preparation": "trpg_shark_preparation",
+  "serving": "trpg_shark_serving",
+  "epilogue": "trpg_shark_epilogue",
+  "debrief": {
+    "smooth": "trpg_shark_debrief_smooth",
+    "with-detour": "trpg_shark_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori",
+          "adam"
+        ],
+        "required": false
+      },
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": false
+      }
+    ]
+  }
+}

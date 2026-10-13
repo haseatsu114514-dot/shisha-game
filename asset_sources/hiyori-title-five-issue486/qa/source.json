@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-10-13T00:41:18.115501+00:00",
+  "browser_cases": 14,
+  "files_sha256": {
+    "remake/test/title_arts.mjs": "bea54e44f963d1712ca352d189d3819adf55402097af874648b877fd472cab71",
+    "remake/test/browser/hiyori_title_five.mjs": "a45143bfaa645582252b6a3d8c910f0d05aadc34a700e250d911900e7f58b889",
+    "remake/data/manifest.json": "6f1c670b337839b8db40c1c696373c70b648e30e303467281801804d053e6b2a",
+    "remake/js/scenes/title.js": "302bda5760c11cf945cee27dd389cd30b833460b4588d529b1d26567976015ed",
+    "remake/js/scenes/title-art.js": "6f0af5ebeb2a3777444869cf421acb3f89295b5ff240656589fcbab19475e812"
+  },
+  "portrait_policy": "Existing rotate hint visible, then rotate to landscape for all five real CGs; hidden CGs do not count as portrait display."
+}

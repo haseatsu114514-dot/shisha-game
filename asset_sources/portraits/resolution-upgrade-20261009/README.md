@@ -63,7 +63,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 - 「表示1単位あたりの原画の細かさ」＝原画の人物の高さ ÷ spriteScale。画面上で同じ高さに換算したときの描き込みの量。
 - みんと営業姿・アゲハ・パッキーは原画シートがリポジトリに無く未計測（同時期のみんと私服から、引き伸ばしは小さいと推定）。依頼対象には入れていない。
-- 身長は今回 `data/dialogue/kafuka.json` のサメちゃんの `spriteScale` を 1 → 0.91（156cm）へ直し、全員が身長設定どおりになった。背比べ図は [height-lineup.png](../../reference-sheets/height-lineup.png)。**画質の作り直しでは身長・表示倍率は変えない。**
+- 身長は今回 `data/dialogue/samechan.json` のサメちゃんの `spriteScale` を 1 → 0.91（156cm）へ直し、全員が身長設定どおりになった。背比べ図は [height-lineup.png](../../reference-sheets/height-lineup.png)。**画質の作り直しでは身長・表示倍率は変えない。**
 
 ## 依頼の方針（2026-10-09 オーナー決定で更新）
 

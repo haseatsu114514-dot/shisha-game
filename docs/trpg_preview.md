@@ -1,0 +1,194 @@
+# 小さな卓の冒険・10分TRPG集
+
+初回制作 Issue #484 / PR #487。本棚・招集の本編基盤 Issue #521 / PR #526。部活・勧誘 Issue #528 / PR #530。最後まで遊べる短編2本を、本棚から選ぶミニゲーム。
+公開プレビュー: https://shisha-trpg-ordinary-484.briskdill17.chatgpt.site （所有者限定）。
+
+## 遊ぶ
+
+```bash
+python3 remake/tools/serve_preview.py --port 8123
+```
+
+本編タイトルの **BOOKSHELF / 物語の本棚** は、オートセーブの所持本・卓の思い出を読む画面です。
+タイトルから購入・招集・再プレイはできません。読み取りだけで本編状態やセーブを変更しません。
+
+第2章以降の日常マップに **遊べるシーシャバー** を追加しました。第2章の本編進行自体はまだ未実装です。
+共通日常ループを使用する章ではこの入口を利用でき、第2章の街独自マップでは `daily/trpg.js` の `trpgSpot()` を登録してください。
+部活設立・対面勧誘・本棚・購入・招集の試遊は `/remake/trpg-campaign-preview.html`。本編セーブを読み書きせず、ページ内だけで購入・クリアを保持します。
+最初にカウンターの店員の提案から「煙とサイコロ部」を設立します。試遊専用の「○○に会う」から対面勧誘を試せます。
+本編のバーに遠隔勧誘ボタンはなく、各キャラの通常訪問・ひよりとの実際の交流の後に話しかけます。
+「試遊の設定へ」から第1章／昼／夜の予定衝突／二人卓／ひよりの残業とアダムの代役を試せます。
+
+### 本編での本棚と招集
+
+- 第2章から、バーの店員に提案されて部活を作ります。サメちゃんは設立のきっかけ役ではなく、後から誘う仲間です。
+- 知り合いの好感度MAX（恋人は絆Lv1でも可）で、興味がある人を対面で勧誘できます。現行はひより・サメちゃん・アダム・つむぎ。興味はcatalog、提案と承諾の台詞は `data/dialogue/trpg_club.json` で管理します。
+- 「今日は誘わない」や途中退出では未入部。本人の承諾を最後まで読んだら入部し、以降は招集対象になります。訪問そのものの料金・行動枠に、勧誘の追加料金や枠はありません。
+- 必須キャラが入部すると本が入荷。MAXだけでは入部・入荷・招集を自動解放しません。
+- 初期価格は普通の一台500円／サメ映画800円。購入だけでは時間や体力を消費しません。価格と条件はcatalogで変更できます。
+- 今夜の参加者は入部済み・シフトや予定なし・その配役に対応する候補から選びます。スミさん・なるは不参加です。
+- 普通の一台のGMはひより、サメ映画のGMはサメちゃん。はじめは参加必須。空いているアダム・ひより・つむぎが任意枠に入ります。
+- GMとはじめの二人でも成立。空いた物語内の役はGMが兼任します。サメ映画ではひよりの枠をアダムが埋められ、台詞と能力も本人用へ変更します。
+- 昼や既存の夜の予定がある時は招集できません。買った本・入荷済みの本は、参加者の仕事の日にも棚に残ります。
+- 結末・振り返り・後日談を最後まで読んだ時に、成否を問わずクリア。参加者・GM・日付・結末・提案を保存し、夜の1枠を同時に消費します。クリア済みは再プレイ不可です。
+- 中断・通信失敗・画面撤去ではクリアや行動消費を記録しません。購入した本は保持します。途中の卓そのものは保存せず、再挑戦は表紙からです。
+- 好感度・恋人の絆・能力・体力・制作報酬は増減しません。記録がこの行動の思い出になります。
+
+保存スキーマ15の `trpg.club` は `{founded:{chapter,day}|null, members:{[id]:{chapter,day}}}`。
+設立と入部は実際の操作だけで記録し、旧セーブのMAXやクリア参加者から補いません。スキーマ14以前の入荷・購入・結末・シフトは保持します。
+勧誘中のセーブ切替・画面撤去・ページ離脱は未入部で終了。通常訪問側が入部とその行動を一緒に保存します。
+
+週間予定は `data/trpg_catalog.json` の `participants[].shifts`。既存には全員のシフト管理がないため、TRPG招集用の初期予定を登録しています。
+ひよりは昼の仕事、つむぎは昼の制作、アダムは定休日以外のシフト、サメちゃんはDAY剰余3・5を休みとして設定しています。
+これは全店舗の正史営業時間を変更するものではなく、今後の章で当日のシフトを `state.trpg.shifts` の
+`{id, chapter, day, slot, busy, reason?}` で上書きできます。臨時休業と当日予約も参照し、上書きのシフトを優先します。
+将来の遠隔地参加は、その章の参加者データで場所と登場条件を追加する必要があります。
+
+独立プレビューは `http://127.0.0.1:8123/remake/trpg-preview.html` を開く。
+PCはクリックとキーボード、タッチ端末は横持ち。会話はEnter/Space、ボタンはTab/Enter。
+
+本棚で2本を選択。表紙から戻る、途中中断、同じ物語の再挑戦に対応。
+音は初期OFF。「音 ON」で小さな環境音と卓の効果音を有効にする。設定はページ内のメモリだけで保持。
+
+### 世界一普通の一台
+
+標準の配役はGMひより、PLははじめ・アダム・つむぎ。架空の小冊子の作者は汐見しお。
+物語は港町ノーラの茶房「波止場の灯」。PLが演じるのはフィン・ニコ・ルカ、
+旅人はオル。本編人物・店舗を冒険の登場人物にしていない。
+
+1. 旅人の話を聞く（2d6）。
+2. 部屋の6箇所を調査し、3つ以上の手がかりから仮説を立てる。仲間への相談とメモ再読は自由。
+3. 香りと席を組み合わせ、一台を準備する（2d6）。
+4. 声のかけ方を選び、提供する（2d6）。結末と卓の振り返りを読む。
+
+どの判定も基本＋1。10以上は成功、7〜9はひと手間、6以下はハプニング。
+失敗しても次の場面へ進む。共有の連携札は2枚、切り札は一人一度。
+アダムは準備＋2、つむぎは提供＋2、はじめは結果を見てサイコロ1個を振り直す。
+切り札を使うたび連携札1枚を使うため、全員分を一度に使うことはできない。
+
+旅人の事情は静かな休息・懐かしい時間・会話の3種類。提案は3×3×3通り。
+結末は「雨音」「帰り道」「話の始まり」「一緒に見つける」の4種類。
+香りに加えて席・声かけが結果に効く。判定の出来は途中の出来事を変える。
+### サメは閉店を待たない
+
+標準の配役はGMサメちゃん、PLははじめ・ひより・つむぎ。作中の架空の作者が書いたサメ映画風台本。
+6つの調査地点のうち最大4箇所を選ぶ。3つ以上の手がかりで習性を見立て、道具・経路・最後の作戦を組み合わせる。
+新しい場所の調査で危機＋1、判定は成功＋0／ひと手間＋1／ハプニング＋2、最大6。
+危機5以上は卓の振り返りも変わる。再読・相談は危機も回数も使わない。見立てが合えば仕掛け判定に＋1。
+香り・振動・光を追う3種類の怪物、4結末。どの作戦・出目でも全員生還し、先へ進める。
+怪物の習性は架空の映画設定。現実のサメの生態説明ではない。ゴア表現やジャンプスケアは入れない。
+
+両作とも各約10分の想定で、実時間の制限はない。読み込み待ちや考える時間を減点しない。
+ページ更新後は本棚またはURLで指定した表紙から始まる。本編セーブ・手動枠・sessionStorageを読み書きしない。
+
+## 正本と構成
+
+- `data/trpg_catalog.json`: シナリオIDと正本ファイル、独立人物profileの参照。
+- `data/dialogue/trpg_club.json`: 店員の設立提案とキャラ別の対面勧誘の返答。
+- `data/dialogue/trpg_ordinary.json` / `trpg_shark.json`: 物語・調査・ルール・選択肢・選択への返答・台詞。
+  本編の `loadAll()` に登録しておらず、TRPGの開始時だけ読む。
+- `remake/js/trpg/campaign.js`: 設立・勧誘・入荷・購入・招集・一度きりの結末のルール。
+- `remake/js/trpg/club-view.js`: 対面で誘う、返答を読む、入部を確定する会話画面。
+- `remake/js/daily/trpg.js`: バー入口と、通常訪問後の勧誘フック。保存は訪問側が所有。
+- `remake/js/trpg/session.js`: DOM・ストレージに依存しない、seed付きのセッション処理。
+- `remake/js/trpg/view.js`: 会話、部屋の調査、メモ、切り札、サイコロ、結末の表示。
+- `remake/js/trpg/index.js`: 本編接続用の呼び出し窓。
+- `remake/js/trpg/preview.js` / `remake/trpg-preview.html`: 独立起動と画面縮尺。
+- `remake/js/trpg/library.js`: 2本の選択。本編人物のID・表示名は共有の正本を参照。
+- `remake/js/trpg/collection.js`: 独立開発プレビューの本棚、読み込み再試行、中断と再挑戦の管理。
+- `remake/js/scenes/trpg-room.js`: タイトルからの読み取り専用の本棚。画面撤去・ページ離脱で卓と音を破棄する。
+  履歴キャッシュからの復帰ではタイトルへ戻す。
+- `remake/js/trpg/presentation.js`: 正本人物とmanifestから表示名・立ち絵位置を導出。
+- `remake/js/trpg/audio.js`: 外部音源を使わない独自WebAudioの雨・波・卓の効果音。
+- `assets/backgrounds/trpg_*_room.png`: 生成背景2枚の原画。画面では同寸法のWebPを使用。
+  生成指示・原画と配信画像のハッシュ・目視QAは `asset_sources/trpg-duo/generation.json`。
+- `remake/css/trpg.css`: 1280×720ステージ内に限定した表示。
+
+人物設定と採用済み立ち絵の正本を直接参照。顔位置は既存manifestのh/b/aspectで合わせる。
+本編キャラ設定・立ち絵・BGMを置換していない。短編の作者・港町・役名は作品固有設定。
+
+## 呼び出す
+
+呼び出し側のCSSに `remake/css/trpg.css` を含め、空の画面領域を渡す。
+
+```js
+import { runTrpg } from "./trpg/index.js";
+
+const result = await runTrpg(host, {
+  scenarioId: "shark-last-order", // "ordinary-cup" が既定
+  signal: abortController.signal,
+});
+if (!result.cancelled) {
+  // scenarioId、ending、variant、plan、hypothesis、clues、checksなどを返す。
+  // 独立セッションの結果。本編ではcampaign-viewが読了時点で保存する。
+}
+```
+
+`runTrpg()` は卓を片付けた時に解決し、画面・タイマー・イベント・中断リスナー・所有する音声を除去する。
+再挑戦ボタンでは `replayRequested: true` を添える。再開の可否と本編の費用は呼び出し側が決める。
+ロード中もAbortでキャンセルし、事前Abortならリソースを読まない。単体呼び出しは指定した1本だけ読む。
+中断は `{ cancelled: true, scenarioId }`。単体の処理から本編の状態モジュールを読み込まない。
+`mountTrpg()` には `finished`、読み取り用の `snapshot()`、`destroy()` がある。
+
+独立した開発プレビューで2本の本棚を表示する場合は `mountTrpgCollection(host, { signal, closable: true, closeLabel })`
+を `trpg/collection.js` から呼ぶ。`ready` は初回読み込み後、`finished` は閉じた後に解決する。
+失敗時は画面内で再試行でき、読み込み中も閉じられる。`snapshot()` と `audioSnapshot()` は読み取り専用。
+
+QA用: `?scenario=ordinary-cup&seed=9&traveler=quiet`、`traveler=home`、`traveler=company`。
+サメ編は `?scenario=shark-last-order&seed=9&traveler=scent`、`traveler=vibration`、`traveler=light`。
+通常起動では事情と出目をseedから選ぶ。条件をURLで固定でき、再現に使える。
+`window.__trpg.snapshot()` は独立プレビューの読み取り窓。
+
+## 検証
+
+```bash
+node --test remake/test/trpg.mjs
+node --test remake/test/trpg_campaign.mjs
+node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
+python3 tools/lint_dialogue.py trpg_
+CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg.mjs
+CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg_main.mjs
+```
+
+ブラウザの既定URLは8123。`BASE_URL`・`ARTIFACT_DIR`で変更できる。
+PlaywrightとChromiumが必要。CIは `.github/workflows/trpg-preview.yml`。
+
+純関数11ケースは全486提案組み合わせ、8結末、全判定段階、二重操作、
+切り札と連携札、調査制限と危機、見立てボーナス、snapshotの分離、seed再現性を確認。
+ブラウザ16ケースはPC/横持ちタッチ、2本の往復、8結末、会話/調査/相談/メモ、仮説、
+振り直し、中断/再挑戦、縦持ち案内、音ON/OFF、ロード失敗からの再試行、背景再読込、
+API中断、画面内収まり、Storageアクセスゼロと既存保存の不変を確認。
+
+本棚・本編アダプターのブラウザ13ケースは、設立と勧誘のPC/タッチ、通常訪問での勧誘、勧誘中止・セーブ切替に加え、PC/タッチ両作の購入と読了、結末読了直後の保存、
+クリア後の再プレイ不可、二人卓、中断、アダムの代役台詞、必須GMの欠席、夜の予定衝突、
+タイトルの読み取り専用棚、通信再試行、画面撤去、本編のマップから入店・時間を使わない購入、
+独立試遊の保存不変と第1章ゲートを確認します。schema移行は実際のオート・手動保存APIで別途検証します。
+
+`ch1_facility_art.mjs` の雨描写4ケースは、改稿前の「緊張」という文字列ではなく、
+正本から選んだ台詞の全文と会話レイヤーの表示を待つ。背景・窓限定の雨・描画サイズの既存検査は維持する。
+本編素材のPC／タッチ全24ケースとGitHubのfacility-artがPASS。
+
+## 静的配信を切り出す
+
+```bash
+python3 tools/export_trpg_preview.py --commit HEAD --output /tmp/trpg-static --pr 487
+python3 -m http.server 8124 --directory /tmp/trpg-static
+```
+
+指定したGitコミットから実ファイルだけを切り出す。背景・立ち絵の使用表情・人物overlay・フォント・モジュールを含み、
+`SOURCE.json` に元リポジトリ・コミット・PR・ファイルハッシュを記録する。ソースはGitHubが正本。
+Sitesで配信する場合も、この出力は配信スナップショットだけとし、実装を分岐させない。
+
+物理端末/Safari、実際の10分所要時間は未確認。
+第2章本体・その街固有のマップへの登録は別作業。週間予定と価格は初期値で、今後の調整対象です。
+
+## Campaignの入口と保存
+
+`mountTrpgCampaign(host, {getState, save, nightBusy, readOnly})` は明示的に渡した状態だけを扱います。
+`readOnly` なら入荷・購入・クリアを一切変更しません。`daily/trpg.js` は本編state/saveを渡すアダプターです。
+`openTrpgBar()` が `{completed:true}` を返した場合、既にslotを消費し保存済みなのでcalendarは `slotsUsed:0` で受け取ります。
+本編の状態schemaは15。設立・入部のない旧セーブは未設立から始め、購入済み・クリア済みの本は保持します。旧無料試遊の履歴や好感度から入部を推測しません。
+
+検証: `node --test remake/test/trpg.mjs remake/test/trpg_campaign.mjs`、
+`node --experimental-vm-modules remake/test/trpg_campaign_save.mjs`、
+`node remake/test/browser/trpg_main.mjs`、`node remake/test/browser/trpg.mjs`。

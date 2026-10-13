@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const data = JSON.parse(readFileSync(new URL("../data/lover.json", import.meta.url), "utf8"));
-const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro", "kafuka"];
+const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro", "samechan"];
 const allowedStats = new Set(["sense", "charm", "insight", "technique", "guts"]);
 for (const id of ids) {
   const scene = data.dates?.[id];

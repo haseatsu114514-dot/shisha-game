@@ -1,6 +1,8 @@
 # 元音源（BGM・SE）
 
-ゲームで鳴らす最終ファイルは `assets/audio/bgm/`。ここは受け取った元データと出典の控え。
+ゲームで鳴らす最終ファイルはBGMが `assets/audio/bgm/`、SEが `assets/audio/se/`。ここは受け取った元データと出典の控え。
+
+制作・吸引・UIのCC0録音SEは [shisha-se/README.md](shisha-se/README.md) に出典・加工・原音と代用の区別を記録する。
 
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|

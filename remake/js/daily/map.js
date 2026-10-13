@@ -15,6 +15,7 @@ import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
 /** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
 function spotFace(s) {
@@ -40,7 +41,7 @@ function pinSymbol(s) {
 function pinCaption(s, locked) {
   if (locked) return "？？？";
   if (!knowsOwner(s) && s.unknownLabel) return s.unknownLabel;
-  return ["tonari", "rival", "shop", "kafuka"].includes(s.kind) ? `${s.label}へ行く` : s.label;
+  return ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${s.label}へ行く` : s.label;
 }
 
 let interrupt = null;
@@ -59,6 +60,7 @@ export function interruptMap(value) {
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
+ * @param opts.onBeforeGo (spot) => boolean | Promise<boolean>。false ならマップを開いたまま移動を中止する。
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
 export async function chooseSpot(opts = {}) {
@@ -98,7 +100,7 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -181,14 +183,25 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       renderInfo(s);
     };
 
-    const go = (s) => {
+    let moving = false;
+    const go = async (s) => {
+      if (moving || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
-      SE.select();
-      cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
-      retire(root);
-      info.classList.add("leaving");
-      interrupt = null;
-      resolve(s.id);
+      moving = true;
+      try {
+        // 移動演出・行動消費より前に、当該スポット固有の確認を行う。
+        if (onBeforeGo && !(await onBeforeGo(s))) return;
+        if (root.classList.contains("done")) return;
+        if (!availability(s).ok) { renderInfo(s); return; }
+        SE.select();
+        cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        retire(root);
+        info.classList.add("leaving");
+        interrupt = null;
+        resolve(s.id);
+      } finally {
+        moving = false;
+      }
     };
 
     for (const s of allSpots()) {
@@ -197,13 +210,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const face = locked ? null : spotFace(s);
+      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
@@ -211,8 +225,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s)]),
+          el("div.ico", [logo || (face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
+            ? el("span", { text: "？" }) : pinSymbol(s))]),
+          logo && face ? el("img.pin-face.pin-owner-face", { src: face, alt: "" }) : null,
         ]),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,

@@ -185,6 +185,7 @@ await suite("ch1-tournament", async check => {
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
     await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     await page.evaluate(() => window.preparing);
     const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.blueberry, flavor: T.core.state.flags._prep_flavor }));
@@ -197,12 +198,17 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(() => window.mixing);
     assert.deepEqual(await page.evaluate(() => cs.mix), { blueberry: 10, mint: 2 });
     assert.equal(await page.evaluate(() => T.core.state.flavorStock.blueberry), 51);
-    await page.evaluate(() => { cs.careHistory = [{ score: 90 }, { score: 95 }]; T.practice.recordPractice(cs, "midweek"); T.core.save(); });
+    await page.evaluate(async () => {
+      T.session.craftTest.auto = "good";
+      await T.practice.runCarePractice({ kind: "midweek" }); T.core.save();
+    });
     await page.reload(); await page.locator('[data-test="title-new"]').waitFor();
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
-    assert.deepEqual(await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1)), {
-      day: 7, kind: "midweek", success: true, mix: { blueberry: 10, mint: 2 }, adjustments: 2,
-    });
+    const record = await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1));
+    assert.equal(record.day, 7); assert.equal(record.kind, "midweek");
+    assert.equal(record.scope, "care"); assert.equal(record.success, true); assert.equal(record.served, false);
+    assert.deepEqual(record.mix, { blueberry: 10, mint: 2 }); assert.equal(record.adjustments, 2);
+    assert.deepEqual(record.scores, {}); assert.equal(record.careScores.length, 2);
   });
 
   for (const [label, viewport, mobile] of [

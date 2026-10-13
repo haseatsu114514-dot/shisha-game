@@ -254,7 +254,7 @@ try {
       epiHeart: /♡|みんとが|だんな様|彼女の彼女/.test(epiText), epiJump: epi.lines.at(-1),
       acceptOld: accept.includes("みんとにバレ"), rule: DB.characters.minto.appearance_rules.private_date,
       privateName: DB.characters.minto.private_name, outingExclude: outing.exclude_flag,
-      kafuka: DB.kafuka.profile.height_cm, kafukaAge: DB.kafuka.profile.age, kafukaRomance: DB.kafuka.profile.romance_available };
+      samechan: DB.samechan.profile.height_cm, samechanAge: DB.samechan.profile.age, samechanRomance: DB.samechan.profile.romance_available };
   });
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
@@ -264,8 +264,8 @@ try {
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
   // HF03
-  assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, true);
-  log("HF03 kafuka height 156cm / adult age kept / formal romance enabled (#442)");
+  assert.equal(shared.samechan, 156); assert.equal(shared.samechanAge, 20); assert.equal(shared.samechanRomance, true);
+  log("HF03 samechan height 156cm / adult age kept / formal romance enabled (#442)");
 
   // ================================================================ HF04/HF05 途中の質問と締めくくり
   // つむぎ: 友情寄りの答え → 締めくくりは友情の着地、贈り物あり、告白なし。再読で恋愛値を稼げない
@@ -495,7 +495,15 @@ try {
     const moneyGain = state.money - moneyBefore;
     // 店の画面: 販売一覧に出ない・売却タブは「売却不可」
     const opening = shop.openShop();
-    await new Promise((r) => setTimeout(r, 200));
+    const waitShop = async (selector) => {
+      const until = performance.now() + 10000;
+      while (!document.querySelector(selector) && performance.now() < until) await new Promise(r => setTimeout(r, 20));
+      const node = document.querySelector(selector);
+      if (!node) throw new Error(`Shop did not show ${selector}`);
+      return node;
+    };
+    (await waitShop('[data-test="shop-enter"]')).click();
+    await waitShop('[data-tab="equip"]');
     document.querySelector('[data-tab="equip"]').click();
     const listed = [...document.querySelectorAll(".shop-row b")].map((b) => b.textContent);
     document.querySelector('[data-tab="sell"]').click();

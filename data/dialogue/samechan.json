@@ -1,0 +1,1185 @@
+{
+  "profile": {
+    "id": "samechan",
+    "name": "波多野なぎさ",
+    "full_name": "波多野なぎさ",
+    "display_name": "サメちゃん",
+    "speech_style": {
+      "samechan": "一人称は「わし」、はじめへの呼びかけは「お主」。親しみのある「〜じゃ」「〜のじゃ」「〜じゃぞ」で話し、照れたり慌てたりすると言いよどむ。",
+      "korochan": "一人称は「余」。はじめは「勇者はじめ」、サメちゃんは「側近」と呼ぶ。王らしく短く断定する「〜である」「〜だ」、命令する「〜せよ」「〜しろ」の調子。本人の「じゃ」「のう」「おる」を使わず、落ち着いて本心をばらす。"
+    },
+    "role": "heroine_candidate",
+    "adult": true,
+    "nationality": "Japan",
+    "affiliation": "SHISHARK",
+    "romance_available": true,
+    "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
+    "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
+    "favorite_flavor": null,
+    "specialty_flavor": null,
+    "spriteScale": 0.91,
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "センス",
+      "notes": "競技の評価ではなく、客が過ごしやすい店を作るために試し、直す。大会のライバル枠へは追加しない。"
+    },
+    "visual_notes": "若々しく可愛らしい顔立ち。柔らかな半目、青い瞳のハイライト、笑うと目立つギザ歯。サメのフードと、王冠をつけたサメのぬいぐるみコロンブレ。",
+    "future_romance_id": "samechan",
+    "age": 20,
+    "height_cm": 156,
+    "intro_cutin": {
+      "title": "サメの王の側近",
+      "line": "お主、サメは好きか？",
+      "face": "smile",
+      "color": "#5aa8e6",
+      "name": "alias"
+    }
+  },
+  "nickname_message_id": "lime_naru_samechan_nickname",
+  "spot": {
+    "id": "shishark",
+    "kind": "samechan",
+    "charId": "samechan",
+    "label": "SHISHARK",
+    "area": "商店街の路地",
+    "x": 58,
+    "y": 38,
+    "theme": "shop",
+    "glyph": "鮫",
+    "face": "samechan",
+    "sub": "店へ顔を出す",
+    "unknownSub": "店へ顔を出す",
+    "cost": 3000,
+    "stamina": -12,
+    "minChapter": 2,
+    "desc": "シーシャーク。海とサメがモチーフの店。店主は大会より、客の居心地を大事にしている。",
+    "bg": "bg_shishark",
+    "preview": "bg_shishark"
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "samechan_first_encounter",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark_preparing_night.png",
+        "setting": "仕事や外出を終えた帰り道。本人から通称を聞いて連絡先を交換し、本名は後の私的な名乗りまで伏せる。",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道。路地を曲がると、大きなサメの看板が目に入った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "足場と養生の残る店先に、「開店準備中」の紙が貼られている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……こんなところに、店ができるんだ。SHISHARK？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメのフードを被った女の子が、入口の箱と通り道を見比べている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が合うと、サメのぬいぐるみを抱え直した。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主、サメは好きか？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "好きです。サメ映画も少し見ます",
+              "next": "shark_yes"
+            },
+            {
+              "text": "少し怖いです。でもその子はかわいいですね",
+              "next": "shark_scary"
+            }
+          ]
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "こっちはコロンブレ。コロちゃんじゃ。サメの王なのじゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女がぬいぐるみを顔の前まで持ち上げ、低い声に変えた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の玉座にふさわしい店を築け",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "分かっておる。まず箱が通路をふさいでおるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この小さい箱、壁際に動かしましょうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "助かるのじゃ。椅子を置いたら、通り道が狭くなっての"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "落ち着く店にしたいのに、入口でつまずかせては困る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱を寄せると、彼女は入口から椅子まで歩いて幅を確かめた。ぬいぐるみに向けて、小さくうなずく。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "店はSHISHARK。シーシャとシャークで、シーシャークと読むのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるほど。俺、tonariで働いてる、はじめです。今度の大会にも出る予定で"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "はじめ。覚えたのじゃ。わしは大会には興味がないが、お主の一杯はちょっと気になるのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そういえば、お名前は？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "名など重要ではないのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "強いていうなら、サメちゃんと呼ばれておる"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_samechan_nickname_known"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、ですね。よろしくお願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥で工具が、かたん、と鳴る。彼女の肩が跳ねた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……コロちゃんがびっくりしただけじゃ。わしは平気じゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "開店は、その大会が終わってからの予定じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "LIMEを交換せんか？ オープンしたら教えるから、来るのじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ぜひ。大会が終わったら、遊びに来ます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、席を用意して待つ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "コロちゃんも、そう申しておる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡先を交換すると、アカウント名は『サメちゃん』と出ていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_samechan"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_samechan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "開店したら、また顔を見せるのじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、ですね。開店のお知らせ、楽しみにしています"
+        }
+      ],
+      "branches": {
+        "shark_yes": [
+          {
+            "speaker": "samechan",
+            "face": "excited",
+            "text": "おお！ スピルバーグを尊敬しておるのじゃ。見えそうで見えん、あの間がの……最初から話すと――"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "側近よ、話が長い。開店前に夜が明けるぞ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "コロちゃん、まだそこまでは話しておらん"
+          }
+        ],
+        "shark_scary": [
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "怖ければ目をそらせばよいのじゃ。……わしは、たまに画面の外の演出を確かめておるだけじゃぞ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "側近よ、怖い場面で顔を伏せたのは誰だ？",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "コロちゃん、人聞きの悪いことを言うでない"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_shop_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_samechan_first_encounter",
+          "next_true": "familiar",
+          "next_false": "new_guest"
+        }
+      ],
+      "branches": {
+        "familiar": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "SHISHARKの工事は終わり、入口にはOPENの札が掛かっている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "扉の前で、彼女がコロちゃんを抱えてこちらに手を振った。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "はじめ！ よく来たのじゃ。お主にも見せたかったのじゃぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "開店、おめでとうございます。箱のあったところ、すっきりしましたね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "椅子をひとつ減らしたのじゃ。人数より、落ち着いて歩ける方を取った"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、席は確保してある",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "コロちゃん、客を急かしてはならん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、今日はゆっくりさせてもらいます"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ。さあ、入るのじゃ。どんな一杯にするか、中で聞かせておくれ"
+          }
+        ],
+        "new_guest": [
+          {
+            "speaker": "",
+            "text": "大きなサメの看板の下で、サメのフードを被った店主が手を振った。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "ようこそ、SHISHARKへ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "店主さんですか？ お名前は？"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "名など重要ではないのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "強いていうなら、サメちゃんと呼ばれておる"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_samechan_nickname_known"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_samechan"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "tonariで働いてる、はじめです。今日はゆっくり、一服させてください"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ！ コロちゃんも、待っておる。気に入ったら、また来るのじゃぞ"
+          },
+          {
+            "speaker": "",
+            "text": "一服を終えて、店のお知らせ用のLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_samechan"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_shop_repeat_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店先のコロちゃんの指定席が、少し低い位置に変わっていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "上に置くと、こちらを見るたび首を上げるじゃろう。王でも、客の首を疲れさせてはならん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっちの方が、目が合いますね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "よかろう。はじめの来訪を歓迎する",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "うむ。今日はここから見ておるそうじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_repeat_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "はじめ、映画の話をしてもよいか？ ひとつだけなのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひとつなら、ぜひ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう。あの――"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は店先で話し込みかけて、扉へ目をやった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……先に中へ入ろう。立たせたまま長話をしては、落ち着く店にならん。続きは座ってからじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_quiet_seat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席に腰を下ろすと、サメちゃんが照明を見上げた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "静かにしたい客が座ると、入口が少し気になるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "目線を外せるものがあると、落ち着きそうですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "大きな仕切りは、かえって窮屈じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "照明の向きとか、小さな工夫ならどうです？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……試してもよいかの。お主、見てくれるか？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、客の目で確かめよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "わかりました。いつもの客として座ってみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "光の向きが変わり、入口の明かりが目に入りにくくなった。"
+        },
+        {
+          "type": "choice",
+          "id": "samechan_quiet_seat_light",
+          "choices": [
+            {
+              "text": "今の方が落ち着きます",
+              "next": "settled"
+            },
+            {
+              "text": "もう少しだけ暗くしてみますか",
+              "next": "softer"
+            }
+          ]
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……よかった。お主に聞いて正解じゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また座って、確かめさせてください"
+        }
+      ],
+      "branches": {
+        "settled": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "これなら落ち着けます。長居したくなる感じです"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "ほんとにそう思うか？ ……なら、この向きにするのじゃ"
+          }
+        ],
+        "softer": [
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "うむ。手元が見える明るさは、残したいのう"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "少しだけ光を落とす。机の上は明るいままだ。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "これなら本も読めるし、ゆっくりできますね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_shop_closing_check",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えた頃、カウンターに小さなメモが並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店を閉める前に、点検ですか？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "今日の気になる所を書いておったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "けっこう細かいですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "店は、毎日少しずつ良くなるものじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、休息も王命である",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、これが終わったら休むのじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "コロちゃんが言うなら、休憩しましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……お主までコロちゃんの味方か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店が好きなんですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "好きじゃ。……だから、少し怖いのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何がですか？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "客が、ここを好きになれんかったら、と思うと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それを考えられる店なら、俺はまた来ますよ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……なら、明日も直すところを探すのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめ、また来るがよい",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はメモを束ねて、ようやく隣の椅子に座った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服が落ち着いた頃、サメちゃんがコロちゃんを膝に戻した。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主の顔を見ると、少し安心するのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……店のこと以外も、話してよいものかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もちろん。サメちゃんの話、聞きたいです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "店が休みの日でも……わしに会いに来てくれるかの？"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_samechan",
+          "romance_char": "samechan",
+          "choices": [
+            {
+              "text": "サメちゃんに会いたいから、来ます",
+              "next": "romance",
+              "romance": 1
+            },
+            {
+              "text": "またサメ映画の話、聞かせてください",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また同じ席で、一服しましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。お主の席を、空けておくのじゃ"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "わ、わしにか？ ……そうか"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "側近よ、煙で顔を隠すな",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "コロちゃん！ ……わしも、お主と話すのが楽しみじゃ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ！ 次はとっておきの一本を教えるのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、余の友としても歓迎する",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "光栄です。店のことも、また相談してください"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "private_scene": true,
+        "bond_finale": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のSHISHARK。サメちゃんが、いつもの席に小さな包みを置いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主、今日は手伝いを頼む日ではないのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "これは、お主に持っていてほしいものじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みには、素焼きのハガルが入っていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "店を開く前、試すために用意しておったものじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "まだ何の香りにも染まっておらん。お主の一台で、育ててほしいのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "大事に使います。ありがとうございます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主が座る席も、煙の向こうに見える顔も"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "わし一人では、気づけぬことがあったのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "王の席は、余が決めたのである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃんの席も、もちろん大事じゃ！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "samechan",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを胸に抱えて、灯りの落ちた店を出た。あの席で過ごした時間が、手の中に残っている。"
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "samechan",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "店の外でも、お主と一緒にいたいのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "俺もです。また二人で、一服しましょう"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "お主となら、店を離れても話してみたいのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（店の外で、サメちゃんと。俺は、どんな時間を過ごしたいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_samechan",
+            "romance_char": "samechan",
+            "choices": [
+              {
+                "text": "二人だけの時間を過ごしたい",
+                "next": "romance",
+                "romance": 1
+              },
+              {
+                "text": "友達として、これからも話したい",
+                "next": "friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "romance": [
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "……二人だけ、か"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "わしも、お主とそういう時間を過ごしたいのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、側近の返事を聞き届けよ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "コロちゃん！ わしが言うたじゃろう！"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ。友として、これからも頼むのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。困った時は、俺にも相談してください"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "次に来た時も、あの席を空けておくのじゃ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "samechan_future_private_swimming",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "future_only": false,
+        "private_scene": true,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……海で泳ぐのは、あまり得意ではないのじゃ。サメ好きと泳ぎは、別の話じゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、足のつくところでゆっくりしましょうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_samechan_swimming_known"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_future_private_name",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "future_only": false,
+        "private_scene": true,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃん、本当のお名前って聞いてもいいですか？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "知ってどうするのじゃ。サメちゃんで十分じゃろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつも会ってるのに、知らないままなのも寂しいなって"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……そんなことを言うでない"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "波多野なぎさじゃ、……一度しか言わんぞ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_samechan_name_known"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なぎささん。教えてくれて、ありがとうございます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……いきなり呼ぶでない。心の準備というものがあるじゃろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメのフードを引き下げたが、隠しきれない頬は赤い。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、もう一度呼ばれることを望んでいる",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ 余計なことを言うでない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……なぎささん"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。お主が呼ぶなら、それでよい"
+        }
+      ]
+    }
+  ],
+  "lime": [
+    {
+      "id": "lime_naru_samechan_nickname",
+      "sender": "naru",
+      "trigger_condition": "flag",
+      "trigger_flag": "_samechan_first_encounter",
+      "exclude_flag": "_samechan_nickname_known",
+      "priority": 3,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "路地のSHISHARK、見かけた？ サメのフード被ってぬいぐるみ連れてる店主、俺はサメちゃんって呼んでる。"
+        },
+        {
+          "sender": "naru",
+          "text": "映画の話になると長いけど、店のことは本当に真面目に考えてる。"
+        },
+        {
+          "sender": "naru",
+          "text": "大会の勝ち負けには興味ないってさ。俺も客として遊びに行きたい。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "荷物運びを、少し手伝いました",
+          "response": "そうか。助かったと思う。サメちゃん、一人で抱え込みがちだからな。",
+          "affinity": 0
+        },
+        {
+          "text": "コロちゃんにも歓迎されました",
+          "response": "王様にも気に入られたか。じゃあ、もう顔なじみだな。",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_samechan_preparing_thanks",
+      "sender": "samechan",
+      "trigger_condition": "flag",
+      "trigger_flag": "_samechan_first_encounter",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
+        },
+        {
+          "sender": "samechan",
+          "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "通りやすくなってよかったです",
+          "response": "うむ。座る前から疲れさせては、落ち着く店にならんからの。",
+          "affinity": 1
+        },
+        {
+          "text": "準備、無理しすぎないでくださいね",
+          "response": "ありがとうなのじゃ。……箱を持つ時は、はじめの言葉を思い出しておる。",
+          "affinity": 1
+        }
+      ],
+      "chapter": 1
+    },
+    {
+      "id": "lime_samechan_opening",
+      "sender": "samechan",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_shishark_opened",
+      "priority": 4,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "SHISHARK、いよいよオープンじゃ！ 大会おつかれさま。コロちゃんと、はじめが来るのを待っておるぞ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "開店おめでとう。遊びに行きます！",
+          "response": "うむ、嬉しいのじゃ。お主がゆっくりできる席を用意しておく。",
+          "affinity": 1
+        },
+        {
+          "text": "コロちゃんにもお祝いを伝えてください",
+          "response": "「余は祝福を受け取った。側近も喜んでいる」……こ、コロちゃん！",
+          "affinity": 1
+        }
+      ]
+    }
+  ],
+  "implementation_notes": {
+    "first_encounter": "第1章DAY8以降の固定イベント・当夜予約・告白・在宅がない帰り道。重なった時は次の空いた帰り道へ繰り越す。",
+    "chapter2_boundary": "現行リメイクは第1章まで。章2用の店訪問とminChapter条件は準備するだけで、章2を遊べる状態にはしない。",
+    "future_private": "既存の泳ぎの原稿はlover_samechan_lv3、本名の原稿はlover_samechan_lv4から正式接続。読了と知識は実際に読んだものだけを記録し、既知の本名は問い直さない。恋人絆Lv1〜5はsamechan-bonds.jsで未読の前段から一つずつ読む。",
+    "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
+    "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。",
+    "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。"
+  }
+}

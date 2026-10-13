@@ -1,0 +1,58 @@
+name: Hiyori axe art regressions
+on:
+  pull_request:
+    paths:
+      - 'asset_sources/hiyori-axe-issue477/**'
+      - 'assets/sprites/characters/hiyori/**'
+      - 'remake/img/sprites/characters/hiyori/**'
+      - 'assets/backgrounds/bg_axe_lounge_night.png'
+      - 'remake/img/backgrounds/bg_axe_lounge_night.webp'
+      - 'assets/ui/axe_throw/**'
+      - 'remake/img/ui/axe_throw/**'
+      - 'remake/data/manifest.json'
+      - 'remake/tools/build_images.py'
+      - 'remake/test/browser/hiyori_axe_assets.mjs'
+      - '.github/workflows/hiyori-axe-art.yml'
+permissions:
+  contents: read
+concurrency:
+  group: hiyori-axe-art-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  art:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser and image validator
+        run: |
+          python3 -m pip install Pillow==12.0.0
+          npm ci --prefix remake/test/browser
+          cd remake/test/browser
+          npx playwright install --with-deps chromium
+      - name: Check adopted files and lossless additions
+        run: python3 asset_sources/hiyori-axe-issue477/validate.py
+      - name: Actual PC and touch artwork, save migration and LIME
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/hiyori-art-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          COMPARISON_DIR=.codex/artifacts/remake-browser/hiyori-axe-poses node remake/test/browser/hiyori_axe_assets.mjs
+          node remake/test/browser/save_load.mjs
+          node --experimental-vm-modules remake/test/lime_consistency.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: hiyori-axe-art-results
+          path: |
+            .codex/artifacts/remake-browser/hiyori-axe*
+            .codex/artifacts/remake-browser/save-load*
+            ${{ runner.temp }}/hiyori-art-preview.log
+          retention-days: 7

@@ -73,7 +73,8 @@ export function startTemp(cs) {
 /** 旧セッションに前工程の温度が無いときも、その一台の中心から調整を始める。 */
 export function careStartTemp(cs) {
   const center = temperatureBands(cs).center;
-  const previous = Number.isFinite(cs.care?.temp) ? cs.care.temp : Number.isFinite(cs.pull?.temp) ? cs.pull.temp : center;
+  const previous = Number.isFinite(cs.care?.temp) ? cs.care.temp : Number.isFinite(cs.pull?.temp) ? cs.pull.temp
+    : Number.isFinite(cs.practiceSource?.temperature) ? cs.practiceSource.temperature : center;
   return cs.careRound ? Math.max(.14, previous - .075) : Number.isFinite(cs.pull?.temp) ? cs.pull.temp : center;
 }
 
@@ -93,7 +94,8 @@ const MODES = {
 export function runPull(cs) { return pullGame(cs, MODES.pull); }
 export async function runCare(cs, { round = 0 } = {}) {
   cs.careRound = round;
-  await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
     cs.careHistory[round - 1] = { ...cs.care, coalsDetail: cs.careCoals ? { ...cs.careCoals } : null };
@@ -378,7 +380,7 @@ async function pullGame(cs, mode) {
     cs.careCoals = { count: coals, picks };
     await sleep(autoSkill() ? 40 : 450);
     choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
-    SE.coalSnip(); SE.crackle();
+    SE.coalPlace();
     const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = performance.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       const k = Math.min(1, (performance.now() - started) / dur);
@@ -445,7 +447,7 @@ async function pullGame(cs, mode) {
   setBenchDraw(cs, null);
   render();
   unkey();
-  if (abandoned) return;
+  if (abandoned) return false;
   if (failed) {
     const text = FAIL_TEXT[failed];
     readout.textContent = `${text.title}……！`;
@@ -457,7 +459,7 @@ async function pullGame(cs, mode) {
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
     tickerSay(text.ticker);
     await resultCard(panel, { title: text.title, lines: [text.line, `${pulls}回吸った`] });
-    return;
+    return true;
   }
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, mode.safe);
@@ -475,7 +477,7 @@ async function pullGame(cs, mode) {
         `${pulls}回吸った`,
       ],
     });
-    return;
+    return true;
   }
   tickerSay(inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
   await resultCard(panel, {
@@ -486,4 +488,5 @@ async function pullGame(cs, mode) {
       `${pulls}回吸った`,
     ],
   });
+  return true;
 }

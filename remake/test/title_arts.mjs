@@ -1,4 +1,4 @@
-// 実際の起動・再表示、採用した7人21枚、PC/スマホのメニューとセーブ不変を確認。
+// 実際の起動・再表示、採用した7人23枚、PC/スマホのメニューとセーブ不変を確認。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -52,10 +52,12 @@ await suite("title-arts", async (check) => {
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
-      assert.equal(arts.length, 21);
-      assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", "kafuka", "mashiro", "minto", "rin", "tsumugi"]);
+      assert.equal(arts.length, 23);
+      const sharkOwner = arts.find(art => art.file.endsWith("_01_shishark_test_run.png")).character;
+      assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", sharkOwner, "mashiro", "minto", "rin", "tsumugi"].sort());
       assert.deepEqual(arts.filter(art => art.character === "hiyori").map(art => art.file).sort(), [
         "title_art_hiyori_01_twilight_walk.png", "title_art_hiyori_02_window_pause.png", "title_art_hiyori_03_after_rain.png",
+        "title_art_hiyori_04_daylight_bookshop.png", "title_art_hiyori_05_ramen_break.png",
       ]);
       assert.ok(!arts.some(art => art.file.includes("rin_02")), "The refinement-pending Rin image was adopted");
       const before = await storageSnapshot(page);

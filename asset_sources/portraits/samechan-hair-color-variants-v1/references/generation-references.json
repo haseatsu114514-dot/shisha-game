@@ -1,0 +1,22 @@
+[
+  {
+    "actual_path": "/workspace/shisha-game-samechan-hair/asset_sources/portraits/samechan-hair-color-variants-v1/references/base-source.png",
+    "role": "Latest selected outfit, identity, hairstyle, composition and expression authority. Only human hair pigments may change. Pending design from PR #206, not an approved render baseline.",
+    "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+  },
+  {
+    "actual_path": "/workspace/shisha-game-samechan-hair/asset_sources/portraits/samechan-hair-color-variants-v1/references/base-face-native.png",
+    "role": "Native face crop of the same base: preserve face and eyes, modify hair pigments only.",
+    "sha256": "716d2add183a5fba601bfd19576ac5fd471db385c5afea816f823b70aee93e26"
+  },
+  {
+    "actual_path": "/workspace/shisha-game-samechan-hair/assets/sprites/characters/minto/chr_minto_normal.png",
+    "role": "Approved Minto rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+    "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+  },
+  {
+    "actual_path": "/workspace/shisha-game-samechan-hair/assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "role": "Approved Ageha rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+    "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+  }
+]

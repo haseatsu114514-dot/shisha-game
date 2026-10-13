@@ -1,0 +1,51 @@
+{
+  "file": "trailer/chapter-one-ova.mp4",
+  "bytes": 10275165,
+  "sha256": "448297ee767ead734766044165479a8ec8adc893efac2f36ae0398e9cb01e391",
+  "duration_seconds": 42.633333,
+  "streams": [
+    {
+      "codec": "h264",
+      "type": "video",
+      "width": 1280,
+      "height": 720,
+      "sample_rate": null,
+      "frame_rate": "30/1"
+    },
+    {
+      "codec": "aac",
+      "type": "audio",
+      "width": null,
+      "height": null,
+      "sample_rate": "48000",
+      "frame_rate": "0/0"
+    }
+  ],
+  "audio": {
+    "all": {
+      "start": 0,
+      "end": 42.624,
+      "peak_dB": -9.463308821495325,
+      "rms_dB": -33.94740607833134
+    },
+    "music": {
+      "start": 12,
+      "end": 16,
+      "peak_dB": -9.463308821495325,
+      "rms_dB": -31.073887406568478
+    },
+    "title": {
+      "start": 33,
+      "end": 35,
+      "peak_dB": -11.776478317355688,
+      "rms_dB": -31.45196945342246
+    },
+    "final_silence": {
+      "start": 39,
+      "end": 41,
+      "peak_dB": -180.0,
+      "rms_dB": -180.0
+    }
+  },
+  "pass": true
+}

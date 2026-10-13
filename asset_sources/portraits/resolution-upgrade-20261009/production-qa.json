@@ -344,10 +344,10 @@
       ]
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "normal",
       "attempt": 2,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/normal-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/normal-source.png",
       "source_sha256": "c5ff1d4e69c0b2dba41f1128cd421ce9adea0078a81d27e908d5ed266f91115f",
       "source_canvas_px": [
         1085,
@@ -355,15 +355,15 @@
       ],
       "source_figure_height_px": 1414,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "099125830696dbce5c051a40dd250ec3802727ba439bd25d4ab9868ffefa640b",
+      "prompt_sha256": "50c4136d771b63ae6ef83a17a813dc4b0b30081a4a27bc3ba4e17ac1ccf259b7",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_normal.png",
       "runtime_png_sha256": "602b983ba598473c5a2225039014e4609e302e5df0e49450395e783c14505bb3",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_normal.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_normal.webp",
       "runtime_webp_sha256": "a728a27dda3aed98bf1146de43364d419764d6e7090332019cc95d7dcfd7b219",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -373,7 +373,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_normal.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_normal.png",
       "previous_runtime_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
       "browser_viewports_passed": [
         {
@@ -384,13 +384,19 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "099125830696dbce5c051a40dd250ec3802727ba439bd25d4ab9868ffefa640b",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "smile",
       "attempt": 1,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/smile-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/smile-source.png",
       "source_sha256": "57491d971cb4f68b19ae0dc9612f39a4b5c4e9483bcff425370c210c5a650f11",
       "source_canvas_px": [
         1085,
@@ -398,15 +404,15 @@
       ],
       "source_figure_height_px": 1398,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "d2673bf39b68adee12f3c66ab9fdd7ea50099bc4856865e5027fa4313a21b5ff",
+      "prompt_sha256": "ef93c2b9ebbbf0def813ca436ceeed6e5d295f1c226e5e2f372fce3e1440a09a",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_smile.png",
       "runtime_png_sha256": "7b3056bd141a4d0c4b8d48f33d880befe039496d9a5111384379c9c83793ff48",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_smile.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_smile.webp",
       "runtime_webp_sha256": "3af941fb783522cc430401a2e6f5aef93586079ec78bbef60016aa562b1de072",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -416,7 +422,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_smile.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_smile.png",
       "previous_runtime_sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
       "browser_viewports_passed": [
         {
@@ -427,13 +433,19 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "d2673bf39b68adee12f3c66ab9fdd7ea50099bc4856865e5027fa4313a21b5ff",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "serious",
       "attempt": 1,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/serious-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/serious-source.png",
       "source_sha256": "abb464b17770a16c1668abbe08c0714e62674df8a8646642ffbb54e579edb907",
       "source_canvas_px": [
         1085,
@@ -441,15 +453,15 @@
       ],
       "source_figure_height_px": 1419,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "afa2bbd90649180f3346bd838524b553f5f41cf746d356d278eacbc24fec4797",
+      "prompt_sha256": "7690f5c4ba7138a72424394aaee890aa370e59d98ee5a45703d74a9e3cc9825c",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_serious.png",
       "runtime_png_sha256": "c132304c7f44762ecb29b07ecfb1a693e3599fc1e71d90f3ca3c337e002982ab",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_serious.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_serious.webp",
       "runtime_webp_sha256": "d0ddb21226b4d7f559ec11f187a07772c46af782bd6e7128b33734feb7d5a05c",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -459,7 +471,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_serious.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_serious.png",
       "previous_runtime_sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
       "browser_viewports_passed": [
         {
@@ -470,13 +482,19 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "afa2bbd90649180f3346bd838524b553f5f41cf746d356d278eacbc24fec4797",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "surprise",
       "attempt": 1,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/surprise-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/surprise-source.png",
       "source_sha256": "f323be79c2adc7e5c15b8785aee3959ed71f35119dc1ea8f23612c05d15aaf35",
       "source_canvas_px": [
         1085,
@@ -484,15 +502,15 @@
       ],
       "source_figure_height_px": 1426,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "33b72ad89cd81a11906e8c21558749c1e287976387f550daa458baaf8854cd24",
+      "prompt_sha256": "54522e0f383e217cab9da5cb5476934566e4dfe850801715078ac15b5fd70fa6",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_surprise.png",
       "runtime_png_sha256": "1f265cea25d0f156b5af491469946cbede3d8edfc153e755596056d83974037a",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_surprise.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_surprise.webp",
       "runtime_webp_sha256": "5c6220a3ab34085d450dfca6c8e3db12f3c833181e4421e1347d87a5d95ea023",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -502,7 +520,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_surprise.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_surprise.png",
       "previous_runtime_sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
       "browser_viewports_passed": [
         {
@@ -513,13 +531,19 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "33b72ad89cd81a11906e8c21558749c1e287976387f550daa458baaf8854cd24",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "excited",
       "attempt": 1,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/excited-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/excited-source.png",
       "source_sha256": "fe4206ef1784268ee394cfee22bba8ec6491dc46d0f77451c3c7a1b245b35f0e",
       "source_canvas_px": [
         1085,
@@ -527,15 +551,15 @@
       ],
       "source_figure_height_px": 1425,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "4c833be248fc07dab7c03fbf81dfb4dc9fb9a727a3a611bd0855830e30d0a1b6",
+      "prompt_sha256": "9eae9bab00980717415c8abed1f3f045187b44d994025a8e8d1a37f8369aebcf",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_excited.png",
       "runtime_png_sha256": "76107557e2e2270f90b7ce337c15d31986a7e507c671cb1ad069f643666dc3e9",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_excited.webp",
       "runtime_webp_sha256": "c458e41bc1877a03e00c5980b15d6d900419ca6a29081b66488406a980707269",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -545,7 +569,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_excited.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_excited.png",
       "previous_runtime_sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
       "browser_viewports_passed": [
         {
@@ -556,13 +580,19 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "4c833be248fc07dab7c03fbf81dfb4dc9fb9a727a3a611bd0855830e30d0a1b6",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
-      "character": "kafuka",
+      "character": "samechan",
       "face": "ventriloquism",
       "attempt": 1,
-      "source": "asset_sources/portraits/kafuka-remaster-v2/ventriloquism-source.png",
+      "source": "asset_sources/portraits/samechan-remaster-v2/ventriloquism-source.png",
       "source_sha256": "dce587a57ff7c649e0e881d6a221ae4e4c61d03b8a66c2fd3c08b1135c4c231e",
       "source_canvas_px": [
         1085,
@@ -570,15 +600,15 @@
       ],
       "source_figure_height_px": 1382,
       "source_matches_original_tool_output": true,
-      "prompt_sha256": "dcaca11698c4f3c24fb75d1dd5df8e2587999e96f091458d122c463150e1699d",
+      "prompt_sha256": "fdd2e0caa2023921be2b468044dfee7b1f290ce3ce4990e042e4583ecf3f5b85",
       "four_reference_hashes_verified": true,
       "runtime_canvas_px": [
         896,
         1200
       ],
-      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+      "runtime_png": "assets/sprites/characters/samechan/chr_samechan_ventriloquism.png",
       "runtime_png_sha256": "120fd34342c41ce0a73079f5b9eb31d3afc690e53f98fee2426dc1f2abac6144",
-      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_ventriloquism.webp",
+      "runtime_webp": "remake/img/sprites/characters/samechan/chr_samechan_ventriloquism.webp",
       "runtime_webp_sha256": "05b619beabc10c41a8b75ea2e33270bd1149fb8caf7220a888f16d756c835e58",
       "webp_rgba_pixels_equal_png": true,
       "whole_image_alignment_translation_px": [
@@ -588,7 +618,7 @@
       "runtime_matches_fitted_preview_with_translation_only": true,
       "figure_height_difference_from_original_px": 0,
       "bottom_difference_from_original_px": 0,
-      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_ventriloquism.png",
+      "previous_runtime": "asset_sources/portraits/samechan-remaster-v2/previous-runtime/chr_samechan_ventriloquism.png",
       "previous_runtime_sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
       "browser_viewports_passed": [
         {
@@ -599,7 +629,13 @@
           "width": 591,
           "height": 1280
         }
-      ]
+      ],
+      "original_prompt_sha256": "dcaca11698c4f3c24fb75d1dd5df8e2587999e96f091458d122c463150e1699d",
+      "prompt_revision": {
+        "date": "2026-10-12",
+        "issue": 485,
+        "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+      }
     },
     {
       "character": "maezono",
@@ -1507,7 +1543,7 @@
   ],
   "alignment_final_dry_run": {
     "tsumugi": 0,
-    "kafuka": 0,
+    "samechan": 0,
     "maezono": 0,
     "sumi": 0,
     "mashiro": 0,

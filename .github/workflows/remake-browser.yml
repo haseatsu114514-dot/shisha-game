@@ -36,7 +36,7 @@ concurrency:
 jobs:
   chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       TEST_REF: ${{ github.sha }}
     steps:
@@ -91,10 +91,17 @@ jobs:
           node remake/test/hiyori.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
-          node remake/test/kafuka_portrait.mjs
-          node remake/test/browser/kafuka_entry.mjs
-          node remake/test/browser/kafuka_confession.mjs
+          node remake/test/samechan_portrait.mjs
+          node remake/test/browser/samechan_entry.mjs
+          node remake/test/browser/samechan_confession.mjs
           node remake/test/browser/affinity_gates.mjs
+          node remake/test/browser/relationship_ui.mjs
+      - name: Minto identity, private outing and relationship progression
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/minto_progression.mjs
       - name: Tsumugi fixed events, legacy saves and continuous chapter days
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
@@ -108,6 +115,14 @@ jobs:
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
           node remake/test/browser/tutorial_transition.mjs
+      - name: Adopted store logos and entry cards on PC and mobile
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          SHOTS: .codex/artifacts/remake-browser/store-logos
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/store_logos.mjs
+          node remake/test/browser/shop_ui.mjs
       - name: Continue captions, asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
@@ -198,4 +213,52 @@ jobs:
           path: |
             .codex/artifacts/remake-browser/eve/
             ${{ runner.temp }}/eve-preview.log
+          retention-days: 7
+
+  practice:
+    name: Chapter 1 focused practice and saves
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.sha }}
+      ARTIFACT_DIR: .codex/artifacts/remake-browser/practice
+      SHOTS: .codex/artifacts/remake-browser/practice
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned test dependencies and Chromium
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: DAY3 review, DAY7 care, legacy history and interrupted saves
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/practice-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/ch1_practice.mjs
+      - name: Preserve practice screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ch1-practice-results
+          path: |
+            .codex/artifacts/remake-browser/practice/
+            ${{ runner.temp }}/practice-preview.log
           retention-days: 7

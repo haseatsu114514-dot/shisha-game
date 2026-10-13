@@ -1,0 +1,31 @@
+{
+  "id": "cg_minto_cheki",
+  "event": "interaction_minto_noon_01",
+  "nativeSize": [
+    1672,
+    941
+  ],
+  "deliverySize": [
+    1920,
+    1080
+  ],
+  "quality": 74,
+  "runtimeBytes": 183848,
+  "nativeSha256": "43ce95cce7b66c82aade7d6316fd048fe53d9f8d05eb21ed7336a5c4daa0df34",
+  "sourceSha256": "9f7fe9b77f06caae2320b45fad3089255b31053ad155b41e6612069f35cb6502",
+  "runtimeSha256": "b13ed1bf46b275a639b91522d4055581066497b0fc6cedcfecc9a266e9bca043",
+  "before": {
+    "registered": false,
+    "fileExists": false
+  },
+  "selection": {
+    "worker": "codex-cg360-20261012-7242bf5ca07e",
+    "status": "selected after visual QA; owner approval is not claimed",
+    "faces": "canonical Minto work portrait and Hajime portrait",
+    "outfits": "work dress and black cap/hoodie",
+    "scene": "spontaneous friendly two-shot, no romance-only memory",
+    "hardware": "none in the crop; background stems removed",
+    "hands": "Minto V sign checked",
+    "firstVisitCheki": "preserved without changes"
+  }
+}

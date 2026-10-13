@@ -721,18 +721,18 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-## サメちゃん（kafuka）
+## サメちゃん（samechan）
 
 ### 29. サメちゃん・normal
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (normal): relaxed half-lidded blue eyes and a small toothy smile, hugging the shark plush in one arm, other hand raised in a little wave
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -747,14 +747,14 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 
 ### 30. サメちゃん・smile
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_smile.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_smile.png` ／ ② `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (smile): both eyes closed with joyful curved lids and a small open toothy smile, same plush and wave
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -769,14 +769,14 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 
 ### 31. サメちゃん・serious
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_serious.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_serious.png` ／ ② `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (serious): softly half-lidded intent eyes, small closed pout, index finger raised in a small explanation, plush in the other arm
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -791,14 +791,14 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 
 ### 32. サメちゃん・surprise
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_surprise.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_surprise.png` ／ ② `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (surprise): round wide blue eyes and a small startled open mouth, free hand slightly open
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -813,14 +813,14 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 
 ### 33. サメちゃん・excited
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_excited.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_excited.png` ／ ② `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (excited): breathless excited talking face, eyes a little more open, small open panting mouth with one or two shark teeth, a tiny sweat bead, index finger raised
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -835,14 +835,14 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 
 ### 34. サメちゃん・ventriloquism
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/samechan/chr_samechan_ventriloquism.png` ／ ② `assets/sprites/characters/samechan/chr_samechan_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Character: Samechan (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
 Expression and pose to keep exactly as image 1 (ventriloquism): holding the shark plush up in front of her face with both hands so the plush covers her whole face, ventriloquist pose
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.

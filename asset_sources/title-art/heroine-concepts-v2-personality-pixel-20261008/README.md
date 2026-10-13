@@ -21,7 +21,7 @@
 | みんと | [ミント色のお出迎え](minto/01-cafe-welcome.png) | [チェキ撮影コーナー](minto/02-instant-photo.png) | [休日の窓辺](minto/03-private-window.png) | [閉店後の素顔](minto/04-after-hours.png) |
 | アゲハ | [ピンクの試香席](ageha/01-professional-taste.png) | [昼の商店街で](ageha/02-grocery-smile.png) | [撮影スタジオの一瞬](ageha/03-model-moment.png) | |
 | 凛 | [黒い試香室](rin/01-night-tasting.png) | [輸入サンプルを選ぶ](rin/02-flavor-samples.png) | [深夜の窓辺](rin/03-late-coffee.png) | |
-| サメちゃん | [シーシャークの試運転](kafuka/01-shishark-test-run.png) | [コロちゃんとサメ映画](kafuka/02-shark-movie.png) | [水族館でコロちゃんと](kafuka/03-aquarium.png) | |
+| サメちゃん | [シーシャークの試運転](samechan/01-shishark-test-run.png) | [コロちゃんとサメ映画](samechan/02-shark-movie.png) | [水族館でコロちゃんと](samechan/03-aquarium.png) | |
 
 背景は、つむぎの創作と自然、ましろのレトロ喫茶と生活、みんとのミント色の店と休日、アゲハの都会的なポップさ、凛の無機質な試香室、サメちゃんの海とサメ映画で分けた。外の景色は現代日本の川辺・駅・商店街・水族館とし、旧案の似た欧州風の街並みを引き継がない。
 
@@ -40,7 +40,7 @@ HTMLを確認するときはリポジトリをHTTPで配信する。画面のフ
 ![みんと4案](review/minto.png)
 ![アゲハ3案](review/ageha.png)
 ![凛3案](review/rin.png)
-![サメちゃん3案](review/kafuka.png)
+![サメちゃん3案](review/samechan.png)
 
 ## 個別の実物シーシャ
 

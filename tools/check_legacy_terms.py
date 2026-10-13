@@ -7,10 +7,13 @@ lint_dialogue.py が対話 JSON だけを見るのに対し、こちらはソー
 
 使い方:
     python3 tools/check_legacy_terms.py          # 全対象走査
+    python3 tools/check_legacy_terms.py --characters-only  # キャラ名・みんとの外見だけ検証
     python3 tools/check_legacy_terms.py --fix     # 安全な置換だけ自動適用（dry-run表示後）
 """
 
+import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -82,6 +85,51 @@ DOC_FILES = {
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 
+# セーブ互換処理・その回帰テスト・この検査定義だけに旧名のリテラルを許す。
+LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
+IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
+IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
+
+
+def scan_character_identity(errors: list):
+    """素材のファイル名・疎チェックアウト未取得分も含め、追跡対象の旧名を防ぐ。"""
+    result = subprocess.run(
+        ["git", "-C", str(REPO), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        check=True, stdout=subprocess.PIPE,
+    )
+    for rel in sorted(set(result.stdout.decode("utf-8").split("\0")) - {""}):
+        if LEGACY_CHARACTER_RE.search(rel):
+            errors.append(f"{rel}: 旧キャラIDのファイル名 → samechan に統一")
+        if rel in IDENTITY_FIXTURES:
+            continue
+        path = REPO / rel
+        if path.suffix not in IDENTITY_TEXT_EXTENSIONS:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        if rel == "remake/js/core/state.js":
+            # この関数の外に互換IDや旧表記を増やすことは許さない。
+            text = re.sub(r"^function migrateSamechanIdentity\(value\) \{.*?^\}",
+                          lambda match: "\n" * match.group().count("\n"), text, flags=re.MULTILINE | re.DOTALL)
+        for number, line in enumerate(text.splitlines(), 1):
+            if LEGACY_CHARACTER_RE.search(line):
+                errors.append(f"{rel}:{number}: 旧キャラ名・ID → サメちゃん / samechan に統一")
+            if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
+                # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
+                if not ("旧" in line and "誤" in line):
+                    errors.append(f"{rel}:{number}: みんとの旧髪型・髪色の指示 → 黒髪のストレートロングに統一")
+
+    minto = next(c for c in json.loads((REPO / "data/characters.json").read_text(encoding="utf-8"))
+                 if c["id"] == "minto")
+    visual = json.dumps({key: minto[key] for key in
+                         ("visual_concepts", "private_visual_concepts", "private_notes", "appearance_rules")},
+                        ensure_ascii=False)
+    if re.search(r"(?:mint|light)[ -]green (?:hair|twin)|ミント(?:グリーン|色)のツイン|ダークブラウン", visual, re.IGNORECASE):
+        errors.append("data/characters.json: みんとの旧髪設定 → 営業・私服とも黒髪のストレートロングと緑の瞳に統一")
+
 
 def should_skip(path: Path) -> bool:
     if path.resolve() in SKIP_FILES:
@@ -131,6 +179,14 @@ def scan_file(path: Path, errors: list, warnings: list):
 
 def main() -> int:
     errors, warnings = [], []
+
+    scan_character_identity(errors)
+    if "--characters-only" in sys.argv[1:]:
+        for error in errors:
+            print("❌ " + error)
+        if not errors:
+            print("✅ OK — キャラ名・ID・みんとの外見に旧設定なし（追跡済み素材パスを含む）")
+        return 1 if errors else 0
 
     for d in SCAN_DIRS:
         if d.is_dir():

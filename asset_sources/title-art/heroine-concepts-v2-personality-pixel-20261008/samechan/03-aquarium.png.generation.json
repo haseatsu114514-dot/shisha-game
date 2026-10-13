@@ -1,0 +1,31 @@
+{
+  "id": "samechan-03-aquarium",
+  "path": "/workspace/generated_images/exec-e149ec45-5532-41e1-95ff-b9c9d6eff57c.png",
+  "source": "samechan/03-aquarium.png",
+  "prompt": "samechan/03-aquarium.prompt.txt",
+  "references": [
+    "references/samechan-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "recovered_after_tool_cell_interruption": true,
+  "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+  "prompt_sha256": "27a95b9e629ae8b65532edecc8cd0e2815a33bc4ced76347c1ffe9ea576ffe94",
+  "reference_sha256": {
+    "references/samechan-adopted-normal.png": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "original_prompt_sha256": "3e00e260cfcde211a95d697b8040ae3fca417b9c0afcc6c85d1a5213aa5cc9a4",
+  "prompt_revision": {
+    "date": "2026-10-12",
+    "issue": 485,
+    "note": "Character identity labels and reference paths corrected for reuse. The source image has not been regenerated; original_prompt_sha256 retains the generation prompt hash."
+  }
+}

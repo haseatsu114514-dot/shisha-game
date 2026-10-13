@@ -1,0 +1,115 @@
+{
+  "version": 2,
+  "request": "実在のシーシャ屋のロゴを参考に。カフェは喫茶こはくと命名し、ロゴ不要。",
+  "generator": "image_gen.imagegen",
+  "transparent_background": true,
+  "layout": "店舗ごとに左=A・中央=B・右=Cの3案を収めた透過PNG。",
+  "shops": [
+    {
+      "id": "tonari",
+      "name": "tonari",
+      "setting": "スミさんの地元シーシャラウンジ。木・深緑のソファ・色違いのトルコ風モザイクランプ。親しみと人のつながり。",
+      "directions": [
+        "やわらかな小文字",
+        "となりの手書き文字",
+        "tの小さなシンボル"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Exact Latin shop name 'tonari' in lowercase in all proposals. Warm local lounge, quiet personal hospitality, timber and Turkish lamps; translate the warmth into typography rather than drawing interior objects. Use a SINGLE solid very dark warm brown ink. LEFT: a distinctive soft humanist lowercase wordmark tonari, subtly joined n/a curves, short small descriptor 'shisha lounge' below, tiny two adjacent dot motif; elegant and relaxed. CENTER: primary original handwritten Japanese 'となり' with understated readable lowercase tonari on a small second line, a small single-line steam stroke tucked into the kana lettering, no script flourishes. RIGHT: an original simple rounded lowercase t monogram with an open arch/door formed by its stem, tiny symbol placed above a stout clean lowercase tonari wordmark, generous spacing. No lantern illustration, no medallions. Emblem maximum 1.5 times the height of the main wordmark.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/musch-main.png",
+        "/tmp/shisha-logo-research/chillin.png",
+        "/tmp/shisha-logo-research/north-village-black.png"
+      ]
+    },
+    {
+      "id": "kemurikusa",
+      "name": "KEMURIKUSA",
+      "setting": "なるの勤める人気店。焼き菓子のような甘い匂い、オリーブ色の壁と木・真鍮。誠実な職人の店。",
+      "directions": [
+        "細長い英字ロゴ",
+        "手書きのケムリクサ",
+        "Kを組んだマーク"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Shop name KEMURIKUSA, Japanese ケムリクサ. Welcoming craft shisha bar run by a skilled pastry/vanilla-minded worker, street style and precise craft. SINGLE solid very dark olive-black ink. LEFT: slender but not fragile custom uppercase sans KEMURIKUSA in a wide, letterspaced clean wordmark, small 'SHISHA BAR' below, one restrained small aroma stroke integrated into the K. CENTER: primary original expressive brush/hand-lettered Japanese ケムリクサ with exact small Latin KEMURIKUSA below, confident modern local-business identity, no swirls or framing. RIGHT: original bold geometric interlocking K/K monogram as a small icon, clean sturdy uppercase KEMURIKUSA wordmark beneath, compact high-recognition identity. No decorative leaves, flower wreaths, pastry pictures, thick oval plaques. Tasteful contemporary typography.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/north-village-black.png",
+        "/tmp/shisha-logo-research/chillin.png"
+      ]
+    },
+    {
+      "id": "eden",
+      "name": "EDEN",
+      "setting": "アダムのダブルアップル専門店。下町、赤と緑の林檎、真鍮・濃緑・赤の重厚な室内。",
+      "directions": [
+        "静かなセリフ体",
+        "Eの幾何学マーク",
+        "太字と二つの点"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Exact uppercase name 'EDEN' in every proposal. Specialized double-apple shisha lounge, serious artisan Adam, traditional ambience, restrained refinement. A SINGLE solid deep charcoal-black ink; no gold shading, no red/green fruit illustrations. LEFT: beautiful carefully kerned custom high-contrast contemporary serif EDEN, a tiny outline pair of whole apples joined by one stem above the lettering, pair total width no more than half of the wordmark, subtitle 'SHISHA LOUNGE' in very small spaced capitals below. CENTER: a NEW minimal geometric E monogram cut into an open square, compact and highly legible, paired with a slim uppercase sans EDEN, precise independent lounge brand. RIGHT: striking original bold compact uppercase EDEN wordmark with two small equal circles placed as an understated double-apple symbol immediately above the N, warm modern small-shop identity. No religious portals, ornate frames, art-deco fans, leaf decoration or heraldry.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/north-village-black.png",
+        "/tmp/shisha-logo-research/c-stand.jpg"
+      ]
+    },
+    {
+      "id": "peppermint",
+      "name": "PEPPERMINT／ぺぱーみんと",
+      "setting": "みんとのコンカフェ。ミント色・ピンクの室内、小悪魔の衣装、SNS向けのポップさ。",
+      "directions": [
+        "小悪魔の英字ロゴ",
+        "ひらがなショップ文字",
+        "丸みのある小文字"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Shop names 'PEPPERMINT' and 'ぺぱーみんと'. Adult performer concept cafe and shisha shop, playful but credible actual nightlife business. SINGLE solid deep nearly black green ink. Main lettering dominates, a tiny cheeky feature only. LEFT: clean refined italic uppercase PEPPERMINT, a subtle pair of tiny devil horns integrated into the first P, small 'shisha cafe & bar' below; elegant playful storefront identity. CENTER: primary original rounded handwritten Japanese ぺぱーみんと, small exact uppercase PEPPERMINT below; an extremely tiny leaf-tip heart integrated into a single kana stroke, sophisticated cute rather than merchandise illustration. RIGHT: original compact custom lowercase peppermint in smooth bold rounded sans, small one-stroke leaf/heart motif at the end of the t, generous whitespace. No wings, ribbon, cameo, bubbles, sparkles, 3D candy letters, mascot or black outlined gradient illustration. The shop's mischievous personality should be legible in subtle typography.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/pukupuku.png",
+        "/tmp/shisha-logo-research/chillin.png",
+        "/tmp/shisha-logo-research/musch-main.png"
+      ]
+    },
+    {
+      "id": "dr-fookah",
+      "name": "Dr.fookah",
+      "setting": "問屋街の卸直営店。1階は機材とフレーバー、2階は暗いショールーム。凛の専門性と少し謎めいた香り。",
+      "directions": [
+        "専門店の文字組み",
+        "細いdfモノグラム",
+        "四角い卸店サイン"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Exact case and punctuation 'Dr.fookah' in EACH design, no spaces after period, spelled f-o-o-k-a-h. Wholesale specialist flavor/equipment shop, dark precise showroom and a scent expert, trade-professional slightly mysterious. A SINGLE solid charcoal-black ink. LEFT: beautifully balanced readable contemporary serif Dr.fookah, just a tiny restrained aroma stroke over the final h, small 'SHISHA SUPPLIES' underneath, typography takes center stage. CENTER: NEW small df monogram constructed from two thin clean orthogonal strokes with one single smooth aroma bend, above exact Dr.fookah in a crisp light grotesk wordmark, premium specialist distributor. RIGHT: original horizontal open-rectangle trade-shop stamp with robust custom monospaced/slab Dr.fookah, small SHISHA SUPPLIES below the box, meticulous utilitarian shop identity. No flask, scent bottle, laboratory shield, medical cross, ornate seal or decorative motifs. No different unrequested slogans. Letterforms should be entirely legible.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/north-village-black.png",
+        "/tmp/shisha-logo-research/c-stand.jpg"
+      ]
+    },
+    {
+      "id": "c-station",
+      "name": "C.STATION",
+      "setting": "南雲会長の大型シーシャチェーン。誰でも入りやすいカフェ的空間、青緑のソファ、大会の旗艦会場。",
+      "directions": [
+        "大型チェーンの英字",
+        "Cの入口マーク",
+        "二段のサイン文字"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Exact uppercase name 'C.STATION', with one period immediately after C, in EACH design. Friendly major shisha-cafe chain with spacious cafe-like flagship that hosts the tournament. A SINGLE solid deep navy-black ink. LEFT: polished clean geometric uppercase wordmark C.STATION, stable proportions and carefully tuned tracking, small line 'SHISHA CAFE & BAR' below, no big emblem. CENTER: NEW simple abstract open-C doorway monogram (not C.STAND's circle, CS or hookah), compact icon above straightforward friendly medium-weight C.STATION lettering, very credible accessible chain brand. RIGHT: custom solid condensed sans wordmark, architectural two-line C. on the first line / STATION on the second, modest narrow line and small SHISHA CAFE & BAR underneath, strong real-life signage. Do NOT use rounded subway-sign plaque, sparkle, people figures, curves copying the attached actual C.STAND logo. Original typography first.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/c-stand.jpg",
+        "/tmp/shisha-logo-research/north-village-black.png"
+      ]
+    },
+    {
+      "id": "choizap",
+      "name": "チョイザップ",
+      "setting": "みんとおすすめのアプリ入会ジム。ガラス張りの明るい店舗、ライム色・白・グレー。気軽なトレーニング。",
+      "directions": [
+        "日常ジムの太字",
+        "一歩進む小さな記号",
+        "チョイの文字遊び"
+      ],
+      "prompt": "Create a NEW ORIGINAL, realistic Japanese shisha-business brand identity using the attached actual shisha shop logos ONLY as reference for professional logo design discipline: controlled letterforms, strong negative space, small symbolic marks, restrained horizontal/stacked lockups. The new shop name below is a fictional game location. Do not reproduce any attached brand's name, slogan, symbol, layout verbatim or distinctive lettering. This is a graphic designer's finished logo file, NOT an illustration, badge painting, fantasy emblem, souvenir graphic, poster or product mockup. Exactly THREE distinct complete logo proposals for the SAME shop, evenly spaced left, center, right on one wide landscape strip, each wholly within its own third and not touching the edges. All background is truly TRANSPARENT. Large generous transparent margins and gutters. Flat clean ink, CRISP typography, pure solid color fills; NO gradients, bevels, metallic effects, glow, drop shadows, texture, hatching, ornamental borders, foliage arrangements, floral decoration, ribbons, big detailed mascots or large illustrative icons. Symbols should be smaller than the wordmark, secondary to the lettering. Wordmark is the dominant visual component, at least 70% of the visual width. Design as if it will be reproduced as a one-color vinyl storefront sign, business card or 24px map icon. Logos should feel like real contemporary Japanese shisha cafes and independently owned hospitality businesses. NO hookah or smoking hardware, no people. Do NOT add concept labels, numbers or explanation text. Make three clearly distinct typographic directions, not slight recolors. Exact Japanese name 'チョイザップ' in each proposal, with optional smaller original Latin 'CHOIZAP'. Fictional app-entry small neighborhood gym; accessible everyday training. This one is a fitness business, not a shisha shop, but maintain the same professional typography discipline. SINGLE solid charcoal-black ink. LEFT: bold clean original Japanese geometric wordmark チョイザップ with a tiny step/arrow cut integrated into its first letter, small CHOIZAP under it, approachable modern gym sign. CENTER: small original two-step forward icon beside easy-to-read rounded Japanese チョイザップ, friendly everyday movement, no large dumbbell. RIGHT: playful but professional custom rounded チョイザップ wordmark, the small ョ/ッ form restrained expressive accents and one small dot, compact app/storefront layout. Do NOT copy chocoZAP/RIZAP or any existing fitness brand lettering, color or emblem. No neon green, swooshes, speed paint, texture, heavy beveled fonts or illustrated equipment.",
+      "referencePaths": [
+        "/tmp/shisha-logo-research/north-village-black.png"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "registered_at": "2026-10-13T00:31:49.075757+00:00",
+  "old_bytes_unchanged": true,
+  "manifest_other_fields_unchanged": true,
+  "title_count": 23,
+  "hiyori_title_count": 5,
+  "outputs": [
+    {
+      "scene": "bookshop",
+      "source": "asset_sources/hiyori-title-five-issue486/raw/bookshop-source.png",
+      "png": "assets/ui/title_arts/title_art_hiyori_04_daylight_bookshop.png",
+      "png_sha256": "6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484",
+      "source_sha256": "6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484",
+      "webp": "remake/img/ui/title_arts/title_art_hiyori_04_daylight_bookshop.webp",
+      "webp_sha256": "e156131979a806a34aca880639f8cf315025f7965f1ef5914447535772b1cd48",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "scene": "ramen",
+      "source": "asset_sources/hiyori-title-five-issue486/raw/ramen-source.png",
+      "png": "assets/ui/title_arts/title_art_hiyori_05_ramen_break.png",
+      "png_sha256": "77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9",
+      "source_sha256": "77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9",
+      "webp": "remake/img/ui/title_arts/title_art_hiyori_05_ramen_break.webp",
+      "webp_sha256": "187941804959983dd4659e9ed1a506a3fdf52d199c84dc359260b93118155c0e",
+      "size": [
+        1024,
+        1536
+      ]
+    }
+  ]
+}

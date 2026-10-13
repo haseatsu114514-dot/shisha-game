@@ -1,0 +1,151 @@
+{
+  "worker": "codex-cg360-20261012-7242bf5ca07e",
+  "transferRun": 38301926910,
+  "testedSourceHead": "5c5eb4dd8cb7ef1517d255fa425845b7a2658fc2",
+  "integratedMain": "0b66f9ec2ecccff2a135c9efc25d8249ea93d7db",
+  "reportedBaseRef": "70ab0899ceea19ffa0649e2b6fd4a3ee4624e1a6",
+  "sourceScope": "Local tests ran on the working tree before the final code commit; all tested implementation, test and image bytes match testedSourceHead as verified by hashes. Final CI tests the eventual head after #453 integration.",
+  "actualRoute": "DAY4 canonical LIME delivery, accept reply, pending invitation, production calendar event, CG display, actual fee and slot progression. Prerequisite legal DAY4 state is seeded; this is not a claim of a fresh-game playthrough for this route.",
+  "tests": {
+    "passed": 8,
+    "failed": 0,
+    "devices": [
+      "1920x1080 PC",
+      "844x390 touch emulation with reduced motion"
+    ],
+    "perDevice": [
+      "real LIME invitation + gallery + unchanged manual save/load",
+      "schema5 saved invitation",
+      "delayed image + SKIP waits for visible image",
+      "invalid image decode + no gallery unlock + continue"
+    ]
+  },
+  "codeAndImageHashes": {
+    "remake/test/minto_cheki_cg.mjs": "cdc1ad7c27463f2afc867ea4eb49f1bff9b892a7827205051ddb48197a1e1525",
+    "remake/js/vn/engine.js": "a8a12d406cdfe44cca913e74057829c34a09713e2ab777224af91d762f53bd95",
+    "remake/js/daily/calendar.js": "c95b7e4c7c72da4a7622b7845cde75aa2e3ca8735cfd570ee072ae5ea72a6ea6",
+    "remake/js/daily/phone.js": "bbbb9700e8335f6b7c0c2535948848c08253a11eb991513b4c884762403b412a",
+    "remake/js/core/state.js": "1362629cc32673d4793bd6ba4dd8460adaaa1c3c6ac194e4bf72fc1739746a4e",
+    "data/dialogue/ch1_events.json": "3c30d199610b37ede3e28a6b5ca85ce2797dcddd430e1d149a28cfd36dd2a95e",
+    "assets/cgs/cg_minto_cheki.png": "9f7fe9b77f06caae2320b45fad3089255b31053ad155b41e6612069f35cb6502",
+    "remake/img/cgs/cg_minto_cheki.webp": "b13ed1bf46b275a639b91522d4055581066497b0fc6cedcfecc9a266e9bca043",
+    "assets/cgs/cg_minto_first_cheki.png": "25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be"
+  },
+  "files": [
+    {
+      "file": "comparisons/before-pc.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "282b9f09c7a96066ac2803eedaed2f17b13633d62977eadc456631dbfffa2b6c"
+    },
+    {
+      "file": "comparisons/after-pc.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "4843bcb05a611e85813a668ae02814686453ffb4260f518c7b5777553ceec339"
+    },
+    {
+      "file": "comparisons/before-touch.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "6dc9f52790538c0a39ac585f67aacd2eeaf6bf2a414b5e173cf60c05b5bfb296"
+    },
+    {
+      "file": "comparisons/after-touch.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "e8317c933ea552dc600d7ed620d87446b40664cb6db6d1f64efdcae2f6622f79"
+    },
+    {
+      "file": "screenshots/pc-photo-vn.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "ef8925192149a7a7487ac1f44f2b70e9fe8c8b01d3469f349ddfa2dc716e0dbb"
+    },
+    {
+      "file": "screenshots/pc-gallery.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "f2cb27f0ab07ba3b7755f8c5c9ccd3dc81d86335f4d99f1e5d072ce8ecbcb25b"
+    },
+    {
+      "file": "screenshots/pc-legacy-photo-vn.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "7fb59673e53e1d141c61eedc0b33a3ae12e1a59cc58b155a38eeff3a38ffce51"
+    },
+    {
+      "file": "screenshots/pc-loading.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "23db1db89497de597f984cd024ff1444d74daacd5358eab5063efbf49dee8fb0"
+    },
+    {
+      "file": "screenshots/touch-photo-vn.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "55cd845368ccb0101e94550e9f74eacf2cfe5145a2b88421af286eb0d7452e50"
+    },
+    {
+      "file": "screenshots/touch-gallery.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "3d83846d01f785a7b787842a673a50c7c57f0018fd50c379025d03a1d096e61c"
+    },
+    {
+      "file": "screenshots/touch-legacy-photo-vn.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "f1731683e08b7c8905368601490d8c88fa466e97ccb90a0df0be768f4f0f068f"
+    },
+    {
+      "file": "screenshots/touch-loading.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "fe9f573b6791427a44c0cb8a82f0ace7d1ad5f34692edbe21f09fb645e536f24"
+    },
+    {
+      "file": "screenshots/minto-cheki-cg-pc-failed-photo-not-recorded.webp",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "sha256": "e5df56a1f2f9e65e31945eda09970ab1835c1f27fc9ff49afa00367457046e5f"
+    },
+    {
+      "file": "screenshots/minto-cheki-cg-touch-failed-photo-not-recorded.webp",
+      "dimensions": [
+        844,
+        390
+      ],
+      "sha256": "7155ab60f9f5aa338bb6c93bc504c2e4ef02a6c9b415734346b15f50ea556060"
+    }
+  ],
+  "visualSelection": "Canonical Minto/Hajime faces and outfits, friendly two-shot in current PEPPERMINT, readable face/V sign above VN overlay; original first-visit solo cheki retained.",
+  "humanApprovalClaimed": false,
+  "dependency": "#453 image-load failure guard is identical; wait for #453 merge and validate merged-main CI before merging #479."
+}

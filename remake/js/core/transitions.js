@@ -5,6 +5,7 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
+import { withStoreArrival } from "./store-arrival.js";
 
 let serial = 0;
 const STYLES = ["diagonal", "smoke", "iris"];
@@ -24,6 +25,14 @@ let cue = null;
 export function cueTransition(kind, opts = {}) {
   cue = { kind, opts, at: performance.now() };
 }
+/** 入店前の体力確認などで待った場合も、同じ行き先の予約を実際の入店に使う。 */
+export function refreshPlaceCue(spotId) {
+  if (cue?.kind === "place" && cue.opts.spotId === spotId) cue.at = performance.now();
+}
+/** 入店前に街へ戻った場合は、その店の入店演出を次の移動へ持ち越さない。 */
+export function cancelPlaceCue(spotId) {
+  if (cue?.kind === "place" && cue.opts.spotId === spotId) cue = null;
+}
 function takeCue() {
   const c = cue;
   cue = null;
@@ -33,7 +42,7 @@ function takeCue() {
 export function createSceneCurtain(host, { fast = false } = {}) {
   const reduced = reducedMotion();
   const cued = takeCue();
-  if (cued?.kind === "place" && !fast && !reduced) return moveCurtain(host, moveStyle(cued.opts), cued.opts);
+  if (cued?.kind === "place" && !fast && !reduced) return withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced });
   const ms = reduced ? 45 : fast ? 140 : 260;
   const variant = STYLES[serial++ % STYLES.length];
   const node = el(`div.scene-curtain.${variant}`, { "aria-hidden": "true", style: { "--st-ms": `${ms}ms` }, dataset: { transition: variant } }, [
@@ -47,7 +56,7 @@ export function createSceneCurtain(host, { fast = false } = {}) {
   let coveredAt = 0;
   const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); coveredAt = performance.now(); })();
   let released = false;
-  return { covered, async release() {
+  const curtain = { covered, async release() {
     if (released) return;
     released = true;
     await covered;
@@ -60,6 +69,7 @@ export function createSceneCurtain(host, { fast = false } = {}) {
     node.remove();
     unhold();
   } };
+  return cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain;
 }
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝

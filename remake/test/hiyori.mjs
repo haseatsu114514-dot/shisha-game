@@ -190,9 +190,14 @@ try {
       const originals = { ...data.DB.dialogues };
       const add = (id, lines, branches = {}) => { data.DB.dialogues[id] = { dialogue_id: id, lines, branches }; added.push(id); };
       try {
-        const s = QA.fresh(); vn.vnTest.turbo = true;
+        const s = QA.fresh(); s.slot = 1; vn.vnTest.turbo = true;
         data.DB.hiyori.route.enabled = true;
         const missing = route.hiyoriEventStatus("axe_reveal");
+        // このケースは共通関係APIのfixture。実斧投げの前後読了/操作は hiyori_axe_story.mjs で通す。
+        const reveal = data.DB.hiyori.route.events.find(e => e.id === "axe_reveal");
+        Object.assign(reveal, { id: "fixture_reveal", requires: ["_hiyori_cracks_done"] });
+        delete reveal.slot; delete reveal.outro; delete reveal.minAffinity;
+        data.DB.hiyori.route.storyEvents = data.DB.hiyori.route.storyEvents.map(id => id === "axe_reveal" ? "fixture_reveal" : id);
         for (const e of route.hiyoriRoute().events) add(e.dialogue,
           e.id === "meeting" ? [{ speaker: "hiyori", text: "朝霧ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
             { type: "set_flag", flag: "_lime_contact_hiyori" }] : [{ speaker: "hiyori", text: "テスト用の正式台本", inner: "表示だけで正体フラグは立てない" }]);
@@ -208,7 +213,7 @@ try {
         const pts = s.affinity.hiyori;
         const replay = await daily.playHiyoriEvent("cracks");
         const stablePts = s.affinity.hiyori === pts;
-        await daily.playHiyoriEvent("axe_reveal");
+        await daily.playHiyoriEvent("fixture_reveal");
         add("hiyori_bond_question", [{ type: "choice", id: "bond_q1_hiyori", romance_char: "hiyori", choices: [
           { text: "恋愛寄りの答え", romance: 1 }, { text: "友人寄りの答え", romance: 0 },
         ] }]);
@@ -241,6 +246,7 @@ try {
         friend.met.hiyori = true; friend.contacts.push("hiyori"); friend.affinity.hiyori = 66;
         for (const e of route.hiyoriRoute().events.filter((e) => route.hiyoriRoute().storyEvents.includes(e.id))) friend.flags[e.flag] = true;
         bonds.recordRomanceChoice({ id: "bond_q1_hiyori", romance_char: "hiyori" }, { romance: 0 });
+        friend.flags[data.DB.hiyori.route.question.flag] = true; // 共通関係APIの既読fixture。正式Q1の読了は専用テストで通す。
         await bonds.playFinale("hiyori");
         const friendRoute = friend.finales.hiyori.route;
         const noConfession = !friend.flags._confession_due && !romance.romanceRouteOpen("hiyori");
@@ -258,7 +264,7 @@ try {
         vn.vnTest.turbo = false;
       }
     });
-    assert.equal(result.missing, "missing_script");
+    assert.equal(result.missing, "prerequisites");
     assert.equal(result.workTooEarly, false); assert.equal(result.beforeEnd, false);
     assert.equal(result.concurrent, false); assert.equal(result.replay, false); assert(result.stablePts);
     assert.deepEqual(result.story, { count: 4, known: true, contact: true, done: true });

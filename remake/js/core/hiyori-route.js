@@ -18,15 +18,17 @@ export function hiyoriStoriesDone() {
   });
 }
 
-/** disabled / missing_script / seen / chapter / prerequisites / relationship / ready */
+/** disabled / missing_script / seen / chapter / time / prerequisites / relationship / ready */
 export function hiyoriEventStatus(id) {
   const route = hiyoriRoute();
   const event = route.events?.find((e) => e.id === id);
   if (!state || !route.enabled || !event) return "disabled";
   const dialogue = DB.dialogues[event.dialogue];
-  if (!dialogue?.lines?.length || dialogue.metadata?.preview_only) return "missing_script";
+  const scripts = [dialogue, ...(event.outro ? [DB.dialogues[event.outro]] : [])];
+  if (scripts.some(script => !script?.lines?.length || script.metadata?.preview_only)) return "missing_script";
   if (state.flags[event.flag]) return "seen";
   if (!event.chapters.includes(state.chapter)) return "chapter";
+  if (event.slot !== undefined && state.slot !== event.slot) return "time";
   if (event.requires.some((flag) => !state.flags[flag]) || event.met && !state.met.hiyori
     || event.contact && !hiyoriHasContact() || affinityLevel("hiyori") < (event.minAffinity || 0)) return "prerequisites";
   if (event.relationship === "lover" && !state.lovers.includes("hiyori")
@@ -41,7 +43,10 @@ export const availableHiyoriEvents = () => (hiyoriRoute().events || []).filter((
 export function hiyoriFinaleReady() {
   const { finale, question } = hiyoriRoute();
   return !!hiyoriRoute().enabled && hiyoriStoriesDone() && state.chapter <= 3 && !!state.met.hiyori
-    && !!DB.dialogues[question?.dialogue]?.lines?.length && !!state.romanceChoices[question?.choice]
+    && !!DB.dialogues[question?.dialogue]?.lines?.length && !DB.dialogues[question?.dialogue]?.metadata?.preview_only
+    && state.romanceChoices[question?.choice]?.char === "hiyori"
+    && Number.isFinite(state.romanceChoices[question?.choice]?.value) && state.romanceChoices[question.choice].value >= 0
+    && !!state.flags[question?.flag]
     && !!finale?.gift && !!DB.equipById[finale.gift] && !!DB.dialogues[finale.dialogue]?.lines?.length
     && !DB.dialogues[finale.dialogue].metadata?.preview_only;
 }

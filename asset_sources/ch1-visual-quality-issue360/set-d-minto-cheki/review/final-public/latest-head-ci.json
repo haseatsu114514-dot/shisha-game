@@ -1,0 +1,109 @@
+{
+  "headRefOid": "57384f537365df8480c2ff06e94aa1154f2d6123",
+  "isDraft": true,
+  "mergeable": "MERGEABLE",
+  "reviewRequests": [],
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:15:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119937/job/115010261374",
+      "name": "cg-art",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 CG art"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:13:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119906/job/115010261900",
+      "name": "facility-art",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 facility art"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:13:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119962/job/115010261454",
+      "name": "browser (selection)",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:15:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119969/job/115010261387",
+      "name": "scenes",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Craft scene readiness and actions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:13:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119905/job/115010261287",
+      "name": "browser",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Issue 439 playtest regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:38:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309120010/job/115010621838",
+      "name": "chromium",
+      "startedAt": "2026-10-12T21:13:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:13:35Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309120019/job/115010262538",
+      "name": "Data loading smoke",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake fast smoke tests"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:23:23Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119962/job/115010261889",
+      "name": "browser (direct)",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:23:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309119962/job/115010261884",
+      "name": "browser (street)",
+      "startedAt": "2026-10-12T21:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-12T21:21:07Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38309120010/job/115010622064",
+      "name": "Chapter 1 eve choices and saves",
+      "startedAt": "2026-10-12T21:13:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    }
+  ]
+}

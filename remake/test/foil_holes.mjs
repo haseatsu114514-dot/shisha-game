@@ -6,10 +6,12 @@ import vm from "node:vm";
 const craftRoot = new URL("../js/craft/", import.meta.url);
 let now = 1000, nextFrame = 1, frames = new Map(), keymap = null, panel = null, automated = null;
 const stamps = [], delayed = [], results = [], visualHoles = [];
+const seCalls = [];
 class Element {
-  constructor(spec) { const [tag, ...classes] = spec.split("."); this.tag = tag; this.classes = new Set(classes); this.children = []; this.listeners = {}; this.style = {}; this.dataset = {}; this.disabled = false;
-    this.classList = { add: (...v) => v.forEach((c) => this.classes.add(c)), toggle: (c, yes) => yes ? this.classes.add(c) : this.classes.delete(c) };
+  constructor(spec) { const [tag, ...classes] = spec.split("."); this.tag = tag; this.classes = new Set(classes); this.children = []; this.listeners = {}; this.style = { setProperty: (k, v) => { this.style[k] = v; } }; this.dataset = {}; this.disabled = false;
+    this.classList = { add: (...v) => v.forEach((c) => this.classes.add(c)), remove: (...v) => v.forEach(c => this.classes.delete(c)), toggle: (c, yes) => yes ? this.classes.add(c) : this.classes.delete(c) };
   }
+  get childElementCount() { return this.children.length; }
   append(...children) { for (const child of children.flat().filter(Boolean)) this.children.push(child); }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
@@ -18,7 +20,7 @@ class Element {
   querySelector(tag) { for (const child of this.children) { if (child.tag === tag) return child; const found = child.querySelector?.(tag); if (found) return found; } return null; }
 }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const n = new Element(spec); Object.assign(n, attrs); n.append(children); return n; }
-const find = (test, node = panel) => node?.dataset?.test === test ? node : node?.children.map((child) => find(test, child)).find(Boolean);
+const find = (test, node = panel) => node?.dataset?.test === test ? node : node?.children?.map((child) => find(test, child)).find(Boolean);
 function fire(test, type = "click") { const node = find(test); assert(node, test); for (const fn of node.listeners[type] || []) fn({ preventDefault() {} }); }
 const settle = async () => { for (let i = 0; i < 80; i++) await Promise.resolve(); };
 async function frame(time) { now = time; const waiting = [...frames.values()]; frames.clear(); for (const callback of waiting) callback(now); await settle(); }
@@ -26,7 +28,8 @@ const values = {
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },
-  "audio.js": { SE: Object.fromEntries(["punch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => {}])) },
+  "art.js": { artImg: () => el("div.art") },
+  "audio.js": { SE: Object.fromEntries(["foilPunch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => seCalls.push(name)])) },
   "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
     setBenchHoleAction: (cs, event) => visualHoles.push({ cs, ...event }) },
   "common.js": { gradeOf: (score) => score >= 90 ? "S" : score >= 80 ? "A" : score >= 65 ? "B" : score >= 50 ? "C" : "D", autoSkill: () => automated,
@@ -89,6 +92,7 @@ async function start(auto = null, templateId = "outer24") {
     assert(find("hole-preview")); assert.equal(frames.size, 0); assert.equal(keymap, null);
     fire(`hole-template-${templateId}`); fire("hole-start"); await settle();
   }
+  seCalls.length = 0;
   return { cs, running };
 }
 async function punchCircle(period, targets, elapsedStart = 0) {
@@ -104,6 +108,9 @@ let active = await start(); assert(find("hole-done").disabled); assert(find("hol
 fire("hole-done"); fire("hole-next"); keymap.Enter(); await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
 await punchCircle(6.4, 24); assert(!find("hole-done").disabled); assert(find("hole-next").disabled); assert(find("hole-punch").disabled);
 assert.equal(visualHoles.length, 24); assert.equal(visualHoles.at(-1).dots.length, 24);
+assert.equal(seCalls.filter(id => id === "foilPunch").length, 24, "each real hole has one quiet material sound");
+assert.equal(seCalls.filter(id => id === "perfect").length, 1, "a ring gets one closing sound");
+assert(!seCalls.includes("good") && !seCalls.includes("miss"), "per-hole judgement sounds do not cover the material sound");
 assert.equal(visualHoles[0].target[0], .8); assert.equal(visualHoles[0].target[1], 0);
 // 完成後の連打で余分な穴や自動送りを増やさない。
 const stampCount = stamps.length; for (let i = 0; i < 5; i++) fire("hole-punch", "pointerdown"); assert.equal(stamps.length, stampCount); assert.equal(delayed.length, 0);

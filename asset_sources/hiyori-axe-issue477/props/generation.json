@@ -1,0 +1,44 @@
+{
+  "source": "OpenAI built-in image_gen",
+  "outputs": [
+    {
+      "variant": "throwing_axe",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-source.png",
+      "sha256": "74758118ee6800182358bb58f605393240445370c4da55704259351a48fceed9",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "adopted": false,
+      "runtime_registered": false,
+      "superseded_reason": "\u5916\u5468alpha=1\u306e\u753b\u7d20\u3092\u542b\u3080\u539f\u6848\u3002\u751f\u6210\u7de8\u96c6\u3057\u305f\u5916\u5468alpha=0\u306e\u7248\u3092\u63a1\u7528\u3059\u308b\u3002"
+    },
+    {
+      "variant": "target_board",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/target-board-source.png",
+      "sha256": "51d054ad2e0c170145c13e036fbc4d3b6fc033d296266e4d88aacf8f1dd87bdc",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "throwing_axe_clean",
+      "source": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-clean-source.png",
+      "sha256": "7b928966182399a175a2488a9394e3b0df6d2d89ae311aea3cd314fbf0075839",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "reference": "asset_sources/hiyori-axe-issue477/props/raw/throwing-axe-source.png",
+      "adopted": true,
+      "runtime_registered": true
+    }
+  ],
+  "minigame_connected": false
+}

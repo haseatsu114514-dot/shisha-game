@@ -1,0 +1,93 @@
+[
+  {
+    "file": "coal_grab_01.wav",
+    "duration_seconds": 0.19,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "3ccdf8aa5e3e59268e081a0176621670b052b545a00b9ab752fdc319a1f00a44"
+  },
+  {
+    "file": "coal_grab_02.wav",
+    "duration_seconds": 0.19,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "e80b6816fa069a2bc7a3cb01ccf1dfae30adffbcb3c91c98b8c3257deaec998b"
+  },
+  {
+    "file": "foil_puncture.wav",
+    "duration_seconds": 0.18,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "bf3e4f25fdf16a5b4ad32f5d825c25b2516fa8b11dbe642872f9c3384081bbc5"
+  },
+  {
+    "file": "hms_knock_01.wav",
+    "duration_seconds": 0.34,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "8ce9b969203229dcd59cffea392d9a17a5719ef19436e52fb68ec5df009dee30"
+  },
+  {
+    "file": "hms_knock_02.wav",
+    "duration_seconds": 0.34,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "5d77ff815b087e1d980bbc87417a19f1086b5c384e399bc3c3d68e1b647338e7"
+  },
+  {
+    "file": "lime_glass.wav",
+    "duration_seconds": 0.46,
+    "channels": 1,
+    "sample_rate_hz": 48000,
+    "sha256": "101eee83e908959d9025258ac1636b463f65c7ea927795fea572462d8c6401f1"
+  },
+  {
+    "file": "shop_bell.wav",
+    "duration_seconds": 1.9,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "b8b560dd6699d395680b857a2dacacf60f8a0305fbc2e1e660dc95fa9ef3b816"
+  },
+  {
+    "file": "ui_back.wav",
+    "duration_seconds": 0.07437641723356009,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "ab2a9ddb545c4433cef41231d6209b99f1c13b9c1eca130bc356cbc215b33c41"
+  },
+  {
+    "file": "ui_click.wav",
+    "duration_seconds": 0.0528344671201814,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "c31fdf5f7910e2b813ef9eedeb6b169a2497282a6cdf7491831b1519906e23df"
+  },
+  {
+    "file": "ui_select.wav",
+    "duration_seconds": 0.0909297052154195,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "c205d1034ada888be3a249ffd4ef1a623ce3ad525a0d33969a625110fa817757"
+  },
+  {
+    "file": "water_draw.wav",
+    "duration_seconds": 2.0,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "900d625007c153a6f715db1c9b7f2b53521040041950068f49798f0c45e8ca49"
+  },
+  {
+    "file": "water_end.wav",
+    "duration_seconds": 0.38,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "234a8914427e8e91ee5552a45905826d3f675c2bdd0d11e9cdfac950500d9277"
+  },
+  {
+    "file": "water_loop.wav",
+    "duration_seconds": 1.28,
+    "channels": 1,
+    "sample_rate_hz": 44100,
+    "sha256": "18d18bcc67f6264286a46c9de305915886d4780bc4c5cdaf6361661c59115c43"
+  }
+]

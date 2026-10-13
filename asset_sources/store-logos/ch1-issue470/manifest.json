@@ -1,0 +1,241 @@
+{
+  "version": 2,
+  "sheets": [
+    {
+      "id": "tonari",
+      "name": "tonari",
+      "file": "sheets/tonari.png",
+      "original_generator_path": "/workspace/generated_images/exec-1764348e-1964-4519-91c1-3bf98de7b4da.png",
+      "sha256": "d370ab7a92227a33cc69d54c4491e6956afaf50115870d61ebb68300a432d7ef",
+      "size": [
+        2050,
+        767
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "solid_bbox": [
+        64,
+        170,
+        1986,
+        569
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "やわらかな小文字",
+        "B": "となりの手書き文字",
+        "C": "tの小さなシンボル"
+      }
+    },
+    {
+      "id": "kemurikusa",
+      "name": "KEMURIKUSA",
+      "file": "sheets/kemurikusa.png",
+      "original_generator_path": "/workspace/generated_images/exec-8a4337b8-8149-4de2-aaf9-f6d18224989d.png",
+      "sha256": "f186172e35f52cfc73edb74a633f3fedfa4580cf713c385607c1704045507a70",
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "solid_bbox": [
+        61,
+        204,
+        2118,
+        510
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "細長い英字ロゴ",
+        "B": "手書きのケムリクサ",
+        "C": "Kを組んだマーク"
+      }
+    },
+    {
+      "id": "eden",
+      "name": "EDEN",
+      "file": "sheets/eden.png",
+      "original_generator_path": "/workspace/generated_images/exec-3baaecb0-31f3-4904-9bf2-eb3cc74f8fbe.png",
+      "sha256": "2b22f322a33142c763cea5493dcb5917ccc9058ffa8bbd2538d1a5a4ab283e1c",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        119,
+        201,
+        1928,
+        578
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "静かなセリフ体",
+        "B": "Eの幾何学マーク",
+        "C": "太字と二つの点"
+      }
+    },
+    {
+      "id": "peppermint",
+      "name": "PEPPERMINT／ぺぱーみんと",
+      "file": "sheets/peppermint.png",
+      "original_generator_path": "/workspace/generated_images/exec-83604396-2371-4ebc-a429-966f19f8a681.png",
+      "sha256": "2f94a0eb4018e3aa43d4aa5577900174f52dd433f0d3cda91d985141f225b835",
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "solid_bbox": [
+        36,
+        259,
+        2137,
+        456
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "小悪魔の英字ロゴ",
+        "B": "ひらがなショップ文字",
+        "C": "丸みのある小文字"
+      }
+    },
+    {
+      "id": "dr-fookah",
+      "name": "Dr.fookah",
+      "file": "sheets/dr-fookah.png",
+      "original_generator_path": "/workspace/generated_images/exec-dce065d3-d7cc-4b02-be8b-d688db9d8d57.png",
+      "sha256": "b1b2c0e4f88b10989b1615dceb60223d43270e59fae253b454575dab562cb741",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        73,
+        183,
+        1983,
+        538
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "専門店の文字組み",
+        "B": "細いdfモノグラム",
+        "C": "四角い卸店サイン"
+      }
+    },
+    {
+      "id": "c-station",
+      "name": "C.STATION",
+      "file": "sheets/c-station.png",
+      "original_generator_path": "/workspace/generated_images/exec-9f465b35-a210-42d0-9a32-26071e8d8aaf.png",
+      "sha256": "1fcd55787ebca9e3aafa9f10eb1a4bede16f63ce87fb4a915b6f27911c4bce56",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        46,
+        174,
+        1997,
+        590
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "大型チェーンの英字",
+        "B": "Cの入口マーク",
+        "C": "二段のサイン文字"
+      }
+    },
+    {
+      "id": "choizap",
+      "name": "チョイザップ",
+      "file": "sheets/choizap.png",
+      "original_generator_path": "/workspace/generated_images/exec-d472ee71-d1f0-4fcf-96ef-3919144b5a7d.png",
+      "sha256": "acd540811c3f05ce23f6cbdfb54ca4b339a994b6b9d418d4d8d8254e967b8abc",
+      "size": [
+        2048,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "solid_bbox": [
+        68,
+        300,
+        1990,
+        488
+      ],
+      "solid_edge_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "concepts": {
+        "A": "日常ジムの太字",
+        "B": "一歩進む小さな記号",
+        "C": "チョイの文字遊び"
+      }
+    }
+  ],
+  "shops": 7,
+  "concepts": 21,
+  "separate_logo_files": false,
+  "cafe_name": "喫茶こはく",
+  "cafe_logo": false
+}
