@@ -352,5 +352,39 @@
       "cable": "rear connected, no front connector",
       "stage_legend": "absent"
     }
+  },
+  "panel_v5": {
+    "revision": "panel-v5",
+    "scope": "static inset corner edit",
+    "status_run": 38385229412,
+    "browser": "Chromium desktop1440x1050",
+    "new_image_load_and_switch": "PASS",
+    "pageerrors": [],
+    "http_errors": [],
+    "visual_review": "Both inset frames have plain rounded rectangles without a tail; counts3+0/2+1, top view and coal2 retained",
+    "interaction_layout": "Unchanged; prior inset_v4 desktop/touch/zoom checks retained",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2066016
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2075154
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1323008
+      }
+    }
   }
 }
