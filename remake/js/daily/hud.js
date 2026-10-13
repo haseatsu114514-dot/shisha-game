@@ -140,11 +140,15 @@ export function updateHud() {
 
 let recoveryObserver = null;
 
-/** 未読の赤丸（数字は出さない・通知バッジ風） */
+/** 未読件数を表示。従来の真偽値呼び出しにも互換対応する。 */
 export function setPhoneBadge(unread) {
   if (!dom) return;
-  dom.phone.classList.toggle("has", !!unread);
-  dom.phone.title = unread ? "LIME（未読あり）" : "LIME";
+  const count = typeof unread === "number" ? unread : unread ? 1 : 0;
+  const name = count ? `LIME（未読${count}件）` : "LIME";
+  dom.phone.classList.toggle("has", count > 0);
+  dom.phone.querySelector(".badge").textContent = count > 9 ? "9+" : String(count || "");
+  dom.phone.title = name;
+  dom.phone.setAttribute("aria-label", name);
 }
 
 /** 朝の家の画面で、就寝前の残量から回復後までゲージを伸ばす。 */

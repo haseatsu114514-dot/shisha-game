@@ -18,7 +18,7 @@ import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 
-import { invitationCost, storeInvitationSpot } from "./invitations.js";
+import { invitationCost, storeInvitationSpot, visitReminderSpot } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -360,12 +360,13 @@ function avatar(account, small = false) {
 const text = (raw) => formatHtml(hooks.interpolate ? hooks.interpolate(String(raw)) : String(raw));
 
 // ================================================================ 受信箱（オーナー指定: 朝は通知だけ・読みたい時に開く）
-// 朝に届いたメッセージは state.inbox に積むだけ。HUD の LIME アイコンに未読の赤丸（数字なし）を出し、
+// 朝に届いたメッセージは state.inbox に積むだけ。HUD の LIME アイコンに未読件数を出し、
 // プレイヤーが好きなときにアプリを開いて、トーク一覧から読みたい相手を選ぶ。
 // 誘いは「当日・その時間帯のうち」なら返事ができる（昼の誘い＝昼の行動の前まで／夜の誘い＝夜の行動の前まで）。
 
 /** 未読があるか（HUD の赤丸） */
-export const hasUnread = () => (state.inbox || []).some((i) => !i.read);
+export const unreadCount = () => (state.inbox || []).filter((i) => !i.read).length;
+export const hasUnread = () => unreadCount() > 0;
 
 /** 今朝のメッセージを受信箱に積む。戻り値=届いた件数 */
 export function deliverMorning(opts = {}) {
@@ -420,6 +421,47 @@ function inviteState(item, opts = {}) {
   if (state.pendingInvite) return "busy";
   return "open";
 }
+
+/** 通常の店訪問と場所が一致する、有効で返事待ちの誘いのみ対象。 */
+export function venueInviteNeedingReply(spotId, opts = {}) {
+  if (!spotId) return null;
+  return (state.inbox || []).find((item) =>
+    item?.msg?.type === "invitation" &&
+    visitReminderSpot(item.msg) === spotId &&
+    !item.done &&
+    !item.result &&
+    (!item.read || !item.replyState || item.replyState === "waiting") &&
+    inviteState(item, opts) === "open"
+  ) || null;
+}
+
+/**
+ * マップで通常行動を確定する直前に知らせるべき招待。
+ * 1. 今向かう場所と会場が一致する招待
+ * 2. 別の行動を使うと当日の返信期限が切れる招待
+ * 営業後の待ち合わせや外出は「普通に店へ行く」と同一視しない。
+ */
+export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
+  const waiting = (state.inbox || []).filter((item) =>
+    item?.msg?.type === "invitation" &&
+    !item.done && !item.result &&
+    (!item.read || !item.replyState || item.replyState === "waiting") &&
+    !ignoredIds.includes(item.id) &&
+    inviteState(item, opts) === "open"
+  );
+  const matching = waiting.find((item) => visitReminderSpot(item.msg) === spotId);
+  if (matching) return { item: matching, kind: "venue" };
+  // 買い物や占いへの入場は時間を使わない。凛との会話や終日休養は確定時に判定する。
+  if (opts.spendsAction === false) return null;
+  // みんとの店頭試飲のような「昼・夜どちらでも返信可」は夜が最後の機会。
+  const expiring = waiting.find((item) =>
+    state.slot + (opts.slotsUsed ?? 1) > (storeInvitationSpot(item.msg) ? 1 : replySlot(item.msg))
+  );
+  return expiring ? { item: expiring, kind: "deadline" } : null;
+}
+
+// 旧テスト/呼び出しとの互換性を維持する。
+export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
 
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
