@@ -3,7 +3,7 @@
   "issue": 504,
   "revision": "v1",
   "status": "design_selection_complete",
-  "merge_authorized": false,
+  "merge_authorized": true,
   "characters": [
     {
       "id": "sumi",
@@ -115,5 +115,9 @@
     "bonus_values": null,
     "implementation_status": "not_implemented_by_this_pr"
   },
-  "selection_source": "会話でオーナーが8人のA/Bを個別指定。PR #507の選定コメントにも記録。"
+  "selection_source": "会話でオーナーが8人のA/Bを個別指定。PR #507の選定コメントにも記録。",
+  "merge_authorization": {
+    "instruction": "マージまでして",
+    "scope": "PR #507の原画・採用結果・性能方針の資料保存。本編の性能実装は含まない。"
+  }
 }
