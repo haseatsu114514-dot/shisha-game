@@ -4,7 +4,7 @@
   "claim_run": 38359462795,
   "status_run": 38359709631,
   "request": "紬を1枚だけ『BASTARD!!』のヨーコ/OVA風に。巨大なアゲハの影に挑む第2章タイトルも90年代風の試作。",
-  "scope": "比較用の別バージョン2枚。採用済みC・本編の画像は変更しない。",
+  "scope": "紬1枚と、文字なし・顔を隠した予告の別構図1枚。前回のタイトル試作は章頭の比較参照として保持。採用済みC・本編の画像は変更しない。",
   "style": "1992 BASTARD!! OVA / Yoko (Tia Noto) visual inspiration; original shisha-game characters.",
   "prompts": {
     "tsumugi": "Create ONE finished alternate illustration by completely REDRAWING input 1 in the lush hand-drawn character aesthetic of the early 1992 BASTARD!! OVA, particularly the expressive facial drawing and screen presence of Yoko / Tia Noto. This is an experimental alternate visual treatment for the user's original everyday Japanese cafe story.\nInput 1 is the existing Tsumugi water scene and the exact storyboard/composition to keep. Input 2 is Tsumugi's official identity and costume reference, not a style reference.\nKEEP the 16:9 landscape framing, camera, poses, table perspective, olive sofa, orange cushion, half-full glass of water, drawing tablet, stylus and the partly occluded young man at left. The young woman is Tsumugi, age 21: the same SHORT CHESTNUT-BROWN BOB with straight bangs, BROWN eyes, small black stud earring, soft youthful adult face and dark PURPLE ZIP HOODIE with ivory/pink/gold flower embroidery. Her gaze and gentle, concerned expression remain. Her right hand offers the glass and her other hand rests beside her own tablet. Keep her specific features clearly recognizable. The man's dark cap and dark hoodie remain at the left.\nMake the character drawing visibly different and emphatically early-1990s OVA: beautifully expressive large vertically shaped eyes with confident thick upper lashes, hand-inked tapered lines and a tiny crisp nose/mouth; richer sculptural hair locks with broad painted glossy highlight ribbons; opaque warm skin cel paint with large sharply edged violet/blue shadows; decisive garment-fold lines and carefully drawn floral motifs; cinematic amber edge light contrasting deep indigo shadows. Use the lush, slightly dramatic beauty of Yoko's OVA facial design while keeping Tsumugi's own short brown hair, clothing and everyday personality. Preserve her gentle cheek shape and short chin. Keep natural hand anatomy and the same physical grip on the glass.\nCharacters should be finished traditional production-cel drawing, with controlled 2-3 tone flat shadow shapes and expressive ink detail; background is subdued hand-painted gouache. This must be a real redraw of face, eyes, linework, hair and shading, with a bold visible change from the source.\nMaintain the everyday quiet cafe interaction. Do not add fantasy costumes, long red hair, weapons, magic, monsters, new props or shisha equipment. No added text, logos, subtitle, borders or watermark. Deliver a single full-bleed 16:9 landscape still.",
@@ -61,7 +61,7 @@
       ],
       "mode": "RGB",
       "opaque": true,
-      "role": "selected-experiment"
+      "role": "earlier-title-study-reference"
     },
     {
       "path": "archive/tsumugi-first-pass.png",
@@ -110,6 +110,7 @@
       "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
     }
   ],
+  "teaser_revision_record": "teaser-generation.json",
   "native_files_preserved": true,
   "production_assets_changed": false,
   "external_images_downloaded": false,

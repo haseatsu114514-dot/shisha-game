@@ -1,0 +1,82 @@
+{
+  "issue": 519,
+  "worker": "codex-ova-study-20261013-5f470b9d",
+  "claim_run": 38359462795,
+  "status_run": 38372542826,
+  "base_commit": "65c9553bac00cb36fb23d2931973ce5d130e89bf",
+  "user_direction": "2章タイトルの絵を予告に繰り返さず、文字なしのワンシーン・違う構図・もっと影や異なるシルエットで気にならせ、2章のタイトルコールで「あ、この子か」とつながるようにする。",
+  "role": "別バージョンの予告用ワンシーン。正式素材への接続は未実施。",
+  "generator": "image_gen.imagegen",
+  "prompt": "Create a completely NEW cinematic teaser scene illustration for the user's everyday Japanese cafe visual novel, in the lush hand-inked, hard-edged two/three-tone production-cel character drawing and gouache backgrounds of a 1992 Japanese OVA, with the visual richness of the early BASTARD!! OVA. IMAGE 1 is Ageha's authoritative identity, costume and adult age-22 reference. IMAGE 2 is the approved alternative OVA treatment for linework and paint density ONLY, not its characters, setting layout or action.\n\nThe purpose is concealment before a later chapter-opening REVEAL. The viewer should wonder \"who is that?\" in the trailer, then recognize Ageha when the separate chapter title shows her face. This must read as ONE actual movie scene, not a poster or a chapter title. Completely different layout from an oversized girl confronting a small protagonist: NO oversized heroine portrait, NO tiny man facing her, NO dueling layout, NO abstract magenta graphic background.\n\nA quiet modern cafe doorway at night, seen from inside across an empty floor at an oblique low camera angle. At the FAR LEFT THIRD near the doorway, a single NORMAL HUMAN-SIZED young adult woman has her back turned in a three-quarter rear view, paused with one hand resting naturally on the sliding-door handle, about to leave. A narrow pale warm amber backlight from the doorway silhouettes her. Her head and almost all her clothing are in deep navy-blue shadow, partly occluded by the near doorframe: NO visible face, eye, smile or portrait. Her honey-blonde ponytails overlap one another and her shoulder into one dark flowing hair mass; one side is cropped by the doorframe, so the outline is mysterious rather than an obvious clear twin-tail silhouette. Keep Ageha's real hair and costume, but hide the bear hairclip shapes, leopard markings and pink shirt in shadow. Include just ONE restrained identity clue: a tiny muted pink glint on the partially occluded near hairclip, with a faint gold rim on the adjacent hair, small enough to only be noticed after the chapter-opening reveal. No obvious mascot badge, visible outfit pattern, face or foreground closeup.\n\nFrom this normal-sized figure, a dramatically elongated, perspective-distorted dark shadow crosses the quiet blue/teal floor toward the LOWER RIGHT foreground, continuing naturally into deep interior darkness. The long shadow is the visual subject: it makes this ordinary girl feel like an overwhelming presence and a future barrier of talent, while remaining physically plausible light-and-shadow, not supernatural. The shadow silhouette is broad and abstract in perspective rather than a clean miniature of her hair; no monstrous horns, wings, weapons or fantasy cues. Use the strong empty negative space of the right half and diagonal floor lines to create anticipation. A few subdued ordinary furniture silhouettes along the background wall, no busy props, no plants, no shisha equipment, no smoke. Cold ink-blue and restrained teal scene with one narrow pale amber doorway, deliberately a different palette and camera from the later orange/magenta title image.\n\nDelicately inked hair edge and fabric folds where light reaches them; broad flat navy cel shadow conceals the face. Painted animation-background atmosphere, filmic quiet tension, full-bleed landscape about 16:9. Exactly ONE person. NO writing of any kind anywhere: no chapter name, series logo, caption, Japanese text, English text, shop signs, typography, title-call space, labels, symbols, watermark or frame. Deliver only the completed wordless scene.",
+  "references": [
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Ageha identity, age 22, hair and clothing; visible features concealed",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "path": "asset_sources/retro-ova-study-519/images/tsumugi-ova.png",
+      "role": "OVA linework and cel-paint style only; not composition or characters",
+      "sha256": "114017c722551c844848c7706ff831eaa73ede28ca32757fa635e889b8d49a7b"
+    }
+  ],
+  "output": {
+    "path": "images/ch2-teaser-shadow.png",
+    "native_generator_path": "/workspace/generated_images/exec-228d88e8-c8f2-441d-ab94-754ae1758d22.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "sha256": "592945033cb0c781ba4ab9bab946fc91336dde2ef01a14fe5b39964e4b126966",
+    "bytes": 1834163
+  },
+  "preview": {
+    "path": "teaser-to-title-preview.mp4",
+    "purpose": "絵のつながりを比べる約10秒の無音確認映像。章頭側には前回のOVAタイトル試作を使用。",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "fps": 30,
+    "frames": 300,
+    "duration_seconds": 9.966667,
+    "codec": "h264",
+    "audio": false,
+    "sha256": "3eabbed2c3509cb9274b9d7c67485c29badca000ff6c3f75dee8aedf6eaf438d",
+    "bytes": 581562,
+    "sequence": [
+      {
+        "start": 0,
+        "end": 6,
+        "image": "images/ch2-teaser-shadow.png",
+        "transition": "last 0.4 seconds fade to black"
+      },
+      {
+        "start": 6,
+        "end": 6.6,
+        "image": null,
+        "transition": "black hold"
+      },
+      {
+        "start": 6.6,
+        "end": 10,
+        "image": "images/ch2-ova-title.png",
+        "transition": "hard cut to chapter-opening reference"
+      }
+    ]
+  },
+  "qa": {
+    "one_normal_sized_person": true,
+    "giant_portrait_or_duel_layout": false,
+    "text_in_scene": false,
+    "visible_eyes_or_mouth": false,
+    "identity_clue": "partly hidden pink hairclip and faint warm hair rim",
+    "composition": "low oblique view of doorway at left, elongated shadow across empty floor",
+    "equipment": "No shisha equipment, smoke, HMD or coals",
+    "image": "PNG decoded; dimensions, RGB and SHA-256 checked; native file copied unchanged",
+    "video": "full video decoded; 1.0-second scene, 6.3-second black, 7.4-second reveal visually inspected"
+  },
+  "native_file_preserved": true,
+  "production_assets_changed": false
+}
