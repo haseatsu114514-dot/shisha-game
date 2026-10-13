@@ -103,10 +103,12 @@ await suite('ch2-daily',async check=>{
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
   });
-  await check('installed-reel-spins-once-for-city-visit',async page=>{
+  await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');
-    let v=await value(page);assert.equal(v.reel.count,1);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
-    await reloadSave(page);v=await value(page);assert.equal(v.reel.count,1,'Loading must not spin or charge the same visit again');
+    let v=await value(page);assert(v.reel.count>0);assert.equal(v.reel.lastChapter,2);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    const drawn=structuredClone(v); // リプレイで複数回転する場合も、確定した抽選と報酬をそのまま保存する。
+    await reloadSave(page);v=await value(page);assert.equal(v.reel.count,drawn.reel.count,'Loading must not reroll the same visit');
+    assert.equal(v.money,drawn.money);assert.deepEqual(v.stats,drawn.stats);
     assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
   });
   await check('touch-four-owners-and-fixed-day3-night',async page=>{
