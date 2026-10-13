@@ -261,7 +261,17 @@
 .heart-row { display: inline-flex; align-items: center; gap: 4px; }
 .heart-row .ui-heart { width: 22px; height: 22px; }
 .pp-hearts { display: inline-flex; align-items: center; gap: 8px; }
-.pp-relation { font-size: 14px; letter-spacing: 0.03em; }
+.pp-relation { font-size: 16px; font-weight: 700; letter-spacing: 0.03em; }
+.pp-face { flex: none; }
+.pp-detail { flex: 1; min-width: 0; }
+.pp-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 16px; }
+.pp-hearts { flex-wrap: wrap; }
+.pp-guide { margin: 0 0 2px; font-size: 16px; line-height: 1.5; color: var(--text-dim); }
+.pp-next { margin: 2px 0 0; font-size: 16px; line-height: 1.5; letter-spacing: 0.02em; color: var(--text-dim); }
+.pp-row[data-relation="romance"] .pp-relation { color: #ff9dbd; }
+.pp-row[data-relation="friend"] .pp-relation { color: #9fd9ec; }
+.pp-row[data-relation="choice"] .pp-relation { color: var(--gold-hi); }
+
 .dodge-heart { background: var(--art-heart) center / contain no-repeat; text-shadow: none; }
 
 /* 枠も中身も生成画像。体力の割合は枠の内側のtrackで正確に表す。 */

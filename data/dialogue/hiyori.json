@@ -1,5 +1,5 @@
 {
-  "_comment": "キャラ設定はdata/characters.json。正式斧投げはtonari再会・三人・退勤後の読了後、夜に前段→実3投→後段で進む。仕事の深掘り・告白は別途台本待ち。preview_onlyは表示確認用。innerはプレイヤーだけに見える。",
+  "_comment": "キャラ設定はdata/characters.json。正式斧投げの読了後に仕事相談と実回答の質問へ。質問は反応の読了も保存し、専用ハガル登録まで締めくくりを解禁しない。preview_onlyは表示確認用。innerはプレイヤーだけに見える。",
   "route": {
     "enabled": true,
     "storyEvents": [
@@ -11,12 +11,15 @@
     "question": {
       "dialogue": "hiyori_bond_question",
       "choice": "bond_q1_hiyori",
-      "host": "hiyori_work_talk"
+      "host": "hiyori_work_talk",
+      "flag": "_hiyori_bond_question_done"
     },
     "finale": {
       "dialogue": "hiyori_bond_finale",
       "question": "bond_q2_hiyori",
-      "gift": null
+      "gift": null,
+      "flag": "_hiyori_bond_finale_done",
+      "night": true
     },
     "events": [
       {
@@ -107,7 +110,8 @@
         ],
         "met": true,
         "minAffinity": 2,
-        "affinity": 10
+        "affinity": 10,
+        "slot": 1
       },
       {
         "id": "tokyo_contact",
@@ -1337,6 +1341,278 @@
           "text": "さっきの笑い声を知っていると、その表情も少し近くに見えた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "hiyori_work_talk",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "tonariの席で、ひよりが手帳を閉じた。先日の笑い声を知ってから、黙っている時間も少し違って見える。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今日も、おつかれさま……。私も、やっと一段落……",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "何か、立て込んでたんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "申請の確認と、更新の期限と、問い合わせ。順番に片づけてるんだけど、途中で別の急ぎが来るんだよね",
+          "face": "serious"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "三年目になると、分かることも増えるから。頼ってもらえるのは、うれしいんだけど……",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "終わらせてから休もう、って思うと、休む時間がなくなる",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "斧投げの時は、仕事のこと、忘れられました？"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あの時はね。青いところしか見てなかった",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、元気な顔してると、まだ余裕があるって思われそうで……。自分でも、そう思っちゃうんだ",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "元気に遊べることと、仕事で疲れることは、両方ありますよね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。ありがとう。笑えてるから平気、ってことにはならないもんね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "全部終わる日を待つより、今日はここまでって区切れたら、少し違うかもしれません"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "急ぎじゃない分は明日に回して、頼めることはちゃんと頼む、か……",
+          "face": "serious"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "それ、できてるつもりだった。明日、最初に整理してみようかな",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "聞いてほしいだけの日も、言ってください。俺が答えを出せなくても、話は聞けるんで"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ふふ……。じゃあ、また少しだけ、隣を借りてもいい……？",
+          "face": "normal",
+          "inner": "少しだけって言ったけど、もうちょっといたい"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは手帳を鞄へしまった。仕事を片づけるためではなく、今ここで過ごすために。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "text": "……次は、斧投げじゃなくても誘っていい……？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あの変な声も、聞かせちゃったけど……。私といるの、嫌じゃなかった……？",
+          "face": "love_blush"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_hiyori",
+          "romance_char": "hiyori",
+          "choices": [
+            {
+              "text": "また斧投げしましょう。次は負けませんよ",
+              "romance": 0,
+              "next": "friend"
+            },
+            {
+              "text": "ひよりさんに会えるなら、二人でどこでも",
+              "romance": 1,
+              "next": "romance"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "text": "ひよりはカップを両手で包み、ゆっくり一口飲んだ。それから、二人で煙の続きを楽しんだ。"
+        }
+      ],
+      "branches": {
+        "friend": [
+          {
+            "speaker": "hiyori",
+            "text": "……うん。私も、そういう時間、大事にしたいな……",
+            "face": "smile"
+          },
+          {
+            "speaker": "hiyori",
+            "text": "じゃあ、今度はラーメンも付き合ってね。斧投げのあと、お腹すくから",
+            "face": "smile"
+          }
+        ],
+        "romance": [
+          {
+            "speaker": "hiyori",
+            "text": "二人で……。そっか……",
+            "face": "love_blush",
+            "inner": "うれしい。今の、ちゃんと私に言ってくれたんだよね"
+          },
+          {
+            "speaker": "hiyori",
+            "text": "私も、また会いたい……。今度は、仕事の話だけじゃなくて……",
+            "face": "love_blush"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "hiyori_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "仕事帰りのひよりが、小さな箱をテーブルに置いた。"
+        },
+        {
+          "speaker": "",
+          "text": "こちらを見る顔には、見覚えのある柔らかな微笑みがある。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "この前、話を聞いてくれて、ありがとう……。私、あれから少し、区切りをつけやすくなったよ……",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "いつも全部できるわけじゃないけど。今日は、手帳を開かずに来られた",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日は、ゆっくりしましょう"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "hiyori",
+          "next_true": "lover",
+          "next_false": "route"
+        },
+        {
+          "speaker": "",
+          "text": "箱の中身を、ひよりがそっと見せてくれた。"
+        },
+        {
+          "speaker": "",
+          "text": "仕事を忘れて笑った日も、静かに話した日も、一つの思い出になっている。"
+        }
+      ],
+      "branches": {
+        "route": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "hiyori",
+            "next_true": "question",
+            "next_false": "friend"
+          }
+        ],
+        "question": [
+          {
+            "speaker": "hiyori",
+            "text": "あの時、もっと二人で会いたいって言ってくれたの……覚えてる",
+            "face": "love_blush"
+          },
+          {
+            "speaker": "hiyori",
+            "text": "私も、同じだった……。今日は、その続き、聞いてもいい……？",
+            "face": "love_blush"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_hiyori",
+            "romance_char": "hiyori",
+            "choices": [
+              {
+                "text": "これからも、大事な友達として会いたい",
+                "romance": 0,
+                "next": "friend"
+              },
+              {
+                "text": "友達より近い気持ちで、ひよりさんに会いたい",
+                "romance": 1,
+                "next": "romance"
+              }
+            ]
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hiyori",
+            "text": "うん……。気を遣わずに笑える友達って、うれしいね……",
+            "face": "smile"
+          },
+          {
+            "speaker": "hiyori",
+            "text": "この箱は、また一緒に一服する時のために。たまには、私の好きな味も作ってね",
+            "face": "smile"
+          }
+        ],
+        "romance": [
+          {
+            "speaker": "hiyori",
+            "text": "……よかった。私だけ、先に走ってたらどうしようって、思ってた……",
+            "face": "love_blush"
+          },
+          {
+            "speaker": "hiyori",
+            "text": "あの顔も、この顔も……。はじめくんには、見せていたいな……",
+            "face": "love_blush"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "hiyori",
+            "text": "隣にいると、元気な私も、静かな私も、そのままでいいんだなって思える……",
+            "face": "love_blush"
+          }
+        ]
+      }
     }
   ]
 }

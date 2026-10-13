@@ -260,6 +260,12 @@ try {
       }
       await consecutive.locator('.map:not(.done) [data-spot="rest"]').click();
       await consecutive.locator('[data-test="map-go"]').click();
+      // Keep resting through the real invitation deadline prompt without
+      // reading or accepting it; the next day/slot still needs to advance.
+      await consecutive.waitForFunction(({ day, slot }) => T.core.state.day !== day || T.core.state.slot !== slot
+        || document.querySelector('[data-test="venue-invite-go"]'), { day, slot }, { timeout: 60000 });
+      const reminder = consecutive.locator('[data-test="venue-invite-go"]');
+      if (await reminder.count()) await reminder.click();
     }
     if (day < 13) {
       await consecutive.waitForFunction(day => T.core.state.day === day + 1

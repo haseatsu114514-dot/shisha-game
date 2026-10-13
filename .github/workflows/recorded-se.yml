@@ -1,0 +1,46 @@
+name: Recorded SE regression
+on:
+  pull_request:
+    paths:
+      - 'remake/js/core/audio.js'
+      - 'remake/js/craft/**'
+      - 'remake/test/recorded_se.mjs'
+      - 'remake/test/browser/recorded_se.mjs'
+      - 'remake/test/foil_holes.mjs'
+      - 'assets/audio/se/**'
+      - '.github/workflows/recorded-se.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/core/audio.js'
+      - 'assets/audio/se/**'
+      - '.github/workflows/recorded-se.yml'
+permissions:
+  contents: read
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio/se
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --experimental-vm-modules remake/test/recorded_se.mjs
+      - run: node --experimental-vm-modules remake/test/foil_holes.mjs
+      - run: node --experimental-vm-modules remake/test/continue_audio.mjs
+      - run: node --experimental-vm-modules remake/test/bgm_gain.mjs
+      - name: Install browser test dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Decode and play recorded effects on PC and touch layouts
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/recorded-se.log" 2>&1 &
+          node remake/test/browser/recorded_se.mjs

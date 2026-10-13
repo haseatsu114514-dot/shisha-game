@@ -1,0 +1,123 @@
+// Campaign rules only. All mutations are explicit; this module has no DOM/storage.
+const clone = value => JSON.parse(JSON.stringify(value));
+const excluded = new Set(["sumi", "naru"]);
+export const emptyTrpgProgress = () => ({ stock: [], owned: [], cleared: {} });
+
+export function participantStatus(state, person) {
+  if (excluded.has(person.id)) return { ok: false, reason: "参加対象外" };
+  if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
+  if (!(state.lovers || []).includes(person.id) && (state.affinity?.[person.id] || 0) < person.maxAffinity) {
+    return { ok: false, reason: "好感度MAXで招待できる" };
+  }
+  const override = (state.trpg?.shifts || []).find(s => s.id === person.id && s.chapter === state.chapter
+    && s.day === state.day && s.slot === state.slot);
+  const temporaryClosed = state.flags?.[`_temporary_closed_${person.id}`] === `${state.chapter}:${state.day}`;
+  const shift = override ? override.busy : !temporaryClosed && (person.shifts || []).some(s =>
+    s.slot === state.slot && s.days.includes(state.day % 7));
+  if (shift) return { ok: false, reason: override?.reason || person.workLabel || "シフト中" };
+  const invite = state.pendingInvite;
+  if (invite?.sender === person.id && (invite.day ?? state.day) === state.day) return { ok: false, reason: "別の約束がある" };
+  return { ok: true, reason: "今夜、参加できる" };
+}
+
+export function tableStatus(state, catalog, { nightBusy = false } = {}) {
+  if (!state || state.chapter < (catalog.unlockChapter || 2)) return { ok: false, reason: "第2章から遊べる" };
+  if (state.phase !== "daily") return { ok: false, reason: "街で過ごせる日に遊ぼう" };
+  if (state.slot !== 1) return { ok: false, reason: "卓を囲むのは夜の1枠" };
+  if (nightBusy || state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1) {
+    return { ok: false, reason: "今夜は先に決まった予定がある" };
+  }
+  return { ok: true, reason: "今夜の卓を囲もう" };
+}
+
+/** Stock persists after the first eligible visit; a work shift never removes a book. */
+export function syncTrpgStock(state, catalog) {
+  if (!state || state.chapter < catalog.unlockChapter) return false;
+  state.trpg ||= emptyTrpgProgress();
+  let changed = false;
+  for (const book of catalog.scenarios) {
+    const ready = book.stockRequires.every(id => {
+      const p = catalog.participants.find(p => p.id === id);
+      return p && !excluded.has(id) && state.met?.[id] && ((state.lovers || []).includes(id)
+        || (state.affinity?.[id] || 0) >= p.maxAffinity);
+    });
+    if (ready && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
+  }
+  return changed;
+}
+
+export function buyTrpgBook(state, catalog, id) {
+  const book = catalog.scenarios.find(b => b.id === id);
+  if (!book || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
+    || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || state.money < book.price) return false;
+  state.money -= book.price;
+  state.trpg.owned.push(id);
+  return true;
+}
+
+/** Deterministic casting: mandatory seats first, then free compatible companions. */
+export function castTrpgTable(state, catalog, scenario, options = {}) {
+  const ready = tableStatus(state, catalog, options);
+  if (!ready.ok) return ready;
+  if (state.trpg?.cleared?.[scenario.id]) return { ok: false, reason: "遊び終えた物語" };
+  if (!state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
+  const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
+  available.add("hajime");
+  const used = new Set();
+  const assignments = {};
+  for (const seat of scenario.campaign.seats) {
+    const id = seat.candidates.find(id => available.has(id) && !used.has(id) && !excluded.has(id));
+    if (!id && seat.required) return { ok: false, reason: "今夜はGMの都合がつかない" };
+    assignments[seat.actor] = id || null;
+    if (id) used.add(id);
+  }
+  return { ok: true, assignments, participants: [...used], gm: assignments[scenario.cast.find(c => c.part === "GM").id] };
+}
+
+/** Authored alternatives are required for any replacement actor; never reuse another person's voice. */
+export function materializeTrpgCast(scenario, assignments) {
+  const table = clone(scenario);
+  const gm = scenario.cast.find(c => c.part === "GM").id;
+  if (!assignments[gm] || assignments.hajime !== "hajime") throw new Error("Missing required TRPG participant");
+  if (Object.values(assignments).some(id => excluded.has(id))) throw new Error("Excluded TRPG participant");
+  table.cast = table.cast.filter(c => assignments[c.id]).map(c => {
+    const id = assignments[c.id];
+    return { ...c, ...(c.alternatives?.[id] || {}), id };
+  });
+  table.consult = Object.fromEntries(Object.entries(table.consult).filter(([id]) => assignments[id])
+    .map(([id, value]) => [assignments[id], value]));
+  for (const check of Object.values(table.checks)) check.helper = assignments[check.helper] || null;
+  for (const block of table.dialogues) {
+    block.lines = block.lines.flatMap(line => {
+      const id = assignments[line.speaker];
+      if (!id) return [];
+      if (id !== line.speaker && !line.variants?.[id]) throw new Error("Missing authored TRPG voice: " + id);
+      const updated = { ...line, ...(line.variants?.[id] || {}), speaker: id };
+      delete updated.variants;
+      if (updated.castIntro) {
+        updated.text = table.cast.length < scenario.cast.length ? updated.smallTableText : updated.text;
+        delete updated.castIntro; delete updated.smallTableText;
+      }
+      return [updated];
+    });
+  }
+  table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、切り札も頼める";
+  table.presentation.endingIdle = "この晩の話は、ここまで。みんなとの記録を本棚に残そう";
+  table.presentation.exitText = "中断した物語は、また遊べます。今夜の行動は使いません。";
+  return table;
+}
+
+/** Commits once, after all ending dialogue is read; includes the action in the same save. */
+export function completeTrpgTable(state, catalog, scenario, ticket, result, options = {}) {
+  if (result?.cancelled || result?.scenarioId !== scenario.id || !scenario.endings[result?.ending]
+    || state.chapter !== ticket.chapter || state.day !== ticket.day || state.slot !== ticket.slot) return false;
+  const current = castTrpgTable(state, catalog, scenario, options);
+  if (!current.ok || JSON.stringify(current.assignments) !== JSON.stringify(ticket.assignments)) return false;
+  state.trpg.cleared[scenario.id] = {
+    chapter: state.chapter, day: state.day, gm: current.gm, participants: [...current.participants],
+    ending: result.ending, endingTitle: scenario.endings[result.ending].title,
+    variant: result.variant, plan: clone(result.plan), version: scenario.version,
+  };
+  state.slot++;
+  return true;
+}

@@ -1152,6 +1152,115 @@
           "text": "二人で、通りの角まで歩いた。次に会う約束は、いつもの席で。"
         }
       ]
+    },
+    {
+      "dialogue_id": "confession_hiyori",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "tonariを出て、帰り道。ひよりが歩幅を少し緩めた。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさん。さっきの話の続き、いいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。私も、まだ帰りたくない……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hajime",
+          "text": "一緒に遊ぶ時間も、何もせずに話す時間も、もっと過ごしたいです"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさんのことが、好きです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "はじめくん……。私も、好き……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、かっこよくは言えないな……。今、すごくうれしくて……",
+          "face": "love_blush",
+          "inner": "言えた。ちゃんと、声に出して言えた"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "恋人として、これからも一緒にいたい",
+              "next_id": "confession_hiyori_accept"
+            },
+            {
+              "text": "やっぱり、友達として一緒にいたい",
+              "next_id": "confession_hiyori_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_hiyori_accept",
+      "metadata": {
+        "private_scene": true,
+        "set_romance": "hiyori"
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "text": "……よろしく、お願いします……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あ、でも。いつも静かにしてるわけじゃないからね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "それも、知ってます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ふふ……。じゃあ、明日はまた、儚く待ってるね……",
+          "face": "smile",
+          "inner": "明日も会いたいって、言っちゃおうかな"
+        },
+        {
+          "speaker": "",
+          "text": "笑い合ってから、ひよりと並んで歩いた。いつもの静かな微笑みも、もう遠いものには見えない。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_hiyori_reject",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "text": "……うん。ちゃんと言ってくれて、ありがとう……",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "一緒に遊べるのは、変わらないよ。次のラーメンも、忘れないでね",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりがいつもの調子で微笑んだ。大事な友達として、また会う約束をした。"
+        }
+      ]
     }
   ]
 }

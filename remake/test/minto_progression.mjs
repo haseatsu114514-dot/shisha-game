@@ -48,7 +48,7 @@ try {
   const run = (friend) => page.evaluate(async (friend) => {
     const state = T.fresh();
     T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex((l) =>
-      friend ? l.includes("友達") : /２人|想いを伝え|付き合って/.test(l)));
+      friend ? /愚痴|友達/.test(l) : /２人|想いを伝え|付き合って/.test(l)));
     await T.spots.visitChar("minto");
     const first = T.vn.backlog().map((l) => l.text);
     const identity = { known: !!state.flags._minto_identity_revealed, full: !!state.flags._minto_name_known };

@@ -779,6 +779,7 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
+  // 関係の方向は返答と相手の反応で伝える。実回答の記録はpickChoiceのフックへ渡す。
   const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
     html: formatHtml(c.text || "……"),
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b11">
+<title>次回予告・3つのサンプル — 水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/chapter-preview.css">
+<link rel="stylesheet" href="css/chapter-preview-samples.css">
+<style>#shell { position: fixed; inset: 0; overflow: hidden; }</style>
+</head>
+<body>
+<div id="shell"><div id="stage"><div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div><div id="fx"></div><div id="toasts"></div><div id="banners"></div><div id="wipe"></div><div id="modal"></div></div></div>
+<script type="module">
+import { el } from "./js/core/util.js";
+import { initLayers } from "./js/core/ui.js";
+import { loadConfig } from "./js/core/state.js";
+import { unlockAudio } from "./js/core/audio.js";
+import { playChapterPreview } from "./js/chapters/ch1-preview.js";
+import { previewSamples } from "./js/chapters/chapter-preview-samples.js";
+const stage = document.getElementById("stage");
+function fit() {
+  const width = visualViewport?.width || innerWidth, height = visualViewport?.height || innerHeight;
+  stage.style.setProperty("--k", String(Math.min(width / 1280, height / 720)));
+}
+fit(); addEventListener("resize", fit); visualViewport?.addEventListener("resize", fit); initLayers(); loadConfig();
+const requested = new URLSearchParams(location.search).get("sample");
+const selected = previewSamples.find(sample => sample.id === requested) || previewSamples[0];
+const button = el("button.btn.primary", { type: "button", text: `${selected.letter} の予告を再生`, dataset: { test: "preview-start" } });
+const note = el("p", { text: selected.description });
+const title = el("h2", { text: selected.hook });
+const tabs = previewSamples.map(sample => el("a.sample-tab", { href: `?sample=${sample.id}`, "aria-current": selected === sample ? "page" : null }, [
+  el("b", { text: `${sample.letter}　約${sample.seconds}秒` }), el("span", { text: sample.name }),
+]));
+const intro = el("div.sample-intro", { dataset: { sample: selected.id } }, [
+  el("header", [el("span", { text: "水煙前線 -EN:CODE-" }), el("span", { text: "第1章の終わり → 第二章『才能の壁』" })]),
+  el("h1", { text: "次回予告、3つの見せ方。" }),
+  el("p.sample-lead", { text: "既存の90年代セル画から、テンポと余韻を変えた3案。" }),
+  el("nav.sample-tabs", { "aria-label": "予告サンプルの選択" }, tabs),
+  el("section.sample-feature", [
+    el("img", { src: "../assets/cgs/ch2_preview/03-minto-warning.webp", alt: "既存セル画サンプルのみんと" }),
+    el("div", [el("small", { text: `${selected.letter}　${selected.name}` }), title, note, button]),
+  ]),
+  el("footer", { text: "音付き・一時停止とスキップができます。" }),
+]);
+document.getElementById("screen").append(intro);
+button.addEventListener("click", async () => {
+  if (button.disabled) return;
+  delete intro.dataset.test;
+  unlockAudio(); button.disabled = true;
+  const result = await playChapterPreview({ sample: selected.id });
+  button.disabled = false;
+  button.textContent = `${selected.letter} をもう一度`;
+  title.textContent = result === "aborted" ? "予告を中断しました。" : "あなたの煙は、誰に届いている？";
+  intro.dataset.test = "preview-ended";
+  button.focus({ preventScroll: true });
+});
+// 本編のセーブ・報酬・既読は読み書きしない。
+</script>
+</body>
+</html>

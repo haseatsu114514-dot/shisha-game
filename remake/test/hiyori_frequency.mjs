@@ -14,7 +14,7 @@ const mocks = {
   "core/state.js": { state, save: () => saves++ },
   "core/stats.js": { gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
-  "daily/bonds.js": { afterStory: async () => {} },
+  "daily/bonds.js": { afterStory: async () => {}, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
 };
 const modules = new Map();
