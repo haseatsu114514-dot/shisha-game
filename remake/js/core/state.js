@@ -215,14 +215,14 @@ function migrate(s) {
   const clubDate = v => v && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0;
   const founded = clubDate(club.founded) ? club.founded : null;
   s.trpg = { stock: ids(trpg.stock), owned: ids(trpg.owned),
-    club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
-      .filter(([id, date]) => id && !["sumi", "naru"].includes(id) && clubDate(date)
-        && (date.chapter > founded.chapter || date.chapter === founded.chapter && date.day >= founded.day))) : {} },
     cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
       && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
       && typeof v.gm === "string" && Array.isArray(v.participants))),
     shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
       && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
+    club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
+      .filter(([id, date]) => id && !["sumi", "naru"].includes(id) && clubDate(date)
+        && (date.chapter > founded.chapter || date.chapter === founded.chapter && date.day >= founded.day))) : {} },
   };
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
