@@ -6,9 +6,9 @@ const evidence = fileURLToPath(new URL('../../../docs/qa/ch2-daily/', import.met
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
-async function setup(page, { money = 36000, unknown = false } = {}) {
+async function setup(page, { money = 36000, unknown = false, reel = false } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ money, unknown }) => {
+  await page.evaluate(async ({ money, unknown, reel }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina: 100, weatherSeed: 7 });
@@ -21,6 +21,7 @@ async function setup(page, { money = 36000, unknown = false } = {}) {
     value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true,
       ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
+    value.reel.installed = reel;
     for (const id of ['ageha', 'kumicho', 'rei', 'volk']) value.flags[`_intro_${id}`] = !unknown;
     core.save();
     for (let i=1;i<=3;i++) localStorage.setItem(`suien_remake_slot${i}`, JSON.stringify({ ...value, money: 1000+i }));
@@ -30,7 +31,7 @@ async function setup(page, { money = 36000, unknown = false } = {}) {
     const vn = await import('./js/vn/engine.js');
     vn.hooks.onLine = (id,line) => { if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id); };
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, { money, unknown });
+  }, { money, unknown, reel });
   await page.locator(t('ch2-main-complete')).waitFor();
 }
 async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(map).waitFor(); }
@@ -62,11 +63,18 @@ async function capture(page,file) { await page.waitForTimeout(700); await page.s
 
 await suite('ch2-daily',async check=>{
   await check('next-day-region-switch-and-autosave',async page=>{
-    await setup(page); await begin(page);
+    await setup(page,{reel:true}); await begin(page);
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,110);
     assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.match(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと12日/);
     await capture(page,'day2-home.png'); await wide(page);
     await assertFits(page,'.map-regions button, .spot-pin');
+    const overlaps=await page.evaluate(()=>{
+      const controls=[...document.querySelectorAll('.map-regions button')].map(n=>n.getBoundingClientRect());
+      return [...document.querySelectorAll('.spot-pin, .hud-card, .hud-stamina, .hud-level, .hud-lime, .hud-menu, .reel-widget')].map(n=>{
+        const r=n.getBoundingClientRect();return {name:n.className,area:Math.max(...controls.map(c=>Math.max(0,Math.min(c.right,r.right)-Math.max(c.left,r.left))*Math.max(0,Math.min(c.bottom,r.bottom)-Math.max(c.top,r.top))))};
+      });
+    });
+    for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
     assert.equal(await page.locator('.spot-pin').count(),4);
     await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
@@ -94,6 +102,12 @@ await suite('ch2-daily',async check=>{
     await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000);assert.equal(v.flags._ch2_talks.ageha,2);
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
+  });
+  await check('installed-reel-spins-once-for-city-visit',async page=>{
+    await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');
+    let v=await value(page);assert.equal(v.reel.count,1);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    await reloadSave(page);v=await value(page);assert.equal(v.reel.count,1,'Loading must not spin or charge the same visit again');
+    assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
   });
   await check('touch-four-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
