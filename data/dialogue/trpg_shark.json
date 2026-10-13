@@ -1,6 +1,6 @@
 {
   "id": "shark-last-order",
-  "version": 2,
+  "version": 3,
   "title": "サメは閉店を待たない",
   "subtitle": "海上ラウンジ、最後の夜",
   "author": "青瀬マコ",
@@ -57,13 +57,19 @@
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す"
     },
     {
-      "id": "naru",
+      "id": "hiyori",
       "part": "PLAYER",
       "role": "オット／香りの研究員",
       "color": "#c8a375",
-      "ability": "即席の仕掛け",
+      "ability": "段取りの確認",
       "abilityType": "prepare",
-      "abilityText": "仕掛けを組むとき、判定に一度だけ＋2"
+      "abilityText": "仕掛けを組むとき、判定に一度だけ＋2",
+      "alternatives": {
+        "adam": {
+          "ability": "舞台の支度",
+          "color": "#c9463a"
+        }
+      }
     },
     {
       "id": "tsumugi",
@@ -377,16 +383,29 @@
           "text": "今夜はサメ映画じゃ。全員生還、そこは約束するぞ"
         },
         {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしがGM、お主たちが店番じゃ。全員、帰すぞ",
+          "castIntro": true,
+          "smallTableText": "わしがGM、お主が店番じゃ。空いた役はわしが兼ねるぞ"
+        },
+        {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "その約束があると、逆に何が起こるか気になるな"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "使える道具は、店にあるものだけなんだな"
+          "text": "……店にあるもので、あのサメから逃げるのね",
+          "variants": {
+            "adam": {
+              "text": "舞台装置は、この店の道具だけか。僕らの見せ場だな",
+              "face": "normal"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -425,10 +444,16 @@
           "text": "余は続編を要求する"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "まず一本目を生きて終えよう"
+          "text": "続編より先に、今ここで助かる方法を考えたいな……",
+          "variants": {
+            "adam": {
+              "text": "続編の主役は、生き残った者だけだ。まずはこの一夜を越えよう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -476,10 +501,16 @@
           "text": "波が入口を叩いた。危機が一つ進むが、道具は使える"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "濡れた床を避けて動こう。慌てなくていい"
+          "text": "足元、濡れてる……。ゆっくり行こう、転ぶと危ないから",
+          "variants": {
+            "adam": {
+              "text": "滑って退場では締まらない。足元から、落ち着いていこう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -516,10 +547,16 @@
           "text": "三人の手が噛み合った。仕掛けは静かに動き始める"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "狙いは通せた。あとは、全員の移動だな"
+          "text": "……うまくいった。今のうちに、みんなで渡ろう",
+          "variants": {
+            "adam": {
+              "text": "仕掛けは決まった。さあ、主役たちの退場だ",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -533,10 +570,16 @@
           "text": "結び目を一つ直す間に、窓の外の波が近づく"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "大丈夫。直した分だけ、次は迷わず使える"
+          "text": "手直しできたなら、大丈夫……。次はちゃんと動くはず",
+          "variants": {
+            "adam": {
+              "text": "修正も、物語を作る一手だ。次こそ狙いを通そう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -607,10 +650,16 @@
           "text": "予定の道に大波が来る。救助艇が、横から灯りを向ける"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一度戻ろう。三人そろって、あの艇へ渡るぞ"
+          "text": "いったん戻ろう……。店番の三人、誰も置いていかないで",
+          "variants": {
+            "adam": {
+              "text": "まだ終幕じゃない。店番三人で、あの艇へ向かおう",
+              "face": "normal"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -621,19 +670,31 @@
       ]
     },
     {
-      "dialogue_id": "trpg_shark_consult_naru",
+      "dialogue_id": "trpg_shark_consult_hiyori",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "serious",
-          "text": "全部を調べる時間はないな。似た手がかりを二つ探そう"
+          "face": "normal",
+          "text": "全部は調べられないのね……。手がかりを比べてみよう",
+          "variants": {
+            "adam": {
+              "text": "すべてを追うより、狙いを定めよう。二つの手がかりを比べるんだ",
+              "face": "normal"
+            }
+          }
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "serious",
-          "text": "保管箱と送風機なら、香りと振動の違いが見えそうだ"
+          "face": "normal",
+          "text": "保管箱と送風機。香りなのか、音なのか、確かめられそう",
+          "variants": {
+            "adam": {
+              "text": "保管箱と送風機。香りと振動、その違いが勝負を分けそうだ",
+              "face": "normal"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -670,10 +731,16 @@
           "text": "見立ては決まった。道具と逃げ道を組み合わせよう"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "同じ仕掛けでも、置く場所で結果は変わるな"
+          "text": "……仕掛けを置く場所も、ちゃんと考えた方がよさそうね",
+          "variants": {
+            "adam": {
+              "text": "仕掛けも、立つ場所で輝きが変わる。配置を考えよう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -710,10 +777,16 @@
           "text": "映画だと見落とすけど、店の準備が一番えらいな"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "次は開店前に、逃げ道も確認しよう"
+          "text": "サメがいる海で営業するなら、開店前に避難訓練してほしい……",
+          "variants": {
+            "adam": {
+              "text": "次作は、避難訓練から幕を開けよう。僕もその方が安心だ",
+              "face": "normal"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -756,10 +829,16 @@
           "text": "……閉じると、背びれが離れていく"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -807,10 +886,16 @@
           "text": "三人分、ちゃんとある。桟橋への縄も届く"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -858,10 +943,16 @@
           "text": "香りより、箱を置いた振動に反応した"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -909,10 +1000,16 @@
           "text": "屋根から縄で渡れば、濡れた床を避けられる"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -960,10 +1057,16 @@
           "text": "香りではなく、影に隠れた灯りを探している"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1011,10 +1114,16 @@
           "text": "灯りを浮きへ固定しても、三人分の縄が残る"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりはメモに残そう。逃げる作戦に使える"
+          "text": "これもメモしておこう……。逃げるときに、きっと使える",
+          "variants": {
+            "adam": {
+              "text": "伏線は覚えておこう。今夜の脱出で、回収するために",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1039,10 +1148,16 @@
       "dialogue_id": "trpg_shark_choice_tool_citrus",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "店の香りを、最後の一箱に使う。置く方向は間違えないぞ"
+          "text": "最後の一箱……。香りを流す方向、間違えないようにしよう",
+          "variants": {
+            "adam": {
+              "text": "最後の一箱で、香りの幕を開ける。流す方向を確かめよう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1050,10 +1165,16 @@
       "dialogue_id": "trpg_shark_choice_tool_sealed",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "密閉と滑り止め。できるだけ、気づかれずに動こう"
+          "text": "箱を閉めて、足元も整える。……気づかれずに行きたいね",
+          "variants": {
+            "adam": {
+              "text": "密閉して、足元を整える。静かな退場にも、準備が必要だ",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1061,10 +1182,16 @@
       "dialogue_id": "trpg_shark_choice_tool_beacon",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "灯りを遠くに運べば、見る場所をずらせそうだ"
+          "text": "灯りを遠くへ運んで……。私たちから、目をそらしてもらうの",
+          "variants": {
+            "adam": {
+              "text": "光の主役を、遠くへ移す。僕らは影を歩こう",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1185,10 +1312,16 @@
           "text": "……足音まで消したら、海の音が聞こえた"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "今夜は、閉店の曲も小さくしておこう"
+          "text": "……閉店の曲まで小さくするのね。静かな夜でよかった",
+          "variants": {
+            "adam": {
+              "text": "終幕は静かに。この海には、拍手より似合う音がある",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1255,10 +1388,16 @@
           "text": "余は言った。続編が必要だ、と"
         },
         {
-          "speaker": "naru",
+          "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "次も救命胴衣は、三人分で頼む"
+          "text": "続編でも、店番三人の救命胴衣は最初から置いておいてね……",
+          "variants": {
+            "adam": {
+              "text": "続編にも、店番三人の救命胴衣を。主役は泳げなくてもいい",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1283,7 +1422,7 @@
       ]
     }
   ],
-  "_comment": "本編キャラが作中の架空台本を遊ぶ独立短編。怪物の習性はこの映画内の設定。実在のサメの生態説明ではない。全員生還し、グロ描写は入れない。",
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
   "presentation": {
     "theme": "shark",
     "number": "02",
@@ -1312,9 +1451,9 @@
     "arrivalRole": "無線のミラ／物語",
     "exploreIdle": "調査は四箇所までじゃ。メモの再読と相談は、何度でもよいぞ",
     "listenIdle": "窓の外の背びれじゃ。まずは状況をつかむのじゃ",
-    "prepareIdle": "おとりと逃げ道を決めるぞ。見立てが合えば、判定にさらに＋1じゃ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
     "serveIdle": "ここが見せ場じゃ。慌てず、全員で岸へ帰るのじゃぞ",
-    "endingIdle": "エンドロールじゃ。ふう……続編は、お主らが決めるのじゃ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
     "phases": {
       "listen": {
         "kicker": "01 / 状況をつかむ",
@@ -1366,7 +1505,7 @@
       "success": "trpg_shark_prepare_success",
       "mixed": "trpg_shark_prepare_mixed",
       "trouble": "trpg_shark_prepare_trouble",
-      "helper": "naru"
+      "helper": "hiyori"
     },
     "serve": {
       "title": "三人そろって岸へ帰る",
@@ -1378,7 +1517,7 @@
     }
   },
   "consult": {
-    "naru": "trpg_shark_consult_naru",
+    "hiyori": "trpg_shark_consult_hiyori",
     "tsumugi": "trpg_shark_consult_tsumugi"
   },
   "preparation": "trpg_shark_preparation",
@@ -1387,5 +1526,38 @@
   "debrief": {
     "smooth": "trpg_shark_debrief_smooth",
     "with-detour": "trpg_shark_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori",
+          "adam"
+        ],
+        "required": false
+      },
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": false
+      }
+    ]
   }
 }

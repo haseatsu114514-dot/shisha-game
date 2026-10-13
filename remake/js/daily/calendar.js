@@ -29,6 +29,7 @@ import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
+import { openTrpgBar } from "./trpg.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -362,6 +363,10 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  if (spot.kind === "trpg") {
+    const result = await openTrpgBar({ nightBusy: () => fixedNight(state.day) });
+    return { used: result.completed, exerted: false, slotsUsed: 0 };
+  }
   let used = true;
   let exerted = false;
   let slotsUsed = 1;

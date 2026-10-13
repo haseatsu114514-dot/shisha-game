@@ -62,7 +62,7 @@ async function finish(page, choices) {
   const fields = Object.keys(choices);
   for (const field of fields.slice(0, 2)) await hit(page, '[data-test="trpg-plan-' + field + '-' + choices[field] + '"]');
   await hit(page, '[data-test="trpg-prepare-open"]');
-  await checkRoll(page, { support: "naru" });
+  await checkRoll(page, { support: "adam" });
   const last = fields[2];
   await hit(page, '[data-test="trpg-plan-' + last + '-' + choices[last] + '"]');
   await hit(page, '[data-test="trpg-serve-open"]');
@@ -256,7 +256,7 @@ try {
     const pressure = (await page.evaluate(() => __trpg.snapshot())).pressure;
     await hit(page, '[data-test="trpg-clue-radio"]');
     await hit(page, '[data-test="trpg-clue-close"]');
-    await hit(page, '[data-test="trpg-consult-naru"]'); await nextLines(page);
+    await hit(page, '[data-test="trpg-consult-hiyori"]'); await nextLines(page);
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pressure, pressure);
     if (movie.label === "shark-scent-pc") await page.screenshot({ path: path.join(artifacts, "shark-explore-pc.png") });
     await hit(page, '[data-test="trpg-interpret"]');

@@ -1,0 +1,127 @@
+import { el, yen } from "../core/util.js";
+import { loadTrpgLibrary, runTrpg } from "./index.js";
+import { displayName, portraitUrl, sceneUrl } from "./presentation.js";
+import { participantStatus, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
+
+/** Owns a shop/table screen. Only the supplied state and save callback may change. */
+export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy = () => false,
+  readOnly = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null } = {}) {
+  const abort = new AbortController();
+  let disposed = false, resources = null, busy = false, completed = false, root = null;
+  let resolveFinished;
+  const finished = new Promise(r => { resolveFinished = r; });
+  const button = (text, test, action, disabled = false) => el("button.trpg-button", {
+    type: "button", text, disabled, dataset: { test }, onclick: () => { if (!disposed && !busy) action(); },
+  });
+  function close() {
+    if (disposed) return;
+    disposed = true; abort.abort(); root?.remove();
+    signal?.removeEventListener("abort", close);
+    resolveFinished({ completed });
+  }
+  if (signal?.aborted) close(); else signal?.addEventListener("abort", close, { once: true });
+
+  function render(message = "") {
+    if (disposed) return;
+    const state = getState(), { catalog, scenarios, characters, manifest } = resources;
+    if (!readOnly && syncTrpgStock(state, catalog)) save();
+    const options = { nightBusy: nightBusy() };
+    const time = tableStatus(state, catalog, options);
+    const name = id => displayName(characters, id);
+    root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
+    root.append(el("header.trpg-campaign-header", [
+      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "遊べるシーシャバー / TABLETOP NIGHT" }),
+        el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : "今夜、誰と物語を囲む？" })]),
+      el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${state.day} · ${yen(state.money)}` : "まだ本棚は空です" }),
+        button(closeLabel, "trpg-campaign-close", close)]),
+    ]));
+    root.append(el("p.trpg-campaign-notice", { role: "status", dataset: { test: "trpg-campaign-notice" },
+      text: message || (readOnly ? "第2章から、街の遊べるシーシャバーで本を買い、仲間を招待できます。" : time.reason) }));
+    const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });
+    for (const person of catalog.participants.filter(p => state?.met?.[p.id])) {
+      const status = participantStatus(state, person);
+      party.append(el("div.trpg-campaign-person", { dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
+        el("img", { src: portraitUrl(manifest, person.id), alt: "" }),
+        el("div", [el("strong", { text: name(person.id) }), el("small", { text: status.reason })]),
+      ]));
+    }
+    if (!party.children.length) party.append(el("p", { text: "仲間と親しくなると、一緒に遊べる物語が増えていきます。" }));
+    root.append(party);
+    const books = el("div.trpg-campaign-books");
+    for (const scenario of scenarios) {
+      const book = catalog.scenarios.find(b => b.id === scenario.id);
+      const memory = state?.trpg?.cleared?.[book.id];
+      const owned = state?.trpg?.owned?.includes(book.id);
+      const stocked = state?.trpg?.stock?.includes(book.id);
+      const cast = state ? castTrpgTable(state, catalog, scenario, options) : { ok: false };
+      const card = el("article.trpg-campaign-book", { dataset: { theme: scenario.presentation.theme, test: "trpg-book-" + book.id } });
+      card.append(el("div.trpg-campaign-book-art", [el("img", { src: sceneUrl(scenario), alt: scenario.presentation.sceneAlt }),
+        el("span.trpg-campaign-book-badge", { text: memory ? "遊び終えた物語" : owned ? "あなたの本棚" : stocked ? "入荷しました" : "これからの一冊" })]));
+      const copy = el("div.trpg-campaign-book-copy", [
+        el("small", { text: scenario.collection + " / 作 · " + scenario.author }),
+        el("h2", { text: scenario.title }), el("p", { text: scenario.presentation.tagline }),
+      ]);
+      if (memory) {
+        copy.append(el("div.trpg-campaign-memory", { dataset: { test: "trpg-memory-" + book.id } }, [
+          el("strong", { text: memory.endingTitle || scenario.endings[memory.ending]?.title || memory.ending }),
+          el("p", { text: `CH.${memory.chapter} · DAY ${memory.day} / ${memory.participants.map(name).join("・")}` }),
+          el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
+        ]));
+      } else if (!stocked && !owned) {
+        copy.append(el("p", { text: "入荷のきっかけ：" + book.stockRequires.map(name).join("・") + "と好感度MAX" }));
+      } else if (!owned) {
+        copy.append(el("p", { text: `シナリオ本 ${yen(book.price)} · 買い物は時間を使いません` }),
+          button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
+            if (buyTrpgBook(getState(), catalog, book.id)) { save(); render("新しいTRPGが、本棚に加わりました。"); }
+            else render("本棚に加えられませんでした。所持金と入荷状況を確認してください。");
+          }, readOnly || state.money < book.price));
+      } else {
+        copy.append(el("p", { text: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason }),
+          el("small", { text: scenario.duration + " · 夜の1枠 · 結末を迎えた本は一度きり" }),
+          button("この仲間で遊ぶ", "trpg-play-" + book.id, () => play(scenario), readOnly || !cast.ok));
+      }
+      card.append(copy); books.append(card);
+    }
+    root.append(books, el("footer.trpg-campaign-footer", { text: "友人も恋人も、好感度MAXで招待。中断した本は、また遊べます。" }));
+    host.replaceChildren(root); root.focus({ preventScroll: true });
+  }
+
+  async function play(scenario) {
+    const state = getState();
+    const cast = castTrpgTable(state, resources.catalog, scenario, { nightBusy: nightBusy() });
+    if (readOnly || !cast.ok) { render(cast.reason); return; }
+    busy = true;
+    const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot };
+    try {
+      const table = materializeTrpgCast(scenario, cast.assignments);
+      await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal,
+        seed: ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0,
+        allowReplay: false, closeLabel: "思い出を本棚へ", onComplete: result => {
+          if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, { nightBusy: nightBusy() })) {
+            completed = true; save();
+          }
+        } });
+      if (disposed) return;
+      busy = false;
+      if (completed) close(); else render("卓を片付けました。本は未クリアのまま、また遊べます。");
+    } catch (error) {
+      busy = false;
+      if (!disposed) render("卓を開けませんでした。本と今夜の行動は残っています。");
+      console.error(error);
+    }
+  }
+
+  async function load() {
+    if (disposed) return;
+    host.replaceChildren(el("div.trpg-loading", [el("p", { text: "本棚と、仲間の予定を確認しています…" }),
+      button(closeLabel, "trpg-campaign-close", close)]));
+    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal }); render(); }
+    catch {
+      if (disposed) return;
+      host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "本棚を読み込めませんでした。もう一度お試しください。" }),
+        button("再読み込み", "trpg-campaign-retry", load), button(closeLabel, "trpg-campaign-close", close)]));
+    }
+  }
+  const ready = load();
+  return { ready, finished, destroy: close, get disposed() { return disposed; } };
+}
