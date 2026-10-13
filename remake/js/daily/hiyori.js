@@ -33,7 +33,7 @@ export async function playHiyoriEvent(id, options = {}) {
 }
 
 /** 買い物だけでは会わない。実際に一服する他店なら、初対面の店は固定しない。 */
-export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "kafuka"
+export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
   || spot.kind === "shop" || spot.id === "c_station");
 
 // 同じ訪問をロードしても再抽選しない。店主・施設側の来店テーブルはそのまま使う。

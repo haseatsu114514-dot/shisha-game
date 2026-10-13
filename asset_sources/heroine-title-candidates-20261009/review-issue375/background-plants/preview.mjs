@@ -46,7 +46,7 @@ await suite("issue375-background-plants", async check => {
           }
         });
         assert.equal(await page.evaluate(() => JSON.stringify(__remake.DB.manifest)), manifest);
-        assert.equal(await page.evaluate(() => __remake.DB.manifest.titleArts.length), 21);
+        assert.equal(await page.evaluate(() => __remake.DB.manifest.titleArts.length), JSON.parse(manifest).titleArts.length);
         assert.equal(await page.evaluate(file => __remake.DB.manifest.titleArts.some(art => art.file === file), file), false);
         assert.deepEqual(await storageSnapshot(page), saved);
       }, options);

@@ -138,7 +138,7 @@ try {
     assert.equal(route.stories, 6); assert(route.gift);
     assert(!route.visits.some(t => t.includes("ああ、つむぎか") || t.includes("QRコード")));
     assert(route.visits.some(t => /約[5５]万/.test(t)), "Optional SNS scene became inaccessible");
-    assert(route.visits.some(t => t.includes("応募の絵、また見せてくれる")));
+    assert(route.visits.some(t => t.includes("応募の夜に見せてもらった絵")));
     assert(route.lines.some(t => t.includes("別の１枚")));
     assert.equal(route.q1, friend ? 0 : 1); assert.equal(route.finale, friend ? "friend" : "romance");
     assert.equal(route.confessed, !friend); assert.deepEqual(route.lovers, friend ? [] : ["tsumugi"]);

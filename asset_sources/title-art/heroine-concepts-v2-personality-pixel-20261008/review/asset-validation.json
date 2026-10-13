@@ -27,7 +27,7 @@
         "minto": 4,
         "ageha": 3,
         "rin": 3,
-        "kafuka": 3
+        "samechan": 3
       },
       "size": [
         1024,
@@ -164,43 +164,43 @@
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-first.png",
       "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-1.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-1.png",
       "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-2.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run-revision-2.png",
       "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/01-shishark-test-run.png",
       "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/02-shark-movie.png",
       "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
     },
     {
-      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png.generation.json",
-      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png",
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/samechan/03-aquarium.png",
       "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
       "byte_identical_to_original": true,
       "prompt_and_actual_reference_hashes_match": true
@@ -433,7 +433,7 @@
       "matches_record": true
     },
     {
-      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/kafuka-adopted-normal.png",
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/samechan-adopted-normal.png",
       "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
       "matches_record": true
     },

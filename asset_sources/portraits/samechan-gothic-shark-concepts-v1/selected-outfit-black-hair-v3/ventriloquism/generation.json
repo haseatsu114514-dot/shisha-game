@@ -1,0 +1,79 @@
+{
+  "character": "samechan",
+  "version": "selected-outfit-black-hair-v3",
+  "expression": "ventriloquism",
+  "status": "pending-review",
+  "request_id": "PRT60/61/62",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "raw_generation_path": "/workspace/generated_images/exec-7e61a7c3-2536-4ef0-969d-5f20e7dd09a1.png",
+  "source_sha256": "c67323acf0cdc11df71cb8fd7aa07495019a8f3cf70d5cbbddd281f7841de2ca",
+  "source_byte_identical": true,
+  "prompt": "Edit image 1, the existing FACE-HIDDEN VENTRILOQUISM sprite, so its CLOTHING COLORS and HAIR match the final selected normal sprite in image 2. Preserve image 1's exact pose, two hands holding the crown-wearing blue shark plush up over her whole face, head/body size, crossed legs, shoes position, composition and full-body scale. Change the clothes and hair palette ONLY to match image 2. Image 2 is the authority for the owner's SELECTED ORIGINAL THIRD-CONCEPT OUTFIT AND BLACK HAIR. Images 3 and 4 are approved Minto/Ageha rendering-quality references only.\n\nOUTFIT: use image 2's exact black/charcoal street-sister hood exterior, jacket, sleeves, short cape, main pleated skort and dark undershorts; pale powder-blue hood lining, straps, piping, fin/tail pieces and pocket flaps; warm IVORY forehead coif band, inner top and sleeve stripes; original silver cross and shark-tooth hardware; charcoal sheer tights; black/ivory/powder-blue skate high-top shoes with wide ivory laces. Remove the all-blue main jacket/skirt palette in image 1. Keep the functional pocket construction, short nun-like veil, cape and gill details exactly consistent with image 2, adapting only natural folds for raised arms. Do not redesign the garment or add accessories.\n\nHAIR: all visible human hair at the sides, below the hood, behind the plush and over shoulders must be soft EBONY BLACK / charcoal BLACK, with at most one or two narrow cobalt/azure-blue streaks like image 2. Remove ALL silver-white or light grey hair. Preserve its softly layered shoulder-length shape. Hair is predominantly black, not large blue patches.\n\nVENTRILOQUISM OCCLUSION MUST REMAIN: Koro is raised directly in front of the woman's face by BOTH hands. Hide her WHOLE face; show NO human eyes, nose, lips or smiling face beside/above the plush. Only hood/coif and dark side hair are visible around it. The toy faces viewer with small dark eyes, a happy OPEN toothy mouth, white snout/belly, medium blue fins/body, a gold KING CROWN, navy bow with gold star and small black cape, as if the plush itself is speaking. Keep the toy's blue color unchanged; it is not recolored black with the outfit. Both hands with blue nails support its sides naturally. One toy only.\n\nOne complete full-body sprite, head/hood, crown, sleeves, hands and BOTH shoes fully visible with empty margins, same composition/aspect and scale as image 1. True RGBA transparent background. Fine clean high-density anime/pixel-art-like rendering with delicate outlines and controlled shading, no heavier dramatic paint or glossy rim light. No text, bubbles, ground, cast shadow, mist, luminous background, checkerboard or extra characters. Clean natural alpha edges.",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/source.png",
+      "role": "Previous ventriloquism: exact face-hidden two-hand pose and Koro; clothing palette and hair are changed to match selected version",
+      "sha256": "f08830ce7585ad2d5ae9b3ab0c9bcdafe108f55ea10b6f6c11a5bb70003ad8c8"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/source.png",
+      "role": "Final selected-outfit normal: black/pale-blue clothes and ebony-black hair with small blue streaks, character proportions",
+      "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto: render quality only",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha: render quality only",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_library_reviewed": "All previously reviewed portrait groups, including remasters merged in PR #204 and three concept renders merged in PR #205, followed by blue normal and ventriloquism variants and latest black-hair pass. Approved Minto and Ageha attached as render references.",
+  "normalization": {
+    "operations": "Only whole-image uniform resize and RGBA placement; common scale per source canvas height for both images. No redraw, face compositing, warping or alpha thresholding.",
+    "scale": 0.607095046854083,
+    "offset": [
+      142,
+      256
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      199,
+      15,
+      832,
+      1512
+    ],
+    "original_main_bbox": [
+      273,
+      267,
+      673,
+      1174
+    ],
+    "preview_main_content": [
+      [
+        263,
+        265,
+        648,
+        1174
+      ],
+      448.32256468797567
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "raw_border_alpha_ge_24": 0,
+    "preview_border_alpha_ge_24": 0
+  },
+  "runtime_changed": false
+}

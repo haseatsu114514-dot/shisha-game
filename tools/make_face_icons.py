@@ -9,7 +9,7 @@ assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
 使い方:
     python3 tools/make_face_icons.py            # 全キャラ生成
     python3 tools/make_face_icons.py --sheet    # 確認用シートも出力
-    python3 tools/make_face_icons.py rin kafuka # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
+    python3 tools/make_face_icons.py rin samechan # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
 """
 
 import sys
@@ -45,7 +45,7 @@ TUNE = {
     "hajime": {"f": 0.186, "dx": -0.051, "dy": 0.081},
     # 2026-10-10 立ち絵そろえ: 新原画の頬幅・目線で切り抜きを再調整。
     # つむぎの元の頭身、ましろの大きめの丸い顔は全身側で保持する。
-    "kafuka": {"f": 0.192, "dx": -0.093, "dy": 0.295},
+    "samechan": {"f": 0.192, "dx": -0.093, "dy": 0.295},
     "maezono": {"f": 0.215, "dx": -0.038, "dy": -0.059},
     "mashiro": {"f": 0.230, "dy": 0.068},
     "minto": {"f": 0.213, "dy": 0.101},

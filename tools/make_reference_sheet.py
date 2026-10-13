@@ -95,7 +95,7 @@ CHARS = {
             "本編の会話では立ち絵を出さない（一人称視点）。冒頭の紹介など限られた場面だけ使用",
         ],
     },
-    "kafuka": {
+    "samechan": {
         "points": [
             "黒髪に濃い青のインナーカラー。青い瞳、笑うとギザ歯が見える",
             "サメのフード付きの黒×水色のジャケット、黒いスカートとガーター、黒タイツ、厚底スニーカー",
@@ -209,7 +209,7 @@ MINTO = {
     ],
     "notes": [
         "営業の場では必ず営業姿。私服は私的な約束と、tonariでの「お姉さん」のとき（本名は聞いた後だけ）",
-        "characters.json の visual_concepts は旧案（ミントグリーンのツインテール）。現行の立ち絵（黒髪＋緑の瞳）を優先",
+        "characters.json と character_profiles.md の外見設定は採用済みの立ち絵と共通。黒髪と緑の瞳を両方の姿で保つ",
     ],
     "face_ja": {"smug": "照れ笑い"},
 }
@@ -345,7 +345,7 @@ def faces_in(cid, prefix):
 
 def load_characters():
     chars = {c["id"]: c for c in json.loads((ROOT / "data/characters.json").read_text(encoding="utf-8"))}
-    k = ROOT / "data/dialogue/kafuka.json"
+    k = ROOT / "data/dialogue/samechan.json"
     if k.exists():
         prof = json.loads(k.read_text(encoding="utf-8")).get("profile")
         if prof:
@@ -530,11 +530,11 @@ _body_k = None
 PAKKI_RATIO = 0.94 / 1.36  # remake/js/vn/engine.js の FRAMING（pakkiTarget / target）
 
 
-# 身長の設定（cm）。正本は brand/character_profiles.md（サメちゃんは data/dialogue/kafuka.json の height_cm）。
+# 身長の設定（cm）。正本は brand/character_profiles.md（サメちゃんは data/dialogue/samechan.json の height_cm）。
 # 設定の無いキャラは None（ゲーム内の spriteScale から換算する）。
 HEIGHT_CM = {
     "hajime": 172, "sumi": 182, "naru": 176, "adam": 178, "minto": 156, "ageha": 160,
-    "nagumo": 178, "dr_kemuri": 175, "mashiro": 155, "kafuka": 156,
+    "nagumo": 178, "dr_kemuri": 175, "mashiro": 155, "samechan": 156,
     "tsumugi": None, "rin": None, "maezono": None, "pakki": None,
 }
 BASE_CM = 172  # spriteScale 1.0 ＝ はじめの身長
@@ -739,7 +739,7 @@ def build_face_size(chars, k=2.0):
     """ゲーム画面での顔の大きさの比較図。全員を同じ倍率（1280x720画面のk倍）で、目の高さをそろえて並べる。
     顔の幅は顔アイコンの調整値（頬の幅＝枠の0.5）から求めた目安。"""
     ids = ["hajime", "sumi", "naru", "adam", "nagumo", "dr_kemuri", "maezono",
-           "minto", "ageha", "mashiro", "kafuka", "tsumugi", "rin"]
+           "minto", "ageha", "mashiro", "samechan", "tsumugi", "rin"]
     data = []
     for cid in ids:
         cfg = make_cfg(cid, chars, light=True)

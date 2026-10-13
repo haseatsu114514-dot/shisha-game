@@ -108,7 +108,7 @@ try {
   await page.locator('[data-test="retry"]').click();
   assert(await page.locator(".go-approval").isVisible(), "generated approval stamp appears on meeting retry");
   console.log("PASS: GAME OVER / approval assets load; stamp appears");
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "kafuka"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
   for (const variant of variants) {
     for (const choice of ["retry", "quit"]) {
       await mount(variant);

@@ -7,7 +7,7 @@
 - [現在と候補：昼夜比較](comparison.png)
 - [昼の原画](day/source.png)／[夜の原画](night/source.png)
 - [1280×720 PNG・可逆WebP](game-ready/manifest.json)
-- [ゲーム画面での比較](../../reviews/kafuka-map-20261007/maps-in-game.png)
+- [ゲーム画面での比較](../../reviews/samechan-map-20261007/maps-in-game.png)
 - [昼夜セットのダウンロード](maps-kit.zip)
 
 昼は現在の昼マップを参照。夜は新しい昼の原画を最優先にし、元の夜マップは時間帯と光の参照にしました。原画は各1672×941 RGBで無加工保存。全フレームを1280×720へ縮小し、切り抜き・描き足し・シャープ処理はしていません。可逆WebPはPNGと全RGB画素が一致します。

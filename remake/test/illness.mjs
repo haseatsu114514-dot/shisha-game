@@ -40,13 +40,14 @@ const values = {
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
-  "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },
+  "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
+    rescheduleInvitation: noop, completeInvitation: noop },
   "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
-  "kafuka-date.js": { kafukaDateReady: () => false, playKafukaDate: async () => ({ done: false, spent: 0 }) },
+  "samechan-date.js": { samechanDateReady: () => false, playSamechanDate: async () => ({ done: false, spent: 0 }) },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
-  "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitKafuka: async () => false, kafukaSpot: () => null },
+  "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null },
 };
 const files = { "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "spots.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 const modules = new Map(), pending = new Map();

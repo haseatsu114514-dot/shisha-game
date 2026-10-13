@@ -137,7 +137,7 @@ window.__remake = {
       }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
-        return (await import("./daily/kafuka.js")).playKafukaEncounter();
+        return (await import("./daily/samechan.js")).playSamechanEncounter();
       }
       if (name.startsWith("dawn")) {
         const kind = name.split("-")[1] || "sun";

@@ -5,7 +5,7 @@
   "personality_notes": {
     "minto04": "仕事着＋白カーディガン、髪を下ろし、飾りはカウンター。1人の公私の中間。",
     "ageha02": "初回の優しさを出す閉じた笑顔。ほか2案は目を開いたプロの顔。",
-    "kafuka": "3案すべて青いインナーと王冠のコロちゃん。映画は架空のサメ影、水族館では本人はガラスの外。"
+    "samechan": "3案すべて青いインナーと王冠のコロちゃん。映画は架空のサメ影、水族館では本人はガラスの外。"
   },
   "candidates": [
     {
@@ -81,7 +81,7 @@
       "checked_visually": true,
       "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
       "pixel_texture": "細かな色のかたまりと網点の質感を目視",
-      "equipment": "採用した黒髪ツインテール、緑の目と飾り。透明小型台、黒いハガルと銅色の蓋付きHMD。白いホースは手元から膝前のUを経て本体の側面ポートへ接続。",
+      "equipment": "旧レビューの『黒髪ツインテール』は誤った髪型注記。現行の正本は黒髪のストレートロングと緑の瞳で、採用済み立ち絵を参照する（Issue #485・画像の再生成や再検品ではない）。透明小型台、黒いハガルと銅色の蓋付きHMD。白いホースは手元から膝前のUを経て本体の側面ポートへ接続。",
       "adoption_status": "owner-approved-random-title-20261011",
       "refinement": null
     },
@@ -185,8 +185,8 @@
       "refinement": null
     },
     {
-      "id": "kafuka-01-shishark-test-run",
-      "source": "kafuka/01-shishark-test-run.png",
+      "id": "samechan-01-shishark-test-run",
+      "source": "samechan/01-shishark-test-run.png",
       "source_sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
       "checked_visually": true,
       "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
@@ -196,8 +196,8 @@
       "refinement": null
     },
     {
-      "id": "kafuka-02-shark-movie",
-      "source": "kafuka/02-shark-movie.png",
+      "id": "samechan-02-shark-movie",
+      "source": "samechan/02-shark-movie.png",
       "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "checked_visually": true,
       "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
@@ -207,8 +207,8 @@
       "refinement": null
     },
     {
-      "id": "kafuka-03-aquarium",
-      "source": "kafuka/03-aquarium.png",
+      "id": "samechan-03-aquarium",
+      "source": "samechan/03-aquarium.png",
       "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
       "checked_visually": true,
       "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",

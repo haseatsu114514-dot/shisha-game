@@ -1088,7 +1088,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "どうだった"
+          "text": "おう。よくやった。今日は一杯、付き合え"
         },
         {
           "speaker": "hajime",
@@ -1098,81 +1098,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "そうか"
+          "text": "飾れ。客が来たら、お前が磨くんだぞ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんはそれだけ言って、シーシャを吸い始めた。ゴボゴボ、という音が響く。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "しばらく吸ってから、ぽつりと。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "thinking",
-          "text": "あの審査員──南雲は、技術じゃ持ち点を動かさねえよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え？ じゃあ、なんで俺が……"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "『もう一口吸いたい』と思わせたかどうか。あいつの基準はそれだけだ"
-        },
-        {
-          "type": "choice",
-          "id": "after_hitokuchi",
-          "choices": [
-            {
-              "text": "俺の１台の、何がですか？",
-              "next": "hk_ask"
-            },
-            {
-              "text": "（そういう審査だったのか）",
-              "next": "hk_think"
-            }
-          ]
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "さあな。そこから先は、俺が言うことじゃねえ。──自分で考えろ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "もう一口吸いたい、か……。（……へえ。俺の煙、そんなふうに思われてたんだ、……ふふ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんが、ふと目を細めた。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……顔つき、変わったな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "え、そうですか？ 自信ついたってことですかね"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "──そうだといいけどな"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんはそれ以上、何も言わなかった。"
+          "text": "グラスが鳴った。スミさんが、トロフィーを置く場所を空ける。"
         },
         {
           "speaker": "",
@@ -1231,12 +1162,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "はじめはすぐに忘れた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……だが、シーシャプレイヤーってのは、こういう一言ほど忘れちゃいけないんだ。"
+          "text": "ドアの方へ顔を上げる前に、スマホがまた震えた。"
         }
       ],
       "branches": {
@@ -1264,11 +1190,6 @@
           {
             "type": "set_flag",
             "flag": "interview_pride"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "──この答えを、覚えている人間がいた。"
           }
         ],
         "iv_honest": [
@@ -1293,18 +1214,8 @@
             "text": "記者が「いい答えですね」と笑った。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "……でも口にした本人は、その言葉の意味をまだ半分も分かっていない。"
-          },
-          {
             "type": "set_flag",
             "flag": "interview_honest"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "──後になっても、この答えだけは嘘にならなかった。"
           }
         ],
         "iv_sumi": [
@@ -1350,25 +1261,6 @@
             "speaker": "",
             "face": "",
             "text": "それだけ言って、南雲は何も説明せずに立ち去った。"
-          }
-        ],
-        "hk_ask": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "じゃあ、俺の１台の何が、そう思わせたんですか？"
-          }
-        ],
-        "hk_think": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（もう一口吸いたい、か。……そういう審査だったのか）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "顔に書いてあるぞ。『俺の何が刺さったんだ』ってな"
           }
         ],
         "promise_kept": [
@@ -1771,6 +1663,111 @@
           "speaker": "",
           "face": "",
           "text": "──第1章「煙がつなぐ街」 終。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_steady",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "提供と2回の調整を、すべて適温に収めた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供も、2回の調整も適温に収めた。あの熱は、お前が整えたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_recovered",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ずれた熱を、調整で適温に戻せた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "途中でずれた熱を、調整で戻したな。立て直せたのは良かった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_care",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸われた後の一台を、適温に整え直した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸われた後の一台を、適温まで整え直せたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_serve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "提供の温度を、適温に合わせた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供の温度は、丁寧に合わせていた。あれは良かった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_heat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "焼き炭を、きちんと用意できた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "焼き炭は、きちんと用意できていた。そこはよくやった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_holes",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "穴の間隔を揃え、熱の通り道を作れた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "穴の間隔が揃っていた。熱の通り道を丁寧に作れたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_steam",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしの間、集中を切らさなかった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "蒸らしの間、最後まで集中できていたな"
         }
       ]
     }
