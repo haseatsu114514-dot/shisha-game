@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-13 JST",
+  "issue": 514,
+  "items": [
+    {
+      "character": "ageha",
+      "source": {
+        "path": "asset_sources/ch2-interiors/archive/v1/ageha/source.png",
+        "size": [
+          1672,
+          940
+        ],
+        "mode": "RGB",
+        "sha256": "560e8a4e525f3874f136f0459b6c0d2ebb2d28a0c237ffc2900cf16e10ef5ecc"
+      },
+      "runtime": {
+        "path": "asset_sources/ch2-interiors/archive/v1/ageha/runtime.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "f84c5b7215e01ae2cc349a2c5c971d11b3392fc580d07bc621fad450410211cb"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "assets/backgrounds/bg_ageha_shop.png",
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg"
+      ],
+      "conversion": "ImageMagick resize full image to 1280x720 (aspect difference about 0.05%), lossless WebP"
+    },
+    {
+      "character": "kumicho",
+      "source": {
+        "path": "asset_sources/ch2-interiors/archive/v1/kumicho/source.png",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "sha256": "dfed889a540ea0cbf1e6b809689f31b0f3c0ee2d6ded3c604b1c6ec3e480289d"
+      },
+      "runtime": {
+        "path": "asset_sources/ch2-interiors/archive/v1/kumicho/runtime.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "ae30b1b98ff1fca235bdf4b420354a48f392ff68ef422e4f5968adcd74d5a8a9"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "assets/backgrounds/bg_ryuji_shop.png",
+        "asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/photos/01-sealed-blue-rim.jpg"
+      ],
+      "conversion": "ImageMagick resize full image to 1280x720 (aspect difference about 0.05%), lossless WebP"
+    },
+    {
+      "character": "rei",
+      "source": {
+        "path": "asset_sources/ch2-interiors/archive/v1/rei/source.png",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "sha256": "33a9b6fe49dd50b2073d56e08fee399c917d0cec2fade2bcb9473f3306b5f049"
+      },
+      "runtime": {
+        "path": "asset_sources/ch2-interiors/archive/v1/rei/runtime.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "93ebef1803bba5d8ffc333751da8079fc463dd1428dc88d10140f1cfe8e0553f"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [],
+      "conversion": "ImageMagick resize full image to 1280x720 (aspect difference about 0.05%), lossless WebP"
+    },
+    {
+      "character": "volk",
+      "source": {
+        "path": "asset_sources/ch2-interiors/archive/v1/volk/source.png",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "sha256": "513411045cf68b2073c157ad53a56f7ff34c81b55245686f275410fd8746d871"
+      },
+      "runtime": {
+        "path": "asset_sources/ch2-interiors/archive/v1/volk/runtime.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "97925e49ffe3659a53bf22b2f9673ed2ba99fc811e764cc971c905c96c6745f3"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [],
+      "conversion": "ImageMagick resize full image to 1280x720 (aspect difference about 0.05%), lossless WebP"
+    }
+  ],
+  "archive_note": "Historical first adoption, superseded by owner C2P06. Prompts and pixels are preserved. Paths below point to archived copies."
+}
