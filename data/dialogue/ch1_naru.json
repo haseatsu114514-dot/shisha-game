@@ -246,7 +246,12 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "受付で登録できる。会長も今日、会場にいるはずだ"
+          "text": "大会は同じビルのイベントホールでやるんだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "受付で登録できる。会長も今日、店にいるはずだ"
         },
         {
           "speaker": "hajime",
