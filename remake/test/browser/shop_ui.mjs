@@ -85,6 +85,7 @@ await suite("shop-ui", async check => {
     await page.evaluate(() => { S.core.state.flavorStock.mint = 0; });
     await open(page, { errand: 'mint', expense: true });
     assert.equal(await page.locator('.shop-entry').count(), 0);
+    await assertFits(page, '.shop-row.errand .shop-price');
     await tap(page, 'shop-leave'); assert.equal(await page.evaluate(() => S.result), 'pending');
     await tap(page, 'buy-mint'); await tap(page, 'shop-checkout');
     assert.equal((await snapshot(page)).money, 0); assert.equal((await snapshot(page)).stock.mint, 50);
@@ -104,6 +105,7 @@ await suite("shop-ui", async check => {
     await setup(page); await page.evaluate(() => { S.core.state.owned.push('suyaki_minto'); }); await open(page);
     await page.locator('[data-tab="equip"]').click();
     assert.equal(await page.locator('.shop-row.product').count(), 8);
+    assert.deepEqual(await page.locator('.shop-price, .shop-stock').evaluateAll(ns => ns.filter(n => n.scrollWidth > n.clientWidth + 1).map(n => n.textContent)), []);
     assert.equal(await page.locator('[data-test="buy-suyaki_minto"]').count(), 0);
     assert.equal(await page.locator('[data-test="buy-silicone_bowl"]').count(), 0);
     await tap(page, 'detail-hagal_80beat'); assert.match(await page.locator('.shop-current').innerText(), /シリコンボウル/);
@@ -119,6 +121,7 @@ await suite("shop-ui", async check => {
     assert.equal((await snapshot(page)).money, 9250);
     assert.equal(await page.evaluate(() => S.shop.sellEquipment('suyaki_minto')), false);
     await page.locator('[data-tab="kuji"]').click(); await tap(page, 'kuji-g500');
+    assert(await page.locator('[data-test="shop-checkout"]').isHidden());
     await page.locator('.kuji-card.reveal').waitFor(); await tap(page, 'kuji-reveal');
     assert.equal(await page.evaluate(() => S.core.state.kuji.g500.drawn), 1);
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
@@ -167,6 +170,15 @@ await suite("shop-ui", async check => {
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
     await go(); await tap(page, 'shop-enter'); await tap(page, 'buy-mint'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
+    await page.evaluate(() => { S.core.state.stamina = 5; });
+    await go(); await tap(page, 'shop-upstairs');
+    await page.getByRole('button', { name: 'やめておく', exact: true }).click();
+    await page.locator('.map:not(.done)').waitFor();
+    assert.equal((await snapshot(page)).slot, 0); assert.equal((await snapshot(page)).stamina, 5);
+    await page.evaluate(() => { S.curtain = S.transitions.createSceneCurtain(S.ui.layers.fx, {}); });
+    assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, 'Stamina cancellation leaked the showroom arrival');
+    await page.evaluate(() => S.curtain.release());
+    await page.evaluate(() => { S.core.state.stamina = 100; });
     await go(); await tap(page, 'shop-upstairs');
     await page.waitForFunction(() => S.error || S.core.state.slot === 1 && document.querySelector('.map:not(.done)'));
     assert.equal(await page.evaluate(() => S.error), null);

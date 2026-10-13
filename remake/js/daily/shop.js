@@ -4,7 +4,7 @@ import { el, yen } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
 import { state, save } from "../core/state.js";
-import { refreshPlaceCue, cancelPlaceCue } from "../core/transitions.js";
+import { cueTransition, refreshPlaceCue, cancelPlaceCue } from "../core/transitions.js";
 import { artImg } from "../craft/art.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
@@ -98,7 +98,8 @@ function chooseShopFloor() {
       if (finished || state !== session || !root.isConnected) return;
       if (destination === "rin" && rinUnavailable()) return;
       finished = true;
-      if (destination) refreshPlaceCue("shop"); else cancelPlaceCue("shop");
+      // 2Fは呼び出し側の体力確認後にvisitRinで予約する。見送り時に演出を残さない。
+      if (destination === "shop") refreshPlaceCue("shop"); else cancelPlaceCue("shop");
       destination ? SE.select() : SE.cancel();
       retire(root); resolve(destination);
     };
@@ -184,8 +185,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${item.short_name || item.name}の詳細`, onclick: () => detail(item, flavor) }, [
           productArt(item, flavor), el("span.shop-main", [el("b", { text: item.short_name || item.name })]),
         ]),
-        el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: TYPE_LABEL[item.type] })]),
-        el("span.shop-price", { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? item.price : item.buy_price) }),
+        el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] })]),
+        el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? item.price : item.buy_price) }),
         owned ? el("span.shop-owned", { text: Object.values(state.equip).includes(item.id) ? "装備中" : "所持済み" }) : quantityPicker(item, flavor),
       ]);
     };
@@ -230,6 +231,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       summary.disabled = !count;
       summary.setAttribute("aria-label", `選択した${count}点の内容を確認。合計${yen(total)}`);
       checkout.disabled = !count || total > state.money;
+      summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
       if (focusTest) {
         const button = body.querySelector(`[data-test="${focusTest}"]`);
@@ -295,6 +297,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
 }
 
 export async function visitRin() {
+  cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
   state.visitedDay.rin = state.day;
   await visitChar("rin");
