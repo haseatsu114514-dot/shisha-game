@@ -1,5 +1,5 @@
 {
-  "_comment": "キャラ設定はdata/characters.json。出会いは自由行動で一服する他店共通。スミさんへの報告・伝言を経て♥3のLIMEからtonariへ。preview_onlyは表示確認用。斧投げ・仕事の深掘り・告白は別途台本待ち。innerはプレイヤーだけに見える。",
+  "_comment": "キャラ設定はdata/characters.json。正式斧投げはtonari再会・三人・退勤後の読了後、夜に前段→実3投→後段で進む。仕事の深掘り・告白は別途台本待ち。preview_onlyは表示確認用。innerはプレイヤーだけに見える。",
   "route": {
     "enabled": true,
     "storyEvents": [
@@ -81,10 +81,18 @@
         ],
         "flag": "_hiyori_real_self_known",
         "requires": [
-          "_hiyori_cracks_done"
+          "_hiyori_cracks_done",
+          "_hiyori_tonari_return_done",
+          "_hiyori_tonari_followup_done",
+          "_hiyori_tonari_afterwork_done"
         ],
         "met": true,
-        "affinity": 10
+        "affinity": 10,
+        "outro": "hiyori_axe_reveal_close",
+        "minAffinity": 3,
+        "slot": 1,
+        "cost": 3000,
+        "staminaCost": 10
       },
       {
         "id": "work_talk",
@@ -1195,6 +1203,138 @@
           "speaker": "hiyori",
           "face": "smile",
           "text": "今日はピーチティーの気分。……ちゃんと、お客さんでいさせて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_axe_reveal",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "tonariで落ち合って、ひよりの好きな斧投げの店へ。"
+        },
+        {
+          "speaker": "",
+          "text": "着替えてきた彼女は、キャップのつばをそっと直した。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "夜の木って……寂しそうだね……。今日は、ここで少しだけ……",
+          "face": "axe_normal",
+          "inner": "三投！　ちゃんと狙って三投！"
+        },
+        {
+          "speaker": "hajime",
+          "text": "前に話してた趣味、これだったんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん……。木に刺さる音を聞いてると、頭の中が静かになるの……",
+          "face": "axe_normal"
+        },
+        {
+          "speaker": "",
+          "text": "スタッフの説明を聞いて、投げる位置に立つ。ひよりは青い小さな的を指さした。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あそこは、先に狙うって宣言するんだって。真ん中より小さいけど、入ると……ふふ……",
+          "face": "axe_laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今、すごく楽しそうな顔しましたね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "え……？　気のせい……かもしれないね……",
+          "face": "axe_normal",
+          "inner": "まずい。顔に出る。いや、もう楽しみなんだけど"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりが隣で見守ってくれる。まずは三投。狙う位置と投げる力を、自分のタイミングで決めよう。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_axe_reveal_close",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "三投を終えて、ひよりと場所を交代した。彼女は小さく息を吐くと、青い的を狙うと宣言した。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "いくよ……。今度は、私……",
+          "face": "axe_normal"
+        },
+        {
+          "speaker": "",
+          "text": "斧が木に刺さる乾いた音。小さな青い円の縁に、刃が収まっている。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "よっしゃあ！　入った！",
+          "face": "axe_shout"
+        },
+        {
+          "speaker": "",
+          "text": "次の瞬間、ひよりは口元を押さえた。見られた、という顔をしてから、こらえきれず笑う。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あー……今の、聞こえたよね。ごめん、好きなんだよね、これ",
+          "face": "axe_laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "聞こえました。そんな声も出るんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "出るよ。普通に元気だし。いつもああいう話し方してると、ちょっと落ち着くんだけど……",
+          "face": "axe_normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "夢中になると、忘れちゃう",
+          "face": "axe_laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "さっきの静かな感じも、今の笑い方も、ひよりさんなんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そう言ってくれるんだ。仕事で疲れてるのは、本当だからね",
+          "face": "axe_normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "それは分かってます。休めたなら、よかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。今日は、ちゃんと遊んだ……。あなたと来られて、よかったな……",
+          "face": "axe_normal",
+          "inner": "また誘ってもいいかな。今度は、ラーメンも"
+        },
+        {
+          "speaker": "",
+          "text": "キャップを直したひよりが、また静かに微笑む。"
+        },
+        {
+          "speaker": "",
+          "text": "さっきの笑い声を知っていると、その表情も少し近くに見えた。"
         }
       ]
     }

@@ -137,9 +137,11 @@ await suite("axe-throw", async check => {
       const mini=await import("./js/minigames/axe.js"),signal=new AbortController(); signal.abort();
       window.cancelledGame=await mini.runAxeThrow({signal:signal.signal});
       const host=document.createElement("div");document.body.append(host);window.detachedGame=mini.runAxeThrow({host});host.remove();
+      const connected=document.createElement("div");document.body.append(connected);
+      window.replacedGame=mini.runAxeThrow({host:connected});connected.replaceChildren();
       window.invalidMode=await mini.runAxeThrow({mode:"fake"}).then(()=>false,e=>e instanceof RangeError);
     });
-    const result=await page.evaluate(async()=>[cancelledGame,await detachedGame]);
+    const result=await page.evaluate(async()=>[cancelledGame,await detachedGame,await replacedGame]);
     assert(result.every(r=>r.cancelled&&!r.completed&&r.throws.length===0));assert(await page.evaluate(()=>invalidMode));assert.equal(await game(page).count(),0);
   });
   await check("art-catalog-names-and-retry",async page => {

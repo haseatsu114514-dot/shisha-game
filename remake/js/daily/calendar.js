@@ -324,6 +324,13 @@ async function performSpotAction(spot) {
   if (spot.kind === "tonari") {
     const sub = await tonariMenu();
     if (!sub) return { used: false, exerted };
+    if (sub === "hiyori_axe") {
+      if (!(await staminaGuard(-10))) return { used: false, exerted };
+      const completed = await playHiyoriEvent("axe_reveal");
+      if (completed) state.visitedDay.tonari_hiyori_axe = state.day;
+      // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
+      return { used: completed, exerted: completed, slotsUsed: 0 };
+    }
     if (state.visitedDay[`tonari_${sub}`] === state.day) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
