@@ -293,6 +293,7 @@ try {
     await capture(p, `timer-${name}`);
     await p.locator('[data-test="timer-start"]').click(); await p.evaluate(() => window.timerRun);
     await p.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
+    await p.waitForSelector('.dodge');
     const geometry = await p.evaluate(() => {
       const rect=s=>document.querySelector(s).getBoundingClientRect();
       const box=rect('.dodge'), pad=rect('.dodge-pad'), scene=rect('.bench'), worker=rect('.bench-worker'), panel=rect('.bench-right'), gallery=rect('.bench-audience'), thermo=rect('.steam-temperature');
