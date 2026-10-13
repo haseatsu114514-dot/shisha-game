@@ -29,10 +29,13 @@ await suite("continue-readiness", async check => {
   await check("warm-premium", async page => {
     await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
     await page.evaluate(async () => {
+      // 新しい本編モジュールで既定250件を超える。先読みを欠落した計測で判定しない。
+      performance.setResourceTimingBufferSize(2000);
       const state = await import("./js/core/state.js"); state.newGame(); state.state.lovers = ["ageha"];
       const screen = await import("./js/chapters/gameover.js");
-      await screen.warmGameOver();
+      window.preparedContinue = await screen.warmGameOver();
     });
+    assert(await page.evaluate(() => preparedContinue.slice(1).every(Boolean)), "Continue images must actually decode before the timer starts");
     const before = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /chr_ageha_/.test(entry.name)).length);
     assert.ok(before >= 3, "Premium expressions were not prepared during the tournament");
     await page.evaluate(() => { window.opening = __remake.dev.gameOver("rank", "premium:ageha"); });
