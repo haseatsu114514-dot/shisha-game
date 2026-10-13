@@ -1,0 +1,308 @@
+{
+  "source_mockup_commit": "60d44b43525f81657ea22b1e6afd9de19d02ddb0",
+  "approved_frame": "asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+  "claim_run": 38350757850,
+  "status_run": 38397879648,
+  "worker": "codex-coal-mockups-20261013-b0d54e25",
+  "plans": {
+    "heat_stove.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "承認モックの電気スパイラルコンロと単一深底炭壺。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "0個。炭は実行時に配置する。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "前から55度ほど上の俯瞰。後部コード・前面ダイヤル。中央と外縁を避けて炭を載せる中間コイル。"
+    },
+    "heat_carrier.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "単一の深い金属炭壺。長いアーチ持ち手が受け部から離れる。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "0個。回収炭はコードで重ねる。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "上からの別視点。開口は円に近く、奥の持ち手は長い。深い内側が見える。"
+    },
+    "heat_cube_lit.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "なし。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "新しい正方体の角炭1個。高さを明確に増やし、真っ直ぐな四角い面、立った角、厚みでフラットと区別。灰と熾きの材質を保持。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "広い底面が水平に接地する同じ俯瞰。単一炭を中央、余白均等。"
+    },
+    "heat_cube_cold.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "なし。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "新しいキューブ角炭の同じ輪郭と向きの未着火差分。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "広い底面が水平に接地する同じ俯瞰。単一炭を中央、余白均等。"
+    },
+    "heat_flat_lit.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "なし。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "オーナーが指定したexec-59b978f3の厚みのある炭をフラットとして採用。そのままの材質・輪郭・向き。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "同じ俯瞰角度、幅に対し高さは薄く、広い底面が水平に接地。"
+    },
+    "heat_flat_cold.png": {
+      "人物": "なし。機材/炭のみの透過素材。キャラは別素材。",
+      "場面": "炭焼き準備・加熱中のゲーム素材。",
+      "台の型": "なし。",
+      "HMD": "なし。シーシャ本体を追加しない。",
+      "炭": "採用されたフラット炭の同じ輪郭・向きの未着火差分、exec-152000f8。",
+      "ホース": "なし。コンロには後部の電源コード。",
+      "吸い口": "なし。",
+      "構図": "同じ俯瞰角度、幅に対し高さは薄く、広い底面が水平に接地。"
+    },
+    "hajime_heat_scene.png": {
+      "人物": "hajime。正規立ち絵を最優先。黒いキャップ、黒い上着、若い顔・既存アクセサリー。",
+      "場面": "炭の焼け具合を見て待つ、手には長い金属トング。",
+      "台の型": "シーシャ本体なし。背景はtonariの店内と作業台。",
+      "HMD": "なし。",
+      "炭": "描かない。操作する炭は右の実入力画面に描く。",
+      "ホース": "なし。",
+      "吸い口": "新規なし。正規アクセサリーを保持。",
+      "構図": "承認済みモックの左枠と同じ近い縦構図。人物・手・トング、柔らかくぼけた温かい店内。文字なし。"
+    }
+  },
+  "thermal_scope": "既存判定・体調/能力・個数/炭種・採点は維持。物理温度モデル変更なし。",
+  "references": "実物写真の出典は既存hybrid-reference.md。写真は形/材質の参照のみ。配布しない。",
+  "generations": [
+    {
+      "name": "heat_stove.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/hybrid-refs/burner-side.jpg"
+        ],
+        "prompt": "Create a NEW production-ready isolated game sprite of ONLY the electric charcoal burner from reference1, preserving its approved camera and proportions. Reference2 is real electric spiral construction only; no branded product copy. Transparent background. Wide landscape asset, all corners and cable inside canvas. Camera looks down about55degrees from the front. Black rectangular enamel case, simple front-right thermostat knob, realistic raised continuous spiral tubular electric heating coil forming an ellipse, restrained deep red glow along coil turns, charcoal-black non-heated central empty patch and outer support rim. One black power lead physically connected to the BACK-RIGHT case edge, extending outward to the right rear; NOT front attached, never across heating surface. Same warm pixel-painter game style and worn dark metal/copper light as approved mock, but clean functional hardware rather than cracked lava. NO charcoal pieces, NO tongs, NO human, NO pot, NO table, NO floor, NO UI, NO letters, NO number, NO logo. Exactly one empty burner, faithful to the approved mock's layout, with its center and medium coil turns clearly readable so game code can place separate charcoal sprites. Entire isolated object, modest transparent padding, no smoke/flames or giant bright aura."
+      },
+      "generated_original": "/workspace/generated_images/exec-42dc3b5a-fbc0-470d-a4c4-623efe490387.png",
+      "output": "assets/ui/making/heat_stove.png",
+      "adopted": true
+    },
+    {
+      "name": "heat_carrier.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/hybrid-refs/coal-holder-2.jpg"
+        ],
+        "prompt": "Create a NEW isolated production game sprite of ONE EMPTY deep metal shisha charcoal carrier from the top-right inset of reference1. Transparent background, no UI. Reference2 shows real construction: one deep circular bowl and a long arch carrying handle with grip FAR ABOVE and AWAY FROM the hot bowl, physically connected at opposite sides; use this structure, do not copy its ornamental floral pattern or logo. Same warm painterly pixel game style, dark charcoal metal with restrained bronze/copper edge reflections. Camera from high above about70degrees, looking deeply into the open bowl; the mouth is nearly circular, dark floor and walls visible, with enough clean interior room for several separately drawn 25mm charcoal pieces in a13cm bowl. Handle extends to the REAR/TOP, tall and well separated from opening, leaving the opening unobscured. Small stable foot beneath bowl, connected naturally. NO charcoal, NO fire, NO tongs, NO person, NO table, NO lettering, NO border, NO bubble pointer, NO divided pockets. Entire object within canvas with transparent margin. Preserve approved inset's separate overhead perspective and deep single carrier; do not make a ceramic flowerpot or shallow HMD."
+      },
+      "generated_original": "/workspace/generated_images/exec-ccf5b766-2007-405a-bc56-483ff4de51f4.png",
+      "output": "assets/ui/making/heat_carrier.png",
+      "adopted": true
+    },
+    {
+      "name": "heat_cube_lit.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg"
+        ],
+        "prompt": "Create a NEW isolated sprite of ONE fully lit25mm coconut hookah charcoal cube for the approved game's main burner. Transparent background, centered full object with even generous padding; no other objects. Reference1 only sets camera/pixel-painter warm game style; reference2 is the PRIMARY real charcoal MATERIAL reference. Broad flat bottom sits horizontally on an implied surface, stable cube, same front oblique elevated camera as mock. Show top and two short side faces. Compressed coconut charcoal with subtly chipped softened corners, fine granular pressed texture, tiny shallow irregular cracks and flaky thin white-to-pale-gray ASH across ALL visible faces. Lower edges and parts below the thin ash glow a restrained vivid red/orange ember. NO large black unlit face, NO large dark round holes or repeated volcanic pores, NO glowing crater, NO lava fissures, NO flaming rock, NO sparkles. Keep a recognizable small manufactured coal with flat roughly square faces and slight natural edge chips. Ash should look dry/powdery like the real photo, NOT shiny ceramic, smooth toy, molten stone or neat dotted-pattern cube. No number, label, halo, tongs, shadow floor or stove. A clean production sprite to reuse unchanged when collecting into the carrier, not a UI mockup."
+      },
+      "generated_original": "/workspace/generated_images/exec-59b978f3-75ab-4552-8e08-dac46aad42d9.png",
+      "output": "assets/ui/making/heat_flat_lit.png",
+      "adopted": true,
+      "role_change": "Owner selected this thicker initial charcoal as flat charcoal."
+    },
+    {
+      "name": "heat_cube_cold.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/assets/ui/making/heat_cube_lit.png"
+        ],
+        "prompt": "Edit this ONE isolated charcoal sprite into the COLD UNLIT version of exactly the same piece. Transparent background, preserve exact image canvas, size, position, perimeter, chipped corners, camera, cube geometry and broad flat horizontal bottom. Change material state only: matte very dark charcoal black/gray compressed coconut grain, tiny shallow cracks, NO gray/white ash, NO red/orange ember, NO halo, NO light, NO flames. This must align as closely as possible with the referenced lit sprite when crossfading in a game; do not turn it, change dimensions or invent large holes. One small manufactured coal cube, painterly detailed sprite, no other object or text."
+      },
+      "generated_original": "/workspace/generated_images/exec-152000f8-accf-4777-a63f-ef3c1fd81ee0.png",
+      "output": "assets/ui/making/heat_flat_cold.png",
+      "adopted": true,
+      "role_change": "Matching cold version of selected flat charcoal."
+    },
+    {
+      "name": "heat_flat_lit.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/assets/ui/making/heat_cube_lit.png",
+          "/workspace/shisha-game/assets/ui/making/coal_flat_just.png",
+          "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg"
+        ],
+        "prompt": "Generate ONE isolated fully lit FLAT hookah coconut charcoal piece on transparent background. Reference1 is the new game charcoal MATERIAL and camera to match. Reference2 is ONLY the flatter slab SHAPE (do not copy its simplistic flat colors). Reference3 is real dry granular ash and red ember material. A manufactured square slab with about half cube height, broad flat horizontal bottom, same yaw and elevated front-oblique camera as reference1. Pale gray thin flaky ash on all visible faces, tiny natural chips, red/orange ember beneath ash at bottom and sides. Fine compressed grain and shallow cracks, no large volcanic holes, no cold black face, no flames, no crater, no glossy smooth toy. Centered entire single piece, evenly padded transparent canvas, no coal IDs, no other objects. Preserve same warm painterly pixel game style and clear charcoal outline."
+      },
+      "generated_original": "/workspace/generated_images/exec-793d2503-aa6b-41b8-a32c-3ff608eeb415.png",
+      "output": "asset_sources/coal-heat-ui-game/iterations/thin-flat/heat_flat_lit.png",
+      "adopted": false,
+      "reason": "Owner: flat charcoal too thin."
+    },
+    {
+      "name": "hajime_heat_scene.png",
+      "args": {
+        "transparent_background": false,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png"
+        ],
+        "prompt": "Create a NEW production artwork for the LEFT portrait scene of the approved shisha charcoal game, based on reference1's left window. Portrait canvas, no UI. Reference2 is the canonical identity: same young Japanese Hajime, same eyes/face/age, charcoal black cap, short messy black hair, dark hoodie/jacket and canonical neck accessory; no different man. Composition same as approved mock: close upper body leaning toward the worktable, thoughtful calm focused look downward/right at offscreen coals; hand in foreground holding one pair of long thin metal shisha tongs diagonally toward the right. Preserve anatomically credible hand and one pair of connected tongs, relaxed grip, not a sword or kitchen spatula. Warm amber/copper side light from the offscreen burner, softly blurred richly textured Japanese shisha lounge in back, cinematic painterly pixel art consistent with mock and existing game. Face and eyes clear, clothing black, not older or muscular redesign. NO coal pieces, NO stove or hookah in this artwork (they are interactive on the right), NO hose or smoking, NO smoke, NO text/labels/numbers/borders/HUD. Foreground table can be visible at the bottom. Full portrait scene; it will fill a narrow left window next to the interactive burner."
+      },
+      "generated_original": "/workspace/generated_images/exec-d38624bc-8dff-486d-974b-99fcf3eceb34.png",
+      "output": "assets/ui/making/hajime_heat_scene.png",
+      "adopted": true
+    },
+    {
+      "name": "heat_flat_cold.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/generated_images/exec-793d2503-aa6b-41b8-a32c-3ff608eeb415.png"
+        ],
+        "prompt": "Edit this single flat charcoal sprite into its cold UNLIT material state. Keep exactly the same canvas, placement, overall perimeter, small edge chips, flat slab proportions, face geometry and camera angle. Broad bottom remains horizontal. Transparent background. Material becomes matte black/dark gray compressed coconut charcoal grains with shallow tiny cracks. No gray/white ash, no red/orange glow, no light or halo, no fire, no tongs or any other object. This pairs with the reference lit sprite for a game crossfade; do not change pose, thickness, shape or scale. No number or text."
+      },
+      "generated_original": "/workspace/generated_images/exec-0653179f-85ce-468a-91e1-2fbae2b371c7.png",
+      "output": "asset_sources/coal-heat-ui-game/iterations/thin-flat/heat_flat_cold.png",
+      "adopted": false,
+      "reason": "Owner: flat charcoal too thin."
+    },
+    {
+      "name": "heat_cube_lit.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/generated_images/exec-59b978f3-75ab-4552-8e08-dac46aad42d9.png"
+        ],
+        "prompt": "Create a NEW fully lit CUBE charcoal sprite matching the granular ash and red ember MATERIAL of the attached charcoal. The attached piece is now selected by the owner as the FLAT charcoal; the new cube must look visibly TALLER and more SQUARE.\n\nTransparent background, one isolated piece centered with even padding, same front oblique elevated camera and yaw. Make a true manufactured25x25x25mm CUBE: straight planar square side faces, vertical edges of full height, perpendicular90-degree corners, flat square top and broad flat bottom resting horizontally. At this camera the side faces must show clear height; add about40percent MORE visible side-wall height than the reference while keeping similar top face width/depth. A strong box-shaped cube silhouette, not a rounded cushion, low slab, irregular boulder or tapered trapezoid. Keep only tiny natural edge chips, do not heavily round the corners.\n\nDry thin white/pale gray granular ash across top and all side faces, shallow tiny cracks in compressed coconut grain, restrained red/orange ember under ash at bottom and sides. Preserve the reference's realistic ash material; do not turn into smooth plastic or a shiny toy. No large black unlit face, no lava holes or flaming crater, no smoke, no other object, no number, no UI. Clean production game sprite. The cube must be geometrically distinguishable from the flatter selected reference, with its added thickness and more square side faces."
+      },
+      "generated_original": "/workspace/generated_images/exec-2fc036fe-4cdf-4055-b8fd-df21f1346da5.png",
+      "output": "assets/ui/making/heat_cube_lit.png",
+      "adopted": true,
+      "review": "Taller side walls with straight square cube faces, small chips; clearly thicker than owner-selected flat. Same ash/ember material."
+    },
+    {
+      "name": "heat_cube_cold.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/generated_images/exec-2fc036fe-4cdf-4055-b8fd-df21f1346da5.png"
+        ],
+        "prompt": "Create the COLD UNLIT state of this exact taller cubic charcoal sprite. Preserve the exact canvas, object scale, position, perimeter, vertical wall height, straight square faces,90degree corners, minor chips, top face, camera angle and horizontal flat base. Change ONLY the material color/state: dark matte black/dark gray compressed coconut grain with tiny shallow cracks. No gray/white ash, no red/orange ember, no halo or flames. Transparent background. One charcoal cube, no other object and no numbers. This must align with the supplied lit cube for a game crossfade; no change to pose, cube geometry, size or framing."
+      },
+      "generated_original": "/workspace/generated_images/exec-db219474-9c84-4859-b832-b2edcc3a3ffb.png",
+      "output": "assets/ui/making/heat_cube_cold.png",
+      "adopted": true,
+      "review": "Same square side-wall height, pose and bottom as the new taller cube; cold material preserves its outline."
+    }
+  ],
+  "qa": {
+    "heat_stove.png": {
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        151,
+        128,
+        1536,
+        908
+      ],
+      "bytes": 2152815
+    },
+    "heat_carrier.png": {
+      "size": [
+        1264,
+        1244
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        159,
+        54,
+        1108,
+        1182
+      ],
+      "bytes": 1501403
+    },
+    "heat_cube_lit.png": {
+      "size": [
+        1374,
+        1145
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        255,
+        128,
+        1128,
+        1021
+      ],
+      "bytes": 1812784
+    },
+    "heat_cube_cold.png": {
+      "size": [
+        1374,
+        1145
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        256,
+        126,
+        1127,
+        1020
+      ],
+      "bytes": 1669299
+    },
+    "heat_flat_lit.png": {
+      "size": [
+        1374,
+        1145
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        294,
+        241,
+        1080,
+        974
+      ],
+      "bytes": 1319848
+    },
+    "heat_flat_cold.png": {
+      "size": [
+        1374,
+        1145
+      ],
+      "mode": "RGBA",
+      "alpha24_bbox": [
+        292,
+        239,
+        1082,
+        976
+      ],
+      "bytes": 1243708
+    },
+    "hajime_heat_scene.png": {
+      "size": [
+        966,
+        1629
+      ],
+      "mode": "RGB",
+      "alpha24_bbox": null,
+      "bytes": 2093000
+    }
+  },
+  "user_shape_correction": "The original thick charcoal exec-59b978f3 is selected as flat. Generate a NEW visibly taller cuboid with square straight faces and almost90-degree corners as cube. Preserve real ash/ember material."
+}

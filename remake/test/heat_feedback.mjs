@@ -68,7 +68,7 @@ try {
         }, { phase });
         await page.waitForTimeout(30);
         const coal = page.locator(`[data-test="coal-${i}"]`);
-        // 奥の炭は手前の炭と一部重なる。実際に見えていて入力が届く位置を使う。
+        // 実際に見えていて入力が届く位置でタップする。
         const point = await coal.evaluate(n => {
           const r = n.getBoundingClientRect();
           for (const y of [.5, .25, .75, .1, .9]) for (const x of [.5, .25, .75, .1, .9]) {
@@ -80,15 +80,20 @@ try {
         assert(point, `${label}: 炭${i + 1}に実入力が届く場所がない`);
         if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
         assert.equal(await coal.getAttribute("data-phase"), phase);
+        assert.equal(await page.locator('[data-test="coal-count"]').textContent(), `${i + 1} / ${count}`);
+        const collected = page.locator(`[data-test="stored-coal-${i}"]`);
+        assert.equal(await collected.getAttribute("data-phase"), phase);
+        assert.deepEqual(await coal.locator(".coal-sprite .art").evaluateAll(nodes => nodes.map(n => n.style.backgroundImage)),
+          await collected.locator(".coal-sprite .art").evaluateAll(nodes => nodes.map(n => n.style.backgroundImage)), "回収しても同じ炭素材を保持する");
         assert.equal(await page.locator(`[data-test="coal-timing-${i}"]`).getAttribute("data-rating"), grade[0]);
         const feedback = page.locator(".heat-feedback");
         assert.equal(await feedback.locator(".stamp").count(), 1, "連続評価は差し替えられる");
-        assert.equal(await feedback.locator(".stamp").textContent(), phase === "just" ? "EXCELLENT" : grade[0]);
+        assert.equal(await feedback.locator(".stamp").textContent(), grade[0]);
         const geometry = await page.evaluate(() => {
           const panel = document.querySelector(".bench-panel").getBoundingClientRect();
           const strip = document.querySelector(".heat-feedback"), f = strip.getBoundingClientRect();
           const stove = document.querySelector(".stove").getBoundingClientRect();
-          const rows = document.querySelector(".heat-picks").getBoundingClientRect();
+          const carrier = document.querySelector(".heat-info").getBoundingClientRect();
           const stamp = strip.querySelector(".stamp").getBoundingClientRect();
           const inside = b => b.left >= panel.left - 1 && b.right <= panel.right + 1 && b.top >= panel.top - 1 && b.bottom <= panel.bottom + 1;
           const accessible = [...document.querySelectorAll(".stove .coal:not(:disabled)")].every(n => {
@@ -96,11 +101,13 @@ try {
             return [.5, .25, .75, .1, .9].some(y => [.5, .25, .75, .1, .9].some(x =>
               n.contains(document.elementFromPoint(r.x + r.width * x, r.y + r.height * y))));
           });
-          return { separate: f.top >= stove.bottom - 1, stripInside: inside(f), rowsInside: inside(rows),
+          const active = [...document.querySelectorAll(".stove .coal:not(:disabled)")].map(n => n.getBoundingClientRect());
+          const separated = active.every((r, i) => active.slice(i + 1).every(o => r.right <= o.left || o.right <= r.left || r.bottom <= o.top || o.bottom <= r.top));
+          return { separate: active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier), separated,
             textInside: stamp.left >= f.left && stamp.right <= f.right, accessible,
             pointer: getComputedStyle(strip).pointerEvents, floating: document.querySelectorAll(".bench-panel > .stamp, .care-burn > .stamp").length };
         });
-        assert.deepEqual(geometry, { separate: true, stripInside: true, rowsInside: true,
+        assert.deepEqual(geometry, { separate: true, stripInside: true, carrierInside: true, separated: true,
           textInside: true, accessible: true, pointer: "none", floating: 0 }, `${label}: ${JSON.stringify(geometry)}`);
         if (shots && (i === count - 1 || phase === "just")) {
           await page.waitForTimeout(270); await page.screenshot({ path: `${shots}/${label}-${i + 1}.png` });

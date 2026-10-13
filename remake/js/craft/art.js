@@ -76,6 +76,12 @@ const BOWL_ART = {
 };
 const PACK_ART = { fluffy: "airy", normal: "normal", firm: "firm" };
 
+/** 今選んでいる器と詰め方だけを先読みする。 */
+export function bowlArtFiles(cs) {
+  const spec = BOWL_ART[cs?.equip?.bowl] || BOWL_ART[DB.equipById[cs?.equip?.bowl]?.art] || BOWL_ART.silicone_bowl;
+  return [spec.empty, ...Object.values(PACK_ART).map(pack => spec.packed ? spec.packed(pack) : "bowl_packed_" + pack + ".png")];
+}
+
 /** 詰め方を確定する前に、選択中の器・葉面を大きく見比べる。配合量は変更しない。 */
 export function packingBowlPreview(cs, pack) {
   const spec = BOWL_ART[cs.equip.bowl] || BOWL_ART[DB.equipById[cs.equip.bowl]?.art] || BOWL_ART.silicone_bowl;
