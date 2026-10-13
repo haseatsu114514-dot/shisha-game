@@ -288,6 +288,27 @@ await suite("venue-invite-reminder", async (check) => {
     await page.locator('[data-test="pin-rest"]').waitFor();
   };
 
+  await check("private-account-reminder-opens-received-thread", async (page) => {
+    await startReminderDay(page);
+    await page.evaluate(async () => {
+      const data = await import("./js/core/data.js");
+      const s = QA.core.state;
+      s.met.minto = true; s.contacts.push("minto"); s.lovers.push("minto");
+      s.flags._minto_name_known = true;
+      const m = data.DB.lime.find(m => m.id === "lime_minto_day4");
+      s.inbox = [
+        { id: "business-chat", day: 4, msg: { sender: "minto", type: "message", messages: ["お店のご案内"] }, read: false, done: false, log: [] },
+        { id: m.id, day: 4, account: "minto_private", msg: structuredClone(m), read: false, done: false, replyState: "waiting", log: [] },
+      ];
+    });
+    await page.locator('[data-test="pin-minto"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    await page.locator('[data-test="venue-invite-check"]').click();
+    await page.locator('[data-test="reply-2"]').waitFor();
+    assert.deepEqual(await page.evaluate(() => QA.core.state.inbox.map(item => item.read)), [false, true]);
+    assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
+  });
+
   await check("free-shopping-before-rin-action", async (page) => {
     await startReminderDay(page);
     await page.locator('[data-test="pin-shop"]').click();

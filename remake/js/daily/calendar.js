@@ -144,7 +144,7 @@ async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed
     ],
   });
   if (choice === "lime") {
-    await readLime(sender);
+    await readLime(pending.account || sender);
     return false;
   }
   return true;
