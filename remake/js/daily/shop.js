@@ -181,9 +181,10 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const productRow = (item, flavor) => {
       const owned = !flavor && state.owned.includes(item.id), selected = cart.has(item.id);
       const needed = flavor && errand === item.id && flavorStock(item.id) < minStock;
+      const name = `${item.short_name || item.name}${flavor ? ` 1箱（${FLAVOR_BOX_GRAMS}g）` : ""}`;
       return el(`div.shop-row.product${selected ? ".selected" : ""}${needed ? ".errand" : ""}`, [
-        el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${item.short_name || item.name}の詳細`, onclick: () => detail(item, flavor) }, [
-          productArt(item, flavor), el("span.shop-main", [el("b", { text: item.short_name || item.name })]),
+        el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${name}の詳細`, onclick: () => detail(item, flavor) }, [
+          productArt(item, flavor), el("span.shop-main", [el("b", { text: name })]),
         ]),
         el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] })]),
         el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? item.price : item.buy_price) }),
