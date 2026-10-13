@@ -20,3 +20,7 @@
 - [PCの♥3待機案内](pc-branch-waiting.png)／[タッチの♥3待機案内](touch-branch-waiting.png): 凛の未回答・節目読了済みデータから、次の訪問先を案内。
 
 詳細は [関係UI結果](relationship-ui-results.json)、[保存・読込結果](save-load-results.json)、[既存ゲート結果](affinity-gates-results.txt)、[1行表示結果](choice-oneline-results.txt)。PRのCI・マージ・公開状態はGitHubで別に確認する。
+
+## マージ前のmain統合
+
+PR #429のmain `cd745597e7227b9e27b14c77bd9fef27b84b2e34` を取り込み、CI設定の競合を両方のテスト呼出しを残して解消。みんとの♥3正体判明→私的な約束の順序修正を維持した統合後のコードで、[関係UI6ケース](merge-main-relationship-ui.txt)、[既存♥3／♥5ゲート10ケース](merge-main-affinity-gates.txt)、[みんとの個別進行4ケース](merge-main-minto.txt)がPASS。YAML構文と両テストステップの存在、JS構文、差分空白を確認した。再開予約はstatus run `38351713253` の成功と同じworker／claim runのログで検証した。
