@@ -1,0 +1,50 @@
+// 本編と同じ工程を、保存済みのゲームを読み書きせず試す入口。
+import { loadAll } from "../core/data.js";
+import { newGame } from "../core/state.js";
+import { initLayers, layers } from "../core/ui.js";
+import { unlockAudio } from "../core/audio.js";
+import { el } from "../core/util.js";
+import { newSession, openBench } from "./session.js";
+import { stepPack } from "./steps.js";
+import { runHoles } from "./holes.js";
+
+function fit() {
+  const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
+  document.getElementById("stage").style.setProperty("--k", String(Math.min(w / 1280, (h - 52) / 720)));
+}
+function activeStep(step) {
+  document.querySelectorAll("[data-preview-step]").forEach(link => {
+    if (link.dataset.previewStep === step) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+}
+export async function boot() {
+  fit(); window.addEventListener("resize", fit); window.visualViewport?.addEventListener("resize", fit);
+  window.addEventListener("pointerdown", unlockAudio); window.addEventListener("keydown", unlockAudio);
+  initLayers();
+  await Promise.all([loadAll(), document.fonts.ready]);
+  newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
+  const cs = newSession("tutorial");
+  cs.mix = { double_apple: 10, mint: 2 };
+  const step = new URLSearchParams(location.search).get("step") === "holes" ? "holes" : "pack";
+  if (step === "holes") cs.pack = "normal";
+  await openBench(cs).ready;
+  document.getElementById("craft-preview-loading").hidden = true;
+  async function play() {
+    activeStep(step);
+    if (step === "pack") await stepPack(cs);
+    activeStep("holes");
+    await runHoles(cs);
+    layers.screen.append(el("section.craft-preview-end", [
+      el("h1", { text: "一枚、できあがり。" }),
+      el("p", { text: "上のメニューから、何度でも試せます。" }),
+      el("a.btn.primary", { href: "craft-preview.html?step=holes", text: "もう一度、穴あけをする" }),
+      el("a.btn", { href: "craft-preview.html", text: "詰め方を見比べる" }),
+    ]));
+  }
+  play().catch(error => {
+    const loading = document.getElementById("craft-preview-loading");
+    loading.textContent = "試遊を続けられませんでした。ページを再読み込みしてください。";
+    loading.hidden = false; console.error(error);
+  });
+}

@@ -76,6 +76,26 @@ const BOWL_ART = {
 };
 const PACK_ART = { fluffy: "airy", normal: "normal", firm: "firm" };
 
+/** 詰め方を確定する前に、選択中の器・葉面を大きく見比べる。配合量は変更しない。 */
+export function packingBowlPreview(cs, pack) {
+  const spec = BOWL_ART[cs.equip.bowl] || BOWL_ART[DB.equipById[cs.equip.bowl]?.art] || BOWL_ART.silicone_bowl;
+  const variant = PACK_ART[pack] || "normal";
+  const name = spec.packed ? spec.packed(variant) : spec.empty;
+  const width = Math.min(380, 300 / artHeight(name, 1));
+  const root = el("div.pack-vessel-art", { dataset: { pack } }, [artImg(name, width)]);
+  if (!spec.packed) {
+    const density = { fluffy: [.85, .29, .32], normal: [.87, .27, .33], firm: [.87, .24, .345] }[pack];
+    const leafHeight = width * density[1];
+    root.append(el("i.mix-clay-leaves", { style: {
+      backgroundImage: `url("${makingUrl(`bowl_packed_${variant}.png`)}")`,
+      backgroundSize: "220% auto", backgroundPosition: `center ${-width * .22}px`,
+      left: "50%", transform: "translateX(-50%)", width: `${width * density[0]}px`, height: `${leafHeight}px`,
+      bottom: `${artHeight(name, width) * (1 - density[2]) - leafHeight / 2}px`,
+    } }));
+  }
+  return root;
+}
+
 /** 配合画面も、実際に選んだハガルと既存の湿った葉の素材を使う。 */
 export function mixBowlPreview(cs, grams, width = 230) {
   const spec = BOWL_ART[cs.equip.bowl] || BOWL_ART[DB.equipById[cs.equip.bowl]?.art] || BOWL_ART.silicone_bowl;
