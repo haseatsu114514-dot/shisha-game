@@ -2,7 +2,7 @@
 
 Issue [#519](https://github.com/haseatsu114514-dot/shisha-game/issues/519) / 2026-10-13（JST）
 
-オーナーの「紬を1枚だけ『BASTARD!!』のヨーコ／OVA風に」「女の子はヨーコみたいな可愛いのがいい」を受けた別バージョン実験。続く指示に合わせ、予告には顔・文字を隠した別構図のワンシーンを描いた。2章のタイトルコールで「あ、この子か」とつながる見え方を狙う。正式採用・本編への接続は未実施。
+オーナーの「紬を1枚だけ『BASTARD!!』のヨーコ／OVA風に」「女の子はヨーコみたいな可愛いのがいい」を受けて描いた2枚。続く指示に合わせ、予告には顔・文字を隠した別構図のワンシーンを描いた。2章のタイトルコールで「あ、この子か」とつながる見え方を狙う。「ゲームに予告を組み込めたらマージして」の指示に従い、本編の採用済みCの次回予告へ接続した。
 
 ## 今回の2枚
 
@@ -23,6 +23,16 @@ Issue [#519](https://github.com/haseatsu114514-dot/shisha-game/issues/519) / 202
 
 章頭側は[前回のOVAタイトル試作](images/ch2-ova-title.png)を比較用に使用した。予告の入口・後ろ姿・冷たい青から、章頭の正面の可愛い顔・巨大な尺度・暖色へ変わる。新しい予告画像自体に文字やロゴは含まれない。元のタイトル画像を暗くした流用ではなく、新しく描いた一場面。
 
+## ゲームへの採用と録画
+
+[音付きのゲーム録画・約53秒](gameplay/chapter-preview.mp4)は本編と同じ予告APIを確認ページで自然完走した実ブラウザ録画。予告本体は47.5秒、導入と終了画面を含めて52.9秒。Cの静かな曲、章名のあとに戻るみんとの言葉、最後の問いを維持する。
+
+- [紬のゲーム画面](gameplay/tsumugi-desktop.png)
+- [入口の影・PC](gameplay/shadow-desktop.png) / [スマホ横画面](gameplay/shadow-touch.png)
+- [録画QA](gameplay/capture.json) / [本編接続9ケース](gameplay/ch1-preview-results.json) / [比較案4ケース](gameplay/chapter-preview-samples-results.json) / [匿名のスマホ表示](gameplay/shadow-touch.json)
+
+第1章クリアの初回・クリア画面の再視聴・確認ページで同じ2枚を使う。予告の入口では話者名を表示せず、元の「……ごめん。理由は、聞かないで」だけを置く。章頭の人物画は予告に入れない。正式なWebPとPNG原画の照合は[採用記録](../ch2-preview/adoption.json)、進行と保存の仕様は[章末と次回予告](../../docs/chapter_previews.md)。
+
 ## 制作記録と初稿
 
 プロンプト、添付した参照、SHA-256、生成時のネイティブ寸法、Issue予約を [generation.json](generation.json) と [teaser-generation.json](teaser-generation.json) に記録。原本PNGの再圧縮・切り抜き・拡大は行わず、そのまま保存している。横長の約16:9で、紬と予告1672×941、前回のタイトル1671×941。確認動画のみ1280×720へ縮小して配置。
@@ -42,9 +52,9 @@ Issue [#519](https://github.com/haseatsu114514-dot/shisha-game/issues/519) / 202
 
 ## 検証・適用範囲
 
-`git diff --check`、`python3 tools/check_agent_docs.py`、PNG復号／寸法／ハッシュ照合、動画の全編復号を実施。変更はこのフォルダだけ。ゲームのコード・データ・正式素材を変更していないため、ゲーム動作テストは実施していない。
+`git diff --check`、`python3 tools/check_agent_docs.py`、PNG/WebP復号・寸法・ハッシュ照合、動画の全編復号を実施。`node remake/test/browser/ch1_preview.mjs` は9ケース、`node remake/test/browser/chapter_preview_samples.mjs` は4ケース成功。さらに844×390のタッチ画面で入口の影を表示し、名前なし・構図全体と字幕の収まり・保存不変を確認。録画でも全12カット、画像6枚の復号、字幕と操作の収まり、エラーなし、保存不変を確認。H.264/AAC・1280×720・52.9秒、音声の最大値−22.8dB。
 
-採用済みCの第1章エンディングと予告、既存の第2章タイトル、正規立ち絵は維持する。採用する場合は、オーナーが選んだ画像を別の実装作業で接続する。
+本編への変更は予告の2枚、入口の話者名の省略、採用記録と資料。PNG原画と過去の比較案を保持する。第2章の章頭への接続は第2章開発側の範囲。
 
 ## 引き継ぎ
 
@@ -52,7 +62,7 @@ Issue [#519](https://github.com/haseatsu114514-dot/shisha-game/issues/519) / 202
 - ISSUE: #519
 - BRANCH: `codex/519-retro-ova-study`
 - CLAIM: [38359462795](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38359462795)（成功）
-- STATUS: [38372542826](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38372542826)（今回の再開時に成功・同owner/run検証）
-- DONE: 紬と文字なしの予告ワンシーン、前回タイトルと初稿、プロンプト・生成記録、予告→暗転→章頭の約10秒確認動画を保存。
-- TODO: オーナーの選定後、採用画像の本編接続を別作業として検討。
-- NEXT: 予告の影から章頭の可愛い顔へ切り替わる見え方をレビュー。正式採用まで画像を自動置換しない。
+- STATUS: [38374804361](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38374804361)（ゲーム組み込み開始時に成功・同owner/run検証）
+- DONE: 紬と匿名の入口の影を本編Cへ接続。原画・初稿・比較用タイトル・生成記録・確認動画、ゲーム録画と動作確認の結果を保存。
+- TODO: 第2章の章頭の実装は第2章開発側の範囲。
+- NEXT: 次の素材変更では本資料と正式WebPの採用記録を照合する。
