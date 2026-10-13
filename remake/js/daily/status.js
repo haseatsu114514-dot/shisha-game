@@ -3,9 +3,9 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
+import { star, starText, rankLabel, affinityLevel, affinityGateWaiting, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { BOND_FINALES } from "./bonds.js";
+import { settledFriend } from "./bonds.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -103,26 +103,23 @@ function meTab() {
 }
 
 const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori"];
-// 「友達」: 告白で友達のままを選んだか、恋愛対象と友情の締めくくりを迎えた
-const friendClosed = (id) => !!state.flags[`_friend_${id}`] || (!!BOND_FINALES[id]?.question && state.finales?.[id]?.route === "friend");
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
-    const bondLv = state.loveLevel?.[id] || 1;
-    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < (lover ? bondLv : lv) ? 100 : 0), {
-      className: "heart-row", bond: lover, label: lover ? "恋人との絆" : "好感度",
+    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < lv ? 100 : 0), {
+      className: "heart-row", bond: lover, label: lover ? "恋人（♥5）" : "好感度",
     });
     return el(`div.pp-row${lover ? ".lover" : ""}`, [
       face ? el("img.pp-face", { src: face, alt: "" }) : el("span.pp-face.ph", { text: displayName(id, state)[0] }),
       el("span.pp-name", { text: displayName(id, state) }),
       el("span.pp-hearts", [
-        lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
+        lover ? el("span.pp-relation", { text: "恋人" }) : null,
         hearts,
-        !lover && id === "hiyori" && lv >= 3 && !state.flags._hiyori_tonari_return_done
-          ? el("span.pp-relation", { text: "スミさんとの再会待ち" }) : null,
-        !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
+        !lover && lv >= 3 && affinityGateWaiting(id)
+          ? el("span.pp-relation", { text: id === "hiyori" ? "スミさんとの再会待ち" : "関係を考える会話待ち" }) : null,
+        settledFriend(id) ? el("span.pp-relation", { text: "友達" }) : null,
       ]),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);

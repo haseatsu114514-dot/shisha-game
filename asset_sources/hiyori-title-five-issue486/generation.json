@@ -1,0 +1,51 @@
+{
+  "references": [
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+      "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+      "viewed": true
+    },
+    {
+      "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+      "viewed": true
+    },
+    {
+      "path": "assets/ui/title_arts/title_art_hiyori_01_twilight_walk.png",
+      "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
+      "viewed": true
+    }
+  ],
+  "outputs": [
+    {
+      "scene": "bookshop",
+      "source": "raw/bookshop-source.png",
+      "generator_file": "exec-efa1a799-fa28-43bf-b50d-1bfbb94bc0d9.png",
+      "sha256": "6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484",
+      "prompt": "prompts/bookshop.txt",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "created_at": "2026-10-13T00:27:54.622503+00:00",
+      "qa": "Same face/ponytail/adopted lace outfit; natural supported book/hands; opaque complete daylight shop; no text/plants/gear. Viewed native output.",
+      "registered": false
+    },
+    {
+      "scene": "ramen",
+      "source": "raw/ramen-source.png",
+      "generator_file": "exec-ebb6ea4c-efaf-4b82-8ec1-ef4752578e76.png",
+      "sha256": "77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9",
+      "prompt": "prompts/ramen.txt",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "created_at": "2026-10-13T00:30:08.396922+00:00",
+      "qa": "Same face/hair/lace outfit; coherent chopstick grip, connected noodles, spoon held by left hand; correctly scaled food bowl on counter; healthy quiet smile; no text/plants/gear. Viewed native output.",
+      "registered": false
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "desktop": [
+    {
+      "half": "1",
+      "file": "stores-01-04.png",
+      "cards": 4,
+      "images": [
+        {
+          "src": "sheets/tonari.png",
+          "complete": true,
+          "width": 2050
+        },
+        {
+          "src": "sheets/kemurikusa.png",
+          "complete": true,
+          "width": 2172
+        },
+        {
+          "src": "sheets/eden.png",
+          "complete": true,
+          "width": 2048
+        },
+        {
+          "src": "sheets/peppermint.png",
+          "complete": true,
+          "width": 2172
+        }
+      ],
+      "height": 2126.125
+    },
+    {
+      "half": "2",
+      "file": "stores-05-07.png",
+      "cards": 3,
+      "images": [
+        {
+          "src": "sheets/dr-fookah.png",
+          "complete": true,
+          "width": 2048
+        },
+        {
+          "src": "sheets/c-station.png",
+          "complete": true,
+          "width": 2048
+        },
+        {
+          "src": "sheets/choizap.png",
+          "complete": true,
+          "width": 2048
+        }
+      ],
+      "height": 1621.734375
+    }
+  ],
+  "mobile": {
+    "cards": 7,
+    "horizontalOverflow": false,
+    "links": [
+      "sheets/tonari.png",
+      "sheets/kemurikusa.png",
+      "sheets/eden.png",
+      "sheets/peppermint.png",
+      "sheets/dr-fookah.png",
+      "sheets/c-station.png",
+      "sheets/choizap.png"
+    ]
+  },
+  "backgroundControls": {
+    "dark": "dark",
+    "checker": "checker"
+  },
+  "pageErrors": [],
+  "implementationChecks": [
+    "ch1_spots dialogue lint: ERROR 0 / existing WARN 19",
+    "spots.js JavaScript syntax: PASS"
+  ]
+}

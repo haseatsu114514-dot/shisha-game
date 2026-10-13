@@ -1,7 +1,0 @@
-画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
-
-Edit reference 1. Reference 1 is the current artwork with CORRECT single black hose seated into the right square blue TOP-LID hose port, but the LEFT bowl/HMD is missing. Restore ONLY that missing blue bowl and silver heat manager. Reference 2 is the earlier version with the correct BLUE Sky Bowl and SILVER Stratus HMD: copy ONLY its bowl/HMD shape, proportions, materials and closed vented lid onto the LEFT small black bowl adapter in reference 1, where those same parts used to sit. Do NOT copy any hose, hose loop, added right cylinder or obsolete fitting from reference 2. Keep all CURRENT SINGLE hose routing, EXACTLY TWO lid fittings, cube, hand, face, clothes, plush, room and pixel texture from reference 1 unchanged. The left black bowl adapter must be capped by one BLUE anodized phunnel Sky Bowl with a SILVER CLOSED vented Stratus on its rim; coals inside under lid, none outside. Actual metal lid includes vent holes and side handle. One compact assembled hookah, full intact blue bowl visible above cube. No logos or words.
-
-Opaque PNG 1024x1536, portrait 2:3, preserve detailed pixel/dot render. Proposed preserved source: asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png
-
-The shared style instruction about a small convex metal post means the STEM mounting post UNDER the bowl; it NEVER means an extra post on the HMD lid.

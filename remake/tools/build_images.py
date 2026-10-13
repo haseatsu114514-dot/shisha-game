@@ -19,6 +19,8 @@ ASSETS = ROOT / "assets"
 OUT = ROOT / "remake" / "img"
 MANIFEST = ROOT / "remake" / "data" / "manifest.json"
 MAX_EDGE = {"ui/making": 1280}
+# 再描画した自宅は輪郭を保ちながら、晴れ昼夜の合計を旧WebP容量内に収める。
+WEBP_QUALITY = {"backgrounds/bg_home_": 74, "backgrounds/bg_tonari_inside_": 62, "backgrounds/bg_street_": 62}
 
 
 def targets(m):
@@ -45,7 +47,7 @@ def encode(src: Path, rel: str) -> bytes:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
-    if (rel.startswith("sprites/characters/kafuka/")
+    if (rel.startswith("sprites/characters/samechan/")
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
@@ -61,12 +63,21 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/naru/")
             or rel.startswith("sprites/characters/dr_kemuri/")
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
-            or rel == "cgs/cg_minto_first_cheki.png"):
+            or rel == "cgs/cg_minto_first_cheki.png"
+            or rel.startswith("ui/axe_throw/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()
+    facility = rel in (
+        "backgrounds/bg_c_station_day.png", "backgrounds/bg_c_station_night.png",
+        "backgrounds/bg_c_station_lobby.png", "backgrounds/bg_fookah_showroom.png",
+        "backgrounds/bg_c_station_overcast_day.png", "backgrounds/bg_c_station_overcast_night.png",
+        "backgrounds/bg_shop.png", "backgrounds/kemurikusa.png",
+        "backgrounds/peppermint.png", "backgrounds/bg_tournament_stage.png",
+    )
+    quality = 62 if facility else next((value for prefix, value in WEBP_QUALITY.items() if rel.startswith(prefix)), 90)
     best = None
-    for opts in ({"lossless": True, "method": 6}, {"quality": 90, "method": 6}):
+    for opts in ({"lossless": True, "method": 6}, {"quality": quality, "method": 6}):
         b = io.BytesIO()
         im.save(b, "WEBP", **opts)
         if best is None or len(b.getvalue()) < len(best):

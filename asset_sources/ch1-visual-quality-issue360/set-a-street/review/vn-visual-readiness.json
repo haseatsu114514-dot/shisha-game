@@ -1,0 +1,23 @@
+{
+  "name": "vn-visual-readiness",
+  "baseURL": "http://127.0.0.1:8360/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "portrait-pc",
+      "status": "passed"
+    },
+    {
+      "label": "portrait-mobile",
+      "status": "passed"
+    },
+    {
+      "label": "cg-fade-and-choice",
+      "status": "passed"
+    },
+    {
+      "label": "skip-curtain",
+      "status": "passed"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
-import { conditionForRatio } from "./condition.js";
+import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -101,7 +101,7 @@ export function earnStat(key, amount = 1) {
 }
 
 /** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null } = {}) {
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
@@ -110,7 +110,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
   finally { earningAction = parent; }
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
-  if (action.spent > 0) {
+  if (action.spent > 0 || consumed(value)) {
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
     const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];
@@ -131,7 +131,23 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori", "samechan"];
+
+// 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
+export const AFFINITY_GATE_CHOICES = Object.freeze({
+  tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
+  samechan: "bond_q1_samechan",
+});
+const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];
+const waitingKey = (id) => `_${id}_affinity_waiting_pts`;
+
+export function affinityGateWaiting(id) {
+  if (!hasAffinityGate(id) || (state.lovers || []).includes(id)) return false;
+  if (id === "hiyori") return !state.flags._hiyori_tonari_return_done;
+  // 完了済みの旧関係は維持。未回答の選択肢を埋めることはしない。
+  return !state.flags[`_friend_${id}`] && !state.finales?.[id]
+    && !state.romanceChoices?.[AFFINITY_GATE_CHOICES[id]];
+}
 
 export function affinityLevel(id) {
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
@@ -145,12 +161,13 @@ export function affinityLevel(id) {
 export function ensureAffinityLevel(id, level) {
   let target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
   if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
+  releaseAffinity(id);
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
-  if (hiyoriWaiting(id) && target > Math.max(prevPts, AFFINITY_RANK_PTS[3])) {
+  if (affinityGateWaiting(id) && target > Math.max(prevPts, AFFINITY_RANK_PTS[3])) {
     const cap = Math.max(prevPts, AFFINITY_RANK_PTS[3]);
     // 最低値の保証を何度呼んでも、同じ保証分を積み増さない。
-    state.flags._hiyori_affinity_waiting_pts = Math.max(state.flags._hiyori_affinity_waiting_pts || 0, target - cap);
+    state.flags[waitingKey(id)] = Math.max(state.flags[waitingKey(id)] || 0, target - cap);
     target = cap;
   }
   if (prevPts >= target) return 0;
@@ -159,27 +176,29 @@ export function ensureAffinityLevel(id, level) {
   return target - prevPts;
 }
 
-const hiyoriWaiting = (id) => id === "hiyori" && !state.flags._hiyori_tonari_return_done
-  && !(state.lovers || []).includes(id);
-
-/** 待っていた実獲得量を、正本の再会読了後に一度だけ・次のハートまで救済する。 */
-export function releaseHiyoriAffinity() {
-  if (!state.flags._hiyori_tonari_return_done || state.flags._hiyori_affinity_waiting_released) return 0;
-  state.flags._hiyori_affinity_waiting_released = true;
-  if ((state.lovers || []).includes("hiyori")) return 0;
-  const prevPts = state.affinity.hiyori || 0;
-  const before = affinityLevel("hiyori");
+/** 待っていた実獲得量を、既存イベントの後に一度だけ・次のハートまで救済する。 */
+export function releaseAffinity(id) {
+  const releasedKey = `_${id}_affinity_waiting_released`;
+  if (id === "hiyori" && !state.flags._hiyori_tonari_return_done) return 0;
+  if (!hasAffinityGate(id) || affinityGateWaiting(id) || state.flags[releasedKey]) return 0;
+  state.flags[releasedKey] = true;
+  if ((state.lovers || []).includes(id)) return 0;
+  const prevPts = state.affinity[id] || 0;
+  const before = affinityLevel(id);
   const next = AFFINITY_RANK_PTS[before + 1] ?? prevPts;
-  const got = Math.min(Math.max(0, Number(state.flags._hiyori_affinity_waiting_pts) || 0),
+  const got = Math.min(Math.max(0, Number(state.flags[waitingKey(id)]) || 0),
     AFFINITY_RANK_PTS[4] - AFFINITY_RANK_PTS[3], Math.max(0, next - prevPts));
   // 元の獲得記録は残す。倍率・占い・端数処理をもう一度かけない。
-  state.flags._hiyori_affinity_released_pts = got;
+  state.flags[`_${id}_affinity_released_pts`] = got;
   if (!got) return 0;
-  state.affinity.hiyori = prevPts + got;
-  queueAffinityGain({ id: "hiyori", level: affinityLevel("hiyori"), levelUp: affinityLevel("hiyori") > before,
-    prevPts, pts: state.affinity.hiyori });
+  state.affinity[id] = prevPts + got;
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before,
+    prevPts, pts: state.affinity[id] });
   return got;
 }
+
+// #320 の呼出し口と保存キーは互換のまま。
+export const releaseHiyoriAffinity = () => releaseAffinity("hiyori");
 
 const rankOf = (pts) => {
   let lv = 0;
@@ -258,6 +277,7 @@ export function gainAffinity(id, pts) {
     queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
     return got;
   }
+  releaseAffinity(id);
   mult *= fortuneMult(id);
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
@@ -266,8 +286,8 @@ export function gainAffinity(id, pts) {
   const value = Math.round(pts * mult) * AFFINITY_PACE + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
-  const applied = hiyoriWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
-  if (applied < got) state.flags._hiyori_affinity_waiting_pts = (state.flags._hiyori_affinity_waiting_pts || 0) + got - applied;
+  const applied = affinityGateWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
+  if (applied < got) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + got - applied;
   state.affinity[id] = prevPts + applied;
   if (!applied) return 0;
   const after = affinityLevel(id);
@@ -301,7 +321,11 @@ export function staminaAfter(n) {
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();
-export const currentCondition = () => conditionForRatio(staminaRatio());
+export const currentCondition = () => {
+  const sick = state.restDay;
+  return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
+    || conditionForRatio(staminaRatio());
+};
 
 // ---------------------------------------------------------------- お金
 

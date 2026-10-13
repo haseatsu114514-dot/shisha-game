@@ -1,0 +1,384 @@
+{
+  "base": "eca6a3d12ec4bb8918ef8eb773f08bf816da16b5",
+  "reviewed": "remake SPOTS/VISIT_BG/shop/ch1 routes and source pixels",
+  "newGenerationCount": 10,
+  "replacementFileCount": 10,
+  "lobbySharesDay": true,
+  "rows": [
+    {
+      "source": "assets/backgrounds/bg_ageha_shop.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "6eb78c49f02f9ec330310527f0d5c563954c5e39f89be76397d62f0c138681af"
+    },
+    {
+      "source": "assets/backgrounds/bg_c_station_day.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "汎用の植物壁を避け、チェーン店の明るさ・同一窓構図を精細化",
+      "inCurrentFacilityScope": true,
+      "sha256": "4a18830f75561288b4c60197ee9b46cac042f45910987a024409121a99c25fab"
+    },
+    {
+      "source": "assets/backgrounds/bg_c_station_lobby.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "従来dayと同一原画の別名。刷新dayを共用して到着場面へ接続",
+      "inCurrentFacilityScope": true,
+      "sha256": "4a18830f75561288b4c60197ee9b46cac042f45910987a024409121a99c25fab"
+    },
+    {
+      "source": "assets/backgrounds/bg_c_station_night.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "昼夜の器具/家具位置と質感差を統一",
+      "inCurrentFacilityScope": true,
+      "sha256": "eab2465eb1e2a5d3200d9040c8787aeeeb3657e0f3f75014fb4004cb7bd7ee80"
+    },
+    {
+      "source": "assets/backgrounds/bg_cafe_day.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "固有の内装/屋外構図と画風が成立。晴れ/夜の既存対も一致",
+      "inCurrentFacilityScope": true,
+      "sha256": "ce1091005e5683090f3dfbeb347c52c37d51ea02d64daa46c3b5b3f8e448c3d0"
+    },
+    {
+      "source": "assets/backgrounds/bg_cafe_night.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "固有の内装/屋外構図と画風が成立。晴れ/夜の既存対も一致",
+      "inCurrentFacilityScope": true,
+      "sha256": "ce6fb415179db98bef0c3a558330c1ec91e9e5876c2b448c08ba0a863ad10dda"
+    },
+    {
+      "source": "assets/backgrounds/bg_choizap.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "固有の内装/屋外構図と画風が成立。晴れ/夜の既存対も一致",
+      "inCurrentFacilityScope": true,
+      "sha256": "5f015c7468034caecb680f2aa3325029ebe74e575358938a9d51cef800b0ea69"
+    },
+    {
+      "source": "assets/backgrounds/bg_eden_shop.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "固有の内装/屋外構図と画風が成立。晴れ/夜の既存対も一致",
+      "inCurrentFacilityScope": true,
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86"
+    },
+    {
+      "source": "assets/backgrounds/bg_fookah_showroom.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "原画が在庫倉庫的。2階の機材相談/展示の用途へ整合",
+      "inCurrentFacilityScope": true,
+      "sha256": "38f0ab678d303735c1a4e55dd8507febcd82c10c32262d7e8c36b2d881007795"
+    },
+    {
+      "source": "assets/backgrounds/bg_hideaway.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "21208acc0d1c756e7bbbce027f5e6660e4a3622e3ba0b6bd1d73bddc821182d1"
+    },
+    {
+      "source": "assets/backgrounds/bg_home.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "82cf6679070aea18afc3036bf9ddd19de59bb929209e2b79d45e035173a4a4ea"
+    },
+    {
+      "source": "assets/backgrounds/bg_home_day.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "9fadd38f25953d73121e34d054b70bcff846547d4fef6caa659e39845f9b6108"
+    },
+    {
+      "source": "assets/backgrounds/bg_home_night.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "2a0d1d9fe7eea811f0db835fb782cac4d3c35e391d6c5e3ab82ef7a77c77b97b"
+    },
+    {
+      "source": "assets/backgrounds/bg_home_overcast_day.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "45c8ba256cb09c7b6431a8448475b239ed23ccfb32c97cd74707002877c85ade"
+    },
+    {
+      "source": "assets/backgrounds/bg_home_overcast_night.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "8bedcf3b9e17d40441204d0f2daa7e0f18779d642209bce3cfb93da21aee3a3b"
+    },
+    {
+      "source": "assets/backgrounds/bg_kannon_day.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "固有の内装/屋外構図と画風が成立。晴れ/夜の既存対も一致",
+      "inCurrentFacilityScope": true,
+      "sha256": "96d4680531ff5e5fa0f62ac648cd89c5595366115b96068babe287157c567df7"
+    },
+    {
+      "source": "assets/backgrounds/bg_osu_map_day.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "cebc00f8d51018bac821e3e15cffca73b7bf8372ea15cc01ffde0b92a35baaea"
+    },
+    {
+      "source": "assets/backgrounds/bg_osu_map_night.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f"
+    },
+    {
+      "source": "assets/backgrounds/bg_ryuji_shop.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "5c0444898ec61f54a98b9eaabccd48d917066454d6a79de25c82766c864f48a0"
+    },
+    {
+      "source": "assets/backgrounds/bg_shishark.png",
+      "size": [
+        1672,
+        941
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "cb2893083e44382a2accd8221fa7c0fac194bc37529a218f4ce0672bda8638ac"
+    },
+    {
+      "source": "assets/backgrounds/bg_shishark_preparing_night.png",
+      "size": [
+        1672,
+        941
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "ac403ed71adf3f1187ad44d8f8c2c93aa3173376ba0f7b72a9e0df65be728422"
+    },
+    {
+      "source": "assets/backgrounds/bg_shop.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "原画がラウンジ的。1階の卸・商品仕入れ用途へ整合",
+      "inCurrentFacilityScope": true,
+      "sha256": "969d0775b5c4fc8e2d5f596d7cea8058cceb9e5775eb1a139adc3536eddd819f"
+    },
+    {
+      "source": "assets/backgrounds/bg_street_day.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "643390a00d6506e956fa0ffdd6c58e4981b30954fac547abb5f7a9a29a3317e8"
+    },
+    {
+      "source": "assets/backgrounds/bg_street_night.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "a9bf95f8a783ce73ad5de6d7f3170bd033ff1e27461f142c5b8d4a6962b27c67"
+    },
+    {
+      "source": "assets/backgrounds/bg_title.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "c4d910bc1ede1f810b88c344e7ad89578d0232ebcad47ef0132cafa247ebcd36"
+    },
+    {
+      "source": "assets/backgrounds/bg_tonari_inside.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "9c4d163189179ae2db7d06a33a0edb86115f19084c10311d8df9afcb1204d562"
+    },
+    {
+      "source": "assets/backgrounds/bg_tonari_inside_day.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "0c425cfc21a6241cf7cfba5f257ff5fbd5c42a640e7db28ed8e923ba45058645"
+    },
+    {
+      "source": "assets/backgrounds/bg_tonari_inside_night.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238"
+    },
+    {
+      "source": "assets/backgrounds/bg_tonari_inside_overcast_day.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "bd8e6713d3fe23e28f5e94226e42e6cf4a143b0a62a879c898c52de54ee38366"
+    },
+    {
+      "source": "assets/backgrounds/bg_tonari_inside_overcast_night.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "756de0e432748e2ab5d8c4842eb0eca3b96f9db5d6a9ae3b1b9d9404b7cae034"
+    },
+    {
+      "source": "assets/backgrounds/bg_tournament_stage.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "旧720pの舞台。4人の制作台と審査席の同一配置を精細化",
+      "inCurrentFacilityScope": true,
+      "sha256": "4af7e3f28824ea46835a99971af19f2d3e2e8082b95a64d6e8ced439cd5483e9"
+    },
+    {
+      "source": "assets/backgrounds/eden.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "維持",
+      "reason": "セットA/PR369の対象、最近採用した完成素材、旧名・予備または現行第1章で未使用。別作業を維持",
+      "inCurrentFacilityScope": false,
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86"
+    },
+    {
+      "source": "assets/backgrounds/kemurikusa.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "全店共通の蔦・丸缶棚を避け、なるの技術/試作向け内装へ",
+      "inCurrentFacilityScope": true,
+      "sha256": "2b21b39b1dbfd6075fd5670ff1deaa0903e7febec4f8fed08bec04f9e97b3622"
+    },
+    {
+      "source": "assets/backgrounds/peppermint.png",
+      "size": [
+        1280,
+        720
+      ],
+      "classification": "再生成・接続済み（検証中）",
+      "reason": "全店共通の蔦/ランプ反復を避け、みんとのミント/桃色の店へ精細化",
+      "inCurrentFacilityScope": true,
+      "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
+    }
+  ],
+  "adoptedUniqueImages": 9
+}

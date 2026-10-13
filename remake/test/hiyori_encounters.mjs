@@ -64,7 +64,7 @@ await suite("hiyori-encounters", async (check) => {
       H.fresh();
       const excluded = ["tonari", "rest", "cafe", "kannon", "choizap", "fortune"].map((id) => H.daily.hiyoriShopEligible(H.spots.spotById(id)));
       H.core.state.chapter = 2;
-      const futureShop = H.daily.hiyoriShopEligible(H.data.DB.kafuka.spot);
+      const futureShop = H.daily.hiyoriShopEligible(H.data.DB.samechan.spot);
       return { shops, excluded, futureShop };
     });
     assert(result.shops.every((s) => s.unknown === "？？？" && s.met && s.contact && !s.duplicate && !s.beforeSumi && s.unchanged && s.shop === s.id));

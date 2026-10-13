@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 11:59 UTC",
+ "generated": "2026-10-12 21:11 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -56,8 +56,13 @@
   },
   "hiyori": {
    "faces": [
+    "axe_laugh",
+    "axe_normal",
+    "axe_shout",
+    "love_blush",
     "normal",
     "sad",
+    "serious",
     "smile",
     "student_smile",
     "surprise",
@@ -68,7 +73,7 @@
    "ax": 0.4685,
    "aspect": 0.7467
   },
-  "kafuka": {
+  "samechan": {
    "faces": [
     "excited",
     "normal",
@@ -211,19 +216,28 @@
  },
  "backgrounds": [
   "bg_ageha_shop.png",
+  "bg_axe_lounge_night.png",
   "bg_c_station_day.png",
   "bg_c_station_lobby.png",
   "bg_c_station_night.png",
+  "bg_c_station_overcast_day.png",
+  "bg_c_station_overcast_night.png",
   "bg_cafe_day.png",
   "bg_cafe_night.png",
+  "bg_cafe_overcast_day.png",
   "bg_choizap.png",
+  "bg_choizap_night.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
   "bg_home.png",
   "bg_home_day.png",
   "bg_home_night.png",
+  "bg_home_overcast_day.png",
+  "bg_home_overcast_night.png",
   "bg_kannon_day.png",
+  "bg_kannon_night.png",
+  "bg_kannon_overcast_day.png",
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
   "bg_ryuji_shop.png",
@@ -232,10 +246,14 @@
   "bg_shop.png",
   "bg_street_day.png",
   "bg_street_night.png",
+  "bg_street_overcast_day.png",
+  "bg_street_overcast_night.png",
   "bg_title.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
   "bg_tonari_inside_night.png",
+  "bg_tonari_inside_overcast_day.png",
+  "bg_tonari_inside_overcast_night.png",
   "bg_tournament_stage.png",
   "eden.png",
   "kemurikusa.png",
@@ -244,10 +262,15 @@
  "cgs": [
   "cg_ch1_dr_kemuri_hook.png",
   "cg_ch1_minto_casual_reveal.png",
+  "cg_ch1_nagumo_smile.png",
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
-  "cg_minto_first_cheki.png"
+  "cg_minto_casual.png",
+  "cg_minto_cheki.png",
+  "cg_minto_first_cheki.png",
+  "cg_oneesan_first_smoke.png",
+  "cg_tsumugi_smoke_color.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -255,7 +278,7 @@
   "face_dr_kemuri.png",
   "face_hajime.png",
   "face_hiyori.png",
-  "face_kafuka.png",
+  "face_samechan.png",
   "face_maezono.png",
   "face_mashiro.png",
   "face_minto.png",
@@ -287,6 +310,15 @@
   "coal_red.png",
   "coal_white.png",
   "foil_surface.png",
+  "hajime_craft_heat.png",
+  "hajime_craft_holes.png",
+  "hajime_craft_holes_contact.png",
+  "hajime_craft_holes_hover.png",
+  "hajime_craft_holes_release.png",
+  "hajime_craft_mix.png",
+  "hajime_craft_pack.png",
+  "hajime_craft_pull.png",
+  "hajime_craft_pull_rest.png",
   "hajime_steam_wait.png",
   "hookah_base.png",
   "hookah_stem.png",
@@ -523,7 +555,7 @@
     "size": 0.16833
    }
   },
-  "kafuka": {
+  "samechan": {
    "excited": {
     "cx": 0.50446,
     "top": 0.245,
@@ -856,11 +888,11 @@
     }
    }
   },
-  "kafuka": {
+  "samechan": {
    "color": "#298bdb",
    "secondary": "#a6ddff",
    "shadow": "#082a48",
-   "background": "ui/character_intros/kafuka.png",
+   "background": "ui/character_intros/samechan.png",
    "frames": {
     "ventriloquism": {
      "width": 1122.462,
@@ -1112,16 +1144,36 @@
    "file": "title_art_ageha_03_model_moment.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_01_shishark_test_run.png"
+   "character": "hiyori",
+   "file": "title_art_hiyori_01_twilight_walk.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_02_shark_movie.png"
+   "character": "hiyori",
+   "file": "title_art_hiyori_02_window_pause.png"
   },
   {
-   "character": "kafuka",
-   "file": "title_art_kafuka_03_aquarium.png"
+   "character": "hiyori",
+   "file": "title_art_hiyori_03_after_rain.png"
+  },
+  {
+   "character": "hiyori",
+   "file": "title_art_hiyori_04_daylight_bookshop.png"
+  },
+  {
+   "character": "hiyori",
+   "file": "title_art_hiyori_05_ramen_break.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_01_shishark_test_run.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_02_shark_movie.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_03_aquarium.png"
   },
   {
    "character": "mashiro",
@@ -1306,6 +1358,69 @@
    0.8164,
    1.5
   ],
+  "hajime_craft_heat.png": [
+   0.0742,
+   0.0,
+   0.9349,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes.png": [
+   0.0,
+   0.2891,
+   0.5755,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_contact.png": [
+   0.5345,
+   0.0332,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_hover.png": [
+   0.5332,
+   0.0,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_holes_release.png": [
+   0.5352,
+   0.0098,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_mix.png": [
+   0.071,
+   0.002,
+   0.9297,
+   0.9961,
+   1.5
+  ],
+  "hajime_craft_pack.png": [
+   0.0,
+   0.0947,
+   1.0,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_pull.png": [
+   0.0,
+   0.0,
+   0.9629,
+   1.0,
+   1.5
+  ],
+  "hajime_craft_pull_rest.png": [
+   0.0,
+   0.0,
+   0.8835,
+   1.0,
+   1.5
+  ],
   "hajime_steam_wait.png": [
    0.3875,
    0.1323,
@@ -1457,19 +1572,28 @@
  ],
  "webp": [
   "backgrounds/bg_ageha_shop.png",
+  "backgrounds/bg_axe_lounge_night.png",
   "backgrounds/bg_c_station_day.png",
   "backgrounds/bg_c_station_lobby.png",
   "backgrounds/bg_c_station_night.png",
+  "backgrounds/bg_c_station_overcast_day.png",
+  "backgrounds/bg_c_station_overcast_night.png",
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
+  "backgrounds/bg_cafe_overcast_day.png",
   "backgrounds/bg_choizap.png",
+  "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
   "backgrounds/bg_home.png",
   "backgrounds/bg_home_day.png",
   "backgrounds/bg_home_night.png",
+  "backgrounds/bg_home_overcast_day.png",
+  "backgrounds/bg_home_overcast_night.png",
   "backgrounds/bg_kannon_day.png",
+  "backgrounds/bg_kannon_night.png",
+  "backgrounds/bg_kannon_overcast_day.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_ryuji_shop.png",
@@ -1478,20 +1602,29 @@
   "backgrounds/bg_shop.png",
   "backgrounds/bg_street_day.png",
   "backgrounds/bg_street_night.png",
+  "backgrounds/bg_street_overcast_day.png",
+  "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
   "backgrounds/bg_tonari_inside_night.png",
+  "backgrounds/bg_tonari_inside_overcast_day.png",
+  "backgrounds/bg_tonari_inside_overcast_night.png",
   "backgrounds/bg_tournament_stage.png",
   "backgrounds/eden.png",
   "backgrounds/kemurikusa.png",
   "backgrounds/peppermint.png",
   "cgs/cg_ch1_dr_kemuri_hook.png",
   "cgs/cg_ch1_minto_casual_reveal.png",
+  "cgs/cg_ch1_nagumo_smile.png",
   "cgs/cg_ch1_sumi_training.png",
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
+  "cgs/cg_minto_casual.png",
+  "cgs/cg_minto_cheki.png",
   "cgs/cg_minto_first_cheki.png",
+  "cgs/cg_oneesan_first_smoke.png",
+  "cgs/cg_tsumugi_smoke_color.png",
   "sprites/characters/adam/chr_adam_intense.png",
   "sprites/characters/adam/chr_adam_normal.png",
   "sprites/characters/adam/chr_adam_serious.png",
@@ -1512,18 +1645,23 @@
   "sprites/characters/hajime/chr_hajime_serious.png",
   "sprites/characters/hajime/chr_hajime_smile.png",
   "sprites/characters/hajime/chr_hajime_surprise.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+  "sprites/characters/hiyori/chr_hiyori_love_blush.png",
   "sprites/characters/hiyori/chr_hiyori_normal.png",
   "sprites/characters/hiyori/chr_hiyori_sad.png",
+  "sprites/characters/hiyori/chr_hiyori_serious.png",
   "sprites/characters/hiyori/chr_hiyori_smile.png",
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
   "sprites/characters/hiyori/chr_hiyori_tears.png",
-  "sprites/characters/kafuka/chr_kafuka_excited.png",
-  "sprites/characters/kafuka/chr_kafuka_normal.png",
-  "sprites/characters/kafuka/chr_kafuka_serious.png",
-  "sprites/characters/kafuka/chr_kafuka_smile.png",
-  "sprites/characters/kafuka/chr_kafuka_surprise.png",
-  "sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+  "sprites/characters/samechan/chr_samechan_excited.png",
+  "sprites/characters/samechan/chr_samechan_normal.png",
+  "sprites/characters/samechan/chr_samechan_serious.png",
+  "sprites/characters/samechan/chr_samechan_smile.png",
+  "sprites/characters/samechan/chr_samechan_surprise.png",
+  "sprites/characters/samechan/chr_samechan_ventriloquism.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -1583,7 +1721,7 @@
   "ui/character_intros/dr_kemuri.png",
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
-  "ui/character_intros/kafuka.png",
+  "ui/character_intros/samechan.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/minto.png",
   "ui/character_intros/nagumo.png",
@@ -1621,6 +1759,15 @@
   "ui/making/coal_red.png",
   "ui/making/coal_white.png",
   "ui/making/foil_surface.png",
+  "ui/making/hajime_craft_heat.png",
+  "ui/making/hajime_craft_holes.png",
+  "ui/making/hajime_craft_holes_contact.png",
+  "ui/making/hajime_craft_holes_hover.png",
+  "ui/making/hajime_craft_holes_release.png",
+  "ui/making/hajime_craft_mix.png",
+  "ui/making/hajime_craft_pack.png",
+  "ui/making/hajime_craft_pull.png",
+  "ui/making/hajime_craft_pull_rest.png",
   "ui/making/hajime_steam_wait.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",
@@ -1644,9 +1791,14 @@
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
   "ui/title_arts/title_art_ageha_02_grocery_smile.png",
   "ui/title_arts/title_art_ageha_03_model_moment.png",
-  "ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
-  "ui/title_arts/title_art_kafuka_02_shark_movie.png",
-  "ui/title_arts/title_art_kafuka_03_aquarium.png",
+  "ui/title_arts/title_art_hiyori_01_twilight_walk.png",
+  "ui/title_arts/title_art_hiyori_02_window_pause.png",
+  "ui/title_arts/title_art_hiyori_03_after_rain.png",
+  "ui/title_arts/title_art_hiyori_04_daylight_bookshop.png",
+  "ui/title_arts/title_art_hiyori_05_ramen_break.png",
+  "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+  "ui/title_arts/title_art_samechan_02_shark_movie.png",
+  "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_keyvisual_01.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",

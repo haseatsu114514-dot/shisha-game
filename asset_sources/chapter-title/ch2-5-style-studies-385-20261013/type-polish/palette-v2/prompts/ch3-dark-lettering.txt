@@ -1,0 +1,4 @@
+Use case: lighting-weather.
+Edit the attached generated title lettering cutout. Preserve EXACT Japanese text「虚ろな王冠」, exact vertical order of five glyphs 虚/ろ/な/王/冠, the same fine Mincho letter shapes, proportions, optical spacing and delicate texture.
+Change ONLY the pigment color from white/silver to DARK INK-GRAY / deep slate-blue, suitable for a PALE SILVER-GRAY chapter3 backdrop. No pale white filling or bright glow remains. A flat restrained dark pigment, refined Japanese film title.
+Keep genuinely TRANSPARENT background and full alpha padding, no backdrop, glow, rectangle, shadow, crown icon, added text, logos, particles or watermark. The result must be only these five dark legible glyphs, no redraw of layout.

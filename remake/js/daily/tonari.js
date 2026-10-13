@@ -12,6 +12,7 @@ import { runFullPractice } from "../craft/practice.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
+import { hiyoriAxeReady, hiyoriAxeAffordable } from "./hiyori-axe.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -23,7 +24,7 @@ export function tonariMenu() {
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
     const pickIt = (value) => { retire(root); resolve(value); };
     const opt = (title, desc, value, test) =>
-      el("button.big-choice", { dataset: { test }, onclick: () => { SE.select(); pickIt(value); } }, [
+      el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
         el("b", { text: title }), el("small", { text: desc }),
       ]);
     const root = showScreen("tonari", el("div.sub-menu", [
@@ -33,6 +34,9 @@ export function tonariMenu() {
         opt("お客さんとして一服", tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("一台を通して練習", "配合から提供・2回の調整まで。材料は店の葉を使う", "practice", "tonari-practice"),
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話すか、裏で自主練もできる", "baito", "tonari-baito"),
+        hiyoriAxeReady() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
+          ? "夜の寄り道。参加3000円・体力10・行動1回。3投を一緒に楽しむ"
+          : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
     ]));
@@ -104,7 +108,17 @@ async function baitoShift({ called }) {
   if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
+  await afterShiftErrand();
   await afterShift();
+}
+
+/** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
+async function afterShiftErrand() {
+  if (state.chapter !== 1 || state.day < 4 || state.flags._ev_ageha_cameo
+    || !DB.dialogues.ch1_ageha_encounter) return;
+  await play("ch1_ageha_encounter");
+  state.flags._ev_ageha_cameo = true;
+  await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
 }
 
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */
@@ -219,14 +233,14 @@ async function afterShift() {
   }
 }
 
-function chooseDrill() {
+export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null } = {}) {
   return new Promise((resolve) => {
     const root = showScreen("tonari", el("div.sub-menu", [
-      el("h2.sub-title", { text: "自主練" }),
-      el("p.sub-lead", { text: "苦手な工程を反復しよう。能力値は増えません。" }),
+      el("h2.sub-title", { text: title }),
+      el("p.sub-lead", { text: lead }),
       el("div.sub-choices.grid", Object.entries(DRILLS).map(([id, d]) =>
         el("button.big-choice", { dataset: { test: `drill-${id}` }, onclick: () => { SE.select(); retire(root); resolve(id); } }, [
-          el("b", { text: d.label }),
+          el("b", { text: `${d.label}${id === recommended ? "（おすすめ）" : ""}` }),
           el("small", { text: `${d.desc}（自己ベスト ${"★".repeat(Math.max(0, state.best[id] ?? 0)) || "なし"}）` }),
         ])
       )),

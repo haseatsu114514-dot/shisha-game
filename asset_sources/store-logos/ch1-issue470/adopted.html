@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>第1章 採用ロゴ</title>
+<link rel="stylesheet" href="../../../remake/css/store-logos.css">
+<style>body{margin:0;padding:32px;background:#efeee9;color:#252b28;font-family:system-ui,sans-serif}main{max-width:1200px;margin:auto}h1{font-size:28px;margin:0 0 10px}p{font-size:14px;color:#637066}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}article{background:#fffdf7;border:1px solid #d9c7a5;border-radius:8px;padding:20px}h2{font-size:19px;margin:0 0 16px}.art{height:224px;display:grid;place-items:center}small{display:block;margin-top:14px;color:#637066;font-size:12px}nav{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px}a{color:#315745}@media(max-width:760px){body{padding:20px}.grid{grid-template-columns:repeat(2,1fr)}.art{height:180px;overflow:hidden}article{padding:12px}}@media(max-width:440px){.grid{grid-template-columns:1fr}}</style></head>
+<body><main><h1>第1章の採用ロゴ</h1><p>マップの店舗看板と、入店時の短いロゴ表示に使用。</p><div class="grid"></div><nav><a href="ingame-qa/map-1331.png">ゲーム内マップ</a><a href="ingame-qa/map-844.png">スマートフォン</a><a href="ingame-qa/arrival-tonari.png">tonariへの入店</a><a href="index.html">候補一覧</a></nav></main>
+<script type="module">
+import {STORE_LOGOS,storeLogo} from '../../../remake/js/core/store-logos.js';
+const selection={tonari:'初期案 B／モザイクランプ',naru:'修正版 A／細い英字',adam:'初期案 A／赤と緑の林檎',minto:'修正版 B／ひらがな',shop:'修正版 C／四角い枠',c_station:'修正版 C／二段文字',choizap:'初期案 B／緑のC'};
+for(const [id,logo] of Object.entries(STORE_LOGOS)){
+ const card=document.createElement('article');const title=document.createElement('h2');title.textContent=logo.name;
+ const art=document.createElement('div');art.className='art';art.append(storeLogo(id,{width:270,height:208}));
+ const note=document.createElement('small');note.textContent=selection[id];card.append(title,art,note);document.querySelector('.grid').append(card);
+}
+</script></body></html>

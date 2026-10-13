@@ -21,6 +21,16 @@ class Element {
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
   getAttribute(name) { return this[name] ?? null; }
+  querySelector(selector) {
+    assert(selector.startsWith(".") && !selector.includes(" "), `Unsupported fixture selector: ${selector}`);
+    const name = selector.slice(1);
+    for (const child of this.children) {
+      if (child.classes?.has(name)) return child;
+      const descendant = child.querySelector?.(selector);
+      if (descendant) return descendant;
+    }
+    return null;
+  }
   querySelectorAll() { return []; }
   getContext() { return null; }
   remove() {}

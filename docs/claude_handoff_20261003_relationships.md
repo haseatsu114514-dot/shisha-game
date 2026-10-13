@@ -19,7 +19,7 @@
 | 1 | 通常好感度を15%減らす式が、小さい報酬で従来より増える場合がある | 「バランスをとって」。小報酬でも増加の逆転を直し、通常は従来比約15%緩やか、恋人後の絆は従来比半分という意図を保つ |
 | 2 | 私的なみんとの呼び名と、結末の口調・衣装が揃っていない | 「マストで治す」。本名開示、公私の文脈、台詞、名前欄、履歴、LIMEを横断して直す |
 | 3 | リメイクの進行は第1章のみ。第2章以降・世界大会後の結末へ未接続 | 「まだいいや」。今回の依頼で章を増やしたり結末への進行を解禁したりしない |
-| 4 | かふかの身長が162cmで定義されている | 「身長156に変えて」。156cmへ変更。年齢20の変更指示はない |
+| 4 | サメちゃんの身長が162cmで定義されている | 「身長156に変えて」。156cmへ変更。年齢20の変更指示はない |
 | 5 | #172のmainへの取り込みが1親のコミットで、元のmerge方式指定と異なる | 「いったんいいや」。既存Git履歴を書き換えたり、マージをやり直したりしない |
 
 ### 好感度MAXのイベント
@@ -67,9 +67,9 @@
 - `data/characters.json` の `appearance_rules.private_date` に「恋人ルート確定後のデートのみ」という古い説明がある。恋人になる前の私服の約束とも整合させる。
 - 共有結末を旧版で表示した時の `web/js/engine.js` の名前解決、`web/js/game.js` の `displayName()`／会話コンテキストにも必要な対応を確認する。共有データ変更時は `python3 web/build_data.py` でバンドルへ反映する。
 
-### 3. かふかの身長
+### 3. サメちゃんの身長
 
-`data/dialogue/kafuka.json` の `profile.height_cm: 162` を156へ。初回の名乗りを前倒ししたり、恋愛を突然解禁したりしない。画像の作り直しは今回依頼されていない。
+`data/dialogue/samechan.json` の `profile.height_cm: 162` を156へ。初回の名乗りを前倒ししたり、恋愛を突然解禁したりしない。画像の作り直しは今回依頼されていない。
 
 ### 4. MAXイベント・途中の恋愛分岐
 
@@ -112,14 +112,14 @@
 - リメイクの通常交流は章1の `sumi / tsumugi / naru / adam / minto / rin`。恋愛対象の現行定義は `tsumugi / minto / rin / ageha`。
 - 旧版 `web/js/game.js` の `CHAR_STAT` は後続章を含む18名。章2：`ageha / kumicho / rei / dr_kemuri`、章3：`mashiro / mukai_master / nandi / steve / volk`、章4：`master_hookah / sheikh / da_silva`。章1の6名に加えた一覧として取り漏れを確認する。
 - 第2章以降のリメイク進行への接続は保留。後続キャラのイベントや贈り物のデータを用意する場合も、現在の章制限を維持し、「データ準備」と「通常プレイで到達できる」を区別して報告する。
-- かふかは別overlay。章1の出会いと章2以降の店の設定があり、現在 `romance_available: false`。身長変更だけを理由に恋愛解禁しない。将来のMAXイベントはコロちゃんの「王の褒美」から本人のお礼へ着地する案がある。
-- **未決定の香りを勝手に確定しない**：かふかは `favorite_flavor / specialty_flavor` がnull。スティーブのMountain Fog、ナンディのパンラースナ、ましろ・ヴォルクのシガー／ダークリーフ系など、現行フレーバーIDと一致しない設定がある。既存正本と予定フレーバーを確認し、未整備・判断待ちを明示する。
+- サメちゃんは別overlay。章1の出会いと章2以降の店の設定があり、現在 `romance_available: false`。身長変更だけを理由に恋愛解禁しない。将来のMAXイベントはコロちゃんの「王の褒美」から本人のお礼へ着地する案がある。
+- **未決定の香りを勝手に確定しない**：サメちゃんは `favorite_flavor / specialty_flavor` がnull。スティーブのMountain Fog、ナンディのパンラースナ、ましろ・ヴォルクのシガー／ダークリーフ系など、現行フレーバーIDと一致しない設定がある。既存正本と予定フレーバーを確認し、未整備・判断待ちを明示する。
 
 ## 今回は保留・別担当
 
 - 第2章以降のリメイク進行、世界大会後の「空」を入れた結末への接続（指摘3）。結末の台詞はmainに存在するが、通常プレイの到達まで完了していない。
 - #172の取り込み方式・既存Git履歴の修復（指摘5）。今後のPRはmerge commitを使い、squashしない。
-- 背景19枚＋透過台7枚は **未回収・後日オーナーがアップロード**。現在の古い背景や空のscenePropsを新しい26枚の回収済み証拠にしない。回収済みのSHISHARK背景2種＋かふか4表情（PNG6＋WebP6）は別件。
+- 背景19枚＋透過台7枚は **未回収・後日オーナーがアップロード**。現在の古い背景や空のscenePropsを新しい26枚の回収済み証拠にしない。回収済みのSHISHARK背景2種＋サメちゃん4表情（PNG6＋WebP6）は別件。
 - 26枚の過去の書き出し先は `/workspace/scratch/c21ba4556c00/handoff_export/shisha-game-ch1-handoff-2026-10-01.tar.gz`、Work Library ID `libfile_709964203b008191bd2a432a287bbbe8`。これは履歴で確認した所在であり、現時点の実ファイル存在・取得可否は未確認。MacのDownloads等では対象アーカイブを確認できていない。
 - 7/16のシーシャ作りパート修正、元フォルダの未コミット変更、stash、他の未マージブランチを今回へ混ぜない。
 - 日常ループのアイデア、哲学書のアイデア提案、別枝の街歩きプロトタイプは、これだけを理由に本編へ実装・マージしない。
@@ -138,7 +138,7 @@
 ## 完了確認と報告
 
 1. 通常の小報酬を含む好感度速度と恋人の半分処理を検証。占い・魅力倍率・端数・保存も確認。
-2. みんとの名前を知る前／後、営業中／私的場面、名前欄／ログ／LIME、私服の表情、告白と結末の口調を確認。かふかの身長は156cm。
+2. みんとの名前を知る前／後、営業中／私的場面、名前欄／ログ／LIME、私服の表情、告白と結末の口調を確認。サメちゃんの身長は156cm。
 3. 同程度に好感度MAXへ進んだ友情ルートでは告白なし、恋愛方向に選択したルートだけ告白あり。途中の質問を再生しても恋愛値が重複しない。
 4. 両ルートで物語の締めとプレゼントを受け取れる。イベント・授与は一度きり。元から恋人の旧セーブ、非恋人MAXの旧セーブの互換を確認。
 5. 専用ハガルは売却不可、所持品に残り、制作で選択でき、素焼きの絵で出る。対応する配合だけ小さく有利になり、対象外・未所持・装備していない時に効果が出ない。
@@ -157,7 +157,7 @@ node remake/test/relationship_memories.mjs
 node --experimental-vm-modules remake/test/data_loading.mjs
 node --experimental-vm-modules remake/test/daily_consistency.mjs
 node --experimental-vm-modules remake/test/foil_holes.mjs
-node --experimental-vm-modules remake/test/kafuka_story.mjs
+node --experimental-vm-modules remake/test/samechan_story.mjs
 node --experimental-vm-modules remake/test/lime_consistency.mjs
 node web/test/playthrough.mjs
 node web/test/ch2.mjs
@@ -165,6 +165,6 @@ node web/test/screenshots.mjs
 node web/test/relationship_memories.mjs
 ```
 
-- この文書作成時はゲームを変更していないため、ゲームのテストを再実行していない。以前のmain監査ではVMの `data_loading / daily_consistency / foil_holes / kafuka_story / lime_consistency` はPASS、ブラウザ通しテストや実機の今回の新機能は未検証。
+- この文書作成時はゲームを変更していないため、ゲームのテストを再実行していない。以前のmain監査ではVMの `data_loading / daily_consistency / foil_holes / samechan_story / lime_consistency` はPASS、ブラウザ通しテストや実機の今回の新機能は未検証。
 - 当Macの通常Node環境では `playwright` と `/opt/node22/lib/node_modules/playwright` が見つからなかった。テスト依存を確認し、未実行をPASS扱いにしない。8123のサーバーが古いworktreeを公開していないか確認する。
 - 完了報告では、実装した項目・保留した項目と理由、テスト結果、PR URL、mainへのマージ結果を記載する。データだけの準備、ローカル実装、GitHub main、公開Pagesを分ける。

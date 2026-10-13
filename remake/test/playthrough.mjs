@@ -12,6 +12,7 @@ const { chromium } = (() => {
 })();
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
+const STREET_MODE = process.env.STREET_MODE === "1";
 const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
@@ -39,6 +40,7 @@ const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_B
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
+  if (window.top !== window) return; // 会話計測フックは本編だけ。歩行frameに相対importを注入しない。
   window.addEventListener("DOMContentLoaded", async () => {
     const audio = await import("./js/core/audio.js");
     const { hooks } = await import("./js/vn/engine.js");
@@ -69,7 +71,7 @@ log("title OK");
 if (SHOTS) await page.screenshot({ path: `${SHOTS}/title.png` });
 await page.click('[data-test="title-new"]');
 // 天気の種を固定（雨の日 = DAY2/7/10/13）。雨の日のマップ・バイトを必ず通す
-await page.evaluate(() => { window.__remake.state.weatherSeed = 4; });
+await page.evaluate(() => { const s = window.__remake.state; s.weatherSeed = 4; s.seed = 1; s.reel.seed = 1; });
 
 let planIdx = 0;
 let pendingAfter = null;
@@ -95,6 +97,7 @@ let limeCoach = 0;
 let limeOpened = 0;
 let errandBlocked = false;
 let checkedTutorialGrowth = false;
+let pendingDrill = null;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
 
@@ -103,6 +106,26 @@ async function click(sel) {
   if (!el) return false;
   try { await el.click({ timeout: 2000 }); return true; } catch { return false; }
 }
+
+// 任意の街歩き経由でも、同じ行動計画と大会の検証を実行する。
+async function chooseDestination(id) {
+  const doors = { cafe: "cafe", minto: "peppermint", naru: "kemurikusa" };
+  if (STREET_MODE && doors[id]) {
+    if (!(await page.$(`[data-test="pin-${id}"]:not(.off)`))) return false;
+    const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
+    await click('[data-test="map-walk"]');
+    const frame = await navigating;
+    await frame.waitForFunction(() => window.__street?.state().ready && !window.__street.state().paused);
+    // 通し確認では入口へ配置し、実キーで決定。実移動・タップは street_selection.mjs で検証。
+    await frame.evaluate((door) => window.__street.warp(door), doors[id]);
+    await frame.locator("#view").focus();
+    await page.keyboard.press("KeyZ");
+    await page.waitForSelector('[data-test="street-frame"]', { state: "detached" });
+    return true;
+  }
+  return (await click(`[data-test="pin-${id}"]`)) && (await click('[data-test="map-go"]'));
+}
+let checkedDeliveryBoundary = false;
 
 for (;;) {
   if (Date.now() > deadline) throw new Error("timeout (12min)");
@@ -247,11 +270,19 @@ for (;;) {
   // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
     if (!snap.errandDone) guided++; else deliveryGuided++;
-    await click(".spot-pin.guide"); await click('[data-test="map-go"]');
+    const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
+    if (id === "c_station" && snap.slot !== 0) throw new Error("DAY1 scout consumed the action before registration");
+    await chooseDestination(id);
     continue;
   }
   // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない
   if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
+  if (snap.screen === "map" && snap.deliveriesDone && !checkedDeliveryBoundary) {
+    const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
+    if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
+    checkedDeliveryBoundary = true;
+    log("DAY2 minto storefront delivery preserves normal first visit");
+  }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
@@ -280,7 +311,7 @@ for (;;) {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       await click('[data-test="pin-shop"]'); await click('[data-test="map-go"]');
     } else {
-      const ok = (await click(`[data-test="pin-${kind}"]`)) && (await click('[data-test="map-go"]'));
+      const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }
     }
     continue;
@@ -293,7 +324,10 @@ for (;;) {
       const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
       await click(`[data-test="${errand}"]`);
     }
-    if (pendingShopBuy && pendingShopBuy !== "__upstairs") await click(`[data-test="buy-${pendingShopBuy}"]`);
+    if (pendingShopBuy && pendingShopBuy !== "__upstairs") {
+      await page.locator('.shop-tab[data-tab="flavor"]').click();
+      await page.locator(`[data-test="buy-${pendingShopBuy}"]`).click();
+    }
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
     if (!kujiDrawn) {
       kujiDrawn = true;
@@ -308,13 +342,16 @@ for (;;) {
     continue;
   }
   if (snap.screen === "tonari") {
+    if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
-      pendingAfter = null;
-      if (a === "sumi") await click('[data-test="after-sumi"]');
-      else if (a) await click('[data-test="after-drill"]');
-      else await click('[data-test="after-none"]');
-      if (a && a !== "sumi") { await page.waitForSelector(`[data-test="drill-${a}"]`, { timeout: 5000 }); await click(`[data-test="drill-${a}"]`); }
+      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : a ? '[data-test="after-drill"]' : '[data-test="after-none"]');
+      // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
+      if (selected) { pendingDrill = a && a !== "sumi" ? a : null; pendingAfter = null; }
+      continue;
+    }
+    if (snap.sub === "自主練" && pendingDrill) {
+      if (await click(`[data-test="drill-${pendingDrill}"]`)) pendingDrill = null;
       continue;
     }
     if (/tonari/.test(snap.sub)) { await click('[data-test="sub-back"]'); continue; }
@@ -324,9 +361,22 @@ for (;;) {
 const s = await page.evaluate(() => window.__remake.state);
 if (s.day !== 14) throw new Error(`Tournament/clear day must remain DAY14, got DAY${s.day}`);
 if (!s.flags._ev_first_practice || !s.flags._ev_midcheck || !s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
-if ((s.flags._craft_practice_runs || []).length < 3 || !s.flavors.includes("blueberry")) throw new Error("Missing early practice, midchapter shopping or rehearsal");
+const practiceRuns = s.flags._craft_practice_runs || [];
+const prepared = s.flags._prep_flavor;
+// くじで先に材料を得た場合は、既存在庫で準備を済ませる契約。ブルーベリーの新規購入を強制しない。
+if (practiceRuns.length < 3 || !s.flavors.includes("lemon") || !s.flavors.includes(prepared)
+  || ["mint", "double_apple"].includes(prepared)
+  || !(practiceRuns.find(run => run.kind === "midcheck")?.mix?.[prepared] > 0)) {
+  throw new Error(`Missing practice/shopping: prepared=${prepared} runs=${JSON.stringify(practiceRuns)} flavors=${JSON.stringify(s.flavors)}`);
+}
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
+const recognitionComments = await page.evaluate(() => Object.entries((window.__remake.DB || {}).dialogues || {}).flatMap(([id, d]) =>
+  id.startsWith("ch1_craft_recognition_") ? d.lines.filter(l => l.speaker === "sumi").map(l => l.text) : []));
+const scoreSheet = s.inbox.find(item => item.id === "_sys_sumi_scoresheet");
+if (!recognitionComments.length || !scoreSheet?.msg.messages.some(text => recognitionComments.includes(text))) {
+  throw new Error("A successful tournament did not acknowledge any actual craft step");
+}
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
 const bgmCues = await page.evaluate(() => window.__tournamentBgmCues);
 for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
@@ -344,7 +394,7 @@ for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
 }
 log("tournament BGM: opening → crafting ROUND 1–4 → judging, including retry: PASS");
 // スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
-log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
+log(`slot: seed=${s.reel.seed} spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);
 if (!s.reel.introDone) throw new Error("slot intro not shown");
 // 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない

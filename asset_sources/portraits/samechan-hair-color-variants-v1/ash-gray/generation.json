@@ -1,0 +1,73 @@
+{
+  "character": "samechan",
+  "request_id": "PRT65",
+  "variant": "ash-gray",
+  "status": "unselected-history",
+  "expression": "normal",
+  "raw_generation_path": "/workspace/generated_images/exec-47973795-46ee-4a0d-bd5a-bd78f3bc7109.png",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "source_sha256": "e9ec3fd14bd84e6d49de0604747157d0ba917aad90198522827a419a401e0e3b",
+  "source_byte_identical": true,
+  "prompt": "Create ONE full-body hair-colour EDIT of IMAGE 1, the latest Samechan / Same-chan character sprite that the owner likes. Image 1 is the complete geometry, face, expression, hairstyle, clothing, prop and composition authority. Image 2 is the native face crop of that same character, for face fidelity only. Images 3 and 4 are previously approved Minto and Ageha sprites, for fine rendering quality only.\n\nONLY CHANGE THE HUMAN HAIR COLOUR / PIGMENT DISTRIBUTION. Keep approximately 75 percent of her visible hair soft ebony black. Change approximately 25 percent into pale cool ASH-GREY inner layers on BOTH sides of the face and through the existing curled shoulder-length ends against the black collar. The dyed sections are visibly light neutral smoky grey with gentle cool shading, not pure bright white or a silver all-over hairstyle. The central fringe, crown and most outside locks remain black. Keep one very narrow small cobalt strand as the shark accent. This is black hair with a light grey inner panel, not reverting to an all-silver-haired character.\n\nPreserve her exact same shoulder-length softly layered hairstyle, fringe shape and parting, curled ends, same cute adult face, blue half-lidded eyes and lashes, tiny nose, blush, mischievous small sharp-tooth smile and skin tone. Preserve face angle, body proportions, crossed-leg stance and raised playful screen-right claw hand. Keep the crown-wearing medium-blue shark plush KORO in the screen-left arm, its white snout/belly, dark round eyes, gold crown, navy bow and gold star, and little black cape unchanged.\n\nKeep ALL CLOTHING COLOURS AND DESIGN IDENTICAL to image 1: charcoal-black hood and loose utility jacket, warm ivory forehead coif band, pale powder-blue hood lining and accents, fin and tail, tiny silver crosses and tooth hardware, ivory inner top and sleeve stripes, black pleated skort, charcoal tights, black/ivory/pale-blue chunky high-top skate shoes with broad ivory laces. Do not recolour the jacket to blue, do not change the ivory coif panel, eyes, nails, skin or plush colour. No change to jacket pockets, straps, jewellery, hem, boots, hands or feet. Keep full character scale and pose in exactly the same position. Both shoes, head, hood, hands and plush fully visible with margin.\n\nUse the same delicate controlled outlines, restrained fine shading and high-density anime/pixel-art-like sprite finish as the input. No heavier ink, dramatic glossy shading, new makeup, exaggerated anatomy or added props. Do not restyle the character. True RGBA transparent background, clean natural alpha edges. No background, glow, mist, floor, ground shadow, text, speech bubble, checkerboard or border. One complete sprite only.\n",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-samechan-hair/asset_sources/portraits/samechan-hair-color-variants-v1/references/base-source.png",
+      "role": "Latest selected outfit, identity, hairstyle, composition and expression authority. Only human hair pigments may change. Pending design from PR #206, not an approved render baseline.",
+      "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-hair/asset_sources/portraits/samechan-hair-color-variants-v1/references/base-face-native.png",
+      "role": "Native face crop of the same base: preserve face and eyes, modify hair pigments only.",
+      "sha256": "716d2add183a5fba601bfd19576ac5fd471db385c5afea816f823b70aee93e26"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-hair/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-hair/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_review": "All earlier 29 portrait groups and 112 images reviewed in the same session. Current task reread latest identity source, native face, and approved Minto/Ageha. Every colour edit uses the same original base rather than the preceding edit.",
+  "normalization": {
+    "operations": "Whole-image uniform resize and RGBA placement only. Native crops are unretouched. No painting, face compositing, warping, alpha thresholding or colour postprocessing.",
+    "common_scale_per_1536px_source_height": 0.607095046854083,
+    "scale": 0.607095046854083,
+    "offset": [
+      146,
+      252
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      189,
+      3,
+      885,
+      1519
+    ],
+    "preview_main_content": [
+      [
+        260,
+        253,
+        683,
+        1174
+      ],
+      447.95082508250823
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "source_rgba": true
+  },
+  "runtime_changed": false
+}

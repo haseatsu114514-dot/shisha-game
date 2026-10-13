@@ -9,10 +9,10 @@ import { MAX_STEAM_SECONDS, normalizeSteamSeconds } from "./steam-time.js";
 import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 
 export function runSteamTimer(cs) {
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "", { brief: "", lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
-  const thermometer = buildSteamTemperature();
+  const thermometer = buildSteamTemperature(cs);
   const forecast = buildSteamForecast(cs, thermometer);
   let start;
   const render = () => {

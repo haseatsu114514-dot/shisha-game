@@ -1,0 +1,683 @@
+{
+  "issue": 375,
+  "worker": "codex-e-visual-20261011-01",
+  "claim_run": 38178464309,
+  "base_sha": "73cd85e0c2f40f18361a6174b9cb9c1064eaab56",
+  "review_kind": "作業者の目視監査。採用承認ではない。",
+  "adopted": [
+    {
+      "character": "ageha",
+      "file": "title_art_ageha_01_professional_taste.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_01_professional_taste.png",
+        "sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_ageha_01_professional_taste.webp",
+        "sha256": "2263cf914d053a60c9644c71e81b4f9d27a9ef4d84d2228b4106a4d4e86fc691",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
+    },
+    {
+      "character": "ageha",
+      "file": "title_art_ageha_02_grocery_smile.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_02_grocery_smile.png",
+        "sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_ageha_02_grocery_smile.webp",
+        "sha256": "3875a5282cfbbc666faa3d2826ad196c054a0f8e1300b0d4592def75f2182c7f",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
+    },
+    {
+      "character": "ageha",
+      "file": "title_art_ageha_03_model_moment.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_ageha_03_model_moment.png",
+        "sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_ageha_03_model_moment.webp",
+        "sha256": "6a89f8f89fd4dd19cc3ab2d4d910093def9a1460320bd5d4494c160598033ad7",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "owner_reassessment": "正式採用の使用は維持。オーナーの顔違い・大人びた/クール化の指摘により個別修正案を保存。新案は未承認。"
+    },
+    {
+      "character": "samechan",
+      "file": "title_art_samechan_01_shishark_test_run.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png",
+        "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_samechan_01_shishark_test_run.webp",
+        "sha256": "7c45b5ea512cbe1f8b397f21f56bf56ffcef2aaa2522fc61193736e5a7d69e24",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "samechan",
+      "file": "title_art_samechan_02_shark_movie.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_samechan_02_shark_movie.png",
+        "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_samechan_02_shark_movie.webp",
+        "sha256": "9bafd5ceddaf6b51eeb49df2e84bea84456e146e16d50231ed5e629e64ac1611",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "samechan",
+      "file": "title_art_samechan_03_aquarium.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_samechan_03_aquarium.png",
+        "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_samechan_03_aquarium.webp",
+        "sha256": "176e5dfecde4906d90b66656473847e5214ebb4e4720dabaa98082372883d3de",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "mashiro",
+      "file": "title_art_mashiro_01_heavy_smoke.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
+        "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_mashiro_01_heavy_smoke.webp",
+        "sha256": "789eb798b2685fe9b87f7ca8308c7d76a1029a812ba642dfa3baad6b4d4c744a",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "mashiro",
+      "file": "title_art_mashiro_02_tea_break.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_mashiro_02_tea_break.png",
+        "sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_mashiro_02_tea_break.webp",
+        "sha256": "e0a677a0be4b98468b2e01aea85ee3ab2e3a6264cd4a7d39532d8b017796cae8",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "mashiro",
+      "file": "title_art_mashiro_03_after_rain.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_mashiro_03_after_rain.png",
+        "sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_mashiro_03_after_rain.webp",
+        "sha256": "5c309fdd2ca8884e1f95f12c18017713531b0f9fc2e8600ce69116697ae5db06",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "minto",
+      "file": "title_art_minto_01_cafe_welcome.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_minto_01_cafe_welcome.png",
+        "sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_minto_01_cafe_welcome.webp",
+        "sha256": "9e18adee7a9eb37928e19f1c96c8ee8fc02b40283a372b4ca6385ae1778aaa79",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "minto",
+      "file": "title_art_minto_02_instant_photo.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_minto_02_instant_photo.png",
+        "sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_minto_02_instant_photo.webp",
+        "sha256": "69e7973c53a1158817d1b02339eee8a3af65b6b0a0aa0662873d699975246202",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "minto",
+      "file": "title_art_minto_03_private_window.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_minto_03_private_window.png",
+        "sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_minto_03_private_window.webp",
+        "sha256": "c5405dc1392c1fb725b576f2148e590f2468c53934926470d848ec16410cfd6c",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "minto",
+      "file": "title_art_minto_04_after_hours.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_minto_04_after_hours.png",
+        "sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_minto_04_after_hours.webp",
+        "sha256": "bdd8bdbf43c19167db76b6359724b45a51ae171a8fcb254853c5758d9f445480",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "rin",
+      "file": "title_art_rin_01_night_tasting.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_rin_01_night_tasting.png",
+        "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_rin_01_night_tasting.webp",
+        "sha256": "9b843a6084ebbeeceb7a7f67805b15eb9d74bd6855a11f41c62c5b1a65fbe5c7",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "rin",
+      "file": "title_art_rin_03_late_coffee.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_rin_03_late_coffee.png",
+        "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_rin_03_late_coffee.webp",
+        "sha256": "a5528cf92d1f380d115af3fe032ae03da4de4bd7c0eef44e8fbc338ad0b9ed69",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "tsumugi",
+      "file": "title_art_tsumugi_01_smoke_colors.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
+        "sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_tsumugi_01_smoke_colors.webp",
+        "sha256": "41ee4fdec5b1e2225fd42f5f82ab2ebbd4ecc1009d237047ee1c073a125996dd",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "tsumugi",
+      "file": "title_art_tsumugi_02_tablet_cat.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
+        "sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_tsumugi_02_tablet_cat.webp",
+        "sha256": "38f721602d0a9f4b5c5ef1cee74e975f8149ff893f3eabf1986cfd203c7ce685",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    },
+    {
+      "character": "tsumugi",
+      "file": "title_art_tsumugi_03_twilight_sketch.png",
+      "status": "採用済み",
+      "source": {
+        "path": "assets/ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+        "sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      },
+      "runtime": {
+        "path": "remake/img/ui/title_arts/title_art_tsumugi_03_twilight_sketch.webp",
+        "sha256": "cad4ac120b98634a8d332465d506906937de89565bdac92c8689386e6efae11a",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGB"
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.png",
+      "sha256": "604d6722755db3f981f00cec25dfa12044071bc390e32b95ed750b583fc4b524",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "tsumugi",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_02_bowl_prep.metadata.json",
+      "visual_review": "ボブ・紫の花刺繍パーカーを維持。掌で保持できる脚付きボウル。冷たいLotus I+が机上、炭・ホースなし。旧巨大版とは別ファイル。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_03_rain_drawing.png",
+      "sha256": "659a0f6a449e2b721f659811ce419c19240e1a455832279bf081324056c134eb",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "tsumugi",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/tsumugi/title_art_tsumugi_03_rain_drawing.prompt.txt",
+      "metadata": null,
+      "visual_review": "雨の屋外スケッチ。紫パーカー・ボブ・タブレットは本人と整合。屋外植栽が多いが植物好きという文脈あり。室内鉢植え削減の対象外。",
+      "hardware_reference_limitation": null
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.png",
+      "sha256": "71b5ddb8b37a5d656d75f0f6729b699890b39d8e8cd02102679221afd9236d48",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "mashiro",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_01_window_smoke.metadata.json",
+      "visual_review": "金髪三つ編み・カーディガン・緑スカートを維持。Provost IIの葉型取手と上下部品。ホース両端を確認、膝裏は遮蔽。元の巨大版を再採用しない。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.png",
+      "sha256": "7c13a175d094aab0b117afa566fb917f5d1f9be900e8897dd90738de6f377bed",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "mashiro",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_02_dark_leaf_prep.metadata.json",
+      "visual_review": "ボウル準備で炭なし。小さな凸金属ポスト、片手で持つ脚付き器。暖色窓際の反復と頬の濃さは選定時の比較点。窓の外の葉は室内鉢植えと区別。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_03_tetsuko.png",
+      "sha256": "c2cb9466f092dcefd4785b9fb3125a9f9e1e4049a64cb901b108cceefb33151c",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "mashiro",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/mashiro/title_art_mashiro_03_tetsuko.prompt.txt",
+      "metadata": null,
+      "visual_review": "屋外で猫と休憩。三つ編み・衣装一致。屋外植栽と猫を題材にした日常。過密な植栽は好みの比較点。",
+      "hardware_reference_limitation": null
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png",
+      "sha256": "270e3cc68bd35ba9d948b7fc6300402f5c689dfecd643ecc9097e06c29264e47",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "minto",
+      "status": "要修正",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.metadata.json",
+      "visual_review": "v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛NGと同一とは断定しない）。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/minto/minto_03_private_parfait.png",
+      "sha256": "ebd308c34b42bae0a16170ad121aa7e55feba56dba7d765779fe90e20cace6ef",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "minto",
+      "status": "要修正",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/minto/minto_03_private_parfait.prompt.txt",
+      "metadata": null,
+      "visual_review": "正式私服立ち絵と黒髪・緑目・白系カーディガン・黒トップ・緑のペンダントを照合。窓際・右下の室内鉢植えの反復をCI97で修正。修正候補を本レビュー内に別名保存。",
+      "hardware_reference_limitation": null
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png",
+      "sha256": "db37efbc4b9d29b953ee8333fa8afc0117b2ed4afb5102db1862f62e2b9bd2bb",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "minto",
+      "status": "要修正",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.metadata.json",
+      "visual_review": "本人の黒髪・角・蝙蝠・黒緑衣装を維持。手持ちボウルと冷たいONMOは準備状態。窓・上部の大量の蔦がCI97と不一致。人物と器具を保ち背景だけ修正する。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.png",
+      "sha256": "8d7bb2da0d5be92aa419987e56afc71ce8902c6841a11604fce0f181032f8f38",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "ageha",
+      "status": "要修正",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/ageha/ageha_c_backstage_selfie.metadata.json",
+      "visual_review": "蜂蜜色ツインテール・熊2個・豹柄・ピンクトップ・黒スカートを維持。スマホ撮影とVサイン。鏡照明の反復は舞台裏という場面に根拠あり。",
+      "hardware_reference_limitation": null,
+      "owner_reassessment": "顔の同一人物性を再審査。洗い物場面は他キャラとの構図・シーン重複も要修正。過去の作業者QAは承認の根拠にしない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.png",
+      "sha256": "bfc8a8afdba1bedd830ea266c64d854a698f45e2f09d9a71fe8bb6f3ca1ffce7",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "ageha",
+      "status": "要修正",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/ageha/title_art_ageha_02_bowl_wash.metadata.json",
+      "visual_review": "本人の髪・熊・衣装を維持。脚付きボウルをブラシで清掃、別の冷たいONMO、炭・完成台なし。窓左側の室内蔦はCI97で除去対象。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。",
+      "owner_reassessment": "顔の同一人物性を再審査。洗い物場面は他キャラとの構図・シーン重複も要修正。過去の作業者QAは承認の根拠にしない。"
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.png",
+      "sha256": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "rin",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/rin/rin_c_midnight_coffee.prompt.txt",
+      "metadata": null,
+      "visual_review": "長いウルフ・半目・白シャツ・フープピアスを維持。深夜の黒縁眼鏡はcharacters.jsonの正規設定、別人化として除去しない。コーヒーミルの手の握りを選定時に拡大確認。PRT34の修正版立ち絵ではない。",
+      "hardware_reference_limitation": null
+    },
+    {
+      "path": "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.png",
+      "sha256": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "character": "rin",
+      "status": "候補保存のみ",
+      "approved": false,
+      "runtime_paths": [],
+      "identity_reference": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "prompt": "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.prompt.txt",
+      "metadata": "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.metadata.json",
+      "visual_review": "長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛02（葉の色修正待ち）とは別ファイル。",
+      "hardware_reference_limitation": "過去metadataにある/workspace/scratch等の外部実写は本checkoutに不存在。再取得して装着・手持ち縮尺を照合するまで製品寸法を合格断定しない。"
+    }
+  ],
+  "missing_slots": [
+    {
+      "slot": "tsumugi01",
+      "status": "要修正",
+      "source": "asset_sources/shisha-hardware-reference/ng-examples/tsumugi-short-bowl-hose-route-20261009.png",
+      "reason": "CI98/99のオーナーNG。承認できる修正版なし。"
+    },
+    {
+      "slot": "rin01",
+      "status": "要修正",
+      "source": "asset_sources/shisha-hardware-reference/ng-examples/rin-short-bowl-20261009.png",
+      "reason": "CI98のオーナーNG。承認できる修正版なし。"
+    },
+    {
+      "slot": "ageha01",
+      "status": "素材待ち",
+      "source": null,
+      "reason": "この別候補系に原画なし。正式系タイトル01で代用しない。"
+    }
+  ],
+  "revision": {
+    "path": "asset_sources/heroine-title-candidates-20261009/review-issue375/minto-private-parfait-ci97.png",
+    "sha256": "11b7d488d3fad6c6785cda12602944d853e03d7e71b7adf95a1fbe05f3698a6e",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGB",
+    "status": "候補保存のみ",
+    "approved": false,
+    "before": "asset_sources/heroine-title-candidates-20261009/minto/minto_03_private_parfait.png",
+    "prompt": "asset_sources/heroine-title-candidates-20261009/review-issue375/minto-private-parfait-ci97.prompt.txt",
+    "tool": "image_gen.imagegen",
+    "generated_original": "/workspace/generated_images/exec-f150e30d-a6e9-4fd0-aa6c-53beeaa9e1a9.png",
+    "qa": "原寸で目視。背景の室内鉢植え3領域が消え、可食ミントの飾りを維持。顔・髪・服・手・パフェの大きな破綻は見られず細かな粒子感を維持。ただし生成編集で全体の画素は微変化、完全同一画素ではない。主観的な顔一致の最終判断はオーナーへ。"
+  },
+  "ageha_followup": "ageha-identity/candidates.json"
+}

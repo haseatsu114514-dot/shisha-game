@@ -1,0 +1,90 @@
+{
+  "issue": 477,
+  "worker": "codex-romance-20261012-c9053659",
+  "claim_run": 38302690637,
+  "status_run": 38302815280,
+  "source": "OpenAI built-in image_gen",
+  "reference": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+  "generated_source": "/workspace/generated_images/exec-3971ad94-d39b-4e5e-a32e-dca20506091f.png",
+  "outputs": [
+    {
+      "variant": "axe_normal",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-normal-source.png",
+      "sha256": "6820a17e0391fbb35927459c02be2cbd3df5c66b9e7abeb72f297fa644d19fc9",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "axe_laugh",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-laugh-source.png",
+      "sha256": "1fec03d4004926588201445e6c9bf84a09677b4e1066e6526ab7d3beac8bd40f",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "axe_shout",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-shout-source.png",
+      "sha256": "05922903da80ee9ba749469e30f54f7cfb8305ccc914e82cdfea2618328c6797",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "serious",
+      "file": "asset_sources/hiyori-axe-issue477/raw/serious-source.png",
+      "sha256": "bee105eeb64a39584f465134f2ef1e2e2eb03b792e2017c30e540d8b19b50876",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "love_blush",
+      "file": "asset_sources/hiyori-axe-issue477/raw/love-blush-source.png",
+      "sha256": "be0648d556a4a16dde377a7cffef2aa793c5516a5771dea38d7a1383a4626fa5",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "adopted": true,
+      "runtime_registered": true
+    },
+    {
+      "variant": "axe_background",
+      "file": "asset_sources/hiyori-axe-issue477/raw/axe-background-source.png",
+      "sha256": "9804d6848cc4772611f19b2f0ccb3b0be1c6f9415e66e13ea61eea6a664b311a",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "adopted": true,
+      "runtime_registered": true
+    }
+  ],
+  "external_files_included": [],
+  "remaining": [],
+  "qa": {
+    "browser_poses": 22,
+    "old_files_unchanged": 13,
+    "formal_story_connected": false
+  }
+}

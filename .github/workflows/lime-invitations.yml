@@ -5,6 +5,8 @@ on:
       - 'remake/js/daily/phone.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/invitations.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/street.js'
       - 'remake/js/core/stats.js'
       - 'remake/js/daily/hiyori.js'
       - 'remake/test/browser/hiyori_gate.mjs'
@@ -18,6 +20,8 @@ on:
       - 'remake/js/daily/phone.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/invitations.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/street.js'
       - 'remake/js/core/stats.js'
       - 'remake/js/daily/hiyori.js'
       - 'remake/test/browser/hiyori_gate.mjs'
@@ -47,6 +51,7 @@ jobs:
             assets/sprites
             assets/cgs
             assets/ui
+            experiments/proto/street
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: '22'

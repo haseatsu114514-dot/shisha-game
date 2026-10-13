@@ -1,0 +1,20 @@
+{
+  "expected": [
+    "cg_oneesan_first_smoke",
+    "cg_ch1_sumi_training",
+    "cg_ch1_tsumugi_heart_art",
+    "cg_ch1_tournament_battle",
+    "cg_ch1_nagumo_smile",
+    "cg_ch1_dr_kemuri_hook"
+  ],
+  "seen": [
+    "cg_ch1_dr_kemuri_hook",
+    "cg_ch1_nagumo_smile",
+    "cg_ch1_sumi_training",
+    "cg_ch1_tournament_battle",
+    "cg_ch1_tsumugi_heart_art",
+    "cg_minto_first_cheki",
+    "cg_oneesan_first_smoke"
+  ],
+  "missing": []
+}

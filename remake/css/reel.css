@@ -248,10 +248,10 @@
 .ri-panel {
   position: absolute;
   left: 50%;
-  bottom: 12%;
-  transform: translateX(-50%);
-  width: 640px;
-  padding: 18px 22px 14px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 760px;
+  padding: 30px 36px 24px;
   background: linear-gradient(180deg, rgba(42, 32, 56, 0.97), rgba(20, 15, 30, 0.97));
   border: 2px solid rgba(244, 210, 122, 0.6);
   border-radius: 14px;
@@ -259,9 +259,9 @@
 }
 .ri-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .ri-head .rw-face.big { width: 46px; height: 46px; }
-.ri-app { font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
-.ri-text { min-height: 58px; margin: 0; font-size: 16px; line-height: 1.8; color: #f2ecdf; }
-.ri-next { display: block; text-align: right; font-size: 14px; color: #cdb8e6; animation: rc-flicker 1.4s infinite; }
+.ri-app { font-size: 24px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
+.ri-text { min-height: 130px; margin: 0; font-size: 26px; line-height: 1.65; color: #f2ecdf; }
+.ri-next { display: block; text-align: right; font-size: 20px; color: #cdb8e6; animation: rc-flicker 1.4s infinite; }
 
 /* ---- 夜の行動のあと: その場でスロットを見せる（翌朝に持ち越さない） ---- */
 .reel-night {

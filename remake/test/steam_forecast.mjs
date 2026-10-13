@@ -142,11 +142,23 @@ try {
     await page.waitForSelector('.dodge'); await ready(page);
     assert.deepEqual(await geometry(page), position, `${name}: thermometer was moved during bullet hell`);
     assert(await page.locator('[data-test="steam-forecast-range"]').isHidden(), 'Forecast leaked into bullet hell');
-    assert(await page.locator('.bench-guide').isHidden());
+    const guide = page.locator('.bench-guide');
+    assert(await guide.isVisible(), 'Optional help button should be available');
+    assert.equal(await guide.getAttribute('open'), null, 'Help must not cover the playfield by default');
+    const helpOutsideField = await guide.locator('summary').evaluate(n => {
+      const help = n.getBoundingClientRect(), field = document.querySelector('.dodge').getBoundingClientRect();
+      return help.right <= field.left || help.left >= field.right || help.bottom <= field.top || help.top >= field.bottom;
+    });
+    assert(helpOutsideField, 'Help must not intercept taps inside the playfield');
+    await guide.locator('summary').click();
+    assert(await guide.locator('.bench-guide-tip').isVisible());
+    assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
+    await guide.locator('summary').click();
+    assert.equal(await guide.getAttribute('open'), null);
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし中');
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);

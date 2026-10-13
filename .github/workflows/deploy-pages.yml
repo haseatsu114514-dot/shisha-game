@@ -9,8 +9,10 @@ on:
       - "assets/**"
       - "data/**"
       - "remake/**"
+      - "experiments/proto/street/**"
       - "icon.svg"
       - "tools/browser/flavor_stats_editor.html"
+      - "tools/title-review/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -52,9 +54,16 @@ jobs:
           </html>
           HTML
           cp tools/browser/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
+          # 選別用生成画像だけ配信。asset_sources の写真・元資料はコピーしない。
+          mkdir -p _site/tools/title-review
+          cp tools/title-review/{index.html,style.css,app.js,model.mjs,catalog.json} _site/tools/title-review/
+          cp -r tools/title-review/media _site/tools/title-review/media
           # 現行版は共有JSONを直接読む
           cp -r remake _site/remake
           cp -r data _site/data
+          # 本編が使用する既存ハリボテ歩行のみを同じ相対パスで配信。
+          mkdir -p _site/experiments/proto/street
+          cp experiments/proto/street/{index.html,street.js,stage_hankagai.json,stage_hankagai_hd.json,stage_hankagai_set.json} _site/experiments/proto/street/
       - uses: actions/configure-pages@v5
         with:
           enablement: true

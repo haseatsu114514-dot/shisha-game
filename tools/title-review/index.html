@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10151e">
+  <title>タイトルCG選別 | 水煙前線</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<header>
+  <div class="eyebrow">水煙前線 · ART REVIEW</div>
+  <div class="heading"><h1>タイトルCGを選ぶ</h1><a href="../../remake/">ゲームを開く ↗</a></div>
+  <p>気になる画像を並べて、次の採用に向けた候補とメモを残せます。正式採用はオーナーが判断します。</p>
+  <div class="toolbar"><button id="export">JSONを書き出す</button><button id="import">JSONを読み込む</button><button id="export-notes" disabled>修正メモを書き出す（TXT）</button><input type="file" id="file" accept=".json,application/json" hidden><span id="save-state" role="status">読み込み中…</span></div>
+  <p id="notice" role="alert" hidden></p>
+</header>
+<main>
+  <section class="filters" aria-label="絞り込み">
+    <label>キャラクター<select id="character"><option value="">全キャラクター</option></select></label>
+    <label>系統<select id="group"><option value="">すべての系統</option></select></label>
+    <label>選別の判定<select id="decision"><option value="">すべての判定</option><option value="unreviewed">未判定</option><option value="candidate">採用候補</option><option value="hold">保留</option><option value="reject">見送り</option></select></label>
+    <label>本編の使用<select id="current"><option value="">すべて</option><option value="yes">本編使用中</option><option value="no">本編未使用</option></select></label>
+    <label class="search">名前・メモで探す<input id="search" type="search" placeholder="パフェ、タッパー、修正前…"></label>
+    <button id="reset">絞り込みを解除</button>
+  </section>
+  <div class="summary"><p id="count"></p><p id="progress" aria-live="polite"></p></div>
+  <p id="empty" hidden>条件に合う画像がありません。絞り込みを変えてください。</p>
+  <section id="gallery" class="gallery" aria-label="画像一覧"></section>
+  <details class="catalog-notes"><summary>収録範囲・重複の整理について</summary><p id="inventory"></p><p>同じ原画はSHA256で一つにまとめ、元の全パス・生成指示・修正履歴を詳細に残しています。写真・素材元・QAスクリーンショットは収録していません。選別の判定は本編使用中の状態と独立して保存します。</p><p id="missing"></p></details>
+</main>
+<footer id="tray"><div><strong id="selected-count">比較 0 / 4枚</strong><span>画像の「比較に追加」で選択</span></div><div class="tray-actions"><button id="clear">選択を解除</button><button id="compare" class="primary" disabled>並べて比較</button></div></footer>
+<dialog id="viewer" aria-labelledby="viewer-title"><div class="dialog-head"><h2 id="viewer-title"></h2><button id="close-viewer" aria-label="表示を閉じる">閉じる ×</button></div><p class="hint">画像を押すと拡大。拡大中はスクロールして顔・衣装・器具を確認できます。</p><div id="viewer-content"></div></dialog>
+<dialog id="import-dialog" aria-labelledby="import-title"><h2 id="import-title">判定を読み込む</h2><p id="import-preview"></p><p>JSONに含まれる画像の判定とメモを更新します。それ以外の判定は保持します。</p><div class="toolbar"><button id="cancel-import">キャンセル</button><button id="apply-import" class="primary">取り込む</button></div></dialog>
+</body>
+</html>

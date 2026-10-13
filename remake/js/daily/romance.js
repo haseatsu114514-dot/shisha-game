@@ -9,13 +9,16 @@ import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
-import { play } from "../vn/engine.js";
+import { play, isPlaying } from "../vn/engine.js";
+import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js";
+import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
+import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
 
 const L = () => DB.lover || {};
-const dayTotal = () => ((state.chapter || 1) - 1) * 14 + state.day;
+const dayTotal = relationshipDayTotal;
 export const isLover = (id) => (state.lovers || []).includes(id);
 // 告白・デート・恋人の節目は仕事を離れた私的な場面（みんとは本名を聞いた後なら「栞さん」と呼ぶ）
 const privateCall = (id) => callName(id, state, { context: "private" });
@@ -26,6 +29,12 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  */
 export function romanceRouteOpen(id) {
   if (id === "hiyori" && (!DB.hiyori?.route?.enabled || state.chapter > 3)) return false;
+  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+    || !state.flags._samechan_bond_question_done
+    || state.romanceChoices?.bond_q1_samechan?.char !== id
+    || state.romanceChoices?.bond_q2_samechan?.char !== id
+    || !(state.romanceChoices?.bond_q1_samechan?.value > 0)
+    || !(state.romanceChoices?.bond_q2_samechan?.value > 0))) return false;
   const answers = Object.values(state.romanceChoices || {}).filter((a) => a?.char === id);
   return !!id && state.finales?.[id]?.route === "romance" && answers.length > 0 && answers.every((a) => a.value > 0)
     && !isLover(id) && !state.flags[`_friend_${id}`] && !!DB.dialogues[`confession_${id}`];
@@ -48,6 +57,8 @@ function becomeLovers(id) {
 export function onDialogueEnter(id, dlg) {
   const m = /^confession_(\w+)_(accept|reject)$/.exec(id || "");
   if (m) {
+    // この新規ルートは正式な締めくくりからだけ成立。既存の友人/恋人を再読で変更しない。
+    if (m[1] === "samechan" && !romanceRouteOpen("samechan")) return;
     if (m[2] === "accept") becomeLovers(m[1]);
     else state.flags[`_friend_${m[1]}`] = true; // 友達のまま（以後この告白は出ない）
   }
@@ -140,7 +151,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
       metadata: { bg: "res://assets/backgrounds/bg_street_night.png", private_scene: true },
       lines: [
         { speaker: "", text: "仕事を終えて、私服の彼女と待ち合わせた。話し始める前に、彼女が小さく息を吸った。" },
-        { speaker: "minto", face: "ura_normal", text: "……改めて、ちゃんと名乗るね。緑川栞。お店では『みんと』だけど、二人の時は、栞って呼んでくれたら嬉しい" },
+        { speaker: "minto", face: "ura_normal", text: "……改めて、ちゃんと名乗るね。緑川栞。お店では『みんと』だけど、２人の時は、栞って呼んでくれたら嬉しい" },
         { type: "set_flag", flag: "_minto_name_known" }, // ここから名前欄も「栞」
         { speaker: "hajime", face: "normal", text: "栞さん。……教えてくれて、ありがとう" },
         { speaker: "minto", face: "ura_smile", text: "……うん。その呼び方、ちょっと照れるけど。ちゃんと、私に話しかけてくれてる感じがする" },
@@ -150,64 +161,73 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     save();
   }
   await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
+  if (id === "samechan" && isLover(id)) await playSamechanMilestone();
   save();
   return true;
 }
 
 // ---------------------------------------------------------------- デート
 
-/** 恋人の節目（絆Lvが上がった）ごとの恋愛イベント。lover_events.json の lover_{id}_lv{n} */
-async function maybeMilestone(id, beforeLv) {
-  const lv = state.loveLevel[id] || 0;
-  if (lv <= beforeLv) return;
-  const evId = [`lover_${id}_lv${lv}`, `lover_${id}_lv${lv}_b`].find((c) => DB.dialogues[c] && !state.loverEventsSeen.includes(c));
-  if (!evId) return;
-  state.loverEventsSeen.push(evId);
+let milestonePlaying = false;
+
+/** 現在の絆Lvまでの最初の未読場面。LIMEや旧セーブで先に進んでも、未読の前段を飛ばさない。 */
+export function loverMilestoneDue(id) {
+  if (id === "samechan") return samechanMilestoneDue();
+  if (!isLover(id)) return null;
+  const seen = state.loverEventsSeen || [];
+  const level = Math.min(5, state.loveLevel[id] || 0);
+  for (let n = 1; n <= level; n++) {
+    const base = `lover_${id}_lv${n}`;
+    for (const eventId of [base, `${base}_b`]) {
+      const scene = DB.dialogues[eventId];
+      if ((eventId !== base && !scene) || seen.includes(eventId)) continue;
+      // 通常台本が欠けた時や、未完成の追加台本がある時は後段へ進まない。
+      if (!scene?.lines?.length || (scene.metadata?.min_chapter || 1) > (state.chapter || 1)) return null;
+      return eventId;
+    }
+  }
+  return null;
+}
+
+/** 実際に会った私的な場面の読了後、未読の節目を一つだけ読む。読了前の保存では未読のまま。 */
+export async function playLoverMilestone(id) {
+  if (milestonePlaying || isPlaying()) return false;
+  if (id === "samechan") return playSamechanMilestone();
+  const eventId = loverMilestoneDue(id);
+  if (!eventId) return false;
+  const owner = state, previousPrivate = bond.private;
+  milestonePlaying = true;
   bond.private = true;
-  await play(evId);
-  bond.private = false;
+  try {
+    await play(eventId);
+    if (state !== owner) return false;
+    state.loverEventsSeen ||= [];
+    if (!state.loverEventsSeen.includes(eventId)) state.loverEventsSeen.push(eventId);
+    save();
+    return true;
+  } finally {
+    bond.private = previousPrivate;
+    milestonePlaying = false;
+  }
 }
 
 /** デート（LIMEの誘いを受けた時間帯に呼ぶ）。行き先はデート回数でローテーション */
 export async function playDate(id) {
+  if (id === "samechan") return playSamechanDate();
   const sc = (L().dates || {})[id];
   if (!sc) {
     console.error(`[romance] Missing date scene for ${id}`);
     return;
   }
-  const exclude = { minto: "pepermint", rin: "drfookah" }[id]; // 自分の店は除外
-  const venues = (L().venues || []).filter((v) => v.id !== exclude);
-  const venue = venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
+  const venue = dateVenue(id);
   state.lastDate[id] = state.day;
-  const name = privateCall(id);
-  const maxed = (state.loveLevel[id] || 0) >= 5;
-  const before = state.loveLevel[id] || 1;
   bond.private = true;
-  await play({
-    dialogue_id: `remake_date_${id}`,
-    metadata: { bg: `res://assets/backgrounds/${venue.bg}`, private_scene: true },
-    lines: [
-      { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
-      { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
-      { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
-      { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
-      { speaker: "", text: sc.choiceQ },
-      { type: "choice", choices: [{ text: sc.optA.text, next: "a" }, { text: sc.optB.text, next: "b" }] },
-      { speaker: id, face: sc.close.face, text: sc.close.text, inner: sc.close.inner },
-      { speaker: "", text: maxed
-        ? "（もう何も進めなくていい。ただ隣にいる——それだけの時間が、いちばん贅沢だ）"
-        : "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる）" },
-    ],
-    branches: {
-      a: [{ speaker: id, face: sc.arrive.face, text: sc.optA.line, inner: sc.optA.inner }, { type: "apply", stats: { [sc.optA.stat]: 2 } }],
-      b: [{ speaker: id, face: sc.arrive.face, text: sc.optB.line, inner: sc.optB.inner }, { type: "apply", stats: { [sc.optB.stat]: 2 } }],
-    },
-  });
+  await play(dateScene(id, venue));
   gainAffinity(id, 10);
   bond.private = false;
   addStamina(-10);
   save();
-  await maybeMilestone(id, before);
+  await playLoverMilestone(id);
 }
 
 // ---------------------------------------------------------------- 恋人からの LIME
@@ -235,6 +255,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
   for (const id of state.lovers || []) {
+    if (id === "samechan" && (state.chapter || 1) < 2) continue;
+    const chapterKey = id === "samechan" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
       const pool = (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
@@ -259,14 +281,17 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     // デートの誘い（数日おき。絆がMAXになっても頻度を落として続く）
     const maxed = (state.loveLevel[id] || 0) >= 5;
     const last = state.lastDate[id] ?? -9;
-    const invId = `_date_inv_${id}_d${state.day}`;
+    const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
-    if (schedule && state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)) {
+    const gap = id === "samechan" ? samechanDateGap() : state.day - last;
+    if (schedule && gap >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)
+      && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,
         ...schedule,
         accept_event: `date_${id}`,
-        messages: [schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？",
+        messages: [(L().inviteOpening || {})[id]?.[schedule.time_slot]
+          || (schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？"),
           ...((maxed && (L().inviteLinesMax || {})[id]) || (L().inviteLines || {})[id] || []).slice()],
         decline_response: { text: (L().declineLines || {})[id] || "また今度ね" },
       });
@@ -274,7 +299,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     }
     // 朝のひとこと（2日おき・キャラごとに位相をずらす）
     const pool = (L().morning || {})[id];
-    const msgId = `_lover_morning_${id}_d${state.day}`;
+    const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
     if (pool?.length && (state.day + (phase[id] || 0)) % 2 === 0 && !read(msgId)) {
       out.push(chat(id, msgId, pool[Math.floor((state.day + (phase[id] || 0)) / 2) % pool.length]));
     }

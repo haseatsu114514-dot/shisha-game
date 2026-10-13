@@ -106,8 +106,8 @@ export function warmGameOver() {
   return Promise.all([preloadBgm("bgm_continue_urgent"), ...[...urls].map(url => imageReady(url, 15000))]);
 }
 
-// 1行を打ち出す時間と、反応の1行を見せる時間（秒）。
-const typeTime = (text, slot) => Math.max(.25, Math.min([...text].length * .05, slot * .6));
+// 試作と同じ26文字/秒。短いキューは既存の枠内で全文を出し、反応の保持時間は変えない。
+const typeTime = (text, slot) => Math.max(.01, Math.min([...text].length / 26, slot * .6));
 const lineTime = text => Math.max(1.1, [...text].length * .07 + .55);
 
 let nextScript = 0;
@@ -146,11 +146,30 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   setMotion();
   motion?.addEventListener?.("change", setMotion);
 
+  // 字幕だけをフレームごとに更新。台本・残り時間・反応の保持時間は既存の時計を使う。
+  function revealCaption(elapsed = (performance.now() - speechStart) / 1000) {
+    if (!active || !started || document.hidden || choice === "timeout") return;
+    if (choice) {
+      const text = script.reactions[choice].text[reactionLine];
+      const seconds = (performance.now() - reactionLineAt) / 1000;
+      view.reveal(reactionInstant || reduce ? 1 : Math.min(1, seconds / typeTime(text, lineTime(text))));
+    } else if (cueIndex >= 0) {
+      const cue = script.cues[cueIndex];
+      const slot = (script.cues[cueIndex + 1]?.at ?? script.duration) - cue.at;
+      view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
+        : Math.min(1, Math.max(0, elapsed - cue.at) / typeTime(cue.text, slot)));
+    }
+  }
+  function animateCaption() {
+    if (!active || !root.isConnected) return;
+    revealCaption();
+    frame = requestAnimationFrame(animateCaption);
+  }
+
   function sync(at, sound = true, countAt = at) {
     const elapsed = Math.min(script.duration, Math.max(0, at));
     const index = Math.max(0, script.cues.findLastIndex(c => c.at <= elapsed));
     const cue = script.cues[index];
-    const length = (script.cues[index + 1]?.at ?? script.duration) - cue.at;
     if (index !== cueIndex) {
       // 表情が変わる区切りだけ人物を弾ませ、低い拍を鳴らす。小分けの行送りでは鳴らさない。
       const turn = index === 0 || cue.face !== script.cues[cueIndex]?.face;
@@ -158,13 +177,12 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       currentInstant = false;
       root.dataset.cue = String(index);
       root.dataset.lastCue = String(index === script.cues.length - 1);
-      view.setCaption(cue.text, cue.emphasis, length);
+      view.setCaption(cue.text, cue.emphasis);
       view.announce(cue.text);
       view.face(cue.face, turn && !reduce);
       if (sound && index > 0 && turn) audio.beat();
     }
-    view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
-      : Math.min(1, (elapsed - cue.at + .05) / typeTime(cue.text, length)));
+    revealCaption(elapsed);
     const remaining = Math.max(0, Math.ceil(script.duration - countAt));
     view.setCount(remaining, countAt / script.duration);
     root.classList.toggle("go-urgent", remaining > 0 && remaining <= 5);
@@ -240,7 +258,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       const lines = reaction.text;
       const lineElapsed = (performance.now() - reactionLineAt) / 1000;
       const hold = lineTime(lines[reactionLine]);
-      view.reveal(reactionInstant || reduce ? 1 : Math.min(1, (lineElapsed + .05) / typeTime(lines[reactionLine], hold)));
+      revealCaption();
       if (lineElapsed >= hold) {
         if (reactionLine < lines.length - 1) showReactionLine(reactionLine + 1);
         else finish();
@@ -252,7 +270,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     reactionLineAt = performance.now();
     reactionInstant = false;
     const data = script.reactions[choice];
-    view.setCaption(data.text[index], data.word, lineTime(data.text[index]));
+    view.setCaption(data.text[index], data.word);
     view.reveal(reduce ? 1 : 0);
   }
   function decide(value) {
@@ -302,6 +320,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     ticker = window.setInterval(tick, 70);
     visibility();
     armDeadline();
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(animateCaption);
   }
   view.retry.addEventListener("click", () => decide("retry"));
   view.quit.addEventListener("click", () => decide("quit"));
@@ -327,7 +347,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     else finish();
   });
   view.setCaption(script.cues[0].text);
-  view.reveal(reduce ? 1 : .03);
+  view.reveal(reduce ? 1 : 0);
   // 幕の終わりまでshowScreenが挿入を待つ場合にも、実際に表示されてから20秒。
   // 接続を待つ間だけ広く観測し、開始後は親だけに切り替える。画面離脱で両方を破棄する。
   observer.observe(document.body, { childList: true, subtree: true });

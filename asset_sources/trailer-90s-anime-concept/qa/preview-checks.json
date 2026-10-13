@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "shots": 6,
+  "all_images_loaded": true,
+  "all_six_scene_dimensions": [
+    1664,
+    936
+  ],
+  "thumbnail_navigation": true,
+  "button_wrap": true,
+  "keyboard_wrap": true,
+  "desktop_no_horizontal_overflow": true,
+  "mobile_no_horizontal_overflow": true,
+  "viewport_desktop": [
+    1440,
+    1100
+  ],
+  "viewport_mobile": [
+    390,
+    844
+  ],
+  "page_errors": [],
+  "engine": "Playwright / Google Chrome headless / file URL"
+}

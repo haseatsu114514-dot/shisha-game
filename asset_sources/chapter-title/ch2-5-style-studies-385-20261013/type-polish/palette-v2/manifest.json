@@ -1,0 +1,243 @@
+{
+  "mode": "built-in image_gen",
+  "request": "Different palette and brightness for each chapter",
+  "source_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
+  "previous_scene_sources": {
+    "3": "originals/ch3-crown-focus.png",
+    "4": "originals/ch4-hajime-guardian-dubai.png"
+  },
+  "previous_scene_sha256": {
+    "3": "aa7e8238c1f38de26914dcfa4abdb362668f42126ce58a573d90b781952a7f39",
+    "4": "27d2130ec5c3d5668796066c9929ef7758a2b4ef56a9970493831e9a44ae90c8"
+  },
+  "previous_type_rows": [
+    {
+      "id": "ch3-01-rain-mincho",
+      "chapter": 3,
+      "original": "originals/ch3-01-rain-mincho.png",
+      "sha256": "2fbb5f00ffefa92c0a0bd463572c2fbc6343a47a970a421eb783c37cfc631f49",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-084dc70b-3c61-4d45-a24c-849c0ed62782",
+      "prompt": "prompts/ch3-01-rain-mincho.txt",
+      "status": "review candidate",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        83,
+        55,
+        1010,
+        1536
+      ],
+      "content_bbox": [
+        329,
+        113,
+        696,
+        1503
+      ],
+      "layout": {
+        "generated_crop": [
+          329,
+          113,
+          696,
+          1503
+        ],
+        "position": [
+          83,
+          148
+        ],
+        "rendered_size": [
+          114,
+          430
+        ]
+      }
+    },
+    {
+      "id": "ch4-02-modern-legacy",
+      "kind": "type",
+      "chapter": 4,
+      "refs": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png"
+      ],
+      "original": "originals/ch4-02-modern-legacy.png",
+      "sha256": "eaa1d997a165043094d308d3add77fe1dca1cbc6b4799233f8a049773ffb5207",
+      "size": [
+        2046,
+        769
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-26357be1-9c9c-42b4-9ac6-cb6d28b8a5f6",
+      "prompt": "prompts/ch4-02-modern-legacy.txt",
+      "status": "review candidate",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        29,
+        2000,
+        769
+      ],
+      "content_bbox": [
+        141,
+        154,
+        1899,
+        631
+      ],
+      "layout": {
+        "generated_crop": [
+          141,
+          154,
+          1899,
+          631
+        ],
+        "position": [
+          54,
+          223
+        ],
+        "rendered_size": [
+          455,
+          123
+        ]
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": "ch3-silver-day",
+      "chapter": 3,
+      "kind": "art",
+      "original": "palette-v2/originals/ch3-silver-day.png",
+      "sha256": "2e2fedf45c88ededf7aaca385c1bd78a9c3747148edc41ced1173299c478be0c",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-ec7f1877-e16f-48da-9b2d-b325b71c1b81",
+      "prompt": "palette-v2/prompts/ch3-silver-day.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch3-art.png",
+          "sha256": "0e4c93807dd4ebfa04dd79faf656019d9857052e18aab6fff168e6ea06aa01d8",
+          "saved_copy": "palette-v2/references/ch3-silver-day-1-ch3-art.png"
+        }
+      ]
+    },
+    {
+      "id": "ch4-desert-sunset",
+      "chapter": 4,
+      "kind": "art",
+      "original": "palette-v2/originals/ch4-desert-sunset.png",
+      "sha256": "e8cff3efedf0ff3e6c75d5b3fbaf53e1c8e95cc3cedda4e351847c62bed5b04a",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-4aedd952-8e1f-4423-ab87-cf7ea9aa48b2",
+      "prompt": "palette-v2/prompts/ch4-desert-sunset.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch4-art.png",
+          "sha256": "f5f211bec9c37af994d71a06aaa109921a48470f8b2b39b85b9cc2a22ec02ac1",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-1-ch4-art.png"
+        },
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-2-chr_hajime_normal.png"
+        },
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/sumi/chr_sumi_normal.png",
+          "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-3-chr_sumi_normal.png"
+        }
+      ]
+    },
+    {
+      "id": "ch3-dark-lettering",
+      "chapter": 3,
+      "kind": "type",
+      "original": "palette-v2/originals/ch3-dark-lettering.png",
+      "sha256": "268a00e7e3659dd90c6438f0545f5b398f6d703b998b7f296ea9592bb1d5862e",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-1bba5cfe-7917-4988-8ad6-aba7395b2788",
+      "prompt": "palette-v2/prompts/ch3-dark-lettering.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/originals/ch3-01-rain-mincho.png",
+          "sha256": "2fbb5f00ffefa92c0a0bd463572c2fbc6343a47a970a421eb783c37cfc631f49",
+          "saved_copy": "palette-v2/references/ch3-dark-lettering-1-ch3-01-rain-mincho.png"
+        }
+      ],
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        27,
+        65,
+        988,
+        1512
+      ],
+      "content_bbox": [
+        328,
+        113,
+        696,
+        1503
+      ]
+    },
+    {
+      "id": "ch4-dark-lettering",
+      "chapter": 4,
+      "kind": "type",
+      "original": "palette-v2/originals/ch4-dark-lettering.png",
+      "sha256": "a7a5e087e322790e04b161863379a911108d56972b465f699b0fe7114a37f2fc",
+      "size": [
+        2046,
+        769
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-4305bdcf-5c86-4c4f-b3d4-c2d07b449131",
+      "prompt": "palette-v2/prompts/ch4-dark-lettering.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/originals/ch4-02-modern-legacy.png",
+          "sha256": "eaa1d997a165043094d308d3add77fe1dca1cbc6b4799233f8a049773ffb5207",
+          "saved_copy": "palette-v2/references/ch4-dark-lettering-1-ch4-02-modern-legacy.png"
+        }
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        0,
+        2032,
+        769
+      ],
+      "content_bbox": [
+        137,
+        144,
+        1902,
+        641
+      ]
+    }
+  ]
+}

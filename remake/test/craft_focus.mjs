@@ -67,7 +67,7 @@ try {
   // 表情は実際の炭焼き結果へ反応し、名前や審査点を勝手に開放しない。
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
-  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光ったら押せ/,'Tutorial Sumi did not explain the game controls');
+  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光.*(?:押|タップ)/,'Tutorial Sumi did not explain the game controls');
   await page.waitForFunction(() => cs.heat?.score > 0);
   await page.evaluate(() => { __remake.craftTest.auto = null; });
   await page.waitForSelector('.result-card.show');
@@ -282,7 +282,9 @@ try {
     await p.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
     const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
-    assert(await p.locator('.bench-guide').isHidden(), 'Steam guide was not removed');
+    // #394 keeps the attack explanation in a closed help control outside the dodge field.
+    assert(await p.locator('.bench-guide').isVisible(), 'Steam help control disappeared');
+    assert.equal(await p.locator('.bench-guide').getAttribute('open'), null, 'Steam help opened during play');
     assert.equal(await p.locator('.dodge-refresh').getAttribute('data-remaining'), '1');
     assert.equal(await p.locator('.bench-title').textContent(), '蒸らし');
     await p.waitForTimeout(1000);

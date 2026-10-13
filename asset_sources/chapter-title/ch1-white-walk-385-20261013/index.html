@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第1章タイトルコール・6案比較</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,sans-serif;color:#242b31;background:#eeede9}
+*{box-sizing:border-box}body{margin:0;padding:28px clamp(16px,4vw,64px) 60px}
+main{max-width:1400px;margin:auto}h1{font-size:24px;margin:0 0 9px;font-weight:600}p{line-height:1.7}
+.lead{color:#66717a;font-size:14px;margin:0 0 20px}.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+button,a.action{border:1px solid #c5c8c6;background:#fafaf8;color:#283039;padding:9px 16px;border-radius:5px;font:inherit;text-decoration:none;cursor:pointer}
+button[aria-pressed=true]{color:white;background:#333e45;border-color:#333e45}button:focus-visible,a:focus-visible{outline:3px solid #729989;outline-offset:3px}
+.stage{position:relative;aspect-ratio:16/9;width:100%;background:white;border:1px solid #d6d9d6;overflow:hidden}.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}.stage img.people{image-rendering:pixelated}
+.meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 24px;margin:12px 0 19px;font-size:14px}.meta p{margin:0}.order{color:#68737a;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{text-align:left;padding:0;overflow:hidden;border-radius:5px;background:#f9f9f6}.card img{display:block;width:100%;aspect-ratio:16/9;background:white}.card span{display:block;padding:8px 12px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.grid figure{margin:0}.grid img{width:100%;display:block}.grid figcaption{font-size:14px;margin-bottom:7px;line-height:1.5}
+[hidden]{display:none!important}.extras{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:#647078;margin-top:26px}.extras a{color:inherit}label{font-size:14px;cursor:pointer}
+.ref{margin-top:30px}.ref summary{cursor:pointer;font-size:14px}.ref img{max-width:100%;display:block;margin-top:12px}
+@media(max-width:640px){body{padding-top:18px}h1{font-size:20px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.bar button,.bar a.action{padding:8px 12px;font-size:13px}.meta{font-size:13px}}
+</style>
+<main>
+<h1>第1章タイトルコール・6案比較</h1>
+<p class="lead">選定したDを画像生成で仕上げ、正式作品名と副題を加えました。元のA〜Fも比較できます。右端が歩く方向の先頭です。</p>
+<div class="bar">
+ <button id="singleBtn" aria-pressed="true">個別表示</button><button id="finalBtn" aria-pressed="true">仕上げD</button><button id="gridBtn" aria-pressed="false">6案一覧</button>
+ <button id="prev" aria-label="前の案">←</button><button id="next" aria-label="次の案">→</button>
+ <a id="download" class="action" download="ch1-A.png" href="titles/A.png">PNGを保存</a>
+ <label><input type="checkbox" id="typeToggle" checked>章題を表示</label>
+</div>
+<section id="singleView" aria-label="選択したタイトル画像">
+ <div id="typeChoices" class="bar" aria-label="文字配置の切り替え"><button id="type01">① 控えめな段差</button><button id="type02">② 大小と段差</button><button id="type03">③ 右上がり</button></div>
+ <div class="stage" id="stage">
+  <img id="plate" src="selected-D/art-plate.png" alt="選定Dの画像生成版。6人が右向きに歩く。">
+  <img id="shadow" src="layers/A-shadows.png" alt="">
+  <img id="people" class="people" src="layers/A-characters.png" alt="">
+  <img id="type" src="layers/A-type.png" alt="CHAPTER 1 煙がつなぐ街">
+ </div>
+ <div class="meta" aria-live="polite"><div><p id="label"></p><p id="intent"></p></div><p class="order" id="order"></p></div>
+ <div class="cards" id="cards" aria-label="案の切り替え"></div>
+</section>
+<section id="gridView" class="grid" hidden aria-label="6案の比較一覧"></section>
+<div class="extras"><a href="selected-D/typography/comparison.png">修正前と文字3案の比較</a><a href="comparison.png">A〜Fの比較画像</a><a href="README.md">制作記録</a><a href="references/sources.json">参照元とハッシュ</a><a href="generation.json">素材と配置の記録</a><span>← → / 1〜6キーで切り替え</span></div>
+<details class="ref"><summary>採用済み画像の参照シート</summary><img src="references/adopted-six-reference-sheet.png" alt="6人の現在の本編立ち絵と顔・衣装の確認シート"></details>
+<details class="ref"><summary>採用画像と今回の歩行素材の比較</summary><img src="review/identity-comparison.png" alt="キャラごとに採用画像と新しい歩行素材を並べた比較"></details>
+</main>
+<script src="layout-data.js"></script>
+<script>
+const records=window.CH1_LAYOUTS;let selected=0;
+const $=id=>document.getElementById(id);
+records.forEach((r,i)=>{
+ const b=document.createElement('button');b.className='card';b.dataset.index=i;b.setAttribute('aria-label',`${r.id} ${r.layout} 並び順${r.order_number}を表示`);
+ const image=document.createElement('img');image.src=r.png;image.alt=`案${r.id}の縮小プレビュー`;
+ const label=document.createElement('span');label.textContent=`${r.id} · ${r.layout} / 並び順${r.order_number}`;
+ b.append(image,label);b.onclick=()=>{view(false);select(i)};$('cards').append(b);
+ const figure=document.createElement('figure');figure.style.order=(i%3)*2+Math.floor(i/3);const caption=document.createElement('figcaption');
+ caption.textContent=`${r.id} · ${r.layout} / 並び順${r.order_number} — ${r.intent}`;
+ const full=document.createElement('img');full.src=r.png;full.alt=`案${r.id}：${r.order_names.join('、')}が右向きに歩く`;full.tabIndex=0;full.onclick=()=>{view(false);select(i)};full.onkeydown=e=>{if(e.key==='Enter'){view(false);select(i)}};
+ figure.append(caption,full);$('gridView').append(figure);
+});
+function select(i){selected=(i+6)%6;const r=records[selected];$('typeChoices').hidden=true;$('plate').hidden=true;$('people').hidden=false;$('shadow').hidden=false;$('finalBtn').setAttribute('aria-pressed',false);
+ $('shadow').src=`layers/${r.id}-shadows.png`;$('people').src=`layers/${r.id}-characters.png`;$('type').src=`layers/${r.id}-type.png`;$('type').alt='CHAPTER 1 煙がつなぐ街';
+ $('people').alt=`左から${r.order_names.join('、')}。全員が右向きに歩く。`;
+ $('label').textContent=`案 ${r.id} / ${r.layout} / 並び順${r.order_number}`;
+ $('intent').textContent=r.intent;$('order').textContent=`左 → 右：${r.order_names.join(' → ')}`;
+ $('download').href=r.png;$('download').download=`ch1-${r.id}.png`;
+ document.querySelectorAll('.card').forEach((b,j)=>b.setAttribute('aria-pressed',j===selected));
+}
+function view(grid){$('singleView').hidden=grid;$('gridView').hidden=!grid;$('singleBtn').setAttribute('aria-pressed',!grid);$('gridBtn').setAttribute('aria-pressed',grid);$('typeToggle').parentElement.hidden=grid;$('prev').hidden=grid;$('next').hidden=grid}
+const typeStudies={'01':{stem:'01-subtle',name:'控えめな段差'},'02':{stem:'02-sizes-and-step',name:'大小と段差'},'03':{stem:'03-rise-right',name:'右上がり'}};
+function showFinal(id='02'){view(false);selected=3;const s=typeStudies[id];$('typeChoices').hidden=false;$('plate').hidden=false;$('people').hidden=true;$('shadow').hidden=true;$('type').src=`selected-D/typography/${s.stem}-type.png`;$('type').alt='水煙前線 -EN:CODE- CHAPTER 1 煙がつなぐ街 Smoke & Ties';$('label').textContent=`選定D / 文字案 ${id} · ${s.name}`;$('intent').textContent='英字と記号のベースラインを整え、章題の文字配置を比較。人物と背景は同じ画素です。';$('order').textContent='左 → 右：みんと → アダム → なる → つむぎ → スミさん → はじめ';$('download').href=`selected-D/typography/${s.stem}.png`;$('download').download=`ch1-D-type-${id}.png`;$('finalBtn').setAttribute('aria-pressed',true);document.querySelectorAll('.card').forEach(b=>b.setAttribute('aria-pressed',false));Object.keys(typeStudies).forEach(k=>$(`type${k}`).setAttribute('aria-pressed',k===id));}
+$('prev').onclick=()=>select(selected-1);$('next').onclick=()=>select(selected+1);$('singleBtn').onclick=()=>view(false);$('gridBtn').onclick=()=>view(true);
+$('typeToggle').onchange=()=>{$('type').hidden=!$('typeToggle').checked};
+$('finalBtn').onclick=()=>showFinal();Object.keys(typeStudies).forEach(id=>$(`type${id}`).onclick=()=>showFinal(id));
+document.addEventListener('keydown',e=>{if(e.target instanceof HTMLInputElement)return;if(e.key==='ArrowLeft'){view(false);select(selected-1);e.preventDefault()}if(e.key==='ArrowRight'){view(false);select(selected+1);e.preventDefault()}if(/^[1-6]$/.test(e.key)){view(false);select(Number(e.key)-1)}});
+showFinal();
+</script>
+</html>

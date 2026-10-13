@@ -1,0 +1,36 @@
+name: Title CG review
+on:
+  pull_request:
+    paths:
+      - 'tools/title-review/**'
+      - '.github/workflows/title-review.yml'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install Pillow==12.3.0
+      - run: python tools/title-review/build_catalog.py --check
+      - run: npm ci --prefix remake/test/browser
+      - run: cd remake/test/browser && npx playwright install --with-deps chromium
+      - name: Review and production title QA
+        run: |
+          python3 -m http.server 8123 > /tmp/title-review-server.log 2>&1 &
+          export NODE_PATH="$PWD/remake/test/browser/node_modules"
+          export ARTIFACT_DIR="$PWD/qa-results"
+          node tools/title-review/test.mjs
+          node tools/title-review/notes_test.mjs
+          node remake/test/title_arts.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: title-review-qa
+          path: qa-results

@@ -24,7 +24,7 @@ try {
   await page.addStyleTag({ content: 'nav{position:static!important}' });
   assert.equal(await page.locator('.grid > figure').count(), 19);
   assert.equal(await page.locator('section').count(), 6);
-  const ids = ['tsumugi', 'mashiro', 'minto', 'ageha', 'rin', 'kafuka'];
+  const ids = ['tsumugi', 'mashiro', 'minto', 'ageha', 'rin', 'samechan'];
   for (const id of ids) {
     await page.locator('section[data-character="' + id + '"]').screenshot({ path: review + '/' + id + '.png' });
     evidence.screenshots.push(id + '.png');
@@ -56,8 +56,8 @@ try {
   await page.getByRole('button', { name: 'サメちゃん', exact: true }).click();
   assert.equal(await page.locator('section:visible figure').count(), 3);
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-  await page.screenshot({ path: review + '/kafuka-mobile.png', fullPage: true });
-  evidence.screenshots.push('kafuka-mobile.png');
+  await page.screenshot({ path: review + '/samechan-mobile.png', fullPage: true });
+  evidence.screenshots.push('samechan-mobile.png');
   assert.deepEqual(errors, []);
   evidence.original_count = 19;
   evidence.previous_count = 15;

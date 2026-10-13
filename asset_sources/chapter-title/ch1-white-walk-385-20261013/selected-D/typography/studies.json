@@ -1,0 +1,335 @@
+{
+  "default": "02",
+  "unchanged_art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+  "before_image": "selected-D/typography/v1-D-title.png",
+  "before_image_sha256": "e1891934d0283922980b2ab5efc87fc23d30f7a0a54301e946ad16431e960ffc",
+  "text": [
+    "水煙前線 -EN:CODE-",
+    "CHAPTER 1",
+    "煙がつなぐ街",
+    "Smoke & Ties"
+  ],
+  "studies": [
+    {
+      "id": "01",
+      "name": "控えめな段差",
+      "stem": "01-subtle",
+      "sizes": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "baselines": [
+        202,
+        198,
+        206,
+        200,
+        204,
+        199
+      ],
+      "gaps": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "glyphs": [
+        {
+          "character": "煙",
+          "size": 80,
+          "baseline": 202,
+          "x": 388,
+          "bounds": [
+            388,
+            135,
+            468,
+            208
+          ]
+        },
+        {
+          "character": "が",
+          "size": 80,
+          "baseline": 198,
+          "x": 472,
+          "bounds": [
+            472,
+            133,
+            552,
+            199
+          ]
+        },
+        {
+          "character": "つ",
+          "size": 80,
+          "baseline": 206,
+          "x": 558,
+          "bounds": [
+            558,
+            156,
+            638,
+            206
+          ]
+        },
+        {
+          "character": "な",
+          "size": 80,
+          "baseline": 200,
+          "x": 642,
+          "bounds": [
+            642,
+            135,
+            722,
+            204
+          ]
+        },
+        {
+          "character": "ぐ",
+          "size": 80,
+          "baseline": 204,
+          "x": 728,
+          "bounds": [
+            728,
+            139,
+            808,
+            210
+          ]
+        },
+        {
+          "character": "街",
+          "size": 80,
+          "baseline": 199,
+          "x": 812,
+          "bounds": [
+            812,
+            131,
+            892,
+            207
+          ]
+        }
+      ],
+      "image": "selected-D/typography/01-subtle.png",
+      "type_layer": "selected-D/typography/01-subtle-type.png",
+      "sha256": "2be401bb0e77b7847d21796ce0d116845270f63f614cf7c7b94e3b2ca7b8c8c5",
+      "art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+      "person_region_pixels_unchanged": true
+    },
+    {
+      "id": "02",
+      "name": "大小と段差",
+      "stem": "02-sizes-and-step",
+      "sizes": [
+        88,
+        64,
+        76,
+        70,
+        72,
+        88
+      ],
+      "baselines": [
+        202,
+        194,
+        207,
+        198,
+        210,
+        202
+      ],
+      "gaps": [
+        8,
+        0,
+        6,
+        0,
+        8
+      ],
+      "glyphs": [
+        {
+          "character": "煙",
+          "size": 88,
+          "baseline": 202,
+          "x": 400,
+          "bounds": [
+            400,
+            128,
+            488,
+            209
+          ]
+        },
+        {
+          "character": "が",
+          "size": 64,
+          "baseline": 194,
+          "x": 496,
+          "bounds": [
+            496,
+            142,
+            560,
+            195
+          ]
+        },
+        {
+          "character": "つ",
+          "size": 76,
+          "baseline": 207,
+          "x": 560,
+          "bounds": [
+            560,
+            159,
+            636,
+            207
+          ]
+        },
+        {
+          "character": "な",
+          "size": 70,
+          "baseline": 198,
+          "x": 642,
+          "bounds": [
+            642,
+            140,
+            712,
+            201
+          ]
+        },
+        {
+          "character": "ぐ",
+          "size": 72,
+          "baseline": 210,
+          "x": 712,
+          "bounds": [
+            712,
+            151,
+            784,
+            216
+          ]
+        },
+        {
+          "character": "街",
+          "size": 88,
+          "baseline": 202,
+          "x": 792,
+          "bounds": [
+            792,
+            128,
+            880,
+            210
+          ]
+        }
+      ],
+      "image": "selected-D/typography/02-sizes-and-step.png",
+      "type_layer": "selected-D/typography/02-sizes-and-step-type.png",
+      "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972",
+      "art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+      "person_region_pixels_unchanged": true
+    },
+    {
+      "id": "03",
+      "name": "右上がり",
+      "stem": "03-rise-right",
+      "sizes": [
+        80,
+        76,
+        76,
+        76,
+        76,
+        84
+      ],
+      "baselines": [
+        211,
+        205,
+        200,
+        195,
+        190,
+        187
+      ],
+      "gaps": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "glyphs": [
+        {
+          "character": "煙",
+          "size": 80,
+          "baseline": 211,
+          "x": 396,
+          "bounds": [
+            396,
+            144,
+            476,
+            217
+          ]
+        },
+        {
+          "character": "が",
+          "size": 76,
+          "baseline": 205,
+          "x": 480,
+          "bounds": [
+            480,
+            143,
+            556,
+            206
+          ]
+        },
+        {
+          "character": "つ",
+          "size": 76,
+          "baseline": 200,
+          "x": 560,
+          "bounds": [
+            560,
+            152,
+            636,
+            200
+          ]
+        },
+        {
+          "character": "な",
+          "size": 76,
+          "baseline": 195,
+          "x": 640,
+          "bounds": [
+            640,
+            132,
+            716,
+            198
+          ]
+        },
+        {
+          "character": "ぐ",
+          "size": 76,
+          "baseline": 190,
+          "x": 720,
+          "bounds": [
+            720,
+            127,
+            796,
+            195
+          ]
+        },
+        {
+          "character": "街",
+          "size": 84,
+          "baseline": 187,
+          "x": 800,
+          "bounds": [
+            800,
+            116,
+            884,
+            194
+          ]
+        }
+      ],
+      "image": "selected-D/typography/03-rise-right.png",
+      "type_layer": "selected-D/typography/03-rise-right-type.png",
+      "sha256": "596ed54a33ff097a866310758ab1f73ce6f4b716dd5d379f6e24d380b8256efa",
+      "art_sha256": "ebe1e20a18697e50e1bef2babd68a39200b905ee946c7027332a6079bf2f646d",
+      "person_region_pixels_unchanged": true
+    }
+  ]
+}

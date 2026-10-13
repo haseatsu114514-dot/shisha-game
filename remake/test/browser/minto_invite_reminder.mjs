@@ -1,12 +1,15 @@
-// #368: 来店先と一致する有効な未対応LIMEだけ、移動の直前に思い出す。
+// #368: 会場一致と最後の返信機会を、未読・保留・旧セーブ・実操作で確認する。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 await suite("venue-invite-reminder", async (check) => {
-  for (const [label, options, read] of [
+  for (const [label, options, read, walking] of [
     ["pc-unread", {}, false],
     ["touch-waiting", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+    ["street-pc-unread", {}, false, true],
+    ["street-touch-waiting", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true, true],
   ]) await check(label, async (page) => {
+    const activate = (locator) => options.hasTouch ? locator.tap() : locator.click();
     page.setDefaultTimeout(30000);
     await page.evaluate(async (read) => {
       const core = await import("./js/core/state.js");
@@ -43,8 +46,30 @@ await suite("venue-invite-reminder", async (check) => {
     await page.locator('[data-test="pin-minto"]').waitFor();
     assert.equal(await page.locator(".hud-lime .badge").textContent(), read ? "" : "1");
     assert.equal(await page.evaluate(() => QA.lime.venueInviteNeedingReply("minto")?.msg?.sender), "minto");
-    await page.locator('[data-test="pin-minto"]').click();
-    await page.locator('[data-test="map-go"]').click();
+    let enter;
+    if (walking) {
+      await activate(page.locator('[data-test="map-walk"]'));
+      await page.locator('[data-test="street-frame"]').waitFor();
+      const frame = page.frames().find((f) => f.url().includes('embed=1'));
+      await frame.waitForFunction(() => window.__street?.state().ready && !__street.state().paused);
+      assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "Browsing the street must not remind");
+      enter = async () => {
+        await frame.evaluate(() => __street.warp("peppermint"));
+        if (options.hasTouch) {
+          const x = await frame.evaluate(() => __street.layout().doors.find(d => d.id === "peppermint").cx - __street.state().camX);
+          const canvas = frame.locator('#view');
+          const box = await canvas.boundingBox();
+          await canvas.tap({ position: { x: x / 640 * box.width, y: 210 / 360 * box.height } });
+        } else {
+          await frame.locator('#view').focus();
+          await page.keyboard.press('KeyZ');
+        }
+      };
+    } else {
+      await activate(page.locator('[data-test="pin-minto"]'));
+      enter = () => activate(page.locator('[data-test="map-go"]'));
+    }
+    await enter();
     await page.locator('[data-test="venue-invite-check"]').waitFor();
     const before = await page.evaluate(() => ({
       slot: QA.core.state.slot,
@@ -53,17 +78,18 @@ await suite("venue-invite-reminder", async (check) => {
       done: QA.core.state.inbox[0].done,
     }));
     assert.deepEqual(before, { slot: 0, money: 30000, read, done: false });
-    await page.locator('[data-test="venue-invite-check"]').click();
+    await activate(page.locator('[data-test="venue-invite-check"]'));
     // 送信者指定のLIMEはトーク一覧ではなく本文へ直行する（一覧行は表示されない）。
     await page.locator('[data-test="reply-2"]').waitFor();
     assert.equal(await page.evaluate(() => QA.core.state.slot), 0, "Opening LIME must not spend an action");
-    await page.locator('[data-test="reply-2"]').click(); // 返事を保留し、一覧へ戻る
-    await page.locator('[data-test="phone-close"]').click();
+    await activate(page.locator('[data-test="reply-2"]')); // 返事を保留し、一覧へ戻る
+    await activate(page.locator('[data-test="phone-close"]'));
     assert.deepEqual(await page.evaluate(() => ({
       slot: QA.core.state.slot, money: QA.core.state.money, read: QA.core.state.inbox[0].read,
       done: QA.core.state.inbox[0].done,
     })), { slot: 0, money: 30000, read: true, done: false });
-    await page.locator('[data-test="map-go"]').click();
+    await page.evaluate(() => { QA.core.save(); QA.core.load(); });
+    await enter();
     assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "The same invite must not nag twice");
   }, options);
 
@@ -77,12 +103,13 @@ await suite("venue-invite-reminder", async (check) => {
       s.inbox.push({ id: m.id, day: 4, msg: structuredClone(m), read: false, done: false, replyState: "waiting" });
       const lime = await import("./js/daily/phone.js");
       const active = lime.venueInviteNeedingReply("minto");
+      const unrelated = lime.actionInviteNeedingReply("naru");
       const expired = s.inbox[0];
       expired.done = true;
       const cleared = lime.venueInviteNeedingReply("minto");
-      window.QAReminder = { active: !!active, cleared: !!cleared, unread: lime.unreadCount() };
+      window.QAReminder = { active: !!active, unrelated: !!unrelated, cleared: !!cleared, unread: lime.unreadCount() };
     });
-    assert.deepEqual(await page.evaluate(() => window.QAReminder), { active: true, cleared: false, unread: 1 });
+    assert.deepEqual(await page.evaluate(() => window.QAReminder), { active: true, unrelated: false, cleared: false, unread: 1 });
   });
 
   for (const [label, source, spot, expectedSender] of [
@@ -234,4 +261,105 @@ await suite("venue-invite-reminder", async (check) => {
     });
     assert.deepEqual(await page.evaluate(() => window.QANonVenue), [null, null, null]);
   });
+  const startReminderDay = async (page, { slot = 1, stamina = 100, night = "" } = {}) => {
+    await page.evaluate(async ({ slot, stamina, night }) => {
+      const core = await import("./js/core/state.js");
+      const data = await import("./js/core/data.js");
+      const vn = await import("./js/vn/engine.js");
+      const daily = await import("./js/daily/calendar.js");
+      const phone = await import("./js/daily/phone.js");
+      const ui = await import("./js/core/ui.js");
+      const ch1 = await import("./js/chapters/ch1.js");
+      const s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 4, slot, stamina, money: 30000 });
+      Object.assign(s.flags, { _morning_4: true, _errand_scout_done: true,
+        _delivery_adam_done: true, _delivery_minto_done: true, _lime_tut: 1, _lime_opened: true });
+      s.met.naru = true; s.contacts.push("naru");
+      const m = data.DB.lime.find((m) => m.id === "lime_naru_day3");
+      s.inbox.push({ id: m.id, day: 4, msg: structuredClone(m), read: false,
+        done: false, replyState: "waiting", log: [] });
+      const nightEvents = night === "completed" ? { 4: { id: "completed", done: () => true } }
+        : night === "deferred" ? { 3: { id: "deferred", schedule: "regular", run: async () => {} } } : {};
+      if (night === "deferred") s.deferredNightEvents = [{ id: "deferred", chapter: 1, originalDay: 3, deferredOn: 3 }];
+      ch1.setupHooks(); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      ui.clearScreen(); window.QA = { core, phone };
+      void daily.runDaily({ nightEvents });
+    }, { slot, stamina, night });
+    await page.locator('[data-test="pin-rest"]').waitFor();
+  };
+
+  await check("free-shopping-before-rin-action", async (page) => {
+    await startReminderDay(page);
+    await page.locator('[data-test="pin-shop"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    await page.locator('[data-test="shop-upstairs"]').waitFor();
+    assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0);
+    assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
+    await page.locator('[data-test="shop-upstairs"]').click();
+    await page.locator('[data-test="venue-invite-check"]').waitFor();
+    assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
+    await page.locator('[data-test="venue-invite-check"]').click();
+    await page.locator('[data-test="reply-2"]').waitFor();
+    await page.locator('[data-test="reply-2"]').click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('[data-test="pin-rest"]').waitFor();
+    assert.deepEqual(await page.evaluate(() => ({ slot: QA.core.state.slot, money: QA.core.state.money,
+      rinVisited: QA.core.state.visitedDay.rin || null })), { slot: 1, money: 30000, rinVisited: null });
+  });
+
+  await check("full-day-rest-last-reply-before-two-slots", async (page) => {
+    await startReminderDay(page, { slot: 0, stamina: 0 });
+    await page.locator('[data-test="pin-rest"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    await page.locator('[data-test="rest-full"]').waitFor();
+    assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0);
+    await page.locator('[data-test="rest-full"]').click();
+    await page.locator('[data-test="venue-invite-check"]').waitFor();
+    assert.deepEqual(await page.evaluate(() => ({ slot: QA.core.state.slot, read: QA.core.state.inbox[0].read,
+      resting: !!QA.core.state.restDay?.fullDay })), { slot: 0, read: false, resting: false });
+    await page.locator('[data-test="venue-invite-check"]').click();
+    await page.locator('[data-test="reply-2"]').waitFor();
+    await page.locator('[data-test="reply-2"]').click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('[data-test="pin-rest"]').waitFor();
+    assert.equal(await page.evaluate(() => QA.core.state.slot), 0);
+  });
+
+  for (const night of ["completed", "deferred"]) await check(`${night}-night-plan`, async (page) => {
+    await startReminderDay(page, { night });
+    await page.locator('[data-test="pin-rest"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    if (night === "completed") {
+      await page.locator('[data-test="venue-invite-check"]').waitFor();
+      assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
+    } else {
+      assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0);
+      assert.equal(await page.evaluate(() => QA.core.state.inbox[0].result), "expired");
+    }
+  });
+
+  await check("multiple-invites-free-actions-and-legacy-reminder-save", async (page) => {
+    const actual = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const data = await import("./js/core/data.js");
+      const phone = await import("./js/daily/phone.js");
+      const s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 4, slot: 1 });
+      s.inbox = ["lime_naru_day3", "lime_adam_arcade_after_close"].map(id => ({ id, day: 4,
+        msg: structuredClone(data.DB.lime.find(m => m.id === id)), read: false, done: false, replyState: "waiting" }));
+      const first = phone.actionInviteNeedingReply("rest").item.id;
+      const second = phone.actionInviteNeedingReply("rest", {}, [first]).item.id;
+      const none = phone.actionInviteNeedingReply("rest", {}, [first, second]);
+      const free = phone.actionInviteNeedingReply("fortune", { spendsAction: false });
+      s.flags._venue_lime_reminders = [`1:4:${first}`];
+      core.save();
+      const saved = JSON.parse(localStorage.getItem(core.SAVE_KEY)); saved.schema = 11;
+      localStorage.setItem(core.SAVE_KEY, JSON.stringify(saved)); core.load();
+      return { first, second, none: !!none, free: !!free,
+        remembered: core.state.flags._venue_lime_reminders, unread: phone.unreadCount() };
+    });
+    assert.deepEqual(actual, { first: "lime_naru_day3", second: "lime_adam_arcade_after_close",
+      none: false, free: false, remembered: ["1:4:lime_naru_day3"], unread: 2 });
+  });
+
 });

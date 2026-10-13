@@ -197,7 +197,7 @@
       ]
     },
     {
-      "id": "kafuka-v2",
+      "id": "samechan-v2",
       "title": "サメちゃん 基本4差分 v2",
       "status": "approved",
       "role": "採用済み生成元・画質と質感の参照",
@@ -205,7 +205,7 @@
       "images": [
         {
           "label": "通常／笑顔／真剣／驚き",
-          "path": "kafuka-v2-sheet.png",
+          "path": "samechan-v2-sheet.png",
           "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b"
         }
       ],
@@ -213,7 +213,7 @@
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187"
     },
     {
-      "id": "kafuka-game-v2",
+      "id": "samechan-game-v2",
       "title": "サメちゃん 採用済みゲーム用5表情",
       "status": "approved",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
@@ -222,38 +222,38 @@
         {
           "label": "通常",
           "expression": "normal",
-          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "path": "../../../../assets/sprites/characters/samechan/chr_samechan_normal.png",
           "sha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277"
         },
         {
           "label": "笑顔",
           "expression": "smile",
-          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+          "path": "../../../../assets/sprites/characters/samechan/chr_samechan_smile.png",
           "sha256": "d07efdbc5af7c8ddf6e9e1b2188caeb94718720fdb1825c98e1e6dd8c2e8040c"
         },
         {
           "label": "真剣",
           "expression": "serious",
-          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+          "path": "../../../../assets/sprites/characters/samechan/chr_samechan_serious.png",
           "sha256": "2a50ac21ca5ece8f2c4c666d30d625e2bb84bdb8e3bd51c3cd8ad5cb7fdf3262"
         },
         {
           "label": "驚き",
           "expression": "surprise",
-          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+          "path": "../../../../assets/sprites/characters/samechan/chr_samechan_surprise.png",
           "sha256": "9e8f146bce256d2128f4b5dc4c4d3cc0b09a4d24e0f93b5422a44fa1de04ea62"
         },
         {
           "label": "息を弾ませてサメ語り",
           "expression": "excited",
-          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+          "path": "../../../../assets/sprites/characters/samechan/chr_samechan_excited.png",
           "sha256": "0499b48c271dc776d25dfaa40b64370ae829c88114d237e21dcae2543fc981c2"
         }
       ],
       "approval": "2026-10-04: オーナー「全て完了したらマージ」。サメちゃん追加v3の5枚目を制作・採用・組み込み、検証後のマージを指示。"
     },
     {
-      "id": "kafuka-excited-v3",
+      "id": "samechan-excited-v3",
       "title": "サメちゃん 追加5表情目・可愛く息切れする熱弁 v3",
       "status": "approved",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
@@ -262,13 +262,13 @@
         {
           "label": "生成元・可愛く息切れしながら熱弁",
           "expression": "excited",
-          "path": "kafuka-excited-v3.png",
+          "path": "samechan-excited-v3.png",
           "sha256": "4dedda89c2ac559015366b4ef12aa4e20d47fc0ff643dc0543e6dbdfc1e810bd"
         },
         {
           "label": "基本4枚と全身高を揃えた確認用",
           "expression": "excited",
-          "path": "kafuka-excited-v3-preview.png",
+          "path": "samechan-excited-v3-preview.png",
           "sha256": "28ca4634e2ab3a8b7346ac1de83bdaac650c5a831de4723aa7cf5bcbc4f8472a"
         }
       ],
@@ -828,103 +828,103 @@
       "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
-      "id": "kafuka-gothic-shark-deep-sea-v1",
+      "id": "samechan-gothic-shark-deep-sea-v1",
       "title": "① 深海シスター",
       "status": "pending",
       "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
-      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "sourceCommit": "working-branch:codex/samechan-gothic-shark-concepts-20261007",
       "images": [
         {
           "label": "無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/deep-sea/source.png",
           "sha256": "767f07542f3fcf4895099839c161a9908da62cdcda4c80a172810b9521656df8"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/deep-sea/preview.png",
           "sha256": "974b1c58229cfd380d7fd65b3ec06619ebff523f12c0af867f292c342230a16f"
         }
       ]
     },
     {
-      "id": "kafuka-gothic-shark-shark-cinema-v1",
+      "id": "samechan-gothic-shark-shark-cinema-v1",
       "title": "② サメ映画好きのシスター",
       "status": "pending",
       "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
-      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "sourceCommit": "working-branch:codex/samechan-gothic-shark-concepts-20261007",
       "images": [
         {
           "label": "無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/shark-cinema/source.png",
           "sha256": "6b3613b5c2f7ec67ff246cef6c77ef79ff7247073e1bed56c2ac35fb9cd7b892"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/shark-cinema/preview.png",
           "sha256": "9371aeb96ec1462404e1a0180e65ab0f01e22ea05fe40d40debc544404d511d2"
         }
       ]
     },
     {
-      "id": "kafuka-gothic-shark-skater-v1",
+      "id": "samechan-gothic-shark-skater-v1",
       "title": "③ スケーター風シスター",
       "status": "pending",
       "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
-      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "sourceCommit": "working-branch:codex/samechan-gothic-shark-concepts-20261007",
       "images": [
         {
           "label": "無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/skater/source.png",
           "sha256": "dfd89eddd0191de79f1f84a2c001599ab30da19bc2bc5516ec593307dc263016"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/skater/preview.png",
           "sha256": "883e89a58d25e4dd2e25912033c465daaa3517a4c7f3798f706b13fc76f37042"
         }
       ]
     },
     {
-      "id": "kafuka-blue-sister-v1",
+      "id": "samechan-blue-sister-v1",
       "title": "サメちゃん・青ベースのストリートシスター 通常／腹話術",
       "status": "pending",
       "role": "3案目を選択した最新指示で主色を青へ修正。通常と顔をコロちゃんで隠した腹話術の確認用。画風の確定基準には使わない",
-      "sourceCommit": "working-branch:codex/kafuka-blue-sister-ventriloquism-20261007",
+      "sourceCommit": "working-branch:codex/samechan-blue-sister-ventriloquism-20261007",
       "images": [
         {
           "label": "通常・無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
           "sha256": "9dd47dcd6aea5fa5b7f46c3a89f17ca86fa384cf74e0b85de21e26e3a937fdce"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/normal/preview.png",
           "sha256": "498209e404092ee90513e82f34336e3a56b254a48ca94678b32b042c45ed0303"
         },
         {
           "label": "腹話術・無加工生成元",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/source.png",
           "sha256": "f08830ce7585ad2d5ae9b3ab0c9bcdafe108f55ea10b6f6c11a5bb70003ad8c8"
         },
         {
           "label": "腹話術・896×1200確認用",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/preview.png",
           "sha256": "5ca5eedda9e07e6b5b14fe1f311348238dec979f2dc65419cb7902f866bcbdb3"
         }
       ]
     },
     {
-      "id": "kafuka-blue-black-hair-v2",
+      "id": "samechan-blue-black-hair-v2",
       "title": "サメちゃん・青衣装の黒髪試案（未使用履歴）",
       "status": "pending",
       "role": "添付の服装選択が生成中に来たため、この青衣装の黒髪案は未使用。髪色の参照のみ。画風基準にしない",
@@ -933,19 +933,19 @@
         {
           "label": "通常・無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-black-hair-v2/normal/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-black-hair-v2/normal/source.png",
           "sha256": "b0ac6119567aab6d1e5b2df83d513e09f3a82f3f6748555c3b06bc1bff8bc60c"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-black-hair-v2/normal/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-black-hair-v2/normal/preview.png",
           "sha256": "0db624a457c137b59e170860f9ceec3bef1d0fbab46a041c9886639fb54ce5a9"
         }
       ]
     },
     {
-      "id": "kafuka-selected-outfit-black-hair-v3",
+      "id": "samechan-selected-outfit-black-hair-v3",
       "title": "サメちゃん・添付の服装と黒髪 通常／腹話術",
       "status": "pending",
       "role": "最新の添付画像で選んだ黒×淡い青の服装を保ち、黒髪＋少量の青メッシュへ修正。通常と顔をコロちゃんで隠した腹話術。確認用で、画風基準には使わない",
@@ -954,31 +954,31 @@
         {
           "label": "通常・無加工生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/source.png",
           "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/preview.png",
           "sha256": "7a70b2ee911c69f8b6e920d055d2795fadc9a17859d4573c7bfa3fbe250380c7"
         },
         {
           "label": "腹話術・無加工生成元",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/source.png",
           "sha256": "c67323acf0cdc11df71cb8fd7aa07495019a8f3cf70d5cbbddd281f7841de2ca"
         },
         {
           "label": "腹話術・896×1200確認用",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/preview.png",
           "sha256": "43bf31261b9f1193d33cdf6d2b1bee6a46bded3cc4ae8699f3277bdd55798921"
         }
       ]
     },
     {
-      "id": "kafuka-hair-ocean-blue-v1",
+      "id": "samechan-hair-ocean-blue-v1",
       "title": "サメちゃん ① 黒髪＋濃い青インナー",
       "status": "approved",
       "role": "採用配色・髪色比較の本人参照。画風基準は従来の採用済みみんと／あげはを保持。",
@@ -988,19 +988,19 @@
         {
           "label": "無加工の生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ocean-blue/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ocean-blue/source.png",
           "sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e"
         },
         {
           "label": "全身確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ocean-blue/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ocean-blue/preview.png",
           "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
         }
       ]
     },
     {
-      "id": "kafuka-hair-blue-violet-v1",
+      "id": "samechan-hair-blue-violet-v1",
       "title": "サメちゃん ② 黒髪＋青紫インナー",
       "status": "rejected",
       "role": "採用配色・髪色比較の本人参照。画風基準は従来の採用済みみんと／あげはを保持。",
@@ -1010,19 +1010,19 @@
         {
           "label": "無加工の生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/blue-violet/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/blue-violet/source.png",
           "sha256": "8d369613ec4110996393c383b0bf2d44894b517642bbe7dabc0aeebd7f5e0e6b"
         },
         {
           "label": "全身確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/blue-violet/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/blue-violet/preview.png",
           "sha256": "67f6496ba9b7f3d07a54504fa25a4862317f5d9e69c3f8c16386b0b4de66e02c"
         }
       ]
     },
     {
-      "id": "kafuka-hair-ash-gray-v1",
+      "id": "samechan-hair-ash-gray-v1",
       "title": "サメちゃん ③ 黒髪＋淡グレーインナー",
       "status": "rejected",
       "role": "採用配色・髪色比較の本人参照。画風基準は従来の採用済みみんと／あげはを保持。",
@@ -1032,19 +1032,19 @@
         {
           "label": "無加工の生成元",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ash-gray/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ash-gray/source.png",
           "sha256": "e9ec3fd14bd84e6d49de0604747157d0ba917aad90198522827a419a401e0e3b"
         },
         {
           "label": "全身確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ash-gray/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ash-gray/preview.png",
           "sha256": "7dd1a7b7b0fc518a30efd62ab6397c380586bd0525dd66c1fc2c4bd150c1fb34"
         }
       ]
     },
     {
-      "id": "kafuka-hair-ocean-blue-ventriloquism-v1",
+      "id": "samechan-hair-ocean-blue-ventriloquism-v1",
       "title": "サメちゃん 採用配色の腹話術",
       "status": "pending",
       "role": "採用配色・髪色比較の本人参照。画風基準は従来の採用済みみんと／あげはを保持。",
@@ -1054,94 +1054,94 @@
         {
           "label": "無加工の生成元",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ocean-blue-ventriloquism/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ocean-blue-ventriloquism/source.png",
           "sha256": "19dd66bce1726708a704fa6131ce85b8ac10a8ca361ee06762406ce1bc7a8a5a"
         },
         {
           "label": "全身確認用",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/ocean-blue-ventriloquism/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-hair-color-variants-v1/ocean-blue-ventriloquism/preview.png",
           "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c"
         }
       ]
     },
     {
-      "id": "kafuka-approved-blue-inner-parts-v1",
+      "id": "samechan-approved-blue-inner-parts-v1",
       "title": "サメちゃん・採用黒髪＋青インナー 6ポーズのパーツ",
       "status": "approved",
       "role": "採用済みの黒髪＋濃い青インナー6ポーズ。2026-10-08に本編へ反映。通常・腹話術はPR #208原画を再利用し、追加4表情も採用",
-      "sourceCommit": "working-branch:codex/kafuka-parts-and-nagoya-map-20261007",
+      "sourceCommit": "working-branch:codex/samechan-parts-and-nagoya-map-20261007",
       "images": [
         {
           "label": "通常・無加工原画",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/normal/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/normal/source.png",
           "sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e"
         },
         {
           "label": "通常・896×1200確認用",
           "expression": "normal",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/normal/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/normal/preview.png",
           "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
         },
         {
           "label": "笑顔・無加工原画",
           "expression": "smile",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/smile/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/smile/source.png",
           "sha256": "f536a535ddfad65a31650fb0261d2281ae084842c38c64f6473c90884aa2ce88"
         },
         {
           "label": "笑顔・896×1200確認用",
           "expression": "smile",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/smile/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/smile/preview.png",
           "sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da"
         },
         {
           "label": "真剣・無加工原画",
           "expression": "serious",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/serious/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/serious/source.png",
           "sha256": "4bff2bb217bac87ebdd1b79bf8b4c56145eeffb2a32959769c4888ad4e15623d"
         },
         {
           "label": "真剣・896×1200確認用",
           "expression": "serious",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/serious/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/serious/preview.png",
           "sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d"
         },
         {
           "label": "驚き・無加工原画",
           "expression": "surprise",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/surprise/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/surprise/source.png",
           "sha256": "93cb237ecf5a5396e48141e7e9a39d29f0e5b34a8f84db37705121d4b607e61a"
         },
         {
           "label": "驚き・896×1200確認用",
           "expression": "surprise",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/surprise/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/surprise/preview.png",
           "sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2"
         },
         {
           "label": "熱弁・無加工原画",
           "expression": "excited",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/excited/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/excited/source.png",
           "sha256": "d4e62a413478efdde4c5a43a31868bef0c9b19c797f404c3ef1924f402264a89"
         },
         {
           "label": "熱弁・896×1200確認用",
           "expression": "excited",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/excited/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/excited/preview.png",
           "sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e"
         },
         {
           "label": "腹話術・無加工原画",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/ventriloquism/source.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/ventriloquism/source.png",
           "sha256": "19dd66bce1726708a704fa6131ce85b8ac10a8ca361ee06762406ce1bc7a8a5a"
         },
         {
           "label": "腹話術・896×1200確認用",
           "expression": "ventriloquism",
-          "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/ventriloquism/preview.png",
+          "path": "../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/ventriloquism/preview.png",
           "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c"
         }
       ],

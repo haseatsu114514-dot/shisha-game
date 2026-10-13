@@ -1,13 +1,14 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { refreshPlaceCue } from "../core/transitions.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
-import { kafukaSpot } from "./kafuka.js";
+import { samechanSpot } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
@@ -59,7 +60,7 @@ export const SPOTS = [
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
-  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
@@ -86,7 +87,7 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
-export const allSpots = () => { const extra = kafukaSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
+export const allSpots = () => { const extra = samechanSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
@@ -106,9 +107,9 @@ const NIGHT_STORIES = new Set([
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
-/** 店に通って親しくなってから、いつもの入店に代わる道端の一度だけの会話。 */
+/** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
-  && storyCount("minto") >= 2 && affinityLevel("minto") >= 2;
+  && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
@@ -122,7 +123,7 @@ export function hasNewEvent(spot) {
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
   if (spot.kind === "shop") return state.day % 7 !== RIN_AWAY_DAY && state.visitedDay.rin !== state.day && hasNewStory("rin");
-  if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
+  if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;
   return spot.id === "choizap" ? !state.flags._gym_member : !(state.spotVisits?.[spot.id] > 0);
@@ -179,14 +180,15 @@ export async function visitChar(charId) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
     await play("ch1_minto_identity_reveal");
     gainAffinity(charId, 10);
+  } else if (questionVisitDue(charId)) {
+    // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
+    await playQuestionVisit(charId, { bg });
+    gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
-  } else if (questionVisitDue(charId)) {
-    await playQuestionVisit(charId, { bg });
-    gainAffinity(charId, 5);
   } else if (finaleAtVisit(charId)) {
     await playFinale(charId, { bg });
     gainAffinity(charId, 10);
@@ -209,6 +211,7 @@ export async function visitChar(charId) {
 }
 
 export async function visitRival(spot) {
+  refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
@@ -217,6 +220,7 @@ export async function visitRival(spot) {
 
 /** 施設スポット（一人の時間）。能力1Pに加え、場所ごとの体力の変化がある。 */
 export async function visitSpot(spot) {
+  refreshPlaceCue(spot.id);
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina || 0);
   state.spotVisits = state.spotVisits || {};
@@ -243,12 +247,12 @@ export async function visitSpot(spot) {
   earnStat(spot.stat, 4);
 }
 
-export async function restAtHome(spot) {
+export async function restAtHome(spot, { fullDay = false } = {}) {
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  await play("remake_rest");
+  await play(fullDay ? "remake_rest_day" : "remake_rest");
 }
 
 /** 好感度の段階（♥の数） */
