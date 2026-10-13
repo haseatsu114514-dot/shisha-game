@@ -1,0 +1,23 @@
+{
+  "issue": 534,
+  "worker": "codex-ch1-ova-20261013-b30a1e4f",
+  "tool": "image_gen.imagegen",
+  "status": "requested",
+  "prompt": "Make one NEW wordless full-bleed cinematic 16:9 still for chapter 1 of an everyday Japanese shisha-cafe story. Use the rich hand-painted aesthetic of the early 1992 BASTARD!! OVA: organic tapered black ink, broad 2-3 hard cel shadow tones, grouped glossy hair highlights, detailed opaque gouache backgrounds. Character reference portraits determine identity, age and clothes; the OVA Tsumugi reference determines art treatment ONLY. No fantasy, magic, battle armor, weapons, real demon body parts, giant characters, title poster, letters, Japanese/English text, brand logos, watermark or border. INPUT 1 is Naru's official identity, age 23: SHORT spiky silver hair, amber-gold eyes, one small silver ear piercing, black-and-WHITE track jacket with orange inner trim, black shirt and cargo trousers. Preserve his real small metallic capsule-shaped personal mouthpiece on its neck chain, as in the official portrait, not just a chain and not a giant pendant. INPUT 2 is OVA style only. INPUT 3 is KEMURIKUSA's setting for dark green painted walls, oak counter and simple warm utility pendant lighting ONLY; exclude all hardware and storage shelves. Fresh waist-up slightly low POV from the visitor's seat, Naru on the RIGHT behind the counter. He turns to welcome the visitor with an open warm easy smile, right hand open palm-up resting just above the countertop as if saying 'watch everything if you want to improve'. His other hand rests casually on the wood. Friendly, capable, generous rival, not arrogant, sneering, hostile or threatening. The LEFT half is an uncluttered oak work surface and wall with a subtle framed botanical print; no real plants. Naru's face and natural five-finger hands read clearly. No additional person, no shisha equipment, bowl, HMD, hose, smoke, coffee machine, mugs, chalkboard or readable writing. Early evening green and amber everyday cafe palette; different camera and room lighting from the tonari drawing and teaching stills.",
+  "referenced_image_paths": [
+    "assets/sprites/characters/naru/chr_naru_normal.png",
+    "asset_sources/retro-ova-study-519/images/tsumugi-ova.png",
+    "assets/backgrounds/kemurikusa.png"
+  ],
+  "transparent_background": false,
+  "brief": {
+    "人物": "なる（23）",
+    "場面": "ケムリクサ、客を迎えて教える",
+    "台型": "映さない",
+    "HMD": "映さない",
+    "炭": "映さない",
+    "ホース": "映さない",
+    "吸い口": "首掛け、正規立ち絵と同じ本体＋チェーン",
+    "構図": "カウンター越しの腰上、なる右、夕方"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "issue": 534,
+  "worker": "codex-ch1-ova-20261013-b30a1e4f",
+  "tool": "image_gen.imagegen",
+  "status": "requested",
+  "prompt": "Make one NEW wordless full-bleed cinematic 16:9 still for chapter 1 of an everyday Japanese shisha-cafe story. Use the rich hand-painted aesthetic of the early 1992 BASTARD!! OVA: organic tapered black ink, broad 2-3 hard cel shadow tones, grouped glossy hair highlights, detailed opaque gouache backgrounds. Character reference portraits determine identity, age and clothes; the OVA Tsumugi reference determines art treatment ONLY. No fantasy, magic, battle armor, weapons, real demon body parts, giant characters, title poster, letters, Japanese/English text, brand logos, watermark or border. INPUT 1 is Minto's official adult identity and concept-cafe costume, real age 29, youthful cute adult appearance; it is used only for hair, human silhouette and accessories, not to show her face. Black straight LONG hair, little black plastic horn-shaped HAIR ACCESSORIES and tiny bat hair clip, black off-shoulder costume with lime-green frill and lacing. The horns/bat are removable fashion accessories, not anatomy or wings. INPUT 2 is OVA style only. New mysterious composition radically different from the blue cafe doorway and long-floor-shadow scene already used for chapter 2: a TIGHT oblique shoulder-height close shot from behind a human-sized woman at the event hall's modest side entrance, black velvet side-stage curtain in the LEFT foreground naturally occluding her ENTIRE face and eyes. She stands on the RIGHT, back/left shoulder toward us, quiet composed readiness. Her long glossy black hair and one tiny horn accessory make a dark silhouette; only a restrained thin lime-green fabric trim at her upper sleeve/bodice catches the warm edge light. One relaxed hand gently holds the curtain edge; natural fingers, no claws. Warm ivory event light beyond the curtain and muted green-gray backstage wall, cinematic contrast but everyday rented local hall, not a cathedral or fantasy lair. The framing ends at her waist; NO floor or long cast shadow, NO opposite protagonist or crowd, NO visible facial profile, eye, nose, lips or reflection. Do not reveal her private identity, real name or older-looking makeup. No equipment, bowl, HMD, coal, hose, mouthpiece or smoke. A short clue without naming the rival or depicting a match outcome.",
+  "referenced_image_paths": [
+    "assets/sprites/characters/minto/chr_minto_normal.png",
+    "asset_sources/retro-ova-study-519/images/tsumugi-ova.png"
+  ],
+  "transparent_background": false,
+  "brief": {
+    "人物": "みんと（実年齢29、顔は伏せる）",
+    "場面": "地元イベントホールの舞台脇",
+    "台型": "映さない",
+    "HMD": "映さない",
+    "炭": "映さない",
+    "ホース": "映さない",
+    "吸い口": "映さない",
+    "構図": "肩の高さの後ろ斜め寄り、カーテンで顔全体を伏せ、足元を映さない"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "issue": 534,
+  "worker": "codex-ch1-ova-20261013-b30a1e4f",
+  "claim_run": 38383045275,
+  "status_validation_run": 38383568123,
+  "tool": "image_gen.imagegen",
+  "status": "generated; visually reviewed",
+  "prompt": "Create a NEW full-bleed cinematic 16:9 movie still for chapter 1 of an everyday Japanese shisha-cafe story. INPUT 1 is Hajime's official character identity, age 22. INPUT 2 is the existing local street setting, for architectural scale and a modest Japanese shopping-street mood only. INPUT 3 is the approved OVA-style Tsumugi illustration, for expressive organic ink and warm opaque cel-paint style only. This is not a title poster. Use the lush early-1990s hand-painted OVA visual language of the 1992 BASTARD!! OVA: confident fine black hand-ink, 2-3 broad hard-edged cel shadow tones, glossy grouped hair highlights, atmospheric gouache background. New framing: a high oblique view across a small, ordinary Japanese neighborhood shopping street at blue hour, wet pavement after a brief shower, low-rise shops and natural overhead utility wires. One human-sized Hajime is walking in the lower RIGHT foreground diagonally toward a warm small cafe doorway in the left midground, his back/side to us. His black cap, messy short black hair, black hoodie, black cargo trousers and boots remain recognizable. The warm doorway suggests a place he belongs and the shop he dreams of having. Quiet hopeful everyday atmosphere; navy evening and honey-colored windows, not a futuristic city or fantasy battlefield. Shop facades are varied and believable, not a duplicate row, with blank small signboards and blank awnings. Do NOT copy the source street composition or its repeated decorative plants. No potted plants added. No shisha equipment visible in windows. No other readable faces. No magic, giant figures, armor, swords, horns on humans, smoke, logos, Japanese/English letters, captions, signs with words, title layout, watermark or border. Exactly one finished wordless scene.",
+  "referenced_image_paths": [
+    "assets/sprites/characters/hajime/chr_hajime_normal.png",
+    "assets/backgrounds/bg_street_night.png",
+    "asset_sources/retro-ova-study-519/images/tsumugi-ova.png"
+  ],
+  "transparent_background": false,
+  "brief": {
+    "人物": "ハジメ（22）",
+    "場面": "地元の商店街、店へ向かう夕方",
+    "台型": "映さない",
+    "HMD": "映さない",
+    "炭": "映さない",
+    "ホース": "映さない",
+    "吸い口": "映さない",
+    "構図": "高い斜め視点、右手前から左中景の灯りへ"
+  },
+  "source_images_are_authoritative_identity_or_style_not_real_hardware": true,
+  "output": "images/01-city-night.png",
+  "sha256": "38ddcc5d149f5fbd23a128ef1bf18ecb77e775398b9e15619e0431509a4e14b4",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "qa": {
+    "identity": "正規立ち絵の髪・服・年齢感を維持",
+    "composition": "新しい構図、画像に文字なし",
+    "hardware": "映らない",
+    "notes": "街は背面で帽子・黒服を確認。紬は茶髪ボブ・茶色の目・黒ピアス・花刺繍・スタイラス・ひび入りタブレット・猫の描画を目視確認。"
+  }
+}
