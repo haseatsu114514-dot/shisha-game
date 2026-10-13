@@ -1,0 +1,59 @@
+{
+  "mockups": {
+    "A-ember-closeup.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2117650
+    },
+    "B-clear-targets.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2032289
+    },
+    "C-one-scene.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2260132
+    }
+  },
+  "baseline": {
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "drill",
+    "pageerrors": 0,
+    "clock": "capture-only fixed after heat start"
+  },
+  "gallery": {
+    "browser": "Chromium",
+    "desktop": [
+      1440,
+      1100
+    ],
+    "landscape_touch": [
+      844,
+      390
+    ],
+    "portrait_touch": [
+      390,
+      844
+    ],
+    "pageerrors": 0,
+    "http_errors": 0,
+    "tabs": "A/B/C plus keyboard arrows PASS",
+    "zoom": "open/close/Escape PASS",
+    "comparison": "three images PASS",
+    "horizontal_overflow": false
+  },
+  "scope": "static mockups only; no game implementation or gameplay regression claim",
+  "claim_run": 38350757850,
+  "status_run": 38350959189,
+  "worker": "codex-coal-mockups-20261013-b0d54e25"
+}
