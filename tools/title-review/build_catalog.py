@@ -9,7 +9,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
-CHARACTERS = {'ageha': 'アゲハ', 'hiyori': 'ひより', 'kafuka': 'サメちゃん／波多野なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rin': '凛', 'tsumugi': 'つむぎ', 'other': 'その他'}
+CHARACTERS = {'ageha': 'アゲハ', 'hiyori': 'ひより', 'samechan': 'サメちゃん／波多野なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rin': '凛', 'tsumugi': 'つむぎ', 'other': 'その他'}
 V1 = 'asset_sources/title-art/heroine-concepts-v1-20261008'
 V2 = 'asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008'
 DAILY = 'asset_sources/heroine-title-candidates-20261009'

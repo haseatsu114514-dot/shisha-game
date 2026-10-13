@@ -9,7 +9,7 @@ const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const SHOTS = process.env.SHOTS;
 const characters = {
   tsumugi: ["normal", "smile", "serious", "surprise", "sad", "evil", "bow"],
-  kafuka: ["normal", "smile", "serious", "surprise", "excited", "ventriloquism"],
+  samechan: ["normal", "smile", "serious", "surprise", "excited", "ventriloquism"],
   maezono: ["normal", "smile", "serious", "surprise", "excited"],
   sumi: ["normal", "smile", "serious", "surprise", "thinking"],
   mashiro: ["normal", "smile", "serious", "surprise", "sad", "sleep"],

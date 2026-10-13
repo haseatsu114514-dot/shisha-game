@@ -15,7 +15,7 @@ DEST = ROOT / "remake/fonts"
 def main():
     # 初遭遇版や会話からの上書きも含める。制作プレビューの文字に依存しない。
     characters = json.loads((ROOT / "data/characters.json").read_text())
-    characters.append(json.loads((ROOT / "data/dialogue/kafuka.json").read_text())["profile"])
+    characters.append(json.loads((ROOT / "data/dialogue/samechan.json").read_text())["profile"])
     text = "".join(json.dumps({key: value for key, value in c.items()
                               if key in ("name", "full_name", "display_name", "private_name") or key.startswith("intro_cutin")},
                              ensure_ascii=False) for c in characters)

@@ -68,7 +68,7 @@ VOICEVOX 公式:
 - `remake/js/core/data.js` の `bgmUrl("bgm_continue_urgent")` は**本体に同名の音源があればそのローカルファイルを最優先**し、それがなければ公式配布ファイル `https://bgmer.net/wp-content/uploads/2021/10/163_BPM115.mp3` を読み込む。速度は1.08倍、音量は通常の約68%。URL/ブラウザ/回線で音が出ない場合、合成WebAudioへフォールバックする。ブラウザのオンライン依存をなくしたければ以下の同梱作業を行う。
 - **GitHubへのMP3実体の同梱について**: 今回は音声バイナリをGitHub connectorだけで直接pushできる手段がないため、公式URLで本編再生対応まで行う。ユーザーのMac/Claude Code上で元ファイルを `assets/audio/bgm/bgm_continue_urgent.mp3` にコピーしてコミットし、`python3 remake/tools/build_manifest.py` を実行すれば、以降はローカル内蔵曲が自動優先される。ユーザー所有MP3の権利確認は上記公式規約で完了。
 - `remake/continue-preview.html` は実ゲームコード・既存の正規立ち絵を使ったUI確認専用ページ。キャラのセリフと表情が20秒で流れる。PC／スマホではまず手動再生を押す。タイトルへの戻りは再生停止だけで本セーブを触らない。
-- 注意: サメちゃんのキャラ正本 `data/dialogue/kafuka.json` はまだ `romance_available:false` のため、通常プレイで本当に恋人になるルートは未接続。今回追加したのはプレミア側の受け皿と演出。後日サメちゃんの告白・恋人イベントを正史に追加して、実際に `state.lovers` に `kafuka` が加わったら抽選される。テスト確認では `premium:kafuka` の強制プレビューで確認可能。
+- 注意: サメちゃんのキャラ正本 `data/dialogue/samechan.json` はまだ `romance_available:false` のため、通常プレイで本当に恋人になるルートは未接続。今回追加したのはプレミア側の受け皿と演出。後日サメちゃんの告白・恋人イベントを正史に追加して、実際に `state.lovers` に `samechan` が加わったら抽選される。テスト確認では `premium:samechan` の強制プレビューで確認可能。
 - 第1章ではみんとが敵側というルールは引き続き絶対厳守（章1は恋人でもプレミア抽選から除外）。今後恋人候補が増える場合も本人との関係成立・大会での立場をチェック。
 
 ## 現在の正規仕様（第3期、追記）

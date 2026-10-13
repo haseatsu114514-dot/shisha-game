@@ -41,7 +41,7 @@
 
 ### サメちゃん
 
-![サメちゃん3案：シーシャークの試運転、サメ映画、水族館](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/kafuka.png)
+![サメちゃん3案：シーシャークの試運転、サメ映画、水族館](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/samechan.png)
 
 ## 原画・比較・履歴
 

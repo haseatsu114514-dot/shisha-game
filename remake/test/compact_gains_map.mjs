@@ -52,7 +52,7 @@ try {
         badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
         gym: document.querySelector('[data-test="pin-choizap"] .store-logo img').src,
-        leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-kafuka"]') };
+        leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
     assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 26 : 52) && f.loaded), JSON.stringify(map.faces));

@@ -5,7 +5,7 @@ import { state } from "../core/state.js";
 export const relationshipDayTotal = () => ((state.chapter || 1) - 1) * 14 + state.day;
 
 export function dateVenue(id, savedId = null) {
-  const exclude = { minto: "pepermint", rin: "drfookah", kafuka: "shishark" }[id];
+  const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];
   const venues = (DB.lover?.venues || []).filter(v => v.id !== exclude);
   return venues.find(v => v.id === savedId)
     || venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
@@ -26,7 +26,7 @@ export function dateScene(id, venue, { choice = null, choiceFlags = null, growth
   return {
     dialogue_id: `remake_date_${id}`,
     metadata: { bg: `res://assets/backgrounds/${venue.bg}`, private_scene: true,
-      ...(id === "kafuka" ? { min_chapter: 2, bgm: "sweets_or_sweets", bgm_on_speaker: id } : {}) },
+      ...(id === "samechan" ? { min_chapter: 2, bgm: "sweets_or_sweets", bgm_on_speaker: id } : {}) },
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },

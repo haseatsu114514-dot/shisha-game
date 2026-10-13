@@ -30,7 +30,7 @@ const values = {
   "engine.js": { play: async (scene) => plays.push(scene), dialogueSequence: (run) => run() },
   "story-knowledge.js": { syncMintoKnowledge() {} },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
-  "kafuka.js": { kafukaSpot: () => null },
+  "samechan.js": { samechanSpot: () => null },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on() {} },

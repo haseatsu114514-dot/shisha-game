@@ -47,7 +47,7 @@ def encode(src: Path, rel: str) -> bytes:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
-    if (rel.startswith("sprites/characters/kafuka/")
+    if (rel.startswith("sprites/characters/samechan/")
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
