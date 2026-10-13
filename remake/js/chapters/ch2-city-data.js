@@ -45,3 +45,13 @@ export async function loadChapterTwoDialogues() {
   ]);
   for (const dialogues of data) Object.assign(DB.dialogues, dialogues);
 }
+
+export async function loadPreparationDialogues() {
+  const required = ["ageha", "kumicho", "rei", "volk"].flatMap(id => ["chat", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+  const [preparation, isolation] = await Promise.all([
+    readDialogues("ch2_preparation", required),
+    readDialogues("ch2_isolation", ["ch2_naru_warm"]),
+  ]);
+  // 後半の孤立場面を日常へ偶然流さず、DAY3の一場面だけを接続する。
+  Object.assign(DB.dialogues, preparation, { ch2_naru_warm: isolation.ch2_naru_warm });
+}

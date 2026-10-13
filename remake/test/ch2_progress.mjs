@@ -1,7 +1,7 @@
 // 章境界で所持品・関係・日時の記録が失われないことを検証する。
 import assert from "node:assert/strict";
 import { newState } from "../js/core/state.js";
-import { chapterDay, chapterDaysLeft } from "../js/core/chapter-clock.js";
+import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { advanceToChapterTwo } from "../js/chapters/ch2-progress.js";
 
 const value = newState();
@@ -22,6 +22,9 @@ assert.equal(value.day, 15, "Elapsed dates must not rewind to 1");
 assert.equal(chapterDay(value), 1);
 assert.equal(chapterDaysLeft(value), 13);
 assert.equal(value.day - value.loverSince.minto, 2, "Anniversary duration must remain meaningful");
+assert.equal(relationshipElapsedDay(value), 15, "Chapter changes must not add 14 days to an elapsed relationship clock");
+assert.equal(relationshipElapsedDay({ chapter: 2, day: 2, flags: {} }), 16, "Legacy chapter-local dates retain their old relationship clock");
+assert.equal(relationshipElapsedDay({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } } }), 16, "Previously saved DAY1 builds need no date reset");
 const once = structuredClone(value);
 assert.equal(advanceToChapterTwo(value), false);
 assert.deepEqual(value, once, "Repeated starts advanced or reset the chapter twice");

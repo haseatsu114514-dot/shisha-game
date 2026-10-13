@@ -7,6 +7,7 @@
 // 文面の正本: 告白=data/dialogue/confession.json、節目=lover_events.json、LIME・デート=remake/data/lover.json
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
@@ -290,7 +291,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (schedule && gap >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)
+    if (schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,

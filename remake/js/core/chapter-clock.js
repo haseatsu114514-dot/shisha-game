@@ -7,3 +7,9 @@ export function chapterDay(value) {
 }
 
 export const chapterDaysLeft = value => Math.max(0, TOURNAMENT_DAY - chapterDay(value));
+
+/** 新しい本編は通算日。章内日を保存していた旧手動データの記念日計算も保つ。 */
+export function relationshipElapsedDay(value) {
+  const elapsed = value?.flags?._elapsed_calendar || value?.flags?._ch2_day1?.startDay > TOURNAMENT_DAY;
+  return elapsed ? value.day : ((value?.chapter || 1) - 1) * TOURNAMENT_DAY + value.day;
+}

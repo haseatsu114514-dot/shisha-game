@@ -13,6 +13,7 @@ import { runDaily } from "../daily/calendar.js";
 import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/night-events.js";
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
 import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
@@ -52,7 +53,7 @@ const PRIZE = 30000;
 export function setupHooks() {
   hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
-  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
+  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(chapterDay(state)))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "記憶と気配の交差")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果

@@ -8,7 +8,7 @@ import { showHud } from "../daily/hud.js";
 import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
-import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues } from "./ch2-city-data.js";
+import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
 
 let session = null;
@@ -73,7 +73,8 @@ async function openChapter(advance) {
       save();
     }
     if (state.chapter !== 2) return;
-    await continueDayOne();
+    if (chapterDay(state) > 1 || state.flags._ch2_preparation_started) await continuePreparation();
+    else await continueDayOne();
   });
 }
 
@@ -248,9 +249,39 @@ function renderComplete() {
   showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("complete") } }, [el("div.ch2-end-card", [
     el("p.ch2-kicker", { text: "第二章・DAY1 / 地元へ戻って" }), el("h1", { text: "次に持っていく、一台。" }),
     el("p.ch2-end-description", { text: "会場までの道を覚えて、tonariへ戻った。鞄の中には、大会の案内。初めての街で見たものを、少しずつ整理していこう。" }),
-    el("p.ch2-preview-note", { text: "第2章は初日まで遊べます。DAY2以降の準備と県大会は制作中です。初日の進行・所持品・人間関係は保存されています。" }),
+    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。DAY2〜3の行動と交流を接続しました。その先の準備と県大会は制作中です。" }),
+    el("div.ch2-actions", [button("翌日へ", "next-day", continuePreparation, true), button("セーブ・メニュー", "menu", openMenu)]),
+  ])]));
+}
+
+async function continuePreparation() {
+  const owner = session;
+  // 追加台本に失敗しても、初日の完了保存や翌日の日付を進めない。
+  let runChapterTwoPreparation;
+  try {
+    owner.scene = "preparation-loading";
+    await loadPreparationDialogues();
+    ({ runChapterTwoPreparation } = await import("./ch2-preparation.js"));
+  } catch (error) {
+    if (current(owner)) { console.error("[ch2 preparation]", error); renderError(continuePreparation); }
+    return;
+  }
+  if (!current(owner)) return;
+  document.body.classList.remove("ch2-city");
+  owner.scene = "preparation";
+  layers.screen.removeAttribute("aria-busy"); // 日常の地図は入力待ち。章のロード中として読み上げを止めない。
+  await runChapterTwoPreparation();
+  if (!current(owner)) return;
+  showHud(false); document.body.classList.add("ch2-city");
+  await setBg(bgUrl("bg_home", "day"), { instant: true });
+  owner.scene = "preparation-limit";
+  showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("preparation-limit") } }, [el("div.ch2-end-card", [
+    el("p.ch2-kicker", { text: `第二章・DAY ${chapterDay(state)} / 次の朝` }),
+    el("h1", { text: "自分の手で、試していこう。" }),
+    el("p.ch2-end-description", { text: "DAY3の夜までの進行を保存しました。DAY4以降の物語と県大会は制作中です。所持品・人間関係・訪問と約束の記録は引き継がれています。" }),
     el("div.ch2-actions", [button("セーブ・メニュー", "menu", openMenu, true)]),
   ])]));
+  focus("menu");
 }
 
 function renderError(retry) {

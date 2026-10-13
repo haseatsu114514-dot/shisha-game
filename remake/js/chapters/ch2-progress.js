@@ -2,6 +2,7 @@
 export function advanceToChapterTwo(value) {
   if (!value || value.chapter !== 1 || value.phase !== "cleared") return false;
   value.flags._ch1_cleared = true;
+  value.flags._elapsed_calendar = true;
   value.chapter = 2;
   value.day += 1;
   value.slot = 0;

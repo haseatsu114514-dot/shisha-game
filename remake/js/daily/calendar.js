@@ -12,6 +12,7 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
@@ -40,7 +41,7 @@ let dawnShownDay = null; // 夜明けの幕でDAYカードを見せた日（同�
 const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
 
 /**
- * 日常パートを DAY1〜13 まで回す。DAY14の大会当日の朝の手前で返る。
+ * 日常パート。章側は実装済みの最終日、街の選択と固有行動だけを差し替えられる。
  * @param def.nightEvents { [day]: { pin, beat, run: async () => {} } }
  * @param def.onQuit タイトルへ戻る処理
  */
@@ -54,14 +55,15 @@ export async function runDaily(def) {
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
   setPhoneBadge(unreadCount()); // つづきから再開したときも未読の赤丸を出す
-  while (state.day < TOURNAMENT_DAY) {
+  if (def.startNextDay && chapterDay(state) === 1) { await advanceDay(); save(); }
+  while (state.day < (def.untilDay ?? TOURNAMENT_DAY)) {
     syncNightQueue(chapterDef.nightEvents);
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
       await morning();
       save();
     }
-    if (state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
+    if (state.chapter === 1 && state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
       await day1Errands();
       save();
     }
@@ -82,7 +84,7 @@ async function morning() {
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
-  else await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日`, { weather: weatherOf() });
+  else await dayCard(`DAY ${chapterDay(state)}`, `${chapterDef.tournamentName || "SMOKE CROWN CUP"} まで あと${daysLeft()}日`, { weather: weatherOf() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight });
   if (n) pushNotice(n, { onOpen: (sender) => {
@@ -156,7 +158,7 @@ async function openMenu() {
   const v = await modal({
     title: "MENU",
     className: "menu-modal",
-    body: `DAY ${state.day}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
+    body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
     options: [
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
@@ -339,6 +341,7 @@ async function takeAction() {
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
   const spotId = await chooseSpot({
+    ...chapterDef.mapOptions?.(),
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     notice: inv && (inv.day ?? state.day) > state.day ? `DAY ${inv.day}に約束がある` : inv && inv.slot > state.slot ? "今夜は約束がある" : "",
     onShown: () => {
@@ -350,7 +353,8 @@ async function takeAction() {
     }),
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
-  const spot = spotById(spotId);
+  const spot = chapterDef.spotById?.(spotId) || spotById(spotId);
+  if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const facility = ["kannon", "choizap"].includes(spot.id);
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
     ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
@@ -363,6 +367,10 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  if (chapterDef.performSpot) {
+    const result = await chapterDef.performSpot(spot, { staminaGuard });
+    if (result) return result;
+  }
   if (spot.kind === "trpg") {
     const result = await openTrpgBar({ nightBusy: () => fixedNight(state.day) });
     return { used: result.completed, exerted: false, slotsUsed: 0 };
@@ -598,11 +606,11 @@ async function advanceDay() {
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   const sleepBefore = state.stamina;
-  const fromDay = state.day;
+  const fromDay = chapterDay(state);
   const fromLeft = daysLeft();
   const wake = () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
-    addStamina(exhausted && state.day + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
+    addStamina(exhausted && chapterDay(state) + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     state.restDay = exhausted ? { chapter: state.chapter, day: state.day, fullDay: false, illnessHealth } : null;
@@ -610,17 +618,17 @@ async function advanceDay() {
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   };
-  if (state.day + 1 < TOURNAMENT_DAY) {
+  if (chapterDay(state) + 1 < TOURNAMENT_DAY) {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: state.day, fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted };
+      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
-  if (state.day >= TOURNAMENT_DAY) {
+  if (chapterDay(state) >= TOURNAMENT_DAY) {
     await play("remake_sick_tournament");
     updateHud();
     return;
@@ -629,7 +637,7 @@ async function advanceDay() {
   const first = !state.flags._sick_once;
   state.flags._sick_once = true;
   state.flags[`_morning_${state.day}`] = true;
-  if (dawnShownDay !== state.day) await dayCard(`DAY ${state.day}`, "……熱っぽい");
+  if (dawnShownDay !== state.day) await dayCard(`DAY ${chapterDay(state)}`, "……熱っぽい");
   if (first) {
     await play("remake_sick_half");
     addStamina(Math.max(0, 60 - state.stamina));

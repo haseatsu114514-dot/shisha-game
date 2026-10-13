@@ -10,6 +10,9 @@ on:
       - 'remake/css/ch2-preview.css'
       - 'data/dialogue/ch2_city.json'
       - 'data/dialogue/remake_ch2.json'
+      - 'data/dialogue/ch2_preparation.json'
+      - 'data/dialogue/ch2_isolation.json'
+      - 'data/lime_messages.json'
       - 'data/characters.json'
       - 'remake/data/manifest.json'
       - 'assets/backgrounds/bg_widehanga_map_*.webp'
@@ -26,6 +29,13 @@ on:
       - 'remake/js/core/state.js'
       - 'remake/js/core/chapter-clock.js'
       - 'remake/js/scenes/saves.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/hud.js'
+      - 'remake/js/daily/phone.js'
+      - 'remake/js/daily/romance.js'
+      - 'remake/js/daily/date-scene.js'
+      - 'remake/js/daily/night-events.js'
       - 'remake/test/browser/ch2_*.mjs'
       - 'remake/test/ch2_progress.mjs'
       - '.github/workflows/ch2-preview.yml'
@@ -45,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [ch2_preview, ch2_main]
+        suite: [ch2_preview, ch2_main, ch2_daily]
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -81,6 +91,7 @@ jobs:
           TEST_REF: ${{ github.sha }}
         run: |
           node remake/test/ch2_progress.mjs
+          node --experimental-vm-modules remake/test/lime_consistency.mjs
           node remake/test/browser/${{ matrix.suite }}.mjs
       - name: Save browser evidence
         if: always()
