@@ -218,7 +218,7 @@ async function day1Errands() {
     f._errand_naru_visited = true;
     save();
   }
-  await chooseSpot({ guide: { pin: "c_station", text: "なるに教わった大会会場へ。C.STATION で参加登録！" } });
+  await chooseSpot({ guide: { pin: "c_station", text: "大会を運営する C.STATION へ。店舗の受付で参加登録！" } });
   // 初回は一服する来店ではなく、無料の会場見学・参加登録。
   const venue = spotById("c_station");
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
