@@ -1,0 +1,215 @@
+{
+  "output": "chapter-preview.mp4",
+  "url": "http://127.0.0.1:8123/remake/chapter-preview.html",
+  "frameCount": 2619,
+  "duration": 52.89693896484375,
+  "audioTrim": 2.59506103515625,
+  "audioContexts": 2,
+  "sampleRate": 48000,
+  "imageTimebase": "1/1000",
+  "clickInVideoSeconds": 1.8855390625,
+  "errors": [],
+  "preload": {
+    "artworks": 6,
+    "durationMs": 47500,
+    "cuts": [
+      "afterglow",
+      "scoresheet",
+      "next",
+      "sumi-silence",
+      "naru-confrontation",
+      "minto-warning",
+      "tsumugi-water",
+      "ageha-departure",
+      "empty-victory",
+      "chapter-title",
+      "minto-return",
+      "last-question"
+    ]
+  },
+  "finalPageState": {
+    "phase": "ended",
+    "cut": null,
+    "elapsedMs": 0,
+    "ended": true
+  },
+  "finalScreenshot": "preview-ended.png",
+  "visuals": [
+    {
+      "cut": "afterglow",
+      "elapsedMs": 0,
+      "epochMs": 1791883309866,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": null,
+      "caption": "『もう一口』の言葉より、\n採点表が、気になっていた。"
+    },
+    {
+      "cut": "scoresheet",
+      "elapsedMs": 3033,
+      "epochMs": 1791883312862.4001,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": null,
+      "caption": "はじめ（……次は、ここでも勝ちたい）"
+    },
+    {
+      "cut": "next",
+      "elapsedMs": 6633,
+      "epochMs": 1791883316462.6,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": null,
+      "caption": ""
+    },
+    {
+      "cut": "sumi-silence",
+      "elapsedMs": 8016,
+      "epochMs": 1791883317862.2,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "01-sumi-silence.webp"
+      },
+      "caption": "スミあの顔は、知ってる。"
+    },
+    {
+      "cut": "naru-confrontation",
+      "elapsedMs": 12033,
+      "epochMs": 1791883321862.2,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "02-naru-confrontation.webp"
+      },
+      "caption": "なる話してる相手まで点で見なくていいだろ"
+    },
+    {
+      "cut": "minto-warning",
+      "elapsedMs": 16633,
+      "epochMs": 1791883326466.9001,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "03-minto-warning.webp"
+      },
+      "caption": "みんと何があっても、わたしはここにいるから。"
+    },
+    {
+      "cut": "tsumugi-water",
+      "elapsedMs": 21016,
+      "epochMs": 1791883330862.9001,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "04-tsumugi-water.webp"
+      },
+      "caption": "つむぎ……少し、お水を飲みませんか"
+    },
+    {
+      "cut": "ageha-departure",
+      "elapsedMs": 26016,
+      "epochMs": 1791883335863.7,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "05-ageha-departure.webp"
+      },
+      "caption": "……ごめん。理由は、聞かないで"
+    },
+    {
+      "cut": "empty-victory",
+      "elapsedMs": 30016,
+      "epochMs": 1791883339862.3,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "06-empty-victory.webp"
+      },
+      "caption": "はじめ（心の声）……俺、なんのために勝ったんだっけ。"
+    },
+    {
+      "cut": "chapter-title",
+      "elapsedMs": 36032,
+      "epochMs": 1791883345862.3,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": null,
+      "caption": ""
+    },
+    {
+      "cut": "minto-return",
+      "elapsedMs": 40048,
+      "epochMs": 1791883349863.1,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": {
+        "width": 1664,
+        "height": 936,
+        "file": "03-minto-warning.webp"
+      },
+      "caption": "みんと何があっても、わたしはここにいるから。"
+    },
+    {
+      "cut": "last-question",
+      "elapsedMs": 43648,
+      "epochMs": 1791883353463.1,
+      "controlsFit": true,
+      "captionFits": true,
+      "artFits": true,
+      "image": null,
+      "caption": "誰のために、煙を作る。"
+    }
+  ],
+  "layoutFailures": [],
+  "storageUnchanged": true,
+  "code_commit": "d85e15b197426e74cd4fe56934ff2b4b45ef67a4",
+  "sha256": "bd6f00632b85ca401eeb04ba9d1c302d4c523bff0957af0b0c4119ebebc77662",
+  "bytes": 3603300,
+  "media": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "format": {
+      "duration": "52.900000"
+    }
+  },
+  "audio_levels_db": {
+    "mean_volume": "-39.9",
+    "max_volume": "-22.8"
+  }
+}
