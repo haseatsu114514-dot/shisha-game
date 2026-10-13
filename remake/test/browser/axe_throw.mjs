@@ -50,7 +50,18 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
       return shoot(page,{touch,x,y,power,keyboard,precision,attempt:attempt+1});
     }
   }
-  await fit(page); await stopGauge(page,power,touch,keyboard); await phase(page,"result");
+  await fit(page);
+  if(precision) {
+    // Read the real rising power needle before spending the short focus window.
+    await page.evaluate(()=>window.precisionTiming=null);
+    await page.waitForFunction(value=>{
+      const root=document.querySelector('[data-test="axe-game"]'),n=Number(root.dataset.timing),previous=window.precisionTiming;
+      window.precisionTiming=n;
+      return previous!==null&&n>previous&&n>=value-.16&&n<=value-.08&&!root.querySelector('[data-test="axe-focus"]').disabled;
+    },power);
+    await press(page,'[data-test="axe-focus"]',touch);
+  }
+  await stopGauge(page,power,touch,keyboard); await phase(page,"result");
 }
 async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
   await page.evaluate(() => {
@@ -66,6 +77,58 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
 }
 await suite("axe-throw", async run => {
   const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
+  for(const [label,options,touch] of [
+    ['rules-pc',{viewport:{width:1280,height:720}},false],
+    ['rules-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
+    ['rules-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
+  ]) await check(label,async page=>{
+    await page.goto(new URL('axe-throw.html',page.url()).href);
+    await press(page,'[data-test="axe-menu-rules"]',touch);
+    const help=page.locator('[data-test="axe-rules-panel"]');await help.waitFor();
+    assert.match(await help.textContent(),/外れ・落下でも1回/);assert.match(await help.textContent(),/外側5点、赤い中心6点/);
+    assert.match(await help.textContent(),/構え直しても回数は戻らない/);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-top.png'});
+    const scroll=help.locator('.axe-rules-scroll');await scroll.evaluate(n=>n.scrollTop=n.scrollHeight);
+    assert(await scroll.evaluate(n=>n.scrollTop>0&&n.scrollWidth<=n.clientWidth));
+    const bounds=await help.locator('.axe-rules-card').boundingBox(),view=page.viewportSize();
+    assert(bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.width<=view.width+1&&bounds.y+bounds.height<=view.height+1);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'.png'});
+    await press(page,'[data-test="axe-rules-close"]',touch);assert.equal(await help.count(),0);
+    await standalone(page,{touch});await pressReady(page,touch);await phase(page,'horizontal');
+    await stopGauge(page,.5,touch);await phase(page,'vertical');await stopGauge(page,.5,touch);await phase(page,'power');
+    await page.locator('[data-test="axe-focus"]:not([disabled])').waitFor();await press(page,'[data-test="axe-focus"]',touch);
+    await press(page,'[data-test="axe-rules"]',touch);await help.waitFor();
+    const frozen=await game(page).evaluate(n=>({timing:n.dataset.timing,held:n.dataset.held,focus:n.dataset.focusRemaining}));
+    await page.waitForTimeout(450);assert.deepEqual(await game(page).evaluate(n=>({timing:n.dataset.timing,held:n.dataset.held,focus:n.dataset.focusRemaining})),frozen);
+    assert.equal(await game(page).getAttribute('data-paused'),'true');
+    for(let n=0;n<4;n++)await page.keyboard.press('Tab');assert(await help.evaluate(n=>n.contains(document.activeElement)));
+    await page.keyboard.press('Escape');assert.equal(await help.count(),0);assert.equal(await game(page).getAttribute('data-phase'),'power');
+    await page.waitForTimeout(100);assert.notEqual(await game(page).getAttribute('data-held'),frozen.held);
+    await page.keyboard.press('Escape');assert.equal(await game(page).count(),0);
+  },options);
+  await check('visible-sway-focus-budget-and-release',async page=>{
+    await page.evaluate(async()=>{const mini=await import('./js/minigames/axe.js');window.swayGame=mini.runAxeThrow({reducedMotion:true});});
+    await phase(page,'choice');await pressReady(page);await phase(page,'horizontal');
+    await stopGauge(page,.5);await phase(page,'vertical');await stopGauge(page,.5);await phase(page,'power');
+    const base=await game(page).getAttribute('data-aim-x'),first=await game(page).getAttribute('data-release-x');await page.waitForTimeout(180);
+    assert.equal(await game(page).getAttribute('data-aim-x'),base);assert.notEqual(await game(page).getAttribute('data-release-x'),first);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/story-sway.png'});
+    await page.locator('[data-test="axe-focus"]:not([disabled])').click();assert(await page.locator('[data-test="axe-focus"]').isDisabled());
+    if(shotsPath)await page.screenshot({path:shotsPath+'/story-focus.png'});
+    await page.locator('[data-test="axe-reaim"]:not([disabled])').click();await phase(page,'choice');
+    await pressReady(page);await phase(page,'horizontal');assert(await page.locator('[data-test="axe-focus"]').isDisabled());
+    assert.equal(await game(page).getAttribute('data-focus-remaining'),'0','Re-aim never restores spent focus');
+    await stopGauge(page,.5);await phase(page,'vertical');await stopGauge(page,.5);await phase(page,'power');
+    await page.evaluate(()=>document.addEventListener('click',event=>{
+      const n=document.querySelector('[data-test="axe-game"]');
+      if(event.target.closest('[data-test="axe-action"]')&&n?.dataset.phase==='power')window.visibleRelease={x:Number(n.dataset.landingX),y:Number(n.dataset.landingY)};
+    },true));
+    await stopGauge(page,.62);await phase(page,'result');await pressReady(page);await phase(page,'choice');
+    await pressReady(page);await phase(page,'horizontal');await page.locator('[data-test="axe-focus"]:not([disabled])').waitFor();
+    await page.keyboard.press('Escape');const result=await page.evaluate(()=>swayGame);assert.equal(result.throws.length,1);
+    const visible=await page.evaluate(()=>visibleRelease),shot=result.throws[0];
+    assert.equal(shot.landing.x,visible.x);assert.equal(shot.landing.y,visible.y);assert.notDeepEqual(shot.aim,shot.baseAim);
+  });
   for (const [label, options, touch] of [
     ["pc",{viewport:{width:1280,height:800}},false],
     ["touch-landscape",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
@@ -203,9 +266,12 @@ await suite("axe-throw", async run => {
     if (relationship === "friend") assert(await page.evaluate(() => A.friendBefore));
     await phase(page, "choice"); await fit(page);
     await shoot(page); await fit(page);
+    await page.locator('[data-test="axe-rules"]').click();await page.locator('[data-test="axe-rules-panel"]').waitFor();
+    if(shotsPath)await page.screenshot({path:shotsPath+'/story-rules-'+relationship+'.png'});
     await page.evaluate(() => A.abort.abort()); const result = await page.evaluate(() => A.flow);
     assert(!result.completed && result.cancelled && result.throws.length === 1);
     assert.equal(await game(page).count(), 0);
+    assert.equal(await page.locator('[data-test="axe-rules-panel"]').count(),0,'Owner abort removes the help dialog too');
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
     assert(await page.evaluate(() => A.route.hiyoriIsFriend() === A.friendBefore));
     await page.evaluate(() => { A.flow = A.mini.runAxeThrow({ reducedMotion: true }); });

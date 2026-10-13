@@ -49,7 +49,8 @@ await suite("lime-appointment-recovery", async check => {
       await page.locator('[data-test="phone-next"]').click(); await page.locator('[data-test="phone-close"]').click();
       await mapAt(page, 5, 0);
       assert.equal(await page.evaluate(() => QA.core.state.pendingInvite.event), "ch1_minto_fifth");
-      await go(page, "shop"); await page.locator('[data-test="buy-blueberry"]').click();
+      await go(page, "shop"); await page.locator('[data-test="shop-enter"]').click(); await page.locator('[data-test="buy-blueberry"]').click();
+      await page.locator('[data-test="shop-checkout"]').click();
       await page.locator('[data-test="shop-leave"]').click(); await mapAt(page, 5, 0);
       assert.equal(await page.evaluate(() => QA.core.state.money), 700);
       await go(page, "rest"); await mapAt(page, 5, 1);

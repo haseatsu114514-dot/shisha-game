@@ -51,7 +51,7 @@ export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
   });
   await Promise.all([...urls].map(url => preload(url, signal)));
   if (signal?.aborted) throw signal.reason || new DOMException("Aborted", "AbortError");
-  return { scenarios, characters: [...people.values()], manifest };
+  return { catalog, scenarios, characters: [...people.values()], manifest };
 }
 
 export async function loadTrpgResources({ scenarioId = "ordinary-cup", signal } = {}) {

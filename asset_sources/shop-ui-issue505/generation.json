@@ -1,0 +1,22 @@
+{
+  "issue": 505,
+  "worker": "codex-shop-purple-20261013-f716d295",
+  "claim_run": "38352822385",
+  "validated_run": "38353627973",
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-13",
+  "reference": "approved-concept.png",
+  "runtime": "remake/img/shop/flavors.webp",
+  "processing": "PNG to WebP (quality 88, method 6), original dimensions and alpha retained; CSS crops define each illustration window.",
+  "generation": "18 botanical illustrations, transparent 6-column by 3-row sheet. Exact order follows SHOP_FLAVORS. The second generation increases transparent gutters. No text, labels, equipment, people, or new shop interiors.",
+  "qa": {
+    "visually_reviewed": true,
+    "ingredients": "mint, apple with anise, blueberry, strawberry, vanilla, pineapple, coconut, mango, lemon, peach, orange, grape, melon, watermelon, banana, cinnamon, rose, lychee",
+    "backgrounds": "Existing bg_shop and bg_fookah_showroom; unchanged."
+  },
+  "sha256": {
+    "entry-mockup.png": "290a721a0105b341851244dbed3930443e9d07744d0bb6ecd3627226a6c6bac8",
+    "approved-concept.png": "9ed69f496c163f065d082253182d9a3e7538d2e36a3542e2d566a106674b8dd5",
+    "flavors-original.png": "c6382daf4dc409e2542548d896a3b883f0d9216da81f1cc475655c47498fcc48"
+  }
+}

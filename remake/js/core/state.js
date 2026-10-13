@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 13; // 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 14; // 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -55,6 +55,7 @@ export function newState() {
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
     notes: {},                 // 常連ノート（接客した客 -> 回数）
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
+    trpg: { stock: [], owned: [], cleared: {}, shifts: [] }, // 卓のシナリオ棚・一度きりの読了・当日シフトの上書き
     recipes: {},               // 発見したレシピ
     keepsakes: [],             // 購入・入手した記念品のID（売却しない）
     best: {},                  // 練習ドリルの自己ベスト（0..2）
@@ -206,6 +207,16 @@ function migrate(s) {
     s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));
     if (s.flags?._rin_sample) s.flavorStock.nightside_earlgrey = 50;
   }
+  // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
+  const trpg = record(s.trpg);
+  const ids = value => [...new Set((Array.isArray(value) ? value : []).filter(id => typeof id === "string" && id))];
+  s.trpg = { stock: ids(trpg.stock), owned: ids(trpg.owned),
+    cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
+      && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
+      && typeof v.gm === "string" && Array.isArray(v.participants))),
+    shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
+      && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
+  };
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
   // 旧/現行セーブで欠落した上司の連絡先だけを補い、交流やひよりの読了は推測しない。

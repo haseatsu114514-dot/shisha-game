@@ -86,6 +86,7 @@ try {
       });
     },id);
     await page.locator(`[data-test="pin-${id}"]`).click(); await page.locator('[data-test="map-go"]').click();
+    if (id === "shop") await page.locator('[data-test="shop-enter"]').click();
     await page.locator(`[data-test="store-arrival"][data-store="${id}"]`).waitFor();
     await page.locator(id==="tonari"?'[data-test="sub-back"]':'.shop-tabs').waitFor();
     assert.equal(await page.locator('.store-arrival').count(),0); checks++;
