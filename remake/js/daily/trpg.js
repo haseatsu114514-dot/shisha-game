@@ -1,9 +1,4 @@
-import { el } from "../core/util.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen } from "../core/ui.js";
-import { stopBgm, playBgm } from "../core/audio.js";
-import { mountTrpgCampaign } from "../trpg/campaign-view.js";
-import { showHud } from "./hud.js";
 
 export const trpgSpot = () => state?.chapter >= 2 ? {
   id: "trpg_bar", kind: "trpg", label: "遊べるシーシャバー", area: "仲間の遊び場", x: 8, y: 77,
@@ -13,6 +8,10 @@ export const trpgSpot = () => state?.chapter >= 2 ? {
 
 /** The table saves its completion and night action atomically; calendar must not advance twice. */
 export async function openTrpgBar({ nightBusy = () => false } = {}) {
+  const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }] = await Promise.all([
+    import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
+    import("../trpg/campaign-view.js"), import("./hud.js"),
+  ]);
   const host = el("section.trpg-screen", { "aria-label": "遊べるシーシャバーのシナリオ棚" });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   showHud(false);
