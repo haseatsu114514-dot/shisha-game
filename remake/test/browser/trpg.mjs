@@ -34,6 +34,14 @@ async function checkRoll(page, { support = null, reroll = false } = {}) {
 async function begin(page, keyboard = false) {
   const start = page.locator('[data-test="trpg-start"]');
   if (keyboard) await start.press("Enter"); else await hit(page, '[data-test="trpg-start"]');
+  if (keyboard) {
+    const line = await page.locator(".trpg-speech p").textContent();
+    await page.locator('[data-test="trpg-log"]').press("Enter");
+    await page.locator('[data-test="trpg-log-close"]').waitFor();
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator(".trpg-speech p").textContent(), line);
+    await page.locator('[data-test="trpg-next"]').focus();
+  }
   await nextLines(page, keyboard);
   await checkRoll(page);
   assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "explore");

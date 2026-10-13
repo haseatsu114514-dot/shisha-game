@@ -474,7 +474,10 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       }
       return;
     }
-    if (busy && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); advanceDialogue(); }
+    if (busy && (event.key === "Enter" || event.key === " ")
+      && (event.target === next || !event.target.closest("button,input,select,textarea"))) {
+      event.preventDefault(); advanceDialogue();
+    }
   }
   root.addEventListener("keydown", keys);
   renderBody(); root.focus({ preventScroll: true });
