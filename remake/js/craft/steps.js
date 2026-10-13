@@ -7,7 +7,7 @@ import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
-import { flavorColor, mixBowlPreview } from "./art.js";
+import { flavorColor, mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
@@ -228,12 +228,38 @@ export async function stepMix(cs) {
 export async function stepPack(cs) {
   await waitBenchReady(cs);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
-  panel.append(el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }));
-  cs.pack = await choose(panel, [
-    { value: "fluffy", label: "ふんわり", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
-    { value: "normal", label: "ノーマル", desc: "熱が素直に入り、崩れにくい基本の詰め方", auto: true },
-    { value: "firm", label: "かため", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
-  ], { cols: 3 });
+  const options = [
+    { value: "fluffy", label: "ふんわり", surface: "葉の間に空気を残す", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
+    { value: "normal", label: "ノーマル", surface: "均等にならす", desc: "熱が素直に入り、崩れにくい基本の詰め方" },
+    { value: "firm", label: "かため", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
+  ];
+  let selected = options.find(o => o.value === cs.pack) || options[1];
+  const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
+  const caption = el("div.pack-caption", { "aria-live": "polite" });
+  const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [
+    el("span.btn-label", { text: "この詰め方で決める" }),
+  ]);
+  const choices = options.map(option => el("button.pack-choice", {
+    type: "button", dataset: { test: `opt-${option.value}` }, onclick: () => { selected = option; SE.select(); draw(); },
+  }, [el("b", { text: option.label }), el("small", { text: option.surface })]));
+  function draw() {
+    vessel.dataset.pack = selected.value;
+    vessel.setAttribute("aria-label", `${DB.equipById[cs.equip.bowl]?.name || "ハガル"}：${selected.label}。${selected.surface}`);
+    vessel.replaceChildren(packingBowlPreview(cs, selected.value));
+    caption.replaceChildren(el("b", { text: selected.label }), el("p", { text: selected.desc }));
+    choices.forEach((button, i) => button.setAttribute("aria-pressed", String(options[i] === selected)));
+  }
+  panel.append(el("div.packing", [
+    el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }),
+    vessel, caption,
+    el("div.pack-choices", { role: "group", "aria-label": "詰め方を見比べる" }, choices),
+    el("div.pack-footer", [el("small", { text: "ボウルを見比べて、詰め方を選ぼう" }), confirm]),
+  ]));
+  draw();
+  cs.pack = await new Promise(resolve => {
+    confirm.addEventListener("click", () => { confirm.disabled = true; resolve(selected.value); }, { once: true });
+    if (autoSkill()) setTimeout(() => confirm.click(), 40);
+  });
   SE.stamp();
   refreshBench();
 }
