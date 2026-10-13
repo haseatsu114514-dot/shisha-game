@@ -10,7 +10,8 @@ async function setup(page){await page.evaluate(async()=>{
  W.syntheticGift=()=>{W.data.DB.hiyori.route.finale.gift='silicone_bowl';};
 });}
 async function work(page,answer=0){return page.evaluate(async answer=>{W.vn.vnTest.choose=()=>answer;return W.daily.playHiyoriEvent('work_talk');},answer);}
-await suite('hiyori-work-relationship',async check=>{
+await suite('hiyori-work-relationship',async run=>{
+ const check=(label,...args)=>!process.env.TEST_CASES||label.includes(process.env.TEST_CASES)?run(label,...args):Promise.resolve();
  await check('only-real-self-read-unlocks-work-and-no-gift-unlocks-finale',async page=>{
   await setup(page);const r=await page.evaluate(async()=>{const s=W.core.state;s.affinity.hiyori=100;delete s.flags._hiyori_real_self_known;const before=JSON.stringify(s),early=await W.daily.playHiyoriEvent('work_talk');
    return {early,same:JSON.stringify(s)===before,finale:W.bonds.finaleDue('hiyori'),status:W.route.hiyoriEventStatus('work_talk')};});
