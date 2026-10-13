@@ -3,7 +3,7 @@ import { displayName, portraitUrl, portraitTop } from "./presentation.js";
 import { recruitmentStatus, joinTrpgClub } from "./campaign.js";
 
 /** A face-to-face invitation, shared by actual visits and the disposable demo. */
-export function mountTrpgRecruitment(host, { getState, personId, catalog, characters, manifest,
+export function mountTrpgRecruitment(host, { getState, personId, catalog, characters, manifest, club,
   save = () => {}, signal } = {}) {
   const owner = getState(), person = catalog.participants.find(p => p.id === personId);
   const stamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
@@ -30,14 +30,14 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
     }
   };
   if (signal?.aborted || !recruitmentStatus(owner, person, catalog).ok) { close(); return { finished, destroy: cancel }; }
-  const name = displayName(characters, personId);
+  const name = displayName(characters, personId), lines = club.branches[personId];
   const button = (text, test, action) => el("button.trpg-button", { type: "button", text, dataset: { test }, onclick: () => {
     if (!current()) { cancel(); return; }
     action();
   } });
   root = el("section.trpg-club-dialog", { role: "dialog", "aria-modal": "true", "aria-label": name + "を部活に誘う" });
   function render() {
-    const line = step < 0 ? "遊べるシーシャバーでTRPGの部活を作ったんだ。一緒にどう？" : person.joinLines[step];
+    const line = step < 0 ? club.branches.invite[0].text : lines[step].text;
     const content = el("div.trpg-club-dialog-card", [
       el("span.trpg-kicker", { text: catalog.club.name + " / 仲間に声をかける" }),
       el("h2", { text: step < 0 ? name + "を部活に誘う？" : name }),
@@ -51,8 +51,8 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
     const actions = el("div.trpg-club-actions");
     if (step < 0) actions.append(button("部活に誘う", "trpg-recruit-invite", () => { step = 0; render(); }),
       button("今日は誘わない", "trpg-recruit-later", cancel));
-    else actions.append(button(step < person.joinLines.length - 1 ? "話を聞く" : "また店で会おう", "trpg-recruit-next", () => {
-      if (step < person.joinLines.length - 1) { step++; render(); return; }
+    else actions.append(button(step < lines.length - 1 ? "話を聞く" : "また店で会おう", "trpg-recruit-next", () => {
+      if (step < lines.length - 1) { step++; render(); return; }
       if (joinTrpgClub(owner, catalog, personId)) { save(); close(true); } else close();
     }));
     content.append(actions); root.replaceChildren(content);

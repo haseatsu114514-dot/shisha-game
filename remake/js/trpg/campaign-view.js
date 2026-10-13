@@ -23,7 +23,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
 
   function render(message = "") {
     if (disposed) return;
-    const state = getState(), { catalog, scenarios, characters, manifest } = resources;
+    const state = getState(), { catalog, scenarios, characters, manifest, club } = resources;
     if (!readOnly && syncTrpgStock(state, catalog)) save();
     const options = { nightBusy: nightBusy() };
     const time = tableStatus(state, catalog, options);
@@ -41,12 +41,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       root.append(el("section.trpg-club-proposal", { dataset: { test: "trpg-club-proposal" } }, [
         el("span.trpg-kicker", { text: "カウンターの店員から" }),
         el("h2", { text: "ここで、部活を作ってみませんか？" }),
-        ...catalog.club.proposal.map(text => el("p", { text })),
-        button("「煙とサイコロ部」を作る", "trpg-club-found", () => {
+        ...club.lines.map(line => el("p", { text: line.text })),
+        button("「" + catalog.club.name + "」を作る", "trpg-club-found", () => {
           if (foundTrpgClub(getState(), catalog)) { save(); render("部活ができました。仲のいい相手に会って、声をかけてみよう。"); }
         }, state.phase !== "daily"),
       ]));
-      root.append(el("p", { text: "好感度MAXの友人も恋人も、興味があれば入部。勧誘と本の購入は時間を使いません。" }));
+      root.append(el("p", { text: "好感度MAXの友人も恋人も、興味があれば入部。勧誘に追加の時間はかかりません。本の購入も時間を使いません。" }));
       host.replaceChildren(root); root.focus({ preventScroll: true }); return;
     }
     const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });

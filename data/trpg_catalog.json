@@ -40,11 +40,7 @@
         }
       ],
       "interested": true,
-      "interestHint": "物語の役を演じるのが好き",
-      "joinLines": [
-        "……物語の中なら、少し違う私にもなれるかしら。",
-        "ええ、入るわ。仕事のない夜に呼んでちょうだい。"
-      ]
+      "interestHint": "物語の役を演じるのが好き"
     },
     {
       "id": "samechan",
@@ -73,11 +69,7 @@
         }
       ],
       "interested": true,
-      "interestHint": "サメ映画のGMに興味あり",
-      "joinLines": [
-        "サメ映画みたいなTRPGもある？　なら入る！",
-        "仕事のない夜に呼んで。サメ役……じゃなくて、GMもやってみたい！"
-      ]
+      "interestHint": "サメ映画のGMに興味あり"
     },
     {
       "id": "tsumugi",
@@ -94,11 +86,7 @@
         }
       ],
       "interested": true,
-      "interestHint": "静かな少人数の卓が好き",
-      "joinLines": [
-        "……はじめがいるなら、やってみたい。",
-        "入る。制作の予定がない夜なら、呼んで。"
-      ]
+      "interestHint": "静かな少人数の卓が好き"
     },
     {
       "id": "adam",
@@ -129,19 +117,11 @@
         }
       ],
       "interested": true,
-      "interestHint": "物語や舞台の仕掛けが好き",
-      "joinLines": [
-        "部活か。俺を誘うとは、いい目をしている。",
-        "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける。"
-      ]
+      "interestHint": "物語や舞台の仕掛けが好き"
     }
   ],
   "club": {
     "name": "煙とサイコロ部",
-    "proposal": [
-      "この店で、TRPGの部活を作ってみませんか？",
-      "仲のいい人を誘って、仕事のない夜に集まるんです。",
-      "メンバーが増えたら、その人たちに合う新しい本も仕入れます。"
-    ]
+    "file": "dialogue/trpg_club.json"
   }
 }

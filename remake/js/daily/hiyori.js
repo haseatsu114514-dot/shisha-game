@@ -79,6 +79,7 @@ function encounterRoll(spot) {
 /** 既存の訪問に相席を添える。同じ日の多重遭遇・無料の買い物による好感度稼ぎを防ぐ。 */
 export async function visitHiyoriAtShop(spot, { bg } = {}) {
   if (!hiyoriShopEligible(spot) || !hiyoriRoute().enabled || ![1, 2].includes(state.chapter)) return false;
+  const owner = state;
   const stamp = `${state.chapter}:${state.day}`;
   if (state.pendingInvite?.event === "__hiyori_shop__" && state.pendingInvite.day === state.day) return false;
   if (state.flags._hiyori_encounter_day === stamp) return false;
@@ -111,6 +112,7 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
   state.flags._hiyori_encounter_day = stamp;
   if (affinityLevel("hiyori") >= 3 && state.flags._hiyori_cracks_done) state.flags._hiyori_tonari_ready = true;
   await maybeRecruitTrpgMember("hiyori");
+  if (state !== owner) return false;
   save();
   return true;
 }

@@ -7,6 +7,7 @@ const module = async path => import("data:text/javascript;base64," + Buffer.from
 const rules = await module("../js/trpg/campaign.js");
 const { TrpgSession } = await module("../js/trpg/session.js");
 const catalog = await json("../../data/trpg_catalog.json");
+const club = await json("../../data/dialogue/trpg_club.json");
 const ordinary = await json("../../data/dialogue/trpg_ordinary.json");
 const shark = await json("../../data/dialogue/trpg_shark.json");
 function state() {
@@ -149,5 +150,17 @@ test("alternate dialogue, small-table intro and cast have canonical actors and f
       assert(!text.includes("\n")); assert([...text].reduce((n, c) => n + (c.codePointAt(0) <= 255 ? .5 : 1), 0) <= 48, text);
     }
     assert(!["sumi", "naru"].includes(line.speaker));
+  }
+});
+
+test("club copy fits dialogue limits and the catalog explicitly marks interest", () => {
+  const lines = [...club.lines, ...club.branches.invite].map(l => l.text);
+  for (const p of catalog.participants) {
+    assert.equal(typeof p.interested, "boolean"); assert(Number.isInteger(p.maxAffinity));
+    if (p.interested) { assert(club.branches[p.id].length >= 2); assert(club.branches[p.id].every(l => l.speaker === p.id)); lines.push(...club.branches[p.id].map(l => l.text)); }
+    assert(!["sumi", "naru"].includes(p.id));
+  }
+  for (const text of lines) {
+    assert(!text.includes("\n")); assert([...text].reduce((n, c) => n + (c.codePointAt(0) <= 255 ? .5 : 1), 0) <= 48, text);
   }
 });

@@ -15,6 +15,8 @@ export async function maybeRecruitTrpgMember(personId) {
   const owner = state, abort = new AbortController();
   const stamp = `${personId}:${owner.chapter}:${owner.day}:${owner.slot}`;
   if (offered.get(owner)?.has(stamp)) return false;
+  const cancel = () => abort.abort();
+  window.addEventListener("pagehide", cancel, { once: true });
   recruiting = true;
   let unsubscribe = () => {}, observer;
   try {
@@ -22,7 +24,6 @@ export async function maybeRecruitTrpgMember(personId) {
       import("../core/bus.js"), import("../core/ui.js"), import("../trpg/campaign.js"),
       import("../trpg/index.js"), import("../trpg/club-view.js"),
     ]);
-    const cancel = () => abort.abort();
     unsubscribe = on("hud", () => { if (state !== owner) cancel(); });
     observer = new MutationObserver(cancel); observer.observe(layers.screen, { childList: true });
     let resources;
@@ -37,7 +38,7 @@ export async function maybeRecruitTrpgMember(personId) {
     });
     const result = await conversation.finished;
     return result.joined;
-  } finally { observer?.disconnect(); unsubscribe(); abort.abort(); recruiting = false; }
+  } finally { observer?.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel); abort.abort(); recruiting = false; }
 }
 
 /** The table saves its completion and night action atomically; calendar must not advance twice. */
