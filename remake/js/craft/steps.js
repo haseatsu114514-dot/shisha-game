@@ -257,7 +257,11 @@ export async function stepPack(cs) {
   ]));
   draw();
   cs.pack = await new Promise(resolve => {
-    confirm.addEventListener("click", () => { confirm.disabled = true; resolve(selected.value); }, { once: true });
+    confirm.addEventListener("click", () => {
+      confirm.disabled = true;
+      choices.forEach(button => { button.disabled = true; });
+      resolve(selected.value);
+    }, { once: true });
     if (autoSkill()) setTimeout(() => confirm.click(), 40);
   });
   SE.stamp();

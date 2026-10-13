@@ -43,6 +43,7 @@ await suite("craft-materials", async check => {
         if (touch) await click(page, '[data-test="pack-confirm"]', true);
         else { await page.locator('[data-test="pack-confirm"]').focus(); await page.keyboard.press("Enter"); }
         await page.evaluate(() => F.running);
+        assert.equal(await page.locator(".pack-choice:disabled").count(), 3, "Confirmed packing can still be changed on screen");
         const after = await page.evaluate(() => ({ pack: F.cs.pack, state: JSON.stringify(F.core.state), mix: JSON.stringify(F.cs.mix) }));
         assert.equal(after.pack, "firm"); assert.equal(after.state, before.state); assert.equal(after.mix, before.mix);
       }

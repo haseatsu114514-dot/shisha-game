@@ -15,7 +15,7 @@ HMD       : なし（穴あけ工程）。
 - 質感・照明：既存ゲームの `remake/img/ui/making/hajime_craft_holes.webp`。
 - 実物の張り面と縁：Hookah.org, [Tangiers hole pattern](https://www.hookah.org/tangiers-hookah-hole-pattern/), [工程写真](https://www.hookah.org/wp-content/uploads/2014/12/tangiers-hookah-bowl-hole-pattern.png), 2026-10-13閲覧。写真は参照のみ。穴配置・手・製品・背景を転載せず、生成素材に既存の穴を焼き込まない。
 
-出力先：`assets/ui/making/foil_interactive_top.png`。WebP配信版とmanifestを既存の部分ビルドで更新する。
+出力先：`assets/ui/making/foil_interactive_top.png`。WebP配信版とmanifestは `python3 remake/tools/build_manifest.py --making-only foil_interactive_top.png` で更新。
 
 ゲームで針穴・凹み・短い傷を同じ位置に重ねる。目標マーク、移動光、リングは画像に焼き込まない。穴数・判定・時間は変更しない。
 
