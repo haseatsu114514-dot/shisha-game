@@ -50,6 +50,7 @@ await suite("venue-invite-reminder", async (check) => {
     if (walking) {
       await activate(page.locator('[data-test="map-walk"]'));
       await page.locator('[data-test="street-frame"]').waitFor();
+      await page.frameLocator('[data-test="street-frame"]').locator('#view').waitFor();
       const frame = page.frames().find((f) => f.url().includes('embed=1'));
       await frame.waitForFunction(() => window.__street?.state().ready && !__street.state().paused);
       assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "Browsing the street must not remind");
