@@ -1,0 +1,90 @@
+{
+  "browser": "Chromium",
+  "stage": "Final audio-clock player",
+  "cases": [
+    {
+      "case": "desktop",
+      "errors": [],
+      "initialReady": true,
+      "pauseStopsClock": true,
+      "pausedAudio": true,
+      "muteWorks": true,
+      "layout": {
+        "canvasFits": true,
+        "controlsFit": true,
+        "horizontalOverflow": false,
+        "captionFits": true
+      },
+      "seekWorks": true,
+      "endSeekWorks": true,
+      "replayWorks": true,
+      "audioClockDriftSeconds": 0,
+      "storageUnchanged": true,
+      "reducedMotion": false,
+      "pass": true
+    },
+    {
+      "case": "mobile",
+      "errors": [],
+      "initialReady": true,
+      "pauseStopsClock": true,
+      "pausedAudio": true,
+      "muteWorks": true,
+      "layout": {
+        "canvasFits": true,
+        "controlsFit": true,
+        "horizontalOverflow": false,
+        "captionFits": true
+      },
+      "seekWorks": true,
+      "endSeekWorks": true,
+      "replayWorks": true,
+      "audioClockDriftSeconds": 0,
+      "storageUnchanged": true,
+      "reducedMotion": false,
+      "pass": true
+    },
+    {
+      "case": "landscape",
+      "errors": [],
+      "initialReady": true,
+      "pauseStopsClock": true,
+      "pausedAudio": true,
+      "muteWorks": true,
+      "layout": {
+        "canvasFits": true,
+        "controlsFit": true,
+        "horizontalOverflow": false,
+        "captionFits": true
+      },
+      "seekWorks": true,
+      "endSeekWorks": true,
+      "replayWorks": true,
+      "audioClockDriftSeconds": 0,
+      "storageUnchanged": true,
+      "reducedMotion": false,
+      "pass": true
+    },
+    {
+      "case": "reduced-motion",
+      "errors": [],
+      "initialReady": true,
+      "pauseStopsClock": true,
+      "pausedAudio": true,
+      "muteWorks": true,
+      "layout": {
+        "canvasFits": true,
+        "controlsFit": true,
+        "horizontalOverflow": false,
+        "captionFits": true
+      },
+      "seekWorks": true,
+      "endSeekWorks": true,
+      "replayWorks": true,
+      "audioClockDriftSeconds": 0,
+      "storageUnchanged": true,
+      "reducedMotion": true,
+      "pass": true
+    }
+  ]
+}

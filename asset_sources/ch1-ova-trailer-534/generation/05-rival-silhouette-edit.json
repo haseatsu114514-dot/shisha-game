@@ -1,0 +1,20 @@
+{
+  "issue": 534,
+  "tool": "image_gen.imagegen",
+  "status": "generated; visually reviewed",
+  "reason": "初稿に説明のない観葉植物が一つ写ったため、背景だけを修正",
+  "prompt": "Edit only the tiny potted green plant visible in the distant warm-light background of this new OVA still. Remove the whole plant and its pot, replacing that small area with the existing warm painted plain hall wall and subtle light. Preserve EVERYTHING else: the 16:9 composition, curtain, girl's exact black long hair, cute adult human proportions, small plastic horn and bat accessories, black/lime-green costume trim, hand holding the curtain, colors and cel ink. Keep her entire facial features, eyes, nose and lips hidden. Do not add people, new plants, equipment, text, title, symbols or watermark. The source is the newly generated mysterious chapter-one local-event-hall scene; this is a minimal background correction, not a new pose or redesign.",
+  "referenced_image_paths": [
+    "images/05-rival-silhouette.png"
+  ],
+  "preserve_hidden_face": true,
+  "transparent_background": false,
+  "output": "images/05-rival-silhouette.png",
+  "original": "archive/05-rival-silhouette-first.png",
+  "qa": {
+    "pass": true,
+    "notes": "植物・鉢がなくなり、髪・顔の秘匿・衣装・手とカーテン・照明を維持"
+  },
+  "source_main": "0614327",
+  "sha256": "87b746b8302eded6adaafa5a2d6c0b8f0e23c275a0bd46e422f69daedab06e48"
+}

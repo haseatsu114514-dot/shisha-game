@@ -1,0 +1,47 @@
+{
+  "issue": 534,
+  "worker": "codex-ch1-ova-20261013-b30a1e4f",
+  "tool": "image_gen.imagegen",
+  "status": "generated; visually reviewed",
+  "prompt": "Make one NEW wordless full-bleed cinematic 16:9 still for chapter 1 of an everyday Japanese shisha-cafe story. Use the rich hand-painted aesthetic of the early 1992 BASTARD!! OVA: organic tapered black ink, broad 2-3 hard cel shadow tones, grouped glossy hair highlights, detailed opaque gouache backgrounds. Character reference portraits determine identity, age and clothes; the OVA Tsumugi reference determines art treatment ONLY. No fantasy, magic, battle armor, weapons, real demon body parts, giant characters, title poster, letters, Japanese/English text, brand logos, watermark or border. INPUT 1 is Hajime's official identity, age 22: black baseball cap, messy short black hair, gray eyes, black hoodie, cargo trousers and boots, real small capsule personal mouthpiece on neck chain if collar permits it. INPUT 2 is OVA visual treatment only. A fresh close-medium three-quarter FRONT view of Hajime on the RIGHT in the quiet corridor outside the rented local SMOKE CROWN CUP event hall in the same ordinary building as C.STATION. His face is clear, eyes directed toward the bright open entrance on the LEFT, apprehensive but hopeful and determined; not smiling triumphantly, crying or posing heroically. His right hand naturally grips a plain canvas equipment-bag strap at chest level, no visible equipment in the closed bag; left hand rests out of view. Normal adult proportions, not a tiny boy facing a giant woman. Cream concrete corridor, modest acoustic wall panels, simple doorjamb and soft ceiling lights; a strip of warm white room light reaches across his shoulder. Past the doorway only softly indistinct rows of roughly a local hundred-seat audience, no distinguishable faces or stage items. The camera cannot see the competition tables or shisha equipment. This is BEFORE his first local competition: NO trophy, winner, medals, results, scoreboard, judge, named opponents, smoke, dramatic giant shadow or supernatural battle. Dark navy foreground and ivory doorway contrast, ordinary modest venue, not stadium, temple or cafe. Leave room at lower LEFT for a separately added final unanswered line, but bake NO text into this image.",
+  "referenced_image_paths": [
+    "assets/sprites/characters/hajime/chr_hajime_normal.png",
+    "asset_sources/retro-ova-study-519/images/tsumugi-ova.png"
+  ],
+  "transparent_background": false,
+  "brief": {
+    "人物": "ハジメ（22）",
+    "場面": "地元大会の会場入口、試合前",
+    "台型": "閉じたバッグ内で映さない",
+    "HMD": "映さない",
+    "炭": "映さない",
+    "ホース": "映さない",
+    "吸い口": "首掛け、正規立ち絵の小さな本体＋チェーン",
+    "構図": "右ハジメ前3/4、左に明るいホール入口、顔が見える"
+  },
+  "output": "images/06-first-step.png",
+  "sha256": "7fc9d5b7c4710a2dc869574d84dba80cab31204cb445717979695d32a3db8ea5",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "runtime": {
+    "path": "trailer/art/06-first-step.webp",
+    "dimensions": [
+      1664,
+      936
+    ],
+    "conversion": "contain (no crop), WebP q93 method6",
+    "contained_dimensions": [
+      1663,
+      936
+    ]
+  },
+  "qa": {
+    "pass": true,
+    "notes": "黒い帽子/短髪/灰色の目/黒服、肩掛けバッグと自然な指、鎖と小型吸い口の本体を確認。普通のイベントホール、勝敗や看板文字なし。",
+    "wordless": true,
+    "plants": 0
+  },
+  "source_main": "0614327"
+}

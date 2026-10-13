@@ -1,0 +1,145 @@
+{
+  "revision": "ring-v7",
+  "source_commit": "cd494f8042201c050145e825998046744bb234e6",
+  "user_request": "奥の1個をコンロのど真ん中から外し、手前の2個は外側から適度に内側へ。炭同士を離した三角配置を保ち、コイルへ乗せる。",
+  "planning_before": {
+    "人物": "はじめ。正規立ち絵を本人の基準とし、既存の顔・衣装・姿勢・トングを保持。",
+    "場面": "炭焼き工程。回収前3+0と回収後2+1。",
+    "台の型": "既存の電気コイルコンロ。後部電源コードを維持。右上の炭壺は上面別視点。",
+    "HMD": "なし。炭を加熱中の工程なので追加しない。",
+    "炭": "3個を同じ向き・同じ大きさの平置き。中央の非コイル部と外縁を避け、中間のコイル上に三角配置。互いに離す。",
+    "ホース": "なし。後部の電源コードは吸引用ホースへ置換しない。",
+    "吸い口": "既存アクセサリーを保持。吸引や煙を追加しない。",
+    "構図": "1672×941の既存画角。奥の炭は11時方向のコイルへ、手前2個は外縁から内側へ寄せる。中央を空けて間隔のある三角配置。"
+  },
+  "planning_after": {
+    "人物": "はじめ。正規立ち絵を本人の基準とし、既存の顔・衣装・姿勢・トングを保持。",
+    "場面": "1個回収後。手前左だけが炭壺へ移動、残り2個は修正した回収前の位置を維持。",
+    "台の型": "既存の電気コイルコンロ。後部電源コードを維持。右上の炭壺は上面別視点。",
+    "HMD": "なし。炭を加熱中の工程なので追加しない。",
+    "炭": "3個を同じ向き・同じ大きさの平置き。中央の非コイル部と外縁を避け、中間のコイル上に三角配置。互いに離す。",
+    "ホース": "なし。後部の電源コードは吸引用ホースへ置換しない。",
+    "吸い口": "既存アクセサリーを保持。吸引や煙を追加しない。",
+    "構図": "1672×941の既存画角。奥の炭は11時方向のコイルへ、手前2個は外縁から内側へ寄せる。中央を空けて間隔のある三角配置。 回収後も残りの2個を動かさない。"
+  },
+  "placement_guide": {
+    "central_clear_patch": [
+      883,
+      447
+    ],
+    "rear_bottom_tip": [
+      883,
+      365
+    ],
+    "front_left_bottom_tip": [
+      763,
+      547
+    ],
+    "front_right_bottom_tip": [
+      1007,
+      547
+    ],
+    "scope": "Guide coordinates for generation, not a measurement or exact thermal model. Actual bottom support and clearance inspected visually."
+  },
+  "material_references": [
+    "Existing layout-v6 mockup",
+    "Real DUM spiral electric burner side photo, previously researched in hybrid-reference.md",
+    "Canonical hajime normal",
+    "Actual lit coconut charcoal photo previously researched in hybrid-reference.md"
+  ],
+  "display_rules": [
+    "No per-coal numeric badges or result prefix",
+    "Retain shared flat posture, clear gaps and similar size",
+    "Keep plain rounded overhead carrier inset, no tail or compartments",
+    "Before3+0 / after2+1",
+    "No lower explanations or new controls"
+  ],
+  "thermal_scope": "Visual placement correction from user instruction and real coil structure. No measured temperature/equal-heating claim or game timing/difficulty change.",
+  "status_run": 38395111620,
+  "generations": [
+    {
+      "stage": "first-before-candidate",
+      "args": {
+        "referenced_image_paths": [
+          "/workspace/scratch/coal-review/ring-inputs/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/hybrid-refs/burner-side.jpg",
+          "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png",
+          "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg"
+        ],
+        "transparent_background": false,
+        "prompt": "Make a precise LOCAL EDIT of the FIRST image, the established Japanese shisha charcoal game static mockup, 1672x941. Change ONLY where the three charcoal pieces sit on the electric spiral coil and their associated corner brackets. Everything else must remain matched to the first image. Reference2 is the real electric spiral burner structure, NOT a new stove to copy. Reference3 is canonical Hajime identity, NOT a new pose. Reference4 is real lit coconut charcoal material, NOT a new charcoal shape. Keep the existing ash, rough chipped edges, gray top and orange-red sides.\n\nThe owner notes that the rear charcoal appears to sit in the coil's CENTRAL NON-HEATING GAP, while the two front pieces are too close to the outer rim. Reposition the three charcoals into a balanced triangle of BASE CONTACT POINTS on the MIDDLE HEATED TURNS. The CENTRAL VOID around image point (883,447) must remain visibly EMPTY. NO charcoal resting in that void, NO piece on the burner rim or support struts. Each charcoal rests flat on a hot coil turn, not standing on an edge, not floating. Keep SAME cube size and SAME yaw/pitch for all 3.\n\nMandatory visible translations from the first image:\nA. Rear charcoal currently has silhouette about x819..945, y305..427. Move it BACK toward the rear heated coil, about60px UP in the image. Its NEW silhouette should be about x819..947, y245..366. Its broad bottom face meets the red middle rear coil at y340..365. The charcoal is raised vertically above that contact point naturally, so its top projects above the rear rim. Do NOT leave its bottom near y425. Reveal all the old charcoal footprint so the center void is unobscured.\nB. Front-left charcoal currently at x657..784 y456..579. Move it about45px RIGHT and32px UP. NEW silhouette about x700..827 y423..547. Broad bottom rests across a middle front-left coil turn, clear of the outer black ring. Keep its gold corner brackets and small 今 cue around this moved piece.\nC. Front-right charcoal currently at x988..1115 y456..579. Move it about45px LEFT and32px UP. NEW silhouette about x943..1071 y423..547. Same posture, same base contact and middle turn radius as the left. Move its gray corner brackets too.\nThis is a moderate inward movement for the front pair, NOT crowding them around the central void. All three remain separate, with clear dark/red coil and air gaps between them. Triangle base points approximately rear(883,350), front-left(763,532), front-right(1007,532). Preserve the first image's stove and coil ellipse; reconstruct exposed coil in the vacated regions smoothly. Do not move or shrink the stove.\n\nPreserve ALL other first-image elements: Hajime, tongs, backgrounds, warm lighting, existing text including 芯が光ったら、炭を取る。, all top stage numbers, SCORE000000, count0/3, the EMPTY carrier in the right plain rounded rectangular overhead inset, long carrier handle, rear power cable, knob and layout. No new per-coal numbers, no bubble pointer, no added labels or explanatory legend. Exactly3 coals on the stove,0 in carrier. This is a placement correction, not a new overall design."
+      },
+      "generated_original": "/workspace/generated_images/exec-9f44e2b5-05b6-4325-ae2b-6e224344981b.png",
+      "output": "iterations/ring-v7-first/AB-hybrid-before.png",
+      "adopted": false,
+      "review": "Moved rear only slightly upward and front pair inward slightly; did not achieve the requested clear middle-turn placement. Preserved as candidate, not canonical output."
+    },
+    {
+      "stage": "placement-correction-before",
+      "args": {
+        "referenced_image_paths": [
+          "/workspace/generated_images/exec-9f44e2b5-05b6-4325-ae2b-6e224344981b.png"
+        ],
+        "transparent_background": false,
+        "prompt": "Edit this exact 1672x941 game mockup. Relocate the three charcoals substantially; keep the stove, spiral, background, character, tongs, labels and empty pot inset unchanged.\n\nThe top charcoal is still TOO CLOSE to the center of the burner. It must move a FULL HALF CHARCOAL WIDTH toward the BACK. Move it sixty pixels UP and thirty pixels LEFT from its current position. Its entire silhouette should now be approximately x795..923 y235..356. This places its broad bottom on the BACK-LEFT MIDDLE HEATED COIL, at roughly11o'clock, where you see a red coil behind the empty center. Its top rises naturally above the stove's rear edge. Show a clean, clearly empty black central patch around(880,438) below/right of this coal. The back charcoal should be visibly OFF the central patch, separated from it by exposed red coil. Reconstruct the uncovered area where that coal used to be. Move its gray corner brackets with it.\n\nThe front-left charcoal moves thirty pixels RIGHT and thirty-five pixels UP, to approximate silhouette x701..828,y414..538. Move its gold brackets and small 今 cue with it. The front-right charcoal moves thirty pixels LEFT and thirty-five pixels UP, to x935..1062,y418..542. Move its gray brackets with it. These FRONT charcoals now sit on the MIDDLE heated coil turns with a CLEAR MARGIN to the outer rim. Keep both front bases at similar depth. These movements leave generous air gaps between the three coals, forming a recognizable triangular placement around the EMPTY CENTER.\n\nKeep all charcoal pieces same size, same yaw/pitch, broad bottom face resting FLAT and in contact with the heated spiral. No floating, no tilted pose, no standing on a corner. Preserve rough gray ash/chipped material and orange-red side faces. Three on stove, zero in pot. Keep the same counts, no coal number circles. Keep the plain rounded top-down charcoal carrier inset with no tail, rear power cord, long handle, all other UI unchanged.\n\nThis edit must show LARGE enough positional differences to resolve the placement issue: rear coal bottom near y350 instead of y415, front pair closer to burner center at x765/x1000. Do not simply nudge a few pixels. Do not add arrows, diagrams, new text or explanations."
+      },
+      "generated_original": "/workspace/generated_images/exec-fdde50ec-c1bf-4576-86c0-bd3a00465ff9.png",
+      "output": "AB-hybrid-before.png",
+      "adopted": true,
+      "review": "Rear coal now on rear-left coil around11o'clock, clear of central black patch. Both front coals moved inward from previous edges; visible gaps and triangular contact arrangement retained. Generated positions are visually accepted; requested coordinates are guide targets only."
+    },
+    {
+      "stage": "matched-after",
+      "args": {
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+          "/workspace/scratch/coal-review/ring-inputs/AB-hybrid-after.png"
+        ],
+        "transparent_background": false,
+        "prompt": "Create the tightly matched AFTER state by locally editing the FIRST 1672x941 game mockup. The SECOND image shows only the previous AFTER-state pot counter and result arrangement; NEVER copy its old stove coal positions. Preserve every unchanged detail from FIRST.\n\nSpecific edits to FIRST:\n- Remove ONLY the front-left charcoal, whose silhouette is approximately x690..816, y440..562, together with its gold corner brackets and 今 cue. Reveal the existing glowing spiral coil beneath it seamlessly.\n- Leave the rear-left charcoal around x756..883,y270..388 EXACTLY in place with gray corner brackets. It must remain on the rear-left coil, offset from the empty central black patch.\n- Leave the front-right charcoal around x956..1085,y440..565 EXACTLY in place and SAME SIZE and SAME ORIENTATION. Change its corner brackets to gold and add a small 今 cue beneath it. Do not recenter either remaining charcoal, do not move them towards the rim. Their broad base remains flat on the same coil turns, central void visible and empty.\n- Right plain rounded rectangular top-down charcoal-pot inset: count0/3 becomes1/3. Add ONE small recovered charcoal inside the same deep metal pot near the floor. Copy the same rough gray ash, chipped corners and orange-red side material from the removed front-left piece; natural overhead foreshortening is allowed. Keep its established inset width about70px, aroundone quarter of the roughly290px opening. No smooth toy cube or new ID badge.\n- Put short gold text PERFECT ｜ 0.06秒遅い along the inset bottom, as in reference2, without any 炭2 or numeric charcoal label.\n\nKeep EXACTLY first image's stove silhouette and spiral path, rear cable, knob, long handle, empty central void, background, Hajime's face/clothes/tongs/pose, warm lighting and all other Japanese UI. Top stage numbers01..06 and SCORE000000 unchanged. No per-coal numbers. No speech bubble tail, no divided slots, no explanation cards. Exactly TWO coals remain on stove, ONE in pot. This is the same scene after front-left collection, not a re-layout."
+      },
+      "generated_original": "/workspace/generated_images/exec-ecd46be1-d5dd-48ac-8089-311c9aca7d22.png",
+      "output": "AB-hybrid-after.png",
+      "adopted": true,
+      "review": "Front-left collected. Rear-left and front-right remain in same locations, sizes and flat orientation; center and rim clear, stove2 + pot1, no per-coal labels."
+    }
+  ],
+  "qa": {
+    "manual_review": "PASS: center black patch unoccupied, rear-left coal offset from center, front pair inward from previous edges, triangular placement and visible air gaps, flat posture, continuity3+0→2+1",
+    "browser": "PASS: PC1440x1050, touch844x390 and390x844; new frame load, switching, compare, zoom/Escape, no overflow or page/HTTP errors",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2000995
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2060399
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1308712
+      }
+    }
+  },
+  "refined_placement_guide": {
+    "rear": "11o'clock rear-left heated turn, visibly separated from central void",
+    "front_pair": "slightly inward and backward, similar depth on middle heated turns",
+    "clearance": "Visible coil between charcoal pieces; central patch and outer rim left free",
+    "scope": "Manual visual acceptance; no measured thermal radius or exact position claim"
+  },
+  "outputs": [
+    "AB-hybrid-before.png",
+    "AB-hybrid-after.png",
+    "hybrid-comparison.png"
+  ]
+}
