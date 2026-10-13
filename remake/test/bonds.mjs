@@ -152,11 +152,11 @@ try {
     await vn.play("confession_minto");
     const confession = [...new Set(names().filter((l) => /栞|みんと/.test(l.name)).map((l) => l.name))];
     const lover = state.lovers.slice();
-    // ジム: 正体を知った後、本名を聞く前後で呼び方と地の文が変わる
-    state = fresh({ met: { minto: true }, flags: { _minto_identity_revealed: true } });
+    // ジム: 本名を聞く前後で呼び方と地の文が変わる
+    state = fresh({ met: { minto: true } });
     await vn.play("choizap_minto");
     const gymBefore = { names: [...new Set(names().map((l) => l.name).filter((x) => x !== "はじめ"))], text: vn.backlog().map((l) => l.text).join("|") };
-    state = fresh({ met: { minto: true }, flags: { _minto_identity_revealed: true, _minto_name_known: true } });
+    state = fresh({ met: { minto: true }, flags: { _minto_name_known: true } });
     await vn.play("choizap_minto");
     const gymAfter = { names: [...new Set(names().map((l) => l.name).filter((x) => x !== "はじめ"))], text: vn.backlog().map((l) => l.text).join("|") };
     // お姉さん（名乗る前の tonari の私服客）
