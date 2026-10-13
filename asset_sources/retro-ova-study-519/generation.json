@@ -1,0 +1,117 @@
+{
+  "issue": 519,
+  "worker": "codex-ova-study-20261013-5f470b9d",
+  "claim_run": 38359462795,
+  "status_run": 38359709631,
+  "request": "紬を1枚だけ『BASTARD!!』のヨーコ/OVA風に。巨大なアゲハの影に挑む第2章タイトルも90年代風の試作。",
+  "scope": "比較用の別バージョン2枚。採用済みC・本編の画像は変更しない。",
+  "style": "1992 BASTARD!! OVA / Yoko (Tia Noto) visual inspiration; original shisha-game characters.",
+  "prompts": {
+    "tsumugi": "Create ONE finished alternate illustration by completely REDRAWING input 1 in the lush hand-drawn character aesthetic of the early 1992 BASTARD!! OVA, particularly the expressive facial drawing and screen presence of Yoko / Tia Noto. This is an experimental alternate visual treatment for the user's original everyday Japanese cafe story.\nInput 1 is the existing Tsumugi water scene and the exact storyboard/composition to keep. Input 2 is Tsumugi's official identity and costume reference, not a style reference.\nKEEP the 16:9 landscape framing, camera, poses, table perspective, olive sofa, orange cushion, half-full glass of water, drawing tablet, stylus and the partly occluded young man at left. The young woman is Tsumugi, age 21: the same SHORT CHESTNUT-BROWN BOB with straight bangs, BROWN eyes, small black stud earring, soft youthful adult face and dark PURPLE ZIP HOODIE with ivory/pink/gold flower embroidery. Her gaze and gentle, concerned expression remain. Her right hand offers the glass and her other hand rests beside her own tablet. Keep her specific features clearly recognizable. The man's dark cap and dark hoodie remain at the left.\nMake the character drawing visibly different and emphatically early-1990s OVA: beautifully expressive large vertically shaped eyes with confident thick upper lashes, hand-inked tapered lines and a tiny crisp nose/mouth; richer sculptural hair locks with broad painted glossy highlight ribbons; opaque warm skin cel paint with large sharply edged violet/blue shadows; decisive garment-fold lines and carefully drawn floral motifs; cinematic amber edge light contrasting deep indigo shadows. Use the lush, slightly dramatic beauty of Yoko's OVA facial design while keeping Tsumugi's own short brown hair, clothing and everyday personality. Preserve her gentle cheek shape and short chin. Keep natural hand anatomy and the same physical grip on the glass.\nCharacters should be finished traditional production-cel drawing, with controlled 2-3 tone flat shadow shapes and expressive ink detail; background is subdued hand-painted gouache. This must be a real redraw of face, eyes, linework, hair and shading, with a bold visible change from the source.\nMaintain the everyday quiet cafe interaction. Do not add fantasy costumes, long red hair, weapons, magic, monsters, new props or shisha equipment. No added text, logos, subtitle, borders or watermark. Deliver a single full-bleed 16:9 landscape still.",
+    "title": "Create ONE alternate chapter-two title illustration by REDRAWING the art in input 1 with the powerful early-1990s Japanese hand-painted OVA aesthetic of the 1992 BASTARD!! anime. The story is a modern everyday shisha-craft drama; use the visual intensity and dramatic cel drawing as an artistic treatment.\nInput 1 is the user's existing Chapter 2 title and exact composition/typography reference. Input 2 is the official original character Ageha, age 22, for face, hair, accessories and costume identity. Input 3 is the official protagonist Hajime, age 22, for identity and clothing.\nLOCK the landscape 16:9 layout: the huge, dark, confident image of genius Ageha dominates the right two-thirds, while small Hajime stands in the lower center-left with his back to us, legs braced and fists down, looking up and facing her. This is a symbolic overwhelming shadow, not an actual giant or a supernatural plot event. Preserve their exact relative scale, pose, directions and camera. Keep the left title area clear and readable.\nAgeha retains her friendly youthful adult face, amber eyes, honey-blonde TWIN PONYTAILS, pink and cream bear hair clips, gold hoops, black choker, heart necklace, leopard-print jacket, pink heart crop top and black pleated skirt. Her confidence should feel effortless and intimidating by scale and lighting, not by changing her into an older cruel villain. Hajime retains the same black cap, black hoodie and cargo trousers, in the same rear-facing stance.\nRebuild all character drawing as rich 1992 production cel art: organic black ink contours with beautifully tapered fine detail, bold classic eyelids and expressive almond/tall eyes, sculpted flowing hair groups with large glossy cel highlight bands, dramatic angular navy/plum shadow masses, emphatic clean folds and warm cel-painted skin. Keep the skin and costume paint flat and opaque with 2-3 carefully designed tones. The character aura comes from spectacular orange-gold rim light and pink-violet backlight outlining hair and shoulders, with a deep shadowed face whose eyes and small assured smile remain discernible. Retain the source's magenta, black and purple abstract diagonal background rhythm, translated into painted animation background and graphic shadow shapes.\nPRESERVE ALL EXISTING TYPOGRAPHY EXACTLY, including its Japanese characters, positions, line breaks, size, color and legibility: top-left '水煙前線 -EN:CODE-', below it 'CHAPTER 2', the large left-middle chapter title '才能の壁', and the lower-left English subtitle 'Jealousy Haze'. Do not introduce any BASTARD!! logos or new wording. The composition must remain the same chapter title while the art becomes distinctly hand-drawn 1990s OVA.\nNo new armor, swords, horns, extra characters, equipment, nudity or watermark. Deliver one full-bleed landscape 16:9 finished title image."
+  },
+  "inputs": {
+    "tsumugi": [
+      "asset_sources/trailer-90s-anime-concept/images/04-tsumugi-water.png",
+      "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png"
+    ],
+    "title": [
+      "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/images/ch2-title.png",
+      "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "assets/sprites/characters/hajime/chr_hajime_normal.png"
+    ]
+  },
+  "latest_user_direction": "バスタードのヨーコみたいな可愛いのがいい　女の子は",
+  "base_commit": "408e968222982f20cf6d9f21e3ee706bd59d73a6",
+  "generator": "image_gen.imagegen",
+  "refinement_prompts": {
+    "tsumugi": "Edit IMAGE 1, the Tsumugi water-offering scene, with IMAGE 2 as the authoritative original character identity reference. This is a cute-face refinement for the user's requested alternate early-1990s OVA look, inspired by the appealing heroine facial language of Yoko in the 1992 BASTARD!! OVA. Keep Tsumugi as herself, a 21-year-old young adult, in her brown short bob, straight bangs, black stud earring, purple zip hoodie with delicate flower embroidery. The user explicitly says the girls should be CUTE like Yoko. Focus the change on Tsumugi's face: slightly taller, larger, clear warm brown eyes with broad luminous irises and lively hand-inked upper lashes; softly rounded cheeks; a short delicate gently rounded chin; a tiny simple cel-drawn nose and small gentle mouth with no modeled lipstick. Give her tender concerned warmth and a restrained hint of sweetness as she offers the water. Cute expressive classic OVA heroine, not a mature glamorous model; avoid sharp cheekbones, long pointed jaw, heavy makeup, sultry lips, angular adult fashion illustration, or modern moe/chibi simplification. Preserve the original 90s style organic ink and warm two/three-tone hard-edged cel paint with glossy hair highlights, solid dark navy/plum shadows, and painted everyday cafe background. Do not change camera, layout, character positions, hair color or length, costume, hands, glass or water, tablet with cat sketch and stylus, wood table, sofa or cushions. Hajime remains foreground left. No extra characters, fantasy costumes, text, smoke, or equipment. Render one complete 16:9 finished illustration.",
+    "title": "Edit IMAGE 1, the generated Chapter 2 title card, using IMAGE 2 as the authoritative Ageha identity and cute face reference. This is a focused facial refinement: keep the existing graphic composition and typography, giant symbolic Ageha dominating the right, small Hajime confronting her from below left, all character placements, clothes, hair, hands, props, background colors, and strong orange rimlight. The user's latest explicit requirement is that the girls should be CUTE like Yoko in the early 1990s BASTARD!! OVA. Make Ageha's face an appealing cute classic OVA heroine face: larger and taller clear amber eyes with broad bright irises and graceful upper lashes, softly rounded full cheeks, shorter small gently rounded chin, a tiny simple ink/cel nose, and a small natural smiling mouth drawn with minimal lines. Remove the current modeled full lips, sharp facial sculpting, mature fashion-model expression and long pointed jaw. Her expression is a bright confident friendly smile with soft youthful adult femininity, exactly Ageha's warmth, age 22. Do not make her a child; do not use chibi or modern moe. The overwhelming talent and challenge must come from her huge scale, deep cel shadow and orange hair rimlight, while her FACE stays sweet and cute. Preserve honey-blonde twin ponytails, pink and cream bear hair clips, gold hoops, black choker, gold heart necklace, leopard jacket, pink heart crop top and black pleated skirt. Use the richly inked broad glossy hair bands and opaque two/three-tone hard-edged painted cels of the 1992 BASTARD!! OVA, but Ageha remains the game's original character, not Yoko's costume or hair. Crucial: preserve all four existing left-side inscriptions EXACTLY with same positions, clean readable lettering and margins: '水煙前線 -EN:CODE-', 'CHAPTER 2', '才能の壁', 'Jealousy Haze'. Keep the plum/black/magenta diagonal painted texture background and small Hajime in black cap, hoodie, pants and boots. Do not change anything else. One complete 16:9 title card."
+  },
+  "refinement_inputs": {
+    "tsumugi": [
+      "archive/tsumugi-first-pass.png",
+      "../../assets/sprites/characters/tsumugi/chr_tsumugi_normal.png"
+    ],
+    "title": [
+      "archive/ch2-title-first-pass.png",
+      "../../assets/sprites/characters/ageha/chr_ageha_normal.png"
+    ]
+  },
+  "outputs": [
+    {
+      "path": "images/tsumugi-ova.png",
+      "native_generator_path": "/workspace/generated_images/exec-c9824f81-3f9f-4c19-a7e1-f8047f77e026.png",
+      "sha256": "114017c722551c844848c7706ff831eaa73ede28ca32757fa635e889b8d49a7b",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "opaque": true,
+      "role": "selected-experiment"
+    },
+    {
+      "path": "images/ch2-ova-title.png",
+      "native_generator_path": "/workspace/generated_images/exec-f2f5bc04-c416-4fad-bc35-38aa11d99bf2.png",
+      "sha256": "9e3586d6f8bb7531875907c069435b138901febdd454fdd7a0cb2b080dec0f9b",
+      "dimensions": [
+        1671,
+        941
+      ],
+      "mode": "RGB",
+      "opaque": true,
+      "role": "selected-experiment"
+    },
+    {
+      "path": "archive/tsumugi-first-pass.png",
+      "native_generator_path": "/workspace/generated_images/exec-0e2c8a5f-2d2b-47d3-aaad-50c13a1bea76.png",
+      "sha256": "2a32490c597b46f650c060f1fe033f09c4bbb88ca8fda8d70fe16079bfd081ad",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "opaque": true,
+      "role": "superseded-first-pass"
+    },
+    {
+      "path": "archive/ch2-title-first-pass.png",
+      "native_generator_path": "/workspace/generated_images/exec-4421c5d8-d9fd-41a7-991b-e24c15a31541.png",
+      "sha256": "581a3b1963fbd79c272c732a5d9af9bdb2a7db96d376369db98575294faa5b39",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "opaque": true,
+      "role": "superseded-first-pass"
+    }
+  ],
+  "input_hashes": [
+    {
+      "path": "asset_sources/trailer-90s-anime-concept/images/04-tsumugi-water.png",
+      "sha256": "6e30832adf9375ee1eb0b0dc3abb67a3e44d680716aa4e4529386fbc7ec27c9f"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4"
+    },
+    {
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/images/ch2-title.png",
+      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    }
+  ],
+  "native_files_preserved": true,
+  "production_assets_changed": false,
+  "external_images_downloaded": false,
+  "hardware": "No shisha equipment drawn; water glass and drawing tablet only in the Tsumugi scene."
+}
