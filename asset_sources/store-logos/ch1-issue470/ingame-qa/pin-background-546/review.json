@@ -1,0 +1,31 @@
+{
+  "sourceRef": "d23c35c277a111331a2180e05f9cb32ed329f96b",
+  "captureSize": [
+    1280,
+    720
+  ],
+  "gallerySizes": [
+    [
+      1440,
+      1080
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "variants": [
+    "current",
+    "warm",
+    "slate",
+    "character"
+  ],
+  "daySwitch": true,
+  "nightSwitch": true,
+  "desktopAspectRatio": true,
+  "mobileAspectRatio": true,
+  "mobileOverflow": false,
+  "pageErrors": [],
+  "failedResources": [],
+  "gameBackgroundChangesApplied": false
+}

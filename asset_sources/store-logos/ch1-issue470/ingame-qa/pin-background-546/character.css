@@ -1,0 +1,9 @@
+.spot-pin.branded { --plate-hi:#ded9ca; --plate-mid:#cfc6b4; --plate-low:#b9ac94; --plate-edge:#80715d; }
+ .spot-pin.branded[data-spot="tonari"] { --plate-hi:#e4d1aa; --plate-mid:#d0b88d; --plate-low:#b9a078; --plate-edge:#8a704d; }
+ .spot-pin.branded[data-spot="naru"] { --plate-hi:#dbe0d1; --plate-mid:#c4ccb9; --plate-low:#aab69f; --plate-edge:#77816a; }
+ .spot-pin.branded[data-spot="adam"] { --plate-hi:#d9d2bd; --plate-mid:#c3b99c; --plate-low:#aea386; --plate-edge:#7b725b; }
+ .spot-pin.branded[data-spot="minto"] { --plate-hi:#dae1d8; --plate-mid:#c1d0c1; --plate-low:#a7bcae; --plate-edge:#728778; }
+ .spot-pin.branded[data-spot="shop"] { --plate-hi:#e0dbe1; --plate-mid:#cbc4d0; --plate-low:#b0a7ba; --plate-edge:#81758b; }
+ .spot-pin.branded[data-spot="c_station"] { --plate-hi:#d6dce3; --plate-mid:#bdc9d5; --plate-low:#a0afc0; --plate-edge:#6c7f95; }
+ .spot-pin.branded[data-spot="choizap"] { --plate-hi:#e0e1cf; --plate-mid:#cdd2b6; --plate-low:#b7c29d; --plate-edge:#879269; }
+ .map[data-night="true"] .spot-pin.branded .shield::before { background-image:linear-gradient(rgba(20,24,36,.11),rgba(20,24,36,.11)),linear-gradient(180deg,var(--plate-hi),var(--plate-mid) 46%,var(--plate-low)); }

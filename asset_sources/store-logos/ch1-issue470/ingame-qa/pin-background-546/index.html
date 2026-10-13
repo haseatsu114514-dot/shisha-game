@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マップの看板｜背景の比較</title>
+<style>
+@font-face{font-family:Zen;src:url('../../../../../remake/fonts/ZenKakuGothicNew-Medium.woff2')}*{box-sizing:border-box}body{margin:0;background:#141820;color:#e8e6e0;font-family:Zen,'Noto Sans CJK JP',sans-serif}main{max-width:1440px;margin:auto;padding:26px 24px 30px}header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px}.eyebrow{color:#b5a686;font:11px monospace;letter-spacing:.2em}h1{font-size:24px;line-height:1.4;margin:6px 0 8px;font-weight:500}p{margin:0;color:#a8acb4;font-size:13px;line-height:1.7}.switch{display:flex;gap:4px;padding:4px;border:1px solid #41444b;border-radius:6px;flex-shrink:0}button{font:inherit;cursor:pointer;color:#bdc2ca;background:transparent;border:0;border-radius:3px;padding:8px 24px;font-size:13px}button[aria-pressed=true]{background:#d4c8ae;color:#262520}button:focus-visible,a:focus-visible{outline:2px solid #efdbac;outline-offset:4px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}figure{margin:0;background:#1b202a;border:1px solid #383e49;border-radius:6px;overflow:hidden}.recommended{border-color:#8d896d}figcaption{height:66px;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}h2{font-size:15px;font-weight:500;margin:0 0 2px}.caption{color:#a5aab4;font-size:11px}.tag{font-size:10px;letter-spacing:.1em;color:#dbcfae;border:1px solid #827659;border-radius:3px;padding:4px 7px;white-space:nowrap}a{display:block;line-height:0}img{display:block;width:100%;height:auto;aspect-ratio:16/9}footer{margin-top:17px;color:#9da3ad;font-size:12px;line-height:1.7}footer strong{color:#d6cbb1;font-weight:500}@media(max-width:700px){main{padding:18px 12px}header{align-items:flex-start;flex-direction:column;gap:14px}h1{font-size:21px}.grid{grid-template-columns:1fr}button{padding:8px 22px}.caption{font-size:11px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">SUIEN ZENSEN · MAP SIGN STUDY</div><h1>白いカードから、街に馴染む看板へ</h1><p>ロゴの絵と大きさは同じ。下地・縁・陰影を比べる3案。</p></div><div class="switch" role="group" aria-label="時間帯"><button type="button" data-time="day" aria-pressed="false">昼</button><button type="button" data-time="night" aria-pressed="true">夜</button></div></header>
+<div class="grid">
+<figure><figcaption><div><h2>現在の白い背景</h2><span class="caption">明るさが均一で、白い面が目立つ。</span></div></figcaption><a href="current-night.png" target="_blank" rel="noopener"><img src="current-night.png" data-style="current" alt="現在の白い看板・夜のマップ" width="1280" height="720"></a></figure>
+<figure><figcaption><div><h2>A　温かいグレージュ</h2><span class="caption">落ち着いた紙色と、細い真鍮色の縁。</span></div></figcaption><a href="warm-night.png" target="_blank" rel="noopener"><img src="warm-night.png" data-style="warm" alt="温かいグレージュの看板・夜のマップ" width="1280" height="720"></a></figure>
+<figure><figcaption><div><h2>B　青灰色のスモークガラス</h2><span class="caption">夜景の青になじむ、薄いガラスの面。</span></div></figcaption><a href="slate-night.png" target="_blank" rel="noopener"><img src="slate-night.png" data-style="slate" alt="青灰色のガラスの看板・夜のマップ" width="1280" height="720"></a></figure>
+<figure class="recommended"><figcaption><div><h2>C　店ごとの淡い色</h2><span class="caption">琥珀・ミント・青灰。枠と陰影は共通。</span></div><span class="tag">おすすめ</span></figcaption><a href="character-night.png" target="_blank" rel="noopener"><img src="character-night.png" data-style="character" alt="店ごとの淡い色の看板・夜のマップ" width="1280" height="720"></a></figure>
+</div>
+<footer><strong>比較用の候補です。</strong> ゲーム本編への背景変更はまだ適用していません。画像を押すと原寸で確認できます。</footer>
+</main>
+<script>
+const buttons=[...document.querySelectorAll('[data-time]')];
+for(const button of buttons)button.addEventListener('click',()=>{
+ const time=button.dataset.time;
+ for(const other of buttons)other.setAttribute('aria-pressed',String(other===button));
+ for(const img of document.querySelectorAll('[data-style]')){
+  const source=`${img.dataset.style}-${time}.png`;img.src=source;img.parentElement.href=source;
+  img.alt=img.alt.replace(/・[昼夜]のマップ$/,`・${time==='day'?'昼':'夜'}のマップ`);
+ }
+});
+</script>
+</body>
+</html>

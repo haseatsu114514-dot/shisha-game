@@ -1,0 +1,2 @@
+.spot-pin.branded { --plate-hi:#e2dccb; --plate-mid:#d2c8b2; --plate-low:#c4b79c; --plate-edge:#817256; }
+ .map[data-night="true"] .spot-pin.branded { --plate-hi:#d0c8b7; --plate-mid:#bcb29d; --plate-low:#aba089; --plate-edge:#73654d; }
