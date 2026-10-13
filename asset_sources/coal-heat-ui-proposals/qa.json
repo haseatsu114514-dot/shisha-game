@@ -465,5 +465,84 @@
       "cable": "rear connected",
       "thermal_validation": "visual proposal only; no equal-heating measurement"
     }
+  },
+  "ring_v7": {
+    "revision": "ring-v7",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38395111620,
+    "scope": "static image mockup; no game code or gameplay timing changes",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2000995
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2060399
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1308712
+      }
+    },
+    "visual_review": {
+      "method": "manual inspection of both generated frames and prior real charcoal references",
+      "before": "stove3 / pot0",
+      "after": "stove2 / pot1",
+      "coal_ids": "absent on stove and stored charcoal; result prefix removed",
+      "posture": "shared yaw and pitch, broad base flat on coil",
+      "spacing": "central non-coil patch and outer rim unoccupied; front pair inward on middle turns; triangle and visible gaps retained",
+      "remaining_positions": "rear-left and front-right retained after collection",
+      "collector": "overhead plain rounded inset, no tail or slots",
+      "cable": "rear connected",
+      "thermal_validation": "visual proposal only; no equal-heating measurement"
+    }
   }
 }
