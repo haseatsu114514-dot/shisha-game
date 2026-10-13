@@ -1,6 +1,6 @@
 # 小さな卓の冒険・10分TRPG集
 
-初回制作 Issue #484 / PR #487。本棚・招集の本編基盤 Issue #521 / PR #526。最後まで遊べる短編2本を、本棚から選ぶミニゲーム。
+初回制作 Issue #484 / PR #487。本棚・招集の本編基盤 Issue #521 / PR #526。部活・勧誘 Issue #528 / PR #530。最後まで遊べる短編2本を、本棚から選ぶミニゲーム。
 公開プレビュー: https://shisha-trpg-ordinary-484.briskdill17.chatgpt.site （所有者限定）。
 
 ## 遊ぶ
@@ -14,20 +14,29 @@ python3 remake/tools/serve_preview.py --port 8123
 
 第2章以降の日常マップに **遊べるシーシャバー** を追加しました。第2章の本編進行自体はまだ未実装です。
 共通日常ループを使用する章ではこの入口を利用でき、第2章の街独自マップでは `daily/trpg.js` の `trpgSpot()` を登録してください。
-本棚・購入・招集の試遊は `/remake/trpg-campaign-preview.html`。本編セーブを読み書きせず、ページ内だけで購入・クリアを保持します。
+部活設立・対面勧誘・本棚・購入・招集の試遊は `/remake/trpg-campaign-preview.html`。本編セーブを読み書きせず、ページ内だけで購入・クリアを保持します。
+最初にカウンターの店員の提案から「煙とサイコロ部」を設立します。試遊専用の「○○に会う」から対面勧誘を試せます。
+本編のバーに遠隔勧誘ボタンはなく、各キャラの通常訪問・ひよりとの実際の交流の後に話しかけます。
 「試遊の設定へ」から第1章／昼／夜の予定衝突／二人卓／ひよりの残業とアダムの代役を試せます。
 
 ### 本編での本棚と招集
 
-- 第2章から、必須キャラの好感度MAX（恋人は絆Lv1でも可）で入荷。既知のキャラだけを招待します。
+- 第2章から、バーの店員に提案されて部活を作ります。サメちゃんは設立のきっかけ役ではなく、後から誘う仲間です。
+- 知り合いの好感度MAX（恋人は絆Lv1でも可）で、興味がある人を対面で勧誘できます。現行はひより・サメちゃん・アダム・つむぎ。興味はcatalog、提案と承諾の台詞は `data/dialogue/trpg_club.json` で管理します。
+- 「今日は誘わない」や途中退出では未入部。本人の承諾を最後まで読んだら入部し、以降は招集対象になります。訪問そのものの料金・行動枠に、勧誘の追加料金や枠はありません。
+- 必須キャラが入部すると本が入荷。MAXだけでは入部・入荷・招集を自動解放しません。
 - 初期価格は普通の一台500円／サメ映画800円。購入だけでは時間や体力を消費しません。価格と条件はcatalogで変更できます。
-- 今夜の参加者は好感度MAX・シフトや予定なし・その配役に対応する候補から選びます。スミさん・なるは不参加です。
+- 今夜の参加者は入部済み・シフトや予定なし・その配役に対応する候補から選びます。スミさん・なるは不参加です。
 - 普通の一台のGMはひより、サメ映画のGMはサメちゃん。はじめは参加必須。空いているアダム・ひより・つむぎが任意枠に入ります。
 - GMとはじめの二人でも成立。空いた物語内の役はGMが兼任します。サメ映画ではひよりの枠をアダムが埋められ、台詞と能力も本人用へ変更します。
 - 昼や既存の夜の予定がある時は招集できません。買った本・入荷済みの本は、参加者の仕事の日にも棚に残ります。
 - 結末・振り返り・後日談を最後まで読んだ時に、成否を問わずクリア。参加者・GM・日付・結末・提案を保存し、夜の1枠を同時に消費します。クリア済みは再プレイ不可です。
 - 中断・通信失敗・画面撤去ではクリアや行動消費を記録しません。購入した本は保持します。途中の卓そのものは保存せず、再挑戦は表紙からです。
 - 好感度・恋人の絆・能力・体力・制作報酬は増減しません。記録がこの行動の思い出になります。
+
+保存スキーマ15の `trpg.club` は `{founded:{chapter,day}|null, members:{[id]:{chapter,day}}}`。
+設立と入部は実際の操作だけで記録し、旧セーブのMAXやクリア参加者から補いません。スキーマ14以前の入荷・購入・結末・シフトは保持します。
+勧誘中のセーブ切替・画面撤去・ページ離脱は未入部で終了。通常訪問側が入部とその行動を一緒に保存します。
 
 週間予定は `data/trpg_catalog.json` の `participants[].shifts`。既存には全員のシフト管理がないため、TRPG招集用の初期予定を登録しています。
 ひよりは昼の仕事、つむぎは昼の制作、アダムは定休日以外のシフト、サメちゃんはDAY剰余3・5を休みとして設定しています。
@@ -75,8 +84,12 @@ PCはクリックとキーボード、タッチ端末は横持ち。会話はEnt
 ## 正本と構成
 
 - `data/trpg_catalog.json`: シナリオIDと正本ファイル、独立人物profileの参照。
+- `data/dialogue/trpg_club.json`: 店員の設立提案とキャラ別の対面勧誘の返答。
 - `data/dialogue/trpg_ordinary.json` / `trpg_shark.json`: 物語・調査・ルール・選択肢・選択への返答・台詞。
   本編の `loadAll()` に登録しておらず、TRPGの開始時だけ読む。
+- `remake/js/trpg/campaign.js`: 設立・勧誘・入荷・購入・招集・一度きりの結末のルール。
+- `remake/js/trpg/club-view.js`: 対面で誘う、返答を読む、入部を確定する会話画面。
+- `remake/js/daily/trpg.js`: バー入口と、通常訪問後の勧誘フック。保存は訪問側が所有。
 - `remake/js/trpg/session.js`: DOM・ストレージに依存しない、seed付きのセッション処理。
 - `remake/js/trpg/view.js`: 会話、部屋の調査、メモ、切り札、サイコロ、結末の表示。
 - `remake/js/trpg/index.js`: 本編接続用の呼び出し窓。
@@ -130,6 +143,8 @@ QA用: `?scenario=ordinary-cup&seed=9&traveler=quiet`、`traveler=home`、`trave
 
 ```bash
 node --test remake/test/trpg.mjs
+node --test remake/test/trpg_campaign.mjs
+node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
 python3 tools/lint_dialogue.py trpg_
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg.mjs
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg_main.mjs
@@ -144,7 +159,7 @@ PlaywrightとChromiumが必要。CIは `.github/workflows/trpg-preview.yml`。
 振り直し、中断/再挑戦、縦持ち案内、音ON/OFF、ロード失敗からの再試行、背景再読込、
 API中断、画面内収まり、Storageアクセスゼロと既存保存の不変を確認。
 
-本棚・本編アダプターのブラウザ9ケースは、PC/タッチ両作の購入と読了、結末読了直後の保存、
+本棚・本編アダプターのブラウザ13ケースは、設立と勧誘のPC/タッチ、通常訪問での勧誘、勧誘中止・セーブ切替に加え、PC/タッチ両作の購入と読了、結末読了直後の保存、
 クリア後の再プレイ不可、二人卓、中断、アダムの代役台詞、必須GMの欠席、夜の予定衝突、
 タイトルの読み取り専用棚、通信再試行、画面撤去、本編のマップから入店・時間を使わない購入、
 独立試遊の保存不変と第1章ゲートを確認します。schema移行は実際のオート・手動保存APIで別途検証します。
@@ -172,7 +187,7 @@ Sitesで配信する場合も、この出力は配信スナップショットだ
 `mountTrpgCampaign(host, {getState, save, nightBusy, readOnly})` は明示的に渡した状態だけを扱います。
 `readOnly` なら入荷・購入・クリアを一切変更しません。`daily/trpg.js` は本編state/saveを渡すアダプターです。
 `openTrpgBar()` が `{completed:true}` を返した場合、既にslotを消費し保存済みなのでcalendarは `slotsUsed:0` で受け取ります。
-本編の状態schemaは14。オート・手動どちらの旧セーブも空の棚から移行し、旧無料試遊の履歴を推測しません。
+本編の状態schemaは15。設立・入部のない旧セーブは未設立から始め、購入済み・クリア済みの本は保持します。旧無料試遊の履歴や好感度から入部を推測しません。
 
 検証: `node --test remake/test/trpg.mjs remake/test/trpg_campaign.mjs`、
 `node --experimental-vm-modules remake/test/trpg_campaign_save.mjs`、

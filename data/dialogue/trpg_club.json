@@ -1,0 +1,68 @@
+{
+  "dialogue_id": "trpg_club",
+  "metadata": {
+    "description": "遊べるシーシャバーの部活設立と対面勧誘"
+  },
+  "lines": [
+    {
+      "speaker": "shop_clerk",
+      "text": "この店で、TRPGの部活を作ってみませんか？"
+    },
+    {
+      "speaker": "shop_clerk",
+      "text": "仲のいい人を誘って、仕事のない夜に集まるんです。"
+    },
+    {
+      "speaker": "shop_clerk",
+      "text": "メンバーが増えたら、その人たちに合う新しい本も仕入れます。"
+    }
+  ],
+  "branches": {
+    "invite": [
+      {
+        "speaker": "hajime",
+        "text": "遊べるシーシャバーでTRPGの部活を作ったんだ。一緒にどう？"
+      }
+    ],
+    "hiyori": [
+      {
+        "speaker": "hiyori",
+        "text": "……物語の中なら、少し違う私にもなれるかしら。"
+      },
+      {
+        "speaker": "hiyori",
+        "text": "ええ、入るわ。仕事のない夜に呼んでちょうだい。"
+      }
+    ],
+    "samechan": [
+      {
+        "speaker": "samechan",
+        "text": "サメ映画みたいなTRPGもある？　なら入る！"
+      },
+      {
+        "speaker": "samechan",
+        "text": "仕事のない夜に呼んで。サメ役……じゃなくて、GMもやってみたい！"
+      }
+    ],
+    "tsumugi": [
+      {
+        "speaker": "tsumugi",
+        "text": "……はじめがいるなら、やってみたい。"
+      },
+      {
+        "speaker": "tsumugi",
+        "text": "入る。制作の予定がない夜なら、呼んで。"
+      }
+    ],
+    "adam": [
+      {
+        "speaker": "adam",
+        "text": "部活か。俺を誘うとは、いい目をしている。"
+      },
+      {
+        "speaker": "adam",
+        "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける。"
+      }
+    ]
+  }
+}

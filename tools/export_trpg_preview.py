@@ -37,6 +37,8 @@ def main():
              "remake/trpg-preview.html", "remake/css/base.css", "remake/css/trpg.css", "remake/js/core/util.js"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
+    if catalog.get("club", {}).get("file"):
+        files.add("data/" + catalog["club"]["file"])
     files.update("remake/fonts/ZenKakuGothicNew-" + weight + ".woff2" for weight in ["Medium", "Bold", "Black"])
 
     def portrait(actor, face="normal"):

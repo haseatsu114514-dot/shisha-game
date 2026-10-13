@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "characterProfiles": [
     "dialogue/samechan.json"
   ],
@@ -38,7 +38,9 @@
             5
           ]
         }
-      ]
+      ],
+      "interested": true,
+      "interestHint": "物語の役を演じるのが好き"
     },
     {
       "id": "samechan",
@@ -65,7 +67,9 @@
             6
           ]
         }
-      ]
+      ],
+      "interested": true,
+      "interestHint": "サメ映画のGMに興味あり"
     },
     {
       "id": "tsumugi",
@@ -80,7 +84,9 @@
             4
           ]
         }
-      ]
+      ],
+      "interested": true,
+      "interestHint": "静かな少人数の卓が好き"
     },
     {
       "id": "adam",
@@ -109,7 +115,13 @@
             6
           ]
         }
-      ]
+      ],
+      "interested": true,
+      "interestHint": "物語や舞台の仕掛けが好き"
     }
-  ]
+  ],
+  "club": {
+    "name": "煙とサイコロ部",
+    "file": "dialogue/trpg_club.json"
+  }
 }

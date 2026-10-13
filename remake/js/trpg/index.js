@@ -27,16 +27,30 @@ async function preload(url, signal) {
 }
 
 /** Scenario and canonical presentation data only; no main-game loading or saves. */
+export async function loadTrpgClubResources({ signal } = {}) {
+  const base = new URL("../../../data/", import.meta.url);
+  const catalog = await json(new URL("trpg_catalog.json", base), signal);
+  const [characters, manifest, overlays, club] = await Promise.all([
+    json(new URL("characters.json", base), signal), json(new URL("../../data/manifest.json", import.meta.url), signal),
+    Promise.all((catalog.characterProfiles || []).map(file => json(new URL(file, base), signal))),
+    json(new URL(catalog.club.file, base), signal),
+  ]);
+  const people = new Map(characters.map(c => [c.id, c]));
+  overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
+  return { catalog, characters: [...people.values()], manifest, club };
+}
+
 export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
   const base = new URL("../../../data/", import.meta.url);
   const catalog = await json(new URL("trpg_catalog.json", base), signal);
   const entries = scenarioId ? catalog.scenarios.filter(s => s.id === scenarioId) : catalog.scenarios;
   if (!entries.length) throw new Error("Unknown TRPG scenario: " + scenarioId);
-  const [scenarios, characters, manifest, overlays] = await Promise.all([
+  const [scenarios, characters, manifest, overlays, club] = await Promise.all([
     Promise.all(entries.map(entry => json(new URL(entry.file, base), signal))),
     json(new URL("characters.json", base), signal),
     json(new URL("../../data/manifest.json", import.meta.url), signal),
     Promise.all((catalog.characterProfiles || []).map(file => json(new URL(file, base), signal))),
+    json(new URL(catalog.club.file, base), signal),
   ]);
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
@@ -51,7 +65,7 @@ export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
   });
   await Promise.all([...urls].map(url => preload(url, signal)));
   if (signal?.aborted) throw signal.reason || new DOMException("Aborted", "AbortError");
-  return { catalog, scenarios, characters: [...people.values()], manifest };
+  return { catalog, scenarios, characters: [...people.values()], manifest, club };
 }
 
 export async function loadTrpgResources({ scenarioId = "ordinary-cup", signal } = {}) {
