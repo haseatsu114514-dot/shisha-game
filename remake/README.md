@@ -213,6 +213,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
      DAY3・DAY8 と、4日以上シフトに入っていない朝はスミさんから「昼のシフト入れるか？」の LIME（乗るとそのままバイト・給料に上乗せ）
    - KEMURIKUSA（なる）・EDEN（アダム）・PEPPERMINT（みんと）: 固有会話を順に消化
    - Dr.fookah（フレーバー・機材の売買／2階＝凛）・カフェ・観音堂・チョイザップ・C.STATION・家に帰る
+   - **施設の寄り道会話**（`daily/spot-encounters.js`）: 再訪から、カフェのなる・上園さん・マスター、観音堂のアダム・老人、ジムのみんと・なる・常連と短く会う。読了した回だけ保存し、遭遇の間には一回以上の静かな訪問を挟む。雨で出なかった回は残す。みんとは実際の正体開示後だけ登場、本名は本人から聞いた後だけ。施設では好感度・恋愛値・店の訪問数／固有会話を進めない。二択の返事は途中セーブからも保ち、次の通常来店で一度だけ拾う。料金・回復／消耗・成長量は通常の施設行動と同じ。
    - 体力・所持金・ステ（★表示のみ・章ソフトキャップ）・好感度（5段階）
    - **LIME**（`daily/phone.js`・オーナー指定）: 朝はプッシュ通知で「新着 n件」を知らせて受信箱（`state.inbox`）に積むだけ。
      HUD の LIME アイコンに未読の赤丸（数字なし）が付き、マップにいる間ならいつでも開ける（トーク一覧→相手を選んで読む）。
@@ -324,6 +325,7 @@ node remake/test/craft_focus.mjs             # 制作UI・審査員・実タイ�
 node remake/test/mix_recognition.mjs        # 味の予告・実績反応・未記録/供給台の境界
 node remake/test/browser/ch1_presentation.mjs # 冒頭・配合・補足の温度・固定票（PC/タッチ）
 node remake/test/browser/ch1_story_feedback.mjs # 既見の絵・アダムの両感想・優勝の夜
+node remake/test/browser/spot_encounters.mjs # 施設の再訪・正体/本名の順序・好感度不変・選択保存と店での一言（PC/横持ちタッチ）
 node remake/test/browser/ch1_tournament.mjs  # 素材待ち・炭解放・調整2回・準備と保存・大会画面
 node remake/test/browser/ch1_eve.mjs         # 前夜の4択・工程別練習・途中保存・旧フラグ・DAY14復帰（PC/横持ちタッチのエミュレーション）
 node remake/test/browser/craft_progress.mjs  # PC/横持ち・提供成功/失敗・共通調整セル・履歴と配点

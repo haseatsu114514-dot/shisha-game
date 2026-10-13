@@ -380,7 +380,7 @@ async function pullGame(cs, mode) {
     cs.careCoals = { count: coals, picks };
     await sleep(autoSkill() ? 40 : 450);
     choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
-    SE.coalSnip(); SE.crackle();
+    SE.coalPlace();
     const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = performance.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       const k = Math.min(1, (performance.now() - started) / dur);

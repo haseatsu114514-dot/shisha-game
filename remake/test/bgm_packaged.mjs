@@ -13,6 +13,7 @@ class Audio {
   constructor(src) { this.src = src || ""; this.volume = 0; this.plays = 0; elements.push(this); }
   play() { this.plays++; this.paused = false; return Promise.resolve(); }
   pause() { this.paused = true; }
+  addEventListener() {}
 }
 class AudioContext {
   state = "running"; destination = {};
