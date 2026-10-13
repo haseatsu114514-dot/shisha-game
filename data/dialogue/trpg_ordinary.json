@@ -1,12 +1,12 @@
 {
   "id": "ordinary-cup",
-  "version": 2,
+  "version": 3,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
   "collection": "船灯文庫・小さな卓の冒険 01",
   "duration": "約10分",
-  "premise": "閉店前の喫煙茶房。旅人は『世界一普通の一台を』と頼んだ。レシピ帳に、その名前はない。三人の店番は、何を用意するだろう。",
+  "premise": "閉店前の喫煙茶房。旅人は『世界一普通の一台を』と頼んだ。レシピ帳に、その名前はない。店番たちは、何を用意するだろう。",
   "fiction": {
     "town": "港町ノーラ",
     "shop": "波止場の灯",
@@ -14,7 +14,7 @@
   },
   "cast": [
     {
-      "id": "sumi",
+      "id": "hiyori",
       "part": "GM",
       "role": "案内と、旅人オル",
       "color": "#dab978"
@@ -29,11 +29,11 @@
       "abilityType": "reroll"
     },
     {
-      "id": "naru",
+      "id": "adam",
       "part": "PLAYER",
       "role": "ニコ／香りの案内役",
       "color": "#c8a375",
-      "ability": "香りの助言",
+      "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋2",
       "abilityType": "prepare"
     },
@@ -59,15 +59,15 @@
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋1。なるの切り札で、さらに＋2できます。",
+      "hint": "店番の手際 ＋1。香りと席の準備を、判定します。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",
-      "helper": "naru"
+      "helper": "adam"
     },
     "serve": {
       "title": "席へ案内して、声をかける",
-      "hint": "相手への気配り ＋1。つむぎの切り札で、さらに＋2できます。",
+      "hint": "相手への気配り ＋1。どの出目でも結末へ進みます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
       "trouble": "trpg_ordinary_serve_trouble",
@@ -119,7 +119,7 @@
     }
   ],
   "consult": {
-    "naru": "trpg_ordinary_consult_naru",
+    "adam": "trpg_ordinary_consult_adam",
     "tsumugi": "trpg_ordinary_consult_tsumugi"
   },
   "hypotheses": [
@@ -383,10 +383,10 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "",
           "face": "normal",
-          "text": "閉店まで、まだ少しあるな。短いのを一本、やってみるか"
+          "text": "今夜は、私が語り手……。短い物語を、一本だけ"
         },
         {
           "speaker": "hajime",
@@ -395,16 +395,18 @@
           "text": "『世界一普通の一台』……シーシャを作る話？"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "",
           "face": "normal",
-          "text": "舞台は架空の港町。俺はGM。三人が、茶房の店番だ"
+          "text": "架空の港町が舞台。私はGM、みんなは茶房の店番ね",
+          "castIntro": true,
+          "smallTableText": "私はGM、はじめくんは店番。空いた役は私が兼ねるね"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "俺はニコ。香りの案内役か。よし、任せてくれ"
+          "text": "ニコという名で、香りを導く。今夜の俺には似合う役だ"
         },
         {
           "speaker": "tsumugi",
@@ -419,19 +421,19 @@
           "text": "じゃあ俺は、見習いのフィン。店番なのに、ちょっと緊張するな"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "港町ノーラ。茶房『波止場の灯』には、雨を避けた人たちが残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人が戸口に立った"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "face": "normal",
           "text": "……まだ、いいかな。世界一普通の一台を、お願いしたい"
@@ -451,14 +453,14 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "旅人は荷物を足元に置く。店の奥では、まだ誰かの笑い声がしている",
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "味の名前を聞く前に、今どう過ごしたいか聞いてみるか",
+          "speaker": "adam",
+          "text": "一台の前に、客の望みを聞こう。名店の幕開けだ",
           "face": "normal"
         },
         {
@@ -476,13 +478,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "text": "さて、君たちの仮説を、一台と席にしてみよう。途中で考え直してもいい",
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "香りは三つある。どれも、この店では普段出してるものだ",
+          "speaker": "adam",
+          "text": "三つの香り、三つの可能性。原点に帰る時間だな",
           "face": "normal"
         },
         {
@@ -499,7 +501,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "一台の準備ができた。店の客も減り、雨音が少し近く聞こえる",
           "face": "normal"
@@ -523,8 +525,8 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
-          "text": "これで、この晩の話はおしまい。世界一のレシピは、最後まで出てこなかったな",
+          "speaker": "hiyori",
+          "text": "これで、この晩はおしまい。世界一のレシピは、出てこなかったね",
           "face": "normal"
         },
         {
@@ -533,8 +535,8 @@
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "選んだ理由を話せたのがよかった。俺も、別の旅人だったらどうするか気になる",
+          "speaker": "adam",
+          "text": "世界一普通……。俺が言うと、世界一普通じゃなく聞こえるな",
           "face": "normal"
         },
         {
@@ -543,8 +545,8 @@
           "face": "normal"
         },
         {
-          "speaker": "sumi",
-          "text": "じゃあ、今日はここまで。次に遊ぶときは、また別の普通があるかもしれん",
+          "speaker": "hiyori",
+          "text": "……いい夜だったね。本を閉じても、雨の音が残ってるみたい",
           "face": "normal"
         }
       ]
@@ -556,7 +558,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "旅人は外套を脱ぎ、肩の力を少し抜いた。最後まで話を聞けそうだ",
           "face": "normal"
@@ -575,14 +577,14 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "奥の客が席を立ち、旅人の言葉が一度途切れる。続きは、ゆっくり聞けばいい",
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "まず座ってもらおう。俺たちも、店の様子を見ようぜ",
+          "speaker": "adam",
+          "text": "まずは客を座らせよう。舞台を整えるのも、俺らの役目だ",
           "face": "normal"
         }
       ]
@@ -594,7 +596,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "フィンは思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
           "face": "normal"
@@ -605,7 +607,7 @@
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "text": "そう。店にも客にも、見られるものはまだある",
           "face": "normal"
         }
@@ -618,14 +620,14 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "ニコが棚を整え、フィンが一台を用意する。選んだ香りが、静かに開いた",
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "できたな。あとは、どんな時間にするかだ",
+          "speaker": "adam",
+          "text": "香りの幕は上がった。あとは、この一夜をどう彩るか",
           "face": "normal"
         }
       ]
@@ -637,7 +639,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "最初は香りが強すぎた。少し落ち着かせてから、旅人の席へ運ぶ",
           "face": "normal"
@@ -656,14 +658,14 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "用意した一台は、思った仕上がりにならない。店の道具で整え直すことにした",
           "face": "normal"
         },
         {
-          "speaker": "naru",
-          "text": "まだ間に合う。やり直すところ、俺も一緒に見る",
+          "speaker": "adam",
+          "text": "名店にも修正はある。俺も、道具を見直そう",
           "face": "normal"
         },
         {
@@ -680,7 +682,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "ルカが椅子を引き、フィンが旅人を案内する。落ち着いたところで、一台を置いた",
           "face": "normal"
@@ -694,7 +696,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "席の説明が少し長くなる。旅人と顔を見合わせ、二人とも小さく笑った",
           "face": "normal"
@@ -708,13 +710,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "フィンが声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "そんなに構えなくていいよ。私も、普通が何か、うまく言えないんだ",
           "face": "normal"
@@ -722,22 +724,22 @@
       ]
     },
     {
-      "dialogue_id": "trpg_ordinary_consult_naru",
+      "dialogue_id": "trpg_ordinary_consult_adam",
       "metadata": {
         "preview_only": true
       },
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "香りの名前だけで決めると、見落とすこともある"
+          "text": "ニコは言う。香りの名だけで、客の望みを決めてはいけない"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物や、メニューを見るのはどうだ？"
+          "text": "メニューと飲み物を見よう。そこに、この店の日常がある"
         },
         {
           "speaker": "hajime",
@@ -746,10 +748,10 @@
           "text": "『普通』っていうフレーバーを探すんじゃないんだな"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "そう。何を選ぶにしても、理由が一つ見つかるといい"
+          "text": "そう。俺らがこの一台を選ぶ、その理由を探そう"
         }
       ]
     },
@@ -786,22 +788,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『穏やかな紅茶』の行を指でなぞり、値段より説明を読んでいた"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "どれも、この店の日常なんだな。旅人は、どこで目を止めただろう"
+          "text": "普段の一台が並ぶ。旅人の目を留めたのは、どの香りだろう"
         }
       ]
     },
@@ -812,19 +814,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓辺には人の声があまり届かない"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は、雨を眺める空いた席を見ている"
@@ -844,19 +846,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札には乗り継ぎの印がいくつもある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『今日は、ずっと人の中だった』と話した"
@@ -876,13 +878,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "カウンターの笑い声には微笑むが、旅人は椅子を引かなかった"
@@ -902,28 +904,28 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人の選んだ飲み物は、薄い紅茶"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "急いで飲まず、手を温めている"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "選んだ味だけじゃなく、選ぶときの言葉も気になるな"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
         }
       ]
     },
@@ -934,19 +936,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートに『呼べる距離で、少し待つ。それも接客』とある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
@@ -960,22 +962,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『紅茶の香りが好きなんだ。家でもよく淹れる』と話した"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "どれも、この店の日常なんだな。旅人は、どこで目を止めただろう"
+          "text": "普段の一台が並ぶ。旅人の目を留めたのは、どの香りだろう"
         }
       ]
     },
@@ -986,13 +988,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "港の灯りには目を向けず、旅人は古い店内写真を見ている"
@@ -1012,19 +1014,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札は帰りの便"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『帰る前に、いつもの時間を思い出したくて』と言った"
@@ -1044,19 +1046,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "棚のそばには古いメニューが残る"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は思い出話ができそうな席を見ている"
@@ -1076,28 +1078,28 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "飲み物は温かい紅茶"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "『結局、これに戻ってくる』と旅人が笑った"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "選んだ味だけじゃなく、選ぶときの言葉も気になるな"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
         }
       ]
     },
@@ -1108,19 +1110,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
@@ -1134,22 +1136,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『ここでは普段、何が出るの？』と尋ね、果実の香りに興味を持った"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "どれも、この店の日常なんだな。旅人は、どこで目を止めただろう"
+          "text": "普段の一台が並ぶ。旅人の目を留めたのは、どの香りだろう"
         }
       ]
     },
@@ -1160,13 +1162,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓辺が空いていても、旅人は店の会話へ顔を向けている"
@@ -1186,19 +1188,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札の道は、人の少ない道"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『最後に話したのは、朝だったかな』と言う"
@@ -1218,13 +1220,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "カウンターの客が椅子を引くと、旅人も荷物を近くへ寄せた"
@@ -1244,28 +1246,28 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は飲み物も店番に尋ねた"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "味を知るまでの会話も楽しんでいる"
         },
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "選んだ味だけじゃなく、選ぶときの言葉も気になるな"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
         }
       ]
     },
@@ -1276,19 +1278,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
           "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
@@ -1302,19 +1304,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "旅人は窓へ目を向ける。少しの間、店には雨の音と、静かな息遣いだけがあった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "……ありがとう。今日の普通は、こういうことだったみたいだ",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "フィンたちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
           "face": "normal"
@@ -1328,19 +1330,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "家の近くにも、こんな店があったんだ。そこで、よく紅茶の話をしていた",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "旅人の話には、見知らぬ店の窓と椅子が現れる。今の茶房に、もう一つの店が重なった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "帰ったら、また寄ってみようかな。今日は、帰り道の途中みたいだ",
           "face": "normal"
@@ -1354,19 +1356,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "長い道だったよ。橋を渡るときにね、面白い鳥がいて……",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "一台を囲み、旅人の道のりが少しずつ言葉になる。隣の客も、話に加わった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "普通って、こうやって一日を誰かに話すことだったのかもしれないな",
           "face": "normal"
@@ -1380,19 +1382,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "考えてくれたんだね。ありがとう。少し、私の話をしてもいいかな",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／場面",
           "text": "旅人の話を聞き、フィンたちは席や言葉を少し変える。一台は、その相談の入口になった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "旅人オル",
           "text": "頼んだ私も、何が欲しいか分かっていなかったんだ。一緒に考えられて、よかった",
           "face": "normal"
@@ -1403,9 +1405,10 @@
       "dialogue_id": "trpg_ordinary_choice_aroma_tea",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "PL／卓の会話",
-          "text": "香りで話を急がせない。紅茶なら、その役ができそうだ"
+          "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
+          "face": "normal"
         }
       ]
     },
@@ -1413,9 +1416,10 @@
       "dialogue_id": "trpg_ordinary_choice_aroma_fruit",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "PL／卓の会話",
-          "text": "この店のいつもの甘さ、か。派手でなくても印象は残る"
+          "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
+          "face": "normal"
         }
       ]
     },
@@ -1423,9 +1427,10 @@
       "dialogue_id": "trpg_ordinary_choice_aroma_spice",
       "lines": [
         {
-          "speaker": "naru",
+          "speaker": "adam",
           "role": "PL／卓の会話",
-          "text": "少し印象に残る香りだな。相手の反応を見ながら出そう"
+          "text": "スパイスで幕を開ける。客の表情を見逃さないようにしよう",
+          "face": "normal"
         }
       ]
     },
@@ -1493,9 +1498,9 @@
       "dialogue_id": "trpg_ordinary_debrief_smooth",
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／卓の会話",
-          "text": "静かな晩だったな。相手の時間をよく見ていた"
+          "text": "静かな夜だったね。旅人も、少し休めたんじゃないかな"
         }
       ]
     },
@@ -1503,14 +1508,14 @@
       "dialogue_id": "trpg_ordinary_debrief_with_detour",
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "hiyori",
           "role": "GM／卓の会話",
-          "text": "途中で聞き直したことも、この一台の一部になったな"
+          "text": "聞き直した時間も、この一台に入ってる……。そういうの、好きだな"
         }
       ]
     }
   ],
-  "_comment": "独立TRPG試作の設定と台詞。台詞は既存のdialogues/lines形式。本編のloadAllには未接続。",
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
   "flow": {
     "prepare": [
       "aroma",
@@ -1565,11 +1570,11 @@
     "serveDescription": "旅人に添える、最初の言葉を選ぶ。",
     "hypothesisTitle": "旅人の「普通」は、どんな時間？",
     "arrivalRole": "旅人オル／物語",
-    "exploreIdle": "気になった場所を調べよう。仲間に相談してもいいぞ",
-    "listenIdle": "まずは旅人の言葉を待ってみよう。サイコロを二つ振るぞ",
-    "prepareIdle": "香りと席を選んでみよう。なるの切り札も使えるぞ",
+    "exploreIdle": "気になる場所を調べよう。仲間に相談してもいいよ",
+    "listenIdle": "まずは旅人の言葉を待ってみよう。サイコロは二つ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
     "serveIdle": "声のかけ方を選んだら、旅人を案内しよう",
-    "endingIdle": "この晩の話は、ここまで。違う提案でも遊んでみてくれ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
     "phases": {
       "listen": {
         "kicker": "01 / 話を聞く",
@@ -1608,5 +1613,37 @@
   "debrief": {
     "smooth": "trpg_ordinary_debrief_smooth",
     "with-detour": "trpg_ordinary_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      },
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": false
+      }
+    ]
   }
 }

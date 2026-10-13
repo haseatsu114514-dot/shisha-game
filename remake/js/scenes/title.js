@@ -37,7 +37,7 @@ export function showTitle(preparedArt = null) {
       if (!key || !loadFromSlot(key)) return;
       smokeWipe(() => { resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
-    item("PLAY ROOM", "遊び場", () => openTrpgRoom(() => {
+    item("BOOKSHELF", "物語の本棚", () => openTrpgRoom(() => {
       showTitle(art);
       document.querySelector('[data-test="title-trpg"]')?.focus({ preventScroll: true });
     }), "title-trpg"),

@@ -90,7 +90,7 @@ test("rerolls are shared across checks and take the new die; aids are spent once
   session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
   const preparation = session.beginCheck("prepare", { support: true });
   assert.equal(preparation.bonus, 3);
-  assert(session.snapshot().used.naru);
+  assert(session.snapshot().used.adam);
   assert.throws(() => session.reroll(0));
 });
 
@@ -164,7 +164,7 @@ test("limited investigation consumes tide only once; rereading and consulting st
   for (const spot of shark.spots.slice(0, 4)) s.inspect(spot.id);
   assert.equal(s.snapshot().pressure, Math.min(6, before + 4));
   const state = s.snapshot();
-  s.inspect("radio"); s.consult("naru"); s.consult("naru");
+  s.inspect("radio"); s.consult("hiyori"); s.consult("hiyori");
   assert.equal(s.snapshot().pressure, state.pressure);
   assert.throws(() => s.inspect("rope"), /limit/);
   assert.equal(s.snapshot().clues.length, 4);

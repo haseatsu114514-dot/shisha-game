@@ -8,7 +8,7 @@ const PHASES = { cover: 0, listen: 1, explore: 2, prepare: 3, serve: 4, ending: 
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
-export function mountTrpg(host, { scenario, characters, manifest, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null }) {
+export function mountTrpg(host, { scenario, characters, manifest, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
   const session = new TrpgSession(scenario, { seed, profileId });
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
@@ -29,7 +29,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, busy = false, disposed = false;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
-  let resolveFinished;
+  let resolveFinished, completed = null;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("span.trpg-step", { "aria-label": "物語の進行" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
@@ -224,8 +224,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         el("div.trpg-ending-plan", Object.entries(result.plan).map(([field, id]) =>
           el("span", { text: scenario.options[field].find(o => o.id === id).label }))),
       ]));
-      panel.append(clueButtons(), button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
-        { class: "primary", disabled: busy }), button(closeLabel, "trpg-finish", () => finish(result), { disabled: busy }));
+      panel.append(clueButtons(), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
+        { class: "primary", disabled: busy })] : []), button(closeLabel, "trpg-finish", () => finish(result), { disabled: busy }));
       idle(presentation.endingIdle);
     }
     content.append(scene, panel);
@@ -395,7 +395,11 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         } else {
           const result = session.result(), ending = scenario.endings[result.ending];
           audio.play("ending");
-          talk(sequence(ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue), () => renderBody());
+          talk(sequence(ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue), () => {
+            completed = result;
+            onComplete(result);
+            renderBody();
+          });
         }
       };
       const responses = (session.flow[settled.kind] || []).map(field =>
@@ -441,6 +445,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     ], [button("卓に戻る", "trpg-help-close", () => pop.close(), { class: "primary" })]);
   }
   function exit() {
+    if (completed) { finish(completed); return; }
     if (session.snapshot().phase === "cover") { finish({ cancelled: true, scenarioId: scenario.id }); return; }
     let pop;
     pop = modal("卓を片付ける？", el("p", { text: presentation.exitText }), [
@@ -482,5 +487,5 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   root.addEventListener("keydown", keys);
   renderBody(); root.focus({ preventScroll: true });
   return { finished, snapshot: () => session.snapshot(),
-    destroy: () => finish({ cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
+    destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
 }

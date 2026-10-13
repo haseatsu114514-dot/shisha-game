@@ -1,14 +1,115 @@
 {
-  "version": 1,
-  "characterProfiles": ["dialogue/samechan.json"],
+  "version": 2,
+  "characterProfiles": [
+    "dialogue/samechan.json"
+  ],
   "scenarios": [
     {
       "id": "ordinary-cup",
-      "file": "dialogue/trpg_ordinary.json"
+      "file": "dialogue/trpg_ordinary.json",
+      "price": 500,
+      "stockRequires": [
+        "hiyori"
+      ]
     },
     {
       "id": "shark-last-order",
-      "file": "dialogue/trpg_shark.json"
+      "file": "dialogue/trpg_shark.json",
+      "price": 800,
+      "stockRequires": [
+        "samechan"
+      ]
+    }
+  ],
+  "unlockChapter": 2,
+  "participants": [
+    {
+      "id": "hiyori",
+      "maxAffinity": 66,
+      "workLabel": "仕事の時間",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "samechan",
+      "maxAffinity": 66,
+      "workLabel": "店のシフト中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "slot": 1,
+          "days": [
+            0,
+            1,
+            2,
+            4,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tsumugi",
+      "maxAffinity": 66,
+      "workLabel": "大学の制作時間",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            1,
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adam",
+      "maxAffinity": 66,
+      "workLabel": "店のシフト中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "slot": 1,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      ]
     }
   ]
 }

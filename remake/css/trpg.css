@@ -264,3 +264,35 @@
 @media (prefers-reduced-motion: reduce) {
   .trpg-root *, .trpg-root *::before, .trpg-root *::after { animation: none !important; transition: none !important; }
 }
+
+/* The campaign shelf is a quiet shop, with tonight's party and lasting book memories. */
+.trpg-campaign { display: flex; flex-direction: column; gap: 14px; padding: 26px 40px 18px; background: radial-gradient(ellipse at 8% 0%, #23494388, transparent 60%), #121d20; color: #efe7d6; }
+.trpg-campaign-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.trpg-campaign-header h1 { margin: 5px 0 0; font-size: 29px; letter-spacing: .08em; }
+.trpg-campaign-meta { display: flex; gap: 18px; align-items: center; font-size: 14px; color: #cbbd9d; }
+.trpg-campaign-notice { min-height: 22px; margin: 0; padding-left: 12px; border-left: 3px solid #dfbd76; font-size: 16px; }
+.trpg-campaign-party { display: flex; gap: 12px; min-height: 66px; }
+.trpg-campaign-person { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: #1c3032; border: 1px solid #56726c; border-radius: 7px; flex: 1; }
+.trpg-campaign-person[data-available="false"] { background: #242a2c; border-color: #465053; color: #afb2ae; }
+.trpg-campaign-person img { width: 40px; height: 50px; object-fit: cover; object-position: 50% 7%; }
+.trpg-campaign-person strong { font-size: 16px; }
+.trpg-campaign-person small { display: block; font-size: 12px; padding-top: 5px; color: #c4c8bd; }
+.trpg-campaign-books { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; min-height: 0; overflow-y: auto; }
+.trpg-campaign-book { border: 1px solid #938365; border-radius: 9px; background: #202b2d; overflow: hidden; display: flex; flex-direction: column; }
+.trpg-campaign-book[data-theme="shark"] { border-color: #487a8c; }
+.trpg-campaign-book-art { position: relative; height: 175px; flex-shrink: 0; }
+.trpg-campaign-book-art img { width: 100%; height: 100%; object-fit: cover; }
+.trpg-campaign-book-badge { position: absolute; left: 16px; bottom: 13px; background: #132c2ded; border: 1px solid #b9a579; padding: 5px 12px; font-size: 13px; }
+.trpg-campaign-book-copy { padding: 19px 24px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.trpg-campaign-book-copy h2 { font-size: 27px; margin: 0; letter-spacing: .04em; }
+.trpg-campaign-book-copy p { font-size: 15px; line-height: 1.5; margin: 0; }
+.trpg-campaign-book-copy small { font-size: 12px; color: #c7bda8; }
+.trpg-campaign-book-copy > button { margin-top: auto; width: 100%; }
+.trpg-campaign-memory { border-left: 2px solid #ddbd77; padding: 8px 12px; margin-top: auto; background: #172326; }
+.trpg-campaign-memory strong { font-size: 21px; color: #efd69e; }
+.trpg-campaign-memory p { padding: 7px 0; font-size: 13px; }
+.trpg-campaign-footer { font-size: 12px; text-align: center; color: #bab7a7; }
+.trpg-campaign-face { position: relative; width: 48px; height: 50px; overflow: hidden; flex-shrink: 0; border-radius: 5px; background: #364548; }
+.trpg-campaign-person .trpg-campaign-face img { position: absolute; width: 180px; height: auto; left: 50%; max-width: none; }
+/* HUD buttons opt back into pointer events even when faded; hide their subtree at the table. */
+body[data-screen="trpg"] #hud { visibility: hidden; }
