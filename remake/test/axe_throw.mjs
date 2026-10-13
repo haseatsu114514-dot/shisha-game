@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { RINGS, BULLS, KILLS, MODES, POWER, scoreAt, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
-import { TARGET, FLIGHT, AXE_SPRITE, flightPose, impactPose } from "../js/minigames/axe-flight.js";
+import { TARGET, CAMERA, AXE, FLIGHT, flightPose, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
+import { projectedAxe } from "../js/minigames/axe-geometry.js";
 const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = []) => resolveThrow({ x, y, power, called }, history);
 test("painted circles match scores; black boundaries use lower neighbouring zones", () => {
   assert.deepEqual(RINGS.map(r => r.score), [6, 5, 4, 3, 2, 1]);
@@ -98,16 +99,35 @@ test("flight shrinks toward the board and contacts the scored blade point withou
   for (const x of [-1.08,0,1.08]) for (const y of [-1.08,0,1.08]) for (const power of [.42,.62,.82]) {
     const result=shot(x,y,power),end=impactPose(result),arrival=flightPose(result,FLIGHT.travel);
     assert.equal(arrival.x,end.x); assert(Math.abs(arrival.y-end.y)<1e-9);
-    assert.equal(arrival.rotation,end.rotation); assert.equal(arrival.scale,end.scale);
+    assert.equal(arrival.pitch,end.pitch); assert.equal(arrival.scale,end.scale);
     assert(Math.abs(arrival.bladeX-(TARGET.x+result.landing.x*TARGET.radius))<1e-9);
     assert(Math.abs(arrival.bladeY-(TARGET.y+result.landing.y*TARGET.radius))<1e-9);
     assert(arrival.done); const first=flightPose(result,0);
     for(let ms=0;ms<=FLIGHT.travel;ms+=40){const pose=flightPose(result,ms);
       assert(pose.scale<=first.scale&&pose.scale>=end.scale);
-      assert(pose.y>=Math.min(first.y,end.y)-24.001,"The axe must not vault far above the target");
+      assert(pose.z>=first.z&&pose.z<=end.z,"The axe travels toward the board in depth");
     }
   }
-  assert(AXE_SPRITE.blade.x!==0||AXE_SPRITE.blade.y!==0,"Spin pivot must differ from cutting edge");
+  assert(AXE.blade.y!==0||AXE.blade.z!==0,"Spin pivot must differ from cutting edge");
+});
+test("first-person forward tumble shortens the handle, reverses it, then embeds the front cutting edge", () => {
+  const result=shot(),poses=[0,.25,.5,.75,1].map(t=>flightPose(result,FLIGHT.travel*t));
+  const length=pose=>projectAxePoint(pose,AXE.handleTip).y-projectAxePoint(pose,AXE.blade).y;
+  assert(poses[0].pixelY<TARGET.y&&poses[0].pixelX>TARGET.x,"Release begins above/right of the player's eyes");
+  assert(length(poses[0])>0&&length(poses[2])<0&&length(poses[4])>0,"Handle tips toward/away from the viewer, rather than rolling sideways");
+  assert(Math.abs(length(poses[1]))<Math.abs(length(poses[0]))/2,"Quarter-turn is foreshortened");
+  assert(worldPoint(poses[1],AXE.handleTip).z<poses[1].z,"Forward pitch brings the handle butt toward the camera");
+  assert(Math.abs(worldPoint(poses[4],AXE.blade).z-CAMERA.boardDepth)<1e-9,"The forward-facing cutting edge reaches the board plane");
+});
+test("frontal mesh swaps visible steel/wood faces during the pitch and keeps depth ordering", () => {
+  const poses=[0,.25,.5,.75,1].map(t=>flightPose(shot(),FLIGHT.travel*t));
+  const seen=poses.map(p=>projectedAxe(p).polygons.map(f=>f.id));
+  assert(seen[0].includes('head-rear')&&!seen[0].includes('blade-front'),'Initial view sees the axe spine, not the broad side picture');
+  assert(seen[1].includes('handle-end'),'Quarter-turn looks along the wooden handle');
+  assert(seen[2].includes('blade-front'),'Half-turn exposes the cutting face');
+  for(const pose of poses){const {polygons}=projectedAxe(pose);assert(polygons.length>0);
+    polygons.forEach((f,i)=>{assert(f.points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)));if(i)assert(polygons[i-1].depth>=f.depth);});
+  }
 });
 test("missed rotation visibly falls after contact; stuck axes keep their final pose", () => {
   for(const power of [.1,.95]){const result=shot(0,0,power),contact=flightPose(result,FLIGHT.travel);

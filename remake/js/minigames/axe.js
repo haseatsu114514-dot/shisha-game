@@ -5,7 +5,8 @@ import { SE, unlockAudio } from "../core/audio.js";
 import { RINGS, BULLS, KILLS, POWER, SWAY, MODES, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall } from "./axe-model.js";
 import { COMPANIONS, reaction } from "./axe-companions.js";
 import { axeRules } from "./axe-rules.js";
-import { TARGET, AXE_SPRITE, FLIGHT, flightPose, impactPose, poseTransform } from "./axe-flight.js";
+import { TARGET, FLIGHT, flightPose, impactPose } from "./axe-flight.js";
+import { createAxe, renderAxe } from "./axe-geometry.js";
 const active = new WeakMap(), artReady = new Map();
 function decodeArt(url) {
   if (!artReady.has(url)) {
@@ -15,7 +16,7 @@ function decodeArt(url) {
   return artReady.get(url);
 }
 const art = name => new URL("../../img/" + name, import.meta.url).href;
-const ART = { bg: art("backgrounds/bg_axe_lounge_night.webp"), board: art("ui/axe_throw/target_board.webp"), axe: art("ui/axe_throw/throwing_axe.webp") };
+const ART = { bg: art("backgrounds/bg_axe_lounge_night.webp"), board: art("ui/axe_throw/target_board.webp") };
 const faceArt = (id, face) => art("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
 const cycles = { horizontal: 3200, vertical: 3600, power: 2400 };
@@ -61,8 +62,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     ]); board.append(marker); markers.set(target.id, marker);
   }
   const impacts = svg("g", { class: "axe-impacts" });
-  const axeImage = () => svg("image", { href: ART.axe, x: AXE_SPRITE.x, y: AXE_SPRITE.y, width: AXE_SPRITE.width, height: AXE_SPRITE.height });
-  const flying = svg("g", { class: "axe-flight", opacity: 0 }, [axeImage()]);
+  const flying = createAxe(); flying.classList.add("axe-flight"); flying.setAttribute("opacity", 0);
   const crosshair = svg("g", { class: "axe-crosshair" }, [svg("circle", { r: 12, fill: "none", stroke: "#fff5d9", "stroke-width": 3 }),
     svg("path", { d: "M-23 0H-7 M7 0H23 M0-23V-7 M0 7V23", stroke: "#fff5d9", "stroke-width": 3 })]);
   const fixedAim = svg("g", { class: "axe-fixed-aim" }, [svg("circle", { r: 7, fill: "none", stroke: "#e5bd70", "stroke-width": 2 }),
@@ -161,7 +161,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     phase = next; elapsed = 0; stamp = null;
     if (next === "flight") {
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
-      flying.setAttribute("transform", poseTransform(pose)); flying.setAttribute("opacity", pose.opacity);
+      renderAxe(flying, pose); flying.setAttribute("opacity", pose.opacity);
     }
     render();
   }
@@ -301,10 +301,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (!document.hidden && !helpPanel) { elapsed += delta; if (cycles[phase]) held += delta; }
     if (phase === "flight" && !document.hidden && !helpPanel) {
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : elapsed);
-      flying.setAttribute("transform", poseTransform(pose)); flying.setAttribute("opacity", pose.opacity);
+      renderAxe(flying, pose); flying.setAttribute("opacity", pose.opacity);
       if (pose.done) {
         const shot = pending; shots.push(shot); pending = null;
-        if (shot.stuck) { SE.hit(); impacts.append(svg("g", { transform: poseTransform(impactPose(shot)) }, [axeImage()])); }
+        if (shot.stuck) { SE.hit(); const embedded = createAxe(); renderAxe(embedded, impactPose(shot)); impacts.append(embedded); }
         setPhase("result");
       }
     }
