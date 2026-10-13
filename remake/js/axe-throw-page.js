@@ -1,6 +1,7 @@
 import { el } from "./core/util.js";
 import { runAxeThrow } from "./minigames/axe.js";
 import { COMPANIONS } from "./minigames/axe-companions.js";
+import { axeRules } from "./minigames/axe-rules.js";
 const host = document.getElementById("axe-app");
 let opponent = "hiyori";
 function menu(result = null) {
@@ -18,15 +19,21 @@ function menu(result = null) {
       for (const b of picker.children) b.setAttribute("aria-pressed", String(b.dataset.companion === id));
     } })));
   const message = el("p", { text: result?.completed ? "前回の記録  " + result.total + " / " + result.maximum + "点" : "横・縦・力のゲージを止めて、一緒に斧投げ。" });
-  host.replaceChildren(el("section.axe-intro", [
+  const rules = el("button.axe-button", { text: "遊び方・得点ルール", dataset: { test: "axe-menu-rules" }, onclick: () => {
+    intro.inert = true;
+    const panel = axeRules(() => { panel.remove(); intro.inert = false; rules.focus(); });
+    host.append(panel); panel.querySelector("button").focus();
+  } });
+  const intro = el("section.axe-intro", [
     el("span.axe-eyebrow", { text: "水煙前線 -EN:CODE-" }), el("h1", { text: "AXE THROW" }), message,
     el("ol", [el("li", { text: "横 → 縦 → 力の順にボタン／Spaceで止める" }),
       el("li", { text: "力は緑の帯へ。弱すぎても強すぎても斧が落ちる" }),
       el("li", { text: "赤6点、通常1〜5点。青は事前宣言で7／8点、外すと0点" }),
       el("li", { text: "宣言は2回。成功した高さのキルショットは閉じる" })]),
-    picker, el("div.axe-pickers", buttons), el("p.axe-menu-help", { text: "キャラクターと遊ぶ練習。相手の投擲と勝敗を含む対戦は今後追加予定。" }),
+    picker, el("div.axe-pickers", [...buttons, rules]), el("p.axe-menu-help", { text: "構えて待つと手ブレが増える。各投1回、息を整えて小さい的を狙おう。" }),
     el("a.axe-back", { href: "./", text: "本編へ" }),
-  ]));
+  ]);
+  host.replaceChildren(intro);
   if (result) start.focus();
 }
 menu();
