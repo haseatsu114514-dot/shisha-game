@@ -6,6 +6,7 @@ import { imageReady, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, VISIT_COST } from "../daily/spots.js";
+import { trpgSpot } from "../daily/trpg.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 
@@ -73,8 +74,8 @@ export async function runChapterTwoPreparation() {
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
       regions: [
-        { id: "home", label: "地元・大須／栄", background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: allSpots },
-        { id: "widehanga", label: "隣町・ワイドハンガ", background: () => MAP[timeOfDay()], spots: PREPARATION_SPOTS },
+        { id: "home", label: "地元・大須／栄", background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg") },
+        { id: "widehanga", label: "隣町・ワイドハンガ", background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, trpgSpot()].filter(Boolean) },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
     }),

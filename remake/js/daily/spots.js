@@ -14,7 +14,7 @@ import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
-import { AXE_BAR } from "./axe-bar.js";
+import { AXE_BAR } from "./axe-bar-data.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 

@@ -43,24 +43,28 @@ export async function maybeRecruitTrpgMember(personId) {
 
 /** The table saves its completion and night action atomically; calendar must not advance twice. */
 export async function openTrpgBar({ nightBusy = () => false } = {}) {
+  const owner = state;
+  if (!owner || owner.chapter < 2 || owner.phase !== "daily") return { completed: false };
   const { save } = await import("../core/state.js");
-  const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }] = await Promise.all([
+  const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
     import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
-    import("../trpg/campaign-view.js"), import("./hud.js"),
+    import("../trpg/campaign-view.js"), import("./hud.js"), import("../core/bus.js"),
   ]);
+  if (state !== owner) return { completed: false };
   const host = el("section.trpg-screen", { "aria-label": "ボドゲカフェのシナリオ棚" });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   showHud(false);
   showScreen("trpg", host); stopBgm(.2);
   const controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy });
+  const unsubscribe = on("hud", () => { if (state !== owner) controller.destroy(); });
   const observer = new MutationObserver(() => { if (!host.isConnected) controller.destroy(); });
   const hide = () => controller.destroy();
   observer.observe(layers.screen, { childList: true });
   window.addEventListener("pagehide", hide, { once: true });
   try { return await controller.finished; }
   finally {
-    observer.disconnect(); window.removeEventListener("pagehide", hide); controller.destroy();
-    if (host.isConnected && document.body.dataset.screen === "trpg") {
+    observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", hide); controller.destroy();
+    if (state === owner && host.isConnected && document.body.dataset.screen === "trpg") {
       showHud(hadHud); playBgm("kansetsu_shomei_to_black_coffee");
     }
   }

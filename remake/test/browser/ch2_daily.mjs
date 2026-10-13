@@ -75,7 +75,7 @@ await suite('ch2-daily',async check=>{
       });
     });
     for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
-    assert.equal(await page.locator('.spot-pin').count(),4);
+    assert.equal(await page.locator('.spot-pin').count(),5);
     await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{
