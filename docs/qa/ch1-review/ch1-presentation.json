@@ -16,6 +16,10 @@
       "status": "passed"
     },
     {
+      "label": "pc-gift-bowl-leaf-plane",
+      "status": "passed"
+    },
+    {
       "label": "pc-recognition-keeps-votes",
       "status": "passed"
     },
@@ -29,6 +33,10 @@
     },
     {
       "label": "touch-many-flavors-and-regulation",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-bowl-leaf-plane",
       "status": "passed"
     },
     {

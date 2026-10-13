@@ -185,7 +185,7 @@
 .mix-vessel { position: relative; flex: none; width: 300px; height: 332px; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #d5a26012, transparent 70%); }
 .mix-vessel-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
 .mix-vessel-art > .art { flex: none; }
-.mix-clay-leaves { position: absolute; top: 11%; left: 35px; width: 230px; height: 62px; border-radius: 50%; background-size: 175% auto; background-position: center 18%; }
+.mix-clay-leaves { position: absolute; border-radius: 50%; background-size: 175% auto; background-position: center 18%; }
 .mix-taste { width: 100%; padding: 8px; text-align: center; }
 .mix-taste > b { font-family: "Craft Mincho", var(--font); font-size: 23px; color: #e2c593; letter-spacing: .04em; }
 .mix-taste p { margin: 8px 0; min-height: 50px; font-size: 15px; line-height: 1.7; color: #e4ddd2; }

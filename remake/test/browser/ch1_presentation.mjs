@@ -85,6 +85,22 @@ await suite("ch1-presentation", async check => {
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.grape), 20);
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.mint), undefined); // Real supplied mint, not owned stock.
     }, options);
+    await check(`${device}-gift-bowl-leaf-plane`, async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        V.cs = V.craft.newSession("tutorial"); V.cs.equip.bowl = "suyaki_tsumugi";
+        await V.craft.openBench(V.cs).ready; V.running = V.steps.stepMix(V.cs);
+      });
+      await page.locator('[data-test="mix-plus-double_apple"]').waitFor();
+      await select(page, '[data-test="mix-plus-double_apple"]', touch);
+      const plane = await page.locator(".mix-vessel-art").evaluate(n => {
+        const bowl = n.querySelector(".art").getBoundingClientRect(), leaf = n.querySelector(".mix-clay-leaves").getBoundingClientRect();
+        return { center: (leaf.top + leaf.bottom) / 2, top: bowl.top, height: bowl.height, leafWidth: leaf.width, bowlWidth: bowl.width };
+      });
+      assert(plane.center > plane.top && plane.center < plane.top + plane.height / 2, "Leaves floated above the gift bowl");
+      assert(plane.leafWidth < plane.bowlWidth);
+      await page.screenshot({ path: `${shots}/${device}-mix-gift-bowl.png` });
+    }, options);
     await check(`${device}-recognition-keeps-votes`, async page => {
       await setup(page);
       await page.evaluate(() => {

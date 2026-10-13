@@ -81,7 +81,14 @@ export function mixBowlPreview(cs, grams, width = 230) {
   const spec = BOWL_ART[cs.equip.bowl] || BOWL_ART[DB.equipById[cs.equip.bowl]?.art] || BOWL_ART.silicone_bowl;
   const name = grams > 0 && spec.packed ? spec.packed("normal") : spec.empty;
   const root = el("div.mix-vessel-art", [artImg(name, width)]);
-  if (grams > 0 && !spec.packed) root.append(el("i.mix-clay-leaves", { style: { backgroundImage: `url("${makingUrl("bowl_packed_normal.png")}")` } }));
+  if (grams > 0 && !spec.packed) {
+    const leafHeight = width * .2;
+    root.append(el("i.mix-clay-leaves", { style: {
+      backgroundImage: `url("${makingUrl("bowl_packed_normal.png")}")`,
+      left: "50%", transform: "translateX(-50%)", width: `${width * .85}px`, height: `${leafHeight}px`,
+      bottom: `${artHeight(name, width) * (1 - spec.rim) - leafHeight / 2}px`,
+    } }));
+  }
   return root;
 }
 
