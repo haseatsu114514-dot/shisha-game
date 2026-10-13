@@ -1,9 +1,9 @@
-PASS down {"direction":"down","keys":["ArrowDown"],"frames":[0,1,2,3],"distance":1.206150000000004,"vanishing":{"x":640.0000000000001,"y":350},"stopped":true}
-PASS down_right {"direction":"down_right","keys":["ArrowDown","ArrowRight"],"frames":[0,1,2,3],"distance":1.219575000000005,"vanishing":{"x":640.0000000000001,"y":350},"stopped":true}
-PASS right {"direction":"right","keys":["ArrowRight"],"frames":[0,1,2,3],"distance":1.214850000000002,"vanishing":{"x":640.0000000000001,"y":350.00000000000006},"stopped":true}
-PASS up_right {"direction":"up_right","keys":["ArrowUp","ArrowRight"],"frames":[0,1,2,3],"distance":1.2066749999999984,"vanishing":{"x":640,"y":350.00000000000006},"stopped":true}
-PASS up {"direction":"up","keys":["ArrowUp"],"frames":[0,1,2,3],"distance":1.2184500000000087,"vanishing":{"x":639.9999999999999,"y":350.00000000000006},"stopped":true}
-PASS up_left {"direction":"up_left","keys":["ArrowUp","ArrowLeft"],"frames":[0,1,2,3],"distance":1.2156749999999987,"vanishing":{"x":640.0000000000001,"y":349.99999999999994},"stopped":true}
-PASS left {"direction":"left","keys":["ArrowLeft"],"frames":[0,1,2,3],"distance":1.2153000000000034,"vanishing":{"x":640.0000000000001,"y":350.00000000000006},"stopped":true}
-PASS down_left {"direction":"down_left","keys":["ArrowDown","ArrowLeft"],"frames":[0,1,2,3],"distance":1.2179250000000044,"vanishing":{"x":640,"y":350},"stopped":true}
+PASS down {"direction":"down","keys":["ArrowDown"],"frames":[0,1,2,3],"distance":1.2120000000000029,"vanishing":{"x":639.9999999999999,"y":349.99999999999994},"stopped":true}
+PASS down_right {"direction":"down_right","keys":["ArrowDown","ArrowRight"],"frames":[0,1,2,3],"distance":1.2120750000000031,"vanishing":{"x":640,"y":350.00000000000006},"stopped":true}
+PASS right {"direction":"right","keys":["ArrowRight"],"frames":[0,1,2,3],"distance":1.2067500000000024,"vanishing":{"x":640.0000000000001,"y":350.00000000000006},"stopped":true}
+PASS up_right {"direction":"up_right","keys":["ArrowUp","ArrowRight"],"frames":[0,1,2,3],"distance":1.205925000000006,"vanishing":{"x":640,"y":350},"stopped":true}
+PASS up {"direction":"up","keys":["ArrowUp"],"frames":[0,1,2,3],"distance":1.2065250000000116,"vanishing":{"x":640,"y":350},"stopped":true}
+PASS up_left {"direction":"up_left","keys":["ArrowUp","ArrowLeft"],"frames":[0,1,2,3],"distance":1.2059250000000028,"vanishing":{"x":640,"y":350},"stopped":true}
+PASS left {"direction":"left","keys":["ArrowLeft"],"frames":[0,1,2,3],"distance":1.2118500000000019,"vanishing":{"x":640.0000000000001,"y":350.00000000000006},"stopped":true}
+PASS down_left {"direction":"down_left","keys":["ArrowDown","ArrowLeft"],"frames":[0,1,2,3],"distance":1.2125250000000019,"vanishing":{"x":639.9999999999999,"y":350},"stopped":true}
 8 directions / 32 rendered poses / actual keyboard / equal ground speed / idle PASS; visual review is separate
