@@ -7,8 +7,17 @@ on:
       - 'remake/js/chapters/ch2-preview.js'
       - 'remake/css/ch2-preview.css'
       - 'data/dialogue/ch2_preview.json'
+      - 'data/characters.json'
+      - 'remake/data/manifest.json'
       - 'assets/backgrounds/bg_widehanga_map_*.webp'
       - 'assets/backgrounds/bg_widehanga_station_day.webp'
+      - 'assets/backgrounds/bg_ch2_*_entry.webp'
+      - 'assets/sprites/characters/kumicho/**'
+      - 'assets/sprites/characters/rei/**'
+      - 'assets/sprites/characters/volk/**'
+      - 'remake/img/sprites/characters/kumicho/**'
+      - 'remake/img/sprites/characters/rei/**'
+      - 'remake/img/sprites/characters/volk/**'
       - 'remake/js/vn/**'
       - 'remake/js/core/data.js'
       - 'remake/js/core/state.js'
@@ -57,7 +66,7 @@ jobs:
           done
           cat "$RUNNER_TEMP/ch2-preview.log"
           exit 1
-      - name: Verify city routes, PC, touch, recovery and save isolation
+      - name: Verify city, shop interiors, portraits, touch, recovery and save isolation
         env:
           TEST_REF: ${{ github.sha }}
         run: node remake/test/browser/ch2_preview.mjs

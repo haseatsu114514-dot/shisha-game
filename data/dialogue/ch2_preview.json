@@ -1,5 +1,5 @@
 {
-  "comment": "第2章制作の導入試遊。第1章優勝後、同じ県内の隣町を初めて歩く。各店は入口での顔合わせのみ。訪問順は任意。本編の章進行・報酬・関係・セーブには接続しない。",
+  "comment": "第2章制作の導入試遊。第1章優勝後、同じ県内の隣町を初めて歩く。各店の入口の顔合わせと、希望すれば準備中の室内見学。訪問順は任意。本編の章進行・報酬・関係・セーブには接続しない。",
   "dialogues": [
     {
       "dialogue_id": "ch2_preview_arrival",
@@ -147,7 +147,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「パラパラ」。ピンクの入口から、軽いリズムが漏れている。"
+          "text": "「MELTY PUFF」。ピンクの入口から、軽いリズムが漏れている。"
         },
         {
           "speaker": "",
@@ -172,7 +172,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ここ、あなたのお店なんですか？"
+          "text": "メルティパフって読むんですね。ここ、あなたのお店なんですか？"
         },
         {
           "speaker": "ageha",
@@ -287,6 +287,14 @@
           "speaker": "kumicho",
           "face": "normal",
           "text": "そうか、……見ねえ顔だな。俺は神崎。この店の店主だ"
+        },
+        {
+          "type": "intro",
+          "char_id": "kumicho",
+          "intro": {
+            "title": "静かな手の店主",
+            "line": "好きなもんを、雑に扱いたくねえ"
+          }
         },
         {
           "type": "set_flag",
@@ -846,6 +854,266 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_preview_ageha_inside",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはに声をかけられて、ドアの内側へ。プリクラ機の隣を抜けると、豹柄のソファがあった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "中、こんな感じ！ ちょい派手？ でも座ったら落ち着くっしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入口から見た時より、席がゆったりしてますね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "荷物多い子も来るし。買い物の袋、足元にぎゅうぎゅうって嫌じゃん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの後ろでは、小さな容器が列を作っている。蓋の高さも、ラベルの向きも揃っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こっちは、すごくきっちり並べるんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "迷って探す時間、もったいないもん。グミベアはこっち、って手が覚えてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会でも、この並びにするんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うん。いつもの感じで作りたいし。ハジメっちも、当日は遠慮なしね！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。俺も、ちゃんと勝負できる一台を持ってきます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "よし！ 台は奥で準備してるから、今度ゆっくりね。道、迷わんように！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "プリクラ機の横で手を振って、通りへ出た。店の明るさが、背中に少し残る。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_preview_kumicho_inside",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんに促されて、暖簾の内側をのぞいた。入口の段差の先に、畳と低い卓が並ぶ。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "上がるなら、靴はそこでな。急がなくていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。外からだと、中は想像できませんでした"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "古い部屋を使ってる。気になるところがあったら、言え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紺の座布団が、卓を挟んで向かい合っていた。奥の棚の容器も、正面を揃えている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、お店の台を見せてもらおうかと思っていたんですけど"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "今は奥で準備中だ。吸う時は、時間を取って来な"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。さっきから、強い匂いがしないんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "香りは、葉から出てくる。余計なもんを、部屋に残したくねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは空いた卓を、一度だけ確かめた。入口へ戻るこちらを、立ったまま待ってくれる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "また来ます。今日は、ありがとうございました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ああ。足元、段差があるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_preview_rei_inside",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ポスターを留め終えたREIさんが、扉を開けた。中は黒と深い赤で、奥の幕は閉じていた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……少しなら。まだ、準備中だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。店でも、音楽をやるんですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……小さいイベントを。何もない日は、普通に座ってもらう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "薔薇の形の格子に、細い照明が落ちる。暗い色の部屋なのに、卓の上はよく見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "席ごとに、ちゃんと明るいんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……手元が見えないと、客も困るだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その奥の棚も、並び方がきれいです"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……置き場所は、変えない。準備の時に、見つからないのが嫌だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、同じものを何度も探す時があります。店に戻ったら見直してみます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……自分が使うなら。自分の手で、確かめた方がいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉を出る前に、もう一度会釈する。REIさんは短く頷き、カウンターへ戻った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_preview_volk_inside",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "展示の準備室へ通された。金属の作業台と運搬ケース。飾りよりも、空いた床が目に入る。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "まだ実演は始めていない。通路は、空けておけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。このケースに、道具を入れて持ってくるんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "場所が変わっても、何を持ってきたかは、変わらない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さな計器の横に、蓋を閉じた容器が並ぶ。ヴォルクさんは、棚を端から確かめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "展示のたびに、全部確認するんですか？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "移動中に、ずれる。前の場所で確認したからといって、ここで省かない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "並べ方まで、準備なんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "置くだけなら、終わる。使えるかは、別だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、大会の荷物を詰めたら、一度出して確かめてみます"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……忘れ物は、それで減る。実演を見る時は、また来い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "邪魔にならないよう扉を閉めた。ケースの留め具を確かめる、小さな音が聞こえた。"
+        }
+      ]
     }
   ]
 }

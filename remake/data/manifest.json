@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-12 21:11 UTC",
+ "generated": "2026-10-13 09:32 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -211,6 +211,33 @@
    "h": 0.7275,
    "b": 0.0208,
    "ax": 0.501,
+   "aspect": 0.7467
+  },
+  "kumicho": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9792,
+   "b": 0.0117,
+   "ax": 0.4831,
+   "aspect": 0.7467
+  },
+  "rei": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.985,
+   "b": 0.01,
+   "ax": 0.4833,
+   "aspect": 0.7467
+  },
+  "volk": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9692,
+   "b": 0.0167,
+   "ax": 0.4736,
    "aspect": 0.7467
   }
  },
@@ -1813,6 +1840,9 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "backgrounds/trpg_ordinary_room.png",
-  "backgrounds/trpg_shark_room.png"
+  "backgrounds/trpg_shark_room.png",
+  "sprites/characters/kumicho/chr_kumicho_normal.png",
+  "sprites/characters/rei/chr_rei_normal.png",
+  "sprites/characters/volk/chr_volk_normal.png"
  ]
 }

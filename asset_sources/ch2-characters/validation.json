@@ -1,0 +1,160 @@
+{
+  "status": "PASS",
+  "files_checked": 17,
+  "checks": [
+    {
+      "path": "asset_sources/ch2-characters/kumicho/normal-source.png",
+      "status": "PASS",
+      "size": [
+        1086,
+        1448
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "remake/img/sprites/characters/kumicho/chr_kumicho_normal.webp",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "asset_sources/ch2-characters/rei/normal-source.png",
+      "status": "PASS",
+      "size": [
+        1086,
+        1448
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "remake/img/sprites/characters/rei/chr_rei_normal.webp",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "asset_sources/ch2-characters/volk/normal-source.png",
+      "status": "PASS",
+      "size": [
+        887,
+        1774
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/sprites/characters/volk/chr_volk_normal.png",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "remake/img/sprites/characters/volk/chr_volk_normal.webp",
+      "status": "PASS",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "asset_sources/ch2-interiors/ageha/source.png",
+      "status": "PASS",
+      "size": [
+        1672,
+        940
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/backgrounds/bg_ch2_ageha_entry.webp",
+      "status": "PASS",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "asset_sources/ch2-interiors/kumicho/source.png",
+      "status": "PASS",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/backgrounds/bg_ch2_kumicho_entry.webp",
+      "status": "PASS",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "asset_sources/ch2-interiors/rei/source.png",
+      "status": "PASS",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/backgrounds/bg_ch2_rei_entry.webp",
+      "status": "PASS",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "asset_sources/ch2-interiors/volk/source.png",
+      "status": "PASS",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/backgrounds/bg_ch2_volk_entry.webp",
+      "status": "PASS",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "limits": "Dimensions, hashes, alpha borders, lossless visible pixels and framing only; anatomy, identity, room structure and in-game visibility require visual QA."
+}

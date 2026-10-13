@@ -10,7 +10,7 @@ const evidence = path.join(root, "docs/qa/ch2-preview");
 const route = new URL("chapter2-preview.html", baseURL).href;
 const test = name => `[data-test="ch2-preview-${name}"]`;
 const pins = ["ageha", "kumicho", "rei", "volk", "c_station"];
-const names = { ageha: "あげは", kumicho: "組長", rei: "零", volk: "ヴォルク" };
+const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "零", volk: "ヴォルク" };
 fs.mkdirSync(evidence, { recursive: true });
 
 async function seedAndOpen(page, prepare = null) {
@@ -72,6 +72,10 @@ async function visit(page, id, { double = false, touch = false } = {}) {
   else if (touch) await button.tap();
   else await button.click();
   await page.waitForFunction(id => window.__ch2Preview.visited.includes(id), id);
+  if (id !== "c_station") {
+    await page.locator(test("stop")).waitFor();
+    await page.locator(test("back-map")).click();
+  }
   await page.locator(test("map")).waitFor();
 }
 
@@ -117,13 +121,23 @@ async function changeTime(page, time, touch = false) {
 }
 
 // Real dialogue clicks, with no SKIP/turbo. Capture name and text after each render.
-async function manualToMap(page, { watch = null, captureUnknown = null } = {}) {
+async function manualToMap(page, { watch = null, captureUnknown = null, inside = false, captureRoom = null } = {}) {
   const observed = [];
   for (let i = 0; i < 100; i++) {
-    if (await page.locator(test("map")).isVisible()) return observed;
+    if (await page.locator(test("map")).isVisible()) {
+      assert.equal(captureRoom, null, 'Room portrait capture was never reached');
+      return observed;
+    }
+    if (await page.locator(test("stop")).isVisible()) {
+      await assertFits(page, `${test("inside")}, ${test("back-map")}`);
+      await page.locator(test(inside ? "inside" : "back-map")).click();
+      await page.locator(test("stop")).waitFor({ state: "detached" });
+      inside = false;
+      continue;
+    }
     const intro = page.locator(".cutin");
     if (await intro.count()) {
-      observed.push(await page.evaluate(watch => ({ name: document.querySelector(".cutin .ci-name")?.textContent || "", text: "character introduction", met: watch ? !!window.__ch2Preview.state.met[watch] : null }), watch));
+      observed.push(await page.evaluate(watch => ({ name: document.querySelector(".cutin .ci-name")?.textContent || "", title: document.querySelector(".cutin .ci-title")?.textContent || "", text: "character introduction", met: watch ? !!window.__ch2Preview.state.met[watch] : null }), watch));
       await intro.waitFor({ state: "detached", timeout: 10000 });
       continue;
     }
@@ -139,6 +153,19 @@ async function manualToMap(page, { watch = null, captureUnknown = null } = {}) {
     assert(frame.textFits, `Production VN text was clipped: ${JSON.stringify(frame)}`);
     if (!observed.some(old => old.name === frame.name && old.text === frame.text && old.met === frame.met)) observed.push(frame);
     if (captureUnknown && frame.name === "？？？") { await screenshot(page, captureUnknown); captureUnknown = null; }
+    if (captureRoom && await page.evaluate(id => {
+      const portrait = document.querySelector(`.vn-portraits img[data-speaker="${id}"].active`);
+      return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(`bg_ch2_${id}_entry.webp`) && portrait?.complete && portrait.naturalWidth > 0;
+    }, watch)) {
+      const portrait = await page.locator(`.vn-portraits img[data-speaker="${watch}"].active`).evaluate(node => ({ src: node.getAttribute("src"), width: node.naturalWidth, height: node.naturalHeight }));
+      if (watch !== "ageha") assert(portrait.src.endsWith(`/chr_${watch}_normal.webp`), `Wrong normal portrait: ${JSON.stringify(portrait)}`);
+      // A portrait can arrive before its entrance animation finishes and before
+      // the new text replaces the preceding narration. Capture settled dialogue.
+      await page.waitForTimeout(1200);
+      assert((await page.locator('.vn-text').textContent()).trim(), 'Room evidence captured an empty dialogue box');
+      await screenshot(page, captureRoom);
+      captureRoom = null;
+    }
     await box.click({ position: { x: 100, y: 40 } });
   }
   throw new Error(`Manual dialogue never returned to the map: ${JSON.stringify(observed)}`);
@@ -205,13 +232,17 @@ await suite("ch2-preview", async check => {
     await launch(page, false);
     const arrival = await manualToMap(page);
     assert(arrival.some(frame => frame.text), "Arrival dialogue was empty");
-    for (const id of ["ageha", "rei"]) {
+    for (const id of ["ageha", "rei", "kumicho", "volk"]) {
       assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.met[id], id), false);
       await page.locator(test(`pin-${id}`)).click();
-      const frames = await manualToMap(page, { watch: id, captureUnknown: id === "ageha" ? "desktop-unknown-name.png" : null });
+      const frames = await manualToMap(page, { watch: id, captureUnknown: id === "ageha" ? "desktop-unknown-name.png" : null, inside: true, captureRoom: `desktop-room-${id}.png` });
       const unknown = frames.findIndex(frame => frame.name === "？？？" && !frame.met);
       const known = frames.findIndex(frame => frame.name.includes(names[id]) && frame.met);
       assert(unknown >= 0 && known > unknown, `${id} name appeared before introduction or did not unlock: ${JSON.stringify(frames)}`);
+      assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_preview_inside_${id}`], id), true);
+      assert(fs.existsSync(path.join(evidence, `desktop-room-${id}.png`)), `Room portrait was not displayed: ${id}`);
+      if (id === 'kumicho') assert(!frames.some(frame => /組長/.test(frame.title || '')), 'Kanzaki secret revealed before DAY14');
+      if (id === 'ageha') assert(frames.some(frame => frame.text.includes('あたしも！')), 'Ageha must remain a chapter-two tournament rival');
     }
     await turbo(page);
     await page.locator(test("return")).click();
@@ -229,6 +260,31 @@ await suite("ch2-preview", async check => {
     await page.locator(test("restart")).dblclick({ delay: 30 });
     await page.locator(test("start")).waitFor();
     assert.deepEqual(await progress(page), []);
+    await preserved(page, before);
+  });
+
+  await check("room-image-recovery-and-night-return", async page => {
+    const before = await seedAndOpen(page, () => page.route('**/bg_ch2_ageha_entry.webp', route => route.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid room image' })));
+    await launch(page);
+    await changeTime(page, 'night');
+    await page.locator(test('pin-ageha')).click();
+    await page.locator(test('stop')).waitFor();
+    await page.locator(test('inside')).click();
+    await page.locator('.ch2-room-warning').waitFor();
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), false);
+    assert.equal(await page.locator('#vn.active').count(), 0, 'Failed room image must not start room dialogue');
+    await page.locator(test('back-map')).click();
+    await page.locator(`${test('map')}[data-time="night"]`).waitFor();
+    await page.locator(test('pin-ageha')).click();
+    await page.locator(test('stop')).waitFor();
+    await page.locator(test('inside')).click();
+    await page.locator('.ch2-room-warning').waitFor();
+    await page.unroute('**/bg_ch2_ageha_entry.webp');
+    await page.locator(test('inside')).click();
+    await page.locator(`${test('map')}[data-time="night"]`).waitFor();
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), true);
+    assert(await page.locator('#bg > .bg-img').last().evaluate(node => node.style.backgroundImage.includes('map_night.webp')));
+    assert.deepEqual(await progress(page), ['ageha']);
     await preserved(page, before);
   });
 

@@ -72,6 +72,8 @@
 .ch2-pin.read::after { border-color: #efd0a0; }
 .ch2-pin.read .ch2-pin-num { color: #efd0a0; }
 .ch2-pin.c-station { width: 195px; }
+.ch2-pin.ageha { width: 215px; }
+.ch2-pin.ageha .ch2-pin-title { font-size: 18px; }
 .ch2-pin.station { width: 185px; border-color: #d8e4e9; background: #152c3bf2; }
 .ch2-pin.station::after { background: #152c3b; border-color: #d8e4e9; }
 .ch2-pin.station .ch2-pin-num { font-size: 22px; color: #dfebef; }
@@ -101,6 +103,12 @@
   position: absolute; top: 20px; left: 26px; padding: 9px 15px; border-left: 3px solid var(--ch2-accent);
   background: #07131ed9; color: #e8eee6; font-size: 17px; letter-spacing: .03em;
 }
+.ch2-stop { display: flex; align-items: center; padding: 64px; background: #07161fc7; }
+.ch2-stop-card { max-width: 810px; padding: 38px; border: 1px solid #bedace70; border-radius: 10px; background: var(--ch2-panel); }
+.ch2-stop-card h1 { margin: 0 0 20px; font-size: 40px; }
+.ch2-stop-card p:not(.ch2-kicker) { font-size: 22px; line-height: 1.7; margin: 0 0 24px; }
+.ch2-stop-card .ch2-actions { flex-wrap: wrap; }
+.ch2-stop-card .ch2-room-warning { color: #f3d89c; }
 .ch2-loading { display: grid; place-content: center; text-align: center; background: #0b202b; }
 .ch2-loading h1 { font-size: 35px; margin: 0 0 18px; }
 .ch2-loading p { margin: 0; font-size: 22px; color: var(--ch2-accent); }

@@ -13,13 +13,14 @@ const MAP = {
 };
 const STATION = "../assets/backgrounds/bg_widehanga_station_day.webp";
 const STOPS = [
-  { id: "ageha", name: "パラパラ", x: 81, y: 46 },
+  { id: "ageha", name: "MELTY PUFF", x: 81, y: 46 },
   { id: "kumicho", name: "神崎煙草店", x: 63, y: 65 },
   { id: "rei", name: "零-ZERO-", x: 42, y: 78 },
   { id: "volk", name: "鉄の煙", x: 18, y: 76, sceneLabel: "鉄の煙の技術展示" },
   { id: "c_station", name: "C.STATION", x: 85, y: 30 },
 ];
-const REQUIRED_IDS = ["arrival", ...STOPS.map((stop) => stop.id), "return"].map((id) => `ch2_preview_${id}`);
+const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei", "volk"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
+const REQUIRED_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_preview_${id}`);
 const visited = new Set();
 let arrivalRead = false;
 let scene = "loading";
@@ -47,8 +48,6 @@ function resetPreview() {
     scratch.met[id] = true;
     scratch.flags[`_intro_${id}`] = true;
   }
-  // この3人の正規立ち絵・紹介絵は制作中。別人の画像や代替カットインを出さない。
-  for (const id of ["kumicho", "rei", "volk"]) scratch.flags[`_intro_${id}`] = true;
   setState(scratch); // メモリ参照の差替えだけ。既存save/config/手動枠には触れない。
   visited.clear();
   arrivalRead = false;
@@ -116,7 +115,7 @@ function renderEntry() {
       el("p.ch2-kicker", { text: "水煙前線 -EN:CODE- / CHAPTER 02" }),
       el("h1", [el("small", { text: "第2章・街歩き試遊" }), "ワイドハンガ街"]),
       el("p.ch2-entry-description", { text: "地元の大会の、その先へ。隣町の大きな駅を出ると、人の流れと、まだ知らない煙が待っている。" }),
-      el("p.ch2-preview-note", { text: "街と4つの訪問先・大会会場の入口会話を遊べます。新登場3人の立ち絵・店内・日常・県大会は制作中で、本編には未接続です。本編のセーブは変更せず、試遊の進行はページを再読み込みするとリセットされます。" }),
+      el("p.ch2-preview-note", { text: "街と4つの訪問先・大会会場の挨拶、準備中の店内見学を遊べます。あげはも県大会のライバルです。日常・県大会は制作中で、本編には未接続です。本編のセーブは変更せず、試遊の進行は再読み込みでリセットされます。" }),
       el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", () => perform(startPreview), "btn primary"), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
       el("p.ch2-entry-controls", { text: "会話：クリック・タップ・Enter ／ 地図：行き先を選ぶ" }),
     ]),
@@ -131,7 +130,7 @@ async function playScene(id, label) {
   layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・街歩き試遊 ／ ${label}` }));
   const owner = new AbortController();
   activeScene = owner;
-  const result = await play(`ch2_preview_${id}`, { signal: owner.signal }); // 店の入口として街の背景を維持。
+  const result = await play(`ch2_preview_${id}`, { signal: owner.signal });
   if (activeScene === owner) activeScene = null;
   layers.hud.replaceChildren();
   return !!result && !result.cancelled && stillCurrent(generation);
@@ -156,7 +155,7 @@ async function startPreview() {
 function mapPin(stop, index) {
   const read = visited.has(stop.id);
   const pin = el("button.ch2-pin", {
-    type: "button", class: `${read ? "read " : ""}${stop.id === "c_station" ? "c-station" : ""}`,
+    type: "button", class: `${read ? "read " : ""}${stop.id === "c_station" ? "c-station" : stop.id}`,
     disabled: busy, dataset: { test: `ch2-preview-pin-${stop.id}`, read: String(read) },
     "aria-label": `${stop.name}、${read ? "挨拶を読了、もう一度話す" : "初めて訪れる"}`,
     onclick: () => perform(async () => {
@@ -164,9 +163,10 @@ function mapPin(stop, index) {
       visited.add(stop.id);
       state.flags[`_ch2_preview_visit_${stop.id}`] = true;
       if (stop.id !== "c_station") state.flags._ch2_preview_met_shop = true;
-      renderMap();
+      if (ROOMS[stop.id]) renderStopMenu(stop);
+      else renderMap();
       say(`${stop.name}での挨拶を読みました。${visited.size}か所、全5か所。`);
-      focusTest(allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`);
+      focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`));
     }),
   }, [
     el("span.ch2-pin-num", { text: read ? "✓" : String(index + 1), "aria-hidden": "true" }),
@@ -174,6 +174,47 @@ function mapPin(stop, index) {
     el("span.ch2-pin-caption", { text: read ? "もう一度話す" : "初めて訪れる" }),
   ]);
   return el("li", { style: { left: `${stop.x}%`, top: `${stop.y}%` } }, [pin]);
+}
+
+function renderStopMenu(stop, imageFailed = false) {
+  scene = `${stop.id}_visit`;
+  layers.screen.replaceChildren(el("main.ch2-shell.ch2-stop", { dataset: { test: "ch2-preview-stop", stop: stop.id } }, [
+    el("div.ch2-stop-card", [
+      el("p.ch2-kicker", { text: "CHAPTER 02 / はじめての顔合わせ" }),
+      el("h1", { text: stop.sceneLabel || stop.name }),
+      el("p", { text: "挨拶を終えた。少し中を見せてもらってから、次の場所へ向かおう。" }),
+      imageFailed ? el("p.ch2-room-warning", { role: "status", text: "店内の背景を読み込めませんでした。再読み込みするか、地図へ戻れます。" }) : null,
+      el("div.ch2-actions", [
+        button(imageFailed ? "室内の背景を再読み込み" : (stop.id === "volk" ? "展示室をのぞく" : "店内をのぞく"), "ch2-preview-inside", () => perform(() => visitInside(stop)), "btn primary"),
+        button("地図へ戻る", "ch2-preview-back-map", () => perform(async () => {
+          if (!await showMapBackground()) return;
+          renderMap();
+          focusTest(`ch2-preview-pin-${stop.id}`);
+        })),
+      ]),
+    ]),
+  ]));
+}
+
+async function visitInside(stop) {
+  const owner = previewEpoch;
+  const available = await imageReady(ROOMS[stop.id], 15000);
+  if (!stillCurrent(owner)) return;
+  if (!available) {
+    renderStopMenu(stop, true);
+    say("店内の背景を読み込めませんでした。再読み込み、または地図へ戻るを選んでください。");
+    focusTest("ch2-preview-inside");
+    return;
+  }
+  layers.screen.replaceChildren();
+  await setBg(ROOMS[stop.id], { instant: true });
+  if (!stillCurrent(owner)) return;
+  if (!await playScene(`${stop.id}_inside`, `${stop.sceneLabel || stop.name}・準備中の室内`)) return;
+  state.flags[`_ch2_preview_inside_${stop.id}`] = true;
+  if (!await showMapBackground()) return;
+  renderMap();
+  say(`${stop.name}の見学を終えました。`);
+  focusTest(allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`);
 }
 
 function allRead() { return arrivalRead && visited.size === STOPS.length; }
@@ -256,7 +297,7 @@ function renderEnd() {
       el("h1", { text: "知らない煙を、地元へ。" }),
       el("p.ch2-end-description", { text: "駅前の光が、列車の窓を流れていく。新しい街に、また訪ねたい場所ができた。第2章の続きは、ここから。" }),
       el("p.ch2-end-progress", { text: `訪問した入口　${visited.size} / 5か所` }),
-      el("p.ch2-preview-note", { text: "今回遊べるのは街と入口会話までです。新登場3人の立ち絵・店内・日常・県大会は今後制作します。本編には未接続で、本編のセーブは変更していません。" }),
+      el("p.ch2-preview-note", { text: "今回は街・挨拶・準備中の店内見学までです。新登場3人は通常立ち絵を制作しました。日常・県大会・表情差分は今後制作します。本編には未接続で、本編のセーブは変更していません。" }),
       el("div.ch2-actions", [
         button("もう一度、街を訪れる", "ch2-preview-restart", () => perform(async () => {
           resetPreview();

@@ -68,12 +68,13 @@
 ## 遊び方（ローカル）
 
 第2章の最初の試遊は `http://127.0.0.1:8123/remake/chapter2-preview.html`。
-同じ県内の隣町・ワイドハンガ街で、到着の会話、新しい昼夜マップ、5地点の入口での出会い、帰路を遊べる。
-本編と同じ会話エンジンと、あげは・博士の正規立ち絵を使う。新登場3人の立ち絵は制作中。
+同じ県内の隣町・ワイドハンガ街で、到着の会話、新しい昼夜マップ、5地点の入口での出会い、4地点の準備中の店内見学、帰路を遊べる。
+本編と同じ会話エンジン、あげは・博士の正規立ち絵、神崎・REI・ヴォルクの新しい通常立ち絵を使う。
+あげはも第14日のライバルで、店名はオーナー選定のMELTY PUFF（メルティパフ）。
 試遊の進行はページ内だけに保持し、再読み込みで最初へ戻る。
-本編の保存枠・関係値・所持品へは引き継がない。14日間の日常と県大会は次の制作範囲。
+本編の保存枠・関係値・所持品へは引き継がない。準備13日間と第14日の県大会は次の制作範囲。
 街の要件と制作順は [第2章ロードマップ](../docs/plans/post_chapter1_roadmap.md)、
-原画・素材の見直しは [街マップ制作記録](../asset_sources/ch2-city/README.md)。
+原画・素材の見直しは [街マップ](../asset_sources/ch2-city/README.md)・[人物](../asset_sources/ch2-characters/README.md)・[内装](../asset_sources/ch2-interiors/README.md) の制作記録。
 検証は `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/ch2_preview.mjs`。
 
 斧投げの練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
@@ -178,7 +179,7 @@ remake/
 ```
 
 立ち絵・背景・作業台の素材（`assets/ui/making/`）を追加・差し替えたら `python3 remake/tools/build_manifest.py` を1回実行する
-（Pillow・numpy・scipy が必要）。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
+（Pillow・numpy・scipy が必要）。人物だけの追加は `--portraits-only kumicho rei volk` で他の採用済み画像を維持して更新できる。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
 `remake/data/manifest.json` に書き出す。コールドオープンの一台と制作画面の静止モックアップの素材は
 この実測値から位置を計算して組む。制作画面には独立した一台のパネルを表示しない。それ以外の変更にビルドは要らない。
 文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。
