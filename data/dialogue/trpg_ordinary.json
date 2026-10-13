@@ -1,6 +1,6 @@
 {
   "id": "ordinary-cup",
-  "version": 1,
+  "version": 2,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
@@ -25,7 +25,8 @@
       "role": "フィン／見習い店番",
       "color": "#89bbc4",
       "ability": "ひらめき",
-      "abilityText": "判定後、サイコロ1個を一度だけ振り直す"
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "abilityType": "reroll"
     },
     {
       "id": "naru",
@@ -33,7 +34,8 @@
       "role": "ニコ／香りの案内役",
       "color": "#c8a375",
       "ability": "香りの助言",
-      "abilityText": "一台を準備するとき、判定に一度だけ＋2"
+      "abilityText": "一台を準備するとき、判定に一度だけ＋2",
+      "abilityType": "prepare"
     },
     {
       "id": "tsumugi",
@@ -41,7 +43,8 @@
       "role": "ルカ／窓辺の絵描き",
       "color": "#b8a3cc",
       "ability": "席の気配",
-      "abilityText": "提供するとき、判定に一度だけ＋2"
+      "abilityText": "提供するとき、判定に一度だけ＋2",
+      "abilityType": "serve"
     }
   ],
   "intro": "trpg_ordinary_intro",
@@ -59,14 +62,16 @@
       "hint": "店番の手際 ＋1。なるの切り札で、さらに＋2できます。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
-      "trouble": "trpg_ordinary_prepare_trouble"
+      "trouble": "trpg_ordinary_prepare_trouble",
+      "helper": "naru"
     },
     "serve": {
       "title": "席へ案内して、声をかける",
       "hint": "相手への気配り ＋1。つむぎの切り札で、さらに＋2できます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
-      "trouble": "trpg_ordinary_serve_trouble"
+      "trouble": "trpg_ordinary_serve_trouble",
+      "helper": "tsumugi"
     }
   },
   "spots": [
@@ -74,43 +79,43 @@
       "id": "menu",
       "label": "手書きのメニュー",
       "short": "メニュー",
-      "x": 23,
-      "y": 39
+      "x": 14,
+      "y": 23
     },
     {
       "id": "window",
       "label": "雨の窓辺",
       "short": "窓辺",
-      "x": 71,
+      "x": 78,
       "y": 31
     },
     {
       "id": "bag",
       "label": "旅人の荷札",
       "short": "荷札",
-      "x": 67,
-      "y": 72
+      "x": 90,
+      "y": 75
     },
     {
       "id": "counter",
       "label": "カウンターの席",
       "short": "席",
-      "x": 38,
-      "y": 64
+      "x": 53,
+      "y": 82
     },
     {
       "id": "cup",
       "label": "旅人の飲み物",
       "short": "飲み物",
-      "x": 59,
+      "x": 52,
       "y": 55
     },
     {
       "id": "notebook",
       "label": "店番のノート",
       "short": "ノート",
-      "x": 18,
-      "y": 76
+      "x": 15,
+      "y": 68
     }
   ],
   "consult": {
@@ -141,51 +146,60 @@
       {
         "id": "tea",
         "label": "穏やかな紅茶",
-        "description": "温かい飲み物を思わせる、落ち着いた香り。"
+        "description": "温かい飲み物を思わせる、落ち着いた香り。",
+        "response": "trpg_ordinary_choice_aroma_tea"
       },
       {
         "id": "fruit",
         "label": "やわらかい果実",
-        "description": "甘さが少し残る、店のいつもの香り。"
+        "description": "甘さが少し残る、店のいつもの香り。",
+        "response": "trpg_ordinary_choice_aroma_fruit"
       },
       {
         "id": "spice",
         "label": "香ばしいスパイス",
-        "description": "印象に残る、少し華やかな香り。"
+        "description": "印象に残る、少し華やかな香り。",
+        "response": "trpg_ordinary_choice_aroma_spice"
       }
     ],
     "seat": [
       {
         "id": "window",
         "label": "雨を眺める窓辺",
-        "description": "店の会話から少し離れた、静かな席。"
+        "description": "店の会話から少し離れた、静かな席。",
+        "response": "trpg_ordinary_choice_seat_window"
       },
       {
         "id": "counter",
         "label": "人と話せるカウンター",
-        "description": "店番や、隣の客の顔が見える席。"
+        "description": "店番や、隣の客の顔が見える席。",
+        "response": "trpg_ordinary_choice_seat_counter"
       },
       {
         "id": "shelf",
         "label": "古いメニューのそば",
-        "description": "昔の写真や店の記録を眺められる席。"
+        "description": "昔の写真や店の記録を眺められる席。",
+        "response": "trpg_ordinary_choice_seat_shelf"
       }
     ],
     "approach": [
       {
         "id": "quiet",
         "label": "声を添えて、少し離れる",
-        "description": "『どうぞ、ごゆっくり』。必要なら呼んでもらう。"
+        "description": "『どうぞ、ごゆっくり』。必要なら呼んでもらう。",
+        "response": "trpg_ordinary_choice_approach_quiet"
       },
       {
         "id": "memory",
         "label": "いつもの香りの話をする",
-        "description": "旅人の好きなものや、思い出をゆっくり聞く。"
+        "description": "旅人の好きなものや、思い出をゆっくり聞く。",
+        "response": "trpg_ordinary_choice_approach_memory"
       },
       {
         "id": "company",
         "label": "今日のことを聞いてみる",
-        "description": "『長い道のりでした？』。話すきっかけを作る。"
+        "description": "『長い道のりでした？』。話すきっかけを作る。",
+        "response": "trpg_ordinary_choice_approach_company"
       }
     ]
   },
@@ -1384,7 +1398,191 @@
           "face": "normal"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_aroma_tea",
+      "lines": [
+        {
+          "speaker": "naru",
+          "role": "PL／卓の会話",
+          "text": "香りで話を急がせない。紅茶なら、その役ができそうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_aroma_fruit",
+      "lines": [
+        {
+          "speaker": "naru",
+          "role": "PL／卓の会話",
+          "text": "この店のいつもの甘さ、か。派手でなくても印象は残る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_aroma_spice",
+      "lines": [
+        {
+          "speaker": "naru",
+          "role": "PL／卓の会話",
+          "text": "少し印象に残る香りだな。相手の反応を見ながら出そう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_seat_window",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "text": "……雨を見る席。何も話さない時間も、ちゃんとある"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_seat_counter",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "text": "……顔が見える距離。話したくなったら、話せるね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_seat_shelf",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "text": "古い写真のそば。今の店と、前の店が少し重なる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_approach_quiet",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "text": "必要になったら呼んでもらおう。俺は少し離れてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_approach_memory",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "text": "いつもの香り、か。俺も旅人の話を聞いてみたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_approach_company",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "text": "答えを急がず、今日のことから聞いてみよう"
+        }
+      ]
     }
   ],
-  "_comment": "独立TRPG試作の設定と台詞。台詞は既存のdialogues/lines形式。本編のloadAllには未接続。"
+  "_comment": "独立TRPG試作の設定と台詞。台詞は既存のdialogues/lines形式。本編のloadAllには未接続。",
+  "flow": {
+    "prepare": [
+      "aroma",
+      "seat"
+    ],
+    "serve": [
+      "approach"
+    ]
+  },
+  "fitWeights": {
+    "aroma": 1,
+    "seat": 1,
+    "approach": 2
+  },
+  "fallbackEnding": "discovery",
+  "rules": {
+    "exploreLimit": 6,
+    "pressureMax": 3,
+    "initialPressure": 0,
+    "inspectionPressure": 0,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 1
+    },
+    "detourThreshold": 1,
+    "hypothesisBonus": 0
+  },
+  "presentation": {
+    "theme": "harbor",
+    "number": "01",
+    "genre": "日常ミステリー",
+    "tagline": "その人にとっての「普通」を、探す。",
+    "image": "../../img/backgrounds/trpg_ordinary_room.webp",
+    "sceneAlt": "雨の港を望む茶房。メニュー、窓辺、荷札、カウンター、カップとノート。",
+    "location": "港町ノーラ / 波止場の灯",
+    "atmosphere": "雨ににじむ港の灯り。閉店まで、もう少し。",
+    "coverHeading": "閉店前の茶房に、旅人がひとり。",
+    "coverRule": "部屋を調べ、仲間と相談し、一台を提案する。",
+    "titleLines": [
+      "世界一普通の",
+      "一台"
+    ],
+    "fields": {
+      "aroma": "一台の香り",
+      "seat": "過ごす席",
+      "approach": "添える言葉"
+    },
+    "prepareTitle": "旅人に、どんな時間を用意する？",
+    "prepareDescription": "香りを一つ、席を一つ。手がかりを組み合わせて提案しよう。",
+    "serveTitle": "一台を置いた、そのあとに。",
+    "serveDescription": "旅人に添える、最初の言葉を選ぶ。",
+    "hypothesisTitle": "旅人の「普通」は、どんな時間？",
+    "arrivalRole": "旅人オル／物語",
+    "exploreIdle": "気になった場所を調べよう。仲間に相談してもいいぞ",
+    "listenIdle": "まずは旅人の言葉を待ってみよう。サイコロを二つ振るぞ",
+    "prepareIdle": "香りと席を選んでみよう。なるの切り札も使えるぞ",
+    "serveIdle": "声のかけ方を選んだら、旅人を案内しよう",
+    "endingIdle": "この晩の話は、ここまで。違う提案でも遊んでみてくれ",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "世界一、普通？",
+        "description": "旅人は何を求めているのだろう。まずは、少し話を聞いてみる。",
+        "button": "言葉を待つ"
+      },
+      "explore": {
+        "kicker": "02 / 店内を調べる",
+        "title": "旅人の「普通」を探す",
+        "description": "気になる場所を調査。3つ以上の手がかりから、みんなで仮説を立てよう。",
+        "button": "仮説を話す"
+      },
+      "prepare": {
+        "kicker": "03 / 一台を用意する",
+        "title": "香りと、過ごす場所",
+        "description": "香りも席も、相手の過ごす時間の一部。",
+        "button": "一台を準備する"
+      },
+      "serve": {
+        "kicker": "04 / 席へ案内する",
+        "title": "最後に、どう声をかける？",
+        "description": "言葉を添えることも、少し待つこともできる。",
+        "button": "旅人を席へ案内する"
+      },
+      "ending": {
+        "kicker": "卓を囲んで",
+        "title": "おつかれさま",
+        "description": "みんなで考えた一台と、過ごす時間。どんな「普通」になっただろう。"
+      }
+    },
+    "help": "三つ以上の手がかりから仮説を立て、香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
+    "endingKicker": "この晩の結末"
+  }
 }
