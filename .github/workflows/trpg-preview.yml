@@ -11,6 +11,13 @@ on:
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
+      - 'remake/trpg-campaign-preview.html'
+      - 'remake/js/core/state.js'
+      - 'remake/js/daily/trpg.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/spot-access.js'
+      - 'remake/js/daily/spots.js'
+      - 'remake/test/trpg_campaign*.mjs'
       - 'remake/index.html'
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
@@ -30,6 +37,13 @@ on:
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
+      - 'remake/trpg-campaign-preview.html'
+      - 'remake/js/core/state.js'
+      - 'remake/js/daily/trpg.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/spot-access.js'
+      - 'remake/js/daily/spots.js'
+      - 'remake/test/trpg_campaign*.mjs'
       - 'remake/index.html'
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
@@ -64,6 +78,8 @@ jobs:
       - name: Scenario and session checks
         run: |
           node --test remake/test/trpg.mjs
+          node --test remake/test/trpg_campaign.mjs
+          node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
           python3 tools/lint_dialogue.py trpg_
       - name: Install pinned browser dependencies
         working-directory: remake/test/browser

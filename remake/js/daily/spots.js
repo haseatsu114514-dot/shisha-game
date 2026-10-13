@@ -13,6 +13,8 @@ import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFin
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
+import { trpgSpot } from "./trpg.js";
+
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
@@ -88,7 +90,7 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
-export const allSpots = () => { const extra = samechanSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
+export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot()].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
