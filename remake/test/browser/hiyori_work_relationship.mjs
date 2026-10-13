@@ -43,6 +43,23 @@ await suite('hiyori-work-relationship',async check=>{
    assert.equal(r.lovers.includes('hiyori'),accept);assert.equal(r.friend,!accept);assert.equal(r.q1,1);assert.equal(r.q2,1);
   }
  });
+ await check('q2-saved-zero-resumes-reaction-without-a-second-answer',async page=>{
+  await setup(page);assert(await work(page,1));
+  await page.evaluate(()=>{W.syntheticGift();W.core.state.affinity.hiyori=66;W.vn.vnTest.choose=()=>0;const previous=W.vn.hooks.onLine;W.vn.hooks.onLine=(id,line)=>{previous?.(id,line);if(id==='hiyori_bond_finale'&&line.speaker==='hiyori'&&W.core.state.romanceChoices.bond_q2_hiyori)W.vn.vnTest.turbo=false;};W.run=W.daily.meetHiyoriAtTonari();});
+  await page.waitForFunction(()=>W.core.state.romanceChoices.bond_q2_hiyori&&document.querySelector('#vn.active .vn-next.show'));
+  const before=await page.evaluate(()=>{const s=W.core.state;const done=!!s.flags._hiyori_bond_finale_done,route=s.finales.hiyori;W.core.saveToSlot('suien_remake_slot1');W.core.newGame();W.core.loadFromSlot('suien_remake_slot1');return {done,route};});
+  assert(!before.done&&!before.route);assert(!await page.evaluate(()=>W.run));
+  const result=await page.evaluate(async()=>{W.vn.hooks.onLine=null;W.vn.vnTest.turbo=true;W.vn.vnTest.choose=()=>{throw Error('Saved Q2 must not ask again');};const resumed=await W.daily.meetHiyoriAtTonari();return {resumed,route:W.core.state.finales.hiyori.route,answer:W.core.state.romanceChoices.bond_q2_hiyori.value,flag:W.core.state.flags._hiyori_bond_finale_done};});
+  assert(result.resumed&&result.flag);assert.equal(result.route,'friend');assert.equal(result.answer,0);
+ });
+ await check('malformed-or-other-character-answer-cannot-settle-hiyori',async page=>{
+  await setup(page);assert(await work(page,1));
+  const r=await page.evaluate(async()=>{W.syntheticGift();W.core.state.affinity.hiyori=66;
+   W.core.state.romanceChoices.bond_q1_hiyori={char:'hiyori'};const missing=W.bonds.finaleDue('hiyori');
+   W.core.state.romanceChoices.bond_q1_hiyori={char:'hiyori',value:1,day:10};W.core.state.romanceChoices.bond_q2_hiyori={char:'rin',value:1,day:10};
+   const before=JSON.stringify(W.core.state);const done=await W.bonds.playFinale('hiyori');return {missing,done,same:JSON.stringify(W.core.state)===before};});
+  assert(!r.missing&&!r.done&&r.same);
+ });
  await check('confession-cannot-bypass-unread-and-existing-relationships',async page=>{
   await setup(page);const r=await page.evaluate(async()=>{await W.vn.play('confession_hiyori_accept');const early=[...W.core.state.lovers];const results=[];
    for(const type of ['friend','lover']){const s=W.fresh();s.finales.hiyori={route:type==='friend'?'friend':'lover',day:4,chapter:1};s.flags._friend_hiyori=type==='friend';s.lovers=type==='lover'?['hiyori','rin']:['rin'];s.lovePts.hiyori=12;s.loveLevel.hiyori=2;const before=JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori});await W.daily.playHiyoriEvent('work_talk');await W.vn.play('confession_hiyori_accept');results.push(before===JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori}));}return {early,results};});
