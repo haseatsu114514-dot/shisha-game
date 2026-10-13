@@ -73,7 +73,7 @@ export function animateIntro(host, id) {
   animate(".ci-art-background", [{ opacity: 0, transform: "scale(1.035)" }, { opacity: 1, transform: "none" }], { duration: 700 });
   animate(".ci-ribbon", [{ transform: "translateX(1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: id === "adam" ? 340 : 480, delay: 130 });
   animate(".ci-accent-line", [{ transform: "translateX(-1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: 510, delay: 180 });
-  const frames = ["kafuka", "pakki"].includes(id)
+  const frames = ["samechan", "pakki"].includes(id)
     ? [{ opacity: 0, transform: "translate(-100px,20px)" }, { opacity: 1, transform: "translate(5px,-4px)", offset: .8 }, { opacity: 1, transform: "none" }]
     : [{ opacity: 0, transform: "translateX(-130px)" }, { opacity: 1, transform: "none" }];
   animate(".ci-portrait", frames, { duration: id === "adam" ? 430 : 620, delay: 160 });

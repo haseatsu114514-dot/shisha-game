@@ -134,17 +134,17 @@
       "notes": "映えや計算だけで客をコントロールしていたが、はじめの『相手をそのまま受け入れる』接客を見た後、いつの間にか客の本当の悩みに寄り添うような深い煙を出すようになっていた。"
     },
     "visual_concepts": [
-      "ageless but youthful looking japanese female, cute idol-like appearance, mint green twin-tails, wearing a frilly maid-like concept cafe uniform with pastel mint aesthetics, winking playfully, holding a bright shisha pipe",
-      "cute concept cafe staff female, pale skin, light green hair with ribbons, wearing a kawaii fashion outfit with lace, secretly calculating eyes behind a sweet smile, pastel neon lighting"
+      "adult japanese woman aged 29 with a youthful idol-like appearance, long straight black hair and blunt bangs, green eyes, small black devil horns and bat-wing hair accessories, wearing a black and neon-green off-shoulder concept cafe dress with a large green ribbon and heart choker, winking playfully",
+      "same adult concept cafe owner, long straight black hair and green eyes, devil horns, bat-wing accessories and a devil tail, black and neon-green off-shoulder dress, playful smile showing a small fang, secretly calculating eyes behind the cheerful idol persona"
     ],
     "private_visual_concepts": [
-      "quiet beautiful japanese woman in her late 20s, hair down in natural dark brown (no mint green dye visible), wearing a beige cable knit sweater and long skirt, minimal makeup, shoulder bag, subdued and elegant, sitting alone at a counter reading a menu, ephemeral beauty",
-      "same woman but walking through a shopping district, calm and reserved demeanor, completely different aura from a flashy concept cafe hostess, natural beauty without any costume or persona"
+      "quiet beautiful japanese woman aged 29, the same long straight black hair and green eyes as her concept cafe appearance, wearing a beige cable knit cardigan and a dark long skirt, minimal makeup, simple shoulder bag, subdued and elegant, sitting alone at a counter reading a menu",
+      "same black-haired green-eyed woman walking through a shopping district in her beige knit cardigan and dark long skirt, calm and reserved demeanor, quietly adult smile, natural beauty without devil horns or bat-wing accessories"
     ],
-    "private_notes": "プライベートの栞は、お店のみんととは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは親しくなってからの来店途中に私服姿を見かけ、本人が「キャストです……はじめくん」と言って同一人物だと気づく。本名は親しくなってから、私的な約束で本人に聞く。",
+    "private_notes": "プライベートの栞は、お店のみんととは別人レベルで雰囲気が異なる。髪は営業姿と同じ黒髪のストレートロングで、瞳も同じ緑。ベージュのケーブルニットのカーディガンに落ち着いた色のロングスカート、薄化粧、シンプルなショルダーバッグ。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは親しくなってからの来店途中に私服姿を見かけ、本人が「キャストです……はじめくん」と言って同一人物だと気づく。本名は親しくなってから、私的な約束で本人に聞く。",
     "appearance_rules": {
-      "shisha_world": "シーシャの世界（大会、応援、店舗など）では常にコンカフェ嬢の姿（ミントグリーンのツインテール、コンカフェ衣装）で登場する。これが業界内で有名な『ぺぱーみんとのみんと』の姿。",
-      "private_date": "仕事を離れた私的な約束（定休日の午後・仕事後の待ち合わせ。恋人になる前の私服デートや告白、恋人のデートも含む）では、私服姿（ダークブラウンの地毛、ベージュのケーブルニット、ロングスカート、薄化粧）で登場する。立ち絵は ura_*。コンカフェの仮面を脱いだ『緑川栞』としての素顔で、口調も素の落ち着いた話し方。営業終了直後の店内はまだ店の装いで、名前も『みんと』のまま。",
+      "shisha_world": "シーシャの世界（大会、応援、店舗など）では常にコンカフェ嬢の姿（黒髪のストレートロング、緑の瞳、悪魔のツノ・しっぽとコウモリの羽のアクセサリー、黒×ネオングリーンのオフショルダードレス、リボンとハート付きチョーカー）で登場する。これが業界内で有名な『ぺぱーみんとのみんと』の姿。",
+      "private_date": "仕事を離れた私的な約束（定休日の午後・仕事後の待ち合わせ。恋人になる前の私服デートや告白、恋人のデートも含む）では、私服姿（営業姿と同じ黒髪のストレートロングと緑の瞳、ベージュのケーブルニットのカーディガン、落ち着いた色のロングスカート、薄化粧、ショルダーバッグ）で登場する。立ち絵は ura_*。コンカフェの仮面を脱いだ『緑川栞』としての素顔で、口調も素の落ち着いた話し方。営業終了直後の店内はまだ店の装いで、名前も『みんと』のまま。",
       "private_name": "名前欄では、本名を本人から聞いた後（_minto_name_known）の私的な場面だけ『栞』（private_name）と表示する。店・大会・応援など営業の場面は『みんと』。私服の立ち絵を見ただけでは本名を出さず、名乗る前の tonari の私服客は『お姉さん』（speaker oneesan）。",
       "lime": "はじめは初来店時に、チェキ購入の有無にかかわらず案内カードのLIME IDをもらい、『営業LIME』だと疑いつつ、こういう店で連絡先を交換していいのかとドキドキしながら登録する。届くのは店の公式アカウント風の事務的な自動メッセージ（アカウント名は lime_name の『みんと＠ぺぱーみんと』・営業姿のアイコン）。ただし店はみんとひとりなので中の人も彼女だけ＝実質みんとの個人アカウント、と本人が明かす（HF12〜HF14）。本名を知った後も、私的な誘いや素の文面はこのお仕事用から届く。恋人になった夜（confession_minto_accept）に『お店のじゃない方』の私用LIME（アカウント名『栞』・私服のアイコン）を渡され、以後はそちらから届く。お仕事用のトークはそのまま残る（2026-10-04 オーナー指定 HF10・HF11）。",
       "first_visit": "Ch1序盤のチュートリアルでtonariに私服姿の「お姉さん」として来店。PEPPERMINTの初回は店内で初対面。好感度♥2以上・固有会話2回以上の後の来店途中に、私服のお姉さんとの会話で正体がつながり、その日は店でも照れた接客になる。"

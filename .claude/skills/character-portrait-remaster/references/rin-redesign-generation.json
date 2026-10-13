@@ -149,9 +149,9 @@
     "tsumugi-v1",
     "tsumugi-yami-v2",
     "tsumugi-game-v1",
-    "kafuka-v2",
-    "kafuka-game-v2",
-    "kafuka-excited-v3",
+    "samechan-v2",
+    "samechan-game-v2",
+    "samechan-excited-v3",
     "rin-redesign-v6"
   ],
   "review": "過去10セット32画像と代表の原寸、本人の既存5表情、最新v6と参考写真を再確認。v6から少し年上に見える輪郭・少し細めた半目・写真1のクールな微笑みへ修正。髪色・長さ・体格・紙のない胸元を保持。2026-10-04の指示で通常v7を採用し、同じ人物で5表情へ展開・組み込み。",
@@ -167,7 +167,7 @@
       1200
     ],
     "rgbaPixelExact": true,
-    "record": "rin-kafuka-final-integration.json"
+    "record": "rin-samechan-final-integration.json"
   },
   "supersededDrafts": [
     {
@@ -519,9 +519,9 @@
         "tsumugi-v1",
         "tsumugi-yami-v2",
         "tsumugi-game-v1",
-        "kafuka-v2",
-        "kafuka-game-v2",
-        "kafuka-excited-v2",
+        "samechan-v2",
+        "samechan-game-v2",
+        "samechan-excited-v2",
         "rin-redesign-v5"
       ],
       "review": "過去の全制作セットと代表の原寸を再確認。本人の旧案・写真3・初期採用済みみんととあげはを実画像で添付。試香紙除去、少し青みがある暗い髪、写真寄りの大きな瞳と半目、短めのロングと女性らしい体格を最新v6へ反映。原寸／2倍と明暗背景の比較は最新ページを参照。",
@@ -662,5 +662,5 @@
     "sourceAlpha24EdgePixelCount": 0,
     "gameFilesChanged": false
   },
-  "verificationRecord": "rin-kafuka-final-integration.json"
+  "verificationRecord": "rin-samechan-final-integration.json"
 }

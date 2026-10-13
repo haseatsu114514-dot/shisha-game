@@ -109,8 +109,8 @@ PR #265を最新mainと統合し、追加要望を反映。
 
 - [スミさん・共同責任](sumi.png) / [世界の終わり](sumi-disaster.png) / [反対多数](sumi-meeting.png)
 - [つむぎ](tsumugi.png) / [栞](minto.png) / [凛](rin.png)
-- [アゲハ](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](kafuka.png)
-- [可決スタンプと再挑戦の一言](meeting-retry.png) / [サメちゃんの再出航](kafuka-retry.png)
+- [アゲハ](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](samechan.png)
+- [可決スタンプと再挑戦の一言](meeting-retry.png) / [サメちゃんの再出航](samechan-retry.png)
 - [スマホ横持ち・つむぎ最終キュー・動き軽減](phone-tsumugi.png)
 - [時間切れのGAME OVERと00](game-over.png)
 

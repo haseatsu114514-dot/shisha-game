@@ -156,7 +156,7 @@ await suite("full-day-rest", async check => {
       const legacy = await page.evaluate(() => {
         const s = R.fresh(14, 2, 10); s.schema = 11; delete s.restDay; delete s.deferredNightEvents;
         R.core.save(); R.core.load();
-        const plain = { schema: R.core.state.schema, rest: R.core.state.restDay, queue: R.core.state.deferredNightEvents };
+        const plain = { schema: R.core.state.schema, currentSchema: R.core.SCHEMA, rest: R.core.state.restDay, queue: R.core.state.deferredNightEvents };
         Object.assign(R.core.state, { phase: "aftermath", money: 52000 });
         for (const key of ["_ev_salaryman", "_ev_day5", "_ev_salaryman_change"]) delete R.core.state.flags[key];
         R.core.state.deferredNightEvents = [2, 5, 10].map(day => ({ id: R.ch1.NIGHT_EVENTS[day].id, chapter: 1,
@@ -168,7 +168,7 @@ await suite("full-day-rest", async check => {
         R.ch1.resumeGame().catch(e => R.failure = e.stack);
         return plain;
       });
-      assert.equal(legacy.schema, 12); assert.equal(legacy.rest, null); assert.deepEqual(legacy.queue, []);
+      assert.equal(legacy.schema, legacy.currentSchema); assert.equal(legacy.rest, null); assert.deepEqual(legacy.queue, []);
       await page.locator('[data-test="end-title"]').waitFor();
       const result = await page.evaluate(() => ({ failure: R.failure, phase: R.core.state.phase, money: R.core.state.money,
         queueCount: R.queueCount, queue: R.core.state.deferredNightEvents,

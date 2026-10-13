@@ -8,7 +8,7 @@ import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
-import { kafukaSpot } from "./kafuka.js";
+import { samechanSpot } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
@@ -87,7 +87,7 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
-export const allSpots = () => { const extra = kafukaSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
+export const allSpots = () => { const extra = samechanSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
@@ -123,7 +123,7 @@ export function hasNewEvent(spot) {
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
   if (spot.kind === "shop") return state.day % 7 !== RIN_AWAY_DAY && state.visitedDay.rin !== state.day && hasNewStory("rin");
-  if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
+  if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;
   return spot.id === "choizap" ? !state.flags._gym_member : !(state.spotVisits?.[spot.id] > 0);

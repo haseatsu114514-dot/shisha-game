@@ -42,9 +42,9 @@
     "tsumugi-v1",
     "tsumugi-yami-v2",
     "tsumugi-game-v1",
-    "kafuka-v2",
-    "kafuka-game-v2",
-    "kafuka-excited-v3",
+    "samechan-v2",
+    "samechan-game-v2",
+    "samechan-excited-v3",
     "rin-redesign-v7"
   ],
   "expressions": [
@@ -129,9 +129,9 @@
       "referencesRecord": "referencesForNewVariants"
     }
   ],
-  "integrationRecord": "rin-kafuka-final-integration.json",
+  "integrationRecord": "rin-samechan-final-integration.json",
   "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
   "generationPolicy": "各差分を1枚ずつ画像生成で制作。原画を保持し、顔の貼り替え・描画加工を行わない。全5枚へ同一倍率と足元基準を適用。",
-  "verificationRecord": "rin-kafuka-final-integration.json",
+  "verificationRecord": "rin-samechan-final-integration.json",
   "gameIntegration": "integrated: five 896x1200 RGBA PNGs and pixel-exact lossless WebPs"
 }

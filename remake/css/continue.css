@@ -16,7 +16,7 @@
 .gameover[data-speaker="rin"] { --go-accent: #a9d7fd; --go-glow: #66b9ed25; }
 .gameover[data-speaker="ageha"] { --go-accent: #ff89b0; --go-glow: #f56f9425; }
 .gameover[data-speaker="mashiro"] { --go-accent: #c5bbf7; --go-glow: #a798e625; }
-.gameover[data-speaker="kafuka"] { --go-accent: #7ee0ec; --go-glow: #4eabda30; }
+.gameover[data-speaker="samechan"] { --go-accent: #7ee0ec; --go-glow: #4eabda30; }
 .gameover .go-veil {
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse at 50% 37%, var(--go-glow), transparent 55%);

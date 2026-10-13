@@ -8,7 +8,7 @@
     "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
   ],
   "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
-  "prompt_sha256": "562563ec1e621746264907fc7015a553c395b91e2e31599275a3a84beb63c656",
+  "prompt_sha256": "887cd56251d9e041f1409ce61172f8ae5af535f272a0220d8543d9c27a747585",
   "reference_sha256": {
     "minto/01-cafe-welcome-first.png": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
     "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069"
@@ -20,5 +20,11 @@
   "mode": "RGB",
   "tool": "image_gen.imagegen",
   "transparent_background": false,
-  "runtime_installed": false
+  "runtime_installed": false,
+  "original_prompt_sha256": "562563ec1e621746264907fc7015a553c395b91e2e31599275a3a84beb63c656",
+  "prompt_revision": {
+    "date": "2026-10-12",
+    "issue": 485,
+    "note": "Brief identity wording corrected for reuse to the current black straight long hair. The source image has not been regenerated; original_prompt_sha256 retains its generation prompt hash."
+  }
 }

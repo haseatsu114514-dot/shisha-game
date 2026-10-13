@@ -41,7 +41,7 @@ function pinSymbol(s) {
 function pinCaption(s, locked) {
   if (locked) return "？？？";
   if (!knowsOwner(s) && s.unknownLabel) return s.unknownLabel;
-  return ["tonari", "rival", "shop", "kafuka"].includes(s.kind) ? `${s.label}へ行く` : s.label;
+  return ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${s.label}へ行く` : s.label;
 }
 
 let interrupt = null;

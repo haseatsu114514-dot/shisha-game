@@ -159,7 +159,7 @@ export function startBubbling({ strength = 1 } = {}) {
 const BLIP = {
   sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
   pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
-  mashiro: 880, kafuka: 1250,
+  mashiro: 880, samechan: 1250,
 };
 
 export const SE = {

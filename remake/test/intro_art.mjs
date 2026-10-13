@@ -28,7 +28,7 @@ try {
     function assertArt() {
       if (Object.keys(DB.manifest.introArt).length !== 15) throw new Error("登場背景が15種ではない");
     }
-    return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "kafuka"].map((id) => [id, DB.manifest.portraits[id].faces]));
+    return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });
 
   // DAY4の実台本を高速送りしても初登場は消えず、名前も職業もまだ開示しない。
