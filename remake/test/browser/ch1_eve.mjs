@@ -262,6 +262,7 @@ await suite("ch1-eve", async check => {
       E.vn.vnTest.choose = () => 0; E.run();
     });
     await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click(); await finish(page);
     const result = await snapshot(page);
     assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.blueberry, 51);
