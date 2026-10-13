@@ -152,7 +152,8 @@ try {
           await click('[data-test="shop-leave"]');
         } else if (snap.screen === 'preparation') await click('[data-test="prep-flavor-blueberry"]');
         else if (snap.screen === 'tonari') {
-          if (!await click('[data-test="tonari-hiyori-axe"]') && !await click('[data-test="tonari-customer"]')) {
+          // DAY3's optional review can now open the same tonari drill menu.
+          if (!await click('[data-test="drill-heat"]') && !await click('[data-test="tonari-hiyori-axe"]') && !await click('[data-test="tonari-customer"]')) {
             if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
           }
         } else if (snap.map) {
