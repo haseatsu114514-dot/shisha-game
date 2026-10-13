@@ -7,7 +7,8 @@ import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
-import { flavorColor } from "./art.js";
+import { flavorColor, mixBowlPreview } from "./art.js";
+import { mixTaste } from "./mix-taste.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
@@ -122,13 +123,15 @@ export async function stepMix(cs) {
   const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
   const lcd = el("div.lcd");
-  const layers = el("div.bowl-layers");
+  const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
+  const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
   const thermometer = buildThermometer({ cs, bandPreview: true, height: 200, width: 36 });
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
-  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
-    el("b", { text: "この配合の温度帯" }),
+  const temperaturePreview = el("details.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
+    el("summary", { text: "温度の目安を見る" }),
+    thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "この配合で詰める" })]);
@@ -138,8 +141,11 @@ export async function stepMix(cs) {
     const total = totalOf();
     lcd.textContent = `${total.toFixed(1)} g / ${cap} g`;
     lcd.classList.toggle("ok", total >= 12 && total <= cap);
-    layers.replaceChildren(...Object.entries(cs.mix).filter(([, g]) => g > 0).map(([id, g]) =>
-      el("i", { style: { height: `${(g / cap) * 100}%`, background: flavorColor(id) } })));
+    vessel.replaceChildren(mixBowlPreview(cs, total));
+    vessel.dataset.filled = String(total > 0);
+    const aroma = mixTaste(cs.mix);
+    taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }),
+      el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
     idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
@@ -185,14 +191,10 @@ export async function stepMix(cs) {
     : null;
 
   panel.append(el("div.mix", [
-    el("div.mix-list", rows.map((r) => r.row)),
-    el("div.mix-side", [
-      el("div.mix-overview", [el("div.mix-bowl", [layers]), thermometer.root]),
-      temperaturePreview,
-      lcd, regLine, recipeLine,
-      hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.memo}` }) : null,
-      okBtn,
-    ]),
+    el("div.mix-side", [vessel, taste, recipeLine,
+      hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.memo}` }) : null]),
+    el("div.mix-list", [el("p.mix-list-caption", { text: "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
+    el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, okBtn]),
   ]));
   redraw();
   await new Promise((resolve) => {
@@ -225,6 +227,7 @@ export async function stepMix(cs) {
 export async function stepPack(cs) {
   await waitBenchReady(cs);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
+  panel.append(el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }));
   cs.pack = await choose(panel, [
     { value: "fluffy", label: "ふんわり", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
     { value: "normal", label: "ノーマル", desc: "熱が素直に入り、崩れにくい基本の詰め方", auto: true },

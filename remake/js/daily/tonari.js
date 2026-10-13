@@ -233,14 +233,14 @@ async function afterShift() {
   }
 }
 
-export function chooseDrill() {
+export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null } = {}) {
   return new Promise((resolve) => {
     const root = showScreen("tonari", el("div.sub-menu", [
-      el("h2.sub-title", { text: "自主練" }),
-      el("p.sub-lead", { text: "苦手な工程を反復しよう。能力値は増えません。" }),
+      el("h2.sub-title", { text: title }),
+      el("p.sub-lead", { text: lead }),
       el("div.sub-choices.grid", Object.entries(DRILLS).map(([id, d]) =>
         el("button.big-choice", { dataset: { test: `drill-${id}` }, onclick: () => { SE.select(); retire(root); resolve(id); } }, [
-          el("b", { text: d.label }),
+          el("b", { text: `${d.label}${id === recommended ? "（おすすめ）" : ""}` }),
           el("small", { text: `${d.desc}（自己ベスト ${"★".repeat(Math.max(0, state.best[id] ?? 0)) || "なし"}）` }),
         ])
       )),

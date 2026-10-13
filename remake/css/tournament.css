@@ -94,3 +94,5 @@
   .rc-ring-progress { transition: none; }
   .nico { animation: none; left: 25%; transform: none; font-size: 19px; opacity: .6; }
 }
+
+.sd-recognition { margin: 0 0 12px; padding: 8px 16px; color: #dfc595; border-left: 2px solid #bf9c63; background: #bf9c630a; font-size: 16px; line-height: 1.5; }
