@@ -43,7 +43,10 @@ export const availableHiyoriEvents = () => (hiyoriRoute().events || []).filter((
 export function hiyoriFinaleReady() {
   const { finale, question } = hiyoriRoute();
   return !!hiyoriRoute().enabled && hiyoriStoriesDone() && state.chapter <= 3 && !!state.met.hiyori
-    && !!DB.dialogues[question?.dialogue]?.lines?.length && !!state.romanceChoices[question?.choice]
+    && !!DB.dialogues[question?.dialogue]?.lines?.length && !DB.dialogues[question?.dialogue]?.metadata?.preview_only
+    && state.romanceChoices[question?.choice]?.char === "hiyori"
+    && Number.isFinite(state.romanceChoices[question?.choice]?.value) && state.romanceChoices[question.choice].value >= 0
+    && !!state.flags[question?.flag]
     && !!finale?.gift && !!DB.equipById[finale.gift] && !!DB.dialogues[finale.dialogue]?.lines?.length
     && !DB.dialogues[finale.dialogue].metadata?.preview_only;
 }
