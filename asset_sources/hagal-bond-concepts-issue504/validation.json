@@ -8,7 +8,46 @@
   "runtime_files_modified": false,
   "game_runtime_tests": "not run; concept archive only",
   "visual_qa": "See REVIEW.md; production issues explicitly pending",
-  "browser_preview": [],
+  "browser_preview": [
+    {
+      "viewport": 1280,
+      "images": 4,
+      "loaded": true,
+      "horizontalOverflow": false,
+      "revisionPaths": true,
+      "selections": [
+        "採用：スミさん：A「閉店後の一服」／なる：B「対等のしるし」",
+        "採用：アダム：B「双香の誓い」／凛：A「夜の私物」",
+        "採用：つむぎ：B「今日の色」／みんと：B「栞のひと息」",
+        "採用：サメちゃん：B「コロちゃんの指定席」／ひより：B「素顔でひと休み」"
+      ],
+      "headings": [
+        "スミさん・なる",
+        "アダム・凛",
+        "つむぎ・みんと",
+        "サメちゃん・ひより"
+      ]
+    },
+    {
+      "viewport": 390,
+      "images": 4,
+      "loaded": true,
+      "horizontalOverflow": false,
+      "revisionPaths": true,
+      "selections": [
+        "採用：スミさん：A「閉店後の一服」／なる：B「対等のしるし」",
+        "採用：アダム：B「双香の誓い」／凛：A「夜の私物」",
+        "採用：つむぎ：B「今日の色」／みんと：B「栞のひと息」",
+        "採用：サメちゃん：B「コロちゃんの指定席」／ひより：B「素顔でひと休み」"
+      ],
+      "headings": [
+        "スミさん・なる",
+        "アダム・凛",
+        "つむぎ・みんと",
+        "サメちゃん・ひより"
+      ]
+    }
+  ],
   "pdf": {
     "pages": 4,
     "bytes": 11636254,
