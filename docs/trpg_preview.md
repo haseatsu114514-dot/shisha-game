@@ -1,6 +1,6 @@
 # 小さな卓の冒険・10分TRPG集
 
-Issue #484 / PR #487。最後まで遊べる短編2本を、本棚から選ぶ独立ミニゲーム。
+Issue #484 / PR #487。最後まで遊べる短編2本を、本棚から選ぶミニゲーム。
 公開プレビュー: https://shisha-trpg-ordinary-484.briskdill17.chatgpt.site （所有者限定）。
 
 ## 遊ぶ
@@ -9,7 +9,12 @@ Issue #484 / PR #487。最後まで遊べる短編2本を、本棚から選ぶ�
 python3 remake/tools/serve_preview.py --port 8123
 ```
 
-`http://127.0.0.1:8123/remake/trpg-preview.html` を開く。
+本編 `http://127.0.0.1:8123/remake/` のタイトルから **PLAY ROOM / 遊び場** を開く。
+セーブなしでも2本を選べる無料プレイ。読了・中断後は本棚、そこからタイトルへ戻る。
+現在の日常の時間・費用・体力・報酬・絆・読了記録は変えない。途中の内容は保存しない。
+タイトルBGMは卓を開く時に止め、タイトルへ戻る時に再開する。卓の音は初期OFF。
+
+独立プレビューは `http://127.0.0.1:8123/remake/trpg-preview.html` を開く。
 PCはクリックとキーボード、タッチ端末は横持ち。会話はEnter/Space、ボタンはTab/Enter。
 
 本棚で2本を選択。表紙から戻る、途中中断、同じ物語の再挑戦に対応。
@@ -56,6 +61,9 @@ GMはサメちゃん、PLははじめ・なる・つむぎ。作中の架空の�
 - `remake/js/trpg/index.js`: 本編接続用の呼び出し窓。
 - `remake/js/trpg/preview.js` / `remake/trpg-preview.html`: 独立起動と画面縮尺。
 - `remake/js/trpg/library.js`: 2本の選択。本編人物のID・表示名は共有の正本を参照。
+- `remake/js/trpg/collection.js`: 本編・独立版で共通の本棚、読み込み再試行、中断と再挑戦の管理。
+- `remake/js/scenes/trpg-room.js`: タイトルからの無料プレイ。画面撤去・ページ離脱で卓と音を破棄する。
+  履歴キャッシュからの復帰ではタイトルへ戻す。
 - `remake/js/trpg/presentation.js`: 正本人物とmanifestから表示名・立ち絵位置を導出。
 - `remake/js/trpg/audio.js`: 外部音源を使わない独自WebAudioの雨・波・卓の効果音。
 - `assets/backgrounds/trpg_*_room.png`: 生成背景2枚の原画。画面では同寸法のWebPを使用。
@@ -88,6 +96,10 @@ if (!result.cancelled) {
 中断は `{ cancelled: true, scenarioId }`。単体の処理から本編の状態モジュールを読み込まない。
 `mountTrpg()` には `finished`、読み取り用の `snapshot()`、`destroy()` がある。
 
+2本の本棚ごと組み込む場合は `mountTrpgCollection(host, { signal, closable: true, closeLabel })`
+を `trpg/collection.js` から呼ぶ。`ready` は初回読み込み後、`finished` は閉じた後に解決する。
+失敗時は画面内で再試行でき、読み込み中も閉じられる。`snapshot()` と `audioSnapshot()` は読み取り専用。
+
 QA用: `?scenario=ordinary-cup&seed=9&traveler=quiet`、`traveler=home`、`traveler=company`。
 サメ編は `?scenario=shark-last-order&seed=9&traveler=scent`、`traveler=vibration`、`traveler=light`。
 通常起動では事情と出目をseedから選ぶ。条件をURLで固定でき、再現に使える。
@@ -99,6 +111,7 @@ QA用: `?scenario=ordinary-cup&seed=9&traveler=quiet`、`traveler=home`、`trave
 node --test remake/test/trpg.mjs
 python3 tools/lint_dialogue.py trpg_
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg.mjs
+CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/trpg_main.mjs
 ```
 
 ブラウザの既定URLは8123。`BASE_URL`・`ARTIFACT_DIR`で変更できる。
@@ -109,6 +122,15 @@ PlaywrightとChromiumが必要。CIは `.github/workflows/trpg-preview.yml`。
 ブラウザ16ケースはPC/横持ちタッチ、2本の往復、8結末、会話/調査/相談/メモ、仮説、
 振り直し、中断/再挑戦、縦持ち案内、音ON/OFF、ロード失敗からの再試行、背景再読込、
 API中断、画面内収まり、Storageアクセスゼロと既存保存の不変を確認。
+
+本編接続7ケースはPC／実タッチ入力の両作読了、再挑戦・別作品への移動・タイトルへ戻る・フォーカスと絵の維持、
+通信応答破損からの再試行と帰還、読み込み中断、判定中の画面撤去と音の破棄、事前Abort、
+履歴復帰イベントを確認。既存のオート／手動2枠・設定・無関係なStorage・本編stateの参照と全内容を保持する。
+履歴の検証はPageTransitionEventで行い、物理端末の履歴キャッシュ保証ではない。
+
+`ch1_facility_art.mjs` の雨描写4ケースは、改稿前の「緊張」という文字列ではなく、
+正本から選んだ台詞の全文と会話レイヤーの表示を待つ。背景・窓限定の雨・描画サイズの既存検査は維持する。
+本編素材のPC／タッチ全24ケースとGitHubのfacility-artがPASS。
 
 ## 静的配信を切り出す
 
@@ -121,5 +143,5 @@ python3 -m http.server 8124 --directory /tmp/trpg-static
 `SOURCE.json` に元リポジトリ・コミット・PR・ファイルハッシュを記録する。ソースはGitHubが正本。
 Sitesで配信する場合も、この出力は配信スナップショットだけとし、実装を分岐させない。
 
-物理端末/Safari、実際の10分所要時間、本編イベントからの接続・採用判断は未確認。
-本編イベントからの呼び出し・解放条件・行動消費・報酬・本編記録は、採用後の接続範囲。
+物理端末/Safari、実際の10分所要時間は未確認。
+日常のイベントとしての解放条件・行動消費・報酬・本編の読了記録は、今回のタイトルの無料プレイとは別の接続範囲。

@@ -1,5 +1,6 @@
 /* A paper scenario on a small table. Scoped to the preview / mounted minigame. */
 #trpg-app { position: absolute; inset: 0; }
+.trpg-screen { position: absolute; inset: 0; background: #171c1e; }
 .trpg-root { position: absolute; inset: 0; --paper: #e8dfc7; --muted: #a6aaa2; --line: #bca577; --room: #374749; color: #eae4d4; background: #171c1e; overflow: hidden; font-family: var(--font); }
 .trpg-root button { cursor: pointer; }
 .trpg-root [hidden] { display: none !important; }

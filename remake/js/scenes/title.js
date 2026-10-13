@@ -8,6 +8,7 @@ import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
+import { openTrpgRoom } from "./trpg-room.js";
 
 export function showTitle(preparedArt = null) {
   setBg(bgUrl("bg_title"), { instant: true });
@@ -36,6 +37,10 @@ export function showTitle(preparedArt = null) {
       if (!key || !loadFromSlot(key)) return;
       smokeWipe(() => { resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
+    item("PLAY ROOM", "遊び場", () => openTrpgRoom(() => {
+      showTitle(art);
+      document.querySelector('[data-test="title-trpg"]')?.focus({ preventScroll: true });
+    }), "title-trpg"),
     item("GALLERY", "ギャラリー", openGallery, "title-gallery"),
     item("CONFIG", "設定", openConfig, "title-config"),
   );

@@ -11,8 +11,12 @@ on:
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
+      - 'remake/index.html'
+      - 'remake/js/scenes/title.js'
+      - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_main.mjs'
       - '.github/workflows/trpg-preview.yml'
   push:
     branches: [main]
@@ -26,8 +30,12 @@ on:
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
+      - 'remake/index.html'
+      - 'remake/js/scenes/title.js'
+      - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_main.mjs'
       - '.github/workflows/trpg-preview.yml'
   workflow_dispatch:
 permissions:
@@ -46,6 +54,8 @@ jobs:
             remake
             data
             tools
+            assets/audio
+            assets/ui
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: '22'
@@ -73,7 +83,9 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/trpg
-        run: node remake/test/browser/trpg.mjs
+        run: |
+          node remake/test/browser/trpg.mjs
+          node remake/test/browser/trpg_main.mjs
       - name: Upload screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2

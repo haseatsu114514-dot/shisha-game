@@ -1,7 +1,7 @@
 import { el } from "../core/util.js";
 import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 
-export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio, onChoose }) {
+export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio, onChoose, onClose = null, closeLabel = "閉じる" }) {
   const root = el("section.trpg-root.trpg-library", { tabindex: "-1", dataset: { phase: "library" } });
   let disposed = false;
   const sound = el("button.trpg-button.small", { type: "button", dataset: { test: "trpg-audio" },
@@ -11,7 +11,9 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
   root.append(el("header.trpg-library-header", [
     el("div", [el("span.trpg-kicker", { text: "水煙前線 -EN:CODE- / TABLETOP COLLECTION" }),
       el("h1", { text: "ひと息、物語の中へ。" })]),
-    el("div.trpg-library-meta", [el("span", { text: "02 STORIES" }), sound]),
+    el("div.trpg-library-meta", [el("span", { text: "02 STORIES" }), sound,
+      ...(onClose ? [el("button.trpg-button.small", { type: "button", text: closeLabel,
+        dataset: { test: "trpg-collection-close" }, onclick: () => { if (!disposed) onClose(); } })] : [])]),
   ]), el("p.trpg-library-intro", { text: "いつもの仲間と、小さな卓を囲む。今夜は、どの物語にする？" }));
   const books = el("div.trpg-library-books");
   for (const s of scenarios) {
