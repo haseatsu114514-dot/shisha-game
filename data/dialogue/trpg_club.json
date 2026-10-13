@@ -1,7 +1,7 @@
 {
   "dialogue_id": "trpg_club",
   "metadata": {
-    "description": "遊べるシーシャバーの部活設立と対面勧誘"
+    "description": "ボドゲカフェの部活設立と対面勧誘"
   },
   "lines": [
     {
@@ -21,7 +21,7 @@
     "invite": [
       {
         "speaker": "hajime",
-        "text": "遊べるシーシャバーでTRPGの部活を作ったんだ。一緒にどう？"
+        "text": "ボドゲカフェでTRPGの部活を作ったんだ。一緒にどう？"
       }
     ],
     "hiyori": [

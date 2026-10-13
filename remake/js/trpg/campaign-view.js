@@ -30,7 +30,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const name = id => displayName(characters, id);
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
     root.append(el("header.trpg-campaign-header", [
-      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "遊べるシーシャバー / TABLETOP NIGHT" }),
+      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP NIGHT" }),
         el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${state.day} · ${yen(state.money)}` : "まだ本棚は空です" }),
         button(closeLabel, "trpg-campaign-close", close)]),

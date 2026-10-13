@@ -30,6 +30,7 @@ import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationD
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
+import { visitAxeBar } from "./axe-bar.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -363,6 +364,10 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  if (spot.kind === "axe") {
+    const completed = await visitAxeBar({ staminaGuard });
+    return { used: completed, exerted: completed };
+  }
   if (spot.kind === "trpg") {
     const result = await openTrpgBar({ nightBusy: () => fixedNight(state.day) });
     return { used: result.completed, exerted: false, slotsUsed: 0 };

@@ -14,6 +14,7 @@ import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
+import { AXE_BAR } from "./axe-bar.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
@@ -53,6 +54,7 @@ export const VISIT_BG = {
  * closedOn: day % 7 がこの値の日は定休日
  */
 export const SPOTS = [
+  AXE_BAR,
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
