@@ -1,0 +1,107 @@
+name: Chapter 2 first day and city preview
+
+on:
+  pull_request:
+    paths:
+      - 'remake/chapter2-preview.html'
+      - 'remake/js/chapters/ch2*.js'
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/index.html'
+      - 'remake/css/ch2-preview.css'
+      - 'data/dialogue/ch2_city.json'
+      - 'data/dialogue/remake_ch2.json'
+      - 'data/dialogue/ch2_preparation.json'
+      - 'data/dialogue/ch2_isolation.json'
+      - 'data/dialogue/ch2_main.json'
+      - 'data/lime_messages.json'
+      - 'data/characters.json'
+      - 'remake/data/manifest.json'
+      - 'assets/backgrounds/bg_widehanga_map_*.webp'
+      - 'assets/backgrounds/bg_widehanga_station_day.webp'
+      - 'assets/backgrounds/bg_ch2_*_entry.webp'
+      - 'assets/sprites/characters/kumicho/**'
+      - 'assets/sprites/characters/rei/**'
+      - 'assets/sprites/characters/volk/**'
+      - 'remake/img/sprites/characters/kumicho/**'
+      - 'remake/img/sprites/characters/rei/**'
+      - 'remake/img/sprites/characters/volk/**'
+      - 'remake/js/vn/**'
+      - 'remake/js/core/data.js'
+      - 'remake/js/core/store-logos.js'
+      - 'assets/ui/store_logos/**'
+      - 'remake/js/core/state.js'
+      - 'remake/js/core/chapter-clock.js'
+      - 'remake/js/scenes/saves.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/hud.js'
+      - 'remake/js/daily/phone.js'
+      - 'remake/js/daily/romance.js'
+      - 'remake/js/daily/date-scene.js'
+      - 'remake/js/daily/night-events.js'
+      - 'remake/test/browser/ch2_*.mjs'
+      - 'remake/test/ch2_progress.mjs'
+      - '.github/workflows/ch2-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ch2-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story]
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/backgrounds
+            assets/sprites
+            assets/ui
+            assets/fonts
+            assets/audio
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ch2-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/chapter2-preview.html; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ch2-preview.log"
+          exit 1
+      - name: Verify city, shop interiors, portraits, touch, recovery and save isolation
+        env:
+          TEST_REF: ${{ github.sha }}
+        run: |
+          node remake/test/ch2_progress.mjs
+          node --experimental-vm-modules remake/test/lime_consistency.mjs
+          node remake/test/browser/${{ matrix.suite }}.mjs
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ${{ matrix.suite }}-results
+          path: |
+            .codex/artifacts/remake-browser/ch2-*
+            ${{ runner.temp }}/ch2-preview.log
+          retention-days: 7

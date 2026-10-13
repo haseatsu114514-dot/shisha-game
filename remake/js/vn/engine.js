@@ -431,6 +431,8 @@ function handleCondition(line) {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
+  } else if (kind === "met") {
+    ok = !!state.met[line.char_id];
   } else if (kind === "customer_note") {
     ok = (state.notes[line.note_id] || 0) >= Number(line.threshold || 1);
   } else if (kind === "affinity") {

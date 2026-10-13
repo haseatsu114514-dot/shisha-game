@@ -1,6 +1,7 @@
 // 日付固定の予定と、休養で見送った夜の予定を分ける。台本・報酬は章側が実行する。
 import { state, save } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
 
 export const restingToday = () => state.restDay?.chapter === state.chapter
   && state.restDay.day === state.day && state.restDay.fullDay;
@@ -52,7 +53,7 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   const urgent = pending.filter(({ ev }) => ev.schedule === "preparation" && ev.deadline <= state.day);
   // 旧セーブで複数の期限が過ぎていた場合も、先行準備の実読了後に後続を実行する。
   if (urgent.length) return urgent.map(({ ev }) => ev);
-  if (state.day >= TOURNAMENT_DAY) return [];
+  if (chapterDay(state) >= TOURNAMENT_DAY) return [];
   const fixed = events[state.day];
   if (fixed && !postponeable(fixed)) return fixed.done?.() ? [] : [fixed];
   // 会話後〜翌朝の保存から再開しても、同じ夜の通常予定をもう1件実行しない。

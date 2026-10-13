@@ -1,0 +1,79 @@
+{
+  "created": "2026-10-13",
+  "issue": 514,
+  "conversion": "magick source.png -resize 768x512 -define webp:lossless=true runtime.webp (whole canvas, no creative editing)",
+  "logos": [
+    {
+      "id": "ageha",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "prompt": "asset_sources/ch2-store-logos/ageha/prompt.txt",
+      "files": [
+        {
+          "path": "asset_sources/ch2-store-logos/ageha/source.png",
+          "width": 1536,
+          "height": 1024,
+          "mode": "RGBA",
+          "sha256": "371e035ff4a1e99c24811f2a6cff9ec4632a690d096e4068ad46c00b8a1cb9ad",
+          "alpha_zero_fraction": 0.345238
+        },
+        {
+          "path": "assets/ui/store_logos/melty-puff.webp",
+          "width": 768,
+          "height": 512,
+          "mode": "RGBA",
+          "sha256": "806427ef08599331e421fb1af37651aa3d2cd8d87f5c1cb7a957925ff8c7c688",
+          "alpha_zero_fraction": 0.347761
+        }
+      ]
+    },
+    {
+      "id": "kumicho",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "prompt": "asset_sources/ch2-store-logos/kumicho/prompt.txt",
+      "files": [
+        {
+          "path": "asset_sources/ch2-store-logos/kumicho/source.png",
+          "width": 1536,
+          "height": 1024,
+          "mode": "RGBA",
+          "sha256": "cb25fa560bdc4ed45424ddb7610c681d5a038aa245e283e83abc1874fe20f4e9",
+          "alpha_zero_fraction": 0.638356
+        },
+        {
+          "path": "assets/ui/store_logos/kanzaki.webp",
+          "width": 768,
+          "height": 512,
+          "mode": "RGBA",
+          "sha256": "fb1c99e5687e8f85562ff0d353afc7064778962b080d9b5b0b0cff574f668c4b",
+          "alpha_zero_fraction": 0.641609
+        }
+      ]
+    },
+    {
+      "id": "rei",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "prompt": "asset_sources/ch2-store-logos/rei/prompt.txt",
+      "files": [
+        {
+          "path": "asset_sources/ch2-store-logos/rei/source.png",
+          "width": 1536,
+          "height": 1024,
+          "mode": "RGBA",
+          "sha256": "7b27af2016cae9aa574b6bdca247c63799680358f4573e00e7e9f73ceed06556",
+          "alpha_zero_fraction": 0.651461
+        },
+        {
+          "path": "assets/ui/store_logos/zero.webp",
+          "width": 768,
+          "height": 512,
+          "mode": "RGBA",
+          "sha256": "ece115e93072a030a0fedc2ae253dce141553dc9c0eac90d4b378310572585d7",
+          "alpha_zero_fraction": 0.655462
+        }
+      ]
+    }
+  ]
+}
