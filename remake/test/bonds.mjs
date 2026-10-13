@@ -495,7 +495,15 @@ try {
     const moneyGain = state.money - moneyBefore;
     // 店の画面: 販売一覧に出ない・売却タブは「売却不可」
     const opening = shop.openShop();
-    await new Promise((r) => setTimeout(r, 200));
+    const waitShop = async (selector) => {
+      const until = performance.now() + 10000;
+      while (!document.querySelector(selector) && performance.now() < until) await new Promise(r => setTimeout(r, 20));
+      const node = document.querySelector(selector);
+      if (!node) throw new Error(`Shop did not show ${selector}`);
+      return node;
+    };
+    (await waitShop('[data-test="shop-enter"]')).click();
+    await waitShop('[data-tab="equip"]');
     document.querySelector('[data-tab="equip"]').click();
     const listed = [...document.querySelectorAll(".shop-row b")].map((b) => b.textContent);
     document.querySelector('[data-tab="sell"]').click();
