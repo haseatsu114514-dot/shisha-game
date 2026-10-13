@@ -66,13 +66,12 @@ try {
     await page.locator(".ht-help summary").click();
     await page.evaluate(() => { __remake.craftTest.auto = "good"; });
     await page.locator('[data-test="hole-start"]').focus(); await page.keyboard.press("Space");
-    await page.waitForFunction(() => cs.holes !== null);
+    // 自動操作は結果カードも自動で閉じる。全体の完了を待ってから手動の炭焼きへ戻す。
+    await page.evaluate(() => window.holesRun);
     await page.evaluate(() => { __remake.craftTest.auto = null; });
     const result = await page.evaluate(() => ({ template: cs.holes.templateId, outer: cs.holes.outer,
       middle: cs.holes.middle, inner: cs.holes.inner, score: cs.holes.score }));
     assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0, score: 99 });
-    await page.waitForSelector(".result-card.show");
-    await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.holesRun);
 
     // 取り出す入力だけ仮想時計で固定。炭の判定・演出・DOMは実装そのものを使う。
     await page.evaluate(() => {

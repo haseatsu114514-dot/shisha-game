@@ -134,7 +134,13 @@
       "generated_original": "/workspace/generated_images/exec-152000f8-accf-4777-a63f-ef3c1fd81ee0.png",
       "output": "assets/ui/making/heat_flat_cold.png",
       "adopted": true,
-      "role_change": "Matching cold version of selected flat charcoal."
+      "role_change": "Matching cold version of selected flat charcoal.",
+      "reference_snapshot": {
+        "historical_input": "assets/ui/making/heat_cube_lit.png",
+        "current_preserved_image": "assets/ui/making/heat_flat_lit.png",
+        "sha256": "be5047deac4a2881d35fec67d44d7fa5f5e3e9fdd4689e21a42933ba2ad07ba0",
+        "note": "At generation time this path contained exec-59b978f3, later selected as flat by the owner. Exact historical args are preserved; use the pinned flat image when replaying."
+      }
     },
     {
       "name": "heat_flat_lit.png",
@@ -150,7 +156,13 @@
       "generated_original": "/workspace/generated_images/exec-793d2503-aa6b-41b8-a32c-3ff608eeb415.png",
       "output": "asset_sources/coal-heat-ui-game/iterations/thin-flat/heat_flat_lit.png",
       "adopted": false,
-      "reason": "Owner: flat charcoal too thin."
+      "reason": "Owner: flat charcoal too thin.",
+      "reference_snapshot": {
+        "historical_input": "assets/ui/making/heat_cube_lit.png",
+        "current_preserved_image": "assets/ui/making/heat_flat_lit.png",
+        "sha256": "be5047deac4a2881d35fec67d44d7fa5f5e3e9fdd4689e21a42933ba2ad07ba0",
+        "note": "At generation time this path contained exec-59b978f3, later selected as flat by the owner. Exact historical args are preserved; use the pinned flat image when replaying."
+      }
     },
     {
       "name": "hajime_heat_scene.png",
@@ -302,6 +314,16 @@
       "mode": "RGB",
       "alpha24_bbox": null,
       "bytes": 2093000
+    },
+    "flat_state_alignment": {
+      "alpha24_iou": 0.9911,
+      "same_canvas": true,
+      "method": "Read-only original alpha masks, no resampling or artistic image edits"
+    },
+    "cube_state_alignment": {
+      "alpha24_iou": 0.9945,
+      "same_canvas": true,
+      "method": "Read-only original alpha masks, no resampling or artistic image edits"
     }
   },
   "user_shape_correction": "The original thick charcoal exec-59b978f3 is selected as flat. Generate a NEW visibly taller cuboid with square straight faces and almost90-degree corners as cube. Preserve real ash/ember material."

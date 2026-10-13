@@ -51,6 +51,7 @@ await suite("craft-readiness", async check => {
       assert.deepEqual(blocked, [], "別工程/全員の表情を今の開始条件にした");
       assert(scope.currentCount < scope.beforeCount / 2);
       const initialMs = await page.evaluate(() => preparationMs);
+      const heldAtStart = blocked.length;
       await page.evaluate(() => heatRun);
       const requests = [];
       page.on("request", request => { if (/\.(webp|png)(\?|$)/.test(request.url())) requests.push(request.url()); });
@@ -72,7 +73,8 @@ await suite("craft-readiness", async check => {
       assert.deepEqual(requests, [], "同じ素材を再通信した");
       metrics.push({ case: "scoped-and-cached", beforeCount: scope.beforeCount, currentCount: scope.currentCount,
         preparationMs: Math.round(initialMs), cachedMs: Math.round(await page.evaluate(() => cachedMs)),
-        unrelatedRequests: blocked.length, repeatedRequests: requests.length, cachedLoadingScreens: 0 });
+        unrelatedAtStart: heldAtStart, laterBackgroundRequests: blocked.map(url => new URL(url).pathname),
+        repeatedRequests: requests.length, cachedLoadingScreens: 0 });
     } finally { release(); }
   });
 
