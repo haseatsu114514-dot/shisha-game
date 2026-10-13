@@ -127,9 +127,15 @@ try {
       }
       continue;
     }
+    if (snap.screen === "shop-entry") {
+      if (actions.at(-1)?.action === "rin" && await press('[data-test="shop-upstairs"]')) continue;
+      await press('[data-test="shop-enter"]'); continue;
+    }
     if (snap.screen === "shop") {
-      if (await page.locator(".shop-errand:not(.done)").count()) await press('.shop-row.errand [data-test^="buy-"]');
-      else if (actions.at(-1)?.action === "rin" && await press('[data-test="shop-upstairs"]')) continue;
+      if (await page.locator(".shop-errand:not(.done)").count()) {
+        await press('.shop-row.errand [data-test^="buy-"]');
+        await press('[data-test="shop-checkout"]');
+      }
       await press('[data-test="shop-leave"]'); continue;
     }
     if (snap.screen === "tonari") {

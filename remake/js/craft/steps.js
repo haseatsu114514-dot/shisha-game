@@ -167,7 +167,8 @@ export async function stepMix(cs) {
       if (d > 0 && totalOf() + d > cap) { SE.error(); return; }
       if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の持ち込みは残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
       cs.mix[id] = next;
-      if (d > 0) SE.pour(); else SE.click();
+      // シロップを含む葉を取る操作はほぼ無音。数字を減らすUIだけ短いクリック。
+      if (d < 0) SE.click();
       redraw();
     };
     const row = el("div.flavor-row", { dataset: { flavor: id } }, [

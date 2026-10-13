@@ -729,7 +729,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "お主は、わしと過ごす時間をどう思っておる？"
+          "text": "店が休みの日でも……わしに会いに来てくれるかの？"
         },
         {
           "type": "choice",
@@ -737,12 +737,12 @@
           "romance_char": "samechan",
           "choices": [
             {
-              "text": "店だけじゃなく、あなたに会いたい",
+              "text": "サメちゃんに会いたいから、来ます",
               "next": "romance",
               "romance": 1
             },
             {
-              "text": "気の合う友達として会いたい",
+              "text": "またサメ映画の話、聞かせてください",
               "next": "friend",
               "romance": 0
             }
@@ -782,7 +782,7 @@
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "うむ。友として、これからも頼むのじゃ"
+            "text": "うむ！ 次はとっておきの一本を教えるのじゃ"
           },
           {
             "speaker": "samechan",
