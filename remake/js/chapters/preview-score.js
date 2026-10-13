@@ -1,7 +1,7 @@
 // 第1章の章末〜次回予告専用。外部音源を使わないオリジナルの短いTVサイズ曲。
 import { config } from "../core/state.js";
 
-const LENGTH = 38.8;
+const LENGTH = 47.8;
 const frequency = note => 440 * 2 ** ((note - 69) / 12);
 const volume = value => Number.isFinite(Number(value)) ? Math.max(0, Math.min(1, Number(value))) : 0;
 
@@ -20,7 +20,7 @@ function compose() {
       for (let step = 0; step < 8; step++) {
         const t = at + step * beat / 2;
         if (t >= end - .05) break;
-        const hush = urgent && t >= 22.8 ? .45 : 1;
+        const hush = urgent && t >= 22.6 ? .45 : 1;
         add(t, Math.min(beat * .46, end - t), melody[step], "lead", (urgent ? .84 : 1) * hush);
         add(t, .07, 0, "hat", (step % 2 ? .3 : .45) * hush);
         add(t, beat * .38, chord[0] - 12 + (step % 4 === 3 ? 12 : 0), "bass", .8 * hush);
@@ -29,36 +29,37 @@ function compose() {
       for (const hit of [0, 1.5, 2.75]) {
         const t = at + hit * beat;
         if (t >= end - .05) break;
-        const hush = urgent && t >= 22.8 ? .45 : 1;
+        const hush = urgent && t >= 22.6 ? .45 : 1;
         chord.forEach(note => add(t, Math.min(beat * .7, end - t), note, "chord", (urgent ? .7 : .85) * hush));
       }
       if (bar % 2 === 0) add(at + beat, Math.min(beat * 2, end - at - beat), chord[2] + 12, "bell", .5);
     }
   }
 
-  passage(5.6, 15.2, 60 / 126,
+  passage(5.6, 13.1, 60 / 126,
     [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]],
     [[76, 79, 81, 79, 76, 74, 72, 74], [76, 79, 84, 83, 81, 79, 76, 74],
       [77, 81, 84, 81, 79, 77, 76, 74], [74, 79, 83, 81, 79, 76, 74, 71]]);
-  add(15.2, .55, 0, "crash", .55);
-  passage(15.2, 26.4, 60 / 150,
+  add(13.1, .55, 0, "crash", .55);
+  passage(13.1, 28.1, 60 / 150,
     [[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]],
     [[76, 81, 79, 76, 74, 72, 71, 72], [77, 81, 84, 81, 79, 77, 76, 74],
       [74, 77, 81, 77, 76, 74, 72, 69], [71, 76, 80, 83, 80, 76, 74, 71]], true);
 
   // 問いかけのカットではリズムを止め、タイトルの大きな和音へ溜める。
-  add(26.4, .35, 40, "bass", .75);
-  add(26.5, 2, 76, "bell", .25);
-  add(28.1, 1.4, 47, "air", .3);
-  add(29.6, .7, 0, "crash", .7);
-  [[29.6, [57, 60, 64, 71]], [31.2, [53, 57, 60, 64]], [32.8, [52, 56, 59, 64]]].forEach(([at, chord]) => {
+  add(28.1, .35, 40, "bass", .75);
+  add(28.2, 2, 76, "bell", .25);
+  add(32.6, 3.5, 45, "air", .3);
+  add(36.9, 1.4, 47, "air", .3);
+  add(38.6, .7, 0, "crash", .7);
+  [[38.6, [57, 60, 64, 71]], [40.2, [53, 57, 60, 64]], [41.8, [52, 56, 59, 64]]].forEach(([at, chord]) => {
     chord.forEach(note => add(at, 1.85, note, "title", .9));
     add(at, .65, chord[0] - 12, "bass", 1);
     add(at, .18, 0, "kick", .8);
     [0, .4, .8].forEach((delay, i) => add(at + delay, .36, chord[i + 1] + 12, "lead", .7));
   });
-  // 最後のスミの一言へ。和音を34.8秒までに切り、短いベルの余韻だけにする。
-  add(34.8, 1.1, 83, "bell", .18);
+  // 既存サンプルの最後の問いへ。43.8秒で和音を切り、短いベルの余韻だけにする。
+  add(43.8, 1.1, 83, "bell", .18);
   return notes.sort((a, b) => a.at - b.at);
 }
 

@@ -25,7 +25,7 @@ async function setup(page, { cleared = false, restore = false } = {}) {
       P.core.save();
       localStorage.setItem("suien_remake_slot1", JSON.stringify({ chapter: 1, day: 7, marker: "untouched manual slot" }));
     }
-    P.cuts = [];
+    P.cuts = []; P.visuals = [];
     P.observer = new MutationObserver(() => {
       const root = document.querySelector('[data-test="chapter-preview"]');
       const cut = root?.dataset.cut;
@@ -34,6 +34,16 @@ async function setup(page, { cleared = false, restore = false } = {}) {
         elapsed: Number(root.dataset.elapsed || 0),
         caption: root.querySelector('[data-test="preview-caption"]')?.textContent || "",
       });
+      const art = root?.querySelector(".preview-art");
+      if (art?.complete && art.naturalWidth && !P.visuals.some(v => v.cut === cut)) {
+        const a = art.getBoundingClientRect(), s = root.querySelector('[data-test="preview-screen"]').getBoundingClientRect();
+        const caption = root.querySelector('[data-test="preview-caption"]');
+        P.visuals.push({ cut, file: art.src.split("/").at(-1), width: art.naturalWidth, height: art.naturalHeight,
+          wholeImageFits: a.left >= s.left - 1 && a.top >= s.top - 1 && a.right <= s.right + 1 && a.bottom <= s.bottom + 1,
+          captionFits: !caption || (caption.scrollWidth <= caption.clientWidth + 1 && caption.scrollHeight <= caption.clientHeight + 1),
+          dotFont: !!caption && getComputedStyle(caption).fontFamily.includes("Chapter Preview Dot")
+            && [...document.fonts].some(f => f.family === "Chapter Preview Dot" && f.status === "loaded") });
+      }
     });
     P.observer.observe(document.getElementById("stage"), { subtree: true, attributes: true, childList: true });
     P.launch = ({ abortable = false } = {}) => {
@@ -89,8 +99,17 @@ await suite("ch1-preview", async check => {
     assert.equal(await page.locator(preview).getAttribute("data-phase"), "playing");
     await page.locator(preview).waitFor({ state: "detached", timeout: spec.duration + 15000 });
     await page.locator('[data-test="end-title"]').waitFor();
-    const result = await page.evaluate(() => ({ cuts: P.cuts, state: P.core.state, saved: P.core.peekSave() }));
+    const result = await page.evaluate(() => ({ cuts: P.cuts, visuals: P.visuals, state: P.core.state, saved: P.core.peekSave() }));
     assert.deepEqual(result.cuts.map(cut => cut.id), frameIds, "The preview skipped or reordered a timed cut");
+    const adopted = spec.frames.filter(f => f.art);
+    assert.equal(result.visuals.length, adopted.length);
+    for (const frame of adopted) {
+      const visual = result.visuals.find(v => v.cut === frame.id);
+      assert(visual && visual.file === `${frame.art}.webp` && visual.width === 1664 && visual.height === 936,
+        `An approved sample frame was replaced: ${JSON.stringify(visual)}`);
+      assert(visual.wholeImageFits && visual.captionFits && visual.dotFont,
+        `The sample's composition, text or DotGothic font changed: ${JSON.stringify(visual)}`);
+    }
     assert(result.state.flags._ch1_preview_seen);
     assert(result.saved.flags._ch1_preview_seen);
     assert.deepEqual(withoutPreviewSaveFields(result.state), withoutPreviewSaveFields(before));

@@ -30,7 +30,7 @@ const stage = document.getElementById("stage");
 function fit() { stage.style.setProperty("--k", String(Math.min(innerWidth/1280, innerHeight/720))); }
 fit(); addEventListener("resize", fit); initLayers(); loadConfig();
 const button = el("button.btn.primary", { type:"button", text:"章末と次回予告を再生", dataset:{test:"preview-start"} });
-const note = el("p", { text:"第1章の余韻から、第二章『才能の壁』へ。\n約39秒・音楽と字幕で再生します。" });
+const note = el("p", { text:"第1章の余韻から、第二章『才能の壁』へ。\n約48秒・音楽と字幕で再生します。" });
 const intro = el("div.preview-intro", [el("small",{text:"水煙前線 -EN:CODE-"}),el("h1",{text:"勝ちは、始まりだった。"}),note,button]);
 document.getElementById("screen").append(intro);
 button.addEventListener("click", async () => {

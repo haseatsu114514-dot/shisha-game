@@ -111,7 +111,7 @@ export function playChapterPreview({ signal } = {}) {
       screen.dataset.kind = cut.kind;
       screen.dataset.tone = cut.tone || "";
       const parts = [];
-      if (cut.art) parts.push(el(`img.preview-art.${cut.move || "still"}`, {
+      if (cut.art) parts.push(el(`img.preview-art.motion-${cut.move || "still"}`, {
         src: `${ART}${cut.art}.webp`, alt: "", style: { "--duration": `${cut.duration}ms` },
       }));
       parts.push(el("div.preview-grain", { "aria-hidden": "true" }));
@@ -160,7 +160,15 @@ export function playChapterPreview({ signal } = {}) {
       try {
         const next = await script();
         const arts = [...new Set(next.frames.map(f => f.art).filter(Boolean))];
-        const loaded = await Promise.all(arts.map(name => imageReady(`${ART}${name}.webp`, 15000)));
+        const fontReady = new Promise(resolve => {
+          const timeout = setTimeout(resolve, 4000);
+          document.fonts.load('400 30px "Chapter Preview Dot"', "水煙前線次回予告みんと")
+            .catch(() => {}).finally(() => { clearTimeout(timeout); resolve(); });
+        });
+        const [loaded] = await Promise.all([
+          Promise.all(arts.map(name => imageReady(`${ART}${name}.webp`, 15000))),
+          fontReady,
+        ]);
         if (done || generation !== attempt) return;
         if (loaded.some(ok => !ok)) throw new Error("Preview image unavailable");
         data = next;
