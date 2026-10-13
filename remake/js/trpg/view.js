@@ -1,73 +1,73 @@
 import { el } from "../core/util.js";
 import { TrpgSession } from "./session.js";
+import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { createTrpgAudio } from "./audio.js";
 
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const PHASES = { cover: 0, listen: 1, explore: 2, prepare: 3, serve: 4, ending: 4 };
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
-export function mountTrpg(host, { scenario, characters, manifest, seed, profileId = null, closeLabel = "卓を片付ける" }) {
+export function mountTrpg(host, { scenario, characters, manifest, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null }) {
   const session = new TrpgSession(scenario, { seed, profileId });
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
-  const chars = Object.fromEntries(characters.map(c => [c.id, c]));
+  const gm = scenario.cast.find(c => c.part === "GM").id;
+  const presentation = scenario.presentation;
+  const audio = providedAudio || createTrpgAudio(presentation.theme);
+  audio.setTheme(presentation.theme);
   const scripts = Object.fromEntries(scenario.dialogues.map(d => [d.dialogue_id, d.lines]));
-  const webp = new Set(manifest.webp || []);
-  const root = el("section.trpg-root", { tabindex: "-1", dataset: { phase: "cover" } });
+  const root = el("section.trpg-root", { tabindex: "-1", dataset: { phase: "cover", theme: presentation.theme } });
   const content = el("div.trpg-content");
   const art = el("div.trpg-speaker-art");
   const speaker = el("strong");
   const role = el("span");
-  const speech = el("p");
+  const speech = el("p", { "aria-live": "polite" });
   const next = button("次へ", "trpg-next", advanceDialogue, { class: "trpg-next" });
   const dock = el("div.trpg-dock", [art, el("div.trpg-speech", [
     el("div.trpg-speaker-label", [speaker, role]), speech,
   ]), next]);
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, busy = false, disposed = false;
-  let overlay = null, modalCloser = null, timer = null, settleGuard = false;
+  let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
   let resolveFinished;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("span.trpg-step", { "aria-label": "物語の進行" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
-  const tools = el("div.trpg-tools", [
+  const sound = button(audio.enabled ? "音 ON" : "音 OFF", "trpg-audio", async () => {
+    sound.disabled = true;
+    await audio.setEnabled(!audio.enabled);
+    if (!disposed) { sound.textContent = audio.enabled ? "音 ON" : "音 OFF"; sound.setAttribute("aria-pressed", String(audio.enabled)); sound.disabled = !audio.available; }
+  }, { class: "small", "aria-pressed": String(audio.enabled), disabled: !audio.available });
+  const tools = el("div.trpg-tools", [sound,
     button("メモ", "trpg-notes", openNotes, { class: "small" }),
     button("ログ", "trpg-log", openLog, { class: "small" }),
     button("遊び方", "trpg-help", openHelp, { class: "small" }),
-    button("閉じる", "trpg-exit", exit, { class: "small" }),
+    button("戻る", "trpg-exit", exit, { class: "small" }),
   ]);
   root.append(el("header.trpg-header", [
-    el("div.trpg-heading", [el("small", { text: "小さな卓の冒険 / 44" }),
+    el("div.trpg-heading", [el("small", { text: "小さな卓の冒険 / " + presentation.number }),
       el("strong", { text: scenario.title }), progress]), tools,
   ]), table, content, dock);
   host.replaceChildren(root);
 
   function button(label, test, action, attrs = {}) {
     return el("button.trpg-button", { type: "button", text: label, dataset: { test },
-      onclick: () => { if (!disposed) action(); }, ...attrs });
+      onclick: () => { if (!disposed) { audio.play("tap"); action(); } }, ...attrs });
   }
   function name(id) {
-    const c = chars[id];
-    if (!c) return id;
-    if (c.display_name) return c.display_name;
-    const parenthetical = /（[^）]*\/\s*([^）]+)）/.exec(c.name);
-    const outer = c.name.replace(/（[^）]*）/g, "");
-    return outer.includes(" / ") ? outer.split(" / ")[0].trim()
-      : parenthetical ? parenthetical[1].trim() : outer.replace(/\s+/g, "");
+    return displayName(characters, id);
   }
   function portrait(id, face = "normal") {
-    const p = manifest.portraits[id];
-    const valid = p?.faces.includes(face) ? face : "normal";
-    const rel = "sprites/characters/" + id + "/chr_" + id + "_" + valid + ".png";
-    return webp.has(rel) ? new URL("../../img/" + rel.replace(/\.png$/, ".webp"), import.meta.url).href
-      : new URL("../../../assets/" + rel, import.meta.url).href;
+    return portraitUrl(manifest, id, face);
   }
   function portraitTop(id, width, headY) {
-    const p = manifest.portraits[id];
-    return (headY - (1 - p.h - p.b) * width / p.aspect) + "px";
+    return topFor(manifest, id, width, headY);
   }
   function syncChrome() {
     const state = session.snapshot();
     root.dataset.phase = state.phase;
+    root.dataset.risk = state.pressure >= 5 ? "high" : "calm";
+    root.style.setProperty("--risk-level", state.pressure / session.rules.pressureMax);
     progress.replaceChildren(...[1, 2, 3, 4].map(n => el("i", { class: n <= PHASES[state.phase] ? "done" : "" })),
       el("small", { text: "連携札 " + state.teamwork + "/2", dataset: { test: "trpg-teamwork" } }));
     table.replaceChildren(...scenario.cast.map(c => el("span.trpg-table-person", {
@@ -79,7 +79,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     table.hidden = covering;
     progress.hidden = covering;
   }
-  function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id); }
+  function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
   function talk(lines, callback) {
     frames = sequence(lines); cursor = 0; afterTalk = callback; busy = true;
     root.classList.remove("trpg-idle"); next.hidden = false; next.disabled = false;
@@ -96,6 +96,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     art.style.backgroundColor = person?.color || "#566053";
     speaker.textContent = name(frame.speaker);
     role.textContent = frame.role || (person?.part === "GM" ? "GM／卓の会話" : "PL／卓の会話");
+    dock.dataset.layer = /場面|物語/.test(role.textContent) ? "fiction" : "table";
     speech.textContent = frame.text;
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     table.querySelectorAll("[data-speaker]").forEach(n => n.classList.toggle("active", n.dataset.speaker === frame.speaker));
@@ -115,36 +116,48 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   }
   function idle(text) {
     if (busy) return;
-    art.replaceChildren(el("img", { src: portrait("sumi"), alt: name("sumi"),
-      style: { top: portraitTop("sumi", 410, 16) } }));
-    art.style.backgroundColor = cast.sumi.color;
-    speaker.textContent = name("sumi"); role.textContent = "GM／卓の会話"; speech.textContent = text;
+    art.replaceChildren(el("img", { src: portrait(gm), alt: name(gm),
+      style: { top: portraitTop(gm, 410, 16) } }));
+    art.style.backgroundColor = cast[gm].color;
+    speaker.textContent = name(gm); role.textContent = "GM／卓の会話"; speech.textContent = text;
+    dock.dataset.layer = "table";
     root.classList.add("trpg-idle"); next.hidden = true;
   }
   function start() {
     if (session.snapshot().phase !== "cover") return;
     session.start(); syncChrome();
-    talk(sequence(scenario.intro, scenario.listen, [{ speaker: "sumi", role: "旅人オル", text: session.profile.arrival }]),
+    audio.play("open");
+    talk(sequence(scenario.intro, scenario.listen, [{ speaker: gm, role: presentation.arrivalRole, text: session.profile.arrival }]),
       () => { renderBody(); openCheck("listen"); });
   }
   function room(interactive = false) {
     const node = el("div.trpg-room", { class: interactive ? "interactive" : "" }, [
-      el("img", { src: new URL("./room.svg", import.meta.url).href, alt: "物語の茶房『波止場の灯』。雨の窓、棚、カウンターと旅人の荷物。" }),
-      el("div.trpg-room-title", { text: "物語の中 · 港町ノーラ / 波止場の灯" }),
-      el("div.trpg-room-sub", { text: "雨ににじむ港の灯り。閉店まで、もう少し。" }),
+      el("img", { src: sceneUrl(scenario), alt: presentation.sceneAlt, decoding: "async", onerror: event => {
+        event.currentTarget.hidden = true; node.classList.add("art-unavailable");
+        node.querySelector(".trpg-scene-retry").hidden = false;
+      } }),
+      el("div.trpg-scene-weather", { "aria-hidden": "true" }),
+      el("div.trpg-room-title", { text: "物語の中 · " + presentation.location }),
+      el("div.trpg-room-sub", { text: presentation.atmosphere }),
+      button("背景をもう一度表示", "trpg-scene-retry", () => {
+        const image = node.querySelector("img");
+        image.onload = () => { image.hidden = false; node.classList.remove("art-unavailable"); node.querySelector(".trpg-scene-retry").hidden = true; };
+        image.src = sceneUrl(scenario) + "?retry=" + Date.now();
+      }, { class: "small trpg-scene-retry", hidden: true }),
     ]);
     if (interactive) {
       const state = session.snapshot();
       scenario.spots.forEach((spot, i) => {
         const checked = state.clues.includes(spot.id);
         node.append(el("button.trpg-spot", { type: "button",
-          class: checked ? "checked" : "", disabled: busy,
+          class: checked ? "checked" : "", disabled: busy || (!checked && state.clues.length >= session.rules.exploreLimit),
           "aria-label": spot.label + (checked ? "、調査済み" : "を調べる"),
           style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id },
           onclick: () => {
             if (busy || overlay) return;
             const clue = session.inspect(spot.id);
-            talk(clue.evidence.lines, () => { renderBody(); idle("気になった場所を調べて、旅人の『普通』を考えてみよう"); });
+            audio.play(clue.fresh ? "clue" : "tap");
+            talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); });
           },
         }, [el("i", { text: checked ? "✓" : String(i + 1) }), el("span", { text: spot.short })]));
       });
@@ -175,51 +188,51 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     if (state.phase === "cover") { cover(); return; }
     content.replaceChildren();
     const scene = room(state.phase === "explore");
-    let panel;
+    const copy = presentation.phases[state.phase];
+    const panel = side(copy.kicker, copy.title, copy.description);
+    if (presentation.theme === "shark") panel.append(el("div.trpg-risk", { dataset: { test: "trpg-risk" } }, [
+      el("span", { text: "危機 " + state.pressure + "/6" }),
+      el("div", { "aria-hidden": "true" }, [1,2,3,4,5,6].map(i => el("i", { class: i <= state.pressure ? "filled" : "" }))),
+    ]));
     if (state.phase === "listen") {
-      panel = side("01 / 話を聞く", "世界一、普通？", "旅人は何を求めているのだろう。まずは、少し話を聞いてみる。");
       panel.append(clueButtons());
       if (!busy) panel.append(button("判定へ", "trpg-listen-open", () => openCheck("listen"), { class: "primary" }));
-      idle("まずは旅人の言葉を待ってみよう。サイコロを二つ振るぞ");
+      idle(presentation.listenIdle);
     } else if (state.phase === "explore") {
-      panel = side("02 / 店内を調べる", "旅人の『普通』を探す", "部屋の札を押して調査。3つ以上集まったら、みんなで仮説を立てよう。");
       panel.append(clueButtons(), el("div.trpg-support", [
-        button("なるに相談", "trpg-consult-naru", () => consult("naru"), { disabled: busy }),
-        button("つむぎに相談", "trpg-consult-tsumugi", () => consult("tsumugi"), { disabled: busy }),
-      ]), button("仮説を話す · " + state.clues.length + "/6", "trpg-interpret", chooseHypothesis,
+        ...Object.keys(scenario.consult).map(id => button(name(id) + "に相談", "trpg-consult-" + id, () => consult(id), { disabled: busy })),
+      ]), button(copy.button + " · " + state.clues.length + "/" + session.rules.exploreLimit, "trpg-interpret", chooseHypothesis,
         { class: "primary", disabled: busy || state.clues.length < 3 }));
-      idle("気になった場所を調べよう。仲間に相談してもいいぞ");
+      if (presentation.theme === "shark") panel.append(el("small.trpg-budget", { text: "調査はあと " + (session.rules.exploreLimit - state.clues.length) + " 箇所 · 再読と相談は無料" }));
+      idle(presentation.exploreIdle);
     } else if (state.phase === "prepare") {
       scene.append(preparationChoices());
       const hypothesis = scenario.hypotheses.find(h => h.id === state.hypothesis);
-      panel = side("03 / 一台を用意する", "香りと、過ごす場所", "今の仮説：" + hypothesis.label);
-      panel.append(clueButtons(), button("一台を準備する", "trpg-prepare-open", () => openCheck("prepare"),
-        { class: "primary", disabled: busy || !state.plan.aroma || !state.plan.seat }));
-      idle("香りと席を選んでみよう。なるの切り札も使えるぞ");
+      panel.append(el("div.trpg-hypothesis-note", { text: "今の見立て：" + hypothesis.label }), clueButtons(), button(copy.button, "trpg-prepare-open", () => openCheck("prepare"),
+        { class: "primary", disabled: busy || session.flow.prepare.some(f => !state.plan[f]) }));
+      idle(presentation.prepareIdle);
     } else if (state.phase === "serve") {
       scene.append(servingChoices());
-      panel = side("04 / 席へ案内する", "最後に、どう声をかける？", "言葉を添えることも、少し待つこともできる。");
-      panel.append(clueButtons(), button("旅人を席へ案内する", "trpg-serve-open", () => openCheck("serve"),
-        { class: "primary", disabled: busy || !state.plan.approach }));
-      idle("声のかけ方を選んだら、旅人を案内しよう");
+      panel.append(clueButtons(), button(copy.button, "trpg-serve-open", () => openCheck("serve"),
+        { class: "primary", disabled: busy || session.flow.serve.some(f => !state.plan[f]) }));
+      idle(presentation.serveIdle);
     } else {
       const result = session.result(), ending = scenario.endings[result.ending];
       scene.append(el("div.trpg-ending", [
-        el("div.trpg-kicker", { text: "この晩の結末" }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
+        el("div.trpg-kicker", { text: presentation.endingKicker }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
         el("p", { text: ending.line }),
         el("div.trpg-ending-plan", Object.entries(result.plan).map(([field, id]) =>
           el("span", { text: scenario.options[field].find(o => o.id === id).label }))),
       ]));
-      panel = side("小さな卓を囲んで", "おつかれさま", "みんなで考えた一台と、過ごす時間。どんな『普通』になっただろう。");
-      panel.append(clueButtons(), button(closeLabel, "trpg-finish", () => finish(result),
-        { class: "primary", disabled: busy }));
-      idle("この晩の話は、ここまで。よかったら、もう一度違う提案でも遊んでみてくれ");
+      panel.append(clueButtons(), button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
+        { class: "primary", disabled: busy }), button(closeLabel, "trpg-finish", () => finish(result), { disabled: busy }));
+      idle(presentation.endingIdle);
     }
     content.append(scene, panel);
   }
   function consult(id) {
     if (busy || overlay) return;
-    talk(session.consult(id), () => { renderBody(); idle("集めた手がかりを、提案につなげてみよう"); });
+    talk(session.consult(id), () => { renderBody(); idle(presentation.exploreIdle); });
   }
   function cover() {
     const castCards = scenario.cast.map(c => el("div.trpg-cast-card", {
@@ -231,18 +244,18 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       el("strong", { text: name(c.id) }), el("p", { text: c.role }),
     ]));
     root.append(el("div.trpg-cover", [
-      el("article.trpg-book", [
+      el("article.trpg-book", { style: { "--cover-art": 'url("' + sceneUrl(scenario) + '")' } }, [
         el("div.trpg-kicker", { text: scenario.collection }),
-        el("h1", [el("span", { text: "世界一普通の" }), el("span", { text: "一台" })]),
+        el("h1", presentation.titleLines.map(text => el("span", { text }))),
         el("p", { text: scenario.subtitle }),
         el("div.trpg-book-author", { text: "作 · " + scenario.author }),
         el("div.trpg-book-stamp", [el("span", { text: "短編TRPG / 約10分" }), el("span", { text: "3人＋GM" })]),
       ]),
       el("div.trpg-cover-right", [
-        el("h2", { text: "閉店前の茶房に、旅人がひとり。" }),
+        el("h2", { text: presentation.coverHeading }),
         el("p", { text: scenario.premise }),
         el("div.trpg-cast", castCards),
-        el("div.trpg-cover-rule", { text: "部屋を調べ、仲間と相談し、一台を提案する。物語は架空の作品、卓を囲むのはいつもの四人。" }),
+        el("div.trpg-cover-rule", { text: presentation.coverRule + " 連携札を二枚持って、物語へ。" }),
         el("div.trpg-cover-actions", [
           button("この卓を始める", "trpg-start", start, { class: "primary" }),
           button("遊び方", "trpg-cover-help", openHelp),
@@ -257,26 +270,26 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       dataset: { test: "trpg-plan-" + field + "-" + option.id },
       onclick: () => {
         if (busy || overlay) return;
-        session.plan(field, option.id); renderBody();
+        audio.play("tap"); session.plan(field, option.id); renderBody();
         root.querySelector('[data-test="trpg-plan-' + field + "-" + option.id + '"]')?.focus({ preventScroll: true });
       },
     }, [el("strong", { text: option.label }), el("span", { text: option.description })]);
   }
   function preparationChoices() {
     return el("div.trpg-plan", [
-      el("h2", { text: "旅人に、どんな時間を用意する？" }),
-      el("p", { text: "香りを一つ、席を一つ。組み合わせて提案してみよう。" }),
-      el("div.trpg-plan-columns", ["aroma", "seat"].map(field => el("div.trpg-plan-column", [
-        el("h3", { text: field === "aroma" ? "一台の香り" : "過ごす席" }),
+      el("h2", { text: presentation.prepareTitle }),
+      el("p", { text: presentation.prepareDescription }),
+      el("div.trpg-plan-columns", session.flow.prepare.map(field => el("div.trpg-plan-column", [
+        el("h3", { text: presentation.fields[field] }),
         ...scenario.options[field].map(option => optionButton(field, option)),
       ]))),
     ]);
   }
   function servingChoices() {
     return el("div.trpg-plan", [
-      el("h2", { text: "一台を置いた、そのあとに。" }),
-      el("p", { text: "旅人に添える、最初の言葉を選ぶ。" }),
-      el("div.trpg-serve-options", scenario.options.approach.map(option => optionButton("approach", option))),
+      el("h2", { text: presentation.serveTitle }),
+      el("p", { text: presentation.serveDescription }),
+      el("div.trpg-serve-options", scenario.options[session.flow.serve[0]].map(option => optionButton(session.flow.serve[0], option))),
     ]);
   }
   function modal(title, body, actions, { dismiss = true } = {}) {
@@ -305,7 +318,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         talk(scenario.preparation, () => renderBody());
       },
     }, [el("strong", { text: h.label }), el("span", { text: h.description })]));
-    pop = modal("旅人の『普通』は、どんな時間？", el("div.trpg-choice-list", choices),
+    pop = modal(presentation.hypothesisTitle, el("div.trpg-choice-list", choices),
       [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())]);
   }
   function die(value, rolling = false) {
@@ -315,7 +328,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   }
   function openCheck(kind) {
     if (busy || overlay || session.snapshot().pending) return;
-    const check = scenario.checks[kind], helper = kind === "prepare" ? "naru" : kind === "serve" ? "tsumugi" : null;
+    const check = scenario.checks[kind], helper = check.helper || null;
     const body = el("div", [el("p", { text: check.hint }),
       el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋1" })])]);
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
@@ -331,13 +344,23 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       if (session.snapshot().pending) return;
       const result = session.beginCheck(kind, { support: !!support?.checked });
       roll.disabled = true;
+      modalCloser = null;
       pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
       body.querySelector(".trpg-dice-row").replaceChildren(die(1, true), die(1, true),
         el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
-      timer = setTimeout(() => { timer = null; if (!disposed) showRollResult(pop, body); }, 350);
+      audio.play("roll");
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduced) rollTicker = setInterval(() => {
+        body.querySelector(".trpg-dice-row")?.replaceChildren(die(Math.ceil(Math.random()*6), true), die(Math.ceil(Math.random()*6), true),
+          el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
+      }, 90);
+      timer = setTimeout(() => {
+        timer = null; clearInterval(rollTicker); rollTicker = null;
+        if (!disposed) showRollResult(pop, body);
+      }, reduced ? 40 : 650);
     }, { class: "primary" });
-    pop = modal(check.title, body, [roll], { dismiss: false });
+    pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll]);
   }
   function showRollResult(pop, body) {
     const result = session.checkResult();
@@ -348,12 +371,17 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         "合計 " + result.total, el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
       ]),
     );
-    if (!session.snapshot().used.hajime && session.snapshot().teamwork > 0) body.append(el("div.trpg-rerolls", [0, 1].map(i =>
+    if (result.hypothesisBonus) body.append(el("p.trpg-roll-insight", { text: "見立てが合っていた · 仕掛けに ＋" + result.hypothesisBonus }));
+    if (presentation.theme === "shark") body.append(el("p.trpg-roll-consequence", { text: result.grade === "success" ? "危機を進めず、次の場面へ" : "危機 ＋" + session.rules.checkPressure[result.grade] + " · 全員で次の場面へ" }));
+    if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+      body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
+      body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button((i + 1) + "個目を振り直す", "trpg-reroll-" + i, () => {
-        if (settleGuard || session.snapshot().used.hajime || session.snapshot().teamwork < 1) return;
+        if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
+        audio.play("roll");
         session.reroll(i); showRollResult(pop, body);
       }))));
-    else body.append(el("p", { text: "振り直しには、未使用の「ひらめき」と連携札1枚が必要です。" }));
+    } else body.append(el("p.trpg-roll-trump", { text: "振り直しには、未使用の切り札と連携札1枚が必要です。" }));
     const actions = pop.box.querySelector(".trpg-modal-actions");
     actions.replaceChildren(button("物語を続ける", "trpg-settle", () => {
       if (settleGuard || disposed) return;
@@ -361,15 +389,18 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       const settled = session.settleCheck(); pop.close();
       const continuation = () => {
         if (settled.kind === "listen") {
-          renderBody(); idle("三つ以上の手がかりを集めたら、みんなで仮説を話そう");
+          renderBody(); idle(presentation.exploreIdle);
         } else if (settled.kind === "prepare") {
           talk(scenario.serving, () => renderBody());
         } else {
-          const ending = scenario.endings[session.result().ending];
-          talk(sequence(ending.dialogue, scenario.epilogue), () => renderBody());
+          const result = session.result(), ending = scenario.endings[result.ending];
+          audio.play("ending");
+          talk(sequence(ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue), () => renderBody());
         }
       };
-      talk(scenario.checks[settled.kind][settled.grade], continuation);
+      const responses = (session.flow[settled.kind] || []).map(field =>
+        scenario.options[field].find(o => o.id === session.snapshot().plan[field])?.response);
+      talk(sequence(...responses, scenario.checks[settled.kind][settled.grade]), continuation);
     }, { class: "primary" }));
     actions.querySelector("button").focus({ preventScroll: true });
   }
@@ -401,17 +432,18 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   function openHelp() {
     let pop;
     pop = modal("この卓の遊び方", [
-      el("p", { text: "気になる場所を調べ、三つ以上の手がかりから仮説を立てます。香り・席・声のかけ方を選んで、旅人に提案します。" }),
+      el("p", { text: presentation.help }),
       el("p", { text: "判定はサイコロ二つの合計に＋1。10以上は成功、7〜9はひと手間、6以下は思わぬ出来事。どの結果でも物語は続きます。" }),
-      el("p", { text: "みんなで共有する連携札は2枚。切り札を使うたび1枚使います。なるは準備に＋2、つむぎは提供に＋2。はじめは判定後に一つ振り直せます。" }),
+      el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。" }),
+      ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
       el("p", { text: "クリック・タップで操作。会話はEnter／Spaceでも進みます。Tabでボタンを選び、Enterで決定できます。" }),
     ], [button("卓に戻る", "trpg-help-close", () => pop.close(), { class: "primary" })]);
   }
   function exit() {
-    if (session.snapshot().phase === "cover") return;
+    if (session.snapshot().phase === "cover") { finish({ cancelled: true, scenarioId: scenario.id }); return; }
     let pop;
-    pop = modal("卓を片付ける？", el("p", { text: "この卓はここで終わります。最初から遊ぶと、また別の旅人が訪れるかもしれません。" }), [
+    pop = modal("卓を片付ける？", el("p", { text: presentation.exitText }), [
       button("続ける", "trpg-exit-back", () => pop.close()),
       button("卓を片付ける", "trpg-exit-confirm", () => finish({ cancelled: true, scenarioId: scenario.id }), { class: "primary" }),
     ]);
@@ -424,10 +456,13 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     if (disposed) return;
     disposed = true;
     if (timer) clearTimeout(timer);
+    if (rollTicker) clearInterval(rollTicker);
+    if (providedAudio) audio.silence(); else audio.destroy();
     root.removeEventListener("keydown", keys);
     root.remove();
   }
   function keys(event) {
+    if (event.repeat) return;
     if (overlay) {
       if (event.key === "Escape" && modalCloser) { event.preventDefault(); modalCloser(); }
       if (event.key === "Tab") {

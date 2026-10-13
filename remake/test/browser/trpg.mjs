@@ -37,24 +37,26 @@ async function begin(page, keyboard = false) {
   await nextLines(page, keyboard);
   await checkRoll(page);
   assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "explore");
+  await fits(page);
 }
-async function explore(page) {
-  for (const id of ["menu", "window", "bag"]) {
+async function explore(page, { spots = ["menu", "window", "bag"], hypothesis = "quiet" } = {}) {
+  for (const id of spots) {
     await hit(page, '[data-test="trpg-spot-' + id + '"]');
     await nextLines(page);
   }
   await hit(page, '[data-test="trpg-consult-tsumugi"]');
   await nextLines(page);
   await hit(page, '[data-test="trpg-interpret"]');
-  await hit(page, '[data-test="trpg-hypothesis-quiet"]');
+  await hit(page, '[data-test="trpg-hypothesis-' + hypothesis + '"]');
   await nextLines(page);
 }
 async function finish(page, choices) {
-  await hit(page, '[data-test="trpg-plan-aroma-' + choices.aroma + '"]');
-  await hit(page, '[data-test="trpg-plan-seat-' + choices.seat + '"]');
+  const fields = Object.keys(choices);
+  for (const field of fields.slice(0, 2)) await hit(page, '[data-test="trpg-plan-' + field + '-' + choices[field] + '"]');
   await hit(page, '[data-test="trpg-prepare-open"]');
   await checkRoll(page, { support: "naru" });
-  await hit(page, '[data-test="trpg-plan-approach-' + choices.approach + '"]');
+  const last = fields[2];
+  await hit(page, '[data-test="trpg-plan-' + last + '-' + choices[last] + '"]');
   await hit(page, '[data-test="trpg-serve-open"]');
   await checkRoll(page, { support: "tsumugi" });
 }
@@ -68,8 +70,19 @@ async function fits(page) {
     }).map(n => ({ text: n.textContent, width: n.clientWidth, scroll: n.scrollWidth }));
   });
   assert.deepEqual(clips, [], "Clipped controls or dialogue");
+  const overlaps = await page.locator(".trpg-spot").evaluateAll(nodes => {
+    const visible = nodes.filter(n => n.offsetWidth && n.offsetHeight);
+    const result = [];
+    for (let i = 0; i < visible.length; i++) for (let j = i + 1; j < visible.length; j++) {
+      const a = visible[i].getBoundingClientRect(), b = visible[j].getBoundingClientRect();
+      if (Math.min(a.right, b.right) > Math.max(a.left, b.left) && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top))
+        result.push([visible[i].textContent, visible[j].textContent]);
+    }
+    return result;
+  });
+  assert.deepEqual(overlaps, [], "Investigation labels cover each other");
 }
-async function run(label, params, options, body) {
+async function run(label, params, options, body, beforeLoad = null) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
   await context.addInitScript(() => {
     const get = Storage.prototype.getItem, set = Storage.prototype.setItem;
@@ -87,13 +100,15 @@ async function run(label, params, options, body) {
   page.setDefaultTimeout(15000);
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
   page.on("response", response => { if (response.status() >= 400) errors.push(response.status() + " " + response.url()); });
   const url = new URL(base);
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   try {
+    if (beforeLoad) await beforeLoad(page);
     await page.goto(url.href);
-    await page.locator('[data-test="trpg-start"]').waitFor();
-    await body(page);
+    if (label !== "loading-retry") await page.waitForFunction(() => window.__trpg?.ready === true);
+    await body(page, errors);
     await fits(page);
     assert.deepEqual(errors, []);
     const storage = await page.evaluate(() => ({
@@ -135,6 +150,8 @@ try {
     await finish(page, { aroma: "tea", seat: "window", approach: "quiet" });
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "雨音のある一台");
     await page.locator('[data-test="trpg-finish"]').click();
+    await page.locator('[data-test="trpg-select-ordinary-cup"]').waitFor();
+    await hit(page, '[data-test="trpg-select-ordinary-cup"]');
     await page.locator('[data-test="trpg-start"]').waitFor();
     assert.equal((await page.evaluate(() => __trpg.snapshot())).teamwork, 2);
   });
@@ -167,8 +184,8 @@ try {
       await page.keyboard.press("Escape");
       await page.locator('[data-test="trpg-exit"]').click();
       await page.locator('[data-test="trpg-exit-confirm"]').click();
-      await page.locator('[data-test="trpg-start"]').waitFor();
-      assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "cover");
+      await page.locator('[data-test="trpg-select-ordinary-cup"]').waitFor();
+      assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
     });
   await run("portrait-touch-hint", { seed: "1" },
     { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, async page => {
@@ -201,6 +218,101 @@ try {
     assert.equal(cancelled.children, 0);
     assert.equal(await page.locator(".trpg-root").count(), 1);
   });
+  await run("library-two-stories", {}, {}, async page => {
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
+    assert.equal(await page.locator(".trpg-library-book").count(), 2);
+    await page.screenshot({ path: path.join(artifacts, "library-pc.png") });
+    await hit(page, '[data-test="trpg-select-ordinary-cup"]');
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "ordinary-cup");
+    await hit(page, '[data-test="trpg-exit"]');
+    await page.locator('[data-test="trpg-select-shark-last-order"]').waitFor();
+    await hit(page, '[data-test="trpg-select-shark-last-order"]');
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "shark-last-order");
+    assert((await page.locator(".trpg-cast-card").first().textContent()).includes("サメちゃん"));
+    await page.screenshot({ path: path.join(artifacts, "shark-cover.png") });
+  });
+  const movies = [
+    { label: "shark-scent-pc", profile: "scent", choices: { tool: "citrus", route: "pier", finale: "lure" }, ending: "海へ贈るラストオーダー", seed: 9, options: {} },
+    { label: "shark-vibration-touch", profile: "vibration", choices: { tool: "sealed", route: "roof", finale: "silence" }, ending: "世界一静かなエンドロール", seed: 14,
+      options: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } },
+    { label: "shark-light-pc", profile: "light", choices: { tool: "beacon", route: "channel", finale: "signal" }, ending: "海上プレミア上映", seed: 4, options: {} },
+    { label: "shark-sequel-small-touch", profile: "scent", choices: { tool: "beacon", route: "roof", finale: "silence" }, ending: "そして、翌朝の予告編", seed: 5,
+      options: { viewport: { width: 667, height: 375 }, isMobile: true, hasTouch: true } },
+  ];
+  for (const movie of movies) await run(movie.label, { scenario: "shark-last-order", traveler: movie.profile, seed: movie.seed }, movie.options, async page => {
+    await begin(page);
+    for (const id of ["radio", "leaves", "fan", "lamp"]) {
+      await hit(page, '[data-test="trpg-spot-' + id + '"]'); await nextLines(page);
+    }
+    assert(await page.locator('[data-test="trpg-spot-rope"]').isDisabled());
+    const pressure = (await page.evaluate(() => __trpg.snapshot())).pressure;
+    await hit(page, '[data-test="trpg-clue-radio"]');
+    await hit(page, '[data-test="trpg-clue-close"]');
+    await hit(page, '[data-test="trpg-consult-naru"]'); await nextLines(page);
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).pressure, pressure);
+    if (movie.label === "shark-scent-pc") await page.screenshot({ path: path.join(artifacts, "shark-explore-pc.png") });
+    await hit(page, '[data-test="trpg-interpret"]');
+    await hit(page, '[data-test="trpg-hypothesis-' + movie.profile + '"]'); await nextLines(page);
+    await finish(page, movie.choices);
+    assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), movie.ending);
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks[1].hypothesisBonus, 1);
+    await fits(page);
+    if (movie.label === "shark-scent-pc") {
+      await hit(page, '[data-test="trpg-replay"]');
+      await page.locator('[data-test="trpg-start"]').waitFor();
+      const reset = await page.evaluate(() => __trpg.snapshot());
+      assert.equal(reset.phase, "cover"); assert.equal(reset.teamwork, 2); assert.equal(reset.pressure, 0);
+    }
+  });
+  await run("audio-and-check-cancellation", { scenario: "shark-last-order", traveler: "light", seed: 3 }, {}, async page => {
+    assert.equal((await page.evaluate(() => __trpg.audio())).state, "idle");
+    await hit(page, '[data-test="trpg-audio"]');
+    await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    await hit(page, '[data-test="trpg-check-back"]');
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 0);
+    await hit(page, '[data-test="trpg-listen-open"]'); await checkRoll(page);
+    await hit(page, '[data-test="trpg-audio"]');
+    await page.waitForFunction(() => !__trpg.audio().enabled && __trpg.audio().state === "suspended");
+    assert.equal((await page.evaluate(() => __trpg.audio())).ambience, 0);
+    await hit(page, '[data-test="trpg-exit"]'); await hit(page, '[data-test="trpg-exit-confirm"]');
+    await page.locator('[data-test="trpg-select-ordinary-cup"]').waitFor();
+  });
+  let rejectCatalog = true;
+  await run("loading-retry", {}, {}, async (page, errors) => {
+    await page.locator('[data-test="trpg-retry-load"]').waitFor();
+    rejectCatalog = false;
+    await hit(page, '[data-test="trpg-retry-load"]');
+    await page.locator('[data-test="trpg-select-shark-last-order"]').waitFor();
+    assert(errors.length > 0);
+    assert(errors.every(error => /503|Resource unavailable/.test(error)), errors.join("\n"));
+    errors.length = 0;
+  }, page => page.route("**/data/trpg_catalog.json", route => rejectCatalog ? route.fulfill({ status: 503, body: "Temporary failure" }) : route.continue()));
+  let rejectScene = true;
+  await run("scene-retry-and-shark-api-abort", { scenario: "shark-last-order", seed: 4, traveler: "scent" }, {}, async (page, errors) => {
+    await begin(page);
+    await page.locator('[data-test="trpg-scene-retry"]').waitFor();
+    rejectScene = false;
+    await hit(page, '[data-test="trpg-scene-retry"]');
+    await page.locator('[data-test="trpg-scene-retry"]').waitFor({ state: "hidden" });
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "explore");
+    const aborted = await page.evaluate(async () => {
+      const { runTrpg, loadTrpgResources } = await import("/remake/js/trpg/index.js");
+      const resources = await loadTrpgResources({ scenarioId: "shark-last-order" });
+      const host = document.createElement("div"), abort = new AbortController();
+      document.getElementById("stage").append(host);
+      const result = runTrpg(host, { resources, signal: abort.signal });
+      const mounted = host.children.length; abort.abort();
+      const cancelled = await result;
+      const children = host.children.length; host.remove();
+      return { mounted, cancelled, children };
+    });
+    assert.equal(aborted.mounted, 1); assert.equal(aborted.children, 0);
+    assert.equal(aborted.cancelled.scenarioId, "shark-last-order"); assert(aborted.cancelled.cancelled);
+    assert(errors.length > 0);
+    assert(errors.every(error => /503/.test(error)), errors.join("\n")); errors.length = 0;
+  }, page => page.route("**/trpg_shark_room.webp*", route => rejectScene ? route.fulfill({ status: 503, body: "Temporary failure" }) : route.continue()));
 } finally {
   await browser.close();
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify({ results }, null, 2) + "\n");

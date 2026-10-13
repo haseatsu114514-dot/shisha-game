@@ -87,14 +87,14 @@
       "id": "leaves",
       "label": "香りの保管箱",
       "short": "保管箱",
-      "x": 40,
+      "x": 35,
       "y": 43
     },
     {
       "id": "fan",
       "label": "止まった送風機",
       "short": "送風機",
-      "x": 48,
+      "x": 53,
       "y": 40
     },
     {
@@ -347,17 +347,17 @@
   "endings": {
     "last-order": {
       "title": "海へ贈るラストオーダー",
-      "line": "最後の香り箱を沖へ。三人は桟橋で、救助艇の温かいお茶を受け取った。",
+      "line": "最後の香り箱を沖へ。三人は艇の上で、温かいお茶を受け取った。",
       "dialogue": "trpg_shark_ending_last-order"
     },
     "quiet-escape": {
       "title": "世界一静かなエンドロール",
-      "line": "床を揺らさず、三人で屋根へ。背びれは店の音を探し続け、艇は静かに岸へ帰った。",
+      "line": "足音と、機械を静かに。背びれは空の店を探し続け、三人を乗せた艇は岸へ帰った。",
       "dialogue": "trpg_shark_ending_quiet-escape"
     },
     "premiere": {
       "title": "海上プレミア上映",
-      "line": "沖に流した浮き灯へ背びれが向く。三人は壁の影から艇へ。港からは、夜の小さな上映会に見えた。",
+      "line": "遠い浮き灯へ背びれが向く。三人はその反対側から艇へ。港からは、夜の小さな上映会に見えた。",
       "dialogue": "trpg_shark_ending_premiere"
     },
     "sequel": {
@@ -421,7 +421,7 @@
         {
           "speaker": "kafuka",
           "role": "コロちゃん／卓の会話",
-          "face": "normal",
+          "face": "ventriloquism",
           "text": "余は続編を要求する"
         },
         {
@@ -495,7 +495,7 @@
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "normal",
+          "face": "surprise",
           "text": "今だけは、その曲止めて！"
         },
         {
@@ -552,7 +552,7 @@
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "normal",
+          "face": "surprise",
           "text": "よし、気づいてはくれた！　近いけど！"
         },
         {
@@ -626,13 +626,13 @@
         {
           "speaker": "naru",
           "role": "PL／卓の会話",
-          "face": "normal",
+          "face": "serious",
           "text": "全部を調べる時間はないな。似た手がかりを二つ探そう"
         },
         {
           "speaker": "naru",
           "role": "PL／卓の会話",
-          "face": "normal",
+          "face": "serious",
           "text": "保管箱と送風機なら、香りと振動の違いが見えそうだ"
         },
         {
@@ -1170,7 +1170,7 @@
           "speaker": "kafuka",
           "role": "GM／場面",
           "face": "normal",
-          "text": "機械を止め、三人は手の合図だけで屋根へ渡った"
+          "text": "機械を止め、三人は手の合図だけで艇へ渡った"
         },
         {
           "speaker": "kafuka",
@@ -1205,7 +1205,7 @@
           "speaker": "kafuka",
           "role": "GM／場面",
           "face": "normal",
-          "text": "三人は壁の影を抜けて、艇へ渡った"
+          "text": "三人は灯りの反対側から、艇へ渡った"
         },
         {
           "speaker": "tsumugi",
@@ -1233,7 +1233,7 @@
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "normal",
+          "face": "surprise",
           "text": "あ、そこは想定してなかった！"
         },
         {
@@ -1251,7 +1251,7 @@
         {
           "speaker": "kafuka",
           "role": "コロちゃん／卓の会話",
-          "face": "normal",
+          "face": "ventriloquism",
           "text": "余は言った。続編が必要だ、と"
         },
         {
@@ -1259,6 +1259,26 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "次も救命胴衣は、三人分で頼む"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "kafuka",
+          "role": "GM／卓の会話",
+          "text": "三人の合図が揃ったのう。怖くても、ちゃんと一緒じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "kafuka",
+          "role": "GM／卓の会話",
+          "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
         }
       ]
     }
@@ -1363,5 +1383,9 @@
   },
   "preparation": "trpg_shark_preparation",
   "serving": "trpg_shark_serving",
-  "epilogue": "trpg_shark_epilogue"
+  "epilogue": "trpg_shark_epilogue",
+  "debrief": {
+    "smooth": "trpg_shark_debrief_smooth",
+    "with-detour": "trpg_shark_debrief_with_detour"
+  }
 }

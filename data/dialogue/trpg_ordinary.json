@@ -1488,6 +1488,26 @@
           "text": "答えを急がず、今日のことから聞いてみよう"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "text": "静かな晩だったな。相手の時間をよく見ていた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "text": "途中で聞き直したことも、この一台の一部になったな"
+        }
+      ]
     }
   ],
   "_comment": "独立TRPG試作の設定と台詞。台詞は既存のdialogues/lines形式。本編のloadAllには未接続。",
@@ -1584,5 +1604,9 @@
     "help": "三つ以上の手がかりから仮説を立て、香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
     "endingKicker": "この晩の結末"
+  },
+  "debrief": {
+    "smooth": "trpg_ordinary_debrief_smooth",
+    "with-detour": "trpg_ordinary_debrief_with_detour"
   }
 }

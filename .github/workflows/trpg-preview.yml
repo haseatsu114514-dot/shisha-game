@@ -1,8 +1,13 @@
-name: TRPG ordinary-cup preview
+name: TRPG two-story collection
 on:
   pull_request:
     paths:
       - 'data/dialogue/trpg_ordinary.json'
+      - 'data/dialogue/trpg_shark.json'
+      - 'data/trpg_catalog.json'
+      - 'remake/img/backgrounds/trpg_*.webp'
+      - 'remake/data/manifest.json'
+      - 'tools/export_trpg_preview.py'
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
@@ -13,6 +18,11 @@ on:
     branches: [main]
     paths:
       - 'data/dialogue/trpg_ordinary.json'
+      - 'data/dialogue/trpg_shark.json'
+      - 'data/trpg_catalog.json'
+      - 'remake/img/backgrounds/trpg_*.webp'
+      - 'remake/data/manifest.json'
+      - 'tools/export_trpg_preview.py'
       - 'remake/js/trpg/**'
       - 'remake/css/trpg.css'
       - 'remake/trpg-preview.html'
@@ -44,7 +54,7 @@ jobs:
       - name: Scenario and session checks
         run: |
           node --test remake/test/trpg.mjs
-          python3 tools/lint_dialogue.py trpg_ordinary
+          python3 tools/lint_dialogue.py trpg_
       - name: Install pinned browser dependencies
         working-directory: remake/test/browser
         run: |
@@ -68,6 +78,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: trpg-ordinary-preview
+          name: trpg-two-story-preview
           path: .codex/artifacts/trpg
           if-no-files-found: ignore
