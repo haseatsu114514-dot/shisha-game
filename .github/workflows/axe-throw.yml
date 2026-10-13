@@ -1,0 +1,69 @@
+name: Axe throw minigame regressions
+on:
+  pull_request:
+    paths:
+      - 'remake/js/minigames/**'
+      - 'remake/js/axe-throw-page.js'
+      - 'remake/axe-throw.html'
+      - 'remake/css/axe-throw.css'
+      - 'remake/index.html'
+      - 'remake/test/axe_throw.mjs'
+      - 'remake/test/browser/axe_throw.mjs'
+      - 'assets/ui/axe_throw/**'
+      - 'remake/img/ui/axe_throw/**'
+      - 'remake/img/backgrounds/bg_axe_lounge_night.webp'
+      - '.github/workflows/axe-throw.yml'
+permissions:
+  contents: read
+concurrency:
+  group: axe-throw-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Ring boundaries, three gauges, power, Killshot calls and character voice
+        run: node --test remake/test/axe_throw.mjs
+      - name: Actual PC, touch portrait/landscape, lifecycle and legacy relationship saves
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/axe-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs
+          node remake/test/browser/save_load.mjs
+          node --experimental-vm-modules remake/test/lime_consistency.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: axe-throw-results
+          path: |
+            .codex/artifacts/remake-browser/axe-*
+            .codex/artifacts/remake-browser/save-load*
+            ${{ runner.temp }}/axe-preview.log
+          retention-days: 7

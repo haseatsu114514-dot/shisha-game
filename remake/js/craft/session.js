@@ -320,7 +320,7 @@ export const burstBench = (cs) => failBench(cs, "burnt");
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
   if (!bench) return;
-  bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  bench.worker.root.dataset.ready = String(!!(bench.cs.pullDone || bench.cs.practiceSource));
   // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
   // panelの工程IDは結果評価が参照するためpullのまま保持する。
   if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {

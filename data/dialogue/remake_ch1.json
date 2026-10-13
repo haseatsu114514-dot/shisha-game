@@ -2354,12 +2354,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "大会まであと{daysLeft}日だ。今日は持っていく香りを選んで、１台作ってみろ"
+          "text": "大会まであと{daysLeft}日だ。まず、持っていく香りを選ぼう"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "提供して終わりじゃねえ。吸われた後の調整も、2回やるぞ"
+          "text": "今日は俺が用意した一台を使う。炭交換と、吸われた後の調整を2回やるぞ"
         }
       ]
     },
@@ -2471,6 +2471,162 @@
         {
           "speaker": "",
           "text": "配達はこれで完了だ。店に入って一服するかどうかは、自分で決めよう。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_preparation_review",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一台、最後まで触ったな。今日は引っかかったところだけ確かめるか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "最初からやりたければ付き合うぞ。どうする？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "苦手な工程だけ復習する",
+              "next": "drill"
+            },
+            {
+              "text": "一台を最初から作る",
+              "next": "full"
+            },
+            {
+              "text": "今日は手順だけ確認する",
+              "next": "review"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "drill": [],
+        "full": [],
+        "review": []
+      }
+    },
+    {
+      "dialogue_id": "remake_preparation_retry",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昼に一台やったな。まだ提供に迷いが残ってる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は一つに絞ってもいい。最初からやり直すか？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "苦手な工程だけ復習する",
+              "next": "drill"
+            },
+            {
+              "text": "一台を最初から作る",
+              "next": "full"
+            },
+            {
+              "text": "今日は手順だけ確認する",
+              "next": "review"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "drill": [],
+        "full": [],
+        "review": []
+      }
+    },
+    {
+      "dialogue_id": "remake_midcheck_review",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供後の調整は、もうやったな。仕入れはこれで揃った"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "もう少し試すか、今日はここまでにするか？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "炭交換と調整を復習する",
+              "next": "care"
+            },
+            {
+              "text": "今日は仕入れだけにする",
+              "next": "stock"
+            },
+            {
+              "text": "一台を通して練習する",
+              "next": "full"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "care": [],
+        "stock": [],
+        "full": []
+      }
+    },
+    {
+      "dialogue_id": "remake_preparation_confirm",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "詰めて、炭を熾して、蒸らす。それから温度を合わせて出す"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうだ。次に触るときは、迷ったところを一つ覚えておけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_preparation_failed",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが炭を外し、作業台を片付けた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ここまでだな。次は、温度と葉を見ながら一つずつ確かめよう"
         }
       ]
     }
