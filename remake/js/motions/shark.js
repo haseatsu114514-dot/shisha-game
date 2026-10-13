@@ -1,4 +1,4 @@
-// サメちゃんとの夜道の出会い（kafuka.js の playKafukaEncounter）。覆っている間に mid() で SHISHARK の店先へ替える。
+// サメちゃんとの夜道の出会い（samechan.js の playSamechanEncounter）。覆っている間に mid() で SHISHARK の店先へ替える。
 // a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";

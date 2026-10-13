@@ -33,7 +33,7 @@
 | アダム | 左の緑と右の赤・二つのりんごと対になる円 | [PNG](adam/preview.png) |
 | みんと | ミント・葉とハートとチェキ | [PNG](minto/preview.png) |
 | 凛 | 藍色・サンプル缶と試香紙とブルーベリー | [PNG](rin/preview.png) |
-| サメちゃん | 海の青・王冠を被ったサメと波 | [PNG](kafuka/preview.png) |
+| サメちゃん | 海の青・王冠を被ったサメと波 | [PNG](samechan/preview.png) |
 | 南雲修二 | 銀灰・ネクタイと審査の円 | [PNG](nagumo/preview.png) |
 | 前園壮一郎 | 深い青緑・誌面と眼鏡とペン | [PNG](maezono/preview.png) |
 | チャコール博士 | シアン・温度計と計測円とグラフ | [PNG](dr_kemuri/preview.png) |
@@ -54,7 +54,7 @@
 
 アゲハ初遭遇はDAY4の買い出し帰りに落とした荷物を拾ってもらう場面用。名前は「？？？」、バイブスは開示しない。初回はsmile表情、第2章の紹介は最初の目を開いたnormal表情の独立した出力で、キャラ選択ボタンも分けた。現在の紹介は全員で呼び名だけを表示する。
 
-二つ名と一言は `data/characters.json` の `intro_cutin`、アゲハ初遭遇は `ageha.intro_cutin_unknown`、サメちゃんは `data/dialogue/kafuka.json` の `profile.intro_cutin`。はじめだけ前回のモックアップに保存した提示案を継承。全員の文言・表情・原画パス・SHA-256・背景柄は [characters.json](characters.json) に記録している。
+二つ名と一言は `data/characters.json` の `intro_cutin`、アゲハ初遭遇は `ageha.intro_cutin_unknown`、サメちゃんは `data/dialogue/samechan.json` の `profile.intro_cutin`。はじめだけ前回のモックアップに保存した提示案を継承。全員の文言・表情・原画パス・SHA-256・背景柄は [characters.json](characters.json) に記録している。
 
 はじめ・アダム・なる・博士・サメちゃんは前回v2の本人PNGを参照する。前園とパッキーは最新の再制作確認PNGを参照し、PR #225で本編にも採用済み。ほかは採用済みのゲームPNGを参照。原画はバイト一致・人物フィルターなし。今回の画像生成による博士の初期スタディは [未使用履歴](unused-generated/dr_kemuri/README.md) に保存し、最終版には使わない。
 

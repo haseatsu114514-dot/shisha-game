@@ -108,15 +108,15 @@ try {
     const history = []; T.audio.playBgm("tonari"); T.vn.vnTest.turbo = true;
     T.vn.hooks.onLine = (_, line) => queueMicrotask(() => history.push({ speaker: line.speaker || "", text: line.text,
       voice: line.voice || "", bgm: T.audio.currentBgm(), name: document.querySelector(".vn-name").textContent }));
-    await T.vn.play("kafuka_first_encounter");
+    await T.vn.play("samechan_first_encounter");
     T.vn.hooks.onLine = null; T.vn.vnTest.turbo = false;
-    return { history, after: T.audio.currentBgm(), contact: T.core.state.flags._lime_contact_kafuka };
+    return { history, after: T.audio.currentBgm(), contact: T.core.state.flags._lime_contact_samechan };
   });
-  const appearance = shark.history.findIndex((l) => l.speaker === "kafuka");
+  const appearance = shark.history.findIndex((l) => l.speaker === "samechan");
   assert(shark.history.slice(0, appearance).every((l) => l.bgm === "tonari"), `Theme before arrival: ${JSON.stringify(shark.history.slice(0, appearance))}`);
   assert.equal(shark.history[appearance].bgm, "sweets_or_sweets");
   assert(shark.history.filter((l) => l.voice === "korochan").every((l) => l.name === "コロちゃん（腹話術）"));
-  assert(shark.history.some((l) => l.speaker === "kafuka" && l.name === "サメちゃん"));
+  assert(shark.history.some((l) => l.speaker === "samechan" && l.name === "サメちゃん"));
   assert.equal(shark.after, "tonari"); assert(shark.contact);
   assert.deepEqual(errors, []);
   console.log("[playtest UI] PASS: theme starts on visible arrival and restores, puppet and girl have distinct names, exchanged nickname appears");

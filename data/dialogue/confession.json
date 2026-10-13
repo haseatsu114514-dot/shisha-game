@@ -978,13 +978,13 @@
       ]
     },
     {
-      "dialogue_id": "confession_kafuka",
+      "dialogue_id": "confession_samechan",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "min_chapter": 2,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
-        "bgm_on_speaker": "kafuka"
+        "bgm_on_speaker": "samechan"
       },
       "lines": [
         {
@@ -993,7 +993,7 @@
           "text": "SHISHARKを出てから、もう少しだけ一緒に歩いた。"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "normal",
           "text": "……お主、今日は帰るのが遅いのう"
         },
@@ -1003,7 +1003,7 @@
           "text": "もう少し、サメちゃんと話したくて"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "surprise",
           "text": "店のことでは、ないのか？"
         },
@@ -1018,12 +1018,12 @@
           "text": "街灯の下で、サメちゃんが足を止めた。コロちゃんを抱く手が、少し強くなる。"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "serious",
           "text": "……わしも、お主が来るのを待っておった"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "normal",
           "text": "客としてだけでは、なくてじゃ"
         },
@@ -1032,29 +1032,29 @@
           "choices": [
             {
               "text": "好きです。俺と付き合ってください",
-              "next_id": "confession_kafuka_accept"
+              "next_id": "confession_samechan_accept"
             },
             {
               "text": "これからも、友達でいてください",
-              "next_id": "confession_kafuka_reject"
+              "next_id": "confession_samechan_reject"
             }
           ]
         }
       ]
     },
     {
-      "dialogue_id": "confession_kafuka_accept",
+      "dialogue_id": "confession_samechan_accept",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "min_chapter": 2,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
-        "bgm_on_speaker": "kafuka",
-        "set_romance": "kafuka"
+        "bgm_on_speaker": "samechan",
+        "set_romance": "samechan"
       },
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "surprise",
           "text": "……わしと、か？"
         },
@@ -1064,28 +1064,28 @@
           "text": "はい。サメちゃんと、付き合いたいです"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "surprise",
           "text": "そう何度も言うでない！ 顔が熱くなるじゃろう"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "smile",
           "text": "……うむ。わしも、お主が好きじゃ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "smile",
           "text": "これからは、恋人として隣にいてほしいのじゃ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "ventriloquism",
           "text": "側近よ、今は余の言葉より、お主の声を届けよ",
           "voice": "korochan"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "normal",
           "text": "……はい、コロちゃん"
         },
@@ -1100,24 +1100,24 @@
           "text": "これからも、よろしくお願いします"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "smile",
           "text": "うむ。……もう少し、このまま歩くのじゃ"
         }
       ]
     },
     {
-      "dialogue_id": "confession_kafuka_reject",
+      "dialogue_id": "confession_samechan_reject",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "min_chapter": 2,
         "private_scene": true,
         "bgm": "sweets_or_sweets",
-        "bgm_on_speaker": "kafuka"
+        "bgm_on_speaker": "samechan"
       },
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "normal",
           "text": "……そうか。うむ、分かったのじゃ"
         },
@@ -1132,12 +1132,12 @@
           "text": "でも、今の気持ちは、友達としてのものです"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "normal",
           "text": "正直に言ってくれて、ありがとの"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "face": "smile",
           "text": "これからも、あの席で話せるなら嬉しいのじゃ"
         },

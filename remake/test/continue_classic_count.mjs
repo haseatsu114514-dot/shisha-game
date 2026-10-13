@@ -68,7 +68,7 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), layout);
     assert.equal(await page.locator(".go-retry").textContent(), "する");
   }
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "kafuka"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     for (const [index, variant] of variants.entries()) {

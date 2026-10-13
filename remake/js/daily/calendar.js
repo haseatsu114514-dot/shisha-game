@@ -18,13 +18,13 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, story
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvitations } from "./phone.js";
+import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
-import { kafukaDateReady, playKafukaDate } from "./kafuka-date.js";
+import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
-import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
+import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./samechan.js";
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
@@ -47,7 +47,7 @@ export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
   queuedLimeSender = null;
-  syncKafukaKnowledge();
+  syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
@@ -104,7 +104,7 @@ async function phoneButton({ sender = null } = {}) {
   state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
   const before = state.pendingInvite;
   await openLime({ tutorial: first, sender, fixedNight });
-  syncKafukaKnowledge();
+  syncSamechanKnowledge();
   setPhoneBadge(hasUnread());
   save();
   // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
@@ -264,38 +264,40 @@ async function takeAction() {
   expireInvitations({ fixedNight });
   // 約束（LIMEの誘い）がこの時間帯にあれば、そのまま向かう
   const inv = state.pendingInvite;
-  if (inv?.event === "date_kafuka" && !kafukaDateReady()) {
-    cancelKafukaAppointment(inv);
+  if (inv?.event === "date_samechan" && !samechanDateReady()) {
+    cancelSamechanAppointment(inv);
     return;
   }
   if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) {
-    if (state.money < invitationCost(inv.event)) {
-      state.pendingInvite = null;
-      toast(`約束の店には${yen(invitationCost(inv.event))}必要です。今日は見送ります`, { kind: "warn" });
-      save();
-      return;
-    }
+    if (postponeUnaffordableInvitation(inv)) return;
     if (inv.afterClose) {
       // 夜の行動枠を予約し、会う場面は営業イベント後・帰宅前まで待つ。
       inv.queuedAfterClose = true;
       state.slot++;
       return;
     }
-    if (inv.event === "date_kafuka") {
-      const result = await playKafukaDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
-      if (result.done) await afterAction({ exerted: true, spent: result.spent });
+    if (inv.event === "date_samechan") {
+      const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
+      if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
       return;
     }
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
-    const { spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender] });
+    const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender] });
+    if (!met) {
+      if (state.flags._private_night_day === state.day && state.flags._private_night_char === inv.sender) {
+        delete state.flags._private_night_day;
+        delete state.flags._private_night_char;
+      }
+      return;
+    }
     state.slot++;
     await afterAction({ exerted: true, spent });
     return;
   }
   const ev = nightPlan(chapterDef.nightEvents)[0];
-  syncKafukaKnowledge();
+  syncSamechanKnowledge();
   const spotId = await chooseSpot({
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     notice: inv && (inv.day ?? state.day) > state.day ? `DAY ${inv.day}に約束がある` : inv && inv.slot > state.slot ? "今夜は約束がある" : "",
@@ -324,6 +326,13 @@ async function performSpotAction(spot) {
   if (spot.kind === "tonari") {
     const sub = await tonariMenu();
     if (!sub) return { used: false, exerted };
+    if (sub === "hiyori_axe") {
+      if (!(await staminaGuard(-10))) return { used: false, exerted };
+      const completed = await playHiyoriEvent("axe_reveal");
+      if (completed) state.visitedDay.tonari_hiyori_axe = state.day;
+      // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
+      return { used: completed, exerted: completed, slotsUsed: 0 };
+    }
     if (state.visitedDay[`tonari_${sub}`] === state.day) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
@@ -334,9 +343,9 @@ async function performSpotAction(spot) {
     if (sub === "baito") await doBaito();
     else if (sub === "practice") await tonariPractice();
     else await tonariCustomer();
-  } else if (spot.kind === "kafuka") {
+  } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
-    used = await visitKafuka(spot);
+    used = await visitSamechan(spot);
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rival") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -385,12 +394,18 @@ async function performSpotAction(spot) {
 }
 
 
-async function meetInvitation(inv) {
+function postponeUnaffordableInvitation(inv) {
   const cost = invitationCost(inv.event);
-  if (state.money < cost) {
-    toast(`約束の店には${yen(cost)}必要です。所持金が足りません`, { kind: "warn" });
-    return;
-  }
+  if (state.money >= cost) return false;
+  rescheduleInvitation(inv, "所持金が足りなかったため、約束を別の日に改めることにした");
+  toast(`約束の店には${yen(cost)}必要です。今日は見送り、別の日に改めます`, { kind: "warn" });
+  save();
+  return true;
+}
+
+async function meetInvitation(inv) {
+  if (postponeUnaffordableInvitation(inv)) return false;
+  const cost = invitationCost(inv.event);
   addMoney(-cost);
   await fadeBlack(null, 300);
   if (inv.event === "__sumi_baito__") {
@@ -433,9 +448,11 @@ async function meetInvitation(inv) {
     const { earnStat } = await import("../core/stats.js");
     earnStat(CHAR_STAT[inv.sender], 1);
   }
+  completeInvitation(inv);
+  return true;
 }
 
-function cancelKafukaAppointment(inv) {
+function cancelSamechanAppointment(inv) {
   state.pendingInvite = null;
   const item = inv.originId && (state.inbox || []).find(i => i.id === inv.originId || i.originId === inv.originId);
   if (item) {
@@ -487,24 +504,28 @@ async function endDay() {
   let metTonight = state.flags._private_night_day === state.day; // 夜の行動枠で約束の相手に会った
   let companion = metTonight ? state.flags._private_night_char : null;
   if (appointment && (appointment.day ?? state.day) === state.day
-    && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1)) {
-    if (appointment.event !== "date_kafuka") state.pendingInvite = null;
+    && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1)
+    && !postponeUnaffordableInvitation(appointment)) {
+    if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。" : "休養のあと、LIMEで約束した場所へ——");
-    if (appointment.event === "date_kafuka") {
-      if (!kafukaDateReady()) cancelKafukaAppointment(appointment);
+    if (appointment.event === "date_samechan") {
+      if (!samechanDateReady()) cancelSamechanAppointment(appointment);
       else {
-        const result = await playKafukaDate({ invite: appointment, cost: invitationCost(appointment.event) });
+        const result = await playSamechanDate({ invite: appointment, cost: invitationCost(appointment.event) });
         if (result.done) {
+          completeInvitation(appointment);
           await afterAction({ exerted: true, spent: result.spent });
           metTonight = true; companion = appointment.sender;
         }
       }
     } else {
-      const { spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender] });
-      await afterAction({ exerted: true, spent });
-      metTonight = true;
-      companion = appointment.sender;
+      const { value: met, spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender] });
+      if (met) {
+        await afterAction({ exerted: true, spent });
+        metTonight = true;
+        companion = appointment.sender;
+      }
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
@@ -513,7 +534,7 @@ async function endDay() {
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
   if (!athome) {
-    await maybeKafukaEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
+    await maybeSamechanEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
       || state.flags._night_event_day === `${state.chapter}:${state.day}`,
       hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
     await play(`remake_homecoming_${state.day % 3}`);

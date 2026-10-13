@@ -18,6 +18,7 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false },
+  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
   "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, bgUrl: () => "bg" },
   "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
@@ -29,7 +30,7 @@ const values = {
   "engine.js": { play: async (scene) => plays.push(scene), dialogueSequence: (run) => run() },
   "story-knowledge.js": { syncMintoKnowledge() {} },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
-  "kafuka.js": { kafukaSpot: () => null },
+  "samechan.js": { samechanSpot: () => null },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on() {} },

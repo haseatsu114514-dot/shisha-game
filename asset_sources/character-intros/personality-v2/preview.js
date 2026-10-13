@@ -31,7 +31,7 @@ function startAnimation(){
  animate(".sweep",[{transform:"translateX(1450px) rotate(-7deg)"},{transform:"translateX(0) rotate(-7deg)"}],{duration:id==="adam"?370:540,delay:110});
  animate(".accent-line",[{transform:"translateX(-1500px) rotate(-7deg)"},{transform:"translateX(0) rotate(-7deg)"}],{duration:520,delay:220});
  animate(".secondary-line",[{transform:"translateX(-1500px) rotate(-7deg)"},{transform:"translateX(0) rotate(-7deg)"}],{duration:520,delay:300});
- const portraitFrames=id==="kafuka"?[{opacity:0,transform:"translate(-130px,22px)"},{opacity:1,transform:"translate(8px,-5px)",offset:.8},{opacity:1,transform:"translate(0,0)"}]:[{opacity:0,transform:`translateX(${id==="adam"?-180:-110}px)`},{opacity:1,transform:"translateX(0)"}];
+ const portraitFrames=id==="samechan"?[{opacity:0,transform:"translate(-130px,22px)"},{opacity:1,transform:"translate(8px,-5px)",offset:.8},{opacity:1,transform:"translate(0,0)"}]:[{opacity:0,transform:`translateX(${id==="adam"?-180:-110}px)`},{opacity:1,transform:"translateX(0)"}];
  animate("#portrait",portraitFrames,{duration:id==="adam"?450:670,delay:140});
  animate(".motif",[{opacity:0,transform:id==="naru"?"translateX(80px)":"scale(1.09)"},{opacity:1,transform:"none"}],{duration:1000,delay:100});
  animate(".edge-stripes",[{opacity:0},{opacity:.5}],{duration:700,delay:500});

@@ -12,11 +12,11 @@ assert.equal(choosePremiumContinue(["minto"], 2, () => 0)?.speaker, "minto", "Mi
 assert.equal(choosePremiumContinue(["minto", "tsumugi"], 1, () => 0)?.speaker, "tsumugi", "excluded rival is never rolled");
 assert.equal(choosePremiumContinue(["minto", "tsumugi"], 2, (() => { let i = 0; return () => [0, .99][i++]; })())?.speaker, "tsumugi", "multiple partners only choose eligible");
 assert.equal(choosePremiumContinue(["stranger"], 5, () => 0), null, "no default for unsupported lover");
-assert.equal(choosePremiumContinue(["kafuka"], 1, () => 0)?.speaker, "kafuka", "shark is eligible only when actually in state.lovers");
+assert.equal(choosePremiumContinue(["samechan"], 1, () => 0)?.speaker, "samechan", "shark is eligible only when actually in state.lovers");
 assert.equal(choosePremiumContinue(["tsumugi"], 1, () => 0, "tsumugi"), null, "same lover cannot appear consecutively when alone");
 assert.equal(choosePremiumContinue(["tsumugi", "rin"], 1, () => 0, "tsumugi")?.speaker, "rin", "choose another eligible lover on the next continue");
 assert.equal(choosePremiumContinue(["tsumugi", "rin"], 1, () => 0, "rin")?.speaker, "tsumugi", "previous lover is excluded");
-assert.equal(choosePremiumContinue(["minto", "kafuka"], 1, () => 0, "kafuka"), null, "chapter-one Minto cannot bypass last-speaker exclusion");
+assert.equal(choosePremiumContinue(["minto", "samechan"], 1, () => 0, "samechan"), null, "chapter-one Minto cannot bypass last-speaker exclusion");
 for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
   assert.equal(s.speaker, id);
   assert.equal(s.duration, 20);

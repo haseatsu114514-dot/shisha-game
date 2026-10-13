@@ -1,12 +1,12 @@
 [
   {
-    "id": "kafuka-01-shishark-test-run",
-    "character": "kafuka",
-    "label": "器具の仕上げ・kafuka",
-    "source": "kafuka/01-shishark-test-run.png",
-    "prompt": "kafuka/01-shishark-test-run.revision-2.prompt.txt",
+    "id": "samechan-01-shishark-test-run",
+    "character": "samechan",
+    "label": "器具の仕上げ・samechan",
+    "source": "samechan/01-shishark-test-run.png",
+    "prompt": "samechan/01-shishark-test-run.revision-2.prompt.txt",
     "references": [
-      "kafuka/01-shishark-test-run-revision-1.png",
+      "samechan/01-shishark-test-run-revision-1.png",
       "references/cloud-micro-blue.jpg"
     ]
   },

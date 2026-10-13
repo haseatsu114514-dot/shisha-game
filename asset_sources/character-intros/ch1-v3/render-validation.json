@@ -365,7 +365,7 @@
       "animations": 0
     },
     {
-      "id": "kafuka",
+      "id": "samechan",
       "text": {
         "title": {
           "text": "サメの王の側近",
@@ -1082,7 +1082,7 @@
       }
     },
     {
-      "id": "kafuka",
+      "id": "samechan",
       "text": {
         "title": {
           "text": "サメの王の側近",
@@ -1452,19 +1452,19 @@
       "nameOpacity": "1"
     },
     {
-      "id": "kafuka",
+      "id": "samechan",
       "ms": 0,
       "portraitOpacity": "0",
       "nameOpacity": "0"
     },
     {
-      "id": "kafuka",
+      "id": "samechan",
       "ms": 400,
       "portraitOpacity": "1",
       "nameOpacity": "0"
     },
     {
-      "id": "kafuka",
+      "id": "samechan",
       "ms": 1600,
       "portraitOpacity": "1",
       "nameOpacity": "1"

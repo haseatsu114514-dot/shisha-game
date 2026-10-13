@@ -1429,7 +1429,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/js/daily/kafuka.js",
+          "url": "/remake/js/daily/samechan.js",
           "category": "code",
           "sourceBytes": 3652,
           "requests": 2,
@@ -1885,7 +1885,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/data/dialogue/kafuka.json",
+          "url": "/data/dialogue/samechan.json",
           "category": "data",
           "sourceBytes": 21625,
           "requests": 2,
@@ -2125,7 +2125,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/assets/ui/face_icons/face_kafuka.png",
+          "url": "/assets/ui/face_icons/face_samechan.png",
           "category": "images",
           "sourceBytes": 54669,
           "requests": 2,
@@ -3952,7 +3952,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/js/daily/kafuka.js",
+          "url": "/remake/js/daily/samechan.js",
           "category": "code",
           "sourceBytes": 3652,
           "requests": 2,
@@ -4408,7 +4408,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/data/dialogue/kafuka.json",
+          "url": "/data/dialogue/samechan.json",
           "category": "data",
           "sourceBytes": 21625,
           "requests": 2,
@@ -4648,7 +4648,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/assets/ui/face_icons/face_kafuka.png",
+          "url": "/assets/ui/face_icons/face_samechan.png",
           "category": "images",
           "sourceBytes": 54669,
           "requests": 2,
@@ -6646,7 +6646,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/js/daily/kafuka.js",
+          "url": "/remake/js/daily/samechan.js",
           "category": "code",
           "sourceBytes": 3652,
           "requests": 3,
@@ -7126,7 +7126,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/data/dialogue/kafuka.json",
+          "url": "/data/dialogue/samechan.json",
           "category": "data",
           "sourceBytes": 21625,
           "requests": 3,
@@ -7366,7 +7366,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/assets/ui/face_icons/face_kafuka.png",
+          "url": "/assets/ui/face_icons/face_samechan.png",
           "category": "images",
           "sourceBytes": 54669,
           "requests": 3,
@@ -8446,7 +8446,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/img/sprites/characters/kafuka/chr_kafuka_normal.webp",
+          "url": "/remake/img/sprites/characters/samechan/chr_samechan_normal.webp",
           "category": "images",
           "sourceBytes": 367230,
           "requests": 1,
@@ -8458,7 +8458,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/img/sprites/characters/kafuka/chr_kafuka_smile.webp",
+          "url": "/remake/img/sprites/characters/samechan/chr_samechan_smile.webp",
           "category": "images",
           "sourceBytes": 367922,
           "requests": 1,
@@ -8470,7 +8470,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/img/sprites/characters/kafuka/chr_kafuka_serious.webp",
+          "url": "/remake/img/sprites/characters/samechan/chr_samechan_serious.webp",
           "category": "images",
           "sourceBytes": 365304,
           "requests": 1,
@@ -8482,7 +8482,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/img/sprites/characters/kafuka/chr_kafuka_surprise.webp",
+          "url": "/remake/img/sprites/characters/samechan/chr_samechan_surprise.webp",
           "category": "images",
           "sourceBytes": 366088,
           "requests": 1,
@@ -8494,7 +8494,7 @@
           "knownProtocolOverheadRemovedBytes": 0
         },
         {
-          "url": "/remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+          "url": "/remake/img/sprites/characters/samechan/chr_samechan_excited.webp",
           "category": "images",
           "sourceBytes": 384926,
           "requests": 1,
