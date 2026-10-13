@@ -21,12 +21,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "描けない日は、ここに来ても、何も渡せないので"
+          "text": "……でも今日は、もう少しここにいたくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（絵がない日のつむぎちゃんに、俺は何て言いたいんだろう）"
+          "text": "（タブレットの向こうじゃなく、今日は俺を見ている）"
         },
         {
           "type": "choice",
@@ -61,7 +61,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "うん。描いてない日のつむぎちゃんとも、話したい"
+            "text": "うん。今日は、つむぎちゃんの顔が見たかった"
           },
           {
             "speaker": "tsumugi",
@@ -118,7 +118,7 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "……一応、聞いとく。ここに来るのは、試香の感想を言いに？"
+          "text": "……今日は何しに来たの？ 試香の口実もないのに"
         },
         {
           "speaker": "hajime",
@@ -217,12 +217,12 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "お店じゃない私と、これからどんなふうに会いたい？"
+          "text": "……次に会うのも、お店の外でいい？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（店のみんとじゃなくて、栞さんと。……俺は、どうしたいんだろう）"
+          "text": "（栞さんは、返事を待ったまま隣にいる）"
         },
         {
           "type": "choice",
@@ -230,12 +230,12 @@
           "romance_char": "minto",
           "choices": [
             {
-              "text": "「栞さんと、２人でもっと会いたい」",
+              "text": "「栞さんと２人だと、ちょっと緊張します」",
               "next": "close",
               "romance": 1
             },
             {
-              "text": "「気楽に話せる友達でいたい」",
+              "text": "「また話しましょう。愚痴でも聞きますよ」",
               "next": "friend",
               "romance": 0
             }
@@ -252,12 +252,12 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "２人で、って言った。……ちゃんと、聞こえたからね"
+            "text": "……私も。お店の外だと、ちょっと緊張する"
           },
           {
             "speaker": "minto",
             "face": "ura_smug",
-            "text": "……うん。私も、そうしたい。照れるから、今日はここまで"
+            "text": "でも……また、２人で会いたい。今日は、ここまで"
           },
           {
             "speaker": "",
@@ -269,7 +269,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "……うん。友達、いいね。お店の外で話せる人、少ないから"
+            "text": "……うん。お店の話、気楽にできる人がいると助かる"
           },
           {
             "speaker": "minto",
