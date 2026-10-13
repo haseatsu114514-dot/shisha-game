@@ -1,5 +1,5 @@
 {
-  "source_commit": "02fd7da567c3867a472cdf543bba0c120500f7c6",
+  "source_commit": "8f6f72bc53b62c507b80291c8c5c5742ca77a0fa",
   "browser": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
   "test_host": "self-contained exported bundle, http://127.0.0.1:8124/remake/",
   "passed_cases": 16,
@@ -36,12 +36,12 @@
     "remake/js/trpg/preview.js": "f78756231dd9926b026b590843a8826f7a01a640c6106b4229551bba76483a05",
     "remake/js/trpg/room.svg": "df7233fd61f9f69fe7f83f0b48ebf95fb8576f2dfb9e67301a9a98a9665bcc22",
     "remake/js/trpg/session.js": "f36fae7f31ac0989f41b36146f474f2630158f0077d68a87d820a57fa98c0c47",
-    "remake/js/trpg/view.js": "8e8ea1550ca484c4fa19c9143cd17e9f7fb56e368203174aeda623cf2804f7f8",
+    "remake/js/trpg/view.js": "3717714fc59944221eace568f95882eb1dac3627c75af76c4808ceaf396dec22",
     "remake/trpg-preview.html": "9c9b2adbe9080d55c0481d029414b3d44e0cf846ecc104b3f77f355fd544819a"
   },
   "screenshot_sha256": {
     "library.png": "bf3f5e53cd2af55522d38e3b5ceb9bf7afc161cc12b9c50cb9b04a437b83f33c",
-    "ordinary-explore.png": "09924e9ad40c053a850ebb38012457df5a5f5afd1298afd36b6010081aa4a3dd",
+    "ordinary-explore.png": "4c5b6b28bd240a5f50cb2abbbff5dc6f45d1850bab81d6c343324e0833b97d4f",
     "shark-explore.png": "3f9c0773062a6622a134283bb205df8a169ba260f96af6bded8a6129e98edecd",
     "shark-touch-ending.png": "9aea28cd28726e3587151861a3f5d7ff51ac494223f771a3946de580295652d2"
   }
