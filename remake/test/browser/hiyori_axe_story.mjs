@@ -75,8 +75,21 @@ await suite("hiyori-axe-story",async check=>{
       const owner=S.core.state;S.core.saveToSlot("suien_remake_slot1");S.core.newGame();S.core.loadFromSlot("suien_remake_slot1");
       return {oldKnown:!!owner.flags._hiyori_real_self_known,loaded:S.before()};
     });assert(!result.oldKnown&&!result.loaded.known);assert.equal(result.loaded.money,90000);
-    await page.evaluate(()=>{S.vn.vnTest.turbo=true;});await page.locator('[data-test="vn-auto"]').click();
     assert(!await page.evaluate(()=>S.run));assert.equal(await page.evaluate(()=>S.core.state.money),90000);
+    assert(!await page.evaluate(()=>S.vn.isPlaying()));
+  });
+  await check("new-game-during-opening-cancels-vn-and-pre-abort",async page=>{
+    await setup(page);
+    const pre=await page.evaluate(async()=>{
+      const abort=new AbortController();abort.abort();const before=JSON.stringify(S.core.state);
+      const result=await S.daily.playHiyoriEvent("axe_reveal",{signal:abort.signal});
+      return {result,same:before===JSON.stringify(S.core.state),running:S.vn.isPlaying()};
+    });assert(!pre.result&&pre.same&&!pre.running);
+    await page.evaluate(()=>{S.vn.vnTest.turbo=false;S.run=S.daily.playHiyoriEvent("axe_reveal");});
+    await page.locator('#vn.active .vn-next.show').waitFor();
+    await page.evaluate(()=>{S.core.newGame();S.changed=JSON.stringify(S.core.state);});
+    assert(!await page.evaluate(()=>S.run));assert(!await page.evaluate(()=>S.vn.isPlaying()));
+    await page.waitForTimeout(100);assert(await page.evaluate(()=>JSON.stringify(S.core.state)===S.changed));
   });
   await check("load-during-game-aborts-old-owner",async page=>{
     await setup(page);await start(page);

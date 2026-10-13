@@ -8,6 +8,7 @@ on:
       - 'remake/js/daily/tonari.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/minigames/**'
+      - 'remake/js/vn/engine.js'
       - 'remake/test/browser/hiyori_axe_*.mjs'
       - 'remake/test/hiyori.mjs'
       - '.github/workflows/hiyori-axe-story.yml'

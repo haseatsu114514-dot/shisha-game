@@ -26,12 +26,12 @@ export async function playHiyoriAxeSequence(event, { signal } = {}) {
   if (signal?.aborted) abort.abort();
   try {
     if (!current()) return false;
-    const opening = await play(event.dialogue);
+    const opening = await play(event.dialogue, { signal: abort.signal });
     if (!current() || opening?.id !== event.dialogue) return false;
     const game = await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal,
       mode: "practice", opponent: "hiyori" });
     if (!current() || !game.completed) return false;
-    const ending = await play(event.outro);
+    const ending = await play(event.outro, { signal: abort.signal });
     return current() && ending?.id === event.outro;
   } finally {
     unsubscribe(); signal?.removeEventListener("abort", cancel); abort.abort();
