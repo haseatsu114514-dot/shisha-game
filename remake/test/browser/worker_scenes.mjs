@@ -108,6 +108,10 @@ await suite("worker-scenes", async check => {
       await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('[data-test="worker-bubbles"]')).opacity) > 0, null, { timeout: 1000 });
       assert(Number(await page.locator('[data-test="worker-bubbles"]').evaluate(n => getComputedStyle(n).opacity)) > 0);
       assert(await button.isDisabled());
+      // 無効中の実タップ/Spaceは次の一口にならない。
+      if (options.hasTouch) {
+        const r = await button.boundingBox(); await page.touchscreen.tap(r.x + r.width / 2, r.y + r.height / 2);
+      } else await page.keyboard.press("Space");
       const overlap = await page.evaluate(async () => {
         const bottle = document.querySelector('.worker-equipment').getBoundingClientRect();
         const thermometer = document.querySelector('.thermo').getBoundingClientRect();
@@ -117,10 +121,6 @@ await suite("worker-scenes", async check => {
       await capture(page, `${name}-real-inhale`);
       const duration = await worker(page).evaluate(n => parseFloat(n.style.getPropertyValue("--draw-duration")));
       assert([1400, 1900, 3200].includes(duration), "Existing puff length changed");
-      // 無効中の実タップ/Spaceは次の一口にならない。
-      if (options.hasTouch) {
-        const r = await button.boundingBox(); await page.touchscreen.tap(r.x + r.width / 2, r.y + r.height / 2);
-      } else await page.keyboard.press("Space");
       await page.waitForFunction(() => !document.querySelector('.bench-worker')?.dataset.draw);
       assert.equal(await worker(page).getAttribute("data-scene"), "pull");
       // 既存の .15s フェードを、固定sleepでフレーム遅延と混同しない。

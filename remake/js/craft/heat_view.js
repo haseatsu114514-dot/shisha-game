@@ -1,6 +1,7 @@
 // 炭焼きの見た目だけを管理。時刻・採点・温度はheat.js / heat_logic.jsを使う。
 import { el } from "../core/util.js";
 import { artImg, artHeight } from "./art.js";
+import { timingLabel } from "./common.js";
 
 // 生成コンロの実測bboxに対する底面の接地点。中央の空き・外縁を避ける。
 const SPOTS = {
@@ -72,7 +73,7 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     rows[index].replaceChildren(el("b", { text: c.label + " " + timing.rating + "（" + timing.label + "）" }),
       el("span", { text: timing.errorText + (timing.automatic ? "・自動取り出し" : "") }));
     rows[index].dataset.rating = timing.rating;
-    feedback.replaceChildren(el("b.stamp." + timing.rating.toLowerCase(), { text: timing.rating }),
+    feedback.replaceChildren(el("b.stamp." + timing.rating.toLowerCase(), { text: timingLabel(timing.rating.toLowerCase(), timing.rating) }),
       el("span.heat-error", { text: timing.errorText + (timing.automatic ? "・自動" : "") }));
   } };
 }

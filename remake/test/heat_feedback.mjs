@@ -57,6 +57,38 @@ try {
       await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === "raw");
       await page.evaluate(() => { Math.random = QA.random; });
       assert.equal(await page.locator(".stove .coal").count(), count);
+      // 入力イベントが反映された瞬間を読む。最後の炭の結果カードへ切り替わる350ms後と競争しない。
+      await page.evaluate(() => {
+        document.addEventListener("pointerdown", e => {
+          const coal = e.target.closest?.(".stove .coal");
+          if (!coal?.disabled) return;
+          const index = coal.dataset.test.split("-")[1];
+          const collected = document.querySelector(`[data-test="stored-coal-${index}"]`);
+          const panel = document.querySelector(".bench-panel").getBoundingClientRect();
+          const strip = document.querySelector(".heat-feedback"), f = strip.getBoundingClientRect();
+          const carrier = document.querySelector(".heat-info").getBoundingClientRect();
+          const stamp = strip.querySelector(".stamp");
+          const r = stamp.getBoundingClientRect();
+          const inside = b => b.left >= panel.left - 1 && b.right <= panel.right + 1 && b.top >= panel.top - 1 && b.bottom <= panel.bottom + 1;
+          const nodes = [...document.querySelectorAll(".stove .coal:not(:disabled)")];
+          const active = nodes.map(n => n.getBoundingClientRect());
+          const images = n => [...n.querySelectorAll(".coal-sprite .art")].map(n => n.style.backgroundImage);
+          QA.lastPick = {
+            phase: coal.dataset.phase, storedPhase: collected.dataset.phase,
+            count: document.querySelector('[data-test="coal-count"]').textContent,
+            originals: images(coal), stored: images(collected),
+            rating: document.querySelector(`[data-test="coal-timing-${index}"]`).dataset.rating,
+            stamps: strip.querySelectorAll(".stamp").length, stamp: stamp.textContent,
+            geometry: {
+              separate: active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier),
+              separated: active.every((r, i) => active.slice(i + 1).every(o => r.right <= o.left || o.right <= r.left || r.bottom <= o.top || o.bottom <= r.top)),
+              textInside: r.left >= f.left && r.right <= f.right,
+              accessible: nodes.every(n => { const r = n.getBoundingClientRect(); return [.5, .25, .75, .1, .9].some(y => [.5, .25, .75, .1, .9].some(x => n.contains(document.elementFromPoint(r.x + r.width * x, r.y + r.height * y)))); }),
+              pointer: getComputedStyle(strip).pointerEvents, floating: document.querySelectorAll(".bench-panel > .stamp, .care-burn > .stamp").length,
+            },
+          };
+        });
+      });
       const expected = [];
       for (let i = 0; i < count; i++) {
         const phase = excellentOnly ? "just" : ["raw", "pre", "just", "over"][i];
@@ -79,36 +111,17 @@ try {
         });
         assert(point, `${label}: 炭${i + 1}に実入力が届く場所がない`);
         if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
-        assert.equal(await coal.getAttribute("data-phase"), phase);
-        assert.equal(await page.locator('[data-test="coal-count"]').textContent(), `${i + 1} / ${count}`);
-        const collected = page.locator(`[data-test="stored-coal-${i}"]`);
-        assert.equal(await collected.getAttribute("data-phase"), phase);
-        assert.deepEqual(await coal.locator(".coal-sprite .art").evaluateAll(nodes => nodes.map(n => n.style.backgroundImage)),
-          await collected.locator(".coal-sprite .art").evaluateAll(nodes => nodes.map(n => n.style.backgroundImage)), "回収しても同じ炭素材を保持する");
-        assert.equal(await page.locator(`[data-test="coal-timing-${i}"]`).getAttribute("data-rating"), grade[0]);
-        const feedback = page.locator(".heat-feedback");
-        assert.equal(await feedback.locator(".stamp").count(), 1, "連続評価は差し替えられる");
-        assert.equal(await feedback.locator(".stamp").textContent(), grade[0]);
-        const geometry = await page.evaluate(() => {
-          const panel = document.querySelector(".bench-panel").getBoundingClientRect();
-          const strip = document.querySelector(".heat-feedback"), f = strip.getBoundingClientRect();
-          const stove = document.querySelector(".stove").getBoundingClientRect();
-          const carrier = document.querySelector(".heat-info").getBoundingClientRect();
-          const stamp = strip.querySelector(".stamp").getBoundingClientRect();
-          const inside = b => b.left >= panel.left - 1 && b.right <= panel.right + 1 && b.top >= panel.top - 1 && b.bottom <= panel.bottom + 1;
-          const accessible = [...document.querySelectorAll(".stove .coal:not(:disabled)")].every(n => {
-            const r = n.getBoundingClientRect();
-            return [.5, .25, .75, .1, .9].some(y => [.5, .25, .75, .1, .9].some(x =>
-              n.contains(document.elementFromPoint(r.x + r.width * x, r.y + r.height * y))));
-          });
-          const active = [...document.querySelectorAll(".stove .coal:not(:disabled)")].map(n => n.getBoundingClientRect());
-          const separated = active.every((r, i) => active.slice(i + 1).every(o => r.right <= o.left || o.right <= r.left || r.bottom <= o.top || o.bottom <= r.top));
-          return { separate: active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier), separated,
-            textInside: stamp.left >= f.left && stamp.right <= f.right, accessible,
-            pointer: getComputedStyle(strip).pointerEvents, floating: document.querySelectorAll(".bench-panel > .stamp, .care-burn > .stamp").length };
-        });
-        assert.deepEqual(geometry, { separate: true, stripInside: true, carrierInside: true, separated: true,
-          textInside: true, accessible: true, pointer: "none", floating: 0 }, `${label}: ${JSON.stringify(geometry)}`);
+        const sample = await page.evaluate(() => QA.lastPick);
+        assert.equal(sample.phase, phase);
+        assert.equal(sample.storedPhase, phase);
+        assert.equal(sample.count, `${i + 1} / ${count}`);
+        assert.equal(sample.originals.length, 4);
+        assert.deepEqual(sample.originals, sample.stored, "回収しても同じ炭素材を保持する");
+        assert.equal(sample.rating, grade[0]);
+        assert.equal(sample.stamps, 1, "連続評価は差し替えられる");
+        assert.equal(sample.stamp, phase === "just" ? "EXCELLENT" : grade[0]);
+        assert.deepEqual(sample.geometry, { separate: true, stripInside: true, carrierInside: true, separated: true,
+          textInside: true, accessible: true, pointer: "none", floating: 0 }, `${label}: ${JSON.stringify(sample.geometry)}`);
         if (shots && (i === count - 1 || phase === "just")) {
           await page.waitForTimeout(270); await page.screenshot({ path: `${shots}/${label}-${i + 1}.png` });
         }

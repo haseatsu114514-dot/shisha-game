@@ -46,7 +46,7 @@ try {
     await button.waitFor();assert(await button.isDisabled());
     await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
     await page.evaluate(()=>document.fonts.ready);
-    await page.waitForFunction(()=>[...document.querySelectorAll('.bench img')].every(i=>i.complete&&i.naturalWidth));
+    await page.waitForFunction(()=>[...document.querySelectorAll('.bench img[src]')].filter(i=>i.getClientRects().length).every(i=>i.complete&&i.naturalWidth));
     const look=await page.evaluate(()=>{
       const heart=document.querySelector('.dodge-heart'),core=heart.querySelector('.dodge-core'),pad=document.querySelector('.dodge-pad'),knob=pad.querySelector('.dodge-knob');
       const h=heart.getBoundingClientRect(),c=core.getBoundingClientRect(),p=pad.getBoundingClientRect(),k=knob.getBoundingClientRect(),scale=p.width/pad.offsetWidth;

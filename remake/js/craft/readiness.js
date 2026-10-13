@@ -5,6 +5,7 @@ import { coalCount, coalTypes } from "./coals.js";
 import { coalSpriteFiles } from "./heat_view.js";
 import { bowlArtFiles } from "./art.js";
 import { WORKER_SCENES } from "./worker-scenes.js";
+import { audienceAssetUrls } from "./audience.js";
 
 const BASE = ["bench_base.png", "ui_craft_panel.png", "ui_craft_button.png",
   "hookah_base.png", "hookah_stem.png", "hookah_tray.png", "bowl_empty_silicone.png"];
@@ -35,6 +36,7 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
     bgUrl(mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"),
     portraitInfo("hajime", "serious")?.src,
     ...people.map(faceIconUrl),
+    ...audienceAssetUrls(cs || { mode, audienceIds: people }),
   ].filter(Boolean))];
 }
 export function warmCraftAssets(mode, options) {

@@ -37,7 +37,7 @@ await suite("ch1-tournament", async check => {
     await init(page);
     let release;
     const held = new Promise(resolve => { release = resolve; });
-    await page.route("**/img/ui/making/coal_white.png", async route => { await held; await route.continue(); });
+    await page.route("**/img/ui/making/heat_flat_lit.webp", async route => { await held; await route.continue(); });
     try {
       await page.evaluate(() => {
         T.session.craftTest.auto = "good";
@@ -60,7 +60,7 @@ await suite("ch1-tournament", async check => {
   await check("failed-image-fallback", async page => {
     await init(page);
     // 読み込み自体は成功、画像デコードは失敗。必須操作はDOMなので先に進める。
-    await page.route("**/img/ui/making/coal_white.png", route => route.fulfill({ status: 200, contentType: "image/png", body: "broken image" }));
+    await page.route("**/img/ui/making/heat_flat_lit.webp", route => route.fulfill({ status: 200, contentType: "image/png", body: "broken image" }));
     await page.evaluate(async () => {
       T.session.craftTest.auto = "good";
       window.cs = T.session.newSession("tournament");
@@ -74,7 +74,7 @@ await suite("ch1-tournament", async check => {
     await init(page);
     let release;
     const held = new Promise(resolve => { release = resolve; });
-    await page.route("**/img/ui/making/coal_white.png", async route => { await held; await route.continue(); });
+    await page.route("**/img/ui/making/ui_craft_panel.webp", async route => { await held; await route.continue(); });
     try {
       // module初期化は画像を保留する前に完了し、本番の開始は同期で呼ぶ。
       await page.evaluate(() => {

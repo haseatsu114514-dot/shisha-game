@@ -36,7 +36,8 @@ export async function suite(name, run) {
     const prefix = path.join(artifacts, `${name}-${label}`);
     try {
       await page.goto(baseURL, { waitUntil: "load" });
-      await page.locator('[data-test="title-new"]').waitFor();
+      // 起動時は書体と選んだタイトル画像を待つ。工程中の操作とは別の上限。
+      await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
       await page.locator("#boot").waitFor({ state: "detached" });
       await body(page);
       assert.deepEqual(errors, [], "Unexpected browser errors");

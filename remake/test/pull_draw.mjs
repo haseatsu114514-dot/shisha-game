@@ -53,7 +53,7 @@ try {
     }, { mode, temp });
     if (mode === 'care') await page.locator('[data-test="care-coal-0"]').click();
     await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
-    await page.waitForFunction(() => [...document.querySelectorAll('.bench img')].every(i => i.complete && i.naturalWidth));
+    await page.waitForFunction(() => [...document.querySelectorAll('.bench img[src]')].filter(i => i.getClientRects().length).every(i => i.complete && i.naturalWidth));
     await page.evaluate(() => document.fonts.ready);
   };
   const at = async (lo, hi) => page.evaluate(async ({ lo, hi }) => {
