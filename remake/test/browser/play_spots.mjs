@@ -13,7 +13,10 @@ async function setup(page, { chapter = 1, slot = 0, money = 12000, club = false,
     Object.assign(s, { chapter, day: chapter === 1 ? 5 : 16, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _lime_tut: true, _lime_opened: true,
+      _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
       _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true } });
+    // DAY5までに読んだ必須会話。LOAD時の旧保存救済とは切り分けて店の消費を比べる。
+    s.met.tsumugi = true; s.affinity.tsumugi = 21; s.contacts.push("tsumugi");
     if (club) {
       s.met.hiyori = true; s.affinity.hiyori = 100;
       s.trpg.club = { founded: { chapter: 2, day: 15 }, members: { hiyori: { chapter: 2, day: 15 } } };
