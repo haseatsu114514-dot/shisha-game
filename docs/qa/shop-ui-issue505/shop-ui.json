@@ -1,7 +1,7 @@
 {
   "name": "shop-ui",
   "baseURL": "http://127.0.0.1:8123/remake/",
-  "ref": null,
+  "ref": "646ad9f",
   "results": [
     {
       "label": "pc-entry",
