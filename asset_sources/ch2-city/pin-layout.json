@@ -1,0 +1,15 @@
+{
+  "coordinateSystem": "percent_of_1280x720_image; anchor_is_storefront_or_plaza_at_ground_level",
+  "status": "recommended_after_visual_review; preview_UI_may_adjust_labels_without_relocating_store_anchors",
+  "region": "same_prefecture_neighboring_city; Widehanga_is_a_district_not_the_city_name",
+  "anchors": {
+    "central_station": { "x": 15, "y": 34, "feature": "station_forecourt" },
+    "c_station": { "x": 85, "y": 30, "feature": "convention_venue_entrance_plaza" },
+    "ageha": { "x": 81, "y": 46, "feature": "small_pink_facade_right_of_department_store" },
+    "kumicho": { "x": 63, "y": 65, "feature": "traditional_wooden_shop_entrance" },
+    "rei": { "x": 42, "y": 78, "feature": "black_and_crimson_music_storefront" },
+    "volk": { "x": 18, "y": 76, "feature": "gray_brick_workshop_with_steel_shopfront" }
+  },
+  "panelSafeArea": { "left": 76, "top": 58, "right": 100, "bottom": 100 },
+  "canonicalLocationWarning": "REI and Volk permanent locations are unresolved across source documents; preview anchors do not finalize canon."
+}
