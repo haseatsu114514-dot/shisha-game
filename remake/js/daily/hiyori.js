@@ -9,6 +9,7 @@ import { afterStory, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bon
 import { on } from "../core/bus.js";
 import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
+import { maybeRecruitTrpgMember } from "./trpg.js";
 
 let active = false;
 
@@ -53,6 +54,8 @@ export async function playHiyoriEvent(id, options = {}) {
     if (event.affinity) gainAffinity("hiyori", event.affinity);
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
     if (state !== owner || lifetime?.signal.aborted) return false;
+    await maybeRecruitTrpgMember("hiyori");
+    if (state !== owner) return false;
     save();
     return true;
   } finally {
@@ -107,6 +110,7 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
   }
   state.flags._hiyori_encounter_day = stamp;
   if (affinityLevel("hiyori") >= 3 && state.flags._hiyori_cracks_done) state.flags._hiyori_tonari_ready = true;
+  await maybeRecruitTrpgMember("hiyori");
   save();
   return true;
 }
@@ -126,6 +130,8 @@ export async function playHiyoriHangout(options = {}) {
     state.flags._hiyori_repeat_count = n + 1;
     state.flags._hiyori_encounter_day = stamp;
     gainAffinity("hiyori", 10);
+    await maybeRecruitTrpgMember("hiyori");
+    if (state !== owner) return false;
     save();
     return true;
   } finally { active = false; }
@@ -139,12 +145,13 @@ export async function meetHiyoriAtTonari() {
   if (hiyoriEventStatus("work_talk") === "ready") return playHiyoriEvent("work_talk");
   if (!active && !isPlaying() && state.flags._hiyori_work_talk_done && !state.flags._hiyori_bond_question_done) {
     const lifetime = ownedConversation(); active = true;
-    try { if (await playHiyoriQuestion({ signal: lifetime.signal })) return true; }
+    try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }
   }
   if (!active && !isPlaying() && finaleAtVisit("hiyori")) {
     const lifetime = ownedConversation(); active = true;
-    try { return await playFinale("hiyori", { signal: lifetime.signal }); }
+    try { const played = await playFinale("hiyori", { signal: lifetime.signal });
+      if (played) await maybeRecruitTrpgMember("hiyori"); return played; }
     finally { lifetime.close(); active = false; }
   }
   return false;

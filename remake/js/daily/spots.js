@@ -13,7 +13,7 @@ import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFin
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
-import { trpgSpot } from "./trpg.js";
+import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
@@ -213,6 +213,7 @@ export async function visitChar(charId) {
   earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
+  await maybeRecruitTrpgMember(charId);
 }
 
 export async function visitRival(spot) {

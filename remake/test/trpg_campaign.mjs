@@ -13,7 +13,11 @@ function state() {
   return { chapter: 2, phase: "daily", day: 3, slot: 1, money: 3000, lovers: [], affinity: {}, met: {}, flags: {},
     trpg: { ...rules.emptyTrpgProgress(), shifts: [] } };
 }
-function friends(s, ids = catalog.participants.map(p => p.id)) { for (const id of ids) { s.met[id] = true; s.affinity[id] = 66; } return s; }
+function friends(s, ids = catalog.participants.map(p => p.id)) {
+  rules.foundTrpgClub(s, catalog);
+  for (const id of ids) { s.met[id] = true; s.affinity[id] = 66; rules.joinTrpgClub(s, catalog, id); }
+  return s;
+}
 function own(s, id) { rules.syncTrpgStock(s, catalog); assert(rules.buyTrpgBook(s, catalog, id)); return s; }
 function finish(scenario) {
   const session = new TrpgSession(scenario, { seed: 2 });
@@ -35,13 +39,36 @@ test("chapter one cannot stock, buy or call a table", () => {
   assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
   assert.deepEqual(s, before);
 });
-test("only known MAX friends/lovers unlock stock; lover bond level is irrelevant", () => {
-  const s = state(); s.met.hiyori = true; s.affinity.hiyori = 65;
-  rules.syncTrpgStock(s, catalog); assert.deepEqual(s.trpg.stock, []);
-  s.lovers.push("hiyori"); s.loveLevel = { hiyori: 1 };
+test("MAX is recruitment eligibility, never automatic membership or stocking", () => {
+  const s = state(); s.met.hiyori = true; s.affinity.hiyori = 66;
+  assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
+  assert(rules.foundTrpgClub(s, catalog)); assert(!rules.foundTrpgClub(s, catalog));
+  assert(rules.recruitmentStatus(s, catalog.participants[0], catalog).ok);
+  assert(!rules.participantStatus(s, catalog.participants[0]).ok);
+  assert(!rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, []);
+  assert(rules.joinTrpgClub(s, catalog, "hiyori")); assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, [ordinary.id]);
   s.met.samechan = true; s.affinity.samechan = 66;
-  assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, [ordinary.id, shark.id]);
+  assert(!rules.syncTrpgStock(s, catalog));
+  assert(rules.joinTrpgClub(s, catalog, "samechan")); assert(rules.syncTrpgStock(s, catalog));
+  assert.deepEqual(s.trpg.stock, [ordinary.id, shark.id]);
+});
+test("known MAX friends or lovers may join; work does not prevent face-to-face recruitment", () => {
+  const s = state(); rules.foundTrpgClub(s, catalog);
+  s.met.hiyori = true; s.affinity.hiyori = 65;
+  assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
+  s.lovers = ["hiyori"]; s.loveLevel = { hiyori: 1 };
+  assert(rules.joinTrpgClub(s, catalog, "hiyori"));
+  s.met.adam = true; s.affinity.adam = 66; // His shop is working tonight.
+  assert(rules.joinTrpgClub(s, catalog, "adam"));
+  assert(!rules.participantStatus(s, catalog.participants.find(p => p.id === "adam")).ok);
+  const before = structuredClone(s);
+  for (const id of ["sumi", "naru", "unknown"]) assert(!rules.joinTrpgClub(s, catalog, id));
+  const uninterested = structuredClone(catalog); uninterested.participants[2].interested = false;
+  s.met.tsumugi = true; s.affinity.tsumugi = 66;
+  assert(!rules.joinTrpgClub(s, uninterested, "tsumugi"));
+  assert.deepEqual(s.trpg, before.trpg);
+  assert.equal(s.money, before.money); assert.equal(s.slot, before.slot);
 });
 test("buy once, charge once, preserve the clock, and keep purchased books when shifts change", () => {
   const s = friends(state()); rules.syncTrpgStock(s, catalog);
@@ -74,7 +101,7 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.pendingInvite.day = 4; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
-test("Sumi/Naru never join; low-affinity companions are not invited", () => {
+test("Sumi/Naru never join; unrecruited companions are not invited", () => {
   const s = own(friends(state(), ["hiyori", "sumi", "naru"]), ordinary.id);
   const result = rules.castTrpgTable(s, catalog, ordinary);
   assert.deepEqual(result.participants, ["hiyori", "hajime"]);

@@ -1,14 +1,41 @@
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru"]);
-export const emptyTrpgProgress = () => ({ stock: [], owned: [], cleared: {} });
+export const emptyTrpgProgress = () => ({ stock: [], owned: [], cleared: {}, club: { founded: null, members: {} } });
+
+export function foundTrpgClub(state, catalog) {
+  if (!state || state.chapter < catalog.unlockChapter || state.phase !== "daily" || state.trpg?.club?.founded) return false;
+  state.trpg ||= emptyTrpgProgress();
+  state.trpg.club = { founded: { chapter: state.chapter, day: state.day }, members: {} };
+  return true;
+}
+
+/** Recruitment requires a real conversation; work schedules only affect the later table. */
+export function recruitmentStatus(state, person, catalog) {
+  if (!state || state.chapter < catalog.unlockChapter) return { ok: false, reason: "第2章から勧誘できる" };
+  if (state.phase !== "daily") return { ok: false, reason: "街で会った時に誘おう" };
+  if (!state.trpg?.club?.founded) return { ok: false, reason: "バーで部活を作ろう" };
+  if (!person || excluded.has(person.id) || person.interested !== true) return { ok: false, reason: "参加対象外" };
+  if (state.trpg.club.members?.[person.id]) return { ok: false, reason: "入部済み" };
+  if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
+  if (!(state.lovers || []).includes(person.id) && (state.affinity?.[person.id] || 0) < person.maxAffinity) {
+    return { ok: false, reason: "好感度MAXになったら誘おう" };
+  }
+  return { ok: true, reason: "会った時に、部活へ誘える" };
+}
+
+export function joinTrpgClub(state, catalog, id) {
+  const person = catalog.participants.find(p => p.id === id);
+  if (!recruitmentStatus(state, person, catalog).ok) return false;
+  state.trpg.club.members[id] = { chapter: state.chapter, day: state.day };
+  return true;
+}
 
 export function participantStatus(state, person) {
   if (excluded.has(person.id)) return { ok: false, reason: "参加対象外" };
   if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
-  if (!(state.lovers || []).includes(person.id) && (state.affinity?.[person.id] || 0) < person.maxAffinity) {
-    return { ok: false, reason: "好感度MAXで招待できる" };
-  }
+  if (!state.trpg?.club?.founded) return { ok: false, reason: "バーで部活を作ろう" };
+  if (person.interested !== true || !state.trpg.club.members?.[person.id]) return { ok: false, reason: "会って部活へ勧誘しよう" };
   const override = (state.trpg?.shifts || []).find(s => s.id === person.id && s.chapter === state.chapter
     && s.day === state.day && s.slot === state.slot);
   const temporaryClosed = state.flags?.[`_temporary_closed_${person.id}`] === `${state.chapter}:${state.day}`;
@@ -23,6 +50,7 @@ export function participantStatus(state, person) {
 export function tableStatus(state, catalog, { nightBusy = false } = {}) {
   if (!state || state.chapter < (catalog.unlockChapter || 2)) return { ok: false, reason: "第2章から遊べる" };
   if (state.phase !== "daily") return { ok: false, reason: "街で過ごせる日に遊ぼう" };
+  if (!state.trpg?.club?.founded) return { ok: false, reason: "まずは、この店で部活を作ろう" };
   if (state.slot !== 1) return { ok: false, reason: "卓を囲むのは夜の1枠" };
   if (nightBusy || state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1) {
     return { ok: false, reason: "今夜は先に決まった予定がある" };
@@ -32,14 +60,13 @@ export function tableStatus(state, catalog, { nightBusy = false } = {}) {
 
 /** Stock persists after the first eligible visit; a work shift never removes a book. */
 export function syncTrpgStock(state, catalog) {
-  if (!state || state.chapter < catalog.unlockChapter) return false;
+  if (!state || state.chapter < catalog.unlockChapter || !state.trpg?.club?.founded) return false;
   state.trpg ||= emptyTrpgProgress();
   let changed = false;
   for (const book of catalog.scenarios) {
     const ready = book.stockRequires.every(id => {
       const p = catalog.participants.find(p => p.id === id);
-      return p && !excluded.has(id) && state.met?.[id] && ((state.lovers || []).includes(id)
-        || (state.affinity?.[id] || 0) >= p.maxAffinity);
+      return p && !excluded.has(id) && p.interested === true && !!state.trpg.club.members?.[id];
     });
     if (ready && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
   }
