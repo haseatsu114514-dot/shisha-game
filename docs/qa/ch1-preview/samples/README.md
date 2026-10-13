@@ -1,6 +1,6 @@
 # 次回予告の3案・実ブラウザ録画
 
-Issue #384 / PR #490。2026-10-13に既存セル画版v2の6場面を使い、比較ページから各案を自然完走させた。元絵・本編用の台本・通常ゲームの選択は変更しない。
+Issue #384 / PR #490。2026-10-13に既存セル画版v2の6場面を使い、比較ページから各案を自然完走させた。この比較録画を見たオーナーの「Cを採用」に従い、Cを通常ゲームの初回・再視聴へ正式採用した。元絵は変更しない。
 
 | 案 | 録画 | ファイル時間 | 予告本体 | 音声ピーク |
 | --- | --- | --- | --- | --- |
@@ -20,4 +20,4 @@ Issue #384 / PR #490。2026-10-13に既存セル画版v2の6場面を使い、�
 - `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/chapter_preview_samples.mjs` — 4件PASS（B/CのPC・スマホ横画面、停止/再開、スキップ、保存不変）。
 - JS構文、`git diff --check`、`python3 tools/check_agent_docs.py` — PASS。
 
-結果JSONは `production-browser-results.json` / `samples-browser-results.json`。録画スクリプトと再作成コマンドは [章末と次回予告](../../../chapter_previews.md)を参照。JPEGの時刻は1/1000秒単位で結合し、動画書き出し時のカットのずれを防ぐ。
+この比較時点の結果JSONは `production-browser-results.json` / `samples-browser-results.json`。Cを本編へ採用した後の9件の結果は `../browser-results.json`。録画スクリプトと再作成コマンドは [章末と次回予告](../../../chapter_previews.md)を参照。JPEGの時刻は1/1000秒単位で結合し、動画書き出し時のカットのずれを防ぐ。

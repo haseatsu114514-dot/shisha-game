@@ -1,4 +1,4 @@
-// 比較専用。採用前の案を本編の台本やセーブへ書き戻さない。
+// 既存台本から採用案と比較案を組み立てる。セーブには触れない。
 export const previewSamples = [
   { id: "tv", letter: "A", name: "王道のテレビ予告", description: "4:3のテレビ枠、ドット字幕。6人の言葉を順に見せる。", hook: "勝ちは、始まりだった。", seconds: 48 },
   { id: "rush", letter: "B", name: "短く畳みかける予告", description: "約30秒。大きな字幕と速い曲から、最後だけ静寂へ。", hook: "勝つほど、遠くなる。", seconds: 30 },

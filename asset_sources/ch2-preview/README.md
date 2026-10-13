@@ -5,9 +5,9 @@
 - 原本: `asset_sources/trailer-90s-anime-concept/images/` の6枚。スミの沈黙、なるとの衝突、みんとの忠告、つむぎの水、アゲハの背中、ひとりの控え室。
 - 原本の生成指示・本人比較・機材/店舗QA: `asset_sources/trailer-90s-anime-concept/`。既存PNGは変更していない。
 - 実装: `assets/cgs/ch2_preview/` の同名WebP。1664×936、6枚合計881,856 bytes。ffmpegでquality90の形式変換だけを行い、再描画・リサイズ・クロップ・色調加工を加えない。
-- 4:3のTV枠の中に16:9の原画全体を収め、小さなズーム中も原画の外縁が切れない余白を取る。字幕は絵の下に置く。
-- 台詞と各場面の長さはサンプルの `trailer/timeline.js` を引き継ぐ。章末の短い余韻と次章タイトルを接続し、全11カット47.8秒。大会の採点・順位の説明を足さず、未知の送信者の正体とアゲハが去る理由は明かさない。
-- サンプルと同じDotGothic16を使用。`assets/fonts/DotGothic16-Regular.ttf` はサンプルのフォント原本とバイト一致。SIL OFLは `assets/fonts/OFL-DotGothic16.txt` に保存。
+- 正式採用Cは横長の画面に16:9の原画全体を収め、字幕は絵の下に置く。比較A/Bの4:3のTV枠でも原画の外縁を切らない。
+- サンプルの `trailer/timeline.js` の台詞を引き継ぐ。オーナーが3案の録画から選んだCは全12カット47.5秒。章末の短い余韻と次章タイトルをつなぎ、タイトル後にみんとの言葉をもう一度置く。大会の採点・順位の説明を足さず、未知の送信者の正体とアゲハが去る理由は明かさない。
+- 章タイトルと話者名はサンプルと同じDotGothic16、Cの本文字幕は本編のSuien Gothicを使用。`assets/fonts/DotGothic16-Regular.ttf` はサンプルのフォント原本とバイト一致。SIL OFLは `assets/fonts/OFL-DotGothic16.txt` に保存。
 
 採用元PNG、実装WebPのSHA-256、寸法は `adoption.json`。原本6枚のコンタクトシートとみんとの実画像を確認し、実ブラウザでも文字・構図・字体を検証する。
 

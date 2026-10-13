@@ -1,4 +1,4 @@
-/* 比較ページだけで読む。Aは本編と同じ見せ方。 */
+/* 比較ページだけで読む。採用済みCのスタイルはchapter-preview.cssにある。 */
 .sample-rush .preview-screen { background: #0c0d19; box-shadow: 0 0 0 2px #baa88a, 0 0 75px #242338; }
 .sample-rush .preview-art { top: 38px; animation: sample-rush-enter .22s ease-out both; }
 .sample-rush .preview-caption { bottom: 35px; }
@@ -11,35 +11,9 @@
 .sample-rush .preview-chapter-title { background: linear-gradient(152deg, #111621 70%, #80693e 70.2%, #080c13 71%); }
 .sample-rush .preview-chapter-title strong { font-size: 92px; color: #f4deb1; }
 .sample-rush .preview-screen[data-kind="echo"] .preview-caption p { font-size: 36px; }
-.sample-quiet .preview-screen { left: 80px; top: 28px; width: 1120px; height: 630px; background: #06070b; box-shadow: 0 0 0 1px #272932; }
-.sample-quiet .preview-screen::after { background: none; box-shadow: none; }
-.sample-quiet .preview-art { left: 90px; top: 16px; width: 940px; height: 528.75px; animation: sample-quiet-art var(--duration) linear both; }
-.sample-quiet .preview-grain { opacity: .045; }
-.sample-quiet .preview-bug { font-size: 13px; top: 23px; right: 20px; letter-spacing: .13em; color: #b4ac97; }
-.sample-quiet .preview-caption { text-align: left; left: 90px; right: 90px; bottom: 15px; }
-.sample-quiet .preview-caption small { background: none; padding: 0; margin-bottom: 4px; font-size: 17px; letter-spacing: .18em; color: #b8ab90; }
-.sample-quiet .preview-caption p { font-family: "Suien Gothic", sans-serif; font-size: 27px; line-height: 1.5; font-weight: 500; color: #eee9df; }
-.sample-quiet .preview-screen[data-kind="prologue"] { background: #06070b; }
-.sample-quiet .preview-screen[data-kind="prologue"] .preview-kicker { top: 207px; font-size: 20px; }
-.sample-quiet .preview-screen[data-kind="prologue"] .preview-caption { bottom: 230px; text-align: center; }
-.sample-quiet .preview-screen[data-kind="prologue"] .preview-caption p { font-size: 28px; }
-.sample-quiet .preview-slate { background: #06070b; }
-.sample-quiet .preview-slate strong { font-size: 60px; margin: 20px 0; }
-.sample-quiet .preview-slate small { font-size: 21px; color: #c3b69b; }
-.sample-quiet .preview-slate span { font-size: 15px; color: #9c96a5; }
-.sample-quiet .preview-chapter-title { background: #06070b; }
-.sample-quiet .preview-chapter-title strong { font-size: 65px; }
-.sample-quiet .preview-chapter-title small { font-size: 22px; }
-.sample-quiet .preview-chapter-title span { font-size: 20px; }
-.sample-quiet .preview-chapter-title b { margin-top: 25px; font-size: 18px; color: #c3b69b; }
-.sample-quiet .preview-screen[data-kind="echo"] .preview-caption { bottom: 270px; text-align: center; }
-.sample-quiet .preview-screen[data-kind="echo"] .preview-caption p { font-size: 36px; letter-spacing: .08em; }
-.sample-quiet .preview-controls, .sample-quiet .preview-progress { left: 80px; right: 80px; }
-.sample-quiet.paused .preview-art { animation-play-state: paused; }
-.chapter-preview.sample-quiet.reduced .preview-art, .chapter-preview.sample-rush.reduced .preview-art { animation: none; }
+.chapter-preview.sample-rush.reduced .preview-art { animation: none; }
 @keyframes sample-rush-enter { from { opacity: .4; transform: translateX(12px); } to { opacity: 1; transform: none; } }
-@keyframes sample-quiet-art { 0% { opacity: 0; } 9% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: .15; } }
-@media (prefers-reduced-motion: reduce) { .sample-rush .preview-art, .sample-quiet .preview-art { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .sample-rush .preview-art { animation: none; } }
 
 .sample-intro { position: absolute; inset: 0; padding: 45px 80px 32px; display: flex; flex-direction: column; gap: 18px; background: radial-gradient(ellipse at 70% 30%, #242432, #090b11 75%); color: #f2ecdf; }
 .sample-intro header { display: flex; justify-content: space-between; align-items: center; color: #c9b895; font-size: 17px; letter-spacing: .18em; }

@@ -5,6 +5,7 @@
   "english": "Jealousy Haze",
   "sub": "HAZE: OPEN CLOUD 編",
   "duration": 47800,
+  "presentation": "quiet",
   "visual_source": "asset_sources/trailer-90s-anime-concept/images/（Issue #415・セル画版v2）",
   "frames": [
     { "id": "afterglow", "kind": "prologue", "duration": 2800, "kicker": "なるさんとの約束、そのあとで。", "text": "『もう一口』の言葉より、\n採点表が、気になっていた。" },
@@ -22,7 +23,7 @@
   "source_notes": {
     "continuity": "第1章の採点表LIME・なるとの約束から続く、次章の断片。後日談と予告の文面は本演出用。第2章本編の読了・交流・報酬は進めない。",
     "canon": ["brand/story_and_structure.md 第1章・第2章", "data/dialogue/ch1_naru.json ch1_naru_promise", "data/dialogue/ch2_main.json", "data/dialogue/ch2_isolation.json"],
-    "sample": "既存サンプルのセル画版v2・6場面・抜粋台詞・各場面の読みの間を採用。PNG原画は変更せず、16:9の構図全体を4:3の画面枠内に収める。",
+    "sample": "既存サンプルのセル画版v2・6場面・抜粋台詞を採用。PNG原画は変更せず、16:9の構図全体を保持する。正式採用C（presentation: quiet）は横長画面・全12カット47.5秒。章タイトル後にみんとの言葉を反復する。基礎台本のA/Bも比較ページから再生できる。",
     "spoilers": "既存サンプルで採用済みの控え室の断片まで。大会名や順位・審査結果の説明は足さず、未知の送信者の正体とアゲハが去る理由を見せない。"
   }
 }

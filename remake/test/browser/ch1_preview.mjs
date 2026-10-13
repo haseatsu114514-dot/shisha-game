@@ -2,8 +2,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { createChapterSample } from "../../js/chapters/chapter-preview-samples.js";
 
-const spec = JSON.parse(fs.readFileSync(new URL("../../../data/chapter_previews/ch2.json", import.meta.url), "utf8"));
+const base = JSON.parse(fs.readFileSync(new URL("../../../data/chapter_previews/ch2.json", import.meta.url), "utf8"));
+assert.equal(base.presentation, "quiet", "The owner selected C for the production preview");
+const spec = createChapterSample(base, base.presentation);
 const frameIds = spec.frames.map(frame => frame.id);
 const preview = '[data-test="chapter-preview"]';
 
@@ -41,6 +44,8 @@ async function setup(page, { cleared = false, restore = false } = {}) {
         P.visuals.push({ cut, file: art.src.split("/").at(-1), width: art.naturalWidth, height: art.naturalHeight,
           wholeImageFits: a.left >= s.left - 1 && a.top >= s.top - 1 && a.right <= s.right + 1 && a.bottom <= s.bottom + 1,
           captionFits: !caption || (caption.scrollWidth <= caption.clientWidth + 1 && caption.scrollHeight <= caption.clientHeight + 1),
+          captionFont: caption ? getComputedStyle(caption.querySelector("p")).fontFamily : "",
+          dotFontLoaded: [...document.fonts].some(f => f.family === "Chapter Preview Dot" && f.status === "loaded"),
           dotFont: !!caption && getComputedStyle(caption).fontFamily.includes("Chapter Preview Dot")
             && [...document.fonts].some(f => f.family === "Chapter Preview Dot" && f.status === "loaded") });
       }
@@ -68,7 +73,7 @@ async function assertPreviewLayout(page) {
     return { ratio: r.width / r.height, stageRatio: stage.width / stage.height,
       captionFits: !caption || (caption.scrollWidth <= caption.clientWidth + 1 && caption.scrollHeight <= caption.clientHeight + 1) };
   });
-  assert(Math.abs(bounds.ratio - 4 / 3) < .01, `Retro screen is not 4:3: ${JSON.stringify(bounds)}`);
+  assert(Math.abs(bounds.ratio - 16 / 9) < .01, `Adopted C screen is not 16:9: ${JSON.stringify(bounds)}`);
   assert(Math.abs(bounds.stageRatio - 16 / 9) < .01);
   assert(bounds.captionFits, "Preview caption is clipped");
 }
@@ -93,6 +98,7 @@ await suite("ch1-preview", async check => {
     const before = await page.evaluate(() => structuredClone(P.core.state));
     await page.evaluate(() => { P.clearRun = P.chapter.showClear(); });
     await playing(page);
+    assert.equal(await page.locator(preview).getAttribute("data-sample"), "quiet", "Chapter clear did not use the adopted C presentation");
     await assertPreviewLayout(page);
     // Repeated dialogue advances must not activate the preview's SKIP button.
     for (let i = 0; i < 3; i++) await page.keyboard.press("Enter");
@@ -107,9 +113,14 @@ await suite("ch1-preview", async check => {
       const visual = result.visuals.find(v => v.cut === frame.id);
       assert(visual && visual.file === `${frame.art}.webp` && visual.width === 1664 && visual.height === 936,
         `An approved sample frame was replaced: ${JSON.stringify(visual)}`);
-      assert(visual.wholeImageFits && visual.captionFits && visual.dotFont,
-        `The sample's composition, text or DotGothic font changed: ${JSON.stringify(visual)}`);
+      assert(visual.wholeImageFits && visual.captionFits && visual.captionFont.includes("Suien Gothic") && visual.dotFontLoaded,
+        `The adopted C composition or subtitle font changed: ${JSON.stringify(visual)}`);
     }
+    const returnIndex = result.cuts.findIndex(cut => cut.id === "minto-return");
+    assert.equal(result.cuts[returnIndex - 1]?.id, "chapter-title");
+    assert.equal(result.cuts[returnIndex + 1]?.id, "last-question");
+    assert.equal(result.cuts[returnIndex].caption, result.cuts.find(cut => cut.id === "minto-warning").caption,
+      "Minto's words did not return between the title and the final question");
     assert(result.state.flags._ch1_preview_seen);
     assert(result.saved.flags._ch1_preview_seen);
     assert.deepEqual(withoutPreviewSaveFields(result.state), withoutPreviewSaveFields(before));

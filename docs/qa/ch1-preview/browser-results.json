@@ -39,5 +39,8 @@
       "label": "standalone-page-preserves-game-storage",
       "status": "passed"
     }
-  ]
+  ],
+  "presentation": "quiet",
+  "durationMs": 47500,
+  "cutCount": 12
 }

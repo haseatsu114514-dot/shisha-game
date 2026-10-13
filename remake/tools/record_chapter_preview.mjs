@@ -119,7 +119,7 @@ try {
       const base = await response.json();
       const sample = new URLSearchParams(location.search).get('sample');
       const { createChapterSample } = await import('./js/chapters/chapter-preview-samples.js');
-      const data = createChapterSample(base, sample);
+      const data = createChapterSample(base, sample ?? base.presentation);
       const arts = [...new Set(data.frames.map(cut => cut.art).filter(Boolean))];
       await Promise.all(arts.map(art => new Promise((resolve, reject) => {
         const image = new Image();

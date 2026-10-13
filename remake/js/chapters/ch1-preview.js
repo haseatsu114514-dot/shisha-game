@@ -172,7 +172,7 @@ export function playChapterPreview({ signal, sample } = {}) {
         ]);
         if (done || generation !== attempt) return;
         if (loaded.some(ok => !ok)) throw new Error("Preview image unavailable");
-        data = createChapterSample(next, sample);
+        data = createChapterSample(next, sample ?? next.presentation);
         if (data.sample) root.classList.add(`sample-${data.sample}`);
         root.dataset.sample = data.sample || "production";
         stopBgm(0.15);
