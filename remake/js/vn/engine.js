@@ -779,25 +779,18 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
-  const buttons = (line.choices || []).map((c, i) => {
-    // 実回答を記録する関係の質問だけ、返答の方向を選ぶ前に明示する。
-    const route = line.romance_char && Number.isFinite(c.romance) && c.romance >= 0
-      ? c.romance > 0 ? "恋愛" : "友情" : null;
-    return el(`button.vn-choice${route ? ".route-choice" : ""}`, {
-      ...(route ? { "aria-label": `${route}：${stripTags(c.text || "……")}` } : { html: formatHtml(c.text || "……") }),
-      disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
-      style: { animationDelay: `${i * 80}ms` },
-      dataset: { test: `choice-${i}`, ...(route ? { route: c.romance > 0 ? "romance" : "friend" } : {}) },
-      onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
-    }, route ? [
-      el("span.vn-choice-route", { text: route, "aria-hidden": "true" }),
-      el("span.vn-choice-text", { html: formatHtml(c.text || "……") }),
-    ] : []);
-  });
+  // 関係の方向は返答と相手の反応で伝える。実回答の記録はpickChoiceのフックへ渡す。
+  const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
+    html: formatHtml(c.text || "……"),
+    disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
+    style: { animationDelay: `${i * 80}ms` },
+    dataset: { test: `choice-${i}` },
+    onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
+  }));
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
-  buttons.forEach((b) => fitOneLine(b.querySelector(".vn-choice-text") || b, 18));
+  buttons.forEach((b) => fitOneLine(b, 18));
   kickAuto();
 }
 
