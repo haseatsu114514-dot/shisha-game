@@ -12,7 +12,7 @@ function slotInfo(data) {
   const when = data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
   const time = data.phase === "daily" ? (data.slot >= 1 ? "夜" : "昼") : "";
   const chapter = data.chapter === 2 ? "第2章・" : "";
-  const label = data.chapter === 2 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
+  const label = data.chapter === 2 && chapterDay(data) === 1 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
   return { head: `${chapter}DAY ${chapterDay(data)}${time ? `・${time}` : ""}　${label}`, sub: `所持金 ${yen(data.money || 0)}${when ? `　${when}` : ""}` };
 }
 

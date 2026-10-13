@@ -1,7 +1,7 @@
 {
   "name": "ch2-daily",
   "baseURL": "http://127.0.0.1:8123/remake/",
-  "ref": "after-032601c-test-correction",
+  "ref": "day2-manual-caption-check",
   "results": [
     {
       "label": "next-day-region-switch-and-autosave",
@@ -36,5 +36,5 @@
       "status": "passed"
     }
   ],
-  "content_basis": "After 032601c with replay-aware test and three repeat-line wording corrections; runtime transitions/costs unchanged"
+  "content_basis": "After ad8aaf9 with DAY2 manual-save caption correction, actual MENU save/overwrite/title LOAD and slot preservation."
 }

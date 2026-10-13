@@ -54,8 +54,8 @@ async function act(page,id,{touch=false}={}) {
     { day: before.day, slot: before.slot });
   await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
 }
-async function reloadSave(page) {
-  await page.reload(); await page.locator(t('title-load')).click(); await page.locator(t('slot-0')).click();
+async function reloadSave(page, slot = 0) {
+  await page.reload(); await page.locator(t('title-load')).click(); await page.locator(t(`slot-${slot}`)).click();
   await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
   await page.evaluate(() => { window.__remake.vnTest.turbo = true; });
 }
@@ -85,9 +85,15 @@ await suite('ch2-daily',async check=>{
     assert.match(preview.src,/bg_ch2_rei_entry.webp/);assert.equal(preview.width,1280);assert.equal(preview.height,720);
     await capture(page,'day2-widehanga.png');
     v=await value(page);assert.equal(v.money,36000);assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
-    await reloadSave(page);v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.flags._ch2_region,'widehanga');
+    await page.locator(t('hud-menu')).click();await page.locator(t('menu-save')).click();
+    await page.locator(t('slot-0')).waitFor();
+    assert.match(await page.locator(t('slot-0')).textContent(),/第2章・DAY 2/);
+    assert(!/初日終了/.test(await page.locator(t('slot-0')).textContent()),'DAY2 saves must not keep the DAY1-complete caption');
+    await page.locator(t('slot-1')).click();await page.locator(t('confirm-overwrite')).click();
+    await page.locator('#modal.show').waitFor({state:'hidden'});
+    await reloadSave(page,1);v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.flags._ch2_region,'widehanga');
     assert.deepEqual(v.flavorStock,{mint:21.5,double_apple:6});assert.deepEqual(v.relationshipMemories,['qa_old_memory']);assert.deepEqual(v.loverSince,{minto:10});
-    const slots=await page.evaluate(()=>[1,2,3].map(i=>JSON.parse(localStorage.getItem(`suien_remake_slot${i}`)).money));assert.deepEqual(slots,[1001,1002,1003]);
+    const slots=await page.evaluate(()=>[1,2,3].map(i=>JSON.parse(localStorage.getItem(`suien_remake_slot${i}`)).money));assert.deepEqual(slots,[36000,1002,1003]);
   });
   await check('paid-city-talk-repeat-and-contact',async page=>{
     await setup(page);await begin(page);await wide(page);await act(page,'ch2_ageha');
