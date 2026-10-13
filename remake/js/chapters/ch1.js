@@ -39,6 +39,7 @@ import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
 import { playChapterPreview } from "./ch1-preview.js";
+import { craftRecognition } from "../craft/recognition.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -88,6 +89,7 @@ export async function startNewGame() {
   // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
   // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
   const scene = mountColdOpen();
+  await scene.ready;
   const co = DB.dialogues.ch1_cold_open;
   await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
   scene.stop();
@@ -408,7 +410,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, (cs.holes.score + cs.heat.score) / 2);
+  await showStandings(1, (cs.holes.score + cs.heat.score) / 2, cs);
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -423,7 +425,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3);
+  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3, cs);
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -438,7 +440,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4);
+    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4, cs);
   }
 
   // 審査は完成品と2回の調整の実績で決まる。
@@ -459,7 +461,7 @@ async function tournamentDay() {
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
-    await victory();
+    await victory(cs);
   } else {
     await resultCountdown(cs, out.kind);
     retireScreen();
@@ -502,7 +504,8 @@ async function entrance() {
 
 // ---------------------------------------------------------------- 優勝のあと
 
-async function victory() {
+async function victory(cs) {
+  const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   await play("ch1_tournament_after", { bg: STAGE });
@@ -511,6 +514,7 @@ async function victory() {
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
         "おう。優勝、見事だった",
+        ...(recognition?.comment ? [recognition.comment] : []),
         "……で、だ。開示された採点表、もう見たか",
         "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
         "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
@@ -520,10 +524,7 @@ async function victory() {
     },
     {
       id: "_sys_unknown_recorded", sender: "???", messages: [
-        "SMOKE CROWN CUP 優勝、おめでとうございます。",
         "本日のあなたの試合データは、すべて記録させていただきました。",
-        "炭の配置、蒸らし時間、引きの圧、提供時の所作。──実に興味深い。",
-        "また、お会いしましょう。",
       ], close_label: "……誰？",
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
