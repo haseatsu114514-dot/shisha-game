@@ -34,5 +34,17 @@
     "composition": "新しい構図、画像に文字なし",
     "hardware": "映らない",
     "notes": "街は背面で帽子・黒服を確認。紬は茶髪ボブ・茶色の目・黒ピアス・花刺繍・スタイラス・ひび入りタブレット・猫の描画を目視確認。"
+  },
+  "runtime": {
+    "path": "trailer/art/04-tsumugi-sketch.webp",
+    "dimensions": [
+      1664,
+      936
+    ],
+    "conversion": "contain (no crop), WebP q93 method6",
+    "contained_dimensions": [
+      1663,
+      936
+    ]
   }
 }

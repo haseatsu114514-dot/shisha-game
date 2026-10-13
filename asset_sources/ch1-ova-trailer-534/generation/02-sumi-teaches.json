@@ -2,7 +2,7 @@
   "issue": 534,
   "worker": "codex-ch1-ova-20261013-b30a1e4f",
   "tool": "image_gen.imagegen",
-  "status": "requested",
+  "status": "generated; visually reviewed",
   "prompt": "Make one NEW wordless full-bleed cinematic 16:9 still for chapter 1 of an everyday Japanese shisha-cafe story. Use the rich hand-painted aesthetic of the early 1992 BASTARD!! OVA: organic tapered black ink, broad 2-3 hard cel shadow tones, grouped glossy hair highlights, detailed opaque gouache backgrounds. Character reference portraits determine identity, age and clothes; the OVA Tsumugi reference determines art treatment ONLY. No fantasy, magic, battle armor, weapons, real demon body parts, giant characters, title poster, letters, Japanese/English text, brand logos, watermark or border. INPUT 1 is Sumi, age 46: black flat cap, tousled black hair, rectangular black glasses, gentle older face, short black goatee and moustache, charcoal rolled-sleeve collared shirt, brown waist apron. INPUT 2 is Hajime, age 22: black baseball cap, messy short black hair, black hoodie, gray eyes and black cargo trousers. INPUT 3 is OVA style only. INPUT 4 is a REAL product photograph, for coherent shisha body proportions and bare preparation structure only; no copying logo, white marbled finish or detached handle. A fresh medium-wide eye-level scene at tonari's wooden work counter in the early evening. Sumi stands on the LEFT, warmly teaching with one relaxed finger pointing toward the small connector at the top of ONE unheated hookah. Hajime stands on the RIGHT slightly leaning forward, genuinely curious, attentive, ready to learn; his hands rest naturally near the counter edge. Both men's faces clearly visible. The ONE hookah sits on the counter between them, same depth as their hands, approximately 40cm tall without a bowl and with a 16cm wide tray, as specified on the manufacturer page; not oversized. Preserve that one model's slender coherent body geometry, with a clear-glass finish and dark stem sleeve: bulbous clear glass water base on the wood counter, modest lower water line and submerged downstem, upright slim stem, broad shallow silver ASH TRAY, and a very small tapered metal bowl-connector post emerging just above the tray. This is PREPARATION BEFORE THE BOWL IS FITTED: NO tobacco bowl, NO HMD, NO charcoal, NO foil, NO smoke, NO hose or handle anywhere; the small bare connector is not a cup, giant mushroom or cap. Do not include the product photo's separate mouthpiece. The assembled base/stem/tray must be whole and physically connected, not missing parts. No hot item held in either hand. Hajime's personal capsule mouthpiece may be naturally hidden by the hoodie at this camera angle; do not invent a dangling hose. Warm wood, two differently shaped colored Turkish mosaic lamps with different hanging heights and normal room light, muted olive shadows; shelves outside the camera, no repeated bowls or decorative plants. A quiet close mentor-and-student moment, not a magical duel.",
   "referenced_image_paths": [
     "assets/sprites/characters/sumi/chr_sumi_normal.png",
@@ -31,5 +31,29 @@
       "height_without_bowl_cm": 40,
       "tray_diameter_cm": 16
     }
+  },
+  "output": "images/02-sumi-teaches.png",
+  "sha256": "2c880075b06992abb80a1fd3fb64ca546aee01155b0d57c2194634a2522197ca",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "runtime": {
+    "path": "trailer/art/02-sumi-teaches.webp",
+    "dimensions": [
+      1664,
+      936
+    ],
+    "conversion": "contain (no crop), WebP q93 method6",
+    "contained_dimensions": [
+      1663,
+      936
+    ]
+  },
+  "qa": {
+    "pass": true,
+    "notes": "スミの帽子・眼鏡・髭・前掛け、ハジメの帽子・黒服・マイチップ本体を確認。台はガラスベース→ステム→広い皿→小さな金属ポストで連続。準備中でボウル/HMD/炭/ホースなし。実写40cm/皿16cmに沿う卓上縮尺。指はポストを示し熱い物を持たない。",
+    "wordless": true,
+    "plants": 0
   }
 }
