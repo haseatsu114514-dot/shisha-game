@@ -3,6 +3,7 @@
 import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
+import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
@@ -119,7 +120,7 @@ async function openingPart() {
     await sleep(600);
     await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
     playBgm("tonari");
-    await play("ch1_opening", { bg: TONARI });
+    await playTonariOpening();
     progress.introDone = true;
     save();
   }

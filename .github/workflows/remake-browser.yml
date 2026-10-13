@@ -114,6 +114,7 @@ jobs:
         run: |
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
+          node remake/test/browser/tonari_opening.mjs
           node remake/test/browser/tutorial_transition.mjs
       - name: Adopted store logos and entry cards on PC and mobile
         env:
