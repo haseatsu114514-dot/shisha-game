@@ -4,6 +4,7 @@
   "branch": "codex/504-hagal-concept-preview",
   "base_sha": "e96b7cf72dea927c5997a7b346adc47cc378221b",
   "claim_run": 38352702425,
-  "status_run": 38353098344,
-  "selection_status": "awaiting_owner_selection"
+  "status_run": 38357171075,
+  "selection_status": "awaiting_owner_selection",
+  "preferred_revision": "v1"
 }

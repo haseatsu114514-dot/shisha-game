@@ -14,6 +14,7 @@
       "images": 4,
       "loaded": true,
       "horizontalOverflow": false,
+      "revisionPaths": true,
       "headings": [
         "スミさん・なる",
         "アダム・凛",
@@ -26,6 +27,7 @@
       "images": 4,
       "loaded": true,
       "horizontalOverflow": false,
+      "revisionPaths": true,
       "headings": [
         "スミさん・なる",
         "アダム・凛",
@@ -36,8 +38,9 @@
   ],
   "pdf": {
     "pages": 4,
-    "bytes": 12879341,
-    "sha256": "007c75ad21391631576ee6c76323f9b119800e45321e01d57a8c5891c241388d",
+    "bytes": 11636254,
+    "sha256": "5a1ad9d54636cd5a3a274bf19d7302afb6078dd489f9eba5dd95cb7d0d41233e",
     "inspection": "pdfinfo confirms four pages"
-  }
+  },
+  "preview_revision": "v1"
 }

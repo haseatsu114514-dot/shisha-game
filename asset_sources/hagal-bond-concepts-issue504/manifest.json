@@ -7,7 +7,7 @@
     {
       "file": "v1/01_sumi_naru.png",
       "revision": "v1",
-      "role": "superseded_reference",
+      "role": "selection_candidate",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-438a5fa0-d704-41dc-96f5-4a01ee22f927.png",
       "sha256": "d2b661a4d2a34e9568acc7201481ef9119edfb4f747b04468f54d0b0512ac012",
@@ -19,7 +19,7 @@
     {
       "file": "v1/02_adam_rin.png",
       "revision": "v1",
-      "role": "superseded_reference",
+      "role": "selection_candidate",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-b861e0bd-3356-4293-acb1-48f52139dae3.png",
       "sha256": "47ebbc31d3b5ab1e29a63d821439ed7ea8a870beb7e0bcd680fcf8405a57b7c3",
@@ -31,7 +31,7 @@
     {
       "file": "v1/03_tsumugi_minto.png",
       "revision": "v1",
-      "role": "superseded_reference",
+      "role": "selection_candidate",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-6f6f3a3f-871a-48e4-ae5c-3ab6f9743dbc.png",
       "sha256": "719288e81f2e33ce20a533009527aa9bfa3cfb7456a28143eb1dbdf5e4aae6ed",
@@ -43,7 +43,7 @@
     {
       "file": "v1/04_samechan_hiyori.png",
       "revision": "v1",
-      "role": "superseded_reference",
+      "role": "selection_candidate",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-eb05bb71-3f7c-461f-bed0-423346dbf7a2.png",
       "sha256": "6d43b520bda90543b4d051ee19bbf115446f06bf6cb137f0b8724dbb026fa72e",
@@ -55,7 +55,7 @@
     {
       "file": "v2/01_sumi_naru.png",
       "revision": "v2",
-      "role": "selection_candidate",
+      "role": "alternate_reference",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-ba714a8b-fcbe-44c7-8b8d-d64f0d922e4c.png",
       "sha256": "e19ca325c699c62bd96023b7e7a3a92a0be49d9d50d215ada83fe19c3c37c205",
@@ -67,7 +67,7 @@
     {
       "file": "v2/02_adam_rin.png",
       "revision": "v2",
-      "role": "selection_candidate",
+      "role": "alternate_reference",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-ed4fe141-c852-47b7-8571-a06a4bb53313.png",
       "sha256": "b7cfadbe26ffe224925f5f5830495c1c0a33ae9cf1dbf560c3e0f55e5ab631cd",
@@ -79,7 +79,7 @@
     {
       "file": "v2/03_tsumugi_minto.png",
       "revision": "v2",
-      "role": "selection_candidate",
+      "role": "alternate_reference",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-655d48fd-91ec-48a5-a15a-d4d82706f189.png",
       "sha256": "e5811c04580cd73e32789df2ad9e91d4e63dd6291850f3bb7f0bf67f6e2d14d8",
@@ -91,7 +91,7 @@
     {
       "file": "v2/04_samechan_hiyori.png",
       "revision": "v2",
-      "role": "selection_candidate",
+      "role": "alternate_reference",
       "generator": "image_gen.imagegen",
       "source_filename": "exec-16b82a8c-f499-42e6-a3fc-08d00c14e4bb.png",
       "sha256": "f0cf2d1534cdaa495f4373306a0c76e0251623583d4ff050887bcca248563efa",
