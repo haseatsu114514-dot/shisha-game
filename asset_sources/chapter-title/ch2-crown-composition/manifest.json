@@ -1,0 +1,133 @@
+{
+  "status": "comparison_only",
+  "selected_variant": null,
+  "runtime_integrated": false,
+  "issue": 549,
+  "created_utc": "2026-10-13",
+  "base_commit": "ad74d6e40525d695b8ad00bf502074fa94611e6e",
+  "worker": "codex-crown-story-549-20261013",
+  "claim_run": 38425739051,
+  "validated_status_run": 38425990044,
+  "generator": "image_gen.imagegen",
+  "pixel_postprocessing": "none",
+  "chapter_title_direction": {
+    "chapter": 2,
+    "japanese": "才能の壁",
+    "english": "Hollow Crown",
+    "chapter_3_title": "undecided"
+  },
+  "references": [
+    {
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch2.png",
+      "role": "approved base composition and rendering",
+      "inspected": true,
+      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Ageha identity",
+      "inspected": true,
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "role": "Hajime identity",
+      "inspected": true,
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch3.png",
+      "role": "crown shape and material only",
+      "inspected": true,
+      "sha256": "15068735e34b21a52987c6fdfa1c94b0efa7a3bd60b96267a2e328e13f164574",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "A",
+      "path": "images/A-held-crown.png",
+      "source_generated_filename": "exec-bd496b00-6642-448d-bc44-e0159c1cf1ad.png",
+      "label": "はじめが手に下げる王冠",
+      "prompt": "prompts/A.txt",
+      "qa_note": "Crown supported by Hajime’s hand; comparatively small motif.",
+      "adopted": false,
+      "sha256": "b1312b0216b62786cfd662d9a6d0a5b31397e5b8cf437eea83d9fa3f66d65e2c",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "id": "B",
+      "path": "images/B-contested-crown.png",
+      "source_generated_filename": "exec-19bbcdd0-0653-4c5d-8f37-c49e885a4f25.png",
+      "label": "二人がつかむ王冠",
+      "prompt": "prompts/B.txt",
+      "qa_note": "Both hands contact one crown; deliberate surreal scale difference. Gripping can read as contest or handover.",
+      "adopted": false,
+      "sha256": "c6dc56e3884d78ba592be603ea88dc2be4eddc8c1f7775050e983a42b2909aa5",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "id": "C",
+      "path": "images/C-crown-background.png",
+      "source_generated_filename": "exec-86e440b0-9c45-47fd-9067-a7c7bfcb5e1f.png",
+      "label": "背景の王冠の輪郭",
+      "prompt": "prompts/C.txt",
+      "qa_note": "Crown is a distressed background graphic, naturally occluded by characters.",
+      "adopted": false,
+      "sha256": "15470e0a16d2b9b8ceb1fea49dac232a1db13d0cd96754551134b71cb493be16",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "previous": {
+    "path": "previous/floating-crown.png",
+    "status": "revision_requested_by_owner",
+    "reason": "王冠の位置がいまいち。構図に組み込んだ複数案を希望。",
+    "sha256": "58100d16175b7754f0da7a6a4571edcbd8a3b277e429ac2a8cfc0c84ac53566d",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  "qa": {
+    "method": "human-visible full-size image inspection by assistant",
+    "character_identity": "preserved against the approved title and canonical sprites",
+    "title_text": "水煙前線 -EN:CODE- / CHAPTER 2 / 才能の壁 / Hollow Crown readable",
+    "hands_and_crown": "checked per candidate",
+    "shisha_hardware": "not depicted; not applicable",
+    "runtime_title_call_test": "not performed; selection and integration pending"
+  },
+  "story_revision_plan": "docs/plans/story_revision.md",
+  "setting_book_followup_issue": 544
+}
