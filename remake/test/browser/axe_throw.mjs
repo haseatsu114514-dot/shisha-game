@@ -51,7 +51,16 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
     }
   }
   await fit(page);
-  if(precision) { await page.locator('[data-test="axe-focus"]:not([disabled])').waitFor();await press(page,'[data-test="axe-focus"]',touch); }
+  if(precision) {
+    // Read the real rising power needle before spending the short focus window.
+    await page.evaluate(()=>window.precisionTiming=null);
+    await page.waitForFunction(value=>{
+      const root=document.querySelector('[data-test="axe-game"]'),n=Number(root.dataset.timing),previous=window.precisionTiming;
+      window.precisionTiming=n;
+      return previous!==null&&n>previous&&n>=value-.16&&n<=value-.08&&!root.querySelector('[data-test="axe-focus"]').disabled;
+    },power);
+    await press(page,'[data-test="axe-focus"]',touch);
+  }
   await stopGauge(page,power,touch,keyboard); await phase(page,"result");
 }
 async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
@@ -103,7 +112,9 @@ await suite("axe-throw", async run => {
     await stopGauge(page,.5);await phase(page,'vertical');await stopGauge(page,.5);await phase(page,'power');
     const base=await game(page).getAttribute('data-aim-x'),first=await game(page).getAttribute('data-release-x');await page.waitForTimeout(180);
     assert.equal(await game(page).getAttribute('data-aim-x'),base);assert.notEqual(await game(page).getAttribute('data-release-x'),first);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/story-sway.png'});
     await page.locator('[data-test="axe-focus"]:not([disabled])').click();assert(await page.locator('[data-test="axe-focus"]').isDisabled());
+    if(shotsPath)await page.screenshot({path:shotsPath+'/story-focus.png'});
     await page.locator('[data-test="axe-reaim"]:not([disabled])').click();await phase(page,'choice');
     await pressReady(page);await phase(page,'horizontal');assert(await page.locator('[data-test="axe-focus"]').isDisabled());
     assert.equal(await game(page).getAttribute('data-focus-remaining'),'0','Re-aim never restores spent focus');
