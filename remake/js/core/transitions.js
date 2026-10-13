@@ -29,6 +29,10 @@ export function cueTransition(kind, opts = {}) {
 export function refreshPlaceCue(spotId) {
   if (cue?.kind === "place" && cue.opts.spotId === spotId) cue.at = performance.now();
 }
+/** 入店前に街へ戻った場合は、その店の入店演出を次の移動へ持ち越さない。 */
+export function cancelPlaceCue(spotId) {
+  if (cue?.kind === "place" && cue.opts.spotId === spotId) cue = null;
+}
 function takeCue() {
   const c = cue;
   cue = null;

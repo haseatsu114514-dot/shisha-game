@@ -149,6 +149,7 @@ try {
         if (!snap.live) continue;
         if (snap.screen === 'shop') {
           await click('.shop-row.errand [data-test^="buy-"]');
+          await click('[data-test="shop-checkout"]');
           await click('[data-test="shop-leave"]');
         } else if (snap.screen === 'preparation') await click('[data-test="prep-flavor-blueberry"]');
         else if (snap.screen === 'tonari') {

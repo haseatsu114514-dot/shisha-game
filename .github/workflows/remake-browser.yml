@@ -121,6 +121,7 @@ jobs:
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/store_logos.mjs
+          node remake/test/browser/shop_ui.mjs
       - name: Continue captions, asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

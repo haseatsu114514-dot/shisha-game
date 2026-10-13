@@ -1,0 +1,101 @@
+/* Dr.fookah: 白い紙と紫。ゲームの1280×720座標内でHUDと操作欄を常時残す。 */
+.shop-paper, .modal-box.shop-dialog {
+  --shop-ink: #38283f; --shop-purple: #69497e; --shop-line: #d5c8dc; --shop-muted: #76667e;
+  color: var(--shop-ink); background: #f7f3ed;
+  background-image: repeating-linear-gradient(35deg, #72547d03 0 1px, transparent 1px 4px);
+  border: 1px solid #ded3dc; border-image: none; border-radius: 4px;
+  box-shadow: 0 16px 54px #110a2255; text-shadow: none;
+}
+.shop.shop-paper { top: 110px; width: 1152px; height: 584px; padding: 0; }
+.shop-paper button { font: inherit; cursor: pointer; touch-action: manipulation; }
+.shop-paper button:disabled { cursor: default; }
+.shop-paper button:focus-visible { outline: 3px solid #9470ad; outline-offset: 2px; }
+.shop-paper .shop-head { flex: none; height: 70px; padding: 12px 26px; align-items: center; gap: 20px; border-bottom: 1px solid var(--shop-line); }
+.shop-paper .shop-head h2 { color: var(--shop-ink); font: 36px Georgia, serif; letter-spacing: -.035em; white-space: nowrap; }
+.shop-paper .shop-sub { color: var(--shop-muted); border-left: 1px solid var(--shop-line); padding-left: 20px; font-size: 16px; }
+.shop-paper .shop-money { color: var(--shop-ink); display: flex; align-items: baseline; gap: 14px; font: 32px Georgia, serif; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.shop-paper .shop-money small { font: 14px var(--font); color: var(--shop-muted); }
+.shop-paper .shop-tabs { flex: none; gap: 8px; height: 46px; margin: 10px 26px 0; }
+.shop-paper .shop-tab { width: 164px; border-radius: 4px 4px 0 0; border: 1px solid var(--shop-line); border-image: none; background: #eee8f033; color: var(--shop-ink); font-size: 17px; box-shadow: none; }
+.shop-paper .shop-tab.on { color: #fff; background: var(--shop-purple); border-color: var(--shop-purple); }
+.shop-paper .shop-tab:hover:not(.on) { background: #e9e0ee; color: var(--shop-ink); }
+.shop-filters { flex: none; display: flex; align-items: center; gap: 8px; height: 48px; margin: 0 26px; }
+.shop-filters[hidden] { display: none; }
+.shop-filter { border: 0; border-radius: 24px; padding: 7px 17px; min-height: 36px; color: var(--shop-muted); background: transparent; font-size: 15px !important; }
+.shop-filter.on { background: #e5d9eb; color: #553563; font-weight: 700; }
+.shop-filter:hover { background: #ebe2ef; }
+.shop-filters > span { margin-left: auto; color: var(--shop-muted); font-size: 14px; }
+.shop-paper .shop-body { min-height: 0; padding: 0 6px 0 0; margin: 0 20px 0 26px; gap: 0; scrollbar-color: #af96bc #ece5ec; scrollbar-width: thin; }
+.shop-paper .shop-row { flex: none; min-height: 68px; padding: 0 8px; border-radius: 0; border-bottom: 1px solid var(--shop-line); gap: 16px; background: transparent; }
+.shop-paper .shop-row:first-child { border-top: 1px solid var(--shop-line); }
+.shop-paper .shop-row.selected { background: #e9dfef99; box-shadow: inset 3px 0 #ad8cbe; }
+.shop-paper .shop-row.errand { outline: none; background: #eee3f2; box-shadow: inset 4px 0 var(--shop-purple); animation: none; }
+.shop-product { display: flex; gap: 14px; align-items: center; flex: 1; min-width: 0; padding: 0; border: 0; text-align: left; background: transparent; color: var(--shop-ink); }
+.shop-product:hover b { text-decoration: underline; text-underline-offset: 5px; }
+.shop-product-art { display: flex; flex: none; width: 76px; height: 66px; align-items: center; justify-content: center; }
+.shop-product-art.botanical { background-size: 600% 300%; background-repeat: no-repeat; width: 66px; margin: 0 5px; }
+.shop-type-mark { display: grid; place-items: center; width: 58px; height: 44px; color: #795c8c; border: 1px solid #baa5c3; border-radius: 8px; font: 17px Georgia, serif; letter-spacing: .04em; }
+.shop-product-art .art { max-height: 64px; }
+.shop-paper .shop-main { min-width: 0; }
+.shop-paper .shop-main b { font-size: 19px; font-weight: 500; }
+.shop-paper .shop-main small { color: var(--shop-muted); font-size: 14px; }
+.shop-paper .shop-stock { color: var(--shop-ink); display: flex; gap: 10px; align-items: baseline; width: 115px; flex: none; font-size: 17px; letter-spacing: 0; }
+.shop-paper .shop-stock small { color: var(--shop-muted); font-size: 14px; }
+.shop-price { width: 126px; flex: none; text-align: right; font: 25px Georgia, var(--font); white-space: nowrap; }
+.shop-quantity { display: flex; align-items: center; justify-content: flex-end; gap: 7px; width: 142px; flex: none; }
+.shop-step { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #bda9c8; border-radius: 3px; background: #fffaf5; color: var(--shop-ink); font-size: 25px !important; line-height: 1; }
+.shop-step.plus { background: var(--shop-purple); color: #fff; border-color: var(--shop-purple); }
+.shop-step:disabled { opacity: .35; }
+.shop-step:not(:disabled):hover { box-shadow: inset 0 0 0 2px #ac8ebc; }
+.shop-quantity output { min-width: 28px; text-align: center; font-size: 20px; font-variant-numeric: tabular-nums; }
+.shop-paper .shop-owned { width: 142px; flex: none; color: var(--shop-purple); font-size: 16px; }
+.shop-paper .shop-foot { height: 72px; flex: none; margin: 0; padding: 10px 26px; gap: 16px; border-top: 1px solid var(--shop-line); background: #ece5ee99; }
+.shop-back { min-width: 164px; min-height: 50px; padding: 10px 22px; font-weight: 700 !important; font-size: 17px !important; color: #58386c; border: 2px solid #9676a8; border-radius: 4px; background: #fffcf8; }
+.shop-back:hover { background: #ebe0f0; }
+.shop-summary { margin-left: auto; display: flex; align-items: baseline; gap: 10px; border: 0; background: transparent; padding: 7px; color: var(--shop-ink); font-variant-numeric: tabular-nums; }
+.shop-summary small { font-size: 14px; }
+.shop-summary strong { font: 30px Georgia, serif; }
+.shop-summary span { color: var(--shop-muted); font-size: 14px; margin-left: 7px; }
+.shop-summary:enabled:hover strong { text-decoration: underline; text-underline-offset: 5px; }
+.shop-checkout { flex: none; min-width: 250px; min-height: 52px; padding: 12px 20px; border: 1px solid var(--shop-purple); background: var(--shop-purple); border-radius: 4px; color: #fff; font-size: 18px !important; font-weight: 700 !important; }
+.shop-checkout:disabled { background: #e3dbe7; border-color: #cfc1d6; color: #796981; }
+.shop-checkout:enabled:hover { background: #533761; }
+.shop-paper .shop-errand { flex: none; margin: 8px 26px 0; padding: 6px 12px; background: #eadfec; color: #593c69; border-left: 3px solid #9676a8; font-size: 15px; }
+.shop-paper .shop-errand::before { display: none; }
+.shop-paper .shop-errand.done { background: #f0eaf2; border-color: #9676a8; color: #593c69; }
+.shop-paper .shop-errand.done, .shop-paper .shop-row.done { pointer-events: auto !important; }
+.shop-paper .shop-empty, .shop-paper .kuji-note { color: var(--shop-muted); }
+.shop-paper .shop-cat { color: var(--shop-muted); border-color: var(--shop-line); }
+.shop-paper .btn, .modal-box.shop-dialog .btn { border: 1px solid #b8a1c4; border-image: none; border-radius: 4px; color: #58376a; background: #f5eef7; box-shadow: none; filter: none; text-shadow: none; }
+.shop-paper .btn:hover, .modal-box.shop-dialog .btn:hover { color: #38283f; background: #e9deef; }
+.shop-paper .kuji-row { padding-top: 14px; padding-bottom: 14px; }
+.shop-paper .kuji-row .shop-main { gap: 6px; }
+.shop-paper .kuji-row .btn { flex: none; min-width: 170px; }
+.shop-entry { position: absolute; left: 50%; top: 126px; transform: translateX(-50%); width: 960px; height: 552px; padding: 24px 30px; display: flex; flex-direction: column; }
+.shop-entry .shop-head { padding: 0 0 18px; height: 60px; }
+.shop-entry > h3 { font-size: 24px; font-weight: 500; letter-spacing: .08em; margin: 18px 0; }
+.shop-floors { display: flex; gap: 22px; flex: 1; min-height: 0; }
+.shop-floor { position: relative; width: 50%; min-width: 0; padding: 0; border: 1px solid #c7b6d1; border-radius: 5px; overflow: hidden; text-align: left; display: flex; flex-direction: column; background: #f3edf4; color: var(--shop-ink); }
+.shop-floor-picture { display: block; position: relative; height: 174px; flex: none; width: 100%; overflow: hidden; }
+.shop-floor-picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.shop-floor-number { position: absolute; top: 12px; left: 12px; padding: 8px 12px; background: #fbf4f4ec; color: #5a3c6b; border: 1px solid #c6b1d1; border-radius: 3px; font: 28px Georgia, serif; }
+.shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: 1; justify-content: center; gap: 10px; width: 100%; padding: 16px 24px; }
+.shop-floor-caption b { font-size: 23px; font-weight: 500; letter-spacing: .06em; }
+.shop-floor-caption small { font-size: 16px; color: #72557f; }
+.shop-floor-arrow { position: absolute; bottom: 22px; right: 22px; font-size: 27px; color: #9976ab; }
+.shop-floor.showroom { background: #493353; color: #fff; border-color: #493353; }
+.shop-floor.showroom small, .shop-floor.showroom .shop-floor-arrow { color: #e0d2e7; }
+.shop-floor:enabled:hover { box-shadow: 0 0 0 3px #ab8dbc; }
+.shop-floor:disabled img { filter: saturate(.45); opacity: .65; }
+.shop-floor:disabled .shop-floor-arrow { display: none; }
+.shop-entry-foot { flex: none; margin-top: 20px; }
+.modal-box.shop-dialog { padding: 28px; max-width: 700px; }
+.modal-box.shop-dialog h3 { color: #51325f; }
+.modal-box.shop-dialog .btn.primary { color: #fff; background: #69497e; }
+.shop-dialog .modal-body { color: #38283f; }
+.shop-detail { font-size: 19px; line-height: 1.8; }
+.shop-detail .shop-product-art { float: left; margin: 0 20px 8px 0; width: 112px; height: 112px; }
+.shop-detail-category { color: #80628f; font-size: 16px; }
+.shop-detail p { margin: 8px 0; }
+.shop-current { clear: both; padding-top: 14px; border-top: 1px solid #d5c8dc; color: #765780; font-size: 17px; }
+.shop-order p { display: flex; justify-content: space-between; gap: 25px; padding: 8px 0; border-bottom: 1px solid #d5c8dc; }

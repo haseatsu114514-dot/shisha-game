@@ -1,0 +1,15 @@
+{
+  "name": "shop-ui",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "shortfall-scroll-discard-stale-state",
+      "status": "passed"
+    },
+    {
+      "label": "delayed-entry-and-discard",
+      "status": "passed"
+    }
+  ]
+}

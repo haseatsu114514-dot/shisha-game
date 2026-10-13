@@ -317,16 +317,24 @@ for (;;) {
     continue;
   }
   if (snap.screen === "preparation") { await click('[data-test="prep-flavor-blueberry"]'); continue; }
+  if (snap.screen === "shop-entry") {
+    const upstairs = pendingShopBuy === "__upstairs" && await page.$('[data-test="shop-upstairs"]:not([disabled])');
+    await click(upstairs ? '[data-test="shop-upstairs"]' : '[data-test="shop-enter"]');
+    if (pendingShopBuy === "__upstairs") pendingShopBuy = null;
+    continue;
+  }
   if (snap.screen === "shop") {
     // スミさんの頼み（ミント）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
       const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
       await click(`[data-test="${errand}"]`);
+      await click('[data-test="shop-checkout"]');
     }
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") {
       await page.locator('.shop-tab[data-tab="flavor"]').click();
       await page.locator(`[data-test="buy-${pendingShopBuy}"]`).click();
+      await click('[data-test="shop-checkout"]');
     }
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
     if (!kujiDrawn) {
@@ -336,9 +344,8 @@ for (;;) {
       await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
       await click('[data-test="kuji-reveal"]');
     }
-    const up = pendingShopBuy === "__upstairs" && (await page.$('[data-test="shop-upstairs"]:not([disabled])'));
     pendingShopBuy = null;
-    await click(up ? '[data-test="shop-upstairs"]' : '[data-test="shop-leave"]');
+    await click('[data-test="shop-leave"]');
     continue;
   }
   if (snap.screen === "tonari") {
