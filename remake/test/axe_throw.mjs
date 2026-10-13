@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RINGS, BULLS, KILLS, MODES, POWER, scoreAt, resolveThrow, gaugeAt, axisAt, totalOf, gradeOf, canCall, killState } from "../js/minigames/axe-model.js";
+import { RINGS, BULLS, KILLS, MODES, POWER, scoreAt, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
 const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = []) => resolveThrow({ x, y, power, called }, history);
 test("painted circles match scores; black boundaries use lower neighbouring zones", () => {
@@ -66,4 +66,30 @@ test("invalid input cannot produce NaN or illegally call a closed target", () =>
   for (const input of [{x:NaN,y:0,power:.6},{x:0,y:Infinity,power:.6},{x:0,y:0,power:2},{x:2,y:0,power:.6},{x:0,y:0,power:.6,called:"fake"}])
     assert.throws(()=>resolveThrow(input),RangeError);
   assert.throws(()=>scoreAt(NaN,0),RangeError); assert.throws(()=>gaugeAt(0,0),RangeError);
+});
+test("waiting and overgripping increase visible sway; focus genuinely reduces it", () => {
+  assert(swayAt(9000).amplitude > swayAt(1000).amplitude * 2);
+  assert(swayAt(9000,.8).amplitude > swayAt(9000,.62).amplitude);
+  const normal=swayAt(9000,.62,2),focused=swayAt(9000,.62,2,true);
+  assert(Math.hypot(focused.x,focused.y) < Math.hypot(normal.x,normal.y) / 4);
+  assert.deepEqual(swayAt(9000,.62,2),normal,"Replay uses the same visible movement, without hidden random error");
+  assert.notDeepEqual(swayAt(9000,.62,3),normal,"Each throw has its own visible rhythm");
+});
+test("a locked center is no longer an automatic bull; timely focus restores precision", () => {
+  let misses=0;
+  for(let ms=3500;ms<9000;ms+=100){
+    const input={x:0,y:0}, moving=releaseAimAt(input,ms,.62,0,false),steady=releaseAimAt(input,ms,.62,0,true);
+    if(resolveThrow({...moving,power:.62}).score<6)misses++;
+    assert.equal(resolveThrow({...steady,power:.62}).score,6);
+    assert.deepEqual(input,{x:0,y:0},"Sway does not move the player's locked aim");
+  }
+  assert(misses>10,"Holding still on the gauge must require reading the moving blade");
+});
+test("visible release positions remain finite and legal at the edges", () => {
+  for(const x of [-1.08,1.08])for(const y of [-1.08,1.08])for(const power of [0,.62,1]){
+    const aim=releaseAimAt({x,y},8000,power,9,false);
+    assert(Math.abs(aim.x)<=1.08&&Math.abs(aim.y)<=1.08);assert(Number.isFinite(resolveThrow({...aim,power}).score));
+  }
+  assert.throws(()=>swayAt(-1),RangeError);assert.throws(()=>swayAt(1,.62,.5),RangeError);
+  assert.throws(()=>releaseAimAt({x:2,y:0},1,.62,0,false),RangeError);
 });

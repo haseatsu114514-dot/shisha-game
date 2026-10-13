@@ -118,11 +118,32 @@
 }
 .axe-portrait-frame { position: relative; overflow: hidden; flex-shrink: 0; width: 85px; height: 112px; border-radius: 8px; }
 .axe-portrait-frame .axe-portrait { position: absolute; width: 180px; max-width: none; height: auto; left: 50%; top: -4px; transform: translateX(-50%); }
+.axe-rules-button { min-height: 44px; padding: 8px 12px; font-size: .8em; }
+.axe-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.axe-controls .axe-button { padding-inline: 8px; font-size: .75em; }
+.axe-steadiness { margin: 0; min-height: 1.3em; font-size: .75em; color: #a9d5e7; }
+.axe-fixed-aim { opacity: .8; }
+.axe-rules { position: absolute; inset: 0; z-index: 90; display: grid; place-items: center; padding: clamp(12px,3vw,36px); background: rgba(8,5,12,.94); color: var(--text); }
+.axe-rules-card { width: min(760px,100%); max-height: 100%; min-height: 0; padding: 24px; display: grid; grid-template-rows: auto minmax(0,1fr); gap: 16px; border: 1px solid var(--gold); border-radius: 14px; background: #201728; font-size: calc(18px * var(--axe-size,1)); }
+.axe-rules-card > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.axe-rules h2 { margin: 0; font-size: 1.3em; color: var(--gold-hi); }
+.axe-rules h3 { margin: 0 0 8px; font-size: 1em; color: var(--gold-hi); }
+.axe-rules-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 12px; touch-action: pan-y !important; }
+.axe-rules-scroll:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.axe-rules section + section { margin-top: 24px; }
+.axe-rules ul { margin: 0; padding-left: 1.3em; line-height: 1.7; }
+.axe-rules li + li { margin-top: 8px; }
 @container (max-width: 650px) and (min-height: 501px) {
+  .axe-header h1 { font-size: 20px; letter-spacing: .04em; }
+  .axe-rules-card { padding: 16px; gap: 12px; font-size: 16px; }
+  .axe-rules h2 { font-size: 20px; }
   .axe-portrait-frame { width: 60px; height: 76px; }
   .axe-portrait-frame .axe-portrait { width: 130px; top: -2px; }
 }
 @container (max-height: 500px) {
+  .axe-rules { padding: 8px; }
+  .axe-rules-card { padding: 12px; gap: 8px; font-size: 15px; }
+  .axe-rules h2 { font-size: 20px; }
   .axe-portrait-frame { width: 54px; height: 72px; }
   .axe-portrait-frame .axe-portrait { width: 125px; top: -2px; }
 }

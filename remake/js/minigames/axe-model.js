@@ -12,6 +12,7 @@ export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
   row: y < 0 ? "upper" : "lower", x: x * .56, y: y * .70, outer: .09, inner: .045,
 })));
 export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82 };
+export const SWAY = { min: .06, max: .18, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18 };
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");
 }
@@ -22,6 +23,25 @@ export function gaugeAt(milliseconds, cycle = 3200) {
   return phase <= 1 ? phase : 2 - phase;
 }
 export const axisAt = needle => { finite(needle); return (needle * 2 - 1) * 1.08; };
+/** Visible, reproducible hand movement. Time is the active stance clock, not wall time. */
+export function swayAt(milliseconds, power = POWER.ideal, throwIndex = 0, focused = false) {
+  finite(milliseconds, power, throwIndex);
+  if (milliseconds < 0 || power < 0 || power > 1 || !Number.isInteger(throwIndex) || throwIndex < 0)
+    throw new RangeError("Invalid stance values");
+  const fatigue = Math.min(1, Math.max(0, (milliseconds - SWAY.fatigueStart) / (SWAY.fatigueFull - SWAY.fatigueStart)));
+  const strain = Math.max(0, POWER.sweetMin - power, power - POWER.sweetMax);
+  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain) * (focused ? SWAY.focusScale : 1);
+  const t = milliseconds / 1000, offset = throwIndex * 1.73;
+  return { x: amplitude * (.75 * Math.sin(t * 4.7 + offset) + .25 * Math.sin(t * 10.3 + offset)),
+    y: amplitude * (.75 * Math.cos(t * 3.9 + offset) + .25 * Math.sin(t * 8.1 - offset)), amplitude, fatigue, focused };
+}
+export function releaseAimAt(aim, milliseconds, power, throwIndex, focused) {
+  finite(aim.x, aim.y);
+  if (Math.abs(aim.x) > 1.08 || Math.abs(aim.y) > 1.08) throw new RangeError("Aim out of range");
+  const sway = swayAt(milliseconds, power, throwIndex, focused);
+  const clampAxis = n => Math.max(-1.08, Math.min(1.08, n));
+  return { x: clampAxis(aim.x + sway.x), y: clampAxis(aim.y + sway.y), sway };
+}
 export function scoreAt(x, y) {
   finite(x, y);
   const radius = Math.hypot(x, y);
