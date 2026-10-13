@@ -51,6 +51,8 @@ jobs:
             assets/sprites
             assets/cgs
             assets/ui
+            assets/proto_street_set
+            assets/proto_walk
             experiments/proto/street
       - uses: actions/setup-node@v7.1.0
         with:
