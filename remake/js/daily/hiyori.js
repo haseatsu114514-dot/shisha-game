@@ -6,6 +6,8 @@ import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stat
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { afterStory } from "./bonds.js";
+import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
+import { addMoney, addStamina } from "../core/stats.js";
 
 let active = false;
 
@@ -13,11 +15,23 @@ let active = false;
 export async function playHiyoriEvent(id, options = {}) {
   if (active || isPlaying() || hiyoriEventStatus(id) !== "ready") return false;
   const event = hiyoriRoute().events.find((e) => e.id === id);
+  if (id === "axe_reveal" && !hiyoriAxeAffordable()) return false;
   const owner = state;
   active = true;
   try {
-    await play(event.dialogue, options);
+    if (id === "axe_reveal") {
+      if (!await playHiyoriAxeSequence(event, options)) return false;
+    } else await play(event.dialogue, options);
     if (state !== owner) return false;
+    if (id === "axe_reveal") {
+      // 前段・実プレイ・後段の読了と料金を同じ保存にする。中止は未払い。
+      if (!hiyoriAxeAffordable()) return false;
+      addMoney(-event.cost);
+      addStamina(-event.staminaCost);
+      state.slot = Math.min(2, state.slot + 1);
+      state.flags._private_night_day = state.day;
+      state.flags._private_night_char = "hiyori";
+    }
     state.flags[event.flag] = true;
     if (id === "tonari_return") releaseHiyoriAffinity();
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");

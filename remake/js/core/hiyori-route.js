@@ -18,15 +18,17 @@ export function hiyoriStoriesDone() {
   });
 }
 
-/** disabled / missing_script / seen / chapter / prerequisites / relationship / ready */
+/** disabled / missing_script / seen / chapter / time / prerequisites / relationship / ready */
 export function hiyoriEventStatus(id) {
   const route = hiyoriRoute();
   const event = route.events?.find((e) => e.id === id);
   if (!state || !route.enabled || !event) return "disabled";
   const dialogue = DB.dialogues[event.dialogue];
-  if (!dialogue?.lines?.length || dialogue.metadata?.preview_only) return "missing_script";
+  const scripts = [dialogue, ...(event.outro ? [DB.dialogues[event.outro]] : [])];
+  if (scripts.some(script => !script?.lines?.length || script.metadata?.preview_only)) return "missing_script";
   if (state.flags[event.flag]) return "seen";
   if (!event.chapters.includes(state.chapter)) return "chapter";
+  if (event.slot !== undefined && state.slot !== event.slot) return "time";
   if (event.requires.some((flag) => !state.flags[flag]) || event.met && !state.met.hiyori
     || event.contact && !hiyoriHasContact() || affinityLevel("hiyori") < (event.minAffinity || 0)) return "prerequisites";
   if (event.relationship === "lover" && !state.lovers.includes("hiyori")

@@ -34,12 +34,22 @@ async function stopGauge(page, value, touch, keyboard) {
   }, value);
   await pressReady(page, touch, keyboard);
 }
-async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard = false } = {}) {
+async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard = false, precision = false, attempt = 0 } = {}) {
   await phase(page,"choice"); await pressReady(page,touch,keyboard); await phase(page,"horizontal"); await fit(page);
   await stopGauge(page,(x / 1.08 + 1) / 2,touch,keyboard); await phase(page,"vertical");
   const stoppedX=await game(page).getAttribute("data-aim-x");
   await stopGauge(page,(y / 1.08 + 1) / 2,touch,keyboard); await phase(page,"power");
   assert.equal(await game(page).getAttribute("data-aim-x"),stoppedX,"Horizontal position remains locked");
+  if (precision) {
+    const actualY=Number(await game(page).getAttribute("data-aim-y"));
+    if (Math.abs(Number(stoppedX)-x)>.03 || Math.abs(actualY-y)>.03) {
+      assert(attempt<4,"Physical aiming failed after five visible re-aims");
+      // Use the player's real re-aim control before throwing; a slow runner can miss the narrow timing window.
+      console.log(`[axe-throw] Re-aim ${attempt+1}: actual ${stoppedX},${actualY}; target ${x},${y}`);
+      await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
+      return shoot(page,{touch,x,y,power,keyboard,precision,attempt:attempt+1});
+    }
+  }
   await fit(page); await stopGauge(page,power,touch,keyboard); await phase(page,"result");
 }
 async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
@@ -54,7 +64,8 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
   if (keyboard) { await page.locator(selector).focus(); await page.keyboard.press("Enter"); } else await press(page,selector,touch);
   await phase(page,"choice");
 }
-await suite("axe-throw", async check => {
+await suite("axe-throw", async run => {
+  const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
   for (const [label, options, touch] of [
     ["pc",{viewport:{width:1280,height:800}},false],
     ["touch-landscape",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
@@ -85,7 +96,7 @@ await suite("axe-throw", async check => {
     assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
     await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
     // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
-    await shoot(page,{x:-.56,y:-.70});
+    await shoot(page,{x:-.56,y:-.70,precision:true});
     assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
     assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
     assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);
@@ -137,9 +148,11 @@ await suite("axe-throw", async check => {
       const mini=await import("./js/minigames/axe.js"),signal=new AbortController(); signal.abort();
       window.cancelledGame=await mini.runAxeThrow({signal:signal.signal});
       const host=document.createElement("div");document.body.append(host);window.detachedGame=mini.runAxeThrow({host});host.remove();
+      const connected=document.createElement("div");document.body.append(connected);
+      window.replacedGame=mini.runAxeThrow({host:connected});connected.replaceChildren();
       window.invalidMode=await mini.runAxeThrow({mode:"fake"}).then(()=>false,e=>e instanceof RangeError);
     });
-    const result=await page.evaluate(async()=>[cancelledGame,await detachedGame]);
+    const result=await page.evaluate(async()=>[cancelledGame,await detachedGame,await replacedGame]);
     assert(result.every(r=>r.cancelled&&!r.completed&&r.throws.length===0));assert(await page.evaluate(()=>invalidMode));assert.equal(await game(page).count(),0);
   });
   await check("art-catalog-names-and-retry",async page => {

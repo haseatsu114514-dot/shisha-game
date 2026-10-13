@@ -59,3 +59,7 @@ hostの既存DOMを消さず一時画面を重ね、終了・AbortSignal・host�
 
 CIは .github/workflows/axe-throw.yml。結果と画面をartifactに保存する。
 原画・実指示・SHA・可逆WebPは asset_sources/hiyori-axe-issue477/。
+
+## 正式なひよりの寄り道
+
+本編の入口はtonariでの既読段階と夜の条件を満たした時のサブメニュー。`daily/hiyori.js` が正式な前段→`daily/hiyori-axe.js`の実3投→後段を順に待ち、読了後にだけ料金・体力・行動・進行を保存する。ミニゲーム自体は引き続きセーブを扱わない。callerはstate変更を検出してAbortし、同じstageの内容が差し替わった場合もミニゲームがキャンセルとして後片付けする。中断や高得点だけで素顔を知ったことにしない。
