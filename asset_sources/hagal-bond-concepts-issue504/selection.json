@@ -2,7 +2,7 @@
   "schema_version": 1,
   "issue": 504,
   "revision": "v1",
-  "status": "awaiting_owner_selection",
+  "status": "design_selection_complete",
   "merge_authorized": false,
   "characters": [
     {
@@ -15,7 +15,7 @@
         "A": "閉店後の一服",
         "B": "旅路の土"
       },
-      "selected": null
+      "selected": "A"
     },
     {
       "id": "naru",
@@ -27,7 +27,7 @@
         "A": "焼き菓子の余韻",
         "B": "対等のしるし"
       },
-      "selected": null
+      "selected": "B"
     },
     {
       "id": "adam",
@@ -39,7 +39,7 @@
         "A": "エデンの古杯",
         "B": "双香の誓い"
       },
-      "selected": null
+      "selected": "B"
     },
     {
       "id": "rin",
@@ -51,7 +51,7 @@
         "A": "夜の私物",
         "B": "ブルーベリーの帰り道"
       },
-      "selected": null
+      "selected": "A"
     },
     {
       "id": "tsumugi",
@@ -63,7 +63,7 @@
         "A": "葉耳ねこの居場所",
         "B": "今日の色"
       },
-      "selected": null
+      "selected": "B"
     },
     {
       "id": "minto",
@@ -75,7 +75,7 @@
         "A": "小悪魔の休息",
         "B": "栞のひと息"
       },
-      "selected": null
+      "selected": "B"
     },
     {
       "id": "samechan",
@@ -87,7 +87,7 @@
         "A": "はじめの海",
         "B": "コロちゃんの指定席"
       },
-      "selected": null
+      "selected": "B"
     },
     {
       "id": "hiyori",
@@ -99,7 +99,7 @@
         "A": "薄桃の夕凪",
         "B": "素顔でひと休み"
       },
-      "selected": null
+      "selected": "B"
     }
   ],
   "design_direction": "最初のシンプルな案を優先。素焼きの基本形、浅い彫り模様、控えめな色でキャラらしさを表す。",
@@ -114,5 +114,6 @@
     "bonus_effect": null,
     "bonus_values": null,
     "implementation_status": "not_implemented_by_this_pr"
-  }
+  },
+  "selection_source": "会話でオーナーが8人のA/Bを個別指定。PR #507の選定コメントにも記録。"
 }
