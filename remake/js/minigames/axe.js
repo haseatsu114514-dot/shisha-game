@@ -230,7 +230,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     feedback.textContent = powerActive ? shiftText + " · 白が着地点" : "針から伸びる線で位置を確認";
     timing.hidden = !moving && !displayedShot;
     timing.dataset.active = String(powerActive); feedback.hidden = ["loading", "failed", "summary"].includes(phase);
-    round.textContent = Math.min(shots.length + 1, rules.throws) + " / " + rules.throws + " 投";
+    round.textContent = Math.min(shots.length + (["result", "summary"].includes(phase) ? 0 : 1), rules.throws) + " / " + rules.throws + " 投";
     const record = shots.map(shot => shot.score).join(",");
     if (score.dataset.record !== record) {
       score.dataset.record = record;

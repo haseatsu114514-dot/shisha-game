@@ -102,6 +102,7 @@ await suite("axe-throw", async run => {
     const paused=await page.locator('.axe-flight').getAttribute('transform');await page.waitForTimeout(850);
     assert.equal(await page.locator('.axe-flight').getAttribute('transform'),paused,'Rules freeze flight too');
     await press(page,'[data-test="axe-rules-close"]',touch);await phase(page,'result');await fit(page);
+    assert.equal(await page.locator('[data-test="axe-round"]').textContent(),'1 / 3 投','Keep the completed throw number until the next throw starts');
     assert.equal(await page.locator('.axe-flight').getAttribute('transform'),await page.locator('.axe-impacts>g').getAttribute('transform'),
       'The flying axe and embedded axe must share exactly the same final pose');
     const tip=await page.locator('.axe-impacts>g').evaluate(n=>{
