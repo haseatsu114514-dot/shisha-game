@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "issue": 504,
+  "revision": "v2",
+  "status": "awaiting_owner_selection",
+  "merge_authorized": false,
+  "characters": [
+    {
+      "id": "sumi",
+      "name": "スミさん",
+      "sheet": "v2/01_sumi_naru.png",
+      "row": "top",
+      "equipment_id": "suyaki_sumi",
+      "options": {
+        "A": "土に宿る一服",
+        "B": "旅灯り"
+      },
+      "selected": null
+    },
+    {
+      "id": "naru",
+      "name": "なる",
+      "sheet": "v2/01_sumi_naru.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_naru",
+      "options": {
+        "A": "バニラ・カヌレ",
+        "B": "ライバル・ビート"
+      },
+      "selected": null
+    },
+    {
+      "id": "adam",
+      "name": "アダム",
+      "sheet": "v2/02_adam_rin.png",
+      "row": "top",
+      "equipment_id": "suyaki_adam",
+      "options": {
+        "A": "エデンの聖杯",
+        "B": "双香の螺旋"
+      },
+      "selected": null
+    },
+    {
+      "id": "rin",
+      "name": "凛",
+      "sheet": "v2/02_adam_rin.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_rin",
+      "options": {
+        "A": "夜側の魔女",
+        "B": "秘密のブルーベリー"
+      },
+      "selected": null
+    },
+    {
+      "id": "tsumugi",
+      "name": "つむぎ",
+      "sheet": "v2/03_tsumugi_minto.png",
+      "row": "top",
+      "equipment_id": "suyaki_tsumugi",
+      "options": {
+        "A": "葉耳ねこの寝床",
+        "B": "色を編む煙"
+      },
+      "selected": null
+    },
+    {
+      "id": "minto",
+      "name": "みんと",
+      "sheet": "v2/03_tsumugi_minto.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_minto",
+      "options": {
+        "A": "小悪魔のご褒美",
+        "B": "栞の喫茶室"
+      },
+      "selected": null
+    },
+    {
+      "id": "samechan",
+      "name": "サメちゃん",
+      "sheet": "v2/04_samechan_hiyori.png",
+      "row": "top",
+      "equipment_id": "suyaki_samechan",
+      "options": {
+        "A": "がぶっとシーシャーク",
+        "B": "コロちゃんの玉座"
+      },
+      "selected": null
+    },
+    {
+      "id": "hiyori",
+      "name": "ひより",
+      "sheet": "v2/04_samechan_hiyori.png",
+      "row": "bottom",
+      "equipment_id": null,
+      "options": {
+        "A": "儚げピーチレース",
+        "B": "素顔のアックス"
+      },
+      "selected": null
+    }
+  ]
+}

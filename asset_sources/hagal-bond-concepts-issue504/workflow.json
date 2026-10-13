@@ -1,0 +1,9 @@
+{
+  "worker": "codex-hagal-preview-504-52d2a031",
+  "issue": 504,
+  "branch": "codex/504-hagal-concept-preview",
+  "base_sha": "e96b7cf72dea927c5997a7b346adc47cc378221b",
+  "claim_run": 38352702425,
+  "status_run": 38353098344,
+  "selection_status": "awaiting_owner_selection"
+}

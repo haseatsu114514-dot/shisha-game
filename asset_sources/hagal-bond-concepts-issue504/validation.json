@@ -1,0 +1,43 @@
+{
+  "png_hashes": "8/8 match original",
+  "png_headers_dimensions": "8/8 valid",
+  "characters": 8,
+  "alternatives": 16,
+  "selected_count": 0,
+  "readme_local_links": "all resolve",
+  "runtime_files_modified": false,
+  "game_runtime_tests": "not run; concept archive only",
+  "visual_qa": "See REVIEW.md; production issues explicitly pending",
+  "browser_preview": [
+    {
+      "viewport": 1280,
+      "images": 4,
+      "loaded": true,
+      "horizontalOverflow": false,
+      "headings": [
+        "スミさん・なる",
+        "アダム・凛",
+        "つむぎ・みんと",
+        "サメちゃん・ひより"
+      ]
+    },
+    {
+      "viewport": 390,
+      "images": 4,
+      "loaded": true,
+      "horizontalOverflow": false,
+      "headings": [
+        "スミさん・なる",
+        "アダム・凛",
+        "つむぎ・みんと",
+        "サメちゃん・ひより"
+      ]
+    }
+  ],
+  "pdf": {
+    "pages": 4,
+    "bytes": 12879341,
+    "sha256": "007c75ad21391631576ee6c76323f9b119800e45321e01d57a8c5891c241388d",
+    "inspection": "pdfinfo confirms four pages"
+  }
+}
