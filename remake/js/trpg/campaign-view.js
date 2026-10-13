@@ -1,4 +1,5 @@
 import { el, yen } from "../core/util.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { loadTrpgLibrary, runTrpg } from "./index.js";
 import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
@@ -32,7 +33,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     root.append(el("header.trpg-campaign-header", [
       el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP NIGHT" }),
         el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : "今夜、誰と物語を囲む？" })]),
-      el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${state.day} · ${yen(state.money)}` : "まだ本棚は空です" }),
+      el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ本棚は空です" }),
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
     root.append(el("p.trpg-campaign-notice", { role: "status", dataset: { test: "trpg-campaign-notice" },
@@ -90,9 +91,11 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         el("h2", { text: scenario.title }), el("p", { text: scenario.presentation.tagline }),
       ]);
       if (memory) {
+        // 旧章内日の記録はそのまま。通算日で残した第2章の記録だけ章内日へ表示する。
+        const memoryClock = { ...memory, flags: memory.day >= (state?.flags?._ch2_day1?.startDay ?? Infinity) ? state.flags : {} };
         copy.append(el("div.trpg-campaign-memory", { dataset: { test: "trpg-memory-" + book.id } }, [
           el("strong", { text: memory.endingTitle || scenario.endings[memory.ending]?.title || memory.ending }),
-          el("p", { text: `CH.${memory.chapter} · DAY ${memory.day} / ${memory.participants.map(name).join("・")}` }),
+          el("p", { text: `CH.${memory.chapter} · DAY ${chapterDay(memoryClock)} / ${memory.participants.map(name).join("・")}` }),
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
         ]));
       } else if (!stocked && !owned) {

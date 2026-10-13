@@ -127,6 +127,7 @@ await suite("play-spots", async runCheck => {
       await assertFits(page, ".spot-pin, .map-regions button");
       assert.deepEqual(await value(page), before);
       await go(page, "trpg_bar"); await page.locator(t("trpg-club-found")).waitFor();
+      assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 2/);
       assert((await page.locator(".trpg-kicker").first().textContent()).includes("ボドゲカフェ"));
       await hit(page, "trpg-club-found"); await hit(page, "trpg-campaign-close");
       await page.locator(t("pin-trpg_bar")).waitFor();

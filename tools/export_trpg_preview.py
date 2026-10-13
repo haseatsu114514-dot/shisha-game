@@ -34,7 +34,8 @@ def main():
     manifest = json.loads(read("remake/data/manifest.json"))
     webp = set(manifest["webp"])
     files = {"icon.svg", "data/characters.json", "data/trpg_catalog.json", "remake/data/manifest.json",
-             "remake/trpg-preview.html", "remake/css/base.css", "remake/css/trpg.css", "remake/js/core/util.js"}
+             "remake/trpg-preview.html", "remake/css/base.css", "remake/css/trpg.css", "remake/js/core/util.js",
+             "remake/js/core/chapter-clock.js", "remake/js/core/rules.js"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
