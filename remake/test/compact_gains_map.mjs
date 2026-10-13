@@ -55,7 +55,7 @@ try {
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
     assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
-    assert(map.faces.every(f => f.width === (f.owner ? 26 : 52) && f.loaded), JSON.stringify(map.faces));
+    assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => (i.vector || i.logo) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
     assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));

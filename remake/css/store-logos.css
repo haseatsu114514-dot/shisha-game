@@ -3,12 +3,12 @@
 .store-logo > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
 .store-logo.missing { display: grid; place-items: center; color: #28251f; font-size: 15px; font-weight: 700; text-align: center; }
 
-.spot-pin.branded .shield { width: 112px; min-width: 112px; padding: 6px 6px 9px; background: #fffaf0; border-color: #d9c7a5; }
+.spot-pin.branded .shield { width: 100px; min-width: 100px; padding: 6px 6px 8px; background: #fffaf0; border-color: #d9c7a5; }
 .spot-pin.branded .shield::after { background: #fffaf0; border-color: #d9c7a5; }
 .spot-pin.branded .shield::before { background-color: #fffaf0; background-image: none; -webkit-mask: none; mask: none; border: 1px solid #d9c7a5; border-radius: 8px; }
-.spot-pin.branded .ico { height: 60px; }
+.spot-pin.branded .ico { height: 52px; }
 .spot-pin.branded.sel .shield { border-color: #ffe9a8; }
-.spot-pin .pin-owner-face { position: absolute; top: -12px; left: -12px; right: auto; width: 26px; height: 26px; }
+.spot-pin .pin-owner-face { position: absolute; top: -16px; left: -16px; right: auto; width: 32px; height: 32px; }
 
 .store-arrival { position: absolute; inset: 0; z-index: 999; display: grid; place-items: center; pointer-events: none; }
 .store-arrival-card { display: grid; place-items: center; gap: 14px; width: 440px; min-height: 250px; padding: 24px 32px; background: #fffdf7; border: 1px solid #d9c7a5; border-radius: 8px; box-shadow: 0 20px 60px rgba(12, 7, 25, .25); }
