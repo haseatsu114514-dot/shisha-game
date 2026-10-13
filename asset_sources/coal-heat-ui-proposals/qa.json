@@ -1,0 +1,548 @@
+{
+  "mockups": {
+    "A-ember-closeup.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2117650
+    },
+    "B-clear-targets.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2032289
+    },
+    "C-one-scene.png": {
+      "size": [
+        1672,
+        941
+      ],
+      "bytes": 2260132
+    }
+  },
+  "baseline": {
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "drill",
+    "pageerrors": 0,
+    "clock": "capture-only fixed after heat start"
+  },
+  "gallery": {
+    "browser": "Chromium",
+    "desktop": [
+      1440,
+      1100
+    ],
+    "landscape_touch": [
+      844,
+      390
+    ],
+    "portrait_touch": [
+      390,
+      844
+    ],
+    "pageerrors": 0,
+    "http_errors": 0,
+    "tabs": "A/B/C plus keyboard arrows PASS",
+    "zoom": "open/close/Escape PASS",
+    "comparison": "three images PASS",
+    "horizontal_overflow": false
+  },
+  "scope": "static mockups only; no game implementation or gameplay regression claim",
+  "claim_run": 38350757850,
+  "status_run": 38350959189,
+  "worker": "codex-coal-mockups-20261013-b0d54e25",
+  "hybrid": {
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": {
+          "width": 1440,
+          "height": 1050
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      },
+      {
+        "viewport": "landscape-touch",
+        "size": {
+          "width": 844,
+          "height": 390
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      },
+      {
+        "viewport": "portrait-touch",
+        "size": {
+          "width": 390,
+          "height": 844
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      }
+    ],
+    "evidence": "HTTP browser run completed all three viewport assertions before the separate file:// check was blocked",
+    "offline_file_preview": "NOT VERIFIED: managed Chromium blocked file:// with ERR_BLOCKED_BY_ADMINISTRATOR; use the verified local HTTP server",
+    "visual_review": {
+      "method": "manual comparison with real photos and both generated frames",
+      "before": "3 coals on stove / 0 in one pot",
+      "after": "2 coals on stove / 1 inside same pot",
+      "large_unlit_black_faces_in_ready_coals": "absent",
+      "white_hot_crater": "absent",
+      "collection_slots": "absent",
+      "pot": "single deep metal bowl with arch handle and stable base",
+      "timing_numbers": "illustrative mock labels; not measured gameplay"
+    },
+    "claim_run": 38350757850,
+    "status_run": 38357224273,
+    "scope": "static hybrid mockup only; no gameplay implementation"
+  },
+  "equipment_v2": {
+    "revision": "equipment-v2",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "scope": "static mockup only; game unchanged",
+    "status_run": 38373984329,
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2171279
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2096651
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1319096
+      }
+    }
+  },
+  "scale_v3": {
+    "revision": "scale-v3",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38379210078,
+    "scope": "static image mockup; no game code changed",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2099734
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2089309
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1311315
+      }
+    },
+    "scale_measurement": {
+      "frame": [
+        1672,
+        941
+      ],
+      "ash_bbox_px": [
+        1441,
+        506,
+        1498,
+        541
+      ],
+      "ash_width_px": 57,
+      "opening_width_estimate_px": 270,
+      "ash_width_over_opening": 0.2111111111111111,
+      "method": "Read-only ash-color mask in pot interior; visible ash width only, inspect full cube boundaries visually."
+    },
+    "visual_review": {
+      "before": "3 on stove / empty pot; rear cord; no front connector or foreground cable",
+      "after": "2 on stove / one small cube inside pot; same rear cord and tall handle",
+      "legend": "absent"
+    }
+  },
+  "inset_v4": {
+    "revision": "inset-v4",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38382268211,
+    "scope": "static image mockup; no game implementation change",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2081999
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2102101
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1320183
+      }
+    },
+    "visual_review": {
+      "method": "manual inspection of both generated full frames and original coal2 reference",
+      "before": "stove3 / empty overhead pot inset0",
+      "after": "stove2 / inset1 with marker2 and short result",
+      "separate_camera": "speech bubble border/tail/backdrop plus overhead angle and上から cue",
+      "main_table_pot": "removed",
+      "collected_coal": "rough gray ash, chipped rounded perimeter and ember edge; material continuity, not pixel-identical source reuse",
+      "cable": "rear connected, no front connector",
+      "stage_legend": "absent"
+    }
+  },
+  "panel_v5": {
+    "revision": "panel-v5",
+    "scope": "static inset corner edit",
+    "status_run": 38385229412,
+    "browser": "Chromium desktop1440x1050",
+    "new_image_load_and_switch": "PASS",
+    "pageerrors": [],
+    "http_errors": [],
+    "visual_review": "Both inset frames have plain rounded rectangles without a tail; counts3+0/2+1, top view and coal2 retained",
+    "interaction_layout": "Unchanged; prior inset_v4 desktop/touch/zoom checks retained",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2066016
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2075154
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1323008
+      }
+    }
+  },
+  "layout_v6": {
+    "revision": "layout-v6",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38389484421,
+    "scope": "static image mockup; no game code or gameplay timing changes",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2037192
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2032954
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1300355
+      }
+    },
+    "visual_review": {
+      "method": "manual inspection of both generated frames and prior real charcoal references",
+      "before": "stove3 / pot0",
+      "after": "stove2 / pot1",
+      "coal_ids": "absent on stove and stored charcoal; result prefix removed",
+      "posture": "shared yaw and pitch, broad base flat on coil",
+      "spacing": "exposed coil and visible air gaps between all three coals; wider separated triangle",
+      "remaining_positions": "back-center and front-right retained after collection",
+      "collector": "overhead plain rounded inset, no tail or slots",
+      "cable": "rear connected",
+      "thermal_validation": "visual proposal only; no equal-heating measurement"
+    }
+  },
+  "ring_v7": {
+    "revision": "ring-v7",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38395111620,
+    "scope": "static image mockup; no game code or gameplay timing changes",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2000995
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2060399
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1308712
+      }
+    },
+    "visual_review": {
+      "method": "manual inspection of both generated frames and prior real charcoal references",
+      "before": "stove3 / pot0",
+      "after": "stove2 / pot1",
+      "coal_ids": "absent on stove and stored charcoal; result prefix removed",
+      "posture": "shared yaw and pitch, broad base flat on coil",
+      "spacing": "central non-coil patch and outer rim unoccupied; front pair inward on middle turns; triangle and visible gaps retained",
+      "remaining_positions": "rear-left and front-right retained after collection",
+      "collector": "overhead plain rounded inset, no tail or slots",
+      "cable": "rear connected",
+      "thermal_validation": "visual proposal only; no equal-heating measurement"
+    }
+  }
+}
