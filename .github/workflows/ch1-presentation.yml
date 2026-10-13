@@ -42,7 +42,9 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
       - name: Actual-result and taste boundaries
-        run: node remake/test/mix_recognition.mjs
+        run: |
+          node remake/test/mix_recognition.mjs
+          node --experimental-vm-modules remake/test/foil_holes.mjs
       - name: PC, touch, seen art, opinions and celebration
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/presentation-preview.log" 2>&1 &
@@ -52,6 +54,7 @@ jobs:
           done
           node remake/test/browser/ch1_presentation.mjs
           node remake/test/browser/ch1_story_feedback.mjs
+          node remake/test/browser/craft_materials.mjs
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2

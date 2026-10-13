@@ -227,7 +227,25 @@
 .mix-ideal { color: #74e0b0; }
 .mix-optimal { color: #ffe5ff; }
 .mix-temperature [hidden] { display: none; }
-.pack-aroma { margin: 12px 0 24px; padding: 14px 20px; border-left: 2px solid #c3a576; background: #d4aa6310; color: #e0c69f; font-size: 19px; line-height: 1.7; }
+.packing { height: 100%; display: flex; flex-direction: column; gap: 10px; }
+.pack-aroma { margin: 0; padding: 7px 14px; border-left: 2px solid #c3a576; background: #d4aa6310; color: #e0c69f; font-size: 15px; line-height: 1.6; }
+.pack-vessel { flex: 1; min-height: 300px; display: grid; place-items: center; position: relative; background: radial-gradient(ellipse at 50% 70%, #ab794821, transparent 63%); }
+.pack-vessel::before { content: ""; position: absolute; width: 260px; height: 24px; bottom: 0; border-radius: 50%; background: #08040ccc; filter: blur(10px); }
+.pack-vessel-art { position: relative; filter: drop-shadow(-6px 9px 9px #0007); }
+.pack-vessel-art .art { image-rendering: auto; }
+.pack-caption { text-align: center; min-height: 58px; }
+.pack-caption b { font-size: 24px; color: #f0d1a0; letter-spacing: .1em; }
+.pack-caption p { margin: 3px 0 0; font-size: 16px; line-height: 1.5; }
+.pack-choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pack-choice { position: relative; border: 1px solid #90795988; border-radius: 8px; background: #17131ee6; color: #ddcbb2; padding: 10px 12px; cursor: pointer; text-align: center; }
+.pack-choice b { display: block; font-size: 20px; }
+.pack-choice small { display: block; margin-top: 3px; font-size: 13px; color: #c8bab0; }
+.pack-choice[aria-pressed="true"] { border-color: #e5bf80; background: #5f43255c; box-shadow: inset 0 -3px #e5bf80; color: #fff1da; }
+.pack-choice[aria-pressed="true"]::before { content: "✓"; position: absolute; top: 5px; right: 9px; color: #f5d9a7; }
+.pack-choice:focus-visible { outline: 3px solid #fff1da; outline-offset: 3px; }
+.pack-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.pack-footer small { color: #c8bab0; font-size: 14px; }
+.pack-footer .pack-confirm { min-width: 240px; min-height: 48px; justify-content: center; font-size: 18px; }
 
 /* ---------------------------------------------------------------- 穴あけ */
 .holes { display: flex; gap: 24px; align-items: center; height: 100%; }
@@ -235,24 +253,31 @@
 .foil {
   position: relative;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.9), transparent 35%),
-    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.06) 0deg 7deg, rgba(0, 0, 0, 0.05) 7deg 14deg),
-    radial-gradient(circle, #e9e9ef 0%, #c4c4cf 60%, #8d8d9c 100%);
-  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.4), 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.25);
+  background: radial-gradient(circle at 70% 28%, #e3dfd6, #9998a0 68%, #55515c);
+  box-shadow: -6px 14px 26px #0009;
   cursor: crosshair;
   touch-action: none;
 }
-.foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed rgba(40, 40, 60, 0.35); pointer-events: none; }
-.foil-ring.cur { border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 50%, transparent); }
+.foil .foil-surface { position: absolute; inset: 0; border-radius: 50%; image-rendering: auto; pointer-events: none; }
+.foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed #29253266; pointer-events: none; }
+.foil-ring.cur { border: 1px solid #30263099; box-shadow: 0 0 0 1px #fff5; }
 .foil-markers, .foil-holes { position: absolute; inset: 0; pointer-events: none; }
-.foil-marker { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; border: 2px solid rgba(60, 60, 80, 0.3); }
-.foil-marker.cur { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); animation: marker-pulse 0.8s ease-in-out infinite; }
-@keyframes marker-pulse { 50% { transform: scale(1.35); } }
-.foil-hole { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #333, #000); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); animation: hole-pop 0.2s var(--ease-out); }
-.foil-hole.close, .foil-hole.miss { background: radial-gradient(circle, #3a1a1a, #140404); }
+.foil-marker { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; transform: rotate(45deg); border: 2px solid #504a55; background: #e6e0d578; box-shadow: 0 0 0 1px #fff9; }
+.foil-marker.cur, .foil-marker.planned { border-color: #251b29; background: #fff6e3; box-shadow: 0 0 0 1px #fff9, 0 1px 3px #20172577; }
+.foil-marker.next { background: #f58055; outline: 2px solid #251b29; outline-offset: 3px; }
+.foil-marker.next::after { content: ""; position: absolute; inset: 2px; background: #291c28; }
+.foil-hole { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 43% 55% 40% 52%; background: radial-gradient(ellipse at 65% 25%, #060509 45%, #34313a 75%, #89828b); box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; animation: hole-pop .2s var(--ease-out); }
+.foil-hole::before { content: ""; position: absolute; inset: -5px; border-radius: 45% 51% 40% 48%; background: linear-gradient(135deg, #20203255, transparent 45%, #fff6dd55 70%, transparent); pointer-events: none; }
+.foil-hole::after { content: ""; position: absolute; top: 4px; left: -7px; width: 22px; height: 1px; background: linear-gradient(90deg, transparent, #4e465ccc 30%, transparent 46%, #fff5dacc 70%, transparent); transform: rotate(var(--scratch-angle, -28deg)); pointer-events: none; }
+.foil-hole.close, .foil-hole.miss { border-radius: 24% 52% 32% 60%; }
+.foil-hole.close::after, .foil-hole.miss::after { width: 27px; height: 2px; }
 @keyframes hole-pop { from { transform: scale(2); } }
-.foil-cursor { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle, #fff, var(--accent) 45%, transparent 70%); box-shadow: 0 0 18px var(--accent), 0 0 34px var(--accent-2); pointer-events: none; }
+.foil-cursor { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #c5fcff; outline: 2px solid #132f40; background: transparent; box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99; pointer-events: none; }
+.foil-cursor::after { content: ""; position: absolute; inset: -7px; border: 2px solid #132f40; clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%); }
+.foil-legend { display: flex; justify-content: center; gap: 27px; margin-top: 26px; padding: 6px 8px; color: #e8dac7; font-size: 14px; }
+.foil-legend span { display: flex; align-items: center; gap: 12px; }
+.foil-legend i { position: relative; display: inline-block; left: auto; top: auto; margin: 0; flex: none; animation: none; }
+.foil-legend .foil-cursor { width: 20px; height: 20px; }
 .hr-side { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .hr-ring { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; }
 .hr-role { font-size: 14px; color: var(--text-dim); }
@@ -272,7 +297,6 @@
 
 /* 同じアルミと作業パネルで、開始前だけ配置を選ぶ。 */
 .ht-preview { width: 430px; height: 430px; cursor: default; touch-action: auto; }
-.ht-preview .foil-hole { animation: none; }
 .ht-side { flex: 1; min-width: 0; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; }
 .ht-side > * { flex-shrink: 0; }
 .ht-title { font-size: 22px; color: var(--accent); }

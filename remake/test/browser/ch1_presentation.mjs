@@ -60,7 +60,8 @@ await suite("ch1-presentation", async check => {
       await page.evaluate(() => { V.running = V.steps.stepPack(V.cs); });
       await page.locator('[data-test="opt-normal"]').waitFor();
       assert.match(await page.locator('[data-test="mix-confirmed-taste"]').textContent(), /アニス.*後味/);
-      await select(page, '[data-test="opt-normal"]', touch); await page.evaluate(() => V.running);
+      await select(page, '[data-test="opt-normal"]', touch);
+      await select(page, '[data-test="pack-confirm"]', touch); await page.evaluate(() => V.running);
       assert.deepEqual(await page.evaluate(() => V.cs.mix), { double_apple: 10, mint: 2 });
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.double_apple), 50);
     }, options);

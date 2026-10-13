@@ -82,6 +82,12 @@
 原画・素材の見直しは [街マップ](../asset_sources/ch2-city/README.md)・[人物](../asset_sources/ch2-characters/README.md)・[内装](../asset_sources/ch2-interiors/README.md) の制作記録。
 検証は `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/ch2_preview.mjs`。
 
+詰め方と穴あけだけを試す場合は `http://127.0.0.1:8123/remake/craft-preview.html`。
+中央のボウルで3種類の詰め方を見比べ、「この詰め方で決める」で穴配置へ進む。
+`?step=holes` で穴あけから開始できる。二重のひし形が次の目標、水色の輪が動く光、黒い小さな凹みが開いた穴。
+タップ／Spaceで穴を開け、完成後に次のリング・仕上げを選ぶ。本番と同じ工程を呼び、本編セーブは読み書きしない。
+回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
+
 斧投げの練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
 生成素材とキャラクターの反応を表示し、横・縦・力のゲージを順に止める。3投練習／10投競技練習、キルショットの宣言と力による落下がある。PC・スマホ縦横で遊べる。
 本編セーブや好感度・恋人/友人状態は変更しない。[操作・API・検証](../docs/axe_throw.md)。
