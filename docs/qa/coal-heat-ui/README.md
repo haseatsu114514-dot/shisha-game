@@ -46,3 +46,27 @@ PNG原画の着火前後は同じ1374×1145キャンバス。alpha>=24の輪郭I
 回線/端末の性能比較や実機での速度保証ではない。初回待機中は入力を止め、必要な素材が準備できてからカウントダウン・時計を始める。
 
 実機iPhone/Safariは未検証。タッチはChromiumの実イベントで確認。公開反映・最終CIはPRへ記録する。
+
+## 正式引き継ぎ後の検証（PR #541）
+
+旧担当の停止・保存済みhead・参照Open PR一覧を確認し、管理者transfer
+[38435531517](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38435531517)
+と同run指定のstatus
+[38435695015](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38435695015)
+の成功後に継続した。新ownerは`claude-coal-541-20261014-d17fc2e3`、実クライアントはCodex。
+
+main `ad74d6e40525d695b8ad00bf502074fa94611e6e`を通常マージ。
+manifestの既存キー・配列の登録を全件照合し、第2章の素材を保持した。
+mainとの差分はmaking素材7件の追加と生成時刻のみ。Open PR #532の素材登録とも別キー。
+
+- `heat_feedback.mjs`: PC/タッチ/縦表示・回収・交換1〜4個、16ケースPASS。
+- `craft_readiness.mjs`: 3ケースPASS。必要素材・混在炭・キーボード・自動回収、次工程先読み、キャッシュ再開。今回のキャッシュ再表示49ms、再通信0、幕0（ローカルの一回の測定）。
+- `worker_scenes.mjs`: 19ケースPASS。PC/タッチ・表示画像decode・遅延/失敗/期限切れ・代替表示・低モーション。
+- `craft_templates_timing.mjs`: 3画面サイズPASS。初回は結果カードの入場中の座標測定がmobileで失敗。`.show`と有限アニメーションの完了を待つようテストを修正し、既存の境界・採点のassertは維持して全ケース再実行。
+- `ch1_opening_resume.mjs`の`interrupted-heat`を追加し、PC/実タッチイベントの2ケースPASS。実際の冒頭進行から炭1個を回収してreload。保存済みの練習選択を保ち、未完成の一台を最初から再開、完了記録は1回、所持金・体力・在庫などを保持し、古い炭や読込幕が残らない。
+- 試遊入口のflat/cube×PC/touch 4ケースPASS。1個回収→穴あけへ移動→戻るで0/3から再開、LocalStorage不変、pageerror/HTTPエラー0。初回の検証スクリプトは1個目のジャストまで待つ間に別の炭が自然回収されて個数期待が失敗したため、離脱検証は開始直後の1個回収へ変更。自然回収の仕様は変更していない。
+- `stamina_condition.mjs`、`foil_holes.mjs`、`mix_recognition.mjs`、`steam_temperature.mjs`、agent docs、diff check PASS。
+
+機能・採点・画像の追加変更は不要だった。今回の追加差分はmain統合、離脱回帰テスト、描画完了のテスト待機と検証記録。
+集計・詳細は[handoff-verification.json](handoff-verification.json)。実機iPhone/Safariは未検証。
+最終headのCI・マージ・Pagesの公開確認はPRとIssue #503へ記録する。

@@ -114,6 +114,10 @@ try {
     assert.match(summary, /全体のタイミング精度 80%.*平均誤差 0\.26秒/);
     assert.equal(await page.locator('[data-test="coal-timing-0"]').textContent(), first);
     assert.equal(await page.evaluate(() => cs.heat.timingAccuracy === cs.heat.score), true);
+    // DOM出現直後は結果カードが下から入場中。実際の完了を待って最終配置を測る。
+    await page.locator(".result-card.show").evaluate(async card => {
+      await Promise.all(card.getAnimations().map(animation => animation.finished));
+    });
     await insidePanel(page, ['[data-test="step-summary"]', ".result-card", '[data-test="step-next"]']);
     await page.waitForTimeout(200); await capture(page, `coal-results-${name}`);
     await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);

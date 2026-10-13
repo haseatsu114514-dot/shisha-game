@@ -161,6 +161,42 @@ await suite("ch1-opening-resume", async check => {
     assert.deepEqual(resources(result.state), resources(interrupted.saved));
   });
 
+  for (const [device, options] of [["pc", {}], ["touch", {
+    viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true,
+  }]]) {
+    await check(`interrupted-heat-after-one-pick-${device}`, async page => {
+      await setup(page, { choice: "practice" });
+      // 前工程は既存autoで通し、炭のカウントダウンから実入力へ切り替える。
+      await page.evaluate(() => {
+        const observer = new MutationObserver(() => {
+          if (document.querySelector('.bench[data-step="heat"]')) {
+            O.craft.craftTest.auto = null;
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.getElementById("screen"), { subtree: true, attributes: true, childList: true });
+        O.run("new");
+      });
+      await page.waitForFunction(() => document.querySelector('.heat')?.getAttribute('aria-busy') === "false",
+        null, { timeout: 90000 });
+      const first = page.locator('[data-test="coal-0"]');
+      if (device === "touch") await first.tap(); else await first.click();
+      assert.equal(await page.locator('[data-test="coal-count"]').textContent(), "1 / 3");
+      const interrupted = await page.evaluate(() => O.snapshot());
+      assert.equal(interrupted.saved.phase, "opening");
+      assert.equal(interrupted.saved.flags._ch1_opening.tutorialChoice, "practice");
+      assert(!interrupted.saved.flags._tutorial_done);
+      assert.equal(practiceCount(interrupted.saved), 0);
+      await reloadAndResume(page);
+      const result = await daily(page);
+      assert.equal(result.choices.length, 0);
+      assert.equal(result.entries.filter(id => id === "remake_tutorial_result").length, 1);
+      assert.equal(practiceCount(result.state), 1);
+      assert.deepEqual(resources(result.state), resources(interrupted.saved));
+      assert.equal(await page.locator(".stove, .craft-loading").count(), 0);
+    }, options);
+  }
+
   await check("completed-craft-unread-result-is-resumed-once", async page => {
     await setup(page, { choice: "practice", pauseAt: "remake_tutorial_result" });
     await page.evaluate(() => O.run("new"));
