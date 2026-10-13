@@ -84,7 +84,7 @@ function renderEntry() {
       el("p.ch2-kicker", { text: "水煙前線 -EN:CODE- / CHAPTER 02" }),
       el("h1", [el("small", { text: "第2章・街歩き試遊" }), "ワイドハンガ街"]),
       el("p.ch2-entry-description", { text: "地元の大会の、その先へ。隣町の大きな駅を出ると、人の流れと、まだ知らない煙が待っている。" }),
-      el("p.ch2-preview-note", { text: "街と4つの訪問先・大会会場の挨拶、準備中の店内見学を遊べます。あげはも県大会のライバルです。日常・県大会は制作中で、本編には未接続です。本編のセーブは変更せず、試遊の進行は再読み込みでリセットされます。" }),
+      el("p.ch2-preview-note", { text: "街と4つの訪問先・県大会ホールの挨拶、準備中の室内見学を遊べます。あげはも県大会のライバルです。日常の続きと県大会は未収録。本編と別に進み、本編のセーブは変更せず、再読み込みでリセットされます。" }),
       el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", () => perform(startPreview), "btn primary"), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
       el("p.ch2-entry-controls", { text: "会話：クリック・タップ・Enter ／ 地図：行き先を選ぶ" }),
     ]),
@@ -222,7 +222,7 @@ function renderMap() {
       button("駅へ戻る", "ch2-preview-return", () => perform(returnHome), allRead() ? "btn primary" : "btn"),
     ]),
     el("footer.ch2-map-footer", [
-      el("p", { text: "第2章・街歩き試遊　｜　本編未接続・県大会未収録・セーブ変更なし" }),
+      el("p", { text: "第2章・街歩き試遊　｜　初日の街歩き・県大会未収録・セーブ変更なし" }),
       el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" }),
     ]),
   ]);
@@ -266,7 +266,7 @@ function renderEnd() {
       el("h1", { text: "知らない煙を、地元へ。" }),
       el("p.ch2-end-description", { text: "駅前の光が、列車の窓を流れていく。新しい街に、また訪ねたい場所ができた。第2章の続きは、ここから。" }),
       el("p.ch2-end-progress", { text: `訪問した入口　${visited.size} / 5か所` }),
-      el("p.ch2-preview-note", { text: "今回は街・挨拶・準備中の店内見学までです。新登場3人は通常立ち絵を制作しました。日常・県大会・表情差分は今後制作します。本編には未接続で、本編のセーブは変更していません。" }),
+      el("p.ch2-preview-note", { text: "今回は街・挨拶・準備中の室内見学までです。新登場3人は通常立ち絵を制作しました。日常の続き・県大会・表情差分は今後制作します。この試遊では本編のセーブは変更していません。" }),
       el("div.ch2-actions", [
         button("もう一度、街を訪れる", "ch2-preview-restart", () => perform(async () => {
           resetPreview();

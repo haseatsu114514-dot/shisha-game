@@ -209,6 +209,6 @@ await suite('ch2-main', async check => {
     await preserved(page, before, { loaded: true });
     const value = await page.evaluate(() => window.__remake.state);
     for (const key of ['money','flavorStock','lovers','loverSince','relationshipMemories']) assert.deepEqual(value[key], before.value[key]);
-    assert.deepEqual(value.trpg, { stock: [], owned: [], cleared: {}, shifts: [] }, 'Old saves acquired unread TRPG records');
+    assert.deepEqual(value.trpg, { ...before.value.trpg, owned: [] }, 'Old saves acquired unread TRPG records');
   });
 });

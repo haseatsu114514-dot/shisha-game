@@ -19,7 +19,7 @@ CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/ch1_preview.mj
 
 ## 結果
 
-本編9ケース、独立試遊10ケース、第1章予告9ケースがPASS。[本編の結果](browser-results.json)。coreの日付と境界検査、データ読込35ファイル／最大同時4、日常整合性、追加台詞lint、571場面の台詞接続、指示資料・構文・diffもPASS。既存の `shuraba_mashiro` 重複ID警告1件は維持。
+main `0614327`（schema15のTRPG部活・採用済みOVA予告）まで通常merge後、本編9ケース、独立試遊10ケース、第1章予告9ケースがPASS。[本編の結果](browser-results.json)。coreの日付と境界検査、データ読込35ファイル／最大同時4、日常整合性、追加台詞lint、571場面の台詞接続、指示資料・構文・diffもPASS。既存の `shuraba_mashiro` 重複ID警告1件は維持。
 
 | 本編ケース | 確認 |
 | --- | --- |
@@ -35,7 +35,7 @@ CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/ch1_preview.mj
 
 金銭・体力・能力と端数・装備・フレーバーのグラム在庫・好感度と端数・恋人と絆・付き合い始めた日・デート日・交流の記憶・話の進行・連絡先・LIME受信箱・常連ノート・レシピ・記念品・くじ・スロット・TRPGを保持した。主な自動保存ケースでは、手動3枠と設定の内容も一致。無料の導入会話で成長・賞金・在庫消費を与えない。
 
-経過日は第1章の14から15へ進め、`flags._ch2_day1.startDay` を基点に「第2章・DAY1」を表示する。記念日の基点や交流の日時は巻き戻さない。状態のroot schemaは変更せず、既存の可変flags領域で進行を保存する。章切替は `chapter === 1 && phase === cleared` の一度だけ。第2章保存は第1章のカレンダー／大会へ再入場させない。
+経過日は第1章の14から15へ進め、`flags._ch2_day1.startDay` を基点に「第2章・DAY1」を表示する。記念日の基点や交流の日時は巻き戻さない。第2章追加で状態のroot schemaは変更せず、既存の可変flags領域で進行を保存する。章切替は `chapter === 1 && phase === cleared` の一度だけ。第2章保存は第1章のカレンダー／大会へ再入場させない。
 
 ## 実画面
 

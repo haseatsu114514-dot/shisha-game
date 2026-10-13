@@ -40,5 +40,6 @@
       "status": "passed"
     }
   ],
-  "note": "Current-main C.STATION hall integration plus working-tree chapter-two DAY1 implementation; CI records the committed ref."
+  "runtime_ref": "df25f3a36334631bca6c86c6649d0ed756ca8980",
+  "note": "Main0614327 integrated, including schema15 TRPG and adopted OVA trailer, with the legacy-fixture adjustment. Subsequent preview-note copy edits are visual-only and captured separately."
 }
