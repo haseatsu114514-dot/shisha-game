@@ -236,7 +236,7 @@ export const NIGHT_EVENTS = {
   5: { label: "スミさんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
   7: { schedule: "preparation", deadline: 12, prerequisites: ["_ev_first_practice", "_tsumugi_contest_progress"],
     label: "中間準備", pin: "tonari", teaser: "tonari", beat: "大会への準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
-  9: { label: "出場者説明会", pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
+  9: { label: "出場者説明会", pin: "c_station", teaser: "イベントホール", beat: "夜。C.STATIONと同じビルのイベントホールへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { label: "常連さんの変化", schedule: "regular", prerequisites: ["_ev_salaryman"], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
   11: { id: "_ev_tsumugi_sketch", doneKeys: ["_ev_tsumugi_sketch", "_tsumugi_contest_submitted"], label: "つむぎの応募", pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
     done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
