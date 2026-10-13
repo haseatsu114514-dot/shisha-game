@@ -66,6 +66,7 @@ try {
 
   // 表情は実際の炭焼き結果へ反応し、名前や審査点を勝手に開放しない。
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
+  await page.waitForSelector('.bench[data-step="heat"] .heat');
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
   assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光.*(?:押|タップ)/,'Tutorial Sumi did not explain the game controls');
   await page.waitForFunction(() => cs.heat?.score > 0);
@@ -93,7 +94,8 @@ try {
   assert.equal(await page.locator('.bench-ticker').count(), 0);
   assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'pakki');
   assert.equal(await page.locator('.audience-person figcaption').textContent(), 'パッキー');
-  assert.equal(await page.locator('[data-test="craft-feedback"]').textContent(), mc);
+  assert.equal(await page.locator('[data-test="craft-feedback"]').getAttribute('data-raw'), mc);
+  assert.equal((await page.locator('[data-test="craft-feedback"]').textContent()).replace(/\s/g, ''), mc.replace(/\s/g, ''));
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
   await loaded(page); await capture(page, 'pakki-heat-desktop');
   await page.evaluate(() => T.session.reactAudience(cs,'good',{force:true}));
@@ -195,10 +197,28 @@ try {
     await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
     const speed = await page.evaluate(async () => {
       const needle = document.querySelector('.pg-needle');
-      const began = await new Promise(requestAnimationFrame), x = parseFloat(needle.dataset.pos);
-      let ended;
-      for (let i = 0; i < 10; i++) ended = await new Promise(requestAnimationFrame);
-      return (parseFloat(needle.dataset.pos) - x) / (ended - began);
+      // 重い描画でフレームが落ちると、ゲームの保護用dt上限と実時計の差で速度が逆転して見える。
+      // 実際の針の更新を、両条件とも同じ16ms×10フレームで測る。
+      const nativeRaf = requestAnimationFrame.bind(window);
+      const descriptor = Object.getOwnPropertyDescriptor(performance, 'now');
+      let clock = performance.now(), lastNative;
+      Object.defineProperty(performance, 'now', { configurable: true, value: () => clock });
+      window.requestAnimationFrame = fn => nativeRaf(now => {
+        if (now !== lastNative) { clock += 16; lastNative = now; }
+        fn(clock);
+      });
+      try {
+        // すでに予約された元のRAFも、新しい時計へ切り替わるまで待つ。
+        await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame);
+        const began = await new Promise(requestAnimationFrame), x = parseFloat(needle.dataset.pos);
+        let ended;
+        for (let i = 0; i < 10; i++) ended = await new Promise(requestAnimationFrame);
+        return (parseFloat(needle.dataset.pos) - x) / (ended - began);
+      } finally {
+        window.requestAnimationFrame = nativeRaf;
+        if (descriptor) Object.defineProperty(performance, 'now', descriptor);
+        else delete performance.now;
+      }
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
@@ -273,6 +293,7 @@ try {
     await capture(p, `timer-${name}`);
     await p.locator('[data-test="timer-start"]').click(); await p.evaluate(() => window.timerRun);
     await p.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
+    await p.waitForSelector('.dodge');
     const geometry = await p.evaluate(() => {
       const rect=s=>document.querySelector(s).getBoundingClientRect();
       const box=rect('.dodge'), pad=rect('.dodge-pad'), scene=rect('.bench'), worker=rect('.bench-worker'), panel=rect('.bench-right'), gallery=rect('.bench-audience'), thermo=rect('.steam-temperature');

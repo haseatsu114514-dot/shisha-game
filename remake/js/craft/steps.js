@@ -52,7 +52,7 @@ const lessonHint = (cs, id, fallback) => (cs.mode === "tutorial" && LESSON[id]) 
 // ---------------------------------------------------------------- 機材
 
 export async function stepSetup(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "setup");
   const types = [["bowl", "ボウル"], ["hms", "ヒートマネジメント"], ["charcoal", "炭"]];
   for (const [type, label] of types) {
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
@@ -108,7 +108,7 @@ export function evaluateMix(cs) {
 }
 
 export async function stepMix(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "mix");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーの配合", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
@@ -226,7 +226,7 @@ export async function stepMix(cs) {
 // ---------------------------------------------------------------- 詰め・配置・蒸らし時間
 
 export async function stepPack(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "葉の間に空気を残す", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
@@ -269,7 +269,7 @@ export async function stepPack(cs) {
 }
 
 export async function stepPlace(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "place");
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
   cs.place = await choose(panel, layouts.map(value => value === "triangle"
@@ -288,6 +288,6 @@ export async function stepPlace(cs) {
 }
 
 export async function stepSteamTime(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "timer");
   await runSteamTimer(cs);
 }

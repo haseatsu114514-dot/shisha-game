@@ -5,11 +5,14 @@ import { suite, assertFits } from "./support.mjs";
 
 const near = (actual, expected, label = "") => assert(Math.abs(actual - expected) < .002, `${label}: ${actual} != ${expected}`);
 const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
-const bandsOf = async page => {
+const bandsOf = async (page, selector = ".thermo") => {
   const preview = page.locator('details[data-test="mix-temperature-preview"]:not([open])');
   if (await preview.count()) await preview.locator("summary").click();
-  return page.locator(".thermo").evaluate(root => {
+  const thermometer = page.locator(selector);
+  await thermometer.locator(".thermo-tube").waitFor({ state: "visible" });
+  return thermometer.evaluate(root => {
   const tube = root.querySelector(".thermo-tube").getBoundingClientRect();
+  if (!root.isConnected || tube.height <= 0) throw new Error("Thermometer detached or has no measurable tube");
   const bounds = selector => {
     const band = root.querySelector(selector).getBoundingClientRect();
     return [(tube.bottom - band.bottom) / tube.height, (tube.bottom - band.top) / tube.height];
@@ -18,8 +21,8 @@ const bandsOf = async page => {
     gradient: getComputedStyle(root.querySelector(".thermo-scale")).backgroundImage };
 });
 };
-const expectBands = async (page, t) => {
-  const bands = await bandsOf(page);
+const expectBands = async (page, t, selector) => {
+  const bands = await bandsOf(page, selector);
   near(bands.t, t);
   for (const [key, expected] of [["ideal", [.42 * t, .66 * t]], ["optimal", [.49 * t, .59 * t]]]) {
     expected.forEach((value, i) => near(bands[key][i], value, key));
@@ -105,7 +108,9 @@ await suite("mix-temperature", async check => {
       await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => QA.run);
       // Desktop exercises the live steam clock. Other profiles use the existing auto hook for completion.
       await page.evaluate(name => { QA.session.craftTest.auto = name === "desktop" ? null : "good"; QA.run = QA.steam.runSteamDodge(QA.cs); }, name);
-      await page.locator('[data-test="steam-temperature"]').waitFor(); await expectBands(page, preview.t);
+      // The timer has the same data-test while steam assets are preparing. Measure
+      // the new dodge screen's connected, visible tube, never the outgoing timer.
+      await expectBands(page, preview.t, '.steam [data-test="steam-temperature"]');
       if (name === "desktop") {
         await page.locator('[data-test="dodge-refresh"]:enabled').waitFor();
         await page.locator('[data-test="step-next"]:enabled').waitFor({ timeout: 45000 });

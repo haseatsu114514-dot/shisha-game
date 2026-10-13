@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-13 10:19 UTC",
+ "generated": "2026-10-13 15:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -347,7 +347,14 @@
   "hajime_craft_pack.png",
   "hajime_craft_pull.png",
   "hajime_craft_pull_rest.png",
+  "hajime_heat_scene.png",
   "hajime_steam_wait.png",
+  "heat_carrier.png",
+  "heat_cube_cold.png",
+  "heat_cube_lit.png",
+  "heat_flat_cold.png",
+  "heat_flat_lit.png",
+  "heat_stove.png",
   "hookah_base.png",
   "hookah_stem.png",
   "hookah_tray.png",
@@ -1456,12 +1463,61 @@
    1.0,
    1.5
   ],
+  "hajime_heat_scene.png": [
+   0.0,
+   0.0,
+   1.0,
+   1.0,
+   0.593
+  ],
   "hajime_steam_wait.png": [
    0.3875,
    0.1323,
    0.7685,
    0.9807,
    0.7471
+  ],
+  "heat_carrier.png": [
+   0.1258,
+   0.0434,
+   0.8766,
+   0.9502,
+   1.0161
+  ],
+  "heat_cube_cold.png": [
+   0.1863,
+   0.11,
+   0.8202,
+   0.8908,
+   1.2
+  ],
+  "heat_cube_lit.png": [
+   0.1856,
+   0.1118,
+   0.821,
+   0.8917,
+   1.2
+  ],
+  "heat_flat_cold.png": [
+   0.2111,
+   0.2611,
+   0.7911,
+   0.8218,
+   1.2
+  ],
+  "heat_flat_lit.png": [
+   0.2103,
+   0.2638,
+   0.7911,
+   0.8218,
+   1.2
+  ],
+  "heat_stove.png": [
+   0.0983,
+   0.125,
+   1.0,
+   0.8867,
+   1.5
   ],
   "hookah_base.png": [
    0.1898,
@@ -1806,7 +1862,14 @@
   "ui/making/hajime_craft_pack.png",
   "ui/making/hajime_craft_pull.png",
   "ui/making/hajime_craft_pull_rest.png",
+  "ui/making/hajime_heat_scene.png",
   "ui/making/hajime_steam_wait.png",
+  "ui/making/heat_carrier.png",
+  "ui/making/heat_cube_cold.png",
+  "ui/making/heat_cube_lit.png",
+  "ui/making/heat_flat_cold.png",
+  "ui/making/heat_flat_lit.png",
+  "ui/making/heat_stove.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",
   "ui/making/hookah_tray.png",

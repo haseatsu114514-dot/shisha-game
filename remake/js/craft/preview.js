@@ -7,6 +7,7 @@ import { el } from "../core/util.js";
 import { newSession, openBench } from "./session.js";
 import { stepPack } from "./steps.js";
 import { runHoles } from "./holes.js";
+import { runHeat } from "./heat.js";
 
 function fit() {
   const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
@@ -24,14 +25,25 @@ export async function boot() {
   initLayers();
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
+  const query = new URLSearchParams(location.search);
+  const step = ["holes", "heat"].includes(query.get("step")) ? query.get("step") : "pack";
   const cs = newSession("tutorial");
   cs.mix = { double_apple: 10, mint: 2 };
-  const step = new URLSearchParams(location.search).get("step") === "holes" ? "holes" : "pack";
-  if (step === "holes") cs.pack = "normal";
+  if (step !== "pack") cs.pack = "normal";
+  if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";
   await openBench(cs).ready;
   document.getElementById("craft-preview-loading").hidden = true;
   async function play() {
     activeStep(step);
+    if (step === "heat") {
+      await runHeat(cs);
+      layers.screen.append(el("section.craft-preview-end", [
+        el("h1", { text: "炭焼き、おつかれさま。" }),
+        el("a.btn.primary", { href: "craft-preview.html?step=heat", text: "フラット炭でもう一度" }),
+        el("a.btn", { href: "craft-preview.html?step=heat&charcoal=cube", text: "キューブ炭で試す" }),
+      ]));
+      return;
+    }
     if (step === "pack") await stepPack(cs);
     activeStep("holes");
     await runHoles(cs);
