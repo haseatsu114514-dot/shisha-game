@@ -1,0 +1,49 @@
+{
+  "name": "ch2-preview",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "desktop-arbitrary-order-full-run",
+      "status": "passed"
+    },
+    {
+      "label": "touch-arbitrary-order-replay-and-return",
+      "status": "passed"
+    },
+    {
+      "label": "real-click-arrival-and-name-release",
+      "status": "passed"
+    },
+    {
+      "label": "partial-safe-ending-and-reset",
+      "status": "passed"
+    },
+    {
+      "label": "room-image-recovery-and-night-return",
+      "status": "passed"
+    },
+    {
+      "label": "data-failure-retry",
+      "status": "passed"
+    },
+    {
+      "label": "map-image-failure-retry",
+      "status": "passed"
+    },
+    {
+      "label": "return-remembers-only-completed-visits",
+      "status": "passed"
+    },
+    {
+      "label": "station-image-failure-keeps-arrival-playable",
+      "status": "passed"
+    },
+    {
+      "label": "interrupted-dialogue-and-history-reset",
+      "status": "passed"
+    }
+  ],
+  "runtime_ref": "2f3e6ca75ce08c5a7f4545369b396de16638ae17",
+  "note": "Latest-main runtime with the updated shop/portrait browser helper; final entry screenshot captured separately after this run."
+}

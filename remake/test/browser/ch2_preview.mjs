@@ -66,7 +66,7 @@ async function progress(page) {
   return page.evaluate(() => window.__ch2Preview.visited);
 }
 
-async function visit(page, id, { double = false, touch = false } = {}) {
+async function visit(page, id, { double = false, touch = false, inside = false } = {}) {
   const button = page.locator(test(`pin-${id}`));
   if (double) await button.dblclick({ delay: 30 });
   else if (touch) await button.tap();
@@ -74,7 +74,9 @@ async function visit(page, id, { double = false, touch = false } = {}) {
   await page.waitForFunction(id => window.__ch2Preview.visited.includes(id), id);
   if (id !== "c_station") {
     await page.locator(test("stop")).waitFor();
-    await page.locator(test("back-map")).click();
+    await assertFits(page, `${test("inside")}, ${test("back-map")}`);
+    const next = page.locator(test(inside ? "inside" : "back-map"));
+    if (touch) await next.tap(); else await next.click();
   }
   await page.locator(test("map")).waitFor();
 }
@@ -179,6 +181,7 @@ await suite("ch2-preview", async check => {
     assert.match(scope, /試遊/);
     assert.match(scope, /セーブ/);
     assert.match(scope, /未収録|未接続/);
+    await screenshot(page, "desktop-entry.png");
     await launch(page);
     assert.equal(await page.evaluate(() => window.__ch2Preview.state.chapter), 2);
     assert.equal(await page.evaluate(() => window.__ch2Preview.state.flags._ch2_preview_qa_sentinel), undefined, "Preview loaded main-game progress");
@@ -212,7 +215,10 @@ await suite("ch2-preview", async check => {
     await page.locator(test("map")).waitFor();
     await mapLayout(page);
     await screenshot(page, "touch-map-day.png");
-    for (const id of ["rei", "c_station", "kumicho", "ageha", "volk"]) await visit(page, id, { touch: true });
+    for (const id of ["rei", "c_station", "kumicho", "ageha", "volk"]) {
+      await visit(page, id, { touch: true, inside: id !== "c_station" });
+      if (id !== "c_station") assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_preview_inside_${id}`], id), true);
+    }
     await visit(page, "rei", { touch: true });
     assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha", "volk"], "Revisiting counted the same destination twice");
     await changeTime(page, "night", true);
@@ -363,6 +369,19 @@ await suite("ch2-preview", async check => {
     assert.equal(await page.locator('#vn.active').count(), 0);
     await launch(page);
     assert.deepEqual(await progress(page), []);
+    await page.locator(test('pin-ageha')).click();
+    await page.locator(test('stop')).waitFor();
+    await turbo(page, false);
+    await page.locator(test('inside')).click();
+    await page.locator('#vn.active .vn-box').waitFor();
+    await page.evaluate(() => {
+      dispatchEvent(new PageTransitionEvent('pagehide'));
+      dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    });
+    await page.locator(test('start')).waitFor();
+    assert.deepEqual(await progress(page), []);
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), false);
+    assert.equal(await page.locator('#vn.active').count(), 0);
     await preserved(page, before);
   });
 });

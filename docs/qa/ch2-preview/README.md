@@ -17,13 +17,13 @@ PlaywrightとChromiumが必要。システムChromiumを使わない場合は `r
 
 ## 検証結果
 
-クラウド環境のChromiumで10ケースPASS。PCは1280×720、横持ちタッチは844×390。
-main `4989bd1`（施設遭遇・EDEN設定）に続き、`e22fece`（自然な関係会話・録音SE）も通常merge。双方の要望台帳を保持し、更新後の会話エンジンで9ケース・データ読込・日常整合性・指示資料・追加台詞を再確認した。
+クラウド環境のChromiumで10ケースPASS。PCは1280×720、横持ちタッチは844×390。[10ケースの結果](browser-results.json)。
+main `4989bd1`（施設遭遇・EDEN設定）に続き、`e22fece`（自然な関係会話・録音SE）も通常merge。続行の素材追加後はmain `be29f49`（ショップ・斧投げ・TRPG・ハガル資料）まで通常mergeし、他作業の要望台帳を保持。更新後の会話エンジンとデータで再検証した。
 
 | ケース | 確認したこと |
 | --- | --- |
 | desktop-arbitrary-order-full-run | 到着→5地点を任意順→帰路。昼夜の実画像・押下状態、二重操作防止、全読了・再試遊 |
-| touch-arbitrary-order-replay-and-return | 実タップで別順序、再視聴で読了数が増えない、夜切替・再読み込みで試遊だけリセット |
+| touch-arbitrary-order-replay-and-return | 実タップで別順序、4室も見学、ボタンの枠内表示、再視聴で読了数が増えない、夜切替・再読み込みで試遊だけリセット |
 | real-click-arrival-and-name-release | SKIP／turboなしで到着とあげは・REI・神崎・ヴォルクを実クリック。名乗る前は「？？？」、後で解禁。各人の室内見学と立ち絵の読込、文字の枠内、神崎の素性を早期公開しない紹介、あげはの県大会出場を確認 |
 | partial-safe-ending-and-reset | 会場だけ訪問して途中終了し、最初から再試遊できる |
 | room-image-recovery-and-night-return | 店内画像が壊れた時は見学を開始せず、再読込／地図復帰を選べる。復旧後の見学で夜の地図へ戻り、読了を重複加算しない |
@@ -31,7 +31,7 @@ main `4989bd1`（施設遭遇・EDEN設定）に続き、`e22fece`（自然な�
 | map-image-failure-retry | 昼マップが壊れても行き先を選べる。再読込で地図が復帰、夜も操作可能 |
 | return-remembers-only-completed-visits | 0地点／会場のみ／あげはのみの帰路。未訪問の人物を思い出さず、未訪問の会場を確認済みと報告しない |
 | station-image-failure-keeps-arrival-playable | 地上の駅前背景が壊れても、俯瞰マップ上で到着会話を続けられる |
-| interrupted-dialogue-and-history-reset | 会話中のpagehideと履歴復帰イベント。途中の名乗り・訪問を完走扱いにせず、試遊が入口へ戻る |
+| interrupted-dialogue-and-history-reset | 入口会話と室内見学中のpagehide／履歴復帰イベント。途中の名乗り・訪問・見学を完走扱いにせず、試遊が入口へ戻る |
 
 全ケースで、本編オートセーブ・手動3枠・設定・起動時ロード用sessionStorage・無関係な保存値を先に用意して比較。StorageのsetItem/removeItem/clearも監視し、試遊からの書込みは0件。正常起動中のブラウザ例外とHTTP／通信失敗は0件。故障試験はHTTP 200の不正本文・画像を意図的に返す。
 
@@ -45,7 +45,7 @@ main `4989bd1`（施設遭遇・EDEN設定）に続き、`e22fece`（自然な�
 - [名乗る前のあげは](desktop-unknown-name.png) / [終了](desktop-end.png)
 - 店内と本人：[MELTY PUFF](desktop-room-ageha.png) / [神崎煙草店](desktop-room-kumicho.png) / [零-ZERO-](desktop-room-rei.png) / [鉄の煙の展示室](desktop-room-volk.png)
 
-親担当が昼夜の街マップを第1章と比較し、駅ビル・双塔・デッキ・スクランブル・商業街の規模差、昼夜の主要形状、文字とピンの干渉を目視確認した。夜のタッチ画像も、実際のnight状態と画像の切替完了後に撮影。原画・画像QAは [素材制作記録](../../../asset_sources/ch2-city/README.md)。
+担当が昼夜の街マップを第1章と比較し、駅ビル・双塔・デッキ・スクランブル・商業街の規模差、昼夜の主要形状、文字とピンの干渉を目視確認した。夜のタッチ画像も、実際のnight状態と画像の切替完了後に撮影。4室の本人立ち絵と会話枠も、表示と文字が落ち着いた状態で目視した。初回の店内記録は人物が出た直後で空の会話枠を撮っていたため、登場と文字の表示完了を待って撮り直した。原画・画像QAは [街](../../../asset_sources/ch2-city/README.md)・[人物](../../../asset_sources/ch2-characters/README.md)・[内装](../../../asset_sources/ch2-interiors/README.md) の制作記録。
 
 ## 発見して修正したこと
 
