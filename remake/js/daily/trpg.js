@@ -1,4 +1,4 @@
-import { state, save } from "../core/state.js";
+import { state } from "../core/state.js";
 
 export const trpgSpot = () => state?.chapter >= 2 ? {
   id: "trpg_bar", kind: "trpg", label: "遊べるシーシャバー", area: "仲間の遊び場", x: 8, y: 77,
@@ -8,6 +8,7 @@ export const trpgSpot = () => state?.chapter >= 2 ? {
 
 /** The table saves its completion and night action atomically; calendar must not advance twice. */
 export async function openTrpgBar({ nightBusy = () => false } = {}) {
+  const { save } = await import("../core/state.js");
   const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }] = await Promise.all([
     import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
     import("../trpg/campaign-view.js"), import("./hud.js"),
