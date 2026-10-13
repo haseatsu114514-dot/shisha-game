@@ -31,3 +31,5 @@
 main 4599463を通常mergeし、入店前のonBeforeGo確認/確認中のpause/確認取消後の復帰、LIME未読表示、現在の入店演出を保持した。nativeの入口/速度/脚の修正は保持。旧試作の640x360座標に依存していたLIME来店前テストだけを実入店ボタンのタップへ変更。selection-latest.txtはPC/タッチ33項目PASS、lime-reminder-latest.txtは18項目PASS。8方向/32姿勢とKEMURIKUSAへの実入店を最新コードで撮り直した。日常/LIME/illness VM・投影・agent docsもPASS。
 
 先行head b211fe1はGitHub CI 7件すべて成功し、直接/歩行ともDAY1偵察・登録、DAY2店先配達、DAY14敗北→再挑戦→クリアまで確認済み。最新main統合後のCIはPR #481の新headで再実行する。物理スマホ/Safari、公開反映、長い背景区間の接続、腕の動きは引き続き未完/未確認。予約status run 38397024178で同じowner/source-runを検証済み。quota補助は既存SyntaxErrorのため成功に数えず、公式利用枠のordinaryUsageAllowed=trueを確認した。
+
+新head abcde27のLIME CI run 38405104095は、street-pc-unread/street-touch-waitingで歩行PNG/JSONが404となり失敗。ローカル18項目PASSと異なる原因はLIME専用workflowのsparse-checkoutにassets/street_walkがなかったため。取得対象と関連path triggerを追加し、欠損チェックを弱めずCIで再確認する。
