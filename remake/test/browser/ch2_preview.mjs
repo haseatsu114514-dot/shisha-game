@@ -217,7 +217,7 @@ await suite("ch2-preview", async check => {
     await screenshot(page, "touch-map-day.png");
     for (const id of ["rei", "c_station", "kumicho", "ageha", "volk"]) {
       await visit(page, id, { touch: true, inside: id !== "c_station" });
-      if (id !== "c_station") assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_preview_inside_${id}`], id), true);
+      if (id !== "c_station") assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
     }
     await visit(page, "rei", { touch: true });
     assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha", "volk"], "Revisiting counted the same destination twice");
@@ -245,7 +245,7 @@ await suite("ch2-preview", async check => {
       const unknown = frames.findIndex(frame => frame.name === "？？？" && !frame.met);
       const known = frames.findIndex(frame => frame.name.includes(names[id]) && frame.met);
       assert(unknown >= 0 && known > unknown, `${id} name appeared before introduction or did not unlock: ${JSON.stringify(frames)}`);
-      assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_preview_inside_${id}`], id), true);
+      assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
       assert(fs.existsSync(path.join(evidence, `desktop-room-${id}.png`)), `Room portrait was not displayed: ${id}`);
       if (id === 'kumicho') assert(!frames.some(frame => /組長/.test(frame.title || '')), 'Kanzaki secret revealed before DAY14');
       if (id === 'ageha') assert(frames.some(frame => frame.text.includes('あたしも！')), 'Ageha must remain a chapter-two tournament rival');
@@ -277,7 +277,7 @@ await suite("ch2-preview", async check => {
     await page.locator(test('stop')).waitFor();
     await page.locator(test('inside')).click();
     await page.locator('.ch2-room-warning').waitFor();
-    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), false);
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_city_inside_ageha), false);
     assert.equal(await page.locator('#vn.active').count(), 0, 'Failed room image must not start room dialogue');
     await page.locator(test('back-map')).click();
     await page.locator(`${test('map')}[data-time="night"]`).waitFor();
@@ -288,7 +288,7 @@ await suite("ch2-preview", async check => {
     await page.unroute('**/bg_ch2_ageha_entry.webp');
     await page.locator(test('inside')).click();
     await page.locator(`${test('map')}[data-time="night"]`).waitFor();
-    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), true);
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_city_inside_ageha), true);
     assert(await page.locator('#bg > .bg-img').last().evaluate(node => node.style.backgroundImage.includes('map_night.webp')));
     assert.deepEqual(await progress(page), ['ageha']);
     await preserved(page, before);
@@ -296,12 +296,12 @@ await suite("ch2-preview", async check => {
 
   await check("data-failure-retry", async page => {
     const before = await seedAndOpen(page);
-    await page.route("**/data/dialogue/ch2_preview.json", route => route.fulfill({ status: 200, contentType: "application/json", body: "{ malformed" }));
+    await page.route("**/data/dialogue/ch2_city.json", route => route.fulfill({ status: 200, contentType: "application/json", body: "{ malformed" }));
     // Reload after installing the fault, exercising the actual initial loader.
     await page.reload();
     await page.locator(test("retry")).waitFor();
     await assertFits(page, test("retry"));
-    await page.unroute("**/data/dialogue/ch2_preview.json");
+    await page.unroute("**/data/dialogue/ch2_city.json");
     await page.locator(test("retry")).click();
     await launch(page);
     await page.locator(test("return")).click();
@@ -380,7 +380,7 @@ await suite("ch2-preview", async check => {
     });
     await page.locator(test('start')).waitFor();
     assert.deepEqual(await progress(page), []);
-    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_preview_inside_ageha), false);
+    assert.equal(await page.evaluate(() => !!window.__ch2Preview.state.flags._ch2_city_inside_ageha), false);
     assert.equal(await page.locator('#vn.active').count(), 0);
     await preserved(page, before);
   });

@@ -6,21 +6,7 @@ import { initLayers, layers, setBg, imageReady } from "../core/ui.js";
 import { unlockAudio } from "../core/audio.js";
 import { play, vnTest } from "../vn/engine.js";
 
-const DIALOGUE_PATH = "../data/dialogue/ch2_preview.json";
-const MAP = {
-  day: "../assets/backgrounds/bg_widehanga_map_day.webp",
-  night: "../assets/backgrounds/bg_widehanga_map_night.webp",
-};
-const STATION = "../assets/backgrounds/bg_widehanga_station_day.webp";
-const STOPS = [
-  { id: "ageha", name: "MELTY PUFF", x: 81, y: 46 },
-  { id: "kumicho", name: "神崎煙草店", x: 63, y: 65 },
-  { id: "rei", name: "零-ZERO-", x: 42, y: 78 },
-  { id: "volk", name: "鉄の煙", x: 18, y: 76, sceneLabel: "鉄の煙の技術展示" },
-  { id: "c_station", name: "C.STATION", x: 85, y: 30 },
-];
-const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei", "volk"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
-const REQUIRED_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_preview_${id}`);
+import { MAP, STATION, STOPS, ROOMS, loadCityDialogues } from "./ch2-city-data.js";
 const visited = new Set();
 let arrivalRead = false;
 let scene = "loading";
@@ -80,23 +66,6 @@ async function perform(action) {
   } finally { if (stillCurrent(owner)) setBusy(false); }
 }
 
-async function loadPreviewDialogues() {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(DIALOGUE_PATH, { cache: "no-cache", signal: controller.signal });
-    if (!response.ok) throw new Error(`試遊台本: HTTP ${response.status}`);
-    const data = await response.json();
-    if (!Array.isArray(data.dialogues)) throw new Error("試遊台本の形式を確認してください");
-    const dialogues = new Map(data.dialogues.map((dialogue) => [dialogue.dialogue_id, dialogue]));
-    for (const id of REQUIRED_IDS) {
-      const dialogue = dialogues.get(id);
-      if (!dialogue || !Array.isArray(dialogue.lines) || !dialogue.lines.length) throw new Error(`試遊台本が不足しています: ${id}`);
-    }
-    for (const [id, dialogue] of dialogues) DB.dialogues[id] = dialogue;
-  } finally { clearTimeout(timer); }
-}
-
 async function showMapBackground() {
   const owner = previewEpoch;
   const url = MAP[time];
@@ -126,11 +95,11 @@ function renderEntry() {
 async function playScene(id, label) {
   const generation = previewEpoch;
   scene = id;
-  if (!DB.dialogues[`ch2_preview_${id}`]) throw new Error(`試遊の場面が見つかりません: ${id}`);
+  if (!DB.dialogues[`ch2_city_${id}`]) throw new Error(`試遊の場面が見つかりません: ${id}`);
   layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・街歩き試遊 ／ ${label}` }));
   const owner = new AbortController();
   activeScene = owner;
-  const result = await play(`ch2_preview_${id}`, { signal: owner.signal });
+  const result = await play(`ch2_city_${id}`, { signal: owner.signal });
   if (activeScene === owner) activeScene = null;
   layers.hud.replaceChildren();
   return !!result && !result.cancelled && stillCurrent(generation);
@@ -161,8 +130,8 @@ function mapPin(stop, index) {
     onclick: () => perform(async () => {
       if (!await playScene(stop.id, stop.sceneLabel || `${stop.name}の入口`)) return;
       visited.add(stop.id);
-      state.flags[`_ch2_preview_visit_${stop.id}`] = true;
-      if (stop.id !== "c_station") state.flags._ch2_preview_met_shop = true;
+      state.flags[`_ch2_city_visit_${stop.id}`] = true;
+      if (stop.id !== "c_station") state.flags._ch2_city_met_shop = true;
       if (ROOMS[stop.id]) renderStopMenu(stop);
       else renderMap();
       say(`${stop.name}での挨拶を読みました。${visited.size}か所、全5か所。`);
@@ -210,7 +179,7 @@ async function visitInside(stop) {
   await setBg(ROOMS[stop.id], { instant: true });
   if (!stillCurrent(owner)) return;
   if (!await playScene(`${stop.id}_inside`, `${stop.sceneLabel || stop.name}・準備中の室内`)) return;
-  state.flags[`_ch2_preview_inside_${stop.id}`] = true;
+  state.flags[`_ch2_city_inside_${stop.id}`] = true;
   if (!await showMapBackground()) return;
   renderMap();
   say(`${stop.name}の見学を終えました。`);
@@ -372,7 +341,7 @@ export async function boot() {
   resetPreview();
   await loadAll();
   if (!stillCurrent(generation)) return;
-  await loadPreviewDialogues();
+  await loadCityDialogues();
   if (!stillCurrent(generation)) return;
   await document.fonts.ready;
   if (!stillCurrent(generation)) return;

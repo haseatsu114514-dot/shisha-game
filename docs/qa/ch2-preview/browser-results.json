@@ -44,6 +44,5 @@
       "status": "passed"
     }
   ],
-  "runtime_ref": "2f3e6ca75ce08c5a7f4545369b396de16638ae17",
-  "note": "Latest-main runtime with the updated shop/portrait browser helper; final entry screenshot captured separately after this run."
+  "note": "Current-main C.STATION hall integration plus working-tree chapter-two DAY1 implementation; CI records the committed ref."
 }

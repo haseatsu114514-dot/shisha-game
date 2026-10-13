@@ -1,12 +1,15 @@
-name: Chapter 2 city preview
+name: Chapter 2 first day and city preview
 
 on:
   pull_request:
     paths:
       - 'remake/chapter2-preview.html'
-      - 'remake/js/chapters/ch2-preview.js'
+      - 'remake/js/chapters/ch2*.js'
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/index.html'
       - 'remake/css/ch2-preview.css'
-      - 'data/dialogue/ch2_preview.json'
+      - 'data/dialogue/ch2_city.json'
+      - 'data/dialogue/remake_ch2.json'
       - 'data/characters.json'
       - 'remake/data/manifest.json'
       - 'assets/backgrounds/bg_widehanga_map_*.webp'
@@ -21,7 +24,10 @@ on:
       - 'remake/js/vn/**'
       - 'remake/js/core/data.js'
       - 'remake/js/core/state.js'
-      - 'remake/test/browser/ch2_preview.mjs'
+      - 'remake/js/core/chapter-clock.js'
+      - 'remake/js/scenes/saves.js'
+      - 'remake/test/browser/ch2_*.mjs'
+      - 'remake/test/ch2_progress.mjs'
       - '.github/workflows/ch2-preview.yml'
   workflow_dispatch:
 
@@ -36,6 +42,10 @@ jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [ch2_preview, ch2_main]
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -69,13 +79,15 @@ jobs:
       - name: Verify city, shop interiors, portraits, touch, recovery and save isolation
         env:
           TEST_REF: ${{ github.sha }}
-        run: node remake/test/browser/ch2_preview.mjs
+        run: |
+          node remake/test/ch2_progress.mjs
+          node remake/test/browser/${{ matrix.suite }}.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: ch2-preview-results
+          name: ${{ matrix.suite }}-results
           path: |
-            .codex/artifacts/remake-browser/ch2-preview*
+            .codex/artifacts/remake-browser/ch2-*
             ${{ runner.temp }}/ch2-preview.log
           retention-days: 7

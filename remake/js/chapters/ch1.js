@@ -158,6 +158,7 @@ async function openingPart() {
 
 export async function resumeGame() {
   setupHooks();
+  if (state.chapter === 2) return (await import("./ch2.js")).resumeChapterTwo();
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
@@ -607,6 +608,15 @@ export async function showClear() {
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   const owner = state;
   let playing = false;
+  const next = el("button.btn.primary", { text: "第2章の初日へ", dataset: { test: "end-chapter2" }, onclick: async () => {
+    if (playing || !root.isConnected || state !== owner) return;
+    playing = true; next.disabled = true; replay.disabled = true;
+    try {
+      const chapter = await import("./ch2.js");
+      if (root.isConnected && state === owner) await chapter.beginChapterTwo();
+    } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
+    finally { playing = false; next.disabled = false; replay.disabled = false; }
+  } });
   const replay = el("button.btn.primary", { text: "次回予告をもう一度", dataset: { test: "end-preview" } });
   const root = el("div.end-screen.clear", [
     el("div.end-title", { text: "第1章 クリア" }),
@@ -615,16 +625,16 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "第2章の本編は準備中です。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
-    el("div.end-actions", [replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("div.end-actions", [next, replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
   ]);
   showScreen("end", root);
   async function preview(first = false) {
     if (playing || !root.isConnected) return;
-    playing = true; replay.disabled = true;
+    playing = true; replay.disabled = true; next.disabled = true;
     const controller = new AbortController();
     const observer = new MutationObserver(() => { if (!root.isConnected) controller.abort(); });
     observer.observe(layers.screen, { childList: true });
@@ -635,7 +645,7 @@ export async function showClear() {
       state.flags._ch1_preview_seen = true;
       save();
     }
-    playing = false; replay.disabled = false;
+    playing = false; replay.disabled = false; next.disabled = false;
     if (root.isConnected) {
       playBgm("bgm_result_emotional");
       replay.focus({ preventScroll: true });
