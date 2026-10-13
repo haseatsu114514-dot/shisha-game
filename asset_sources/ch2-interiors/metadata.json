@@ -42,7 +42,7 @@
         ],
         "rejected_reason": "Typography-like magazine headings, cleaned with imagegen edit."
       },
-      "visual_qa": "Reviewed full generated image: distinct room identity, supported furniture, closed ingredient storage, no visible flavor tubs or shisha devices; in-game overlay verification follows."
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
     },
     {
       "character": "kumicho",
@@ -81,7 +81,7 @@
         "local_attachment_original_available": false,
         "primary": "User-attached wood-paneled office with black leather sofas, shrine and marble floor; previous four rooms are secondary and not retained for the tatami design"
       },
-      "visual_qa": "Reviewed full generated image: distinct room identity, supported furniture, closed ingredient storage, no visible flavor tubs or shisha devices; in-game overlay verification follows."
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
     },
     {
       "character": "rei",
@@ -116,7 +116,7 @@
           "asset_sources/ch2-interiors/archive/v1/rei/source.png"
         ]
       },
-      "visual_qa": "Reviewed full generated image: distinct room identity, supported furniture, closed ingredient storage, no visible flavor tubs or shisha devices; in-game overlay verification follows."
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
     },
     {
       "character": "volk",
@@ -151,7 +151,7 @@
           "asset_sources/ch2-interiors/archive/v1/volk/source.png"
         ]
       },
-      "visual_qa": "Reviewed full generated image: distinct room identity, supported furniture, closed ingredient storage, no visible flavor tubs or shisha devices; in-game overlay verification follows."
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
     }
   ],
   "revision": "C2P06: office reference, V-kei belongings, Heisei gyaru bears and concealed ingredient storage",

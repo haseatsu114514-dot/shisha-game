@@ -44,6 +44,6 @@
       "status": "passed"
     }
   ],
-  "runtime_ref": "df25f3a36334631bca6c86c6649d0ed756ca8980",
-  "note": "Main0614327 integrated, including schema15 TRPG and adopted OVA trailer, with the legacy-fixture adjustment. Subsequent preview-note copy edits are visual-only and captured separately."
+  "verified_content_commit": "252a1210a0b173d4e94279e990eb31c5345a3177",
+  "verification_note": "TEST_REF was unset. Art/dialogue content checked against 252a121 after this run; docs and evidence were updated afterward."
 }
