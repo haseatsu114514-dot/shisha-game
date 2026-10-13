@@ -6,8 +6,8 @@ const ENCOUNTERS = {
     { id: "cafe_master_quiz" },
   ],
   kannon: [
-    { id: "kannon_adam", met: "adam" },
-    { id: "kannon_oldman" },
+    { id: "kannon_adam", met: "adam", slot: 0 },
+    { id: "kannon_oldman", slot: 0 },
   ],
   choizap: [
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },
@@ -29,14 +29,14 @@ export function spotEncounterDue(spotId, visit, save, dialogues) {
   if (visit < 2 || spotId === "choizap" && !save.flags._gym_member) return null;
   const last = Number(save.flags[`_spot_last_${spotId}`]) || 0;
   if (last && visit - last < 2) return null;
-  return ENCOUNTERS[spotId]?.find(({ id, met, flag }) => dialogues[id]
+  return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
     && !save.flags[seenKey(id)] && (!met || save.met[met]) && (!flag || save.flags[flag]))?.id || null;
 }
 
 /** 遭遇回を従来の循環から外す。未開示のみんとや読了済みの選択を再生しない。 */
-export function quietSpotPool(spot) {
+export function quietSpotPool(spot, slot = 0) {
   const ids = new Set((ENCOUNTERS[spot.id] || []).map(({ id }) => id));
-  return (spot.pool || []).filter((id) => !ids.has(id));
+  return (slot === 1 && spot.nightPool || spot.pool || []).filter((id) => !ids.has(id));
 }
 
 /** 台本末尾へ実際に到達したときだけ間隔を記録。途中で閉じた回・雨で延期した回は残す。 */

@@ -6,7 +6,7 @@ async function hit(page, id) {
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
-async function setup(page, { chapter = 1, slot = 0, money = 12000, club = false, run = true } = {}) {
+async function setup(page, { chapter = 1, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, run = true } = {}) {
   page.setDefaultTimeout(20000);
   await page.evaluate(async ({ chapter, slot, money, club, run }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
@@ -73,17 +73,21 @@ await suite("play-spots", async runCheck => {
     await assertFits(page, ".axe-game button:visible");
     await finishAxe(page, count); await page.locator(map).waitFor();
     const after = await value(page);
-    assert.equal(after.money, before.money - 3000); assert.equal(after.stamina, before.stamina - 10);
-    assert.equal(after.slot, 1); assert.equal(after.axeVisited, 5); assert.equal(after.stats.guts, before.stats.guts + 1);
+    assert.equal(after.money, before.money - 3000); assert.equal(after.stamina, before.stamina - 10 + 14, "Night play is followed by one sleep recovery");
+    assert.equal(after.day, 6); assert.equal(after.slot, 0); assert.equal(after.axeVisited, 5); assert.equal(after.stats.guts, before.stats.guts + 1);
     assert.equal(after.records[mode].plays, 1); assert.equal(after.records[mode].last.throws.length, count);
     assert.deepEqual(after.affinity, before.affinity); assert.deepEqual(after.met, before.met); assert.deepEqual(after.story, before.story);
-    await go(page, "axe_bar"); assert(await page.locator(t("axe-bar-" + mode)).isDisabled());
+    await hit(page, "pin-axe_bar"); assert.equal(await page.locator(t("map-go")).count(), 0, "The bar is closed next morning");
+    // 次の営業中の記録閲覧は無料。別日に再プレイできることも確認する。
+    await page.evaluate(() => { spotCore.state.slot = 1; });
+    const nextNight = await value(page);
+    await go(page, "axe_bar"); assert(!await page.locator(t("axe-bar-" + mode)).isDisabled());
     assert((await page.locator(".axe-bar-records").textContent()).includes("各投"));
-    await hit(page, "axe-bar-back"); await page.locator(map).waitFor(); assert.deepEqual(await value(page), after);
+    await hit(page, "axe-bar-back"); await page.locator(map).waitFor(); assert.deepEqual(await value(page), nextNight);
     await page.evaluate(() => spotCore.saveToSlot("suien_remake_slot1"));
     await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
     await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
-    assert.deepEqual(await value(page), after);
+    assert.deepEqual(await value(page), nextNight);
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
   }, options);
 
@@ -99,6 +103,9 @@ await suite("play-spots", async runCheck => {
     await hit(page, "axe-bar-back"); await page.locator(map).waitFor();
     await page.evaluate(() => { spotCore.state.money = 12000; spotCore.state.stamina = 0; });
     await go(page, "axe_bar"); assert(await page.locator(t("axe-bar-league")).isDisabled());
+    await hit(page, "axe-bar-back"); await page.locator(map).waitFor();
+    await page.evaluate(() => { spotCore.state.stamina = 80; spotCore.state.visitedDay.axe_bar = spotCore.state.day; });
+    await go(page, "axe_bar"); assert(await page.locator(t("axe-bar-practice")).isDisabled());
   });
 
   for (const where of ["menu", "game", "pagehide", "screen"]) await check("axe-abort-" + where, async page => {
@@ -153,7 +160,8 @@ await suite("play-spots", async runCheck => {
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.slot, 2); assert.equal(saved.day, 16); assert(saved.trpg.cleared["ordinary-cup"]);
     assert.equal(saved.money, before.money - 500); assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
-    await hit(page, "trpg-finish"); await page.locator(map).waitFor();
+    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+    await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
     const after = await value(page); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
     assert(after.trpg.cleared["ordinary-cup"]);
   });

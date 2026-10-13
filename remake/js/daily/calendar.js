@@ -19,6 +19,7 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, story
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
+import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
@@ -367,6 +368,7 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
     const { visitAxeBar } = await import("./axe-bar.js");
     const completed = await visitAxeBar({ staminaGuard });
@@ -415,7 +417,7 @@ async function performSpotAction(spot) {
     const r = await openShop();
     if (r !== "rin") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { await visitRin(); exerted = true; }
+    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; }
     else used = false;
   } else if (spot.kind === "spot") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };

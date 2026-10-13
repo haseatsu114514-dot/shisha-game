@@ -7,7 +7,7 @@ import { romanceRouteOpen } from "./romance.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
-  rin: "Dr.fookahの2階", minto: "PEPPERMINT", samechan: "シーシャーク",
+  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", samechan: "シーシャーク",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 

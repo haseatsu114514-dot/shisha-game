@@ -2,6 +2,6 @@
 export const AXE_BAR = {
   id: "axe_bar", kind: "axe", label: "斧投げBar", area: "商店街の裏通り",
   x: 48, y: 84, theme: "gym", glyph: "斧", preview: "bg_axe_lounge_night",
-  stamina: -10, playCost: 3000,
-  desc: "一人で斧投げ。3投練習か10投のスコアアタックを選べる。1回3,000円・体力10・1行動。記録を見るだけなら無料。",
+  stamina: -10, playCost: 3000, openSlots: [1],
+  desc: "夜だけ開く斧投げBar。店主の斧崎マキが迎えてくれる。3投練習か10投のスコアアタック。1回3,000円・体力10・1行動。営業中の記録閲覧は無料。",
 };

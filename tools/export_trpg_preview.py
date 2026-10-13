@@ -35,7 +35,7 @@ def main():
     webp = set(manifest["webp"])
     files = {"icon.svg", "data/characters.json", "data/trpg_catalog.json", "remake/data/manifest.json",
              "remake/trpg-preview.html", "remake/css/base.css", "remake/css/trpg.css", "remake/js/core/util.js",
-             "remake/js/core/chapter-clock.js", "remake/js/core/rules.js"}
+             "remake/js/core/chapter-clock.js", "remake/js/core/rules.js", "remake/js/core/venue-host.js", "remake/css/venue-host.css"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
@@ -47,6 +47,8 @@ def main():
         face = face if face in meta["faces"] else "normal"
         rel = f"sprites/characters/{actor}/chr_{actor}_{face}.png"
         files.add("remake/img/" + rel.removesuffix(".png") + ".webp" if rel in webp else "assets/" + rel)
+
+    portrait("sai")
 
     for entry in catalog["scenarios"]:
         path = "data/" + entry["file"]

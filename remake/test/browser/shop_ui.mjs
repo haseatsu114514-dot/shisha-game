@@ -70,7 +70,7 @@ await suite("shop-ui", async check => {
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /出張中/);
     await tap(page, 'shop-entry-back');
-    await page.evaluate(() => { S.core.state.day = 5; S.core.state.visitedDay.rin = 5; S.open(); });
+    await page.evaluate(() => { S.core.state.day = 5; S.core.state.slot = 1; S.core.state.visitedDay.rin = 5; S.open(); });
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /訪問済み/);
     await tap(page, 'shop-entry-back');

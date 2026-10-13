@@ -1,3 +1,4 @@
+@import url("venue-host.css");
 /* A paper scenario on a small table. Scoped to the preview / mounted minigame. */
 #trpg-app { position: absolute; inset: 0; }
 .trpg-screen { position: absolute; inset: 0; background: #171c1e; }

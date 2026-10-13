@@ -1,3 +1,4 @@
+@import url("venue-host.css");
 #axe-app { position: fixed; inset: 0; container-type: size; }
 .axe-intro, .axe-game { --axe-bg: url("../img/backgrounds/bg_axe_lounge_night.webp"); background: linear-gradient(90deg,rgba(10,7,13,.92),rgba(10,7,13,.54)),var(--axe-bg) center/cover; }
 .axe-intro { min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(20px,7vw,100px); gap: 16px; }

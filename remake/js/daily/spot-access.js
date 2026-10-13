@@ -2,6 +2,7 @@
 import { state } from "../core/state.js";
 import { yen } from "../core/util.js";
 import { isUnlocked, isClosed, isTemporaryClosed, visitedToday } from "./spots.js";
+import { openingStatus } from "./spot-hours.js";
 
 export const freeGuide = (s, guide) => !!guide?.free && guide.pin === s.id;
 
@@ -10,6 +11,8 @@ export function spotAvailability(s, { guide = null } = {}) {
   if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
   if (s.kind === "fortune" && state.fortuneDay === state.day) return { ok: false, why: "今日はもう占ってもらった", tag: "今日はもう占った" };
   if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
+  const hours = openingStatus(s, state);
+  if (!hours.ok) return hours;
   if (isClosed(s)) {
     const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
     return { ok: false, why: tag, tag };

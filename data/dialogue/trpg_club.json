@@ -5,16 +5,19 @@
   },
   "lines": [
     {
-      "speaker": "shop_clerk",
-      "text": "この店で、TRPGの部活を作ってみませんか？"
+      "speaker": "sai",
+      "face": "normal",
+      "text": "よければ、この店でTRPGの部活を作りませんか"
     },
     {
-      "speaker": "shop_clerk",
-      "text": "仲のいい人を誘って、仕事のない夜に集まるんです。"
+      "speaker": "sai",
+      "face": "normal",
+      "text": "仲のいい人を誘って、仕事のない夜に集まるんです"
     },
     {
-      "speaker": "shop_clerk",
-      "text": "メンバーが増えたら、その人たちに合う新しい本も仕入れます。"
+      "speaker": "sai",
+      "face": "normal",
+      "text": "皆さんの好みに合う本を、こちらで仕入れておきます"
     }
   ],
   "branches": {
@@ -62,6 +65,76 @@
       {
         "speaker": "adam",
         "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける。"
+      }
+    ],
+    "host_day": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "昼は、短い遊びをひとつ。お帰りの時間にも間に合いますよ"
+      }
+    ],
+    "host_night": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "今夜の席は、こちらです。皆さんの物語を楽しみにしています"
+      }
+    ],
+    "host_trial": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "一度振ったら、続けるか止めるか。ルールは、それだけです"
+      }
+    ],
+    "host_push": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "まだ振れますよ。もちろん、ここで止めても"
+      }
+    ],
+    "host_bust": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "ああ、越えましたね。お茶はこぼれていないので、大丈夫です"
+      }
+    ],
+    "host_seven": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "ぴったりです。よく、その一投を選びましたね"
+      }
+    ],
+    "host_stop": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "そこで止めるんですね。はい、その数で記録しましょう"
+      }
+    ],
+    "host_after_table": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "お帰りなさい。同じ本でも、そんな結末になるんですね"
+      }
+    ],
+    "host_after_table_good": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "なるほど、その一手が。皆さんで選んだ甲斐がありましたね"
+      }
+    ],
+    "host_after_table_hard": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "ええ、そこで迷いますよね。続けてくださって、よかった"
       }
     ]
   }
