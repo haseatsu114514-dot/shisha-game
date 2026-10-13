@@ -1501,7 +1501,7 @@
     },
     "prepare": {
       "title": "即席の仕掛けを組み立てる",
-      "hint": "手際 ＋1。見立てが合えば＋1、なるの切り札で＋2。",
+      "hint": "手際 ＋1。見立てが合えば＋1、仲間の切り札で＋2。",
       "success": "trpg_shark_prepare_success",
       "mixed": "trpg_shark_prepare_mixed",
       "trouble": "trpg_shark_prepare_trouble",

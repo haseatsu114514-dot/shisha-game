@@ -1,6 +1,6 @@
 import { el, yen } from "../core/util.js";
 import { loadTrpgLibrary, runTrpg } from "./index.js";
-import { displayName, portraitUrl, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 import { participantStatus, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
 /** Owns a shop/table screen. Only the supplied state and save callback may change. */
@@ -41,7 +41,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     for (const person of catalog.participants.filter(p => state?.met?.[p.id])) {
       const status = participantStatus(state, person);
       party.append(el("div.trpg-campaign-person", { dataset: { test: "trpg-person-" + person.id, available: status.ok } }, [
-        el("img", { src: portraitUrl(manifest, person.id), alt: "" }),
+        el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
+          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + manifest.portraits[person.id].ax * 100 + "%)" } })),
         el("div", [el("strong", { text: name(person.id) }), el("small", { text: status.reason })]),
       ]));
     }

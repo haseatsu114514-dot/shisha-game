@@ -59,7 +59,7 @@
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋1。なるの切り札で、さらに＋2できます。",
+      "hint": "店番の手際 ＋1。仲間の切り札で、さらに＋2できます。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",

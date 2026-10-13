@@ -292,3 +292,7 @@
 .trpg-campaign-memory strong { font-size: 21px; color: #efd69e; }
 .trpg-campaign-memory p { padding: 7px 0; font-size: 13px; }
 .trpg-campaign-footer { font-size: 12px; text-align: center; color: #bab7a7; }
+.trpg-campaign-face { position: relative; width: 48px; height: 50px; overflow: hidden; flex-shrink: 0; border-radius: 5px; background: #364548; }
+.trpg-campaign-person .trpg-campaign-face img { position: absolute; width: 180px; height: auto; left: 50%; max-width: none; }
+/* HUD buttons opt back into pointer events even when faded; hide their subtree at the table. */
+body[data-screen="trpg"] #hud { visibility: hidden; }

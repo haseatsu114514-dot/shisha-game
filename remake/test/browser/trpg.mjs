@@ -62,7 +62,7 @@ async function finish(page, choices) {
   const fields = Object.keys(choices);
   for (const field of fields.slice(0, 2)) await hit(page, '[data-test="trpg-plan-' + field + '-' + choices[field] + '"]');
   await hit(page, '[data-test="trpg-prepare-open"]');
-  await checkRoll(page, { support: "adam" });
+  await checkRoll(page, { support: choices.tool ? "hiyori" : "adam" });
   const last = fields[2];
   await hit(page, '[data-test="trpg-plan-' + last + '-' + choices[last] + '"]');
   await hit(page, '[data-test="trpg-serve-open"]');
