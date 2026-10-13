@@ -18,6 +18,7 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false },
+  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
   "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, bgUrl: () => "bg" },
   "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
