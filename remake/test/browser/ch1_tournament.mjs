@@ -185,6 +185,7 @@ await suite("ch1-tournament", async check => {
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
     await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     await page.evaluate(() => window.preparing);
     const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.blueberry, flavor: T.core.state.flags._prep_flavor }));

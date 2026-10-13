@@ -1,14 +1,16 @@
 import { el } from "../core/util.js";
 import { layers, showScreen } from "../core/ui.js";
 import { stopBgm } from "../core/audio.js";
-import { mountTrpgCollection } from "../trpg/collection.js";
+import { mountTrpgCampaign } from "../trpg/campaign-view.js";
+import { peekSave } from "../core/state.js";
 
-/** Title's free-play room; the collection never changes campaign progress. */
+/** Title reads the saved bookshelf only. All playing/purchasing belongs to the daily bar. */
 export function openTrpgRoom(onReturn) {
   const host = el("section.trpg-screen", { "aria-label": "短編TRPGの遊び場" });
   showScreen("trpg", host);
   stopBgm(.2);
-  const collection = mountTrpgCollection(host, { closable: true, closeLabel: "タイトルへ戻る" });
+  const saved = peekSave();
+  const collection = mountTrpgCampaign(host, { getState: () => saved, readOnly: true, closeLabel: "タイトルへ戻る" });
   let leaving = false;
   const observer = new MutationObserver(() => { if (!host.isConnected) cleanup(); });
   function cleanup() {

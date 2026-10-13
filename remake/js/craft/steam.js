@@ -39,6 +39,7 @@ export function refreshEffect() {
 
 export async function runSteamDodge(cs) {
   await waitBenchReady(cs);
+  SE.coalPlace();
   const stock = refreshStock();
   const effect = refreshEffect();
   const tutorial = cs.mode === "tutorial";

@@ -272,17 +272,6 @@
 .pp-row[data-relation="friend"] .pp-relation { color: #9fd9ec; }
 .pp-row[data-relation="choice"] .pp-relation { color: var(--gold-hi); }
 
-/* 返答は1行のまま、関係の質問にだけ恋愛／友情の札を添える。 */
-.vn-choice.route-choice { position: relative; padding-left: 120px; }
-.vn-choice-route {
-  position: absolute; left: 30px; top: 50%; transform: translateY(-50%);
-  padding: 2px 12px; border: 1px solid currentColor; border-radius: 4px;
-  font-size: 15px; line-height: 1.4; letter-spacing: 0.04em;
-}
-.vn-choice[data-route="romance"] .vn-choice-route { color: #ff9dbd; }
-.vn-choice[data-route="friend"] .vn-choice-route { color: #9fd9ec; }
-.vn-choice.route-choice:hover .vn-choice-route, .vn-choice.route-choice:focus-visible .vn-choice-route { color: inherit; }
-.vn-choice-text { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dodge-heart { background: var(--art-heart) center / contain no-repeat; text-shadow: none; }
 
 /* 枠も中身も生成画像。体力の割合は枠の内側のtrackで正確に表す。 */

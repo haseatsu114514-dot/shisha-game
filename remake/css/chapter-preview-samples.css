@@ -1,0 +1,32 @@
+/* 比較ページだけで読む。採用済みCのスタイルはchapter-preview.cssにある。 */
+.sample-rush .preview-screen { background: #0c0d19; box-shadow: 0 0 0 2px #baa88a, 0 0 75px #242338; }
+.sample-rush .preview-art { top: 38px; animation: sample-rush-enter .22s ease-out both; }
+.sample-rush .preview-caption { bottom: 35px; }
+.sample-rush .preview-caption small { background: #e0c590; color: #171526; font-size: 22px; padding: 3px 18px; margin-bottom: 7px; }
+.sample-rush .preview-caption p { font-size: 34px; line-height: 1.35; }
+.sample-rush .preview-bug { color: #f6dda6; top: 17px; }
+.sample-rush .preview-slate { align-items: flex-start; padding-left: 75px; background: linear-gradient(152deg, #080c13 67%, #80693e 67.2%, #080c13 68%); }
+.sample-rush .preview-slate strong { font-size: 92px; letter-spacing: .05em; }
+.sample-rush .preview-slate span { padding: 7px 12px; background: #ecd29c; color: #171526; font-size: 18px; }
+.sample-rush .preview-chapter-title { background: linear-gradient(152deg, #111621 70%, #80693e 70.2%, #080c13 71%); }
+.sample-rush .preview-chapter-title strong { font-size: 92px; color: #f4deb1; }
+.sample-rush .preview-screen[data-kind="echo"] .preview-caption p { font-size: 36px; }
+.chapter-preview.sample-rush.reduced .preview-art { animation: none; }
+@keyframes sample-rush-enter { from { opacity: .4; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sample-rush .preview-art { animation: none; } }
+
+.sample-intro { position: absolute; inset: 0; padding: 45px 80px 32px; display: flex; flex-direction: column; gap: 18px; background: radial-gradient(ellipse at 70% 30%, #242432, #090b11 75%); color: #f2ecdf; }
+.sample-intro header { display: flex; justify-content: space-between; align-items: center; color: #c9b895; font-size: 17px; letter-spacing: .18em; }
+.sample-intro h1 { margin: 0; font-size: 40px; font-weight: 800; letter-spacing: .03em; }
+.sample-intro .sample-lead { margin: 0; color: #b7b0c0; font-size: 18px; }
+.sample-tabs { display: flex; gap: 14px; }
+.sample-tab { flex: 1; padding: 14px 18px; border: 1px solid #686275; border-radius: 3px; text-decoration: none; color: #ccc5d5; font-size: 19px; line-height: 1.5; }
+.sample-tab[aria-current="page"] { color: #f3dfb5; border-color: #d4b980; background: #d4b98014; }
+.sample-tab b { display: block; color: #f3dfb5; font-size: 24px; }
+.sample-feature { display: grid; grid-template-columns: 570px 1fr; gap: 34px; align-items: center; margin-top: 2px; }
+.sample-feature img { display: block; width: 570px; height: 320.625px; object-fit: contain; box-shadow: 0 0 0 1px #666071; }
+.sample-feature small { color: #d6bd86; font-size: 20px; }
+.sample-feature h2 { margin: 15px 0; font-size: 37px; line-height: 1.5; }
+.sample-feature p { margin: 0 0 25px; font-size: 20px; line-height: 1.7; color: #c3bacf; }
+.sample-feature .btn { width: 100%; font-size: 21px; }
+.sample-intro footer { margin-top: auto; font-size: 16px; color: #9f98a9; }
