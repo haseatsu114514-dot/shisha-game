@@ -7,9 +7,12 @@ on:
       - 'remake/js/chapters/ch1.js'
       - 'remake/js/chapters/ch1-preview.js'
       - 'remake/js/chapters/preview-score.js'
+      - 'remake/js/chapters/chapter-preview-samples.js'
       - 'remake/js/core/audio.js'
       - 'remake/css/chapter-preview.css'
+      - 'remake/css/chapter-preview-samples.css'
       - 'remake/chapter-preview.html'
+      - 'remake/chapter-preview-samples.html'
       - 'remake/js/chapter-preview.js'
       - 'assets/ui/chapter_previews/**'
       - 'assets/cgs/ch2_preview/**'
@@ -18,6 +21,7 @@ on:
       - 'remake/img/ui/chapter_previews/**'
       - 'remake/img/cgs/ch2_preview/**'
       - 'remake/test/browser/ch1_preview.mjs'
+      - 'remake/test/browser/chapter_preview_samples.mjs'
       - '.github/workflows/ch1-preview.yml'
   workflow_dispatch:
 
@@ -66,7 +70,9 @@ jobs:
       - name: Play full preview and verify PC, touch, saves and cleanup
         env:
           TEST_REF: ${{ github.sha }}
-        run: node remake/test/browser/ch1_preview.mjs
+        run: |
+          node remake/test/browser/ch1_preview.mjs
+          node remake/test/browser/chapter_preview_samples.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
@@ -74,5 +80,6 @@ jobs:
           name: ch1-preview-results
           path: |
             .codex/artifacts/remake-browser/ch1-preview*
+            .codex/artifacts/remake-browser/chapter-preview-samples*
             ${{ runner.temp }}/ch1-preview.log
           retention-days: 7

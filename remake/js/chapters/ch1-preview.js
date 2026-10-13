@@ -4,6 +4,7 @@ import { layers, imageReady } from "../core/ui.js";
 import { config } from "../core/state.js";
 import { stopBgm } from "../core/audio.js";
 import { createPreviewScore } from "./preview-score.js";
+import { createChapterSample } from "./chapter-preview-samples.js";
 
 let active = null;
 let scriptPromise = null;
@@ -30,7 +31,7 @@ function script() {
 }
 
 /** 初回/再視聴/確認ページで同じ演出。完走・スキップのみ呼び出し側で既読を保存する。 */
-export function playChapterPreview({ signal } = {}) {
+export function playChapterPreview({ signal, sample } = {}) {
   if (active) return active;
   if (signal?.aborted) return Promise.resolve("aborted");
   active = new Promise(resolve => {
@@ -171,9 +172,13 @@ export function playChapterPreview({ signal } = {}) {
         ]);
         if (done || generation !== attempt) return;
         if (loaded.some(ok => !ok)) throw new Error("Preview image unavailable");
-        data = next;
+        data = createChapterSample(next, sample);
+        if (data.sample) root.classList.add(`sample-${data.sample}`);
+        root.dataset.sample = data.sample || "production";
         stopBgm(0.15);
-        score = createPreviewScore();
+        score = createPreviewScore(data.sample === "rush"
+          ? { timeline: data.frames, originalTimeline: next.frames }
+          : data.sample === "quiet" ? { timeline: data.frames, quiet: true } : {});
         score.setMuted(soundOff);
         time = 0; last = performance.now();
         pause.disabled = false;

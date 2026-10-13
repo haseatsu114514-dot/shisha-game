@@ -28,3 +28,29 @@ Issue #384。第1章で勝利とライバルの「もう一口」を受け取っ
 `node remake/test/browser/ch1_preview.mjs` の9ケースで、自然完走の全11カット、既存サンプルの6枚/16:9構図の保持/ドット書体、初回と再視聴、旧セーブ、16:9復帰、PC/タッチ横画面、動き軽減、字幕と操作の収まり、非表示の停止、読み込み失敗と遅延、中断の後片付け、単体ページの保存不変を検証する。CIは `.github/workflows/ch1-preview.yml`。
 
 実ブラウザの音付き録画とQAは `docs/qa/ch1-preview/`。録画は単体ページで本編と同じ台本・画像・演出・音楽を再生したもの。ゲーム本編の通し検証は `node remake/test/playthrough.mjs`。
+
+## 3案の比較サンプル
+
+オーナーの「何パターンかサンプルを録画やスクショで見たい」に対応した比較ページは `/remake/chapter-preview-samples.html`。`?sample=tv` / `rush` / `quiet` で直接各案を開ける。
+
+| 案 | 時間 | 見せ方と引き |
+| --- | --- | --- |
+| A 王道のテレビ予告 | 47.8秒 | 現在の本編案と同じ4:3のTV枠・ドット字幕・曲。6場面を順に見せ、「誰のために、煙を作る。」で締める。 |
+| B 短く畳みかける予告 | 29.2秒 | 字幕を大きく2行へ整え、速い曲で畳みかける。ひとりの控え室から音を引き、問いを残す。 |
+| C 言葉を残す静かな予告 | 47.5秒 | 横長の画面・細い字幕・静かな倍音とベル。タイトルのあとに既存のみんとの言葉を再び置いてから、最後の問いへ。 |
+
+比較案は `remake/js/chapters/chapter-preview-samples.js` が既存台本を複製して組み立てる。Bの改行以外の台詞は元と同じ。Cの再登場は同じ絵と台詞の編集上の反復で、新しい出来事を追加しない。元絵6枚と本編の自動再生案は維持し、比較再生はセーブ・既読・音量設定を変更しない。比較用のCSSは比較ページだけで読む。
+
+PC/スマホ横画面の表示、一時停止、再開、スキップ、保存不変は `node remake/test/browser/chapter_preview_samples.mjs`。録画で全カットの自然完走、元絵のデコード、字幕と操作の収まり、保存不変、ブラウザエラーを確認する。成果物は `docs/qa/ch1-preview/samples/`。
+
+録画の再作成にはPlaywright・Chromium・ffmpegが必要。サーバー起動後に例として:
+
+```bash
+PREVIEW_URL='http://127.0.0.1:8123/remake/chapter-preview-samples.html?sample=rush' \
+CHROME_EXECUTABLE_PATH=/usr/bin/chromium \
+OUTPUT_VIDEO='.codex/artifacts/chapter-preview-recording/b-rush.mp4' \
+CAPTURE_DIR='.codex/artifacts/chapter-preview-recording/b-rush' \
+node remake/tools/record_chapter_preview.mjs
+```
+
+録画は実ブラウザの描画時刻を保持した30fpsのH.264/AAC。独立した録画用ブラウザだけに音声ミックスを追加し、ゲームコードには録画処理を入れない。導入画面と再生後の画面があるため、ファイルの長さは予告本体より約5秒長い。

@@ -63,13 +63,53 @@ function compose() {
   return notes.sort((a, b) => a.at - b.at);
 }
 
-/** seek(0)で開始。以降のseekは映像の秒数へ同期し、一時停止状態を維持する。 */
-export function createPreviewScore() {
+function sampleScore(timeline, originalTimeline, quiet) {
+  if (quiet) {
+    const notes = [];
+    let at = 0;
+    for (const cut of timeline) {
+      const dur = cut.duration / 1000;
+      if (cut.kind === "image" || cut.kind === "prologue") {
+        notes.push({ at: at + .15, dur: Math.max(.2, dur - .4), note: cut.id === "empty-victory" ? 40 : 45, voice: "air", level: .4 });
+        notes.push({ at: at + .45, dur: Math.min(2, dur - .5), note: cut.speaker === "みんと" ? 81 : 76, voice: "bell", level: .3 });
+      }
+      if (cut.kind === "title") [57, 60, 64, 71].forEach(note => notes.push({ at, dur: dur - .3, note, voice: "title", level: .45 }));
+      at += dur;
+    }
+    return notes.sort((a, b) => a.at - b.at);
+  }
+  // カットごとに曲の区間を縮める。音程を上げず、タイトル/静寂の位置を映像に合わせる。
+  const original = new Map();
+  let sourceStart = 0;
+  for (const cut of originalTimeline) {
+    original.set(cut.id, { start: sourceStart, duration: cut.duration / 1000 });
+    sourceStart += cut.duration / 1000;
+  }
+  const score = compose(), notes = [];
+  let at = 0;
+  for (const cut of timeline) {
+    const source = original.get(cut.id), dur = cut.duration / 1000;
+    if (source) {
+      const rate = dur / source.duration;
+      for (const event of score) {
+        const start = Math.max(event.at, source.start);
+        const end = Math.min(event.at + event.dur, source.start + source.duration);
+        if (end > start) notes.push({ ...event, at: at + (start - source.start) * rate, dur: (end - start) * rate });
+      }
+    }
+    at += dur;
+  }
+  return notes.sort((a, b) => a.at - b.at);
+}
+
+/** seek(0)で開始。比較案のみカットに合わせて曲を組み替える。 */
+export function createPreviewScore({ timeline = null, originalTimeline = null, quiet = false } = {}) {
   const AC = window.AudioContext || window.webkitAudioContext;
   let ctx = null, music = null, limiter = null, noise = null;
   let timer = null, stopped = false, paused = false, started = false, localMute = false;
   let offset = 0, epoch = 0, cursor = 0;
-  const events = compose();
+  const length = timeline ? timeline.reduce((total, cut) => total + cut.duration / 1000, 0) : LENGTH;
+  const events = timeline ? sampleScore(timeline, originalTimeline, quiet) : compose();
   const voices = new Set();
 
   function ensureContext() {
@@ -105,7 +145,7 @@ export function createPreviewScore() {
   }
 
   function currentPosition() {
-    return !ctx || paused || !started ? offset : Math.min(LENGTH, offset + ctx.currentTime - epoch);
+    return !ctx || paused || !started ? offset : Math.min(length, offset + ctx.currentTime - epoch);
   }
 
   function clearVoices() {
@@ -174,8 +214,8 @@ export function createPreviewScore() {
     while (cursor < events.length && events[cursor].at < position + .25) {
       schedule(events[cursor++], position);
     }
-    if (position >= LENGTH) {
-      offset = LENGTH;
+    if (position >= length) {
+      offset = length;
       paused = true;
       clearInterval(timer);
       timer = null;
@@ -196,7 +236,7 @@ export function createPreviewScore() {
   function seek(seconds = 0) {
     if (stopped) return;
     const next = Number(seconds);
-    offset = Number.isFinite(next) ? Math.max(0, Math.min(LENGTH, next)) : 0;
+    offset = Number.isFinite(next) ? Math.max(0, Math.min(length, next)) : 0;
     if (!ensureContext()) return;
     clearVoices();
     cursor = events.findIndex(event => event.at + event.dur > offset + .015);
