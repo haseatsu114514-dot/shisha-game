@@ -98,3 +98,10 @@ node --experimental-vm-modules remake/test/lime_consistency.mjs
 ## DAY2の手動保存表示
 
 DAY1の読了旗はDAY2以降も保持するため、保存枠の「初日終了」は章内DAY1の完了時だけ表示する。DAY2のオート保存表示が「第2章・DAY2／日常」になることを実際のMENUで検査し、手動1への上書き・タイトルLOADから同じ街と時刻に戻ること、他の手動2枠を保持することを追加確認。自由日8ケースを再実行して全件PASS。病欠VM・既存デート16・保存6の修正後、ad8aaf9の第2章CI run38409213612は試遊／初日／自由日3ジョブSUCCESS、一般の保存UI・休養・デートのCIもSUCCESS。最終headはこの保存枠表示と検査・記録の更新だけを追加する。
+
+
+## 公開URLの追加確認
+
+[481e0eeの本編](https://raw.githack.com/haseatsu114514-dot/shisha-game/481e0ee3dfe19c957e6fdde19b06b0da1489c599/remake/index.html)を新しいChromiumコンテキストで確認。初日完了fixtureから実際の「翌日へ」→街切替→透過ロゴ3枚の読込→MELTY PUFF相談→3,000円・1行動・連絡先交換がPASS。別のDAY13夜fixtureからつむぎ→隣町移動→未面識のあげはの名乗り→前夜の会話→DAY14制作境界もPASS。お金・未解決の味覚状態を維持し、有料の連絡先を捏造しない。[結果](online-results.json)。新規開始から第1章14日間をオンラインで完走した検査ではない。
+
+CIはChapter 2の試遊・初日・日常・物語の4ジョブへ拡張。481e0eeのrun38419823228はGitHubの実行待ち。最新headの結論はPR #524のChecksで確認し、待機を成功扱いにしない。

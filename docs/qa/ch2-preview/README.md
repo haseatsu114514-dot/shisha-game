@@ -77,3 +77,13 @@ main `2d1dbe1` の制作ミニゲーム改修を通常merge後、素材・台本
 ## 日常の続行後
 
 本編にDAY2〜3の日常を追加しても、独立試遊の到着・地図・見学・帰路は同じ範囲に保つ。試遊から通常セーブを読まず書かない。自由日と新しい相談台本は本編の「翌日へ」からのみ読み込む。[自由日QA](../ch2-daily/README.md)を参照。
+
+
+## 3店のロゴ表示
+
+既存10ケースに加え、PC／横持ちタッチの任意順訪問2ケースを再実行。3枚とも実画像をデコードし、見学カードのロゴと操作ボタンが画面に収まることを確認した。撮影はVNのフェード終了を待ち、残像を検証画面へ残さない。[結果](logo-results.json)。
+
+- PC: [MELTY PUFF](desktop-logo-ageha.png) / [神崎煙草店](desktop-logo-kumicho.png) / [零-ZERO-](desktop-logo-rei.png)
+- 横持ちタッチ: [MELTY PUFF](touch-logo-ageha.png) / [神崎煙草店](touch-logo-kumicho.png) / [零-ZERO-](touch-logo-rei.png)
+
+生成原画・実指示・透過配布は[ロゴ制作記録](../../../asset_sources/ch2-store-logos/README.md)。大きな原画とゲームの小さなピンを実際に目視し、店名テキストも残した。
