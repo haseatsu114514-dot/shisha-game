@@ -117,5 +117,75 @@
     "claim_run": 38350757850,
     "status_run": 38357224273,
     "scope": "static hybrid mockup only; no gameplay implementation"
+  },
+  "equipment_v2": {
+    "revision": "equipment-v2",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "switch_zoom_compare_keyboard": "PASS",
+        "image_decode": "PASS",
+        "removed_explanations": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "scope": "static mockup only; game unchanged",
+    "status_run": 38373984329,
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2171279
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2096651
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1319096
+      }
+    }
   }
 }
