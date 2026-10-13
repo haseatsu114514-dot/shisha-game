@@ -6,6 +6,7 @@ import { sharkSwim } from "../core/scene-motions.js";
 import { gainAffinity, affinityLevel, releaseAffinity, earnStat, addMoney, addStamina } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
+import { maybeRecruitTrpgMember } from "./trpg.js";
 
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
 export const SAMECHAN_BOND_CHOICE = "bond_q1_samechan";
@@ -132,6 +133,8 @@ export async function visitSamechan(spot) {
     gainAffinity("samechan", count === 0 ? 2 : 1);
     earnStat("insight", 4);
     syncSamechanKnowledge();
+    await maybeRecruitTrpgMember("samechan");
+    if (state !== owner) return false;
     state.flags._samechan_visit.complete = true;
     // calendarが行動・育成の確定後に保存する。支払済み／行動未消費の中間セーブを作らない。
     return true;

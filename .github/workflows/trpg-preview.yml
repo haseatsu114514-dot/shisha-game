@@ -4,6 +4,7 @@ on:
     paths:
       - 'data/dialogue/trpg_ordinary.json'
       - 'data/dialogue/trpg_shark.json'
+      - 'data/dialogue/trpg_club.json'
       - 'data/trpg_catalog.json'
       - 'remake/img/backgrounds/trpg_*.webp'
       - 'remake/data/manifest.json'
@@ -14,6 +15,8 @@ on:
       - 'remake/trpg-campaign-preview.html'
       - 'remake/js/core/state.js'
       - 'remake/js/daily/trpg.js'
+      - 'remake/js/daily/samechan.js'
+      - 'remake/js/daily/hiyori.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/spot-access.js'
       - 'remake/js/daily/spots.js'
@@ -30,6 +33,7 @@ on:
     paths:
       - 'data/dialogue/trpg_ordinary.json'
       - 'data/dialogue/trpg_shark.json'
+      - 'data/dialogue/trpg_club.json'
       - 'data/trpg_catalog.json'
       - 'remake/img/backgrounds/trpg_*.webp'
       - 'remake/data/manifest.json'
@@ -40,6 +44,8 @@ on:
       - 'remake/trpg-campaign-preview.html'
       - 'remake/js/core/state.js'
       - 'remake/js/daily/trpg.js'
+      - 'remake/js/daily/samechan.js'
+      - 'remake/js/daily/hiyori.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/spot-access.js'
       - 'remake/js/daily/spots.js'
