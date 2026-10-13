@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "issue": 504,
+  "revision": "v1",
+  "status": "design_selection_complete",
+  "merge_authorized": true,
+  "characters": [
+    {
+      "id": "sumi",
+      "name": "スミさん",
+      "sheet": "v1/01_sumi_naru.png",
+      "row": "top",
+      "equipment_id": "suyaki_sumi",
+      "options": {
+        "A": "閉店後の一服",
+        "B": "旅路の土"
+      },
+      "selected": "A"
+    },
+    {
+      "id": "naru",
+      "name": "なる",
+      "sheet": "v1/01_sumi_naru.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_naru",
+      "options": {
+        "A": "焼き菓子の余韻",
+        "B": "対等のしるし"
+      },
+      "selected": "B"
+    },
+    {
+      "id": "adam",
+      "name": "アダム",
+      "sheet": "v1/02_adam_rin.png",
+      "row": "top",
+      "equipment_id": "suyaki_adam",
+      "options": {
+        "A": "エデンの古杯",
+        "B": "双香の誓い"
+      },
+      "selected": "B"
+    },
+    {
+      "id": "rin",
+      "name": "凛",
+      "sheet": "v1/02_adam_rin.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_rin",
+      "options": {
+        "A": "夜の私物",
+        "B": "ブルーベリーの帰り道"
+      },
+      "selected": "A"
+    },
+    {
+      "id": "tsumugi",
+      "name": "つむぎ",
+      "sheet": "v1/03_tsumugi_minto.png",
+      "row": "top",
+      "equipment_id": "suyaki_tsumugi",
+      "options": {
+        "A": "葉耳ねこの居場所",
+        "B": "今日の色"
+      },
+      "selected": "B"
+    },
+    {
+      "id": "minto",
+      "name": "みんと",
+      "sheet": "v1/03_tsumugi_minto.png",
+      "row": "bottom",
+      "equipment_id": "suyaki_minto",
+      "options": {
+        "A": "小悪魔の休息",
+        "B": "栞のひと息"
+      },
+      "selected": "B"
+    },
+    {
+      "id": "samechan",
+      "name": "サメちゃん",
+      "sheet": "v1/04_samechan_hiyori.png",
+      "row": "top",
+      "equipment_id": "suyaki_samechan",
+      "options": {
+        "A": "はじめの海",
+        "B": "コロちゃんの指定席"
+      },
+      "selected": "B"
+    },
+    {
+      "id": "hiyori",
+      "name": "ひより",
+      "sheet": "v1/04_samechan_hiyori.png",
+      "row": "bottom",
+      "equipment_id": null,
+      "options": {
+        "A": "薄桃の夕凪",
+        "B": "素顔でひと休み"
+      },
+      "selected": "B"
+    }
+  ],
+  "design_direction": "最初のシンプルな案を優先。素焼きの基本形、浅い彫り模様、控えめな色でキャラらしさを表す。",
+  "gameplay_policy": {
+    "status": "direction_confirmed_details_pending",
+    "base_performance": "通常のハガルと同等を基本とする",
+    "bonus_condition": "得意フレーバー使用時だけ",
+    "bonus_scale": "小さなボーナス",
+    "reference_normal_bowl": null,
+    "favorite_flavor_assignments": null,
+    "activation_rules": null,
+    "bonus_effect": null,
+    "bonus_values": null,
+    "implementation_status": "not_implemented_by_this_pr"
+  },
+  "selection_source": "会話でオーナーが8人のA/Bを個別指定。PR #507の選定コメントにも記録。",
+  "merge_authorization": {
+    "instruction": "マージまでして",
+    "scope": "PR #507の原画・採用結果・性能方針の資料保存。本編の性能実装は含まない。"
+  }
+}
