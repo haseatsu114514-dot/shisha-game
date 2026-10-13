@@ -275,5 +275,82 @@
       "after": "2 on stove / one small cube inside pot; same rear cord and tall handle",
       "legend": "absent"
     }
+  },
+  "inset_v4": {
+    "revision": "inset-v4",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare_zoom": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38382268211,
+    "scope": "static image mockup; no game implementation change",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2081999
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2102101
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1320183
+      }
+    },
+    "visual_review": {
+      "method": "manual inspection of both generated full frames and original coal2 reference",
+      "before": "stove3 / empty overhead pot inset0",
+      "after": "stove2 / inset1 with marker2 and short result",
+      "separate_camera": "speech bubble border/tail/backdrop plus overhead angle and上から cue",
+      "main_table_pot": "removed",
+      "collected_coal": "rough gray ash, chipped rounded perimeter and ember edge; material continuity, not pixel-identical source reuse",
+      "cable": "rear connected, no front connector",
+      "stage_legend": "absent"
+    }
   }
 }

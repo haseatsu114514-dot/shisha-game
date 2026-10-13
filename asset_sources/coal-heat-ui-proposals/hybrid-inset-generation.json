@@ -1,0 +1,57 @@
+{
+  "revision": "inset-v4",
+  "user_request": "回収時に炭が整ったキューブへ変わる違和感と、同じ距離なのにサイズが変わる違和感を解消。炭壺を別視点の吹き出しに置き、上から見せる方向を採用。細部はオーナーから一任。",
+  "decision": "One framed speech-bubble inset at upper-right showing a top-down/high-overhead charcoal carrier; remove full-size carrier standing on main tabletop. Clear panel edge, short tail, overhead orientation and small上から label communicate a separate view.",
+  "planning": {
+    "人物": "はじめの既存姿勢・本人・帽子・服・トング・首のアクセサリーを保持。",
+    "場面": "炭焼き、回収前3+0と1個回収後2+1。",
+    "台の型": "シーシャ本体なし。メインは電気コンロ。炭壺は独立の上から視点の小窓。",
+    "HMD": "なし。追加しない。",
+    "炭": "回収対象2の灰膜・粒・不揃いの角・赤い熾きの特徴を小窓でも維持。別の整形キューブを作らない。",
+    "ホース": "なし。既存の後部接続の電源コード一本を保持。",
+    "吸い口": "吸引の追加なし。既存人物アクセサリーを保持。",
+    "構図": "1672×941の既存構図。右上に独立した吹き出し。操作対象を覆わず、深い一つの炭壺を上から見る。長い持ち手は奥へ倒して口を見せる。"
+  },
+  "scope": "Static concept only; preview switches images. Shared sprite/texture continuity and actual transfer animation belong to game implementation; no game code edits.",
+  "material_references": "Keep previously inspected actual coal closeup and carrier interior reference; external photos are not redistributed.",
+  "outputs": [
+    {
+      "file": "AB-hybrid-after.png",
+      "generated_path": "/workspace/generated_images/exec-700ba2fd-89e8-402b-9d6f-28ac3b2ead6c.png"
+    },
+    {
+      "file": "AB-hybrid-before.png",
+      "generated_path": "/workspace/generated_images/exec-03cb4254-7c05-417b-a571-f463b817a2d8.png"
+    }
+  ],
+  "qa": {
+    "visually_inspected": true,
+    "collection": "before3+0; after2+1",
+    "separate_view": "One outlined speech-bubble at upper-right, distinct inset backdrop, tail and small上から label; no standing pot on main tabletop.",
+    "charcoal": "Recovered piece is rough ash-coated briquette with worn corners and ember edge, linked to original target by2 marker. Same material language, not a smooth clean cube. Separate generated frames do not guarantee pixel-identical cracks; production implementation must reuse shared coal sprites/material.",
+    "pot": "Single deep worn-metal carrier viewed from above, long handle behind opening, no slots.",
+    "power": "Rear-right stove cable preserved; no front connector or foreground cable.",
+    "overlap": "Inset does not cover active coals or tongs. Count and result contained in inset.",
+    "legend": "Removed stage explanation remains absent"
+  },
+  "before_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-after.png",
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v3/AB-hybrid-before.png",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png"
+    ],
+    "transparent_background": false,
+    "prompt": "Edit IMAGE1 into the BEFORE-pickup version of this exact Japanese16:9 game UI. Preserve all framing1672x941, outer borders, exact character Hajime and his cap/clothes/necklace/pose/hands/tongs, room and tabletop, top HUD/score000000, heading and short instruction, stove geometry, REAR RIGHT power cable and front dial. Preserve EXACTLY the new upper-right SPEECH-BUBBLE INSET, including its dark background, thin outline, rounded corners, triangular tail, high-overhead/top-down view of the SINGLE deep bronze charcoal carrier, and long bail handle folded toward the back. Do not restore the carrier as a full-size object on the main worktable; it stays only in the independent inset. Change ONLY collection state. In the inset remove the single recovered charcoal and its numbered2 marker so the pot is empty, change 1 / 3 to 0 / 3, and remove the result line 炭2 PERFECT ｜ 0.06秒遅い. Keep labels 炭壺 and 上から and the same pot opening/body/angle/inset bounds. In the main stove view restore coal2 in the lower-left target position, so the stove has3 pieces:1 top,2 bottom-left,3 bottom-right. Image2 is ONLY a reference for the before-state coal2 position, rough ash material and target2 markings. Make coal2 a worn compressed coconut briquette with the same irregular chipped ash-covered squarish form as the recovered charcoal in image1. Keep natural uneven corners/ash flakes and red embers, not perfectly sharp toy blocks or smooth cube faces. Use gold target brackets around2, gold circled2 and small 今 beside2, matching image2. Coal3 now has neutral gray brackets and neutral circled3, with no 今. Keep neutral markings of coal1. Do NOT copy image2's main-table carrier, old scale, or any previous explanatory legend. Image3 is canonical character identity only. No extra tutorial diagrams, labels, devices, people or coals in the inset. The result is3 on stove,0 in the independent overhead pot inset, with exactly the same separate-camera composition as image1."
+  },
+  "after_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v3/AB-hybrid-after.png",
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v3/AB-hybrid-before.png",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png",
+      "/workspace/scratch/coal-review/hybrid-refs/coal-holder-2.jpg",
+      "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg"
+    ],
+    "transparent_background": false,
+    "prompt": "Revise the Japanese 16:9 charcoal-timing game mockup in IMAGE1. Preserve its full1672x941 framing, all outer borders, exact Hajime character at left, cap/clothing/necklace/hands and tongs, mosaic lamp room, six-step top HUD, SCORE000000, heading炭焼き, instruction芯が光ったら、炭を取る。, the stove with its REAR-connected black power cable, the two enlarged interactive coals numbered1 and3, neutral brackets on1 and gold brackets/今 on3, and the left dialogue card. Keep the lower charcoal-stage tutorial absent. Solve the optical inconsistency of a small carrier beside enlarged stove coals by making the carrier a CLEARLY SEPARATE VIEW. Completely REMOVE the large standing charcoal carrier, its pedestal, old0/3 or1/3 label and result text from the shared tabletop at right. Restore the room/worktable behind that location. Add ONE floating SPEECH-BUBBLE INSET at upper right, approximately x1255..1630 and y160..650, with a dark desaturated interior, a thin pale ivory/bronze outline, rounded corners and a small triangular tail on its left-lower edge toward the stove/tongs. It is visibly an independent framed inset, NOT a bowl standing on the same main worktable. Keep the inset out of the three coal input regions, not over the stove or hot cable junction. Leave the power cable's rear origin visible and let its rest naturally run behind the inset into the back of the room. In the inset show a genuine deep charcoal carrier viewed from HIGH OVERHEAD, nearly TOP-DOWN: one large round metal opening, dark deep inner sidewalls, worn bronze rim, no slots or individual compartments. Reference4 is a real deep carrier and its interior, not a heat-management device. Its long bail handle is folded outward toward the back of the inset so it does not cover the opening; keep its long length and mechanical connection, do not make a tiny bucket grip. The top-down pot view and distinct bubble border communicate a different camera distance and angle. In the inset header use only 炭壺 on the left and 1 / 3 on the right; a very small muted 上から under the heading is allowed. In the pot put exactly ONE recovered charcoal, and it MUST LOOK LIKE THE SAME COAL2 that was on the lower-left stove in IMAGE2. Retain that coal's worn uneven corners, asymmetrical ash flakes, rough porous gray surface and subtle ember edge. It must NOT turn into a new perfectly geometric toy cube with smooth straight square edges and clean flat faces. Seen from above it has a chipped irregular squarish ash footprint, recognizably the original compressed briquette. Match the ash texture and distinctive broken corner of coal2 from image2, while rotating the viewpoint, not changing the object. Reference5 supplies ONLY the real charcoal ash/ember material; do not copy its HMD or background. The recovered piece occupies approx20-23% of the inset pot's opening width, about50-60px for a250px opening; surrounding empty space remains. Add a tiny neutral numbered2 marker beside this recovered piece without covering its ash, to link it with the earlier stove target. Under the inset keep a single short result line 炭2 PERFECT ｜ 0.06秒遅い, clear of foreground tongs. Do not add explanatory paragraphs or extra panels. The main view remains two stove coals and the independent inset contains one coal, totals2+1. Image3 preserves Hajime identity only. Preserve the original warm painterly/pixel-styled finish. Only revise the right carrier representation into the overhead speech bubble and improve the recovered coal continuity."
+  }
+}
