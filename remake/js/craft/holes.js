@@ -193,7 +193,7 @@ export async function runHoles(cs) {
     const ring = state[ri];
     if (ring.closed || ring.taken.every(Boolean)) return;
     const a = cursorAngle();
-    SE.punch();
+    SE.foilPunch();
     // 一番近い「まだ開けていない目印」
     let best = -1, bestD = Infinity;
     ring.taken.forEach((tk, k) => {
@@ -214,7 +214,6 @@ export async function runHoles(cs) {
       tally[kind]++;
       combo++;
       report(kind === "perfect" ? "EXCELLENT" : "GOOD", kind);
-      kind === "perfect" ? SE.perfect() : SE.good();
     } else {
       ring.holes.push({ a, d: goodWin * 1.5 });
       ring.extra++;
@@ -222,7 +221,6 @@ export async function runHoles(cs) {
       if (kind === "close") { tally.tooClose++; report("TOO CLOSE", "bad"); }
       else { tally.miss++; report("ズレた…", "miss"); }
       if (ring.id === "inner") tally.tooMany++;
-      SE.miss();
     }
     addHoleDot(a, ring.r, kind);
     setBenchHoleAction(cs, {
@@ -231,7 +229,7 @@ export async function runHoles(cs) {
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((h) => h.d <= perfWin) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
-      SE.just();
+      SE.perfect();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
     }

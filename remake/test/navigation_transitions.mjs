@@ -70,6 +70,7 @@ await suite("navigation-transitions", async (check) => {
       const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
+      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");

@@ -22,6 +22,15 @@ try {
       };
       return node;
     };
+    const bufferSource = AC.prototype.createBufferSource;
+    AC.prototype.createBufferSource = function (...args) {
+      const node = bufferSource.apply(this, args), start = node.start;
+      node.start = function (...a) {
+        if (node.loop || (node.buffer?.duration > .35 && node.buffer?.duration < .4)) window.bubbleSounds++;
+        return start.apply(this, a);
+      };
+      return node;
+    };
   });
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');
@@ -77,6 +86,7 @@ try {
 
   await open();
   await page.mouse.click(1100, 24); // 本物のユーザー操作で音声を解放。
+  await page.evaluate(() => T.audio.preloadSe());
   const layout = await page.evaluate(() => {
     const box = s => { const r = document.querySelector(s).getBoundingClientRect(); return { left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width }; };
     const white = getComputedStyle(document.querySelector('.thermo-optimal'), '::before');
@@ -127,7 +137,7 @@ try {
   const upMs = await page.evaluate(() => lastDraw.ended - lastDraw.began);
   const afterUp = await temperature();
   assert(afterUp > up.before + .08 && upMs >= 1300 && upMs < 2500, `${up.before} -> ${afterUp}, ${upMs}ms`);
-  assert(await page.evaluate(() => window.bubbleSounds) > 5, 'no audible bubble oscillators ran');
+  assert(await page.evaluate(() => window.bubbleSounds) >= 2, 'recorded loop and final bubble did not play');
   const sounds = await page.evaluate(() => window.bubbleSounds);
   await page.waitForTimeout(220); assert.equal(await page.evaluate(() => window.bubbleSounds), sounds, 'bubble sound continued after inhaling');
   assert(await page.locator('[data-test="pull-serve"]').isDisabled(), 'minimum two pulls still required');

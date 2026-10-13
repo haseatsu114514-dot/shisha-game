@@ -117,7 +117,9 @@ await suite('action-context', async check => {
         await page.locator('[data-test="map-go"]').click();
         if (action === 'baito') await page.locator('[data-test="tonari-baito"]').click();
         if (action === 'shopping') {
+          await page.locator('[data-test="shop-enter"]').click();
           await page.locator('[data-test="buy-blueberry"]').click();
+          await page.locator('[data-test="shop-checkout"]').click();
           await page.locator('[data-test="shop-leave"]').click();
           await page.locator('.map:not(.done) [data-spot="rest"]').waitFor();
           const shop = await page.evaluate(() => ({ slot: C.core.state.slot, money: C.core.state.money,
