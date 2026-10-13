@@ -55,5 +55,67 @@
   "scope": "static mockups only; no game implementation or gameplay regression claim",
   "claim_run": 38350757850,
   "status_run": 38350959189,
-  "worker": "codex-coal-mockups-20261013-b0d54e25"
+  "worker": "codex-coal-mockups-20261013-b0d54e25",
+  "hybrid": {
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": {
+          "width": 1440,
+          "height": 1050
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      },
+      {
+        "viewport": "landscape-touch",
+        "size": {
+          "width": 844,
+          "height": 390
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      },
+      {
+        "viewport": "portrait-touch",
+        "size": {
+          "width": 390,
+          "height": 844
+        },
+        "pageerrors": [],
+        "http_errors": [],
+        "states": "before/after PASS",
+        "keyboard": "PASS",
+        "zoom": "open/Escape PASS",
+        "side_by_side": "PASS",
+        "horizontal_overflow": false
+      }
+    ],
+    "evidence": "HTTP browser run completed all three viewport assertions before the separate file:// check was blocked",
+    "offline_file_preview": "NOT VERIFIED: managed Chromium blocked file:// with ERR_BLOCKED_BY_ADMINISTRATOR; use the verified local HTTP server",
+    "visual_review": {
+      "method": "manual comparison with real photos and both generated frames",
+      "before": "3 coals on stove / 0 in one pot",
+      "after": "2 coals on stove / 1 inside same pot",
+      "large_unlit_black_faces_in_ready_coals": "absent",
+      "white_hot_crater": "absent",
+      "collection_slots": "absent",
+      "pot": "single deep metal bowl with arch handle and stable base",
+      "timing_numbers": "illustrative mock labels; not measured gameplay"
+    },
+    "claim_run": 38350757850,
+    "status_run": 38357224273,
+    "scope": "static hybrid mockup only; no gameplay implementation"
+  }
 }
