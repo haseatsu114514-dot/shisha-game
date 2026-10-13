@@ -122,6 +122,10 @@ await suite("tonari-opening", async check => {
       await page.selectOption("#opening-from", shot);
       await page.click("#opening-play");
       await page.locator(`.tonari-opening[data-shot="${shot}"]`).waitFor();
+      if (shot === "coal") {
+        await page.locator('[data-test="vn-auto"]').click();
+        await page.locator('.tonari-opening[data-shot="bowl"]').waitFor({ timeout: 15000 });
+      }
       await page.click("#opening-stop");
       await page.waitForFunction(() => !document.getElementById("opening-play").disabled);
       assert.equal(await page.locator(".tonari-opening").count(), 0);
