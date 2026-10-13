@@ -131,10 +131,12 @@ function waitSceneAssets(task, owner = running) {
  * 会話を再生する。
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
+ * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
   const dlg = typeof idOrDlg === "string" ? DB.dialogues[idOrDlg] : idOrDlg;
+  if (opts.signal?.aborted) return Promise.resolve({ id: dlg?.dialogue_id || "", visited: [], cancelled: true });
   if (!dlg) {
     console.warn("[vn] dialogue not found:", idOrDlg);
     return Promise.resolve();
@@ -184,6 +186,12 @@ export function play(idOrDlg, opts = {}) {
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
     document.body.classList.add("vn-open");
     const me = running;
+    if (opts.signal) {
+      const cancel = () => { if (running === me) finish(true); };
+      me.removeAbort = () => opts.signal.removeEventListener("abort", cancel);
+      opts.signal.addEventListener("abort", cancel, { once: true });
+      if (opts.signal.aborted) { cancel(); return; }
+    }
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     waitSceneAssets(Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]), me).then(() => {
@@ -253,15 +261,17 @@ function prefetch(dlg) {
   preload([...urls].slice(0, 16), 0);
 }
 
-function finish() {
+function finish(cancelled = false) {
   const r = running;
   running = null;
   clearTimeout(autoTimer);
+  clearInterval(r.typeTimer); clearTimeout(r.typeTimer);
+  r.removeAbort?.();
   const meta = r.dlg.metadata || {};
   // metadata / growth_stats の報酬（会話の最後にまとめて付く）
-  if (meta.add_stat) applyStats(meta.add_stat);
-  if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
-  if (r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
+  if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
+  if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
+  if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
@@ -270,7 +280,7 @@ function finish() {
   layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
-  r.resolve({ id: r.id, visited: r.visited });
+  r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
 
 function advance() {

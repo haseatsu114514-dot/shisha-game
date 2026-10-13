@@ -204,7 +204,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function tick(now) {
     if (phase === "closed") return;
-    if (!host.isConnected) { cleanup(false); return; }
+    if (!host.isConnected || !root.isConnected) { cleanup(false); return; }
     const delta = stamp === null ? 0 : Math.min(50, Math.max(0, now - stamp)); stamp = now;
     if (!document.hidden) elapsed += delta;
     if (phase === "flight" && !document.hidden) {
