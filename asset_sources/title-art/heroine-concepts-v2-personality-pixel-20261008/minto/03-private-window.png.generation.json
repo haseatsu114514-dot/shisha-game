@@ -9,7 +9,7 @@
     "../heroine-concepts-v1-20261008/references/minto-private.png"
   ],
   "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
-  "prompt_sha256": "657c0a6adc9a02e3950e4f8d58ae220102f782e65c9237fbe191f9e9b67f8c3e",
+  "prompt_sha256": "ff5a0f522e10c2eedb186c2d752dc4ae56b36555883c2299e049499f604fdfbf",
   "reference_sha256": {
     "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
     "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
@@ -22,5 +22,11 @@
   "mode": "RGB",
   "tool": "image_gen.imagegen",
   "transparent_background": false,
-  "runtime_installed": false
+  "runtime_installed": false,
+  "original_prompt_sha256": "657c0a6adc9a02e3950e4f8d58ae220102f782e65c9237fbe191f9e9b67f8c3e",
+  "prompt_revision": {
+    "date": "2026-10-12",
+    "issue": 485,
+    "note": "Brief identity wording corrected for reuse to the current black straight long hair. The source image has not been regenerated; original_prompt_sha256 retains its generation prompt hash."
+  }
 }

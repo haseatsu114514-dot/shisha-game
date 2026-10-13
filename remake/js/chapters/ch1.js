@@ -1,4 +1,4 @@
-// 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
+// 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
@@ -10,6 +10,7 @@ import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
+import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/night-events.js";
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
@@ -19,7 +20,7 @@ import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
-import { newSession, openBench, tickerSay, waitBenchReady } from "../craft/session.js";
+import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
@@ -28,13 +29,16 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
-import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
+import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
+import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
+import { chooseDrill } from "../daily/tonari.js";
 import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
+import { craftRecognition } from "../craft/recognition.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -49,25 +53,35 @@ export function setupHooks() {
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
-    .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "日常の風景")
+    .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "記憶と気配の交差")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
   // 交友の締めくくり: lover / romance_open。story_seen は固有会話を読んだか（約束・既知の話の分岐）
   hooks.evalCondition = (line) => line.condition_type === "story_seen" ? storySeen(line.dialogue) : bondCondition(line);
   hooks.onChoice = (dialogueId, choiceId, branch, nextId, choice, line) => {
     // 途中の質問・締めくくりの最後の質問（choice.romance＝隠し恋愛値。選択肢 id ごとに一度だけ）
     recordRomanceChoice(line, choice);
+    // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
+    if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
+      const progress = openingProgress();
+      progress.tutorialChoice = branch;
+      if (branch === "practice") setFlag("_tutorial_requested");
+      else delete state.flags._tutorial_requested;
+      save();
+    }
     // チョイザップ入会（月額4,000円）
     if (dialogueId === "ch1_choizap_first" && branch === "register") {
       addMoney(-4000);
       setFlag("_gym_member");
     }
-    // 大会前夜の過ごし方（練習=本番に小ボーナス／スミさん=根性／早寝=体力全快）
+    // 選択だけを保存する。報酬・補正・読了は、実際の練習/会話を終えてから。
     if (dialogueId === "ch1_day7_last_night") {
-      state.flags._last_night = branch;
-      if (branch === "sleep_early") {
-        addStamina(maxStamina() - state.stamina);
-        state.flags._home_tonight = true; // 自室で寝た後に帰り道を重ねない。
-      }
+      state.flags._ch1_eve = { choice: branch };
+      save();
+    }
+    const preparationKey = { remake_preparation_review: "_ch1_early", remake_preparation_retry: "_ch1_early", remake_midcheck_review: "_ch1_mid" }[dialogueId];
+    if (preparationKey) {
+      (state.flags[preparationKey] ||= {}).choice = branch;
+      save();
     }
   };
 }
@@ -76,71 +90,120 @@ export function setupHooks() {
 
 export async function startNewGame() {
   setupHooks();
-  clearScreen();
-  stopBgm();
-  await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
-  // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
-  // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
-  const scene = mountColdOpen();
-  const co = DB.dialogues.ch1_cold_open;
-  await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
-  scene.stop();
-  await sleep(600);
-  await chapterTitle({ no: "第一章", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" });
-  playBgm("tonari");
-  await play("ch1_opening", { bg: TONARI });
+  state.flags._ch1_opening = {};
   save();
+  await openingPart();
+  await dailyPart();
+}
+
+function openingProgress() {
+  // 旧版で opening が保存されるのは ch1_opening を読み終えてから。
+  // 練習や接客の読了はここから推測せず、残りの場面を実際に読む。
+  return state.flags._ch1_opening ||= { introDone: true };
+}
+
+async function openingPart() {
+  const progress = openingProgress();
+  clearScreen();
+  if (!progress.introDone) {
+    stopBgm();
+    await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
+    // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
+    // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
+    const scene = mountColdOpen();
+    await scene.ready;
+    const co = DB.dialogues.ch1_cold_open;
+    await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
+    scene.stop();
+    await sleep(600);
+    await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
+    playBgm("tonari");
+    await play("ch1_opening", { bg: TONARI });
+    progress.introDone = true;
+    save();
+  }
+  playBgm("tonari");
   await playTsumugiStory(1); // 初日に取材と連絡先交換。配達・他店のイベントより先に関係を作る。
-  await play("ch1_tsumugi_departure", { bg: TONARI });
-  await play("remake_tutorial_offer", { bg: TONARI });
-  if (flag("_tutorial_requested")) await tutorial();
-  else setFlag("_tutorial_skipped");
-  await play("ch1_tutorial_oneesan", { bg: TONARI });
+  if (!progress.departureDone) {
+    await play("ch1_tsumugi_departure", { bg: TONARI });
+    progress.departureDone = true;
+    save();
+  }
+  // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
+  progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
+    : flag("_tutorial_skipped") ? "skip" : null;
+  if (!progress.offerDone) {
+    const offer = DB.dialogues.remake_tutorial_offer;
+    await play(progress.tutorialChoice
+      ? { ...offer, lines: offer.branches[progress.tutorialChoice], branches: {} }
+      : "remake_tutorial_offer", { bg: TONARI });
+    progress.offerDone = true;
+    save();
+  }
+  if (progress.tutorialChoice === "practice") await tutorial(progress);
+  else {
+    setFlag("_tutorial_skipped");
+    save();
+  }
+  if (!progress.oneesanDone) {
+    await play("ch1_tutorial_oneesan", { bg: TONARI });
+    progress.oneesanDone = true;
+    save();
+  }
   state.phase = "daily";
   state.statsAtChapterStart = { ...state.stats };
   save();
-  await dailyPart();
 }
 
 export async function resumeGame() {
   setupHooks();
   if (state.phase === "cleared") return showClear();
+  if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
-  if (state.phase === "opening") state.phase = "daily";
+  if (state.phase === "opening") await openingPart();
   await dailyPart();
 }
 
 async function dailyPart() {
-  await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
+  syncNightQueue(NIGHT_EVENTS);
+  const deferFlags = state.deferredNightEvents.filter((entry) => entry.chapter === state.chapter).flatMap((entry) => entry.doneKeys || []);
+  await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N), deferFlags });
   await runDaily({ nightEvents: NIGHT_EVENTS });
   await tournamentDay();
 }
 
 // ---------------------------------------------------------------- チュートリアル（スミさんの手本つきの通し）
 
-async function tutorial() {
-  await play("remake_tutorial_intro", { bg: TONARI });
-  const cs = newSession("tutorial");
-  openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
-  await stepMix(cs);
-  await stepPack(cs);
-  await runHoles(cs);
-  await stepPlace(cs);
-  await runHeat(cs);
-  await stepSteamTime(cs);
-  await runSteamDodge(cs);
-  await runPull(cs);
-  // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
-  while (cs.failed) {
-    await play("remake_tutorial_burnt", { bg: TONARI });
-    Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
+async function tutorial(progress = null) {
+  if (!progress || !flag("_tutorial_done")) {
+    await play("remake_tutorial_intro", { bg: TONARI });
+    const cs = newSession("tutorial");
     openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+    await stepMix(cs);
+    await stepPack(cs);
+    await runHoles(cs);
+    await stepPlace(cs);
+    await runHeat(cs);
+    await stepSteamTime(cs);
+    await runSteamDodge(cs);
     await runPull(cs);
+    // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
+    while (cs.failed) {
+      await play("remake_tutorial_burnt", { bg: TONARI });
+      Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
+      openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+      await runPull(cs);
+    }
+    recordPractice(cs, "tutorial");
+    state.flags._tutorial_done = true;
+    delete state.flags._tutorial_skipped;
+    save();
   }
-  recordPractice(cs, "tutorial");
-  state.flags._tutorial_done = true;
-  delete state.flags._tutorial_skipped;
-  await play("remake_tutorial_result", { bg: TONARI });
+  if (!progress?.tutorialResultRead) {
+    await play("remake_tutorial_result", { bg: TONARI });
+    if (progress) progress.tutorialResultRead = true;
+    save();
+  }
   retire(layers.screen.querySelector(":scope > .bench")); // 次の会話（お姉さん）の後ろに作業台を残さない
 }
 
@@ -158,66 +221,161 @@ const sketchScene = (id, bg) => async () => {
   await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
   await play(id, { bg });
 };
-const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, done: () => flag(key) });
+const once = (key, fn) => ({ id: key, doneKeys: [key], run: async () => { await fn(); setFlag(key); }, done: () => flag(key) });
 
-const NIGHT_EVENTS = {
-  2: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
-  3: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後は作業台で練習する──",
+export const NIGHT_EVENTS = {
+  2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
+    label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
     run: async () => {
       await playTsumugiStory(3);
       if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
     } },
-  5: { pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
-  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し。準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
-  9: { pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
-  10: { pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  11: { pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
+  5: { label: "スミさんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
+  7: { schedule: "preparation", deadline: 12, prerequisites: ["_ev_first_practice", "_tsumugi_contest_progress"],
+    label: "中間準備", pin: "tonari", teaser: "tonari", beat: "大会への準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
+  9: { label: "出場者説明会", pin: "c_station", teaser: "C.STATION", beat: "夜。出場者説明会の時間に合わせて、C.STATIONへ──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
+  10: { label: "常連さんの変化", schedule: "regular", prerequisites: ["_ev_salaryman"], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの様子が気になって、tonariへ──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
+  11: { id: "_ev_tsumugi_sketch", doneKeys: ["_ev_tsumugi_sketch", "_tsumugi_contest_submitted"], label: "つむぎの応募", pin: "tonari", teaser: "tonari", beat: "夜。つむぎが描き終えた絵を見に、閉店間際のtonariへ──",
     done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
     run: async () => {
       await playTsumugiStory(11, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
       setFlag("_ev_tsumugi_sketch");
     } },
-  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。最後の確認をしにtonariへ。店の作業台で、前日リハーサル──",
-    done: () => flag("_ev_rehearsal") && flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
+  [TOURNAMENT_DAY - 1]: { id: "_ev_rehearsal", doneKeys: ["_ev_last_night", "_tsumugi_contest_eve"], label: "大会前夜", pin: "tonari", teaser: "tonari", beat: "夜。大会前夜のtonariへ。今夜の過ごし方を考える──",
+    done: () => flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
     run: async () => {
       await playTsumugiStory(TOURNAMENT_DAY - 1);
-      if (!flag("_ev_rehearsal")) await once("_ev_rehearsal", rehearsal).run();
       await lastNight();
     } },
 };
 
 async function lastNight() {
-  if (!flag("_ev_last_night")) await once("_ev_last_night", nightScene("ch1_day7_last_night", BG("bg_home_night"))).run();
+  // 旧セーブの読了は維持。通し練習がなくても、過ごし方を終えた夜へ戻さない。
+  if (flag("_ev_last_night")) return;
+  const dialogue = DB.dialogues.ch1_day7_last_night;
+  if (!state.flags._ch1_eve?.choice) {
+    // 既存のVN選択を使い、分岐会話は実作業の後に読む。
+    await play({ ...dialogue, branches: {} }, { bg: TONARI_N });
+  }
+  const progress = state.flags._ch1_eve;
+  if (progress.choice === "practice") await rehearsal(progress);
+  if (progress.choice === "drill" && !progress.practiceDone) {
+    if (!progress.drill) { progress.drill = await chooseDrill(); save(); }
+    beginEvePractice(progress);
+    const tier = await runDrill(progress.drill);
+    state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
+    progress.practiceDone = true;
+    save();
+  }
+  // 報酬キューは分岐の末尾でVNが一度だけ適用する（コード側では加算しない）。
+  await play({ dialogue_id: `${dialogue.dialogue_id}_${progress.choice}`, lines: dialogue.branches[progress.choice] }, { bg: TONARI_N });
+  state.flags._last_night = progress.choice;
+  if (progress.choice === "sleep_early") {
+    addStamina(maxStamina() - state.stamina);
+    state.flags._home_tonight = true;
+  }
+  setFlag("_ev_last_night");
+  save();
+}
+
+function beginEvePractice(progress) {
+  // 中断した制作は初めから。保存途中の消耗を重ねず、完了済みの制作は呼ばない。
+  progress.staminaBefore ??= state.stamina;
+  state.stamina = progress.staminaBefore;
+  save();
 }
 
 async function earlyPractice() {
-  await play("remake_preparation_first", { bg: TONARI_N });
-  await runFullPractice({ coached: true, adjustments: false, kind: "early" });
+  const progress = state.flags._ch1_early ||= {};
+  if (!progress.choice) {
+    if (basicsExperienced() || fullPracticeToday()) {
+      const id = basicsExperienced() ? "remake_preparation_review" : "remake_preparation_retry";
+      await play({ ...DB.dialogues[id], branches: {} }, { bg: TONARI_N });
+    } else {
+      await play("remake_preparation_first", { bg: TONARI_N });
+      progress.choice = "full";
+      save();
+    }
+  }
+  if (!progress.practiceDone && progress.choice !== "review") {
+    if (progress.choice === "drill" && !progress.drill) {
+      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はtonariでいつでもできます。", recommended: recommendedDrill() });
+      save();
+    }
+    beginEvePractice(progress);
+    if (progress.choice === "full") {
+      const cs = await runFullPractice({ coached: true, adjustments: false, kind: "early" });
+      progress.failed = cs.failed || null;
+    } else {
+      const tier = await runDrill(progress.drill);
+      state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
+    }
+    progress.practiceDone = true;
+    save();
+  }
+  if (progress.feedbackRead) return;
+  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+  if (progress.choice === "review") await play("remake_preparation_confirm", { bg: TONARI_N });
   await play("remake_preparation_first_end", { bg: TONARI_N });
+  progress.feedbackRead = true;
+  save();
 }
 
 async function midPreparation() {
-  await play("remake_midcheck_intro", { bg: TONARI_N });
-  await prepareFlavorStock();
-  const cs = await runFullPractice({ kind: "midcheck" });
-  await play(cs.failed ? "remake_rehearsal_burnt" : "remake_midcheck", { bg: TONARI_N });
+  const progress = state.flags._ch1_mid ||= {};
+  if (!progress.introRead) {
+    await play("remake_midcheck_intro", { bg: TONARI_N });
+    progress.introRead = true;
+    save();
+  }
+  if (!progress.stockDone) { await prepareFlavorStock(); progress.stockDone = true; save(); }
+  if (!progress.choice) {
+    if (careExperienced()) await play({ ...DB.dialogues.remake_midcheck_review, branches: {} }, { bg: TONARI_N });
+    else { progress.choice = "care"; save(); }
+  }
+  if (!progress.practiceDone && progress.choice !== "stock") {
+    beginEvePractice(progress);
+    const cs = progress.choice === "full" ? await runFullPractice({ kind: "midcheck" }) : await runCarePractice({ kind: "midcheck" });
+    progress.failed = cs.failed || null;
+    progress.practiceDone = true;
+    save();
+  }
+  if (progress.feedbackRead) return;
+  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+  await play("remake_midcheck", { bg: TONARI_N });
+  progress.feedbackRead = true;
+  save();
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
-async function rehearsal() {
-  await prepareFlavorStock();
-  await play("remake_rehearsal_intro", { bg: TONARI_N });
-  const cs = await runFullPractice({ kind: "rehearsal" });
-  if (cs.failed) {
-    state.rehearsal = "rough";
-    await play("remake_rehearsal_burnt", { bg: TONARI_N });
-    return;
+async function rehearsal(progress = null) {
+  // 旧 _ev_rehearsal は実制作・結果会話まで完了済み。二台目を強制しない。
+  if (progress && flag("_ev_rehearsal") && !progress.practiceDone) return;
+  let result = progress?.result;
+  if (!progress?.practiceDone) {
+    await prepareFlavorStock();
+    await play("remake_rehearsal_intro", { bg: TONARI_N });
+    if (progress) beginEvePractice(progress);
+    const cs = await runFullPractice({ kind: "rehearsal" });
+    if (cs.failed) {
+      state.rehearsal = "rough";
+      result = "burnt";
+    } else {
+      const shisha = computeShisha(cs);
+      const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
+      result = state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
+    }
+    if (progress) {
+      Object.assign(progress, { practiceDone: true, result });
+      setFlag("_ev_rehearsal"); // 実制作の記録。会話・睡眠・ドリルでは立てない。
+      save();
+    }
   }
-  const shisha = computeShisha(cs);
-  const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
-  state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
-  await play(`remake_rehearsal_${state.rehearsal}`, { bg: TONARI_N });
+  if (progress?.feedbackRead) return;
+  await play(`remake_rehearsal_${result}`, { bg: TONARI_N });
+  if (progress) { progress.feedbackRead = true; save(); }
 }
 
 // ---------------------------------------------------------------- 大会当日
@@ -226,6 +384,11 @@ const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includ
 const STEPS_ALL = CRAFT_STEPS;
 
 async function tournamentDay() {
+  // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
+  syncNightQueue(NIGHT_EVENTS, { resting: false });
+  await runNightPlan(NIGHT_EVENTS, async () => {
+    await play({ dialogue_id: "remake_rest_preparation_catchup", lines: [{ speaker: "", text: "大会に出る前に、スミさんと残っていた準備を確かめた。" }] });
+  });
   await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
   if (state.phase !== "tournament") {
@@ -299,7 +462,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, (cs.holes.score + cs.heat.score) / 2);
+  await showStandings(1, (cs.holes.score + cs.heat.score) / 2, cs);
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -314,7 +477,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3);
+  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3, cs);
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -329,7 +492,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4);
+    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4, cs);
   }
 
   // 審査は完成品と2回の調整の実績で決まる。
@@ -350,7 +513,7 @@ async function tournamentDay() {
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
-    await victory();
+    await victory(cs);
   } else {
     await resultCountdown(cs, out.kind);
     retireScreen();
@@ -393,7 +556,8 @@ async function entrance() {
 
 // ---------------------------------------------------------------- 優勝のあと
 
-async function victory() {
+async function victory(cs) {
+  const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   await play("ch1_tournament_after", { bg: STAGE });
@@ -402,6 +566,7 @@ async function victory() {
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
         "おう。優勝、見事だった",
+        ...(recognition?.comment ? [recognition.comment] : []),
         "……で、だ。開示された採点表、もう見たか",
         "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
         "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
@@ -411,14 +576,24 @@ async function victory() {
     },
     {
       id: "_sys_unknown_recorded", sender: "???", messages: [
-        "SMOKE CROWN CUP 優勝、おめでとうございます。",
         "本日のあなたの試合データは、すべて記録させていただきました。",
-        "炭の配置、蒸らし時間、引きの圧、提供時の所作。──実に興味深い。",
-        "また、お会いしましょう。",
       ], close_label: "……誰？",
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
   await play("ch1_naru_promise");
+  state.phase = "aftermath";
+  save();
+  await finishAfterTournament();
+}
+
+async function finishAfterTournament() {
+  showHud(false);
+  state.restDay = null; // 大会を終え、体調が戻った後の補完。発病当日の参加はここまで。
+  setFlag("_rest_after_tournament");
+  await finishDeferredNights(NIGHT_EVENTS, async () => {
+    await play({ dialogue_id: "remake_rest_after_tournament", lines: [{ speaker: "", text: "大会を終えて、体調が戻った後。休養で見送ったtonariの予定を、改めて訪ねた。" }] });
+  });
+  delete state.flags._rest_after_tournament;
   state.phase = "cleared";
   save();
   await bannersIdle();

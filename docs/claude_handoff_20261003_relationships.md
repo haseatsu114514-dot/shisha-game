@@ -69,7 +69,7 @@
 
 ### 3. サメちゃんの身長
 
-`data/dialogue/kafuka.json` の `profile.height_cm: 162` を156へ。初回の名乗りを前倒ししたり、恋愛を突然解禁したりしない。画像の作り直しは今回依頼されていない。
+`data/dialogue/samechan.json` の `profile.height_cm: 162` を156へ。初回の名乗りを前倒ししたり、恋愛を突然解禁したりしない。画像の作り直しは今回依頼されていない。
 
 ### 4. MAXイベント・途中の恋愛分岐
 
@@ -157,7 +157,7 @@ node remake/test/relationship_memories.mjs
 node --experimental-vm-modules remake/test/data_loading.mjs
 node --experimental-vm-modules remake/test/daily_consistency.mjs
 node --experimental-vm-modules remake/test/foil_holes.mjs
-node --experimental-vm-modules remake/test/kafuka_story.mjs
+node --experimental-vm-modules remake/test/samechan_story.mjs
 node --experimental-vm-modules remake/test/lime_consistency.mjs
 node web/test/playthrough.mjs
 node web/test/ch2.mjs
@@ -165,6 +165,6 @@ node web/test/screenshots.mjs
 node web/test/relationship_memories.mjs
 ```
 
-- この文書作成時はゲームを変更していないため、ゲームのテストを再実行していない。以前のmain監査ではVMの `data_loading / daily_consistency / foil_holes / kafuka_story / lime_consistency` はPASS、ブラウザ通しテストや実機の今回の新機能は未検証。
+- この文書作成時はゲームを変更していないため、ゲームのテストを再実行していない。以前のmain監査ではVMの `data_loading / daily_consistency / foil_holes / samechan_story / lime_consistency` はPASS、ブラウザ通しテストや実機の今回の新機能は未検証。
 - 当Macの通常Node環境では `playwright` と `/opt/node22/lib/node_modules/playwright` が見つからなかった。テスト依存を確認し、未実行をPASS扱いにしない。8123のサーバーが古いworktreeを公開していないか確認する。
 - 完了報告では、実装した項目・保留した項目と理由、テスト結果、PR URL、mainへのマージ結果を記載する。データだけの準備、ローカル実装、GitHub main、公開Pagesを分ける。

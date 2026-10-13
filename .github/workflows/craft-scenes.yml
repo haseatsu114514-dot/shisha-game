@@ -1,0 +1,58 @@
+name: Craft scene readiness and actions
+on:
+  pull_request:
+    paths:
+      - "remake/js/craft/worker*.js"
+      - "remake/js/craft/readiness.js"
+      - "remake/js/craft/session.js"
+      - "remake/js/craft/holes.js"
+      - "remake/css/worker-scenes.css"
+      - "remake/index.html"
+      - "remake/data/manifest.json"
+      - "remake/img/ui/making/hajime_craft_*"
+      - "remake/test/browser/worker_scenes.mjs"
+      - "remake/test/foil_holes.mjs"
+      - ".github/workflows/craft-scenes.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Check production scenes and readiness
+        env:
+          TEST_REF: ${{ github.sha }}
+          ARTIFACT_DIR: ${{ runner.temp }}/craft-scenes
+          SHOTS: ${{ runner.temp }}/craft-scenes/screens
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/scene-preview.log" 2>&1 &
+          python3 - <<'PY'
+          import time, urllib.request
+          for attempt in range(50):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:8123/remake/", timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.1)
+          else:
+              raise SystemExit("Preview server did not start")
+          PY
+          node remake/test/browser/worker_scenes.mjs
+          node --experimental-vm-modules remake/test/foil_holes.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: craft-scenes
+          path: ${{ runner.temp }}/craft-scenes
+          if-no-files-found: error

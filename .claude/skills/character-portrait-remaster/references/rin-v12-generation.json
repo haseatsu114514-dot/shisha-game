@@ -51,17 +51,17 @@
         "images": 6
       },
       {
-        "id": "kafuka-v2",
+        "id": "samechan-v2",
         "status": "approved",
         "images": 1
       },
       {
-        "id": "kafuka-game-v2",
+        "id": "samechan-game-v2",
         "status": "approved",
         "images": 5
       },
       {
-        "id": "kafuka-excited-v3",
+        "id": "samechan-excited-v3",
         "status": "approved",
         "images": 2
       },
@@ -168,8 +168,8 @@
         ]
       },
       {
-        "group": "kafuka-v2",
-        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+        "group": "samechan-v2",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/samechan-v2-sheet.png",
         "crop": [
           94,
           70,
@@ -178,8 +178,8 @@
         ]
       },
       {
-        "group": "kafuka-game-v2",
-        "source": "/workspace/shisha-game/assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "group": "samechan-game-v2",
+        "source": "/workspace/shisha-game/assets/sprites/characters/samechan/chr_samechan_normal.png",
         "crop": [
           348,
           259,
@@ -188,8 +188,8 @@
         ]
       },
       {
-        "group": "kafuka-excited-v3",
-        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/kafuka-excited-v3.png",
+        "group": "samechan-excited-v3",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/samechan-excited-v3.png",
         "crop": [
           403,
           0,

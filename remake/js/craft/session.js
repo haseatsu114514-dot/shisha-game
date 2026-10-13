@@ -116,7 +116,7 @@ export function openBench(cs, { steps = [] } = {}) {
   root.append(loading);
   root.inert = true;
   root.setAttribute("aria-busy", "true");
-  const ready = Promise.all([bg(), warmCraftAssets(cs.mode)]).finally(() => {
+  const ready = Promise.all([bg(), warmCraftAssets(cs.mode), worker.ready]).finally(() => {
     root.inert = false;
     root.removeAttribute("aria-busy");
     loading.remove();
@@ -134,9 +134,9 @@ export function benchRoot(cs) {
 }
 
 /** 工程の見出しを切り替え、パネルを空にして返す */
-export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText } = {}) {
+export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
-  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[id] : null;
+  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.open = false;
@@ -145,15 +145,16 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
     : hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
-  b.audience?.setStep(hintText, id);
+  // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
+  // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
+  const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;
+  b.audience?.setStep(coaching, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
-  b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
-  b.worker.setDraw(null);
-  b.worker.setMental("steady");
+  b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
@@ -172,6 +173,10 @@ export function setBenchTemperature(cs, temp) {
 /** 吸い出し・熱管理の一口を左の作業風景へつなぐ。今後の吸引動画もこの状態を読む。 */
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
+}
+/** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
+export function setBenchHoleAction(cs, event) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
 }
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
@@ -315,7 +320,7 @@ export const burstBench = (cs) => failBench(cs, "burnt");
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
   if (!bench) return;
-  bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  bench.worker.root.dataset.ready = String(!!(bench.cs.pullDone || bench.cs.practiceSource));
   // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
   // panelの工程IDは結果評価が参照するためpullのまま保持する。
   if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {
@@ -325,7 +330,7 @@ export function refreshBench() {
     bench.guide.root.open = false;
     bench.guide.root.hidden = true;
     bench.root.dataset.step = "serve";
-    bench.worker.root.dataset.step = "serve";
+    bench.worker.setStep("serve");
     bench.worker.caption.textContent = "シーシャを提供した";
   }
 }

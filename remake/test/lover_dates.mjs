@@ -1,9 +1,9 @@
-// Data-level regression test for all six romance dates.
+// Data-level regression test for all seven romance dates.
 // Run: node remake/test/lover_dates.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const data = JSON.parse(readFileSync(new URL("../data/lover.json", import.meta.url), "utf8"));
-const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro"];
+const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro", "samechan"];
 const allowedStats = new Set(["sense", "charm", "insight", "technique", "guts"]);
 for (const id of ids) {
   const scene = data.dates?.[id];
@@ -25,4 +25,4 @@ const dialogue = [mashiro.arrive.text, mashiro.mid.text, mashiro.optA.line, mash
 assert.ok(dialogue.includes("はじめくん"));
 assert.ok(dialogue.includes("僕"));
 assert.doesNotMatch(dialogue, /わたし|私|はじめさん|蒸野くん/);
-console.log("OK: all six romance dates have complete data and Mashiro's voice is consistent");
+console.log("OK: all seven romance dates have complete data and Mashiro's voice is consistent");

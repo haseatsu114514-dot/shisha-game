@@ -3,7 +3,7 @@ import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
-import { conditionForRatio } from "./condition.js";
+import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -101,7 +101,7 @@ export function earnStat(key, amount = 1) {
 }
 
 /** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null } = {}) {
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
@@ -110,7 +110,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
   finally { earningAction = parent; }
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
-  if (action.spent > 0) {
+  if (action.spent > 0 || consumed(value)) {
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
     const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];
@@ -131,11 +131,12 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori", "samechan"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
   tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
+  samechan: "bond_q1_samechan",
 });
 const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];
 const waitingKey = (id) => `_${id}_affinity_waiting_pts`;
@@ -320,7 +321,11 @@ export function staminaAfter(n) {
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();
-export const currentCondition = () => conditionForRatio(staminaRatio());
+export const currentCondition = () => {
+  const sick = state.restDay;
+  return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
+    || conditionForRatio(staminaRatio());
+};
 
 // ---------------------------------------------------------------- お金
 

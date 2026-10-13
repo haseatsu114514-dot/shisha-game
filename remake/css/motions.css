@@ -10,3 +10,13 @@
 .mo-back { position: absolute; inset: 0; }
 .mg-kinetic { display: inline-flex; overflow: hidden; padding-block: 0.08em; }
 .mg-char { display: inline-block; transform: translateY(110%); opacity: 0; }
+/* LIME交換。文字は画像に焼き込まず、現在の呼び名を表示する。 */
+.mo-lime-cards { position: absolute; inset: 210px 0 auto; display: flex; justify-content: center; gap: 280px; }
+.mo-lime-card { width: 200px; height: 250px; border: 2px solid #b9e6d4; border-radius: 24px; background: #302747; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; box-shadow: 0 12px 40px #0008; }
+.mo-lime-card img, .mo-lime-avatar { width: 90px; height: 90px; border-radius: 50%; background: #504367; object-fit: cover; }
+.mo-lime-avatar { display: grid; place-items: center; font-size: 48px; color: #f4ecdf; }
+.mo-lime-card b { font-size: 28px; color: #f4ecdf; }
+.mo-lime-card > span:last-child { font-size: 18px; letter-spacing: .2em; color: #b9e6d4; }
+.mo-lime-title { position: absolute; top: 510px; width: 100%; text-align: center; color: #f4ecdf; opacity: 0; }
+.mo-lime-title small { display: block; color: #b9e6d4; letter-spacing: .3em; font-size: 20px; margin-bottom: 12px; }
+.mo-lime-title strong { font-size: 36px; }

@@ -100,9 +100,9 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
       { at: 17.1, face: "excited", text: "ほら、コンティニュー！ いっけえええ！" },
     ],
   },
-  kafuka: {
-    id: "premium_kafuka", title: "サメの王からの緊急命令", name: "サメちゃん",
-    bio: "恋人 / SHISHARK", speaker: "kafuka", duration: 20, audio: null,
+  samechan: {
+    id: "premium_samechan", title: "サメの王からの緊急命令", name: "サメちゃん",
+    bio: "恋人 / SHISHARK", speaker: "samechan", duration: 20, audio: null,
     reactions: {
       retry: { text: ["おおっ！ それでこそ、わしの……", "いや、コロちゃんの勇者じゃ！", "いざ、再出航じゃ！"], faces: ["surprise", "excited"], effect: "shark", word: "再出航じゃ！" },
       quit: { text: ["……うむ。サメも休むときは休むのじゃ。", "コロちゃんも『よくやった』と申しておる。"], faces: ["normal", "smile"], effect: "shark", word: "よくやった" },

@@ -1,0 +1,321 @@
+{
+  "issue": 415,
+  "pull_request": 441,
+  "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+  "worker": "codex-trailer415-20261013-01a130ab",
+  "claim_run": 38268614301,
+  "validated_run": 38302513904,
+  "style_revision": "cel-1992-v2",
+  "composition_revision": "Minto solo close-up; other five layouts retained",
+  "status": "concept_merge_authorized",
+  "merge_allowed": true,
+  "generator": "built-in image_gen.imagegen",
+  "dimensions": [
+    1664,
+    936
+  ],
+  "postprocessing": "sips center crop only; 8 px horizontal / 5 px vertical removed; no upscale, color filter or retouch",
+  "scope": "Chapter 2 cinematic scenes; owner-directed revision from initial six-character brief",
+  "shots": [
+    {
+      "slug": "01-sumi-silence",
+      "title": "スミの沈黙",
+      "ids": [
+        "sumi",
+        "hajime"
+      ],
+      "source": "data/dialogue/ch2_main.json#ch2_sumi_silence",
+      "summary": "閉店後のtonari。戸口で止まったはじめが、スミと常連の会話を聞く。炭を置き直す手と、会話に入れない距離を描く。",
+      "background": "tonari-night.png",
+      "camera": "戸口から50mm、斜めの肩越し。2〜3%だけ静かに寄る。",
+      "motion": "スミは炭を1個置き直し、手を止める。はじめは動かない。",
+      "environment": "背景は暗い色面と既存の素材に抑える。窓や棚の配置を足さない。",
+      "effects": "換気で残留煙がゆっくり流れる。HMDから煙は出さない。",
+      "seconds": 6,
+      "qa": "帽子・角眼鏡・髭・炭を扱う5指を確認。受け皿と脚付きボウルを修正。HMD内1炭＋トング1炭、1本のホースを両方向へ追跡。 新版でセル画の線・2段の硬い影・髪の塊・筆描き背景を確認。",
+      "file": "images/01-sumi-silence.png",
+      "original": "originals/01-sumi-silence.png",
+      "prompts": [
+        "prompts/01-sumi-silence.txt",
+        "prompts/01-sumi-silence.edit-02.txt",
+        "style-v2/prompts/01-sumi-silence.txt"
+      ],
+      "generated_file": "01-sumi-silence.png",
+      "reference_files": [
+        "references/sumi-normal.png",
+        "references/hajime-normal.png"
+      ],
+      "face_comparison": "qa/01-sumi-silence-face-comparison.jpg",
+      "image_sha256": "9c7563040d0515d95cf11c690272ce36ca018eb5b91f7ef32912f8618b5125f8",
+      "original_sha256": "18e0f2958ef174bd1ab51b49cce981542f6868841f83088d93b5469e1c09f4a1",
+      "review": "manual visual inspection passed for owner-review candidate",
+      "location_reference": "references/tonari-night.png"
+    },
+    {
+      "slug": "02-naru-confrontation",
+      "title": "なるとの衝突",
+      "ids": [
+        "naru",
+        "hajime"
+      ],
+      "source": "data/dialogue/ch2_isolation.json#ch2_naru_confrontation",
+      "summary": "ケムリクサでの言い争いの直後。なるは声を荒げず、磨いていたボウルを置いて距離を取る。はじめの肩越しに、その間を見せる。",
+      "background": "kemurikusa.png",
+      "camera": "70mmの肩越しを固定。終わりだけピントをなるからボウルへ移す。",
+      "motion": "なるがボウルを置き、顔を少し戻して奥へ向きを変える。",
+      "environment": "緑の壁と木の材質だけを低コントラストで示す。",
+      "effects": "銀髪の縁に小さな暖色の反射。大きな光の変化は入れない。",
+      "seconds": 5,
+      "qa": "銀髪・琥珀の目・白黒ジャケット・橙の襟を照合。初版の飲み物用カップ形状を、中央穴と細い脚のあるファンネルへ修正。冷たい単体ボウルに炭やHMDはない。 新版でセル画の線・2段の硬い影・髪の塊・筆描き背景を確認。",
+      "file": "images/02-naru-confrontation.png",
+      "original": "originals/02-naru-confrontation.png",
+      "prompts": [
+        "prompts/02-naru-confrontation.txt",
+        "prompts/02-naru-confrontation.edit-02.txt",
+        "style-v2/prompts/02-naru-confrontation.txt"
+      ],
+      "generated_file": "02-naru-confrontation.png",
+      "reference_files": [
+        "references/naru-normal.png",
+        "references/hajime-normal.png"
+      ],
+      "face_comparison": "qa/02-naru-confrontation-face-comparison.jpg",
+      "image_sha256": "ddcdeaaa64505ab095619977528d9c8141e5fb724e27406d0fb19939ad8b74c5",
+      "original_sha256": "21e5f453188de0bd5414a1425efb3e8896e57633c0a2a9c6d2c551b478e08f83",
+      "review": "manual visual inspection passed for owner-review candidate",
+      "location_reference": "references/kemurikusa.png"
+    },
+    {
+      "slug": "03-minto-warning",
+      "title": "みんとの忠告",
+      "ids": [
+        "minto"
+      ],
+      "source": "data/dialogue/ch2_isolation.json#ch2_minto_warning",
+      "summary": "ぺぱーみんとのカウンター。みんとが営業の笑顔をふっと緩め、画面外のはじめへ気遣いを向ける。横顔と目元だけに寄る。",
+      "background": "peppermint.png",
+      "camera": "一人の横顔に寄る。右の余白を残し、小さく目元へ寄る。",
+      "motion": "みんとが小さく視線を落とし、声をかけた後の笑顔を残す。",
+      "environment": "正式背景のミント色・クリーム色・淡いピンクを浅いピントで残す。新しい窓や扉を作らない。",
+      "effects": "髪の輪郭へ控えめな暖色光。アクセサリーを発光させない。",
+      "seconds": 5,
+      "qa": "黒髪・緑の目・角/蝙蝠・胸リボン/ハート・緑のハートチョーカーを照合。つむぎと似ていた二人の卓上構図から一人の横顔の寄りへ変更。手元や新しい店舗配置は描かない。",
+      "file": "images/03-minto-warning.png",
+      "original": "originals/03-minto-warning.png",
+      "prompts": [
+        "prompts/03-minto-warning.txt",
+        "prompts/03-minto-warning.edit-02.txt",
+        "style-v2/prompts/03-minto-warning.txt",
+        "style-v2/prompts/03-minto-warning.composition-02.txt"
+      ],
+      "generated_file": "03-minto-warning.png",
+      "reference_files": [
+        "references/minto-normal.png"
+      ],
+      "face_comparison": "qa/03-minto-warning-face-comparison.jpg",
+      "image_sha256": "719a7e6904f6b51efe97f21da1451f1a5b75cb1e05f362a2680360f6a013ea9f",
+      "original_sha256": "c8a52db3b7363dd2b032a04cc8edcec80634b4d06e735e2a3ca8d0ab5fd94e68",
+      "review": "manual visual inspection passed for owner-review candidate",
+      "location_reference": "references/peppermint.png"
+    },
+    {
+      "slug": "04-tsumugi-water",
+      "title": "つむぎが差し出す水",
+      "ids": [
+        "tsumugi",
+        "hajime"
+      ],
+      "source": "data/dialogue/ch2_isolation.json#ch2_tsumugi_color",
+      "summary": "tonariの奥。つむぎは硬い返答をしたはじめに、色の診断をせず、ただ水を寄せる。手の届く距離をテーブルすれすれから描く。",
+      "background": "tonari-night.png",
+      "camera": "テーブルに近い40mm。水の移動へ数cmだけ横移動。",
+      "motion": "つむぎがコップを軽く寄せ、はじめの指がわずかに緩む。手は触れ合わない。",
+      "environment": "正式背景の緑ソファと橙のクッション、木のテーブル周辺だけを見せる。",
+      "effects": "水面が1回だけ小さく揺れ、反射が動く。煙や魔法を増やさない。",
+      "seconds": 6,
+      "qa": "茶のボブ・茶色の瞳・紫パーカーと花刺繍・黒いピアスを照合。コップの両側に指、ガラスと手の前後関係を確認。指の重なりは自然な遮蔽。ソファ/クッションは正式背景の範囲。 新版でセル画の線・2段の硬い影・髪の塊・筆描き背景を確認。",
+      "file": "images/04-tsumugi-water.png",
+      "original": "originals/04-tsumugi-water.png",
+      "prompts": [
+        "prompts/04-tsumugi-water.txt",
+        "prompts/04-tsumugi-water.v2.txt",
+        "style-v2/prompts/04-tsumugi-water.txt"
+      ],
+      "generated_file": "04-tsumugi-water.png",
+      "reference_files": [
+        "references/tsumugi-normal.png",
+        "references/hajime-normal.png"
+      ],
+      "face_comparison": "qa/04-tsumugi-water-face-comparison.jpg",
+      "image_sha256": "6e30832adf9375ee1eb0b0dc3abb67a3e44d680716aa4e4529386fbc7ec27c9f",
+      "original_sha256": "d9eb888ebc9192c58811aa70f6ae11af36cc04d5f4125f85f94305e9baebd174",
+      "review": "manual visual inspection passed for owner-review candidate",
+      "location_reference": "references/tonari-night.png"
+    },
+    {
+      "slug": "05-ageha-departure",
+      "title": "アゲハが去る背中",
+      "ids": [
+        "ageha",
+        "hajime"
+      ],
+      "source": "data/dialogue/ch2_isolation.json#ch2_empty_victory",
+      "summary": "県大会の結果が出た後。アゲハは謝る理由を明かさず、人混みへ去る。はじめの止まった肩と、遠ざかる背中を重ねる。",
+      "background": null,
+      "camera": "85mmの長いレンズ。固定から、小さく背中を追う。",
+      "motion": "アゲハが2歩進み、視線を戻す。機材ケースとツインテールが小さく揺れる。",
+      "environment": "大会会場の脇通路は舞台美術の試作。遠景の人は顔を描き込まない。",
+      "effects": "暖かな会場光から、控えめな寒色の影へ移る。",
+      "seconds": 6,
+      "qa": "金髪の高いツインテール・熊飾り・豹柄・黒スカートとピンク靴を確認。横顔の若さを保持。背中からの構図なので正面の胸飾りは見えない。手とケース、歩行の足を確認。 新版でセル画の線・2段の硬い影・髪の塊・筆描き背景を確認。",
+      "file": "images/05-ageha-departure.png",
+      "original": "originals/05-ageha-departure.png",
+      "prompts": [
+        "prompts/05-ageha-departure.txt",
+        "style-v2/prompts/05-ageha-departure.txt"
+      ],
+      "generated_file": "05-ageha-departure.png",
+      "reference_files": [
+        "references/ageha-normal.png",
+        "references/hajime-normal.png"
+      ],
+      "face_comparison": "qa/05-ageha-departure-face-comparison.jpg",
+      "image_sha256": "3a0b1d8f136ed33db62dd1d6d0982115327bf171c635d0298b78f3cabe9282fb",
+      "original_sha256": "ab79ba01dd0aa16a85670af8b08cbf671e193433a188aa0e963ca3e1c99760db",
+      "review": "manual visual inspection passed for owner-review candidate"
+    },
+    {
+      "slug": "06-empty-victory",
+      "title": "誰もいない優勝",
+      "ids": [
+        "hajime"
+      ],
+      "source": "data/dialogue/ch2_isolation.json#ch2_empty_victory",
+      "summary": "誰もいない控え室。はじめは優勝後も味が戻らず、東京への切符を握ったまま座る。トロフィーと人物の間に、広い空白を置く。",
+      "background": null,
+      "camera": "28mm、戸口の高い位置からの俯瞰。6秒かけてごくゆっくり引く。",
+      "motion": "はじめはほぼ静止。呼吸で肩と切符がわずかに動く。",
+      "environment": "控え室は既存店舗ではない舞台美術の試作。空いた床と席を固定する。",
+      "effects": "寒色の部屋と廊下の暖色を維持。トロフィーの反射だけ小さく動く。",
+      "seconds": 6,
+      "qa": "黒い服・帽子・髪・顔の横向き・首掛けの実体パーツを確認。俯瞰のため顔は小さく、正面顔の詳細一致は最終オーナー確認対象。帽子印と切符の文字を再生成で除去。 新版でセル画の線・2段の硬い影・髪の塊・筆描き背景を確認。",
+      "file": "images/06-empty-victory.png",
+      "original": "originals/06-empty-victory.png",
+      "prompts": [
+        "prompts/06-empty-victory.txt",
+        "prompts/06-empty-victory.edit-02.txt",
+        "style-v2/prompts/06-empty-victory.txt"
+      ],
+      "generated_file": "06-empty-victory.png",
+      "reference_files": [
+        "references/hajime-normal.png"
+      ],
+      "face_comparison": "qa/06-empty-victory-face-comparison.jpg",
+      "image_sha256": "34d3fa1c8a7cc15e08e7c847b5dd43519d7bcd7b8513439f55aa2f6f2ac3ba9f",
+      "original_sha256": "1c6cb522f9e079f456f8d0be1fb5fdf2b19bb5a8ffd00489031e463197e00f0c",
+      "review": "manual visual inspection passed for owner-review candidate"
+    }
+  ],
+  "reference_provenance": [
+    {
+      "copy": "references/sumi-normal.png",
+      "source": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5"
+    },
+    {
+      "copy": "references/hajime-normal.png",
+      "source": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "copy": "references/naru-normal.png",
+      "source": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577"
+    },
+    {
+      "copy": "references/minto-normal.png",
+      "source": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "copy": "references/tsumugi-normal.png",
+      "source": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4"
+    },
+    {
+      "copy": "references/ageha-normal.png",
+      "source": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "copy": "references/ageha-sad.png",
+      "source": "assets/sprites/characters/ageha/chr_ageha_sad.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3"
+    },
+    {
+      "copy": "references/hajime-sad.png",
+      "source": "assets/sprites/characters/hajime/chr_hajime_sad.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758"
+    },
+    {
+      "copy": "references/tonari-night.png",
+      "source": "assets/backgrounds/bg_tonari_inside_night.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238"
+    },
+    {
+      "copy": "references/kemurikusa.png",
+      "source": "assets/backgrounds/kemurikusa.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "2b21b39b1dbfd6075fd5670ff1deaa0903e7febec4f8fed08bec04f9e97b3622"
+    },
+    {
+      "copy": "references/peppermint.png",
+      "source": "assets/backgrounds/peppermint.png",
+      "source_commit": "75dd7bc79ee0c6460acea820fec4d0c4a1283aff",
+      "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
+    }
+  ],
+  "synced_main": "ed022833e826fc408d505b9d225f7e52d2a12b81",
+  "trailer": {
+    "preview": "trailer/index.html",
+    "video": "trailer/teaser-37s.mp4",
+    "sha256": "ecc177ba9b07a7a88a973294dd8087789ec816983a1e2fd9a352a1fa5211dc9f",
+    "duration_seconds": 37,
+    "dimensions": [
+      1280,
+      720
+    ],
+    "fps": 24,
+    "frames": 888,
+    "audio": false,
+    "motion": "still image camera movement and cuts",
+    "manual_player": "typewriter; click/Space/Enter to reveal or advance",
+    "source": "trailer/timeline.js",
+    "game_integration": false,
+    "chapter": {
+      "number": 2,
+      "title": "才能の壁",
+      "subtitle": "Jealousy Haze",
+      "reading": "ジェラシー・ヘイズ",
+      "source": "brand/story_and_structure.md",
+      "source_commit": "5fec373e90cce62fbf50e49bfedea1d47b3b0899"
+    },
+    "font": {
+      "family": "DotGothic16",
+      "file": "trailer/fonts/DotGothic16-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "source": "assets/fonts/DotGothic16-Regular.ttf",
+      "sha256": "92524cf71473014b9988fbcb63ac5cfe045e55944918b021a41f991ca0b6e329"
+    }
+  },
+  "merge_authorization": "Owner explicitly requested merge on 2026-10-13 in this task; no game integration requested"
+}

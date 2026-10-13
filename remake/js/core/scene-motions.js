@@ -14,6 +14,13 @@ const gift = () => import("../motions/gift.js");
 const shift = () => import("../motions/shift.js");
 const shark = () => import("../motions/shark.js");
 const sketch = () => import("../motions/sketch.js");
+const lime = () => import("../motions/lime.js");
+
+export async function limeExchange(charId, context = null) {
+  if (skipMotion()) return;
+  const mod = await lime().catch((e) => { console.error(e); return null; });
+  await mod?.exchange(charId, context);
+}
 
 const skipMotion = () => reducedMotion() || document.body.classList.contains("vn-skip");
 /** 今のパターンの関数。読めなかったときは null（演出を省いて先へ進む） */

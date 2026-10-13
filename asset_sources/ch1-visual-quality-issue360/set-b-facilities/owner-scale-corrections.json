@@ -1,0 +1,73 @@
+{
+  "records": [
+    {
+      "id": "bg_shop",
+      "key": "shop",
+      "file": "exec-0c49fda2-56a2-4b9c-b3d2-a2857daffcd5.png",
+      "prompt": "Edit ONLY the wholesale-shop pixel-art room image among the recent images. The two uploaded real photographs are owner references, NOT edit targets: one shows a small shallow lidded flavour tub, the other shows a bare hookah connector. Correct the room's flavour STORAGE TUBS throughout: currently they are implausibly large deep square bins. Replace them with substantially smaller hand-sized shallow rectangular translucent plastic tubs like the owner's photo, roughly half the current linear size, especially lower body height. They sit on the SAME shelves, with roomy spacing and orderly front-facing tiny blank labels, sealed shallow lids; modest brown moist tobacco flakes, never green herbs or whole giant leaves. Perspective and scale relative to shelf depth and counter must be convincing. Keep bulk sealed foil bags and outer shipping boxes their existing sensible sizes: they are separate wholesale stock, not giant plastic flavour tubs. Preserve the entire room, all furniture, shelving footprints, lights, doors, camera, colour palette, glass bowl display, tong display and clear aisle. No hookahs added to this wholesale room. No people, text, copied brand, UI, smoke or watermark. Match the existing refined crisp pixel-cluster shading and 16:9 framing. The correction is real small shallow flavour tubs throughout, not relabelled giant bins or resized entire furniture.",
+      "accepted": true
+    },
+    {
+      "id": "kemurikusa",
+      "key": "naru",
+      "file": "exec-43c579f3-327f-4cf4-9306-4b72eb7f3606.png",
+      "prompt": "Edit ONLY the olive-green KEMURIKUSA pixel-art bar room, the most recently shown image. Preserve ALL room/camera/furniture/light positions and pixel-art shading. The two uploaded real photos are owner references: shallow small rectangular flavour tub, and the bare hookah with compact metal neck plus tapered black rubber grommet above its broad tray. Other shop images are not edit targets. Make TWO local corrections throughout KEMURIKUSA: (1) every transparent storage tub on the rear shelves becomes a small shallow hand-sized rectangular lidded container, roughly half its current height and narrower too. Keep it resting on the same shelves, tidy fronts, tiny blank labels, brown moist tobacco, no text/brand. Do not replace tubs with jars or giant bins; leave more breathing room. (2) all THREE inactive hookahs on the rear counter keep their bases/stems/trays exactly where they are, but upper connectors match the owner's bare-hookah photograph: very short narrow metal neck topped by a small tapered BLACK rubber grommet, subtly hollow/open at the top, compact flange. Its total width is tiny relative to the ash tray, about one eighth of tray diameter, not a huge cap, bowl, mushroom, funnel, knob or HMD. Tray remains a broad thin separate disk. NO ceramic bowl, coal, HMD, hose or smoke. The original tub photo's words must not be copied. Keep quiet foreground and no people/UI/new objects. Same landscape 16:9 crisp refined pixel art, no photography, collage or diagram.",
+      "accepted": true
+    },
+    {
+      "id": "peppermint",
+      "key": "minto",
+      "file": "exec-53bf1d47-cb4c-443a-9c3b-262f2d260d27.png",
+      "prompt": "Edit image 1 ONLY, the mint/pink PEPPERMINT pixel-art cafe. Preserve camera, all furniture, walls, lights, colours, decoration and clear dialogue foreground. Image 2 is the newly corrected KEMURIKUSA artwork illustrating the owner's approved physical scale direction: small shallow tubs, compact bare-post rubber connector. Images 3 and 4 are real physical references for hookah construction and sealed rectangular tubs ONLY, no brand/photo copying; the owner's newer compact connector rule overrides any taller post in image 3. Correct ALL brown flavour tubs on both rear shelves: shallow small rectangular closed translucent tubs, reduce body height and overall volume substantially, orderly tiny blank front labels, brown wet leaf flakes; not tall cubic canisters. Empty shelf space is welcome. Keep exactly TWO inactive assembled hookah samples in the central arch in their existing positions with unchanged bases/stems/trays. Above each broad thin tray use a very short narrow metal neck and a SMALL tapered black rubber bowl grommet, about one eighth of the tray diameter and only a few pixels tall at this scene's scale. No large knob/cap/bowl/HMD/coal. The far-left upper-arch object is a spare glass BASE ONLY: remove its mistaken tall metal top entirely, leaving a sensible empty spare glass vessel. No hoses or smoke. No people, text, labels with writing, logos, UI or watermark. Crisp refined pixel shading, full-frame landscape16:9. Do not recolour this cafe like the olive reference room.",
+      "accepted": true
+    },
+    {
+      "id": "bg_fookah_showroom",
+      "key": "showroom",
+      "file": "exec-9cac0d56-f3e9-4450-ae5a-6830bee97cbf.png",
+      "prompt": "Make a precise local edit to image 1, the navy/glass Dr.fookah SHOWROOM. Preserve the entire image's viewpoint, cabinets, all spare glass bases/parts, furniture, windows, lights, metals, palette and pixel shading. Correct ONLY the very top of the TWO fully assembled bare hookah samples in the central two glass display cases. Image 2 shows the owner-directed corrected bare connectors in KEMURIKUSA; image 3 is real bare-hookah structure reference, not a brand/design to copy. Above each unchanged broad thin ash tray use a SHORT narrow metal connector neck topped by a tiny tapered BLACK RUBBER bowl grommet with small flange and small top opening. Total connector width around one eighth of its tray width, short rather than a tower. No big cap, mushroom, cup, bowl, HMD, charcoal, hose or smoke. Keep complete glass base/stem/tray assemblies exactly positioned and sensible; no new whole hookahs on other shelves. Bare spare glass vessels remain glass vessels. No people, lettering, logos, UI or watermark. One unchanged full-frame landscape 16:9 refined pixel-art room with only the two top connections corrected.",
+      "accepted": true
+    },
+    {
+      "id": "bg_tournament_stage",
+      "key": "stage",
+      "file": "exec-ef1c64b2-b0d9-47ec-9f3b-2c56c681e66f.png",
+      "prompt": "Precisely edit image 1, the empty four-counter tournament stage, ONLY at the upper connectors of all FOUR hookahs. Leave the whole stage, all counters, bases, stems, broad thin trays, illumination, steps, judges' table, chairs and camera unchanged. Image 2 is a corrected bare-hookah drawing for the OWNER's new scale instruction; image3 a real full bare hookah for actual assembly structure. Above each unchanged ash tray fit a VERY SHORT narrow metal connector and SMALL tapered BLACK RUBBER bowl grommet, a little hollow opening at the top, tiny lip. Connector width about one eighth of tray diameter, not a large cap, mushroom, cup, bowl or HMD. No bowls, coals, hoses, handles, smoke or people: before preparation begins. Preserve crisp landscape16:9 pixel-art style, purple/blue/amber lights, no logos/text/UI/watermark. Four intact separate modest equipment assemblies, physically resting on four countertops. The short tiny connector shape is the only correction.",
+      "accepted": false
+    },
+    {
+      "id": "bg_tournament_stage",
+      "key": "stage_final",
+      "file": "exec-063a68e3-db5f-462b-aa77-277c1e4103bf.png",
+      "prompt": "Local correction to the ONLY attached tournament stage image, preserving everything pixel-aligned except FOUR bare connectors above the trays. Their current shiny cylindrical top posts are STILL too tall and look metallic all the way. REPLACE each entire connector ABOVE the tray with a compact bare bowl fitting HALF its current height: at the original 1672-pixel-wide frame each tray is about45px wide, so ABOVE it use only 3px-high narrow metal neck plus 5px-high tapered MATTE BLACK rubber grommet, 5pxwide at base, 3pxwide top, tiny dark top opening. Total 8px height maximum above the tray. Not an all-metal cylinder, not a tall tower, cup, knob or bowl. Black grommet has only one restrained pixel highlight. The neck is the only shiny metal above the tray. Keep all trays wide/thin and at EXACT same height and width, all stems and glass bases unchanged. No ceramic bowl/HMD/coals/hoses/smoke. Preserve stage camera/counters/lighting/chairs/background and existing refined16:9pixel art. No other modifications, figures, text, UI or logos.",
+      "accepted": false
+    },
+    {
+      "id": "bg_tournament_stage",
+      "key": "stage_retry",
+      "file": "exec-8ab51866-68b3-4e85-bc07-7798c9d186f1.png",
+      "prompt": "Edit ONLY the four bare TOP FITTINGS in the attached tournament stage background. The FOUR WIDE THIN SILVER ASH TRAYS are essential: each tray is centered respectively around x350,660,984,1298 and y400 in this1672x941frame. KEEP every tray exactly at y400 with its existing width and metallic disk shape. KEEP all vertical stems, bases and device heights below the trays unchanged. Replace the tall silver-only protrusion ABOVE each ash tray with a visibly smaller short METAL NECK topped by a small tapered MATTE BLACK RUBBER GROMMET. A compact black trapezoid with tiny top opening; widthmuch smaller than tray; overall protrusion should be about half current height but MUST still be ABOVE the unchanged wide tray. Nothing moves the tray or cuts the whole stem shorter. No bowl, HMD, coals, hose, smoke. Image2 real barehookah is assembly reference; match compact post-to-tray ratio, no productpattern copy. Keep every other pixel scene element, counters, illumination and audience chairs unchanged. No people, text or UI. Landscape16:9pixel-art full stage. Most important: FOUR TRAYS RETAINED, FOUR SHORT BLACK-RUBBER-CONNECTORS ABOVE THEM.",
+      "accepted": false
+    },
+    {
+      "id": "bg_tournament_stage",
+      "key": "stage_small",
+      "file": "exec-4d79ee64-714b-4eb9-aabd-de38428967c8.png",
+      "prompt": "Edit the attached four-hookah pixel-art stage with one TINY local correction, everything else unchanged. Make each black rubber grommet ABOVE its ash tray significantly smaller and lower: roughly the width of the slender upright metal stem immediately BELOW that tray, at most1.5times that stem width. Cut the current black grommet width AND height by HALF, keep it a little tapered rubber fitting on a short silver neck, an open small tip. FOUR broad silver ash trays MUST remain unchanged at the same height/width. Four lower stems and glass bases untouched. The tiny top fitting should now be inconspicuous at full-frame scale, not four black cups above the trays. No bowls, HMD, coals, hoses, smoke. Preserve all stage, counters, chairs, lighting and pixel art. No added text/UI/people. Same full-frame16:9.",
+      "accepted": false
+    },
+    {
+      "id": "bg_tournament_stage",
+      "key": "stage_redraw",
+      "file": "exec-0911a4fe-c56b-4c46-a5d1-570a82e78dcc.png",
+      "prompt": "Create a fresh detailed16:9 pixel-art background of a small Japanese four-person shisha tournament stage, using the attached image solely as authoritative camera and stage-furniture layout. Fully REDRAW the four hookahs rather than retain their erroneous tall top caps. Keep four counters at the same positions, empty audience seats, judges' table, stage steps, geometric LED wall and purple/blue/amber lighting. On each counter: modest clear glass base, elegant slim upright stem, visibly broad THIN separate silver ash-catching disk above the stem. Immediately above each disk sits an inconspicuously small short black tapered RUBBER grommet on a tiny metal neck: just the size of a little eraser, roughly the width of the narrow stem itself, dramatically smaller than a ceramic bowl. A tiny visible top hole. All four trays must be present and broad compared with the tiny grommet. No ceramic bowls, HMD, coals, hoses or smoke: these are bare preparation-state hookahs. Actual modern hookah construction, not candleholders or black cups. Crisp stepped pixel clusters and controlled detailed material shading in this game's existing palette. No people, logos, text, UI, plants or ornaments added. Foreground quiet for dialogue. One full-frame playable empty stage.\n",
+      "accepted": true
+    }
+  ],
+  "referenceMechanism": {
+    "shop": "num_last_images_to_include=3: both owner photographs and shop target",
+    "naru": "num_last_images_to_include=5: both owner photographs, shop target/correction and Naru target",
+    "later": "local edited Naru scale reference + viewed real full-device/sealed-tub photo as appropriate"
+  },
+  "ownerPhotos": "Referenced directly from this conversation; original uploaded photo files were not exposed as downloadable workspace files. Not relabelled generated pictures as originals."
+}

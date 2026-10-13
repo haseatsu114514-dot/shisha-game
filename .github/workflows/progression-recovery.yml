@@ -1,0 +1,76 @@
+name: Progression recovery regressions
+on:
+  pull_request:
+    paths:
+      - 'remake/**'
+      - 'data/**'
+      - '.github/workflows/progression-recovery.yml'
+      - 'tools/check_legacy_terms.py'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/**'
+      - 'data/**'
+      - '.github/workflows/progression-recovery.yml'
+      - 'tools/check_legacy_terms.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: progression-recovery-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.sha }}
+      ARTIFACT_DIR: .codex/artifacts/remake-browser/progression-recovery
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Saved character identity and invitation recovery
+        run: |
+          node --experimental-vm-modules remake/test/samechan_migration.mjs
+          node --experimental-vm-modules remake/test/lime_consistency.mjs
+          node --experimental-vm-modules remake/test/daily_consistency.mjs
+          node --experimental-vm-modules remake/test/illness.mjs
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Opening checkpoints and unread lover milestones
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/recovery-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/ch1_opening_resume.mjs
+          node remake/test/browser/lover_milestones.mjs
+          node remake/test/browser/lime_appointment_recovery.mjs
+          node remake/test/browser/lime_evening.mjs
+          node remake/test/browser/save_load.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: progression-recovery-results
+          path: |
+            .codex/artifacts/remake-browser/progression-recovery/
+            ${{ runner.temp }}/recovery-preview.log
+          retention-days: 7

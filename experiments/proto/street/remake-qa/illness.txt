@@ -1,0 +1,4 @@
+(node:93721) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[illness] PASS: increasing risk, lucky zero, canceled action, actual save, rest, half/full sick days, capacity/discount boundary, tournament without a softlock
+[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy, automatic illness deferral, fixed sick attendance, accepted appointment, preparation deadlines, post-tournament order, no duplicates, other chapters and interrupted scenes

@@ -473,15 +473,15 @@
       "runtime_asset": "assets/ui/title_arts/title_art_rin_03_late_coffee.png"
     },
     {
-      "id": "kafuka-01-shishark-test-run",
-      "character": "kafuka",
+      "id": "samechan-01-shishark-test-run",
+      "character": "samechan",
       "label": "シーシャークの試運転",
       "shisha": true,
       "hardware_reference_model": "Shishabucks Cloud Micro blue",
-      "source": "kafuka/01-shishark-test-run.png",
-      "prompt": "kafuka/01-shishark-test-run.prompt.txt",
+      "source": "samechan/01-shishark-test-run.png",
+      "prompt": "samechan/01-shishark-test-run.prompt.txt",
       "references": [
-        "references/kafuka-adopted-normal.png",
+        "references/samechan-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png",
         "references/cloud-micro-blue.jpg",
         "references/sky-bowl.jpg",
@@ -495,25 +495,25 @@
         1024,
         1536
       ],
-      "latest_prompt": "kafuka/01-shishark-test-run.revision-3.prompt.txt",
+      "latest_prompt": "samechan/01-shishark-test-run.revision-3.prompt.txt",
       "latest_references": [
-        "kafuka/01-shishark-test-run-revision-2.png",
-        "kafuka/01-shishark-test-run-revision-1.png",
+        "samechan/01-shishark-test-run-revision-2.png",
+        "samechan/01-shishark-test-run-revision-1.png",
         "references/stratus-hmd.jpg"
       ],
       "adoption_status": "owner-approved-random-title-20261011",
-      "runtime_asset": "assets/ui/title_arts/title_art_kafuka_01_shishark_test_run.png"
+      "runtime_asset": "assets/ui/title_arts/title_art_samechan_01_shishark_test_run.png"
     },
     {
-      "id": "kafuka-02-shark-movie",
-      "character": "kafuka",
+      "id": "samechan-02-shark-movie",
+      "character": "samechan",
       "label": "コロちゃんとサメ映画",
       "shisha": false,
       "hardware_reference_model": null,
-      "source": "kafuka/02-shark-movie.png",
-      "prompt": "kafuka/02-shark-movie.prompt.txt",
+      "source": "samechan/02-shark-movie.png",
+      "prompt": "samechan/02-shark-movie.prompt.txt",
       "references": [
-        "references/kafuka-adopted-normal.png",
+        "references/samechan-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": true,
@@ -524,24 +524,24 @@
         1024,
         1536
       ],
-      "latest_prompt": "kafuka/02-shark-movie.prompt.txt",
+      "latest_prompt": "samechan/02-shark-movie.prompt.txt",
       "latest_references": [
-        "references/kafuka-adopted-normal.png",
+        "references/samechan-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "adoption_status": "owner-approved-random-title-20261011",
-      "runtime_asset": "assets/ui/title_arts/title_art_kafuka_02_shark_movie.png"
+      "runtime_asset": "assets/ui/title_arts/title_art_samechan_02_shark_movie.png"
     },
     {
-      "id": "kafuka-03-aquarium",
-      "character": "kafuka",
+      "id": "samechan-03-aquarium",
+      "character": "samechan",
       "label": "水族館でコロちゃんと",
       "shisha": false,
       "hardware_reference_model": null,
-      "source": "kafuka/03-aquarium.png",
-      "prompt": "kafuka/03-aquarium.prompt.txt",
+      "source": "samechan/03-aquarium.png",
+      "prompt": "samechan/03-aquarium.prompt.txt",
       "references": [
-        "references/kafuka-adopted-normal.png",
+        "references/samechan-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": true,
@@ -552,13 +552,13 @@
         1024,
         1536
       ],
-      "latest_prompt": "kafuka/03-aquarium.prompt.txt",
+      "latest_prompt": "samechan/03-aquarium.prompt.txt",
       "latest_references": [
-        "references/kafuka-adopted-normal.png",
+        "references/samechan-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "adoption_status": "owner-approved-random-title-20261011",
-      "runtime_asset": "assets/ui/title_arts/title_art_kafuka_03_aquarium.png"
+      "runtime_asset": "assets/ui/title_arts/title_art_samechan_03_aquarium.png"
     }
   ],
   "title_adoption": {

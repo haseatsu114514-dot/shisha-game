@@ -1257,11 +1257,11 @@
       "_ev_tsumugi_sketch": true,
       "_morning_12": true,
       "_invited__sumi_baito_inv_d12": true,
-      "_kafuka_nickname_known": true,
-      "_intro_kafuka": true,
-      "_lime_contact_kafuka": true,
-      "_met_kafuka": true,
-      "_kafuka_first_encounter": true,
+      "_samechan_nickname_known": true,
+      "_intro_samechan": true,
+      "_lime_contact_samechan": true,
+      "_met_samechan": true,
+      "_samechan_first_encounter": true,
       "_morning_13": true,
       "_invited__sumi_baito_inv_d13": true,
       "_tsumugi_contest_eve": true,
@@ -1276,14 +1276,14 @@
       "nagumo": true,
       "adam": true,
       "minto": true,
-      "kafuka": true
+      "samechan": true
     },
     "affinityCarry": {
       "naru": 0.5,
       "adam": 0.5,
       "tsumugi": 0.14999999999999858,
       "sumi": 0.6499999999999999,
-      "kafuka": 0.7
+      "samechan": 0.7
     },
     "loveCarry": {},
     "baitoRecent": [],
@@ -1292,7 +1292,7 @@
       "naru": 8,
       "adam": 8,
       "sumi": 7,
-      "kafuka": 1
+      "samechan": 1
     },
     "story": {
       "naru": 1,
@@ -1339,7 +1339,7 @@
     "contacts": [
       "sumi",
       "tsumugi",
-      "kafuka"
+      "samechan"
     ],
     "limeRead": [
       "_sumi_baito_inv_d3",
@@ -1354,7 +1354,7 @@
       "_sumi_baito_inv_d10",
       "_sumi_baito_inv_d11",
       "_sumi_baito_inv_d12",
-      "lime_kafuka_preparing_thanks",
+      "lime_samechan_preparing_thanks",
       "_sumi_baito_inv_d13"
     ],
     "pendingInvite": null,
@@ -1891,23 +1891,23 @@
         "result": "declined"
       },
       {
-        "id": "lime_kafuka_preparing_thanks",
-        "originId": "lime_kafuka_preparing_thanks",
+        "id": "lime_samechan_preparing_thanks",
+        "originId": "lime_samechan_preparing_thanks",
         "day": 13,
         "chapter": 1,
         "msg": {
-          "id": "lime_kafuka_preparing_thanks",
-          "sender": "kafuka",
+          "id": "lime_samechan_preparing_thanks",
+          "sender": "samechan",
           "trigger_condition": "flag",
-          "trigger_flag": "_kafuka_first_encounter",
+          "trigger_flag": "_samechan_first_encounter",
           "type": "chat",
           "messages": [
             {
-              "sender": "kafuka",
+              "sender": "samechan",
               "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
             },
             {
-              "sender": "kafuka",
+              "sender": "samechan",
               "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
             }
           ],
@@ -2293,7 +2293,7 @@
       "slot": 1
     },
     {
-      "id": "kafuka_first_encounter",
+      "id": "samechan_first_encounter",
       "day": 12,
       "slot": 2
     },
@@ -2460,7 +2460,7 @@
       "day": 10
     },
     {
-      "scene": "kafuka_first_encounter",
+      "scene": "samechan_first_encounter",
       "choice": "",
       "branch": "shark_yes",
       "next": "",
@@ -2618,11 +2618,11 @@
       "_ev_tsumugi_sketch": true,
       "_morning_12": true,
       "_invited__sumi_baito_inv_d12": true,
-      "_kafuka_nickname_known": true,
-      "_intro_kafuka": true,
-      "_lime_contact_kafuka": true,
-      "_met_kafuka": true,
-      "_kafuka_first_encounter": true,
+      "_samechan_nickname_known": true,
+      "_intro_samechan": true,
+      "_lime_contact_samechan": true,
+      "_met_samechan": true,
+      "_samechan_first_encounter": true,
       "_morning_13": true,
       "_invited__sumi_baito_inv_d13": true,
       "_tsumugi_contest_eve": true,
@@ -2635,14 +2635,14 @@
       "nagumo": true,
       "adam": true,
       "minto": true,
-      "kafuka": true
+      "samechan": true
     },
     "affinityCarry": {
       "naru": 0.5,
       "adam": 0.5,
       "tsumugi": 0.14999999999999858,
       "sumi": 0.6499999999999999,
-      "kafuka": 0.7
+      "samechan": 0.7
     },
     "loveCarry": {},
     "baitoRecent": [],
@@ -2651,7 +2651,7 @@
       "naru": 8,
       "adam": 8,
       "sumi": 7,
-      "kafuka": 1
+      "samechan": 1
     },
     "story": {
       "naru": 1,
@@ -2698,7 +2698,7 @@
     "contacts": [
       "sumi",
       "tsumugi",
-      "kafuka"
+      "samechan"
     ],
     "limeRead": [
       "_sumi_baito_inv_d3",
@@ -2713,7 +2713,7 @@
       "_sumi_baito_inv_d10",
       "_sumi_baito_inv_d11",
       "_sumi_baito_inv_d12",
-      "lime_kafuka_preparing_thanks",
+      "lime_samechan_preparing_thanks",
       "_sumi_baito_inv_d13"
     ],
     "pendingInvite": null,
@@ -3250,23 +3250,23 @@
         "result": "declined"
       },
       {
-        "id": "lime_kafuka_preparing_thanks",
-        "originId": "lime_kafuka_preparing_thanks",
+        "id": "lime_samechan_preparing_thanks",
+        "originId": "lime_samechan_preparing_thanks",
         "day": 13,
         "chapter": 1,
         "msg": {
-          "id": "lime_kafuka_preparing_thanks",
-          "sender": "kafuka",
+          "id": "lime_samechan_preparing_thanks",
+          "sender": "samechan",
           "trigger_condition": "flag",
-          "trigger_flag": "_kafuka_first_encounter",
+          "trigger_flag": "_samechan_first_encounter",
           "type": "chat",
           "messages": [
             {
-              "sender": "kafuka",
+              "sender": "samechan",
               "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
             },
             {
-              "sender": "kafuka",
+              "sender": "samechan",
               "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
             }
           ],

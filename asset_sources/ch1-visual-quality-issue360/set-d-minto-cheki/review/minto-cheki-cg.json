@@ -1,0 +1,39 @@
+{
+  "name": "minto-cheki-cg",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "ref": "70ab0899ceea19ffa0649e2b6fd4a3ee4624e1a6",
+  "results": [
+    {
+      "label": "pc-real-lime-invitation",
+      "status": "passed"
+    },
+    {
+      "label": "pc-legacy-saved-invitation",
+      "status": "passed"
+    },
+    {
+      "label": "pc-delayed-photo-skip-waits",
+      "status": "passed"
+    },
+    {
+      "label": "pc-failed-photo-not-recorded",
+      "status": "passed"
+    },
+    {
+      "label": "touch-real-lime-invitation",
+      "status": "passed"
+    },
+    {
+      "label": "touch-legacy-saved-invitation",
+      "status": "passed"
+    },
+    {
+      "label": "touch-delayed-photo-skip-waits",
+      "status": "passed"
+    },
+    {
+      "label": "touch-failed-photo-not-recorded",
+      "status": "passed"
+    }
+  ]
+}

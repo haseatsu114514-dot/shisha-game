@@ -1,0 +1,89 @@
+{
+  "character": "samechan",
+  "concept": "deep-sea",
+  "status": "pending-selection",
+  "user_authorized_scope": "One normal-expression full-body image for each of three street-sister plus shark costume designs; hair and clothes redesigned, no game adoption.",
+  "raw_generation_path": "/workspace/generated_images/exec-6dddc68c-034e-40e8-ae59-bd7b5e13a921.png",
+  "source": "source.png",
+  "source_sha256": "767f07542f3fcf4895099839c161a9908da62cdcda4c80a172810b9521656df8",
+  "source_byte_identical": true,
+  "source_mode": "RGBA",
+  "source_size": [
+    1084,
+    1451
+  ],
+  "prompt": "Create exactly ONE full-body character standing sprite, a single normal-expression costume concept for SAME-CHAN (Samechan Hatano), a cute adult 20-year-old Japanese woman, height 156 cm. Portrait composition, one character plus her existing shark plush held in her screen-left arm. Head, sleeves, plush and both shoes fully visible with comfortable transparent margins. Real RGBA transparent background, no text, no ground or cast shadow, no frame, no additional characters, no checkerboard.\n\nREFERENCE ROLES: image 1 is her existing normal sprite: preserve her recognisable soft rounded adult face, brilliant blue half-lidded eyes, tiny nose, gentle cheek blush, mischievous open smile showing a few sharp triangular teeth, adult body proportions, and the crown-wearing blue shark plush Koro. Image 2 is her unretouched native face crop for these identity details. Redesign her hair and clothes as specified below; the old silver long hair and bright-blue shark-mouth hoodie are intentionally replaced. Images 3 and 4 are approved Minto and Ageha sprites, used ONLY for render quality: fine, deliberate high-resolution pixel-art-like anime sprite, careful crisp outlines, restrained stepped shading, small dense details in hair and fabric, soft cute faces. Do not copy their faces, hairstyles or outfits. Image 5 is official Guilty Gear Strive Bridget art, used ONLY to understand how a nun-inspired hood/coif and relaxed oversized street jacket can combine. Invent a new outfit with our own palette, shark language and silhouette; no yo-yo, handcuff ornament, teddy bear, blonde hair, yellow central emblem, or copied costume.\n\nAll three concepts represent this SAME person: blue-black shoulder-length softly layered hair with silver-grey inner strands near the cheeks; simple natural hair clumps, no luminous highlights. Keep her slightly tilted friendly normal face and confident relaxed standing posture. Screen-left arm cradles Koro; screen-right hand makes her playful small claw gesture; casually crossed legs with both feet supported. The plush remains medium blue with white belly and snout, little dark round eyes, friendly toothy mouth, a small unmistakable GOLD KING CROWN, and navy bow with a tiny gold star; add a small black cape, do not replace or obscure it.\n\nThe fashion is casual gothic STREET SISTER plus SHARK. A waist-length relaxed zip jacket with generous sleeves, short nun-coif-inspired ivory forehead framing and black hood, a short shoulder cape/yoke, a subtle shark dorsal fin behind the hood, and a split rear cape/tab shaped like a shark tail. The hood has no shark mouth opening, no giant tooth edging, no cartoon eyes. Small shark-tooth zipper pulls and three subtle gill slits on the side panels. Knee-above pleated skirt worn over practical dark shorts, translucent charcoal tights, chunky everyday high-top sneakers. Tiny antique silver cross and shark-tooth charms on a short rosary-like chain, understated everyday fashion, not a formal floor-length nun's habit. Keep modest charming adult proportions similar to the reference.\n\nDraw every part as one coherent complete newly illustrated sprite, do not paste the old face or different bodies together. Match the approved sprite's crisp delicate high-density rendering at native resolution, not a flat icon, coarse pixel mosaic, glossy smooth illustration, or airbrushed painting. Preserve clean alpha including fine hair and edges; no luminous fringe or random outline noise.\n\nCONCEPT 1 — DEEP-SEA STREET SISTER. Palette near-black ink/navy, warm IVORY, small muted DEEP TEAL accents, antique silver. The short cape-yoke has a graceful gothic silhouette and an ivory inner edge; the loose black hood has an ivory coif band around the forehead and two short dark veil tabs ending around the shoulders. Relaxed black jacket with ivory inner top and teal piping at cuffs, teal-lined little shark-tail tabs. An asymmetrically overlapping black pleated skirt with one teal narrow panel, charcoal tights, black and ivory chunky high-tops with teal lace tips. Small shark-tooth pin at the collar and modest cross chain. Quiet elegant deep-sea mood with her unexpectedly cheeky toothy smile. Do not add burgundy movie patches, a huge long veil, or dominant blue. This is the most gently gothic of the three concepts.",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/assets/sprites/characters/samechan/chr_samechan_normal.png",
+      "role": "Existing Samechan: face, body proportions, Koro identity; hair and costume deliberately redesigned",
+      "sha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/asset_sources/portraits/samechan-gothic-shark-concepts-v1/existing-face.png",
+      "role": "Original face native crop: face identity",
+      "sha256": "700fce2f25f57568f8ea253c8f2da1e72bbebc7eff5acce85a2103cf151a06c0"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto: render quality only",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-samechan-concepts/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha: render quality only",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "actual_path": "/workspace/scratch/samechan-design-reference/bridget-official.webp",
+      "role": "Official Bridget: casual hood/coif and jacket construction only",
+      "sha256": "0f6614c6ed480bee60fc733dd07beb0857bd347ee63731efa60bbc44d3edf11e"
+    }
+  ],
+  "reference_library_reviewed": "All 23 groups / 96 images, including the four newly remastered pending character sets in PR #201, reviewed during this session. Main catalog: 19 groups / 72 images. Approved Minto and Ageha render references attached.",
+  "normalization": {
+    "operations": "Only whole-image uniform resize and RGBA placement. No face/body painting, compositing of different characters, alpha thresholding or redraw.",
+    "scale": 0.6437189496096523,
+    "offset": [
+      108,
+      260
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      244,
+      11,
+      876,
+      1420
+    ],
+    "original_main_bbox": [
+      273,
+      267,
+      673,
+      1174
+    ],
+    "original_foot_anchor": 448.3085318283675,
+    "preview_main_content": [
+      [
+        265,
+        267,
+        672,
+        1174
+      ],
+      448.39891281622414
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "raw_border_alpha_ge_24": 0,
+    "preview_border_alpha_ge_24": 0
+  },
+  "third_party_construction_reference": {
+    "url": "https://www.guiltygear.com/ggst/jp/character/bgt/",
+    "art_url": "https://www.guiltygear.com/ggst/jp/wordpress/wp-content/uploads/2022/08/chara_38nd9nd2jd73.webp",
+    "role": "Hood/coif and loose street-jacket construction only, no costume or character duplication."
+  }
+}

@@ -1,12 +1,12 @@
 [
   {
-    "id": "kafuka-01-shishark-test-run",
-    "label": "ハガル上部の確認・kafuka",
-    "source": "kafuka/01-shishark-test-run.png",
-    "prompt": "kafuka/01-shishark-test-run.revision-3.prompt.txt",
+    "id": "samechan-01-shishark-test-run",
+    "label": "ハガル上部の確認・samechan",
+    "source": "samechan/01-shishark-test-run.png",
+    "prompt": "samechan/01-shishark-test-run.revision-3.prompt.txt",
     "references": [
-      "kafuka/01-shishark-test-run-revision-2.png",
-      "kafuka/01-shishark-test-run-revision-1.png",
+      "samechan/01-shishark-test-run-revision-2.png",
+      "samechan/01-shishark-test-run-revision-1.png",
       "references/stratus-hmd.jpg"
     ]
   },

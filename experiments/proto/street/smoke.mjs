@@ -1,6 +1,6 @@
-// 通りの試作（web/proto/street/）のスモークテスト。本編のテスト一覧には入れない（試作専用）。
+// 通りの試作（experiments/proto/street/）のスモークテスト。本編のテスト一覧には入れない（試作専用）。
 //   python3 -m http.server 8123   # リポジトリルートで
-//   node web/proto/street/smoke.mjs
+//   node experiments/proto/street/smoke.mjs
 // 標準版（320×180）・高解像度2.5D版（640×360・?stage=hd）・ハリボテ背景版（?stage=set）のそれぞれで、生成画像と
 // 画像を全部404にした仮素材の両方について、同じ流れを最後まで通す（座標は __street.layout() から読む）。
 import { createRequire } from "module";
@@ -11,7 +11,7 @@ const { chromium } = (() => {
 })();
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/";
-const PAGE = `${BASE}web/proto/street/index.html`;
+const PAGE = `${BASE}experiments/proto/street/index.html`;
 let failed = 0;
 const ok = (cond, label, detail = "") => {
   console.log(`${cond ? "OK  " : "FAIL"} ${label}${detail ? " — " + detail : ""}`);
@@ -265,7 +265,7 @@ await run("ハリボテ背景版・仮素材（画像なし）", { blockImages: 
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(`${BASE}web/proto/walk/index.html`);
+  await page.goto(`${BASE}experiments/proto/walk/index.html`);
   await page.waitForFunction(() => window.__walk && window.__walk.state().source[32] === "image", null, { timeout: 8000 }).catch(() => {});
   const s = await page.evaluate(() => window.__walk.state());
   console.log("\n== 歩行テスト");

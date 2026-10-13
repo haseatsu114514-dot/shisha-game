@@ -120,6 +120,8 @@ try {
   console.log('[refresh] PASS: actual 8-second recharge and second use, medium range, no base healing/invulnerability/spawn delay, repeat/cooldown guards and hit-based score');
 
   await page.evaluate(()=>startSteam(41));
+  // 新しい作業台は素材decode後に蒸らし画面を作る。未生成のtraceを参照しない。
+  await page.locator('[data-test="mental-trace"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('[data-test="mental-trace"]').dataset.level==='shaken',null,{timeout:10000});
   const recovered=await page.evaluate(()=>consume('x'));
   assert.equal(recovered.levelBefore,'shaken');assert.equal(recovered.levelAfter,'unsteady','Growth refresh must recover exactly one mental level');
@@ -128,6 +130,7 @@ try {
   await finish();
 
   await page.evaluate(()=>startSteam(81));
+  await page.locator('[data-test="mental-trace"]').waitFor();
   await page.waitForFunction(()=>enemies().length>=3);
   const full=await page.evaluate(()=>consume('x'));
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);

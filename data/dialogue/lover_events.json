@@ -41,7 +41,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……今日のこと、ノートに描きます。……二人の、いちばん最初のページ"
+          "text": "……今日のこと、ノートに描きます。……２人の、いちばん最初のページ"
         },
         {
           "type": "apply",
@@ -81,7 +81,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの昼下がり。つむぎが、ひびの入ったiPadを抱えて部屋に来た。"
+          "text": "休みの昼下がり。つむぎが、ひびの入ったタブレットを抱えて部屋に来た。"
         },
         {
           "speaker": "tsumugi",
@@ -142,12 +142,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後。誰もいないtonariで、つむぎのために一台、組んだ。"
+          "text": "閉店後。誰もいないtonariで、つむぎのために１台、組んだ。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……お店のじゃなくて。わたしのために、だけの一台"
+          "text": "……お店のじゃなくて。わたしのために、だけの１台"
         },
         {
           "speaker": "",
@@ -184,7 +184,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……この一台の色、忘れないように、覚えて帰ります"
+          "text": "……この１台の色、忘れないように、覚えて帰ります"
         },
         {
           "speaker": "",
@@ -264,7 +264,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜。つむぎが、新しいiPadを抱えていた。……ひびの入っていない、新品の。"
+          "text": "夜。つむぎが、新しいタブレットを抱えていた。……ひびの入っていない、新品の。"
         },
         {
           "speaker": "tsumugi",
@@ -279,7 +279,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "見せてくれた画面には、二つの煙が、ひとつの色に溶けていた。澄んだ、いちばん深い水色。"
+          "text": "見せてくれた画面には、２つの煙が、ひとつの色に溶けていた。澄んだ、いちばん深い水色。"
         },
         {
           "speaker": "tsumugi",
@@ -301,7 +301,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ひびの入った古いiPadは、鞄の中に、大事そうにしまわれていた。"
+          "text": "ひびの入った古いタブレットは、鞄の中に、大事そうにしまわれていた。"
         },
         {
           "speaker": "tsumugi",
@@ -507,7 +507,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "二人でゆっくり過ごす時間。栞さんが、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
+          "text": "２人でゆっくり過ごす時間。栞さんが、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
         },
         {
           "speaker": "minto",
@@ -517,7 +517,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……いつか、チョコミントのパフェ、もう一回、出すんだ。……はじめくんにも、食べてほしい"
+          "text": "……いつか、チョコミントのパフェ、もう１回、出すんだ。……はじめくんにも、食べてほしい"
         },
         {
           "speaker": "hajime",
@@ -568,7 +568,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。こうして二人で過ごせる時間、好きだな"
+          "text": "……うん。こうして２人で過ごせる時間、好きだな"
         },
         {
           "speaker": "minto",
@@ -1074,7 +1074,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "見て！この煙のうねり！アタシの『好き』を、ぜんぶ詰めた一台！"
+          "text": "見て！この煙のうねり！アタシの『好き』を、ぜんぶ詰めた１台！"
         },
         {
           "speaker": "hajime",
@@ -1245,7 +1245,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんが古い缶を差し出してきた。"
+          "text": "ましろちゃんが古い袋を差し出してきた。"
         },
         {
           "speaker": "mashiro",
@@ -1462,7 +1462,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "深夜のmukai。一台が用意されていた。"
+          "text": "深夜のmukai。１台が用意されていた。"
         },
         {
           "speaker": "mashiro",
@@ -1580,7 +1580,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "一台に炭を何個も載せたらどうなる"
+          "text": "１台に炭を何個も載せたらどうなる"
         },
         {
           "speaker": "sumi",
@@ -1670,7 +1670,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが出ていった。二人きりになる。"
+          "text": "スミさんが出ていった。２人きりになる。"
         },
         {
           "speaker": "mashiro",
@@ -1691,6 +1691,293 @@
           "speaker": "",
           "face": "",
           "text": "……それが、かえって胸に痛かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_samechan_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "samechan_bond_level": 1
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道。並んで歩く肩の間が、さっきより少し近い。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "恋人として隣におるのは、まだ落ち着かぬのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、少し緊張しています"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、側近の歩幅に合わせよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ わしも合わせておるじゃろう！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、二人でゆっくり歩きましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。急いで帰らずとも、よいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女が俺の袖をつまんだ。足音を合わせて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_samechan_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "samechan_bond_level": 2
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の話を離れて、サメ映画の話になった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "スピルバーグのサメは、見せぬ時間こそ恐ろしいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "あの音が来ると、画面におらんのに、もうそこにおる！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、息。少し休んでからで大丈夫です"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……こほん。わしは平気じゃ。怖がってなどおらん"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、血の出る場面で目をそらすのである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ それは、画面をよく確かめるためじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "怖いところは、俺と一緒に目をそらしましょうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……お主まで一緒なら、少し心強いのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "強がる声の隣で、彼女の指が、そっと俺の指に触れた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_samechan_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "samechan_bond_level": 3
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に一緒に出かけるなら、どんな場所がいいか。そんな話をしていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_samechan_swimming_known",
+          "next_true": "known",
+          "next_false": "reveal"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "泳がなくても、岸から海を見るのもいいですね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "うむ。お主となら、強がらずに過ごせそうじゃ"
+          }
+        ],
+        "reveal": [
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……海の話になると、言っておきたいことがあるのじゃ"
+          },
+          {
+            "type": "jump",
+            "next_id": "samechan_future_private_swimming"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "lover_samechan_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "samechan_bond_level": 4
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を呼ぶだけで、照れた顔がこちらを向く。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_samechan_name_known",
+          "next_true": "known",
+          "next_false": "reveal"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "なぎささん。そう呼ぶと、やっぱり照れますね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "……お主が呼ぶのは、嫌ではないのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "側近は、もう一度呼ばれることを望んでいる",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "コロちゃん！ ……わしも、自分の声で言えるのじゃ"
+          }
+        ],
+        "reveal": [
+          {
+            "type": "jump",
+            "next_id": "samechan_future_private_name"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "lover_samechan_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "samechan_bond_level": 5
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "別れ際。彼女がコロちゃんを抱き直して、俺の方を向いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "今日は、コロちゃんの声を借りずに話すのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あなたの声を、聞かせてください"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "店主でも、サメの王の側近でもなくてじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしは、お主に会える日を楽しみにしておる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "笑った顔も、黙って煙を見ておる顔も、好きじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、サメちゃんといる時間が好きです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。これからも、隣にいてほしいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は彼女の手を取った。今夜は、その声に自分の声で返す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "これからも、一緒に過ごしましょう"
         }
       ]
     }

@@ -34,7 +34,7 @@ function checkRects(){
    fs.mkdirSync(path.join(base,c.id),{recursive:true});await page.screenshot({path:path.join(base,c.id,'preview.png')});checks.push(check);
   }
   // Meaningful animation checkpoints: initially hidden, mid-transition, fully readable.
-  await page.evaluate(()=>window.introPreview.showCharacter('kafuka'));
+  await page.evaluate(()=>window.introPreview.showCharacter('samechan'));
   const phases=[];for(const ms of [0,400,1600]){await page.evaluate(t=>window.introPreview.seek(t),ms);phases.push(await page.evaluate(t=>({ms:t,portraitOpacity:getComputedStyle(document.querySelector('#portrait')).opacity,nameOpacity:getComputedStyle(document.querySelector('#name')).opacity,nameTransform:getComputedStyle(document.querySelector('#name')).transform}),ms));await page.screenshot({path:path.join(base,`animation-${ms}.png`)});}
   if(phases[0].nameOpacity!=='0'||Number(phases[1].portraitOpacity)<=0||phases[2].nameOpacity!=='1')throw new Error('animation timing');
   // Managed Chromium blocks file://. Serve the self-contained file and reject any
@@ -51,7 +51,7 @@ function checkRects(){
   await page.waitForFunction(()=>window.previewReady&&document.querySelector('#stage').dataset.character==='naru',{},{timeout:6000});await page.locator('#loop').click();
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.introPreview.seek(1600));await page.screenshot({path:path.join(base,'mobile-preview.png')});
   const controlsFit=await page.locator('#controls').evaluate(el=>el.scrollWidth<=innerWidth);if(!controlsFit)throw new Error('mobile controls overflow');
-  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.introPreview.showCharacter('kafuka'));if(await page.evaluate(()=>window.introPreview.animations.length)!==0)throw new Error('reduced motion');
+  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.introPreview.showCharacter('samechan'));if(await page.evaluate(()=>window.introPreview.animations.length)!==0)throw new Error('reduced motion');
   if(external.length)throw new Error('standalone external requests '+external.join(','));
   await page.unroute('**/*');
   if(video){

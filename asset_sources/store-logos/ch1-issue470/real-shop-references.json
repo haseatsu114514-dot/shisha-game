@@ -1,0 +1,67 @@
+{
+  "retrieved_utc": "2026-10-12",
+  "use": "公式サイトの実際のロゴを目視し、画像生成へスタイル参照として添付。実在ロゴの原本は配布アセットに収録せず、出典URLとハッシュを記録。",
+  "official_sites": [
+    "https://www.musch.jp/",
+    "https://shisha.tokyo/",
+    "https://c-stand-shisha.com/",
+    "https://shisha-pukupuku.com/",
+    "https://shisha-chillin.com/"
+  ],
+  "images": [
+    {
+      "id": "musch-main",
+      "url": "https://www.musch.jp/wp-content/themes/musch/assets/img/logo/logo-main.png",
+      "path": "/tmp/shisha-logo-research/musch-main.png",
+      "sha256": "cd881b0ff0bbae1abef8973256b6ba75d92ad37ac4e32b7d424ab026cbc3fd59",
+      "bytes": 65265,
+      "rights": "各ブランド権利者のロゴ。デザインの研究・生成参照用。配布アセットには含めない。",
+      "observations": "小さな黒の抽象シンボル、セリフ体の小文字、短い副文。"
+    },
+    {
+      "id": "north-village",
+      "url": "https://shisha.tokyo/img/logo3.svg",
+      "path": "/tmp/shisha-logo-research/north-village.svg",
+      "sha256": "be20feb2694ef0de1a9cfadb635a56ccef0a6a2135ed66929471b4bef9a84ce7",
+      "bytes": 63515,
+      "rights": "各ブランド権利者のロゴ。デザインの研究・生成参照用。配布アセットには含めない。"
+    },
+    {
+      "id": "c-stand",
+      "url": "https://c-stand-shisha.com/wp-content/uploads/2023/08/Instagram②.jpg",
+      "path": "/tmp/shisha-logo-research/c-stand.jpg",
+      "sha256": "53bac966834cf30999eeccf353d5a9ff136f34ad74fa91ca557e031ed2604710",
+      "bytes": 18357,
+      "rights": "各ブランド権利者のロゴ。デザインの研究・生成参照用。配布アセットには含めない。",
+      "observations": "単色の店名・小さな円形マーク・業態説明を階層化。"
+    },
+    {
+      "id": "pukupuku",
+      "url": "https://shisha-pukupuku.com/wp-content/themes/pukupuku/img/head_logo.png",
+      "path": "/tmp/shisha-logo-research/pukupuku.png",
+      "sha256": "1d65d5b1d10f84d7f641d07993c969ad4d6a7a9fc4e98fa9524b713c2410a46c",
+      "bytes": 6801,
+      "rights": "各ブランド権利者のロゴ。デザインの研究・生成参照用。配布アセットには含めない。",
+      "observations": "小さなマークと筆記体の横組み。"
+    },
+    {
+      "id": "chillin",
+      "url": "https://shisha-chillin.com/wp/wp-content/themes/chill/img/common/logo.png",
+      "path": "/tmp/shisha-logo-research/chillin.png",
+      "sha256": "36ff6828c91b4a1fcd47dce30fefc75179b212a2689960a57e7f5c85c08d4c2c",
+      "bytes": 9197,
+      "rights": "各ブランド権利者のロゴ。デザインの研究・生成参照用。配布アセットには含めない。",
+      "observations": "やわらかい和文を使ったコンパクトな横組み。"
+    },
+    {
+      "id": "north-village-black",
+      "url": "https://shisha.tokyo/img/logo2_b.svg",
+      "path": "/tmp/shisha-logo-research/north-village-black.svg",
+      "rendered_path": "/tmp/shisha-logo-research/north-village-black.png",
+      "sha256": "8ed69fb093fb724370ac98231a2d21c70e6641e1416df9457543d3f0e703fbc4",
+      "rights": "各ブランド権利者のロゴ。デザイン研究・生成参照用。配布アセットには含めない。",
+      "observations": "独特な線の英字を二段に組む単色ワードマーク。",
+      "rendered_sha256": "f30611de2e0cfab9b3c336b9d47cc14e1dd6992f0be4c1c6e12d8a31c3e77320"
+    }
+  ]
+}

@@ -19,6 +19,10 @@ async function init(page) {
       broadcast: await import("./js/craft/broadcast.js"),
       preparation: await import("./js/daily/preparation.js"),
       practice: await import("./js/craft/practice.js"),
+      chapter: await import("./js/chapters/ch1.js"),
+      vn: await import("./js/vn/engine.js"),
+      intro: await import("./js/vn/intro.js"),
+      story: await import("./js/chapters/tsumugi-story.js"),
     };
     T.open = async (cs) => {
       const b = T.session.openBench(cs, { steps: T.practice.CRAFT_STEPS });
@@ -72,11 +76,10 @@ await suite("ch1-tournament", async check => {
     const held = new Promise(resolve => { release = resolve; });
     await page.route("**/img/ui/making/coal_white.png", async route => { await held; await route.continue(); });
     try {
-      await page.evaluate(async () => {
-        const chapter = await import("./js/chapters/ch1.js");
-        const vn = await import("./js/vn/engine.js");
-        const intro = await import("./js/vn/intro.js");
-        const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
+      // module初期化は画像を保留する前に完了し、本番の開始は同期で呼ぶ。
+      await page.evaluate(() => {
+        const { chapter, vn, intro } = T;
+        const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
         Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
@@ -194,12 +197,17 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(() => window.mixing);
     assert.deepEqual(await page.evaluate(() => cs.mix), { blueberry: 10, mint: 2 });
     assert.equal(await page.evaluate(() => T.core.state.flavorStock.blueberry), 51);
-    await page.evaluate(() => { cs.careHistory = [{ score: 90 }, { score: 95 }]; T.practice.recordPractice(cs, "midweek"); T.core.save(); });
+    await page.evaluate(async () => {
+      T.session.craftTest.auto = "good";
+      await T.practice.runCarePractice({ kind: "midweek" }); T.core.save();
+    });
     await page.reload(); await page.locator('[data-test="title-new"]').waitFor();
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
-    assert.deepEqual(await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1)), {
-      day: 7, kind: "midweek", success: true, mix: { blueberry: 10, mint: 2 }, adjustments: 2,
-    });
+    const record = await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1));
+    assert.equal(record.day, 7); assert.equal(record.kind, "midweek");
+    assert.equal(record.scope, "care"); assert.equal(record.success, true); assert.equal(record.served, false);
+    assert.deepEqual(record.mix, { blueberry: 10, mint: 2 }); assert.equal(record.adjustments, 2);
+    assert.deepEqual(record.scores, {}); assert.equal(record.careScores.length, 2);
   });
 
   for (const [label, viewport, mobile] of [
