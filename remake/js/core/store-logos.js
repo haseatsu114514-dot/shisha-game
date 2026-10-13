@@ -9,11 +9,14 @@ export const STORE_LOGOS = Object.freeze({
   shop: { name: "Dr.fookah", file: "dr-fookah", sheet: [2048, 768], frame: [1337, 281, 662, 260] },
   c_station: { name: "C.STATION", file: "c-station", sheet: [2048, 768], frame: [1533, 157, 481, 440] },
   choizap: { name: "チョイザップ", file: "choizap", sheet: [2172, 724], frame: [754, 89, 693, 547] },
+  ch2_ageha: { name: "MELTY PUFF", file: "melty-puff", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch2_kumicho: { name: "神崎煙草店", file: "kanzaki", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch2_rei: { name: "零-ZERO-", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
 });
 
 export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, id);
 export const storeLogoUrl = (id) => hasStoreLogo(id)
-  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[id].file}.png`, import.meta.url).href : null;
+  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[id].file}.${STORE_LOGOS[id].ext || "png"}`, import.meta.url).href : null;
 export const allStoreLogoUrls = () => Object.keys(STORE_LOGOS).map(storeLogoUrl);
 
 /** 店舗ごとに異なる縦横比を保ち、指定された枠へ収める。 */
