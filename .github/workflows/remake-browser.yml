@@ -95,6 +95,7 @@ jobs:
           node remake/test/browser/samechan_entry.mjs
           node remake/test/browser/samechan_confession.mjs
           node remake/test/browser/affinity_gates.mjs
+          node remake/test/browser/relationship_ui.mjs
       - name: Minto identity, private outing and relationship progression
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
