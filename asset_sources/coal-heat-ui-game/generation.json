@@ -50,7 +50,7 @@
       "場面": "炭焼き準備・加熱中のゲーム素材。",
       "台の型": "なし。",
       "HMD": "なし。シーシャ本体を追加しない。",
-      "炭": "オーナーが指定したexec-59b978f3の厚みのある炭をフラットとして採用。そのままの材質・輪郭・向き。",
+      "炭": "フラット炭の側面を前版より2割程度低くする。薄すぎた初版と厚すぎる前版の間。上面・材質・向きは維持。",
       "ホース": "なし。コンロには後部の電源コード。",
       "吸い口": "なし。",
       "構図": "同じ俯瞰角度、幅に対し高さは薄く、広い底面が水平に接地。"
@@ -60,7 +60,7 @@
       "場面": "炭焼き準備・加熱中のゲーム素材。",
       "台の型": "なし。",
       "HMD": "なし。シーシャ本体を追加しない。",
-      "炭": "採用されたフラット炭の同じ輪郭・向きの未着火差分、exec-152000f8。",
+      "炭": "高さを微調整したフラット炭と同じ輪郭・向きの未着火差分。",
       "ホース": "なし。コンロには後部の電源コード。",
       "吸い口": "なし。",
       "構図": "同じ俯瞰角度、幅に対し高さは薄く、広い底面が水平に接地。"
@@ -118,9 +118,10 @@
         "prompt": "Create a NEW isolated sprite of ONE fully lit25mm coconut hookah charcoal cube for the approved game's main burner. Transparent background, centered full object with even generous padding; no other objects. Reference1 only sets camera/pixel-painter warm game style; reference2 is the PRIMARY real charcoal MATERIAL reference. Broad flat bottom sits horizontally on an implied surface, stable cube, same front oblique elevated camera as mock. Show top and two short side faces. Compressed coconut charcoal with subtly chipped softened corners, fine granular pressed texture, tiny shallow irregular cracks and flaky thin white-to-pale-gray ASH across ALL visible faces. Lower edges and parts below the thin ash glow a restrained vivid red/orange ember. NO large black unlit face, NO large dark round holes or repeated volcanic pores, NO glowing crater, NO lava fissures, NO flaming rock, NO sparkles. Keep a recognizable small manufactured coal with flat roughly square faces and slight natural edge chips. Ash should look dry/powdery like the real photo, NOT shiny ceramic, smooth toy, molten stone or neat dotted-pattern cube. No number, label, halo, tongs, shadow floor or stove. A clean production sprite to reuse unchanged when collecting into the carrier, not a UI mockup."
       },
       "generated_original": "/workspace/generated_images/exec-59b978f3-75ab-4552-8e08-dac46aad42d9.png",
-      "output": "assets/ui/making/heat_flat_lit.png",
-      "adopted": true,
-      "role_change": "Owner selected this thicker initial charcoal as flat charcoal."
+      "output": "asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_lit.png",
+      "adopted": false,
+      "role_change": "Owner selected this thicker initial charcoal as flat charcoal.",
+      "reason": "Owner: selected flat charcoal still slightly too tall. Reduce side-wall height about20%, preserving top footprint and material."
     },
     {
       "name": "heat_cube_cold.png",
@@ -132,15 +133,16 @@
         "prompt": "Edit this ONE isolated charcoal sprite into the COLD UNLIT version of exactly the same piece. Transparent background, preserve exact image canvas, size, position, perimeter, chipped corners, camera, cube geometry and broad flat horizontal bottom. Change material state only: matte very dark charcoal black/gray compressed coconut grain, tiny shallow cracks, NO gray/white ash, NO red/orange ember, NO halo, NO light, NO flames. This must align as closely as possible with the referenced lit sprite when crossfading in a game; do not turn it, change dimensions or invent large holes. One small manufactured coal cube, painterly detailed sprite, no other object or text."
       },
       "generated_original": "/workspace/generated_images/exec-152000f8-accf-4777-a63f-ef3c1fd81ee0.png",
-      "output": "assets/ui/making/heat_flat_cold.png",
-      "adopted": true,
+      "output": "asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_cold.png",
+      "adopted": false,
       "role_change": "Matching cold version of selected flat charcoal.",
       "reference_snapshot": {
         "historical_input": "assets/ui/making/heat_cube_lit.png",
-        "current_preserved_image": "assets/ui/making/heat_flat_lit.png",
+        "current_preserved_image": "asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_lit.png",
         "sha256": "be5047deac4a2881d35fec67d44d7fa5f5e3e9fdd4689e21a42933ba2ad07ba0",
         "note": "At generation time this path contained exec-59b978f3, later selected as flat by the owner. Exact historical args are preserved; use the pinned flat image when replaying."
-      }
+      },
+      "reason": "Owner: selected flat charcoal still slightly too tall. Reduce side-wall height about20%, preserving top footprint and material."
     },
     {
       "name": "heat_flat_lit.png",
@@ -159,7 +161,7 @@
       "reason": "Owner: flat charcoal too thin.",
       "reference_snapshot": {
         "historical_input": "assets/ui/making/heat_cube_lit.png",
-        "current_preserved_image": "assets/ui/making/heat_flat_lit.png",
+        "current_preserved_image": "asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_lit.png",
         "sha256": "be5047deac4a2881d35fec67d44d7fa5f5e3e9fdd4689e21a42933ba2ad07ba0",
         "note": "At generation time this path contained exec-59b978f3, later selected as flat by the owner. Exact historical args are preserved; use the pinned flat image when replaying."
       }
@@ -219,6 +221,49 @@
       "output": "assets/ui/making/heat_cube_cold.png",
       "adopted": true,
       "review": "Same square side-wall height, pose and bottom as the new taller cube; cold material preserves its outline."
+    },
+    {
+      "name": "heat_flat_lit.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_lit.png"
+        ],
+        "prompt": "Edit this ONE lit shisha FLAT charcoal to be slightly LOWER. The owner says this flat piece is a little too tall, but earlier rejected a very thin wafer. Aim for a substantial flat charcoal brick between those extremes.\n\nPreserve the reference's broad square TOP FOOTPRINT, top-face shape, yaw, elevated front-oblique camera, granular dry pale-gray ash, red/orange ember material, chipped edges, lighting and style. Shorten ONLY the VERTICAL SIDE WALLS by about20percent. The overall image silhouette should be about8–10percent lower than the reference at the same top footprint width, still with clear visible side faces and real thickness. A moderate manufactured flat25x25mm charcoal with medium slab thickness. Not a paper-thin tile, not an equally tall cube, not a rounded pillow or a tapering pyramid.\n\nOne isolated piece on a transparent background, exact same1374x1145 canvas, horizontal broad flat bottom resting at the same baseline, centered in the same position. Do not widen the charcoal or change the top's perspective or texture. Keep fine real coconut charcoal ash and restrained red embers at the sides/base, no huge black unlit face, no shiny plastic, no lava holes, no flames, no text, no UI, no other objects. This will replace only the FLAT charcoal; the separate taller square CUBE remains unchanged."
+      },
+      "generated_original": "/workspace/generated_images/exec-ee1beb8b-ee8e-4141-b513-ecb72bb023fb.png",
+      "output": "asset_sources/coal-heat-ui-game/iterations/too-low-flat/heat_flat_lit.png",
+      "adopted": false,
+      "review": "Visible height/width0.7421, roughly20% lower than the previous flat. Too large a reduction for the owner's slight adjustment. Preserved and used only as a thinner secondary reference."
+    },
+    {
+      "name": "heat_flat_lit.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/shisha-game/asset_sources/coal-heat-ui-game/iterations/thick-flat/heat_flat_lit.png",
+          "/workspace/generated_images/exec-ee1beb8b-ee8e-4141-b513-ecb72bb023fb.png"
+        ],
+        "prompt": "Create ONE precise intermediate-height version of the lit flat coconut charcoal in IMAGE 1. IMAGE 1 is only A LITTLE too tall. IMAGE 2 is TOO LOW: do not adopt image2's low pancake side walls.\nKeep image1's broad square top face, granular white/pale gray ash and red orange ember texture, elevated front-oblique camera, same horizontal footprint, straight parallel side walls, facing direction, edge chips and pose. Take image1 and reduce its OVERALL charcoal silhouette height by ONLY about8–9percent, while keeping the same silhouette width. Reduce actual side-wall thickness mildly, about15–18percent, not drastically. Target roughly two-thirds of the way in thickness from the thinner image2 back towards the thick image1.\nExact1374x1145 transparent canvas. The image1 object's visible bounds are approximately x294..1080 and y241..974. Keep the flat BOTTOM baseline near y974, footprint width about790pixels. The new object's visible height should be around670pixels, bounds approximately x294..1084 and y304..974. Image2 is only587pixels tall and is TOO THIN. Target visible height660–685pixels at width780–800pixels. Do not merely scale the bitmap; preserve the top face dimensions and perspective and mildly shorten only physical side walls. Square top, broad flat horizontal bottom, definite substantial vertical side faces, manufactured flat25x25mm charcoal brick with moderate thickness, shorter than a true tall cube but clearly thicker than a thin tile.\nDry granular realistic ash throughout top and side faces, restrained red/orange glowing ember near base/side cracks, shallow compressed coconut cracks, no huge black unlit area, no glossy lava, no flames. One isolated charcoal piece only, transparent background, no text, no other objects. Prioritize the requested mild height adjustment and same camera/footprint."
+      },
+      "generated_original": "/workspace/generated_images/exec-641bd1a5-aec2-49de-b814-37f9f6d38ecf.png",
+      "output": "assets/ui/making/heat_flat_lit.png",
+      "adopted": true,
+      "review": "Broad square top and granular ash preserved, moderate vertical side walls. Visible height/width0.8008, between the earlier rejected thin0.6931 and too-tall0.9326. At86px width about69px high versus the previous80px and cube88px; cube unchanged."
+    },
+    {
+      "name": "heat_flat_cold.png",
+      "args": {
+        "transparent_background": true,
+        "referenced_image_paths": [
+          "/workspace/generated_images/exec-641bd1a5-aec2-49de-b814-37f9f6d38ecf.png"
+        ],
+        "prompt": "Create ONLY the COLD UNLIT state of this exact moderately thick flat coconut charcoal sprite. Preserve the exact1374x1145 canvas, scale, position, perimeter, side-wall thickness, square top face shape, width/depth, yaw, elevated front-oblique camera, chipped corners and broad horizontal flat bottom baseline. This is an intermediate flat brick, not a cube, not a thin wafer. Change ONLY the material color/state to matte black/dark gray compressed coconut charcoal with fine grain and shallow cracks. Remove all red/orange ember, glow, ash powder and white coating. No glow, flame or smoke. Keep precisely the same geometric outline and internal top/side face edges. One charcoal piece only on transparent background, no words, no UI, no other objects. Game crossfade pair: the unlit shape must align to the provided lit sprite instead of changing height or camera."
+      },
+      "generated_original": "/workspace/generated_images/exec-38223859-c607-4d16-a8a5-9d6bac99fa97.png",
+      "output": "assets/ui/making/heat_flat_cold.png",
+      "adopted": true,
+      "review": "Same moderate side-wall thickness, square top, face edges and pose as the slightly lower lit flat. Only material/state is changed."
     }
   ],
   "qa": {
@@ -285,12 +330,12 @@
       ],
       "mode": "RGBA",
       "alpha24_bbox": [
-        294,
-        241,
-        1080,
-        974
+        289,
+        302,
+        1087,
+        941
       ],
-      "bytes": 1319848
+      "bytes": 1066893
     },
     "heat_flat_cold.png": {
       "size": [
@@ -299,12 +344,12 @@
       ],
       "mode": "RGBA",
       "alpha24_bbox": [
-        292,
-        239,
-        1082,
-        976
+        290,
+        299,
+        1087,
+        941
       ],
-      "bytes": 1243708
+      "bytes": 1020679
     },
     "hajime_heat_scene.png": {
       "size": [
@@ -316,7 +361,7 @@
       "bytes": 2093000
     },
     "flat_state_alignment": {
-      "alpha24_iou": 0.9911,
+      "alpha24_iou": 0.9896,
       "same_canvas": true,
       "method": "Read-only original alpha masks, no resampling or artistic image edits"
     },
@@ -324,7 +369,15 @@
       "alpha24_iou": 0.9945,
       "same_canvas": true,
       "method": "Read-only original alpha masks, no resampling or artistic image edits"
+    },
+    "flat_height_revision": {
+      "method": "Read-only alpha24 bbox ratio at the same86px visible width; no artistic pixel transformations.",
+      "previous_flat_height": 80.2,
+      "new_flat_height": 68.86,
+      "cube_height": 87.97,
+      "earlier_thin_flat_height": 59.61,
+      "cube_unchanged": true
     }
   },
-  "user_shape_correction": "The original thick charcoal exec-59b978f3 is selected as flat. Generate a NEW visibly taller cuboid with square straight faces and almost90-degree corners as cube. Preserve real ash/ember material."
+  "user_shape_correction": "The original thick charcoal exec-59b978f3 is selected as flat. Generate a NEW visibly taller cuboid with square straight faces and almost90-degree corners as cube. Preserve real ash/ember material. Second correction: selected flat charcoal is now slightly too tall; shorten only its side walls by about20%, keep its top footprint and ash/ember material. Keep more thickness than the rejected thin flat."
 }

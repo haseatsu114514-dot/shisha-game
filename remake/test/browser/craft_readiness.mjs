@@ -80,6 +80,12 @@ await suite("craft-readiness", async check => {
 
   await check("next-step-prefetch-does-not-block", async page => {
     await init(page);
+    // 初回の必要素材/背景準備を済ませ、保留する次工程だけが開始を止めないことを測る。
+    await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      const bench = T.session.openBench(cs, { steps: [["heat", "炭焼き"], ["place", "炭の配置"]] });
+      await Promise.all([bench.ready, T.readiness.warmCraftAssets(cs.mode, { cs, step: "heat" }), bench.worker.prepare("heat")]);
+    });
     let release;
     const held = new Promise(resolve => { release = resolve; });
     let requested = false;
@@ -88,8 +94,6 @@ await suite("craft-readiness", async check => {
     await page.route("**/img/ui/making/coal_just.webp", async route => { requested = true; await held; await route.continue(); });
     try {
       await page.evaluate(() => {
-        window.cs = T.session.newSession("tournament");
-        T.session.openBench(cs, { steps: [["heat", "炭焼き"], ["place", "炭の配置"]] });
         window.preparing = T.session.waitBenchReady(cs, "heat").then(() => { window.currentReady = true; });
       });
       await page.waitForFunction(() => window.currentReady);
@@ -123,7 +127,8 @@ await suite("craft-readiness", async check => {
       assert.equal(await page.locator(".countdown, .stove .coal").count(), 0, "必須画像より先に時計が始まった");
       assert.equal(await page.evaluate(() => cs.heat), null);
     } finally { release(); }
-    await page.waitForFunction(() => document.querySelector('.heat')?.getAttribute('aria-busy') === "false");
+    // 必須画像の既存15秒上限と、その後の3秒カウントダウンを含む。
+    await page.waitForFunction(() => document.querySelector('.heat')?.getAttribute('aria-busy') === "false", null, { timeout: 20000 });
     const shapes = await page.locator(".stove .coal").evaluateAll(nodes => nodes.map(n => ({
       image: n.querySelector(".c-cold").style.backgroundImage,
       height: parseFloat(n.querySelector(".coal-sprite").style.height),

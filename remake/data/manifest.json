@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-13 13:30 UTC",
+ "generated": "2026-10-13 15:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1472,17 +1472,17 @@
    1.2
   ],
   "heat_flat_cold.png": [
-   0.2125,
-   0.2087,
-   0.7875,
-   0.8524,
+   0.2111,
+   0.2611,
+   0.7911,
+   0.8218,
    1.2
   ],
   "heat_flat_lit.png": [
-   0.214,
-   0.2105,
-   0.786,
-   0.8507,
+   0.2103,
+   0.2638,
+   0.7911,
+   0.8218,
    1.2
   ],
   "heat_stove.png": [

@@ -3,8 +3,8 @@
     "case": "scoped-and-cached",
     "beforeCount": 104,
     "currentCount": 27,
-    "preparationMs": 3661,
-    "cachedMs": 117,
+    "preparationMs": 3427,
+    "cachedMs": 1032,
     "unrelatedAtStart": 0,
     "laterBackgroundRequests": [
       "/remake/img/sprites/characters/naru/chr_naru_normal.webp"

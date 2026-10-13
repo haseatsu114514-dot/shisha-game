@@ -1,6 +1,7 @@
 [
   {
     "shape": "flat",
+    "height": 69,
     "count": "1 / 3",
     "unchangedSave": true,
     "errors": [],
@@ -8,6 +9,7 @@
   },
   {
     "shape": "cube",
+    "height": 88,
     "count": "1 / 3",
     "unchangedSave": true,
     "errors": [],
