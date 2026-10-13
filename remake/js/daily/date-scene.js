@@ -1,8 +1,9 @@
 // 共通のデート画面。条件・料金・日付の確定は呼出し側が持つ。
 import { DB, callName } from "../core/data.js";
 import { state } from "../core/state.js";
+import { relationshipElapsedDay } from "../core/chapter-clock.js";
 
-export const relationshipDayTotal = () => ((state.chapter || 1) - 1) * 14 + state.day;
+export const relationshipDayTotal = () => relationshipElapsedDay(state);
 
 export function dateVenue(id, savedId = null) {
   const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];

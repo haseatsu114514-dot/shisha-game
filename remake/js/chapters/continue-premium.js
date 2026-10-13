@@ -79,7 +79,7 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
   },
   ageha: {
     id: "premium_ageha", title: "帰るには早くない？", name: "アゲハ",
-    bio: "恋人 / パラパラ", speaker: "ageha", duration: 20,
+    bio: "恋人 / MELTY PUFF", speaker: "ageha", duration: 20,
     audio: null,
     reactions: {
       retry: { text: ["っしゃあ！ それでこそハジメっち！", "アタシの声援、ちゃんと届いた！？"], faces: ["excited"], effect: "cheer", word: "っしゃあ！" },

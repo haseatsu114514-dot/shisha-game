@@ -62,6 +62,9 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/adam/")
             or rel.startswith("sprites/characters/naru/")
             or rel.startswith("sprites/characters/dr_kemuri/")
+            or rel.startswith("sprites/characters/kumicho/")
+            or rel.startswith("sprites/characters/rei/")
+            or rel.startswith("sprites/characters/volk/")
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
             or rel == "cgs/cg_minto_first_cheki.png"
             or rel.startswith("ui/axe_throw/")):

@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
@@ -28,6 +29,7 @@ const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new E
 const context = vm.createContext({ console, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
 const noop = () => {}, mods = new Map();
 const values = {
+  "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
@@ -360,5 +362,24 @@ reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _min
 const oldWrongDay = item(oldHoliday, { read: true, done: true, result: "accepted" }); state.inbox.push(oldWrongDay);
 state.pendingInvite = { day: 11, originId: oldHoliday.id, event: oldHoliday.accept_event, sender: "minto", slot: 0 };
 phone.expireInvitations({ fixedNight: () => false }); assert.equal(state.pendingInvite, null); assert(oldWrongDay.needsResend); assert(oldWrongDay.log.some((l) => /別の日/.test(l.note || "")));
+
+// 第2章は通算日を保存し、朝の条件と記念日だけを適切な時計で読む。
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 }, _ch2_ageha_contact: true }, contacts: ["ageha"] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit");
+assert.equal(phone.deliverMorning(), 1); assert.equal(state.inbox[0].msg.sender, "ageha");
+assert.equal(phone.deliverMorning(), 0, "Read/unread buffers must not duplicate the new contact's message");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 }, _ch2_ageha_contact: true }, contacts: [] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit"); assert.equal(phone.deliverMorning(), 0, "No message without an actual contact exchange");
+reset({ chapter: 1, day: 3, flags: { _ch2_ageha_contact: true }, contacts: ["ageha"] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit"); phone.deliverMorning(); assert(!state.inbox.some(item => item.msg.sender === "ageha"));
+reset({ chapter: 2, day: 17, flags: { _ch2_day1: { startDay: 15 } }, contacts: ["naru"] });
+db.lime = [{ id: "ch2_clock_probe", sender: "naru", chapter: 2, type: "chat", trigger_condition: "lime_exchanged", trigger_day: 3, messages: ["章内DAY3"] }];
+assert.equal(phone.deliverMorning(), 1, "Chapter-scoped triggers use local DAY3, not elapsed day17");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["minto"], contacts: ["minto"], loverSince: { minto: 6 } });
+db.lime = []; db.lover = { anniversary: { minto: { m: ["{n}日"], r: [] } } };
+assert.equal(phone.morningMessages()[0].id, "_lover_anniv_minto_n10", "Chapter transition must preserve ten-day anniversaries");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["minto"], contacts: ["minto"], lastDate: { minto: 12 } });
+db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
+assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
 
 console.log("[remake LIME] notification thread, defer, automatic conflict history/retry, six rumor replies, unread/read retry, small affinity, holiday/after-close schedules, queued closing appointment, legacy name introduction, Adam arcade, confession gate, morning copy: PASS");
