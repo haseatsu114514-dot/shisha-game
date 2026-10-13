@@ -188,6 +188,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
+  // みんとの最初の私的な買い出しは、♥3到達だけで正体判明より先行させない。
+  if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") return needsResend(m.id) || m.trigger_day <= state.day && state.day - m.trigger_day <= 1;
