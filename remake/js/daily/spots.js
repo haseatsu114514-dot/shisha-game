@@ -13,6 +13,7 @@ import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFin
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
+import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
 
@@ -55,20 +56,20 @@ export const SPOTS = [
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
     desc: "焼き菓子みたいな甘い匂いの人気店。腕のいい若い店員がいると評判らしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
-    desc: "焼き林檎みたいな匂いが漏れてくる店。注文はなぜかいつも一種類。", stamina: -16 },
+    desc: "アニスの甘い香りが漏れてくる店。注文はなぜかいつもダブルアップル。", stamina: -16 },
   { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
   { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
-    desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
+    desc: "なる行きつけの喫茶。ラテと焼き菓子でひと息。常連の小話も聞こえる。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
-    desc: "アダムに教えてもらった静かな場所。頭が空っぽになる。" },
+    desc: "アダムに教えてもらった静かな場所。猫と掃除の箒がある、街の小さなお堂。" },
   { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
-    desc: "みんとに教えてもらったジム。「見た目も武器だよ」とのこと。" },
+    desc: "みんとに教えてもらったジム。街の人も汗を流す、気軽な寄り道先。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
@@ -176,6 +177,8 @@ export async function visitChar(charId) {
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
+  const followup = spotFollowupDue(charId, state, DB.dialogues);
+  if (followup) await play(followup, { bg });
   if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
     await play("ch1_minto_identity_reveal");
@@ -218,19 +221,23 @@ export async function visitRival(spot) {
   await visitChar(spot.charId);
 }
 
-/** 施設スポット（一人の時間）。能力1Pに加え、場所ごとの体力の変化がある。 */
+/** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
 export async function visitSpot(spot) {
   refreshPlaceCue(spot.id);
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina || 0);
   state.spotVisits = state.spotVisits || {};
   const n = (state.spotVisits[spot.id] = (state.spotVisits[spot.id] || 0) + 1);
+  const owner = state;
+  const pool = quietSpotPool(spot);
   let id = spot.first;
   if (spot.id === "choizap") {
-    id = state.flags._gym_member ? spot.pool[(n - 1) % spot.pool.length] : spot.first;
-  } else if (n > 1 && spot.pool) {
-    id = spot.pool[(n - 2) % spot.pool.length];
+    if (state.flags._gym_member && pool.length) id = pool[(n - 1) % pool.length];
+  } else if (n > 1 && pool.length) {
+    id = pool[(n - 2) % pool.length];
   }
+  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues);
+  if (encounter) id = encounter;
   // 雨の日（2回目以降）は雨の回を出す
   const rainId = RAIN_SPOT_TEXTS[spot.id];
   if (rainId && n > 1 && isRainy() && DB.dialogues[rainId]) id = rainId;
@@ -240,6 +247,8 @@ export async function visitSpot(spot) {
     id = "ch1_reviewer_payoff";
   }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  if (state !== owner) return;
+  recordSpotEncounter(spot.id, id, n, state);
   if (spot.id === "c_station") {
     state.flags._c_station_registered = true;
     await installReel();
