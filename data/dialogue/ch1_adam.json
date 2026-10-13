@@ -588,27 +588,56 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "俺はダブルアップルが到達点であり、原点であると信じている"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "……だが、お前の煙にも、お前だけの『何か』が芽吹き始めている"
+          "text": "……今日は、いつもの一台が決まらん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺だけの……何か……"
+          "text": "アダムさんでも、そういう日があるんですか？"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "特定の強みがなくとも、構わない。俺が一点を極めるなら、お前は全方向を素直に受け入れる"
+          "text": "ある。認めたくないが、ある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは炭を端へ寄せて、もう一口吸った。"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "それも、れっきとした１つの道だ"
+          "text": "……ふむ。お前も吸ってみろ。さっきと今、どちらが好きだ？"
+        },
+        {
+          "type": "choice",
+          "id": "adam_fifth_taste",
+          "choices": [
+            {
+              "text": "さっきの濃い感じが好き",
+              "next": "taste_before"
+            },
+            {
+              "text": "今の軽い後味が好き",
+              "next": "taste_after"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持ったまま、アダムが首をひねる。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……悩むではないか、同志よ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺まで一緒に悩んでる。そろそろ帰るつもりだったのに）"
         },
         {
           "speaker": "adam",
@@ -638,14 +667,35 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（アダムさんとの奇妙な交流で、シーシャの奥深さを改めて知った気がする）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（さっきのは、あの人なりのエールだと思っておこう）"
+          "text": "（アダムさんは、まだ器から目を離さない）"
         }
-      ]
+      ],
+      "branches": {
+        "taste_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺は、さっきの濃い感じが好きでした"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……そうか。では、戻して確かめよう"
+          }
+        ],
+        "taste_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今のほうが、最後が軽くて好きです"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……ふむ。俺はさっきの濃さも残したいところだが"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_adam_group_soutoku",

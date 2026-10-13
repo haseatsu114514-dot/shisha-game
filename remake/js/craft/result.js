@@ -9,6 +9,7 @@ import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
 import { evaluationOf } from "./feedback.js";
+import { craftRecognition } from "./recognition.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
@@ -64,7 +65,7 @@ const header = (eyebrow, title, sub) => el("header.tournament-heading", [
  * @param round 1 | 2
  * @param mine  ここまでのはじめの出来（0〜100）
  */
-export async function showStandings(round, mine) {
+export async function showStandings(round, mine, cs = null) {
   // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
   const table = round === 1
     ? { maezono: { naru: 3, adam: 1, minto: 1 }, dr_kemuri: {}, nagumo: {} }
@@ -74,6 +75,7 @@ export async function showStandings(round, mine) {
     ? [`${displayName("maezono", state)}、なるに3点投入！`, "南雲審査員長、まだ動かず"]
     : ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"];
   const review = evaluationOf(mine);
+  const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
     header(`SMOKE CROWN CUP / ROUND ${round}`, "現在の投票", "審査員の持ち点 · 南雲審査員長は10点を保留"),
     el("div.sd-rows", ordered(values).map((id, i) => el(`div.sd-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(i) }, dataset: { id } }, [
@@ -84,6 +86,7 @@ export async function showStandings(round, mine) {
       el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
     ]))),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
+    recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
     el("div.sd-feed", feed.map((t) => el("div", { text: `▶ ${t}` }))),
   ]);
   const dim = el("div.fx-dim");

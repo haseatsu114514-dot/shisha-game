@@ -304,6 +304,9 @@ python3 remake/tools/serve_preview.py --port 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 node remake/test/gameplay_polish.mjs         # 任意練習・会釈・HUD回復・スマホ弾幕/リフレッシュ
 node remake/test/craft_focus.mjs             # 制作UI・審査員・実タイマー・温度引継ぎ・成功帯と針速度
+node remake/test/mix_recognition.mjs        # 味の予告・実績反応・未記録/供給台の境界
+node remake/test/browser/ch1_presentation.mjs # 冒頭・配合・補足の温度・固定票（PC/タッチ）
+node remake/test/browser/ch1_story_feedback.mjs # 既見の絵・アダムの両感想・優勝の夜
 node remake/test/browser/ch1_tournament.mjs  # 素材待ち・炭解放・調整2回・準備と保存・大会画面
 node remake/test/browser/ch1_eve.mjs         # 前夜の4択・工程別練習・途中保存・旧フラグ・DAY14復帰（PC/横持ちタッチのエミュレーション）
 node remake/test/browser/craft_progress.mjs  # PC/横持ち・提供成功/失敗・共通調整セル・履歴と配点

@@ -5,7 +5,10 @@ import { suite, assertFits } from "./support.mjs";
 
 const near = (actual, expected, label = "") => assert(Math.abs(actual - expected) < .002, `${label}: ${actual} != ${expected}`);
 const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
-const bandsOf = page => page.locator(".thermo").evaluate(root => {
+const bandsOf = async page => {
+  const preview = page.locator('details[data-test="mix-temperature-preview"]:not([open])');
+  if (await preview.count()) await preview.locator("summary").click();
+  return page.locator(".thermo").evaluate(root => {
   const tube = root.querySelector(".thermo-tube").getBoundingClientRect();
   const bounds = selector => {
     const band = root.querySelector(selector).getBoundingClientRect();
@@ -14,6 +17,7 @@ const bandsOf = page => page.locator(".thermo").evaluate(root => {
   return { t: Number(root.dataset.tolerance), ideal: bounds(".thermo-zone"), optimal: bounds(".thermo-optimal"),
     gradient: getComputedStyle(root.querySelector(".thermo-scale")).backgroundImage };
 });
+};
 const expectBands = async (page, t) => {
   const bands = await bandsOf(page);
   near(bands.t, t);
@@ -68,7 +72,7 @@ await suite("mix-temperature", async check => {
       await expectBands(page, 1);
       assert.equal(await page.locator('[data-test="thermo-pointer"]').isVisible(), false);
       assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /緑.*42\.0.*虹.*49\.0/);
-      await assertFits(page, '.mix-temperature-preview, .mix-temperature, [data-test="mix-ok"]');
+      await assertFits(page, '.mix-temperature-preview > summary, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
       const small = await expectBands(page, .9);
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
@@ -81,7 +85,7 @@ await suite("mix-temperature", async check => {
       assert.equal(await page.locator(".mix-ideal").textContent(), "緑 · 適温 50.4〜79.2%");
       assert.equal(await page.locator(".mix-optimal").textContent(), "虹 · 最適温 58.8〜70.8%");
       assert.match(await page.locator('.flavor-row[data-flavor="mint"]').textContent(), /課題（支給）/);
-      await assertFits(page, '.mix-temperature-preview, .mix-temperature, [data-test="mix-ok"]');
+      await assertFits(page, '.mix-temperature-preview > summary, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await page.screenshot({ path: path.join(shots, `mix-temperature-preview-${name}.png`) });
       await page.locator('[data-test="mix-ok"]').click(); await page.evaluate(() => QA.run);
       const mix = await page.evaluate(() => ({ mix: QA.cs.mix, mintStock: QA.core.state.flavorStock.mint || 0 }));
