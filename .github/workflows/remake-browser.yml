@@ -95,6 +95,7 @@ jobs:
           node remake/test/browser/samechan_entry.mjs
           node remake/test/browser/samechan_confession.mjs
           node remake/test/browser/affinity_gates.mjs
+          node remake/test/browser/relationship_ui.mjs
       - name: Tsumugi fixed events, legacy saves and continuous chapter days
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
