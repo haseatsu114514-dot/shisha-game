@@ -1156,6 +1156,14 @@
    "file": "title_art_hiyori_03_after_rain.png"
   },
   {
+   "character": "hiyori",
+   "file": "title_art_hiyori_04_daylight_bookshop.png"
+  },
+  {
+   "character": "hiyori",
+   "file": "title_art_hiyori_05_ramen_break.png"
+  },
+  {
    "character": "samechan",
    "file": "title_art_samechan_01_shishark_test_run.png"
   },
@@ -1786,6 +1794,8 @@
   "ui/title_arts/title_art_hiyori_01_twilight_walk.png",
   "ui/title_arts/title_art_hiyori_02_window_pause.png",
   "ui/title_arts/title_art_hiyori_03_after_rain.png",
+  "ui/title_arts/title_art_hiyori_04_daylight_bookshop.png",
+  "ui/title_arts/title_art_hiyori_05_ramen_break.png",
   "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",

@@ -108,6 +108,54 @@
       "thumbnail": "media/af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158-thumb.webp"
     },
     {
+      "id": "6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484",
+      "sha256": "6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484",
+      "character": "hiyori",
+      "label": "title_art_hiyori_04_daylight_bookshop",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_04_daylight_bookshop.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484.webp",
+      "thumbnail": "media/6ea270d90ddfb7f09d138f36f4ec0115f6cf01a63a33f2ee9b7a0a1326769484-thumb.webp"
+    },
+    {
+      "id": "77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9",
+      "sha256": "77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9",
+      "character": "hiyori",
+      "label": "title_art_hiyori_05_ramen_break",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_05_ramen_break.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9.webp",
+      "thumbnail": "media/77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9-thumb.webp"
+    },
+    {
       "id": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
       "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
       "character": "hiyori",
@@ -2645,10 +2693,10 @@
     ]
   },
   "summary": {
-    "originalPaths": 114,
-    "uniqueArt": 92,
+    "originalPaths": 116,
+    "uniqueArt": 94,
     "duplicatePaths": 22,
-    "current": 21,
+    "current": 23,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

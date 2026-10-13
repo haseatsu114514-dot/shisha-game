@@ -31,10 +31,10 @@ const seed=()=>localStorage.setItem('suien_remake_save','{"schema":5,"day":9,"ow
 try {
   await check('all-images-and-catalog',async page=>{
     catalog=await page.evaluate(async()=>await(await fetch('catalog.json')).json());
-    assert.equal(catalog.summary.current,21); assert.equal(new Set(catalog.items.map(a=>a.id)).size,catalog.items.length);
+    assert.equal(catalog.summary.current,23); assert.equal(new Set(catalog.items.map(a=>a.id)).size,catalog.items.length);
     assert.equal(catalog.items.filter(a=>a.groups.includes('アゲハ修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.groups.includes('タッパー修正')).length,5);
-    assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,3);
+    assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,5);
     assert.equal(catalog.characters.samechan,'サメちゃん／波多野なぎさ');
     const urls=[...catalog.items.flatMap(a=>[a.image,a.thumbnail]),...Object.values(catalog.references).flat().map(a=>a.url)];
     const failures=await page.evaluate(async urls=>{
@@ -100,7 +100,7 @@ try {
       await page.locator('#close-viewer').click();
       await page.locator('#decision').selectOption('candidate'); assert.equal(await page.locator('.card').count(),1);
       await page.locator('#reset').click();
-      await page.locator('#current').selectOption('yes'); assert.equal(await page.locator('.card').count(),21);
+      await page.locator('#current').selectOption('yes'); assert.equal(await page.locator('.card').count(),23);
       await page.locator('#reset').click();
       await page.locator('#search').fill('タッパー'); assert.ok(await page.locator('.card').count()>=5);
       await page.locator('#reset').click();
