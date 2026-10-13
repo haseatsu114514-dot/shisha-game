@@ -1,0 +1,132 @@
+// Short tabletop stories: isolated, deterministic sessions with scenario-owned rules.
+const copy = value => structuredClone(value);
+
+export class TrpgSession {
+  constructor(scenario, { seed = Date.now(), profileId = null } = {}) {
+    if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
+    this.scenario = scenario;
+    this.rng = Number(seed) >>> 0 || 1;
+    const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
+      : scenario.profiles[this.next() % scenario.profiles.length];
+    if (!profile) throw new Error("Unknown traveler profile");
+    this.profile = profile;
+    this.flow = scenario.flow || { prepare: ["aroma", "seat"], serve: ["approach"] };
+    this.rules = { exploreLimit: 6, pressureMax: 3, initialPressure: 0, inspectionPressure: 0,
+      checkPressure: { success: 0, mixed: 1, trouble: 1 }, detourThreshold: 1, hypothesisBonus: 0,
+      ...scenario.rules };
+    this.rerollActor = scenario.cast.find(c => c.abilityType === "reroll")?.id || "hajime";
+    this.state = {
+      scenarioId: scenario.id, version: scenario.version, seed: Number(seed) >>> 0, phase: "cover",
+      profileId: profile.id, clues: [], consulted: [], hypothesis: null,
+      plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
+      pressure: this.rules.initialPressure, teamwork: 2,
+      used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
+      checks: [], pending: null,
+    };
+  }
+
+  next() {
+    let x = this.rng;
+    x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+    return this.rng = x >>> 0;
+  }
+  die() { return this.next() % 6 + 1; }
+  snapshot() { return copy(this.state); }
+  require(phase) {
+    if (this.state.phase !== phase || this.state.pending) throw new Error("Action unavailable in this phase");
+  }
+  start() { this.require("cover"); this.state.phase = "listen"; }
+
+  inspect(id) {
+    this.require("explore");
+    const spot = this.scenario.spots.find(s => s.id === id);
+    if (!spot) throw new Error("Unknown investigation spot");
+    const fresh = !this.state.clues.includes(id);
+    if (fresh && this.state.clues.length >= this.rules.exploreLimit) throw new Error("Investigation limit reached");
+    if (fresh) {
+      this.state.clues.push(id);
+      this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.inspectionPressure);
+    }
+    return { fresh, spot: copy(spot), evidence: copy(this.profile.evidence[id]) };
+  }
+
+  consult(id) {
+    this.require("explore");
+    if (!this.scenario.consult[id]) throw new Error("Unknown participant");
+    if (!this.state.consulted.includes(id)) this.state.consulted.push(id);
+    return copy(this.scenario.consult[id]);
+  }
+
+  interpret(id) {
+    this.require("explore");
+    if (this.state.clues.length < 3) throw new Error("Collect three clues before discussing the plan");
+    if (!this.scenario.hypotheses.some(h => h.id === id)) throw new Error("Unknown hypothesis");
+    this.state.hypothesis = id;
+    this.state.phase = "prepare";
+  }
+
+  plan(field, value) {
+    const phase = Object.keys(this.flow).find(kind => this.flow[kind].includes(field));
+    if (!phase) throw new Error("Unknown preparation field");
+    this.require(phase);
+    if (!this.scenario.options[field]?.some(option => option.id === value)) throw new Error("Unknown preparation choice");
+    this.state.plan[field] = value;
+  }
+
+  beginCheck(kind, { support = false } = {}) {
+    const phases = { listen: "listen", prepare: "prepare", serve: "serve" };
+    if (!phases[kind]) throw new Error("Unknown check");
+    this.require(phases[kind]);
+    if (this.flow[kind]?.some(field => !this.state.plan[field])) throw new Error("Complete the plan before rolling");
+    const helper = this.scenario.checks[kind].helper || null;
+    if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
+    if (support) { this.state.used[helper] = true; this.state.teamwork--; }
+    const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus : 0;
+    this.state.pending = {
+      kind, dice: [this.die(), this.die()], bonus: 1 + hypothesisBonus + (support ? 2 : 0), hypothesisBonus,
+      helper: support ? helper : null, rerolled: false,
+    };
+    return this.checkResult();
+  }
+
+  checkResult() {
+    const p = this.state.pending;
+    if (!p) throw new Error("No pending check");
+    const total = p.dice[0] + p.dice[1] + p.bonus;
+    return { ...copy(p), total, grade: total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble" };
+  }
+
+  reroll(index) {
+    const p = this.state.pending;
+    if (!p || ![0, 1].includes(index) || p.rerolled || this.state.used[this.rerollActor] || this.state.teamwork < 1) throw new Error("Reroll unavailable");
+    this.state.used[this.rerollActor] = true;
+    this.state.teamwork--;
+    p.rerolled = true;
+    p.dice[index] = this.die();
+    return this.checkResult();
+  }
+
+  settleCheck() {
+    const result = this.checkResult();
+    this.state.checks.push(result);
+    this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
+    this.state.pending = null;
+    this.state.phase = { listen: "explore", prepare: "serve", serve: "ending" }[result.kind];
+    return copy(result);
+  }
+
+  result() {
+    if (this.state.phase !== "ending") throw new Error("The session is not complete");
+    const plan = this.state.plan;
+    const fit = Object.entries(plan).reduce((n, [field, value]) =>
+      n + (this.profile.likes[field].includes(value) ? (this.scenario.fitWeights?.[field] || 1) : 0), 0);
+    const ending = fit >= 3 ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
+    return {
+      scenarioId: this.state.scenarioId, version: this.state.version, ending,
+      variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
+      plan: copy(plan), hypothesis: this.state.hypothesis,
+      clues: copy(this.state.clues), checks: copy(this.state.checks),
+      pressure: this.state.pressure, profileId: this.profile.id,
+    };
+  }
+}

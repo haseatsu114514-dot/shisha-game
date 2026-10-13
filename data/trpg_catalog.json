@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "characterProfiles": ["dialogue/samechan.json"],
+  "scenarios": [
+    {
+      "id": "ordinary-cup",
+      "file": "dialogue/trpg_ordinary.json"
+    },
+    {
+      "id": "shark-last-order",
+      "file": "dialogue/trpg_shark.json"
+    }
+  ]
+}

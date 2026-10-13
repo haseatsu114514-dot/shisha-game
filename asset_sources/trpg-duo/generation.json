@@ -1,0 +1,45 @@
+{
+  "images": [
+    {
+      "scenario": "ordinary",
+      "generator": "image_gen.imagegen",
+      "origin_filename": "exec-b624aaca-76d5-4e3d-b87a-b8633d0dcc6d.png",
+      "source": "assets/backgrounds/trpg_ordinary_room.png",
+      "source_sha256": "acacbffccf026973923e141dda189d38c015581eb253cf5d8270b04e782ae9c1",
+      "served": "remake/img/backgrounds/trpg_ordinary_room.webp",
+      "served_sha256": "27eefdba11e81a2509dd2d5a305a50d56b3152359ac01576a9413345d5f3898c",
+      "prompt": "asset_sources/trpg-duo/ordinary-prompt.txt",
+      "prompt_sha256": "bee1a21c1e0b071056df67d3127ea00c34f091b4ba2cd1042d7b76700682763b",
+      "conversion": "ImageMagick PNG to WebP, quality 90, original dimensions preserved",
+      "qa": {
+        "reviewed": true,
+        "hardware_absent": true,
+        "people_absent": true,
+        "copyrighted_logos_absent": true,
+        "interactive_props_readable": true,
+        "scene_specific": true
+      }
+    },
+    {
+      "scenario": "shark",
+      "generator": "image_gen.imagegen",
+      "origin_filename": "exec-a2e94f15-9639-4220-840e-292a9f754882.png",
+      "source": "assets/backgrounds/trpg_shark_room.png",
+      "source_sha256": "b88af359b5a80af29eb1a782df26fc5d18bba94484d70dd4f9e0dfe1a157d45d",
+      "served": "remake/img/backgrounds/trpg_shark_room.webp",
+      "served_sha256": "f2d20fbfe755129169257c1bfcb02103354fb05a06fe6f88b50fde3560958356",
+      "prompt": "asset_sources/trpg-duo/shark-prompt.txt",
+      "prompt_sha256": "9e1f8387cbfae5e729efc738e1c172e28a11934b636e2c39d101d13aa9905326",
+      "conversion": "ImageMagick PNG to WebP, quality 90, original dimensions preserved",
+      "qa": {
+        "reviewed": true,
+        "hardware_absent": true,
+        "people_absent": true,
+        "copyrighted_logos_absent": true,
+        "interactive_props_readable": true,
+        "scene_specific": true
+      }
+    }
+  ],
+  "note": "新規に生成した架空の冒険背景。人物は正規立ち絵を別途使用。実在店舗・作品・ロゴの模写なし。原画はassetsに保管。"
+}
