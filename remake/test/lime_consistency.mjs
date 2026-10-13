@@ -28,7 +28,7 @@ const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new E
 const context = vm.createContext({ console, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
 const noop = () => {}, mods = new Map();
 const values = {
-  "hiyori-route.js": { hiyoriEventStatus: () => "disabled" },
+  "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "ui.js": { layers }, "state.js": { state, save: noop, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },

@@ -9,6 +9,7 @@ import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
+import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js";
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
@@ -28,7 +29,11 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
  */
 export function romanceRouteOpen(id) {
-  if (id === "hiyori" && (!DB.hiyori?.route?.enabled || state.chapter > 3)) return false;
+  if (id === "hiyori") {
+    const route = hiyoriRoute();
+    if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
+      || ![route.question?.choice,route.finale?.question].every(key => state.romanceChoices[key]?.char === id && state.romanceChoices[key].value > 0)) return false;
+  }
   if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
     || !state.flags._samechan_bond_question_done
     || state.romanceChoices?.bond_q1_samechan?.char !== id
@@ -59,11 +64,12 @@ export function onDialogueEnter(id, dlg) {
   if (m) {
     // この新規ルートは正式な締めくくりからだけ成立。既存の友人/恋人を再読で変更しない。
     if (m[1] === "samechan" && !romanceRouteOpen("samechan")) return;
+    if (m[1] === "hiyori" && !romanceRouteOpen("hiyori")) return;
     if (m[2] === "accept") becomeLovers(m[1]);
     else state.flags[`_friend_${m[1]}`] = true; // 友達のまま（以後この告白は出ない）
   }
   const r = dlg?.metadata?.set_romance;
-  if (r) becomeLovers(r);
+  if (r && (r !== "hiyori" || romanceRouteOpen(r))) becomeLovers(r);
 }
 
 // ---------------------------------------------------------------- 告白

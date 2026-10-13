@@ -15,6 +15,7 @@ export const canWalkStreet = ({ guide } = {}) => state.chapter === 1 && (!guide 
 export function openStreet(opts, setInterrupt) {
   return new Promise((resolve) => {
     let finished = false;
+    let entering = false;
     const finish = (value) => {
       if (finished) return;
       finished = true;
@@ -46,14 +47,19 @@ export function openStreet(opts, setInterrupt) {
             const id = STREET_DOORS[door];
             return !!(state.visits[id] > 0 || state.spotVisits?.[id] > 0);
           },
-          enter: (door) => {
-            if (!info(door).ok) return;
-            const spot = spotById(STREET_DOORS[door]);
-            cueTransition("place", { spotId: spot.id, label: spot.label, area: spot.area || "", glyph: spot.glyph || "" });
-            finish(spot.id);
+          enter: async (door) => {
+            if (finished || entering || !info(door).ok) return;
+            entering = true;
+            try {
+              const spot = spotById(STREET_DOORS[door]);
+              if (opts.onBeforeGo && !(await opts.onBeforeGo(spot))) return;
+              if (finished || !info(door).ok) return;
+              cueTransition("place", { spotId: spot.id, label: spot.label, area: spot.area || "", glyph: spot.glyph || "" });
+              finish(spot.id);
+            } finally { entering = false; }
           },
           back: () => finish(BACK_TO_MAP),
-          paused: () => finished || !root.isConnected || root.classList.contains("done")
+          paused: () => finished || entering || !root.isConnected || root.classList.contains("done")
             || layers.modal.classList.contains("show") || layers.vn.classList.contains("active")
             || document.body.classList.contains("vn-open") || document.hidden,
         });

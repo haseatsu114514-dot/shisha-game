@@ -54,10 +54,12 @@ await suite("ch1-facility-art", async check => {
         ui.clearScreen(); const art = data.sceneBg("bg_c_station", time);
         await ui.setBg(art.url, { instant: true });
         const line = data.DB.dialogues.ch1_meet_rivals.lines.find(l => l.speaker === "naru" && l.text);
+        if (!line) throw new Error("Missing canonical spoken line: ch1_meet_rivals/naru");
         void engine.play({ dialogue_id: "facility-rain", metadata: { bg: "bg_c_station" }, lines: [line] });
-        return { url: art.url, rain: wx.rainScene(art.url, "vn") };
+        return { url: art.url, rain: wx.rainScene(art.url, "vn"), text: line.text };
       }, time);
-      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("緊張") && Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99);
+      await page.waitForFunction(text => document.querySelector(".vn-text")?.textContent === text
+        && Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99, result.text);
       assert.equal(result.url, `img/backgrounds/bg_c_station_overcast_${time}.webp`);
       assert.equal(result.rain.mode, "indoor");
       assert.equal(await page.locator("#weather .weather-drop").count(), result.rain.windows.length * 5);

@@ -1,0 +1,95 @@
+name: TRPG two-story collection
+on:
+  pull_request:
+    paths:
+      - 'data/dialogue/trpg_ordinary.json'
+      - 'data/dialogue/trpg_shark.json'
+      - 'data/trpg_catalog.json'
+      - 'remake/img/backgrounds/trpg_*.webp'
+      - 'remake/data/manifest.json'
+      - 'tools/export_trpg_preview.py'
+      - 'remake/js/trpg/**'
+      - 'remake/css/trpg.css'
+      - 'remake/trpg-preview.html'
+      - 'remake/index.html'
+      - 'remake/js/scenes/title.js'
+      - 'remake/js/scenes/trpg-room.js'
+      - 'remake/test/trpg.mjs'
+      - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_main.mjs'
+      - '.github/workflows/trpg-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/dialogue/trpg_ordinary.json'
+      - 'data/dialogue/trpg_shark.json'
+      - 'data/trpg_catalog.json'
+      - 'remake/img/backgrounds/trpg_*.webp'
+      - 'remake/data/manifest.json'
+      - 'tools/export_trpg_preview.py'
+      - 'remake/js/trpg/**'
+      - 'remake/css/trpg.css'
+      - 'remake/trpg-preview.html'
+      - 'remake/index.html'
+      - 'remake/js/scenes/title.js'
+      - 'remake/js/scenes/trpg-room.js'
+      - 'remake/test/trpg.mjs'
+      - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_main.mjs'
+      - '.github/workflows/trpg-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: trpg-preview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            tools
+            assets/audio
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Scenario and session checks
+        run: |
+          node --test remake/test/trpg.mjs
+          python3 tools/lint_dialogue.py trpg_
+      - name: Install pinned browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/trpg-server.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/trpg-preview.html; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/trpg-server.log"
+          exit 1
+      - name: PC, touch, story branches and storage isolation
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          ARTIFACT_DIR: .codex/artifacts/trpg
+        run: |
+          node remake/test/browser/trpg.mjs
+          node remake/test/browser/trpg_main.mjs
+      - name: Upload screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: trpg-two-story-preview
+          path: .codex/artifacts/trpg
+          if-no-files-found: ignore
