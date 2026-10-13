@@ -58,6 +58,13 @@ def main():
 
     output = Path(args.output).resolve()
     output.mkdir(parents=True, exist_ok=True)
+    previous = output / "SOURCE.json"
+    if previous.is_file():
+        old_paths = json.loads(previous.read_text(encoding="utf-8")).get("sha256", {})
+        for path in set(old_paths) - files:
+            target = output / path
+            target.resolve().relative_to(output)
+            target.unlink(missing_ok=True)
     hashes, total = {}, 0
     for path in sorted(files):
         data = read(path)

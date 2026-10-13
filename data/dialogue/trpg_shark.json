@@ -42,7 +42,7 @@
   },
   "cast": [
     {
-      "id": "kafuka",
+      "id": "samechan",
       "part": "GM",
       "role": "案内と、海の怪物",
       "color": "#73b8df"
@@ -371,7 +371,7 @@
       "dialogue_id": "trpg_shark_intro",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "今夜はサメ映画じゃ。全員生還、そこは約束するぞ"
@@ -395,13 +395,13 @@
           "text": "……予告編、もう見たい"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "海上ラウンジ「夜凪」。岸の灯りは、まだ遠い"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "閉店の曲が鳴った瞬間、窓の向こうを背びれが横切る"
@@ -413,13 +413,13 @@
           "text": "……閉店してから来てくれない？"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "サメは営業時間を知らぬのじゃ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
           "text": "余は続編を要求する"
@@ -436,13 +436,13 @@
       "dialogue_id": "trpg_shark_listen",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "無線に、港の監視員ミラの声が混じる"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "無線のミラ／物語",
           "face": "normal",
           "text": "救助艇を向かわせる。窓の外、何が見える？"
@@ -453,7 +453,7 @@
       "dialogue_id": "trpg_shark_listen_success",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "背びれの動く間隔が見えた。慌てず、店内を調べよう"
@@ -470,7 +470,7 @@
       "dialogue_id": "trpg_shark_listen_mixed",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "波が入口を叩いた。危機が一つ進むが、道具は使える"
@@ -487,7 +487,7 @@
       "dialogue_id": "trpg_shark_listen_trouble",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "閉店の曲が急に大きく鳴る。全員、窓から一歩下がる"
@@ -499,7 +499,7 @@
           "text": "今だけは、その曲止めて！"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "危機は二つ進む。じゃが、調査はできるぞ"
@@ -510,7 +510,7 @@
       "dialogue_id": "trpg_shark_prepare_success",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "三人の手が噛み合った。仕掛けは静かに動き始める"
@@ -527,7 +527,7 @@
       "dialogue_id": "trpg_shark_prepare_mixed",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "結び目を一つ直す間に、窓の外の波が近づく"
@@ -544,7 +544,7 @@
       "dialogue_id": "trpg_shark_prepare_trouble",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "仕掛けが鳴らした音に、背びれが急に向きを変える"
@@ -556,7 +556,7 @@
           "text": "よし、気づいてはくれた！　近いけど！"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "予備の留め具で直す。作戦は、まだ使えるぞ"
@@ -567,7 +567,7 @@
       "dialogue_id": "trpg_shark_serve_success",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "合図は一度。三人は、サメの目が外れた隙を渡った"
@@ -584,7 +584,7 @@
       "dialogue_id": "trpg_shark_serve_mixed",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "一人の靴がひっかかる。二人が手を伸ばして引き上げる"
@@ -601,7 +601,7 @@
       "dialogue_id": "trpg_shark_serve_trouble",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "予定の道に大波が来る。救助艇が、横から灯りを向ける"
@@ -613,7 +613,7 @@
           "text": "一度戻ろう。三人そろって、あの艇へ渡るぞ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "全員、生還じゃ。映画には、助けが来る場面も要る"
@@ -636,7 +636,7 @@
           "text": "保管箱と送風機なら、香りと振動の違いが見えそうだ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "相談とメモは、調査回数を使わぬぞ"
@@ -681,7 +681,7 @@
       "dialogue_id": "trpg_shark_serving",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外で、背びれが最後の円を描く"
@@ -698,7 +698,7 @@
       "dialogue_id": "trpg_shark_epilogue",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "おしまいじゃ。三人分の救命胴衣は、最初からあったのじゃ"
@@ -722,7 +722,7 @@
           "text": "……エンドロールの絵、描いてもいい？"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "よいぞ。サメの目は、少し格好よく頼むのじゃ"
@@ -733,7 +733,7 @@
       "dialogue_id": "trpg_shark_clue_scent_radio",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "香りが流れた方向へ、移動していたらしい"
@@ -750,7 +750,7 @@
       "dialogue_id": "trpg_shark_clue_scent_leaves",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "……閉じると、背びれが離れていく"
@@ -767,7 +767,7 @@
       "dialogue_id": "trpg_shark_clue_scent_fan",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "回転の音より、運ばれた香りに反応している"
@@ -784,7 +784,7 @@
       "dialogue_id": "trpg_shark_clue_scent_lamp",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "灯りを変えても、進路は同じだ"
@@ -801,7 +801,7 @@
       "dialogue_id": "trpg_shark_clue_scent_rope",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "三人分、ちゃんとある。桟橋への縄も届く"
@@ -818,7 +818,7 @@
       "dialogue_id": "trpg_shark_clue_scent_chart",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "香りを沖へ流せば、艇との間に距離を作れる"
@@ -835,7 +835,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_radio",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "低い機械音のある場所を、追っているらしい"
@@ -852,7 +852,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_leaves",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "香りより、箱を置いた振動に反応した"
@@ -869,7 +869,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_fan",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "滑り止めを使えば、床の振動を減らせそうだ"
@@ -886,7 +886,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_lamp",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "光より、軋む桟橋に近づいている"
@@ -903,7 +903,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_rope",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "屋根から縄で渡れば、濡れた床を避けられる"
@@ -920,7 +920,7 @@
       "dialogue_id": "trpg_shark_clue_vibration_chart",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "表は軋んでる。屋根の側は、しっかりしてる"
@@ -937,7 +937,7 @@
       "dialogue_id": "trpg_shark_clue_light_radio",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "点滅する灯りを、追っているらしい"
@@ -954,7 +954,7 @@
       "dialogue_id": "trpg_shark_clue_light_leaves",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "香りではなく、影に隠れた灯りを探している"
@@ -971,7 +971,7 @@
       "dialogue_id": "trpg_shark_clue_light_fan",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "羽根の影で光が消えると、曲がっている"
@@ -988,7 +988,7 @@
       "dialogue_id": "trpg_shark_clue_light_lamp",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "……ランプを、おとりの役にできる"
@@ -1005,7 +1005,7 @@
       "dialogue_id": "trpg_shark_clue_light_rope",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "灯りを浮きへ固定しても、三人分の縄が残る"
@@ -1022,7 +1022,7 @@
       "dialogue_id": "trpg_shark_clue_light_chart",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "表を明るく、裏は暗く。逃げる場所を隠せる"
@@ -1138,13 +1138,13 @@
       "dialogue_id": "trpg_shark_ending_last-order",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "甘い香りの箱が沖へ流れ、背びれも遠ざかった"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "艇へ渡った三人の前に、温かいお茶が置かれる"
@@ -1156,7 +1156,7 @@
           "text": "ラストオーダー、海にも一つってことか"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "その一箱が、三人を岸へ帰したのじゃ"
@@ -1167,13 +1167,13 @@
       "dialogue_id": "trpg_shark_ending_quiet-escape",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "機械を止め、三人は手の合図だけで艇へ渡った"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "背びれは空のラウンジを回る。艇は静かに岸を目指す"
@@ -1196,13 +1196,13 @@
       "dialogue_id": "trpg_shark_ending_premiere",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "赤い光が沖で瞬く。背びれは、その灯りを追っていく"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "三人は灯りの反対側から、艇へ渡った"
@@ -1214,7 +1214,7 @@
           "text": "……最後のカットは、海の灯りだけ"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "港の人は、夜の上映会じゃと思ったそうな"
@@ -1225,7 +1225,7 @@
       "dialogue_id": "trpg_shark_ending_sequel",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "仕掛けに、サメは一度だけ首をかしげた"
@@ -1237,19 +1237,19 @@
           "text": "あ、そこは想定してなかった！"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "その一瞬に艇の縄が届く。三人とも、岸へ帰れた"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
           "text": "翌朝。沖の向こうに、もう一つ小さな背びれが見える"
         },
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
           "text": "余は言った。続編が必要だ、と"
@@ -1266,7 +1266,7 @@
       "dialogue_id": "trpg_shark_debrief_smooth",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "text": "三人の合図が揃ったのう。怖くても、ちゃんと一緒じゃ"
         }
@@ -1276,7 +1276,7 @@
       "dialogue_id": "trpg_shark_debrief_with_detour",
       "lines": [
         {
-          "speaker": "kafuka",
+          "speaker": "samechan",
           "role": "GM／卓の会話",
           "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
         }

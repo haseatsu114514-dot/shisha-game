@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "characterProfiles": ["dialogue/kafuka.json"],
+  "characterProfiles": ["dialogue/samechan.json"],
   "scenarios": [
     {
       "id": "ordinary-cup",
