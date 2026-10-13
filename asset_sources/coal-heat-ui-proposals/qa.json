@@ -187,5 +187,93 @@
         "bytes": 1319096
       }
     }
+  },
+  "scale_v3": {
+    "revision": "scale-v3",
+    "browser": "Chromium",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "size": [
+          1440,
+          1050
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "landscape_touch",
+        "size": [
+          844,
+          390
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      },
+      {
+        "viewport": "portrait_touch",
+        "size": [
+          390,
+          844
+        ],
+        "new_frames_switch_compare": "PASS",
+        "image_decode": "PASS",
+        "horizontal_overflow": false,
+        "pageerrors": [],
+        "http_errors": []
+      }
+    ],
+    "status_run": 38379210078,
+    "scope": "static image mockup; no game code changed",
+    "images": {
+      "AB-hybrid-before.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2099734
+      },
+      "AB-hybrid-after.png": {
+        "size": [
+          1672,
+          941
+        ],
+        "bytes": 2089309
+      },
+      "hybrid-comparison.png": {
+        "size": [
+          1800,
+          697
+        ],
+        "bytes": 1311315
+      }
+    },
+    "scale_measurement": {
+      "frame": [
+        1672,
+        941
+      ],
+      "ash_bbox_px": [
+        1441,
+        506,
+        1498,
+        541
+      ],
+      "ash_width_px": 57,
+      "opening_width_estimate_px": 270,
+      "ash_width_over_opening": 0.2111111111111111,
+      "method": "Read-only ash-color mask in pot interior; visible ash width only, inspect full cube boundaries visually."
+    },
+    "visual_review": {
+      "before": "3 on stove / empty pot; rear cord; no front connector or foreground cable",
+      "after": "2 on stove / one small cube inside pot; same rear cord and tall handle",
+      "legend": "absent"
+    }
   }
 }
