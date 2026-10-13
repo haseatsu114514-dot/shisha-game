@@ -118,6 +118,10 @@ await suite("axe-throw", async run => {
       const n=document.querySelector('.axe-flight');return document.querySelector('.axe-game').dataset.phase==='flight'&&Number(n.getAttribute('opacity'))<.9;
     });
     assert(Number(await page.locator('.axe-flight').getAttribute('opacity'))>0,'Drop stays visible while falling');
+    await press(page,'[data-test="axe-rules"]',touch);
+    const fade=await page.locator('.axe-flight').getAttribute('opacity');await page.waitForTimeout(450);
+    assert.equal(await page.locator('.axe-flight').getAttribute('opacity'),fade,'Rules must not reset the fading drop');
+    await press(page,'[data-test="axe-rules-close"]',touch);
     await phase(page,'result');assert.equal(await page.locator('.axe-impacts>g').count(),0);
     assert.match(await page.locator('.axe-note').textContent(),/落下 · 0点/);
     await page.keyboard.press('Escape');assert.deepEqual(await storageSnapshot(page),before);

@@ -157,7 +157,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (phase !== "choice" || document.hidden || helpPanel || performance.now() - lastAction < 250 || id && !canCall(id, shots)) return;
     called = id; render();
   }
-  function setPhase(next) { phase = next; elapsed = 0; stamp = null; render(); }
+  function setPhase(next) {
+    phase = next; elapsed = 0; stamp = null;
+    if (next === "flight") {
+      const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
+      flying.setAttribute("transform", poseTransform(pose)); flying.setAttribute("opacity", pose.opacity);
+    }
+    render();
+  }
   function act() {
     if (document.hidden || helpPanel || !["choice", "horizontal", "vertical", "power", "result", "summary", "failed"].includes(phase)
       || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250) return;
@@ -260,7 +267,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     xNeedle.setAttribute("transform", "translate(" + (CX + aim.x * R) + " 462)");
     yNeedle.setAttribute("transform", "translate(564 " + (CY + aim.y * R) + ")");
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : .5); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : .5);
-    flying.setAttribute("opacity", phase === "flight" ? 1 : 0); needle.style.left = power * 100 + "%";
+    if (phase !== "flight") flying.setAttribute("opacity", 0);
+    needle.style.left = power * 100 + "%";
     calls.hidden = phase !== "choice"; reaim.hidden = !cycles[phase]; retry.hidden = phase !== "summary";
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = document.hidden || Boolean(helpPanel) || focusUsed || performance.now() - lastAction < 250;
@@ -278,7 +286,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const last = shots.at(-1);
     const nextNote = document.hidden ? "一時停止中" : phase === "loading" ? "準備しています…" : phase === "failed" ? "画像を読み込めませんでした。もう一度お試しください。"
       : phase === "choice" ? shots.length === 5 ? "後半5投。キルショットの閉鎖は引き継ぎます。" : "通常の得点か、青いキルショットか。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
-      : phase === "power" ? "③ 緑の力と、白い照準が揃った瞬間に！" : phase === "flight" ? "それっ！"
+      : phase === "power" ? "③ 白い着地点＋緑の力で投げる" : phase === "flight" ? "それっ！"
       : phase === "result" ? last.outcome === "drop" ? (last.dropReason === "weak" ? "力が足りず落下 · 0点" : "回転が合わず落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
       : last.outcome === "killshot-miss" ? "宣言した青い的から外れた · 0点" : last.score ? "命中！ " + last.score + "点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";

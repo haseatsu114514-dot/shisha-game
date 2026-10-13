@@ -55,6 +55,8 @@
 .axe-power-scale span:nth-child(2) { color: #c6e6b9; }
 .axe-timing[data-active="false"] .axe-gauge, .axe-timing[data-active="false"] .axe-power-scale { opacity: .4; }
 .axe-feedback { margin: 0; font-size: .72em; line-height: 1.4; color: #c6e6b9; }
+.axe-note, .axe-feedback, .axe-steps, .axe-timing, .axe-controls { flex-shrink: 0; }
+.axe-in-stage .axe-note { min-height: 1.5em; }
 .axe-aim-guides { pointer-events: none; }
 .axe-impact-mark { filter: drop-shadow(0 0 3px #161016); }
 @container (max-width: 650px) and (min-height: 501px) {
