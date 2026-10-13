@@ -1225,6 +1225,36 @@
       "decline_response": {
         "text": "おう。また都合が合う時にな。あいつも好きな時に来るだろ"
       }
+    },
+    {
+      "id": "lime_ch2_ageha_after_visit",
+      "sender": "ageha",
+      "chapter": 2,
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_ageha_contact",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、来てくれてありがと〜！"
+        },
+        {
+          "sender": "ageha",
+          "text": "あの席の白いクマ、また空けとくね。無理せず、お互い準備しよ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また顔を見に行きます",
+          "response": "おっけー！ 道迷ったら連絡してね",
+          "affinity": 1
+        },
+        {
+          "text": "教えてもらったこと、試してみます",
+          "response": "うん、ハジメっちの店でやってみて！",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }

@@ -8,6 +8,7 @@ import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
@@ -181,7 +182,7 @@ export function expireInvitations(opts = {}) {
 function eligible(m, { tournamentDay = false } = {}) {
   if (state.limeRead.includes(m.id) && !importantInvite(m) && !needsResend(m.id)) return false;
   if (m.chapter && m.chapter !== state.chapter) return false;
-  if (["ageha"].includes(m.sender)) return false; // ch1 ではまだ連絡先を知らない
+  if (m.sender === "ageha" && state.chapter === 1) return false; // 第1章では連絡先を知らない
   const cond = m.trigger_condition;
   if (cond === "tournament_day") return tournamentDay && HEROINES_ENCOURAGE.includes(m.sender) && hasContact(m.sender);
   if (tournamentDay) return false;
@@ -192,7 +193,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_minto_1" && !state.flags._minto_identity_revealed) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
-  if (cond === "lime_exchanged") return needsResend(m.id) || m.trigger_day <= state.day && state.day - m.trigger_day <= 1;
+  if (cond === "lime_exchanged") {
+    const day = m.chapter ? chapterDay(state) : state.day;
+    return needsResend(m.id) || m.trigger_day <= day && day - m.trigger_day <= 1;
+  }
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
   if (cond === "flag") return !!state.flags[m.trigger_flag];
   return false;
@@ -706,7 +710,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   state.flags._lime_tut = 1;
   expireInvitations({ fixedNight });
   const accepted = [];
-  const ui = phoneShell({ time: clockNow(), title: `DAY ${state.day}` });
+  const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
@@ -803,7 +807,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
  */
 export async function openPhone(messages, { title = null, time = "朝" } = {}) {
   const accepted = [];
-  const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${state.day}`) });
+  const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${chapterDay(state)}`) });
   await sleep(420);
   for (const m of messages) {
     const item = stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg: m,

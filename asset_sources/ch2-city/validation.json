@@ -1,0 +1,179 @@
+{
+  "files": {
+    "day_source": {
+      "path": "asset_sources/ch2-city/day/source.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4352508,
+      "sha256": "72104b6fe154eea357c81405f87530cee8580d5bcba00681168d8e2890269703"
+    },
+    "night_source": {
+      "path": "asset_sources/ch2-city/night/source.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3996115,
+      "sha256": "7778d39b30280ac58a2491e110917cd0708010c5255ebe6aa48aa77058f75c3e"
+    },
+    "day_runtime": {
+      "path": "assets/backgrounds/bg_widehanga_map_day.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "format": "WEBP",
+      "mode": "RGB",
+      "bytes": 1811274,
+      "sha256": "49f78ff82b764daae5f875fb29143143db63d5a48aeacd75563fce65bcea235b"
+    },
+    "night_runtime": {
+      "path": "assets/backgrounds/bg_widehanga_map_night.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "format": "WEBP",
+      "mode": "RGB",
+      "bytes": 1793410,
+      "sha256": "563235ac2e5ce5f64c1db5a31b95f341e73cc2e3e69e794c5252bd86e6493b36"
+    },
+    "station_source": {
+      "path": "asset_sources/ch2-city/station/source.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3191272,
+      "sha256": "9f5f7d41cb0b659e462a30414cfec016ba288c820d1c46c36718207754fe10c4"
+    },
+    "station_runtime": {
+      "path": "assets/backgrounds/bg_widehanga_station_day.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "format": "WEBP",
+      "mode": "RGB",
+      "bytes": 1406386,
+      "sha256": "6448ef5ca3f479dd640dfc84e120d07e46cf5fa313f86a0bbaa40241d40de19d"
+    }
+  },
+  "alignment": {
+    "station": {
+      "source_box": [
+        150,
+        240,
+        570,
+        470
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.566867
+    },
+    "glass_towers": {
+      "source_box": [
+        350,
+        20,
+        780,
+        250
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.507627
+    },
+    "scramble": {
+      "source_box": [
+        720,
+        360,
+        985,
+        555
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.633638
+    },
+    "venue": {
+      "source_box": [
+        1280,
+        90,
+        1660,
+        310
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.601132
+    },
+    "fashion_street": {
+      "source_box": [
+        1260,
+        305,
+        1440,
+        470
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.603688
+    },
+    "tobacco_shop": {
+      "source_box": [
+        940,
+        490,
+        1180,
+        660
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.630161
+    },
+    "music_street": {
+      "source_box": [
+        620,
+        575,
+        765,
+        770
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.654714
+    },
+    "industrial_shop": {
+      "source_box": [
+        140,
+        560,
+        380,
+        765
+      ],
+      "best_offset": [
+        0,
+        0
+      ],
+      "edge_correlation": 0.628866
+    }
+  },
+  "method": "edge-magnitude correlation at 8 source-image landmarks; search ±8 px",
+  "status": "passed",
+  "limits": "Local edge alignment supplements visual checks and does not prove identical geometry at every pixel or verify UI overlays."
+}

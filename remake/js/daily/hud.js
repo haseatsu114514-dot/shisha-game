@@ -7,9 +7,10 @@ import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
-export const daysLeft = () => Math.max(0, TOURNAMENT_DAY - (state?.day || 1));
+export const daysLeft = () => chapterDaysLeft(state);
 
 let dom = null;
 let handlers = { phone: null, status: null, menu: null };
@@ -118,7 +119,8 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  dom.day.replaceChildren(el("b", { text: String(state.day) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
+  dom.area.textContent = state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "WIDEHANGA" : "SAKAE";
+  dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
   dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;

@@ -1,0 +1,49 @@
+{
+  "name": "ch2-preview",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "desktop-arbitrary-order-full-run",
+      "status": "passed"
+    },
+    {
+      "label": "touch-arbitrary-order-replay-and-return",
+      "status": "passed"
+    },
+    {
+      "label": "real-click-arrival-and-name-release",
+      "status": "passed"
+    },
+    {
+      "label": "partial-safe-ending-and-reset",
+      "status": "passed"
+    },
+    {
+      "label": "room-image-recovery-and-night-return",
+      "status": "passed"
+    },
+    {
+      "label": "data-failure-retry",
+      "status": "passed"
+    },
+    {
+      "label": "map-image-failure-retry",
+      "status": "passed"
+    },
+    {
+      "label": "return-remembers-only-completed-visits",
+      "status": "passed"
+    },
+    {
+      "label": "station-image-failure-keeps-arrival-playable",
+      "status": "passed"
+    },
+    {
+      "label": "interrupted-dialogue-and-history-reset",
+      "status": "passed"
+    }
+  ],
+  "verified_content_commit": "252a1210a0b173d4e94279e990eb31c5345a3177",
+  "verification_note": "TEST_REF was unset. Art/dialogue content checked against 252a121 after this run; docs and evidence were updated afterward."
+}

@@ -1,0 +1,533 @@
+{
+  "comment": "本編DAY2〜3の店主との相談。ch2_cityの名乗りを済ませた後に読む。各店の初回と再訪を分け、後半のスランプ・素性・去る理由を先取りしない。料金・体力・通常成長・読了保存は呼出側が管理する。",
+  "dialogues": [
+    {
+      "dialogue_id": "remake_ch2_ageha_chat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "飲み物を受け取り、白いクマの隣に腰を下ろす。あげはがデコケータイを閉じた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、あのクマにしたんだ！ そこ、うちも好きな席"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どの席に座るかまで、考えて置いてるんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "写真撮りたい子も、ぼーっとしたい子もいるじゃん。好きなとこ選んでほしいし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙を作る時も、相手に合わせるんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "合わせるっていうか……顔見てる。ひと口めの顔、けっこう分かるよ"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_ageha_first_chat",
+          "choices": [
+            {
+              "text": "自分も顔を見てみよう",
+              "next": "a"
+            },
+            {
+              "text": "どんな顔を見てるんですか？",
+              "next": "b"
+            }
+          ]
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、LIME交換しよ！ 道分かんなくなったら聞いて。うちのおすすめも送るし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。……また、話を聞きに来ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡先を交換した。名前の横のクマの絵が、この店によく似合っていた。"
+        }
+      ],
+      "branches": {
+        "a": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "つい台ばかり見てしまうんです。次は、相手の顔も見てみます"
+          },
+          {
+            "type": "apply",
+            "stats": {
+              "charm": 1
+            }
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "そそ！ ずっと見つめるのはダメだけどね。困ってたら声かけるくらいで"
+          }
+        ],
+        "b": [
+          {
+            "type": "apply",
+            "stats": {
+              "insight": 1
+            }
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "眉がちょい上がるとか、肩の力が抜けるとか。自分もそうなるっしょ？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……なるほど。言葉になる前にも、変わってるんですね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_chat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒革のソファに座った。神崎さんが正面の椅子を引く。机の上には何も散らかっていない。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "座れたじゃねえか。飲み物、そこ置いていいぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、手の動かし方を聞いてみたくて。俺、急ぐとすぐ雑になって"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……忙しい時ほど、置く場所を決める。手に持ったまま迷うな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "置く場所、ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "卓の端で考え始めるとな、ろくなことにならねえ。いったん置いて、見直す"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_kumicho_first_chat",
+          "choices": [
+            {
+              "text": "自分の作業台も見直します",
+              "next": "a"
+            },
+            {
+              "text": "大会では焦りそうです",
+              "next": "b"
+            }
+          ]
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "好きなもんを雑に扱わねえためだ。小僧、お前の店の卓で試してみな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。まず、自分の手がどこで迷うのか見てみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "立ち上がると、神崎さんが空いた席のクッションを戻した。大きな手が、一度だけ止まる。"
+        }
+      ],
+      "branches": {
+        "a": [
+          {
+            "type": "apply",
+            "stats": {
+              "technique": 1
+            }
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "ああ。俺の真似だけじゃ、お前の卓には合わねえ。実際に手を伸ばしてみろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "使う場所も、広さも違いますもんね"
+          }
+        ],
+        "b": [
+          {
+            "type": "apply",
+            "stats": {
+              "insight": 1
+            }
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "焦るだろうよ。それでも止まれる場所を、普段から作っとけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "止まるのも、準備なんですね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_chat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんが、棚から一枚のCDを取り出した。裏返して、ケースの角を指で支える。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……最初なら、これ。聴いてみる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。ジャケットだけでも、雰囲気が違いますね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……同じ人たちの曲でも、盤ごとに違う。好きなのだけ、飾ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お客さんも、曲の話をするんですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……する。何も知らずに来る人もいる。ギター見て、話し始めたり"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_rei_first_chat",
+          "choices": [
+            {
+              "text": "知らなくても来ていいんですね",
+              "next": "a"
+            },
+            {
+              "text": "おすすめの曲はどう選びますか？",
+              "next": "b"
+            }
+          ]
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……無理に詳しくならなくていい。聴いて、好きなら、それで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。帰ったら、今日教えてもらった曲を探してみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんはCDを棚へ戻した。ジャケットを正面に向けてから、小さく頷く。"
+        }
+      ],
+      "branches": {
+        "a": [
+          {
+            "type": "apply",
+            "stats": {
+              "sense": 1
+            }
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……俺も、最初は知らなかった。好きになってから覚えた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "それなら、俺も入りやすいです"
+          }
+        ],
+        "b": [
+          {
+            "type": "apply",
+            "stats": {
+              "insight": 1
+            }
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……いつも何を聴くか、聞く。それでも分からなければ、ひとつ流してみる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "煙も、いきなり決めつけずに聞いた方がいいんですね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_volk_chat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "展示の準備室で、ヴォルクさんが計器を運搬ケースへ戻していた。留め具は、まだ開いている。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "相談か。通路はそこを空けておけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "場所が変わっても、同じように準備できるのがすごいと思って"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "同じにはならない。机の高さも、部屋の温度も違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうなんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "変わらないのは、確認する順番だ。数字が違えば、そこで考える"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_volk_first_chat",
+          "choices": [
+            {
+              "text": "順番を紙に書いてみます",
+              "next": "a"
+            },
+            {
+              "text": "数字だけで決めるんですか？",
+              "next": "b"
+            }
+          ]
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ここで聞いたことは、お前の店でも確かめろ。私の道具と、お前の道具は違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。持ち帰って、そのまま使うんじゃなくて……試してみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクさんがケースの留め具を閉めた。準備室の床には、次の作業の場所が空いていた。"
+        }
+      ],
+      "branches": {
+        "a": [
+          {
+            "type": "apply",
+            "stats": {
+              "insight": 1
+            }
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "抜けた時に、分かるようにしろ。長すぎる紙は、読まなくなる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "最初は、よく忘れるところだけ書いてみます"
+          }
+        ],
+        "b": [
+          {
+            "type": "apply",
+            "stats": {
+              "sense": 1
+            }
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "計器の数字が正しいかも確認する。見えているものを、全部同じ扱いにはしない"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "数字を見れば終わり、じゃないんですね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ席のクマに挨拶すると、あげはが笑った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "お、もうその子と仲良くなったじゃん。今日はどう？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お客さんの顔、どこまで見たらいいのか考えてました。台にも、目を配らないといけないし"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちも全部分かるわけじゃないよ。話してみたら、違ったりするし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……決めつけずに、聞いてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "小僧、作業台の方はどうだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "物を置く場所から、考えてみたいです。店に戻ったら、手を動かして確かめます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "使わなきゃ分かんねえもんだ。動かして、また確かめろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。一度並べたら終わりだと、思ってました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、ソファの空いた方を指した。今日は迷わず、そこへ座れた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat",
+      "lines": [
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……この間の曲、どうだった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前の曲が気になって。もう少し、曲の話を聞いてみたいです"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……急がなくていい。俺も、一枚をずっと聴くことがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次は、その曲の話もしてみたいです"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。待ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_volk_repeat",
+      "lines": [
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "前に話した順番は、試したか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よく飛ばしてしまうところがあって。確認する順番は、そこから考えてみたいです"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "なら、直せる。私の順番と同じである必要はない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "自分が、実際に使えるようにするんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……そうだ。紙を増やすために、書くな"
+        }
+      ]
+    }
+  ]
+}

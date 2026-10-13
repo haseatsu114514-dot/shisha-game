@@ -1,0 +1,141 @@
+{
+  "issue": 514,
+  "worker": "codex-ch2-20261013-7bc91a42",
+  "base": "origin/main 408e968",
+  "branch": "codex/514-ch2-city-preview",
+  "saved_at_utc": "2026-10-13T07:02:50.384539+00:00",
+  "tool": "image_gen.imagegen",
+  "status": "chapter2_city_preview_art; full_chapter_not_connected",
+  "generations": {
+    "day": {
+      "operation": "new_image",
+      "referenced_image_paths": [],
+      "prompt_path": "asset_sources/ch2-city/day/prompt.txt",
+      "prompt_sha256": "ed3cb2d7d6fcfb8c61389be0e67f1aa5d650b75dedd504c2338d2443237f9b73",
+      "generated_filename": "exec-23f9539b-f35d-4d1b-b7ea-4f7fbc8e54ab.png",
+      "original": {
+        "path": "asset_sources/ch2-city/day/source.png",
+        "dimensions": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "format": "PNG",
+        "bytes": 4352508,
+        "sha256": "72104b6fe154eea357c81405f87530cee8580d5bcba00681168d8e2890269703"
+      }
+    },
+    "night": {
+      "operation": "edit_day_image_lighting_only",
+      "referenced_image_paths": [
+        "asset_sources/ch2-city/day/source.png"
+      ],
+      "reference_sha256": "72104b6fe154eea357c81405f87530cee8580d5bcba00681168d8e2890269703",
+      "prompt_path": "asset_sources/ch2-city/night/prompt.txt",
+      "prompt_sha256": "b8e96c62e3ee9b08dd9c5f11a453e8b8e47c622a434fceda02e5a117274ff0c1",
+      "generated_filename": "exec-de5cdcc7-4a6d-49ae-a853-8a3422918b2e.png",
+      "original": {
+        "path": "asset_sources/ch2-city/night/source.png",
+        "dimensions": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "format": "PNG",
+        "bytes": 3996115,
+        "sha256": "7778d39b30280ac58a2491e110917cd0708010c5255ebe6aa48aa77058f75c3e"
+      }
+    },
+    "station": {
+      "operation": "new_image_ground_level_arrival",
+      "referenced_image_paths": [],
+      "prompt_path": "asset_sources/ch2-city/station/prompt.txt",
+      "prompt_sha256": "09109fa1f23db53e3969d27456959ca220d60a86a889d96920725a8a4027d5da",
+      "generated_filename": "exec-0a405a7c-1b50-456a-9012-b9f9d546c087.png",
+      "original": {
+        "path": "asset_sources/ch2-city/station/source.png",
+        "dimensions": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "format": "PNG",
+        "bytes": 3191272,
+        "sha256": "9f5f7d41cb0b659e462a30414cfec016ba288c820d1c46c36718207754fe10c4"
+      }
+    }
+  },
+  "runtime": [
+    {
+      "path": "assets/backgrounds/bg_widehanga_map_day.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "mode": "RGB",
+      "format": "WEBP",
+      "bytes": 1811274,
+      "sha256": "49f78ff82b764daae5f875fb29143143db63d5a48aeacd75563fce65bcea235b"
+    },
+    {
+      "path": "assets/backgrounds/bg_widehanga_map_night.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "mode": "RGB",
+      "format": "WEBP",
+      "bytes": 1793410,
+      "sha256": "563235ac2e5ce5f64c1db5a31b95f341e73cc2e3e69e794c5252bd86e6493b36"
+    },
+    {
+      "path": "assets/backgrounds/bg_widehanga_station_day.webp",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "mode": "RGB",
+      "format": "WEBP",
+      "bytes": 1406386,
+      "sha256": "6448ef5ca3f479dd640dfc84e120d07e46cf5fa313f86a0bbaa40241d40de19d"
+    }
+  ],
+  "conversion": {
+    "tool": "ImageMagick",
+    "resize": "1280x720! full image; no crop",
+    "encoding": "WebP lossless",
+    "pixel_editing": "No painting, compositing, color change or AI edits during conversion. Day/night originals are preserved."
+  },
+  "style_reference_observed": [
+    "remake/img/backgrounds/bg_osu_map_day.webp",
+    "remake/img/backgrounds/bg_osu_map_night.webp"
+  ],
+  "scene_constraints": [
+    "same_region_neighboring_city",
+    "Nagoya_station_scale_plus_Shibuya_fashion_streets",
+    "Widehanga_is_district_name",
+    "no_readable_text_or_real_logo",
+    "no_shisha_equipment",
+    "same_day_night_camera_and_layout"
+  ],
+  "visual_review": {
+    "source_and_runtime_reviewed": true,
+    "day_night_map_edges_reviewed": true,
+    "station_towers_deck_crosswalk_buildings_reviewed": true,
+    "reviewer": "map_direction agent; root also reviewed day style against current Osu map",
+    "status": "pass_for_city_preview"
+  },
+  "validation": "asset_sources/ch2-city/validation.json",
+  "inventory": "asset_sources/ch2-city/quality-inventory.csv",
+  "ownership": "Only assets/backgrounds/bg_widehanga_map_day.webp, night.webp and asset_sources/ch2-city/ edited by map_direction.",
+  "station_visual_qa": {
+    "status": "root_visually_checked",
+    "items": [
+      "駅の曲面ガラス屋根・矩形と円筒の双塔・歩行者デッキ・右手の曲面商業棟を地図と照合",
+      "下部は舗道と道路で会話枠用の余白を確保",
+      "小さなモブと信号・車道・歩道に不自然な大きな主役なし",
+      "実在ロゴ・読める看板文字・シーシャなし"
+    ],
+    "limits": "新しい地上視点の背景。地図の各建物の寸法を三次元的に完全復元したものではない。"
+  }
+}

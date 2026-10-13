@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>第2章・街歩き試遊 | 水煙前線 -EN:CODE-</title>
+  <link rel="icon" href="../icon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/vn.css">
+  <link rel="stylesheet" href="css/intro.css">
+  <link rel="stylesheet" href="css/extras.css">
+  <link rel="stylesheet" href="css/ui-art.css">
+  <link rel="stylesheet" href="css/ui-inner.css">
+  <link rel="stylesheet" href="css/ch2-preview.css">
+</head>
+<body class="ch2-city ch2-preview">
+  <div id="viewport"><div id="stage">
+    <div id="bg" aria-hidden="true"></div>
+    <div id="screen"><main class="ch2-shell ch2-loading"><h1>第2章・街歩き試遊</h1><p role="status">街の台本を読み込んでいます…</p></main></div><div id="vn"></div><div id="hud"></div>
+    <div id="fx"></div><div id="toasts"></div><div id="banners"></div>
+    <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div><div id="modal"></div>
+  </div></div>
+  <div class="ch2-rotate-hint" aria-hidden="true">横向きにすると、街と会話を大きく表示できます。</div>
+  <noscript>第2章の試遊には JavaScript を有効にしてください。</noscript>
+  <script>
+    // 本体モジュールが通信エラーになっても、再試行と本編への戻り口を残す。
+    import('./js/chapters/ch2-preview.js').catch(() => {
+      const panel = document.createElement('main');
+      panel.className = 'ch2-shell ch2-loading';
+      const message = document.createElement('p');
+      message.textContent = '試遊を読み込めませんでした。通信を確認して、もう一度お試しください。';
+      message.setAttribute('role', 'status');
+      const retry = document.createElement('button');
+      retry.className = 'btn'; retry.textContent = 'もう一度試す';
+      retry.addEventListener('click', () => location.reload());
+      const back = document.createElement('a');
+      back.className = 'ch2-text-link'; back.href = 'index.html'; back.textContent = '本編タイトルへ';
+      panel.append(message, retry, back);
+      document.getElementById('screen').replaceChildren(panel);
+    });
+  </script>
+</body>
+</html>
