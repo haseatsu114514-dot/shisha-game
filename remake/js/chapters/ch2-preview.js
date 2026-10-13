@@ -2,6 +2,7 @@
 import { DB, loadAll } from "../core/data.js";
 import { newState, setState, state } from "../core/state.js";
 import { el } from "../core/util.js";
+import { storeLogo } from "../core/store-logos.js";
 import { initLayers, layers, setBg, imageReady } from "../core/ui.js";
 import { unlockAudio } from "../core/audio.js";
 import { play, vnTest } from "../vn/engine.js";
@@ -134,7 +135,7 @@ function mapPin(stop, index) {
       if (stop.id !== "c_station") state.flags._ch2_city_met_shop = true;
       if (ROOMS[stop.id]) renderStopMenu(stop);
       else renderMap();
-      say(`${stop.name}での挨拶を読みました。${visited.size}か所、全5か所。`);
+      say(`${stop.name}での挨拶を読みました。${visited.size}か所、全${STOPS.length}か所。`);
       focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`));
     }),
   }, [
@@ -150,11 +151,12 @@ function renderStopMenu(stop, imageFailed = false) {
   layers.screen.replaceChildren(el("main.ch2-shell.ch2-stop", { dataset: { test: "ch2-preview-stop", stop: stop.id } }, [
     el("div.ch2-stop-card", [
       el("p.ch2-kicker", { text: "CHAPTER 02 / はじめての顔合わせ" }),
+      storeLogo(`ch2_${stop.id}`, { width: 240, height: 140 }),
       el("h1", { text: stop.sceneLabel || stop.name }),
       el("p", { text: "挨拶を終えた。少し中を見せてもらってから、次の場所へ向かおう。" }),
       imageFailed ? el("p.ch2-room-warning", { role: "status", text: "店内の背景を読み込めませんでした。再読み込みするか、地図へ戻れます。" }) : null,
       el("div.ch2-actions", [
-        button(imageFailed ? "室内の背景を再読み込み" : (stop.id === "volk" ? "展示室をのぞく" : "店内をのぞく"), "ch2-preview-inside", () => perform(() => visitInside(stop)), "btn primary"),
+        button(imageFailed ? "室内の背景を再読み込み" : "店内をのぞく", "ch2-preview-inside", () => perform(() => visitInside(stop)), "btn primary"),
         button("地図へ戻る", "ch2-preview-back-map", () => perform(async () => {
           if (!await showMapBackground()) return;
           renderMap();
@@ -215,8 +217,8 @@ function renderMap() {
     el("ul.ch2-map-pins", { "aria-label": "行き先" }, [...STOPS.map(mapPin), station]),
     el("aside.ch2-map-summary", [
       el("h2", { text: allRead() ? "初めての顔合わせを終えた" : "街の入口を、ひと巡り" }),
-      el("div.ch2-progress", { dataset: { test: "ch2-preview-progress" }, "aria-label": `読了した訪問先は5か所中${visited.size}か所` }, [
-        `${visited.size} / 5`, el("small", { text: "か所読了" }),
+      el("div.ch2-progress", { dataset: { test: "ch2-preview-progress" }, "aria-label": `読了した訪問先は${STOPS.length}か所中${visited.size}か所` }, [
+        `${visited.size} / ${STOPS.length}`, el("small", { text: "か所読了" }),
       ]),
       el("p", { text: allRead() ? "今日はここまで。駅へ戻り、地元の店へ持ち帰ろう。" : "店と会場で短い挨拶ができます。途中でも、駅から地元へ戻れます。" }),
       button("駅へ戻る", "ch2-preview-return", () => perform(returnHome), allRead() ? "btn primary" : "btn"),
@@ -265,7 +267,7 @@ function renderEnd() {
       el("p.ch2-end-badge", { text: complete ? "すべての入口で、顔合わせを終えた" : "今日は、ここまで" }),
       el("h1", { text: "知らない煙を、地元へ。" }),
       el("p.ch2-end-description", { text: "駅前の光が、列車の窓を流れていく。新しい街に、また訪ねたい場所ができた。第2章の続きは、ここから。" }),
-      el("p.ch2-end-progress", { text: `訪問した入口　${visited.size} / 5か所` }),
+      el("p.ch2-end-progress", { text: `訪問した入口　${visited.size} / ${STOPS.length}か所` }),
       el("p.ch2-preview-note", { text: "今回は街・挨拶・準備中の室内見学までです。新登場3人は通常立ち絵を制作しました。日常の続き・県大会・表情差分は今後制作します。この試遊では本編のセーブは変更していません。" }),
       el("div.ch2-actions", [
         button("もう一度、街を訪れる", "ch2-preview-restart", () => perform(async () => {

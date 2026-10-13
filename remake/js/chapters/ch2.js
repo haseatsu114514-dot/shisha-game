@@ -1,6 +1,7 @@
 // 第2章「才能の壁」初日。第1章の状態を引き継ぎ、読んだ場面の区切りだけを保存する。
 import { DB, bgUrl } from "../core/data.js";
 import { el, yen } from "../core/util.js";
+import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, imageReady, chapterTitle, modal } from "../core/ui.js";
@@ -167,11 +168,12 @@ function renderStop(stop, failed = false) {
   session.scene = "stop";
   showScreen("ch2-stop", el("main.ch2-shell.ch2-stop", { dataset: { test: test("stop"), stop: stop.id } }, [el("div.ch2-stop-card", [
     el("p.ch2-kicker", { text: "第2章・DAY1 / 街の顔合わせ" }),
+    storeLogo(`ch2_${stop.id}`, { width: 240, height: 140 }),
     el("h1", { text: stop.sceneLabel || stop.name }),
     el("p", { text: "少し中を見せてもらうか、次の場所へ向かおう。" }),
     failed ? el("p.ch2-room-warning", { role: "status", text: "室内を読み込めませんでした。再読み込みするか、地図へ戻れます。" }) : null,
     el("div.ch2-actions", [
-      button(failed ? "室内を再読み込み" : stop.id === "volk" ? "展示室をのぞく" : "店内をのぞく", "inside", async () => {
+      button(failed ? "室内を再読み込み" : "店内をのぞく", "inside", async () => {
         const owner = session;
         const ready = await imageReady(ROOMS[stop.id], 15000);
         if (!current(owner)) return;
@@ -218,7 +220,7 @@ function renderMap() {
     ]),
     el("ul.ch2-map-pins", { "aria-label": "行き先" }, [...STOPS.map(pin), el("li", { style: { left: "15%", top: "34%" } }, [station])]),
     el("aside.ch2-map-summary", [el("h2", { text: canReturn ? "会場までの道を覚えた" : "県大会ホールを確かめよう" }),
-      el("div.ch2-progress", { dataset: { test: test("progress") } }, [`${visited.size} / 5`, el("small", { text: "か所で挨拶" })]),
+      el("div.ch2-progress", { dataset: { test: test("progress") } }, [`${visited.size} / ${STOPS.length}`, el("small", { text: "か所で挨拶" })]),
       el("p", { text: canReturn ? "気になる店を訪ねてからでも、今日はここで地元へ戻っても大丈夫。" : "C.STATIONと同じビルのイベントホール。入口と搬入場所を見ておこう。" }), home]),
     el("footer.ch2-map-footer", [el("p", { text: "初日の街歩き・顔合わせ" }), el("span", { text: `所持金 ${yen(state.money)}` })]),
   ]);
@@ -249,7 +251,7 @@ function renderComplete() {
   showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("complete") } }, [el("div.ch2-end-card", [
     el("p.ch2-kicker", { text: "第二章・DAY1 / 地元へ戻って" }), el("h1", { text: "次に持っていく、一台。" }),
     el("p.ch2-end-description", { text: "会場までの道を覚えて、tonariへ戻った。鞄の中には、大会の案内。初めての街で見たものを、少しずつ整理していこう。" }),
-    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。DAY2〜3の行動と交流を接続しました。その先の準備と県大会は制作中です。" }),
+    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。大会前夜のDAY13まで、行動と交流、物語が続きます。県大会の本戦は制作中です。" }),
     el("div.ch2-actions", [button("翌日へ", "next-day", continuePreparation, true), button("セーブ・メニュー", "menu", openMenu)]),
   ])]));
 }
@@ -277,8 +279,8 @@ async function continuePreparation() {
   owner.scene = "preparation-limit";
   showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("preparation-limit") } }, [el("div.ch2-end-card", [
     el("p.ch2-kicker", { text: `第二章・DAY ${chapterDay(state)} / 次の朝` }),
-    el("h1", { text: "自分の手で、試していこう。" }),
-    el("p.ch2-end-description", { text: "DAY3の夜までの進行を保存しました。DAY4以降の物語と県大会は制作中です。所持品・人間関係・訪問と約束の記録は引き継がれています。" }),
+    el("h1", { text: "県大会の朝。" }),
+    el("p.ch2-end-description", { text: "大会前夜までの進行を保存しました。DAY14の県大会本戦は制作中です。所持品・人間関係・訪問と約束の記録は引き継がれています。" }),
     el("div.ch2-actions", [button("セーブ・メニュー", "menu", openMenu, true)]),
   ])]));
   focus("menu");

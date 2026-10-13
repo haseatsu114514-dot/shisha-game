@@ -22,7 +22,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false } = {}
       ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
     value.reel.installed = reel;
-    for (const id of ['ageha', 'kumicho', 'rei', 'volk']) value.flags[`_intro_${id}`] = !unknown;
+    for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
     core.save();
     for (let i=1;i<=3;i++) localStorage.setItem(`suien_remake_slot${i}`, JSON.stringify({ ...value, money: 1000+i }));
     window.__remake.vnTest.turbo = true;
@@ -75,7 +75,7 @@ await suite('ch2-daily',async check=>{
       });
     });
     for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
-    assert.equal(await page.locator('.spot-pin').count(),4);
+    assert.equal(await page.locator('.spot-pin').count(),3);
     await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{
@@ -117,15 +117,15 @@ await suite('ch2-daily',async check=>{
     assert.equal(v.money,drawn.money);assert.deepEqual(v.stats,drawn.stats);
     assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
   });
-  await check('touch-four-owners-and-fixed-day3-night',async page=>{
+  await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
-    for(const id of ['ageha','kumicho','rei','volk']) {await act(page,`ch2_${id}`,{touch:true});}
-    await page.locator(t('ch2-main-preparation-limit')).waitFor();
-    let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,24000);
-    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei','volk'])assert.equal(v.flags._ch2_talks[id],1);
+    for(const id of ['ageha','kumicho','rei']) {await act(page,`ch2_${id}`,{touch:true});}
+    await page.locator(t('map-region-home')).tap(); await act(page,'rest',{touch:true});
+    let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000);
+    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
     const trace=await page.evaluate(()=>window.__dailyTrace);assert.equal(trace.filter(id=>id==='ch2_naru_warm').length,1);
-    assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),163,'Fixed Naru night must not award growth');
-    await capture(page,'touch-day3-complete.png');await reloadSave(page);v=await value(page);assert.equal(v.day,18);assert.equal(v.money,24000);
+    assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),161,'Fixed Naru night must not award growth');
+    await capture(page,'touch-day4-home.png');await reloadSave(page);v=await value(page);assert.equal(v.day,18);assert.equal(v.money,27000);
     assert.equal(await page.locator(t('ch2-main-next-day')).count(),0);
   },{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   await check('preparation-json-failure-keeps-day1-and-retries',async page=>{

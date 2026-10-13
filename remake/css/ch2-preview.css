@@ -132,3 +132,4 @@
   }
 }
 @media (prefers-reduced-motion: reduce) { .ch2-pin { transition: none; } }
+.ch2-stop-card > .store-logo { margin: 0 auto 8px; }

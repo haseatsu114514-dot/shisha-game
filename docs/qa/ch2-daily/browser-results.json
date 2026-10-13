@@ -1,7 +1,7 @@
 {
   "name": "ch2-daily",
   "baseURL": "http://127.0.0.1:8123/remake/",
-  "ref": "day2-manual-caption-check",
+  "ref": null,
   "results": [
     {
       "label": "next-day-region-switch-and-autosave",
@@ -16,7 +16,7 @@
       "status": "passed"
     },
     {
-      "label": "touch-four-owners-and-fixed-day3-night",
+      "label": "touch-three-owners-and-fixed-day3-night",
       "status": "passed"
     },
     {
@@ -36,5 +36,5 @@
       "status": "passed"
     }
   ],
-  "content_basis": "After ad8aaf9 with DAY2 manual-save caption correction, actual MENU save/overwrite/title LOAD and slot preservation."
+  "content_basis": "DAY13 preparation + three rivals + shop logos, following 7f639db; 2026-10-13"
 }

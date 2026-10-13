@@ -631,143 +631,6 @@
       }
     },
     {
-      "dialogue_id": "ch2_city_volk",
-      "lines": [
-        {
-          "type": "condition",
-          "condition_type": "met",
-          "char_id": "volk",
-          "next_true": "known",
-          "next_false": "first"
-        }
-      ],
-      "branches": {
-        "first": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "駅前の賑わいが遠のく。工業地区へ続く通りに、技術展示の案内があった。"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "「Железный Дым」。その下に、小さく「鉄の煙」。"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "展示の入口で、長身の男が小さな計器を見ている。顔を上げるまで、待った。"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "……何か用か"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "tonariの蒸野です。県大会の前に、この辺りのお店を見ていて"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "ヴォルクだ。「鉄の煙」の職人だ"
-          },
-          {
-            "type": "set_flag",
-            "flag": "_met_volk"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "俺は、この県大会には出ない。ここでは、熱の管理を見せる"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "そうなんですね。それ、温度計ですか？"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "温度と湿度。外の空気を、先に見ている"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "展示が始まる前から、ですか"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "扉が開けば、外の空気も入る。無視できない"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "ヴォルクさんは数字をひとつ書き留めた。細い線が、まっすぐ並ぶ。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "毎日、ここまで測るんですか？"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "毎日、条件が違う。昨日の数字で、今日の煙は作れない"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（同じ手順を守るために、その前から、確かめてる）"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "見学したいなら、時間を取って来い。急ぐ客に、説明は詰め込まない"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "はい。今日は、道を覚えて帰ります"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "駅は、そこの角を左だ。ケースを持った人が多い。ぶつかるな"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "短い言葉のあと、視線は計器へ戻った。看板の下を、ひんやりした風が通る。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（大会に出ない人まで、こんなに迷いなく準備してるんだ）"
-          }
-        ],
-        "known": [
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "また来たか。道は、覚えたか"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "少しずつ。展示の準備も、見せてもらえますか？"
-          },
-          {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "通路を空けておけ。まだ、実演は始めていない"
-          }
-        ]
-      }
-    },
-    {
       "dialogue_id": "ch2_city_c_station",
       "lines": [
         {
@@ -899,13 +762,6 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch2_city_visit_volk",
-          "next_true": "echo_volk",
-          "next_false": ""
-        },
-        {
-          "type": "condition",
-          "condition_type": "flag",
           "flag": "_ch2_city_met_shop",
           "next_true": "curious",
           "next_false": "first_step"
@@ -968,13 +824,6 @@
             "speaker": "",
             "face": "",
             "text": "REIさんが返事を選ぶ間。ポスターの角を押さえていた指。"
-          }
-        ],
-        "echo_volk": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "ヴォルクさんは、数字を確かめてから、顔を上げていた。"
           }
         ],
         "curious": [
@@ -1224,71 +1073,6 @@
           "speaker": "",
           "face": "",
           "text": "扉を出る前に、もう一度会釈する。REIさんは短く頷き、飾ってあるCDへ目を戻した。"
-        }
-      ]
-    },
-    {
-      "dialogue_id": "ch2_city_volk_inside",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "展示の準備室へ通された。金属の作業台と運搬ケース。飾りよりも、空いた床が目に入る。"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "まだ実演は始めていない。通路は、空けておけ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。このケースに、道具を入れて持ってくるんですね"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "場所が変わっても、何を持ってきたかは、変わらない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "閉じた戸棚の前で、ヴォルクさんが計器の表示を確かめる。作業台には、使う道具だけが置かれていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "展示のたびに、全部確認するんですか？"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "移動中に、ずれる。前の場所で確認したからといって、ここで省かない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "着いてから確かめるところまで、準備なんですね"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "置くだけなら、終わる。使えるかは、別だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺も、大会の荷物を詰めたら、一度出して確かめてみます"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "……忘れ物は、それで減る。実演を見る時は、また来い"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "邪魔にならないよう扉を閉めた。ケースの留め具を確かめる、小さな音が聞こえた。"
         }
       ]
     }
