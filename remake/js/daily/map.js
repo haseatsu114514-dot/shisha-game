@@ -60,6 +60,7 @@ export function interruptMap(value) {
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
+ * @param opts.onBeforeGo (spot) => boolean | Promise<boolean>。false ならマップを開いたまま移動を中止する。
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
 export async function chooseSpot(opts = {}) {
@@ -99,7 +100,7 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -182,14 +183,25 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       renderInfo(s);
     };
 
-    const go = (s) => {
+    let moving = false;
+    const go = async (s) => {
+      if (moving || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
-      SE.select();
-      cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
-      retire(root);
-      info.classList.add("leaving");
-      interrupt = null;
-      resolve(s.id);
+      moving = true;
+      try {
+        // 移動演出・行動消費より前に、当該スポット固有の確認を行う。
+        if (onBeforeGo && !(await onBeforeGo(s))) return;
+        if (root.classList.contains("done")) return;
+        if (!availability(s).ok) { renderInfo(s); return; }
+        SE.select();
+        cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        retire(root);
+        info.classList.add("leaving");
+        interrupt = null;
+        resolve(s.id);
+      } finally {
+        moving = false;
+      }
     };
 
     for (const s of allSpots()) {

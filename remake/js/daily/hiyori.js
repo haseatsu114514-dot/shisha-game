@@ -5,11 +5,21 @@ import { seeded } from "../core/util.js";
 import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { afterStory } from "./bonds.js";
+import { afterStory, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
+import { on } from "../core/bus.js";
 import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
 
 let active = false;
+
+function ownedConversation(signal) {
+  const owner = state, controller = new AbortController();
+  const stop = () => controller.abort();
+  const unsubscribe = on("hud", () => { if (state !== owner) stop(); });
+  signal?.addEventListener("abort", stop, { once: true });
+  if (signal?.aborted) stop();
+  return { signal: controller.signal, close() { unsubscribe(); signal?.removeEventListener("abort", stop); stop(); } };
+}
 
 /** 実際に読み終えた後だけ進行を記録。同時呼び出し・再読で好感度を稼がない。 */
 export async function playHiyoriEvent(id, options = {}) {
@@ -17,12 +27,16 @@ export async function playHiyoriEvent(id, options = {}) {
   const event = hiyoriRoute().events.find((e) => e.id === id);
   if (id === "axe_reveal" && !hiyoriAxeAffordable()) return false;
   const owner = state;
+  const lifetime = id === "work_talk" ? ownedConversation(options.signal) : null;
   active = true;
   try {
     if (id === "axe_reveal") {
       if (!await playHiyoriAxeSequence(event, options)) return false;
-    } else await play(event.dialogue, options);
-    if (state !== owner) return false;
+    } else {
+      const result = await play(event.dialogue, { ...options, ...(lifetime ? { signal: lifetime.signal } : {}) });
+      if (result?.cancelled) return false;
+    }
+    if (state !== owner || lifetime?.signal.aborted) return false;
     if (id === "axe_reveal") {
       // 前段・実プレイ・後段の読了と料金を同じ保存にする。中止は未払い。
       if (!hiyoriAxeAffordable()) return false;
@@ -37,11 +51,12 @@ export async function playHiyoriEvent(id, options = {}) {
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
     if (event.affinity) gainAffinity("hiyori", event.affinity);
-    await afterStory(event.dialogue);
-    if (state !== owner) return false;
+    await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
+    if (state !== owner || lifetime?.signal.aborted) return false;
     save();
     return true;
   } finally {
+    lifetime?.close();
     active = false;
   }
 }
@@ -121,5 +136,16 @@ export async function meetHiyoriAtTonari() {
   if (hiyoriEventStatus("sumi_message") === "ready") return playHiyoriEvent("sumi_message");
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
   if (hiyoriEventStatus("tonari_afterwork") === "ready") return playHiyoriEvent("tonari_afterwork");
+  if (hiyoriEventStatus("work_talk") === "ready") return playHiyoriEvent("work_talk");
+  if (!active && !isPlaying() && state.flags._hiyori_work_talk_done && !state.flags._hiyori_bond_question_done) {
+    const lifetime = ownedConversation(); active = true;
+    try { if (await playHiyoriQuestion({ signal: lifetime.signal })) return true; }
+    finally { lifetime.close(); active = false; }
+  }
+  if (!active && !isPlaying() && finaleAtVisit("hiyori")) {
+    const lifetime = ownedConversation(); active = true;
+    try { return await playFinale("hiyori", { signal: lifetime.signal }); }
+    finally { lifetime.close(); active = false; }
+  }
   return false;
 }

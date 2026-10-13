@@ -71,7 +71,11 @@ await suite("full-day-rest", async check => {
       await page.evaluate(() => R.core.requestResumeOnBoot()); await page.reload({ waitUntil: "load" });
       await mapAt(page, 3, 0); await setup(page);
       assert.equal(await page.evaluate(() => R.core.state.deferredNightEvents.length), 1);
-      await goHome(page, touch); await mapAt(page, 3, 1);
+      await goHome(page, touch);
+      // The resumed day has Sumi's unanswered daytime invitation. Dismiss the
+      // deadline reminder explicitly before checking the original rest flow.
+      await page.locator('[data-test="venue-invite-go"]').click();
+      await mapAt(page, 3, 1);
       assert.equal(await page.locator('[data-test="rest-full"]').count(), 0, "健康時の休養は既存1行動");
       await goHome(page, touch); await mapAt(page, 4, 0);
       const completed = await page.evaluate(() => ({ done: R.core.state.flags._ev_salaryman,

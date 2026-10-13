@@ -246,6 +246,7 @@ try {
         friend.met.hiyori = true; friend.contacts.push("hiyori"); friend.affinity.hiyori = 66;
         for (const e of route.hiyoriRoute().events.filter((e) => route.hiyoriRoute().storyEvents.includes(e.id))) friend.flags[e.flag] = true;
         bonds.recordRomanceChoice({ id: "bond_q1_hiyori", romance_char: "hiyori" }, { romance: 0 });
+        friend.flags[data.DB.hiyori.route.question.flag] = true; // 共通関係APIの既読fixture。正式Q1の読了は専用テストで通す。
         await bonds.playFinale("hiyori");
         const friendRoute = friend.finales.hiyori.route;
         const noConfession = !friend.flags._confession_due && !romance.romanceRouteOpen("hiyori");

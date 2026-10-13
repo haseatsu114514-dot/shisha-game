@@ -13,6 +13,7 @@ const out = path.resolve(process.env.ARTIFACT_DIR || path.join(root, '.codex/art
 fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_EXECUTABLE_PATH ? {executablePath:process.env.CHROME_EXECUTABLE_PATH} : {}) });
 const results = [];
+const workGoal = process.env.GOAL_HIYORI_WORK === '1';
 
 async function boot(page) {
   await page.goto(base);
@@ -92,7 +93,7 @@ try {
         const key = JSON.stringify([snap.day, snap.slot, snap.screen, snap.vn, snap.phone, snap.modal, snap.current?.text, snap.flags._hiyori_tonari_afterwork_done]);
         if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
         assert(Date.now() - lastProgress < 45000, `Stalled: ${key}`);
-        if (snap.flags._hiyori_real_self_known && !snap.vn) break;
+        if ((workGoal ? snap.flags._hiyori_work_talk_done && snap.flags._hiyori_bond_question_done : snap.flags._hiyori_real_self_known) && !snap.vn) break;
         assert(snap.day < 14, 'The natural hiyori sequence must fit before the tournament');
         const axe=page.locator('[data-test="axe-game"]');
         if(await axe.count()) {
@@ -172,12 +173,12 @@ try {
           if (invite && snap.slot === 0 && (snap.flags._hiyori_affinity_waiting_pts > 0 || snap.day >= 11)) {
             await click('[data-test="hud-phone"]'); await click('[data-test="lime-chat-sumi"]'); continue;
           }
-          const selected = await page.evaluate(() => {
+          const selected = await page.evaluate(workGoal => {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
             const needsTonari = f._hiyori_meeting_done && !f._hiyori_sumi_message_done
               || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done;
             const tonari = sp.spotById('tonari');
-            if(f._hiyori_tonari_afterwork_done && s.slot===1 && !sp.isClosed(tonari)) return 'tonari';
+            if(f._hiyori_tonari_afterwork_done && s.slot===1 && !sp.isClosed(tonari) && (!workGoal || !f._hiyori_bond_question_done)) return 'tonari';
             if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day) return 'tonari';
             if (s.stamina < 35 || f._hiyori_encounter_day === `1:${s.day}` || s.money < 3000) return 'rest';
             const candidates = ['naru','adam','minto','c_station'].map(id => sp.spotById(id))
@@ -189,22 +190,34 @@ try {
             };
             candidates.sort((a,b) => roll(a)-roll(b));
             return candidates[0]?.id || 'rest';
-          });
+          },workGoal);
           await click(`[data-test="pin-${selected}"]`); await click('[data-test="map-go"]');
         }
       }
       const final = await page.evaluate(() => ({ state: structuredClone(Q.core.state), events: Q.events }));
       row.actions = actions; row.events = final.events; row.final = final.state;
       const required = ['hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
+      if(workGoal) required.push('hiyori_work_talk','hiyori_bond_question');
       let previous = -1;
       for (const id of required) { const at = final.events.findIndex(e => e.id === id); assert(at > previous, `Missing/out-of-order ${id}`); previous = at; }
       assert(final.state.flags._hiyori_tonari_afterwork_done);
-      assert(final.state.flags._hiyori_real_self_known && !final.state.flags._hiyori_work_talk_done);
+      assert(final.state.flags._hiyori_real_self_known);
+      assert.equal(!!final.state.flags._hiyori_work_talk_done,workGoal);
+      if(workGoal){
+        assert(final.state.flags._hiyori_bond_question_done);
+        assert.equal(final.state.romanceChoices.bond_q1_hiyori.value,0);
+        assert(!final.state.flags._hiyori_bond_finale_done&&!final.state.finales.hiyori);
+      }
       assert.equal(final.state.slot,2);
       const opening=final.events.find(e=>e.id==='hiyori_axe_reveal');
       const closing=final.events.find(e=>e.id==='hiyori_axe_reveal_close');
       assert.equal(opening.money,closing.money,'Payment must wait for closing VN');
-      assert.equal(final.state.money,opening.money-3000);
+      if(!workGoal) assert.equal(final.state.money,opening.money-3000);
+      else {
+        const work=final.events.find(e=>e.id==='hiyori_work_talk'),q=final.events.find(e=>e.id==='hiyori_bond_question');
+        assert.equal(work.money,q.money);
+        assert.equal(final.state.money,work.money,'Work dialogue must not add a separate fee');
+      }
       assert(!closing.flags._hiyori_real_self_known);
       assert(!final.state.flags._confession_due);
       assert.deepEqual({ day: row.afterReply.day, slot: row.afterReply.slot, money: row.afterReply.money, affinity: row.afterReply.affinity }, row.beforeReply);

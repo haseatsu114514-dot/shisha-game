@@ -91,3 +91,15 @@
 後段の仕事相談/恋愛友情/告白/専用ハガル・AI対戦・海外は別Issue。第2章のAPI条件があっても、今の新規ゲームが第2章へ進める証明にはしない。
 
 検証: `remake/test/browser/hiyori_axe_story.mjs` は本番前後台本/3投/読了保存/取消/ロード/旧関係/LIMEと本番calendar入口、`hiyori_axe_natural.mjs` は新規ゲームから出会い・報告・伝言・♥3のLIME・再会・三人・退勤後を自然に経て斧投げまでPC/タッチで通す。後者は乱数seedだけ固定し、日・好感度・読了を注入しない。既存 `hiyori.mjs` の共通関係APIケースは専用fixtureイベントであり、実斧投げの読了証拠とは区別する。
+
+## 深い仕事相談と関係の問い（#496 / 旧 #344）
+
+正式斧投げを読んだ後、次の夜のtonari対面で `hiyori_work_talk` を読む。総務として整理・対応できる人であること、本当の疲れ、笑えることと余裕があることの違いを描き、退勤後の入口の手帳会話を重複させない。採用済みのserious/normal/smileを使い、別衣装は代用で作らない。
+
+仕事相談の後に `hiyori_bond_question` を読み、実回答を既存の `{char,value,day}` へ保存する。友人のvalue:0を無回答扱いにせず、反応の読了後だけ `_hiyori_bond_question_done` を立てる。途中保存からは同じ答えの反応へ戻り、再選択・好感度の再付与をしない。所有stateが変わったら仕事/質問のVNを中断し、前の場面から新セーブへ報酬を加えない。
+
+MAX時の正式台本 `hiyori_bond_finale` と `confession_hiyori`/accept/rejectを追加した。二度の実回答と正式な締めくくりの読了を確認してから恋愛へ進む。途中で友人を選んだ場合は友人の結論へ進み、既存の友人/恋人は再読で分類し直さない。最終質問の保存済み0/1も同じ反応へ戻す。
+
+**専用ハガルは後続 #497 / 旧 #345。今はroute.finale.giftがnullのままで、締めくくり・告白は本番では解禁しない。** 新しい台本だけで機材を持っている扱いにせず、過去の読了や回答を好感度から補完しない。台本と共通関係APIの検証は、既に所有するsilicone_bowlを明示的なテストfixtureとして一時登録し、本番設定とは区別する。
+
+検証は `remake/test/browser/hiyori_work_relationship.mjs`。自然New Gameの仕事到達は `GOAL_HIYORI_WORK=1 node remake/test/browser/hiyori_axe_natural.mjs` で、seedだけ固定して実斧投げ→仕事相談→最初の友人回答まで通す。後続素材未登録のため本番ではfinales/恋人を増やさない。
