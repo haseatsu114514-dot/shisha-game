@@ -78,6 +78,51 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
 await suite("axe-throw", async run => {
   const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
   for(const [label,options,touch] of [
+    ['flight-ui-pc',{viewport:{width:1280,height:800}},false],
+    ['flight-ui-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
+    ['flight-ui-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
+  ]) await check(label,async page=>{
+    await standalone(page,{touch});const before=await storageSnapshot(page);
+    await pressReady(page,touch);await phase(page,'horizontal');await fit(page);
+    assert.equal(await page.locator('[data-step="horizontal"]').getAttribute('aria-current'),'step');
+    await stopGauge(page,.5,touch);await phase(page,'vertical');
+    assert.match(await page.locator('[data-step="horizontal"]').textContent(),/✓/);
+    await stopGauge(page,.5,touch);await phase(page,'power');await fit(page);
+    assert.match(await page.locator('[data-step="vertical"]').textContent(),/✓/);
+    await page.waitForFunction(()=>Number(document.querySelector('.axe-game').dataset.power)<.4);
+    assert.match(await page.locator('.axe-power-label').textContent(),/弱すぎる・落下/);
+    assert.match(await page.locator('.axe-feedback').textContent(),/↓ 下/);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-power.png'});
+    await stopGauge(page,.62,touch);await phase(page,'flight');
+    assert.match(await page.locator('[data-step="power"]').textContent(),/✓/);
+    const landing=await game(page).evaluate(n=>({x:Number(n.dataset.landingX),y:Number(n.dataset.landingY)}));
+    await page.waitForTimeout(180);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-flight.png'});
+    await press(page,'[data-test="axe-rules"]',touch);
+    const paused=await page.locator('.axe-flight').getAttribute('transform');await page.waitForTimeout(850);
+    assert.equal(await page.locator('.axe-flight').getAttribute('transform'),paused,'Rules freeze flight too');
+    await press(page,'[data-test="axe-rules-close"]',touch);await phase(page,'result');await fit(page);
+    assert.equal(await page.locator('.axe-flight').getAttribute('transform'),await page.locator('.axe-impacts>g').getAttribute('transform'),
+      'The flying axe and embedded axe must share exactly the same final pose');
+    const tip=await page.locator('.axe-impacts>g').evaluate(n=>{
+      const p=n.ownerSVGElement.createSVGPoint();p.x=-39;p.y=-23.1;
+      const actual=p.matrixTransform(n.transform.baseVal.consolidate().matrix);return {x:actual.x,y:actual.y};
+    });
+    assert(Math.abs(tip.x-(330+landing.x*164))<.001&&Math.abs(tip.y-(245+landing.y*164))<.001,'Rendered cutting edge must land on the visible prediction');
+    assert.deepEqual(await game(page).evaluate(n=>({x:Number(n.dataset.landingX),y:Number(n.dataset.landingY)})),landing);
+    if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-result.png'});
+    await pressReady(page,touch);await phase(page,'choice');
+    await pressReady(page,touch);await phase(page,'horizontal');await stopGauge(page,.5,touch);
+    await phase(page,'vertical');await stopGauge(page,.5,touch);await phase(page,'power');await stopGauge(page,.93,touch);
+    await phase(page,'flight');await page.waitForFunction(()=>{
+      const n=document.querySelector('.axe-flight');return document.querySelector('.axe-game').dataset.phase==='flight'&&Number(n.getAttribute('opacity'))<.9;
+    });
+    assert(Number(await page.locator('.axe-flight').getAttribute('opacity'))>0,'Drop stays visible while falling');
+    await phase(page,'result');assert.equal(await page.locator('.axe-impacts>g').count(),0);
+    assert.match(await page.locator('.axe-note').textContent(),/落下 · 0点/);
+    await page.keyboard.press('Escape');assert.deepEqual(await storageSnapshot(page),before);
+  },options);
+  for(const [label,options,touch] of [
     ['rules-pc',{viewport:{width:1280,height:720}},false],
     ['rules-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ['rules-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
