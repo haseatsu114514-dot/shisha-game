@@ -8,7 +8,7 @@ import { runDaily } from "../daily/calendar.js";
 import { allSpots, VISIT_COST } from "../daily/spots.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
-import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
+import { dayOneProgress, recordCityVisit, scheduleChapterTwoTrpgNight } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
@@ -65,6 +65,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
 
 export async function runChapterTwoPreparation() {
   const startDay = dayOneProgress(state).startDay;
+  scheduleChapterTwoTrpgNight(state, startDay);
   state.flags._ch2_preparation_started = true;
   state.flags._ch2_region ||= "home";
   save();

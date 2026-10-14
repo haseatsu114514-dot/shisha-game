@@ -10,9 +10,9 @@ async function hit(page, id) {
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
-async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, run = true } = {}) {
+async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true } = {}) {
   page.setDefaultTimeout(20000);
-  await page.evaluate(async ({ chapter, day, slot, money, club, run }) => {
+  await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
@@ -22,8 +22,8 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
     // DAY5までに読んだ必須会話。LOAD時の旧保存救済とは切り分けて店の消費を比べる。
     s.met.tsumugi = true; s.affinity.tsumugi = 21; s.contacts.push("tsumugi");
     if (club) {
-      s.met.hiyori = true; s.affinity.hiyori = 100;
-      s.trpg.club = { founded: { chapter: 2, day: 15 }, members: { hiyori: { chapter: 2, day: 15 } } };
+      for (const id of clubIds) { s.met[id] = true; s.affinity[id] = 100; }
+      s.trpg.club = { founded: { chapter: 2, day: 15 }, members: Object.fromEntries(clubIds.map(id => [id, { chapter: 2, day: 15 }])) };
     }
     core.config.bgmVolume = 0; core.config.textSpeed = 4;
     __remake.vnTest.turbo = true;
@@ -34,7 +34,7 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
       await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
       void (await import("./js/chapters/ch2-preparation.js")).runChapterTwoPreparation();
     } else void (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
-  }, { chapter, day, slot, money, club, run });
+  }, { chapter, day, slot, money, club, clubIds, run });
   if (run) await page.locator(map).waitFor();
 }
 async function value(page) {
@@ -73,6 +73,10 @@ async function finishAxe(page, count, confirm = true, aimed = false) {
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
 async function roll(page) { await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function manualSave(page) {
+  await hit(page, "hud-menu"); await hit(page, "menu-save"); await hit(page, "slot-1");
+  await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
+}
 
 await suite("play-spots", async runCheck => {
   const check = (name, ...args) => !process.env.CASE_FILTER || name.includes(process.env.CASE_FILTER) ? runCheck(name, ...args) : Promise.resolve();
@@ -114,7 +118,7 @@ await suite("play-spots", async runCheck => {
     await go(page, "axe_bar"); assert(!await page.locator(t("axe-bar-" + mode)).isDisabled());
     assert((await page.locator(".axe-bar-records").textContent()).includes("各投"));
     await hit(page, "axe-bar-back"); await page.locator(map).waitFor(); assert.deepEqual(await value(page), nextNight);
-    await page.evaluate(() => spotCore.saveToSlot("suien_remake_slot1"));
+    await manualSave(page);
     await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
     await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
     assert.deepEqual(await value(page), nextNight);
@@ -150,6 +154,8 @@ await suite("play-spots", async runCheck => {
   }
 
   await check("axe-real-navigation-keeps-unfinished-save", async page => {
+    // pagehide後もcalendarは取消を自動保存する。日時だけ固定し、保存全文の比較を保つ。
+    await page.clock.setFixedTime(new Date("2026-10-14T10:00:00Z"));
     await setup(page);
     const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
@@ -158,8 +164,11 @@ await suite("play-spots", async runCheck => {
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before);
   });
 
-  for (const where of ["menu", "game", "pagehide", "screen"]) await check("axe-abort-" + where, async page => {
+  for (const where of ["menu", "game", "load", "pagehide", "screen"]) await check("axe-abort-" + where, async page => {
     await setup(page, { run: false });
+    if (where === "load") await page.evaluate(() => {
+      localStorage.setItem("suien_remake_slot2", JSON.stringify({ ...spotCore.state, money: 7654 }));
+    });
     await page.evaluate(async () => { window.axeResult = null; (await import("./js/daily/axe-bar.js")).visitAxeBar().then(v => { window.axeResult = v; }); });
     await page.locator(t("axe-bar-practice")).waitFor();
     assert.equal(await page.evaluate(async () => (await import("./js/daily/axe-bar.js")).visitAxeBar()), false);
@@ -168,11 +177,13 @@ await suite("play-spots", async runCheck => {
       window.oldOwner = spotCore.state;
       if (where === "pagehide") window.dispatchEvent(new Event("pagehide"));
       else if (where === "screen") (await import("./js/core/ui.js")).showScreen("test", document.createElement("div"));
+      else if (where === "load") spotCore.loadFromSlot("suien_remake_slot2");
       else spotCore.newGame();
     }, where);
     await page.waitForFunction(() => window.axeResult === false);
     assert.equal(await page.locator(t("axe-game")).count(), 0);
     assert(await page.evaluate(() => oldOwner.money === 12000 && oldOwner.stamina === 80 && !oldOwner.flags._axe_bar_records));
+    if (where === "load") assert.equal((await value(page)).money, 7654);
   });
 
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
@@ -195,9 +206,10 @@ await suite("play-spots", async runCheck => {
     }, options);
   }
 
-  await check("ch2-table-purchase-completion-and-save", async page => {
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) await check((label === "pc" ? "" : "touch-") + "ch2-table-purchase-completion-and-save", async page => {
     await setup(page, { chapter: 2, slot: 1, club: true }); const before = await value(page);
     await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+    await capture(page, label + "-ordinary-entry");
     await hit(page, "trpg-buy-ordinary-cup");
     assert.equal((await value(page)).money, before.money - 500); assert.equal((await value(page)).slot, 1);
     await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
@@ -207,6 +219,7 @@ await suite("play-spots", async runCheck => {
     await hit(page, "trpg-prepare-open"); await roll(page);
     await hit(page, "trpg-plan-approach-quiet"); await hit(page, "trpg-serve-open"); await roll(page);
     await page.locator(t("trpg-ending-title")).waitFor();
+    await capture(page, label + "-ordinary-result");
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.slot, 2); assert.equal(saved.day, 16); assert(saved.trpg.cleared["ordinary-cup"]);
     assert.equal(saved.money, before.money - 500); assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
@@ -214,7 +227,58 @@ await suite("play-spots", async runCheck => {
     await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
     const after = await value(page); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
     assert(after.trpg.cleared["ordinary-cup"]);
-  });
+    await capture(page, label + "-ordinary-return");
+  }, options);
+
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(label + "-ch2-day8-shark-from-town-and-load", async page => {
+      // 本編の日程と地図を使う。入部済み保存から再開し、夜予定の判定を迂回しない。
+      await setup(page, { chapter: 2, day: 22, slot: 1, club: true, clubIds: ["hiyori", "samechan"] });
+      const before = await value(page);
+      assert.deepEqual(before.trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
+      await hit(page, "map-region-widehanga"); await page.locator(t("pin-trpg_bar")).waitFor();
+      await capture(page, label + "-cafe-map"); await go(page, "trpg_bar");
+      await page.locator('[data-test="venue-host-sai"] img').evaluate(img => img.decode());
+      assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 8/);
+      assert.equal(await page.locator(t("trpg-person-samechan")).getAttribute("data-available"), "true");
+      await capture(page, label + "-cafe-entry");
+      await page.evaluate(() => { window.oldBookBuy = document.querySelector('[data-test="trpg-buy-shark-last-order"]'); });
+      await hit(page, "trpg-buy-shark-last-order");
+      await page.evaluate(() => { oldBookBuy.click(); oldBookBuy.click(); });
+      const bought = await value(page);
+      assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
+      assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
+      await hit(page, "trpg-play-shark-last-order"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+      assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
+      for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
+      await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page);
+      await hit(page, "trpg-plan-tool-citrus"); await hit(page, "trpg-plan-route-pier");
+      await hit(page, "trpg-prepare-open"); await roll(page);
+      await hit(page, "trpg-plan-finale-lure"); await hit(page, "trpg-serve-open"); await roll(page);
+      await page.locator(t("trpg-ending-title")).waitFor(); await capture(page, label + "-cafe-result");
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+      assert.equal(saved.day, 22); assert.equal(saved.slot, 2); assert.equal(saved.money, before.money - 800);
+      assert.equal(saved.trpg.cleared["shark-last-order"].gm, "samechan");
+      assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "samechan"]);
+      assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
+      for (const key of ["met", "affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
+      await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+      await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
+      const after = await value(page); assert.equal(after.day, 23); assert.equal(after.slot, 0);
+      assert.equal(after.money, before.money - 800); assert.equal(after.stamina, before.stamina + 14);
+      assert.deepEqual(after.trpg.cleared["shark-last-order"], saved.trpg.cleared["shark-last-order"]);
+      await capture(page, label + "-cafe-return");
+      await manualSave(page);
+      await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
+      await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
+      assert.deepEqual(await value(page), after);
+      await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+      assert.equal(await page.locator(t("trpg-play-shark-last-order")).count(), 0);
+      assert((await page.locator(t("trpg-memory-shark-last-order")).textContent()).length > 0);
+      await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
+      assert.deepEqual(await value(page), after);
+    }, options);
+  }
 
   await check("cafe-chapter-gate-and-load-cancel", async page => {
     await setup(page, { run: false });
