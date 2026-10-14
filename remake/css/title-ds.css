@@ -1,0 +1,78 @@
+/* 試作タイトルだけのテーマ。通常版のdaily.cssは保持する。 */
+:root { --title-layout-ready: 1; }
+.title-layout-toolbar {
+  position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right));
+  z-index: 110; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
+  max-width: calc(100% - 20px); padding: 4px; border: 1px solid #b68d53; border-radius: 5px;
+  background: #1b1023f2; color: #f6dfaf; font-size: 14px;
+}
+.title-layout-toolbar button, .title-layout-toolbar a { padding: 10px 12px; min-height: 40px; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
+.title-layout-toolbar button[aria-pressed="true"] { background: #67422d; border-radius: 3px; }
+.title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
+.title-layout-note:empty { display: none; }
+.title-layout-note { flex-basis: 100%; padding: 2px 8px; font-size: 12px; }
+/* タイトルの選択と復旧入口は縦持ちでも操作できる。ゲームに入れば既存の案内へ戻る。 */
+body[data-screen="title"]:not(.vn-open) #rotate-hint { display: none; }
+.title-logo-fallback { position: absolute; top: 90px; font-size: 36px; color: #f5d79f; }
+.title-ds-panel[hidden], .title-logo[hidden], .title-logo-fallback[hidden] { display: none; }
+
+/* 条件から外れた瞬間に元の1280x720ステージへ戻る。会話・マップ・制作には適用しない。 */
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #stage {
+  left: 0; top: 0; width: 100%; height: 100%; transform: none;
+}
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #rotate-hint { display: none; }
+.title[data-layout="ds"] {
+  --ds-gold: #c8a05d; --ds-text: #fbe6c1; --ds-ink: #1d0f21;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  padding: 66px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom));
+  background: #100b19; overflow: auto;
+}
+.title[data-layout="ds"] > .title-left, .title[data-layout="ds"] > .title-smoke, .title[data-layout="ds"] > .title-foot { display: none; }
+.title[data-layout="ds"] .title-ds-panel {
+  position: relative; min-height: 0; overflow: hidden; border: 1px solid var(--ds-gold); border-radius: 2px;
+  background-color: var(--ds-ink); color: var(--ds-text);
+}
+.title[data-layout="ds"] .title-ds-visual { background-size: cover; background-position: center; }
+.title[data-layout="ds"] .title-art {
+  inset: 80px 0 0; width: 100%; height: calc(100% - 80px); background-size: contain; background-position: center;
+  mask-image: none; -webkit-mask-image: none; opacity: 1; animation: none;
+}
+.title[data-layout="ds"] .title-brand { position: absolute; inset: 10px auto auto 18px; width: min(70%, 290px); height: auto; }
+.title[data-layout="ds"] .title-logo { position: static; width: 100%; animation: none; }
+.title[data-layout="ds"] .title-logo-smoke { display: none; }
+.title[data-layout="ds"] .title-logo-fallback { position: static; font-size: clamp(22px, 3vw, 36px); text-shadow: 0 2px 6px #000; }
+.title[data-layout="ds"] .title-ds-controls {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 22px; background: radial-gradient(ellipse at top, #65332b88, transparent 75%), linear-gradient(140deg, #211025, #30141e 60%, #130e1e);
+}
+.title[data-layout="ds"] .title-menu { width: min(100%, 420px); margin: 0; gap: 12px; }
+.title[data-layout="ds"] .title-item {
+  width: 100%; min-height: 54px; padding: 10px 16px; border: 1px solid var(--ds-gold);
+  background: #130a1688; justify-content: center; flex-direction: column; align-items: center; gap: 3px;
+  text-align: center; color: var(--ds-text); transform: none;
+}
+.title[data-layout="ds"] .title-item:hover:not(:disabled), .title[data-layout="ds"] .title-item:focus-visible {
+  background: #643328; outline: 2px solid #ffe4aa; outline-offset: 2px; transform: none;
+}
+.title[data-layout="ds"] .ti-en { order: 2; font-size: 11px; letter-spacing: .14em; color: #cfb28a; }
+.title[data-layout="ds"] .ti-ja { font-size: 22px; line-height: 1.25; letter-spacing: .08em; color: inherit; }
+.title[data-layout="ds"] .ti-en::before { content: none; }
+.title[data-layout="ds"] .title-ds-caption { margin: 24px 0 6px; font-size: 16px; color: #d6b58a; }
+.title[data-layout="ds"] .title-ds-chapter { margin: 0; font-size: 11px; letter-spacing: .12em; color: #c3a37a; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .modal-box {
+  min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 28px); padding: 22px;
+}
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg { min-width: 0; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg-row { flex-wrap: wrap; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+@media (max-width: 760px) and (orientation: portrait) {
+  .title[data-layout="ds"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(300px, 1fr)); padding-top: 66px; }
+  .title[data-layout="ds"] .title-ds-controls { padding: 14px 18px; }
+  .title[data-layout="ds"] .title-menu { gap: 8px; }
+  .title[data-layout="ds"] .title-item { min-height: 44px; padding: 6px 12px; flex-direction: row; }
+  .title[data-layout="ds"] .ti-en { display: none; }
+  .title[data-layout="ds"] .ti-ja { font-size: 19px; }
+  .title[data-layout="ds"] .title-ds-caption { margin-top: 16px; font-size: 14px; }
+  .title-layout-toolbar { font-size: 12px; }
+  .title-layout-toolbar button, .title-layout-toolbar a { min-height: 44px; padding: 10px; }
+}

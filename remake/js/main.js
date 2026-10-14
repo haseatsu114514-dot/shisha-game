@@ -12,6 +12,7 @@ import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { prepareTitleArt } from "./scenes/title-art.js";
+import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
@@ -45,7 +46,9 @@ export async function boot() {
     ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
   ])]);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
-  if (consumeResumeOnBoot() && load()) resumeGame();
+  const resumeRequested = consumeResumeOnBoot();
+  // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
+  if (!isNormalTitleForced() && resumeRequested && load()) resumeGame();
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
