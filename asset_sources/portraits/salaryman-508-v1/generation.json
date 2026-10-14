@@ -52,19 +52,36 @@
       "raw": "normal-raw.png",
       "prompt": "normal-prompt.txt",
       "status": "superseded: face appeared too young",
-      "raw_sha256": "6dd3bb6a6b9a4a081d257361318a78ddc7a55af4f77759d618ea5b57e8cb275e"
+      "raw_sha256": "6dd3bb6a6b9a4a081d257361318a78ddc7a55af4f77759d618ea5b57e8cb275e",
+      "actual_reference_order": [
+        "asset_sources/images/desktop_backup/chr_salaryman_normal.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
     },
     {
       "raw": "normal-age-raw.png",
       "prompt": "normal-age-prompt.txt",
       "expression": "normal",
-      "raw_sha256": "bc46ab9aa245ad8a725245a5fcb491be07726c0f94901104c6966eb622857122"
+      "raw_sha256": "bc46ab9aa245ad8a725245a5fcb491be07726c0f94901104c6966eb622857122",
+      "actual_reference_order": [
+        "normal-raw.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
     },
     {
       "raw": "smile-raw.png",
       "prompt": "smile-prompt.txt",
       "expression": "smile",
-      "raw_sha256": "3749a4b5fb560bbe97e538731cbba6a1234f3061e6eccec88b93e39ab36d9d54"
+      "raw_sha256": "3749a4b5fb560bbe97e538731cbba6a1234f3061e6eccec88b93e39ab36d9d54",
+      "actual_reference_order": [
+        "normal-age-raw.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png"
+      ]
     }
   ]
 }

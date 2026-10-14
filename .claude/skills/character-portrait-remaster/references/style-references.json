@@ -1323,6 +1323,26 @@
           "sha256": "9c9620b66790db2bd8f5730258de1831cd17a88d6c7c9cdc9f13f88ad72d3823"
         }
       ]
+    },
+    {
+      "id": "salaryman-508-v1",
+      "title": "サラリーマン normal / smile #508",
+      "status": "pending",
+      "role": "オーナー指定Draftで生成・接続した確認用。main採用は未承認。",
+      "images": [
+        {
+          "label": "normal",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+          "sha256": "ed407e102f6e85196b2662d8d6995b205423dc24c59b2b9de0023cbedcc6e22a"
+        },
+        {
+          "label": "smile",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+          "sha256": "eb715b9f3c06419436ac119c0dbea6c89a21cb03d2c672a39fc78f1114cb9253"
+        }
+      ]
     }
   ]
 }

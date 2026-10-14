@@ -4,6 +4,9 @@
 #vn { opacity: 0; transition: opacity 0.25s ease; }
 #vn.active { opacity: 1; }
 
+/* 冒頭専用の顔を映さないカットでは、新規常連立ち絵を重ねない。 */
+body:has(.tonari-opening) .vn-portraits img[data-speaker="salaryman"] { visibility: hidden; }
+
 .vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
   display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;
   background: #171221f2; color: #e4d4b4; font-size: 18px; pointer-events: none; }
