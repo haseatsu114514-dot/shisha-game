@@ -58,7 +58,7 @@ Chromium、PC1280×720、タッチ844×390（`tap()`）。日常保存fixtureか
 
 - worker `codex-play540-20261014-893386c8`。正式transfer [38544778342](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38544778342)とそのrun指定のstatus [38545145863](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38545145863)の成功・実ログを確認してから編集。予約を維持。
 - 旧担当の停止は540の引継ぎで確認。保存済みheadは保全。別環境の未コミット・未push差分は**未確認**。
-- DS #554/#555とは [境界を共有](https://github.com/haseatsu114514-dot/shisha-game/issues/554#issuecomment-6165573309)。DSのmain.js・title・renderer・CSSを編集していない。共有index差分は既存venue-host.css登録のみ。555との統合QAは未実施。
+- DS #554/#555とは [境界を共有](https://github.com/haseatsu114514-dot/shisha-game/issues/554#issuecomment-6165573309)。main.js・title・renderer・DS用CSS・共有index.htmlはmainとの差分なし。店員CSSは545の既存axe-throw.css／trpg.cssから読み込む。555との統合QAは未実施。
 - #547の看板寸法、#481の街歩き、#489の新キャラ対戦、新店舗ロゴ、無関係な台詞改稿は範囲外。残要望のある540を閉じない。
 - 実機Safari、実機ブラウザ、NEW GAMEから第1章／第2章全日の通しプレイは未確認。仕上がりはオーナーレビュー待ち。
 
