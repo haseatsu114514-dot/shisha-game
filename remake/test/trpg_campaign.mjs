@@ -5,6 +5,8 @@ import { test } from "node:test";
 const json = async path => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const module = async path => import("data:text/javascript;base64," + Buffer.from(await readFile(new URL(path, import.meta.url), "utf8")).toString("base64"));
 const rules = await module("../js/trpg/campaign.js");
+const { scheduleChapterTwoTrpgNight } = await module("../js/chapters/ch2-progress.js");
+const { CH2_NIGHTS } = await module("../js/chapters/ch2-story-data.js");
 const { TrpgSession } = await module("../js/trpg/session.js");
 const catalog = await json("../../data/trpg_catalog.json");
 const club = await json("../../data/dialogue/trpg_club.json");
@@ -31,6 +33,53 @@ function finish(scenario) {
   }
   return session.result();
 }
+
+test("chapter two DAY8 is a playable shark night with only the approved individual shift", () => {
+  const s = own(friends(state()), shark.id); s.day = 22;
+  const before = structuredClone(s), originalCatalog = structuredClone(catalog);
+  assert(!rules.castTrpgTable(s, catalog, shark).ok, "The ordinary weekly shift is busy on elapsed day 22");
+  assert(scheduleChapterTwoTrpgNight(s, 15));
+  assert.deepEqual(s.trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
+  const cast = rules.castTrpgTable(s, catalog, shark);
+  assert(cast.ok); assert.equal(cast.gm, "samechan");
+  assert(!CH2_NIGHTS.some(night => night.day === 8), "The exception must not compete with a mandatory story night");
+  const once = structuredClone(s);
+  assert(!scheduleChapterTwoTrpgNight(s, 15)); assert.deepEqual(s, once);
+  for (const [key, value] of Object.entries(before)) {
+    if (key !== "trpg") assert.deepEqual(s[key], value, key);
+  }
+  assert.deepEqual({ ...s.trpg, shifts: [] }, before.trpg);
+  for (let localDay = 2; localDay <= 13; localDay++) {
+    s.day = 15 + localDay - 1;
+    const ready = rules.castTrpgTable(s, catalog, shark, { nightBusy: CH2_NIGHTS.some(night => night.day === localDay) });
+    assert.equal(ready.ok, localDay === 8, `Unexpected normal-calendar shark availability on DAY${localDay}`);
+  }
+  assert.deepEqual(catalog, originalCatalog, "Weekly schedules must stay unchanged");
+});
+
+test("the DAY8 exception preserves explicit appointments and does not admit unknown or unrecruited people", () => {
+  const s = own(friends(state()), shark.id); s.day = 22;
+  s.trpg.shifts = [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: true, reason: "既存の予定" }];
+  const before = structuredClone(s);
+  assert(!scheduleChapterTwoTrpgNight(s, 15)); assert.deepEqual(s, before);
+  assert(!rules.castTrpgTable(s, catalog, shark).ok);
+  s.trpg.shifts = []; assert(scheduleChapterTwoTrpgNight(s, 15));
+  s.pendingInvite = { sender: "samechan", day: 22, slot: 1 };
+  assert(!rules.castTrpgTable(s, catalog, shark).ok);
+  s.pendingInvite = null;
+  assert(!rules.castTrpgTable(s, catalog, shark, { nightBusy: true }).ok);
+  s.slot = 0; assert(!rules.castTrpgTable(s, catalog, shark).ok); s.slot = 1;
+  delete s.trpg.club.members.samechan; assert(!rules.castTrpgTable(s, catalog, shark).ok);
+  s.trpg.club.members.samechan = { chapter: 2, day: 15 };
+  delete s.met.samechan; assert(!rules.castTrpgTable(s, catalog, shark).ok);
+  for (const changes of [{ chapter: 1 }, { day: 23 }]) {
+    const other = { ...structuredClone(before), ...changes, trpg: { ...structuredClone(before.trpg), shifts: [] } };
+    const untouched = structuredClone(other);
+    assert(!scheduleChapterTwoTrpgNight(other, 15)); assert.deepEqual(other, untouched);
+  }
+  const oldSave = friends(state()); oldSave.day = 22; delete oldSave.trpg.shifts;
+  assert(scheduleChapterTwoTrpgNight(oldSave, 15)); assert.equal(oldSave.trpg.shifts.length, 1);
+});
 
 test("chapter one cannot stock, buy or call a table", () => {
   const s = friends(state()); s.chapter = 1;

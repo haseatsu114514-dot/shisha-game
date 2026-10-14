@@ -9,6 +9,7 @@ async function setup(page, restore = false) {
       vn: await import("./js/vn/engine.js"), phone: await import("./js/daily/phone.js"),
       romance: await import("./js/daily/romance.js"), dates: await import("./js/daily/samechan-date.js"),
       bonds: await import("./js/daily/samechan-bonds.js"),
+      calendar: await import("./js/daily/calendar.js"),
       stats: await import("./js/core/stats.js"), data: await import("./js/core/data.js") };
     if (restore) K.core.load();
     else {
@@ -35,7 +36,10 @@ await suite("samechan-dates", async check => {
     await check(`${mode}-real-lime-booking-date-choice-and-save`, async page => {
       await setup(page);
       await page.evaluate(() => {
-        K.ch1.resumeGame();
+        K.ch1.setupHooks(); // resumeGame used to reset the test observer before installing it below.
+        // This suite exercises a legacy saved-lover UI fixture. The real chapter
+        // entry now runs DAY1; chapter-two reachability is covered by ch2_daily.
+        void K.calendar.runDaily({ nightEvents: {} });
         const enter = K.vn.hooks.onEnter;
         K.vn.hooks.onEnter = (id, scene) => { K.events.push(id); enter?.(id, scene); K.vn.vnTest.turbo = id !== "remake_date_samechan"; };
       });
@@ -193,7 +197,7 @@ await suite("samechan-dates", async check => {
         K.data.DB.lover.dates.samechan = sc;
         s.lovers = []; s.pendingInvite = { event: "date_samechan", sender: "samechan", day: 4, slot: 0 };
         s.inbox = [{ id: "unrelated", day: 4, msg: { sender: "minto", type: "chat", messages: ["hello"] }, read: true, done: true, log: [] }];
-        K.ch1.resumeGame(); return { before, friend, friendAfter, chapter, missing, noInvite };
+        void K.calendar.runDaily({ nightEvents: {} }); return { before, friend, friendAfter, chapter, missing, noInvite };
       });
       assert(!r.friend.done && !r.chapter.done && !r.missing.done); assert.deepEqual(r.friendAfter, r.before); assert.deepEqual(r.noInvite, []);
       await page.locator(".map:not(.done)").waitFor();

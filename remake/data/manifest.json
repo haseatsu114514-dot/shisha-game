@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-13 10:19 UTC",
+ "generated": "2026-10-14 18:24 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -212,6 +212,51 @@
    "b": 0.0208,
    "ax": 0.501,
    "aspect": 0.7467
+  },
+  "kumicho": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9792,
+   "b": 0.0117,
+   "ax": 0.4831,
+   "aspect": 0.7467
+  },
+  "rei": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.985,
+   "b": 0.01,
+   "ax": 0.4833,
+   "aspect": 0.7467
+  },
+  "volk": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9692,
+   "b": 0.0167,
+   "ax": 0.4736,
+   "aspect": 0.7467
+  },
+  "sai": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9825,
+   "b": 0.01,
+   "ax": 0.4729,
+   "aspect": 0.7467
+  },
+  "maki": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9867,
+   "b": 0.01,
+   "ax": 0.4861,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -249,6 +294,7 @@
   "bg_street_overcast_day.png",
   "bg_street_overcast_night.png",
   "bg_title.png",
+  "bg_tonari_customer_hands.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
   "bg_tonari_inside_night.png",
@@ -293,6 +339,7 @@
  "making": [
   "bench_base.png",
   "bowl_empty_clay.png",
+  "bowl_empty_hiyori.png",
   "bowl_empty_phunnel.png",
   "bowl_empty_silicone.png",
   "bowl_packed_airy.png",
@@ -320,7 +367,14 @@
   "hajime_craft_pack.png",
   "hajime_craft_pull.png",
   "hajime_craft_pull_rest.png",
+  "hajime_heat_scene.png",
   "hajime_steam_wait.png",
+  "heat_carrier.png",
+  "heat_cube_cold.png",
+  "heat_cube_lit.png",
+  "heat_flat_cold.png",
+  "heat_flat_lit.png",
+  "heat_stove.png",
   "hookah_base.png",
   "hookah_stem.png",
   "hookah_tray.png",
@@ -1240,6 +1294,13 @@
    0.8927,
    1.3685
   ],
+  "bowl_empty_hiyori.png": [
+   0.1754,
+   0.0486,
+   0.823,
+   0.953,
+   1.0
+  ],
   "bowl_empty_phunnel.png": [
    0.1497,
    0.1191,
@@ -1429,12 +1490,61 @@
    1.0,
    1.5
   ],
+  "hajime_heat_scene.png": [
+   0.0,
+   0.0,
+   1.0,
+   1.0,
+   0.593
+  ],
   "hajime_steam_wait.png": [
    0.3875,
    0.1323,
    0.7685,
    0.9807,
    0.7471
+  ],
+  "heat_carrier.png": [
+   0.1258,
+   0.0434,
+   0.8766,
+   0.9502,
+   1.0161
+  ],
+  "heat_cube_cold.png": [
+   0.1863,
+   0.11,
+   0.8202,
+   0.8908,
+   1.2
+  ],
+  "heat_cube_lit.png": [
+   0.1856,
+   0.1118,
+   0.821,
+   0.8917,
+   1.2
+  ],
+  "heat_flat_cold.png": [
+   0.2111,
+   0.2611,
+   0.7911,
+   0.8218,
+   1.2
+  ],
+  "heat_flat_lit.png": [
+   0.2103,
+   0.2638,
+   0.7911,
+   0.8218,
+   1.2
+  ],
+  "heat_stove.png": [
+   0.0983,
+   0.125,
+   1.0,
+   0.8867,
+   1.5
   ],
   "hookah_base.png": [
    0.1898,
@@ -1613,6 +1723,7 @@
   "backgrounds/bg_street_overcast_day.png",
   "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
+  "backgrounds/bg_tonari_customer_hands.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
   "backgrounds/bg_tonari_inside_night.png",
@@ -1666,11 +1777,13 @@
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
   "sprites/characters/hiyori/chr_hiyori_tears.png",
+  "sprites/characters/kumicho/chr_kumicho_normal.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
   "sprites/characters/maezono/chr_maezono_smile.png",
   "sprites/characters/maezono/chr_maezono_surprise.png",
+  "sprites/characters/maki/chr_maki_normal.png",
   "sprites/characters/mashiro/chr_mashiro_normal.png",
   "sprites/characters/mashiro/chr_mashiro_sad.png",
   "sprites/characters/mashiro/chr_mashiro_serious.png",
@@ -1702,11 +1815,13 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rin/chr_rin_normal.png",
   "sprites/characters/rin/chr_rin_sad.png",
   "sprites/characters/rin/chr_rin_serious.png",
   "sprites/characters/rin/chr_rin_smile.png",
   "sprites/characters/rin/chr_rin_surprise.png",
+  "sprites/characters/sai/chr_sai_normal.png",
   "sprites/characters/samechan/chr_samechan_excited.png",
   "sprites/characters/samechan/chr_samechan_normal.png",
   "sprites/characters/samechan/chr_samechan_serious.png",
@@ -1725,6 +1840,7 @@
   "sprites/characters/tsumugi/chr_tsumugi_serious.png",
   "sprites/characters/tsumugi/chr_tsumugi_smile.png",
   "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+  "sprites/characters/volk/chr_volk_normal.png",
   "ui/chapters/ch1_keyart.png",
   "ui/character_intros/adam.png",
   "ui/character_intros/ageha.png",
@@ -1752,6 +1868,7 @@
   "ui/continue/neon_title.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
+  "ui/making/bowl_empty_hiyori.png",
   "ui/making/bowl_empty_phunnel.png",
   "ui/making/bowl_empty_silicone.png",
   "ui/making/bowl_packed_airy.png",
@@ -1779,7 +1896,14 @@
   "ui/making/hajime_craft_pack.png",
   "ui/making/hajime_craft_pull.png",
   "ui/making/hajime_craft_pull_rest.png",
+  "ui/making/hajime_heat_scene.png",
   "ui/making/hajime_steam_wait.png",
+  "ui/making/heat_carrier.png",
+  "ui/making/heat_cube_cold.png",
+  "ui/making/heat_cube_lit.png",
+  "ui/making/heat_flat_cold.png",
+  "ui/making/heat_flat_lit.png",
+  "ui/making/heat_stove.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",
   "ui/making/hookah_tray.png",

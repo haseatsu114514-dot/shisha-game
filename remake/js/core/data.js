@@ -41,6 +41,7 @@ const DIALOGUE_FILES = [
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "venue_hours", // 店主の案内と街の昼夜差分
   "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);

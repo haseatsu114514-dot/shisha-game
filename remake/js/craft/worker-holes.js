@@ -23,8 +23,10 @@ export function buildWorkerHoles() {
   const hands = el("div.worker-punch-hands", frames.map(frame => frame.img));
   const root = el("div.worker-punch", { hidden: true, "aria-hidden": "true", dataset: { test: "worker-punch", pose: "hover" } }, [dots, hands]);
   let available = false, target = [0.75, -0.5], timers = [];
-  const ready = Promise.all(frames.map(frame => readyWorkerImage(frame.img, makingUrl(frame.file))))
+  let pending;
+  const prepare = () => pending ??= Promise.all(frames.map(frame => readyWorkerImage(frame.img, makingUrl(frame.file))))
     .then(results => { available = results.every(Boolean); });
+  const ready = Promise.resolve();
   const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
   const positionHand = () => {
     const scale = Math.min(root.clientWidth / FOIL_VIEW.width, root.clientHeight / FOIL_VIEW.height);
@@ -51,7 +53,7 @@ export function buildWorkerHoles() {
     pose(name);
   }, ms));
   reset();
-  return { root, ready, get available() { return available; }, reset,
+  return { root, ready, prepare, get available() { return available; }, reset,
     show(visible) {
       root.hidden = !visible || !available;
       if (root.hidden) { clearTimers(); resize?.disconnect(); }

@@ -1,0 +1,81 @@
+{
+  "revision": "scale-v3",
+  "user_request": "スクショの指摘：コンロの前に電源接続があるのはおかしい。後ろから出る形へ。炭壺に対して入れた炭が大きすぎるので実物のサイズを調べ、寸法比を計算して2枚目の写真に近づける。",
+  "sources": [
+    {
+      "url": "https://ipecharcoal.com/",
+      "observation": "Cube 25 is 25×25×25 mm (manufacturer product specifications)."
+    },
+    {
+      "url": "https://www.shisha.jp/shopdetail/000000003158/",
+      "observation": "Carrier receiving bowl diameter13cm; overall height35cm (retailer dimensions). This does not specify inner diameter or wall thickness."
+    },
+    {
+      "url": "https://shishatabak.nl/products/dum-hot-plate-1000-watt-elektrische-kolenbrander",
+      "observation": "Real burner front photographs: control knob and plain front housing. Downloaded images did not verify the rear connection. Rear-right cable routing follows the user's requested correction; no claim that it matches this exact product."
+    }
+  ],
+  "planning": {
+    "人物": "はじめ。既存UIの人物姿勢と正規立ち絵を維持。",
+    "場面": "炭焼き、回収前3+0と1個回収後2+1。",
+    "台の型": "シーシャ台本体なし。電気コイルコンロと既存の深い金属製炭壺。",
+    "HMD": "なし。シーシャ使用中に変更しない。",
+    "炭": "壺内は小さな25mm角炭1個。薄い灰と赤い熾き。コンロは操作対象の拡大表現を維持。",
+    "ホース": "なし。コンロ後部から電源ケーブル1本だけ。",
+    "吸い口": "人物の既存アクセサリーを保持。吸引なし。",
+    "構図": "既存16:9、上のHUD/左人物/右のコンロと単一の炭壺。長い持ち手と削除した凡例を維持。"
+  },
+  "scale": {
+    "cube_side_mm": 25,
+    "carrier_receiving_diameter_mm": 130,
+    "physical_side_to_diameter": 0.19230769230769232,
+    "opening_width_px_reference": 270,
+    "face_parallel_target_px": 51.92307692307692,
+    "minor_yaw_degrees_max": 10,
+    "minor_yaw_bbox_px_max": 60.15059640064757,
+    "prompt_visible_width_px": [
+      50,
+      60
+    ],
+    "notes": "130mm is published receiving diameter, not a measured bore. Use approx19-22% rendered width as a concept target; do not claim exact3D calibration. Orient cube face approximately parallel to view; deep front rim partially occludes it. Stove charcoal remains enlarged UI targets, so this ratio calibrates the carrier illustration only."
+  },
+  "outputs": [
+    {
+      "file": "AB-hybrid-after.png",
+      "generated_path": "/workspace/generated_images/exec-d2e1549c-f2ff-4ba5-8e35-cd6013164ff1.png"
+    },
+    {
+      "file": "AB-hybrid-before.png",
+      "generated_path": "/workspace/generated_images/exec-20cf87f2-b090-4c76-aa4f-a0ea9ec69d20.png"
+    }
+  ],
+  "qa": {
+    "visually_inspected": true,
+    "coal_counts": "before3+0; after2+1",
+    "cord": "One cord originates at rear-right housing and runs backwards behind the carrier. Old front connector and foreground cable removed in both frames.",
+    "stored_cube_ash_width_px": 57,
+    "opening_width_estimate_px": 270,
+    "visible_width_ratio": 0.2111111111111111,
+    "measurement": "Read-only pixel ash-color mask, checked against full image. Approximate2D measurement, not a physical interior measurement.",
+    "long_handle": "Preserved"
+  },
+  "after_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v2/AB-hybrid-after.png",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png",
+      "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg",
+      "/workspace/scratch/coal-review/hybrid-refs/burner-side.jpg"
+    ],
+    "transparent_background": false,
+    "prompt": "Edit image 1 with TWO tightly localized corrections only. It is the existing 1672x941 Japanese charcoal-timing game AFTER-one-pickup mockup. Preserve the full 16:9 canvas, all borders, every top HUD and Japanese label, score000000, exact Hajime pose/face/hands/cap/clothes/necklace, left portrait and dialogue box, room lighting, heating coil, enlarged clickable stove charcoal1 and3, target brackets and 今, tongs, and the SINGLE bronze charcoal carrier with its previously approved very LONG handle and large air gap. Keep 炭壺 1 / 3 and 炭2 PERFECT ｜ 0.06秒遅い. Correction A: The power cord currently emerges from the FRONT fascia next to the control dial. Completely REMOVE that front cable connector/grommet and the ENTIRE old thick cable sweeping across the lower foreground table. Restore continuous plain metal fascia except for the original control dial, and uninterrupted dark wooden table in the lower strip. Put ONE realistic fixed black rubber power cable at the stove's REAR RIGHT CORNER, on the back edge behind the heating plate, far away from the front dial. Its strain relief belongs to the rear housing, not the front and not the heating coil. Show a short visibly connected segment emerging behind the top-right back corner around x1160,y270, then naturally bending AWAY from the viewer toward the back of the worktable and right background; it can continue behind the charcoal carrier and out the right panel edge. Logical occlusion is allowed, but the rear origin must read clearly and the entire foreground cable must be gone. Do not draw a loose unplugged plug, a cord attached to the hot coil, or a cord crossing active charcoal. Image4 is only a REAL burner front/control-knob reference: do not copy its logo, text, exact model or white backdrop. Correction B: The one charcoal inside the carrier is MUCH TOO LARGE relative to its opening. Shrink ONLY this stored charcoal to a carefully defined real-world size ratio. A normal cube is25x25x25 millimeters; reference carrier receiving diameter is130 millimeters. A cube side is25/130=0.1923 of the bowl diameter. The current opening is approximately270 image pixels wide, so the new stored charcoal should have a VISIBLE HORIZONTAL WIDTH of about52-58 pixels at this exact canvas size, approximately ONE FIFTH of the opening. The old stored charcoal is about115 pixels wide; make the replacement roughly HALF that width and accordingly half its height. Keep the bowl size and long handle unchanged. Orient the little cube with an edge approximately parallel to the image horizontal so a large diagonal does not inflate its width. Place the single small cube genuinely INSIDE the deep carrier, in the lower-center interior behind the front lip, with most of its side naturally occluded; around x1475,y521. Leave generous surrounding empty space. Retain fine gray/white ash and subtle red embers like image3, scaled down with the cube, no large lava crack. Do not fill the pot with several cubes: exactly ONE tiny natural shisha coal, still clearly recognizable. Keep the stove's two interactive charcoal targets unchanged, as game UI closeups. Image2 is canonical Hajime identity only; no character changes. No charcoal-stage tutorial cards, diagrams, extra labels, new devices, extra people or smoke. Make the updated rear power cable and the corrected small stored cube the only changes."
+  },
+  "before_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-after.png",
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v2/AB-hybrid-before.png",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png"
+    ],
+    "transparent_background": false,
+    "prompt": "Make the BEFORE-pickup state by editing IMAGE1. Image1 is the newly corrected AFTER image: its power cord emerges from the REAR RIGHT corner behind the stove, and the single coal inside the carrier is correctly small. Preserve image1's exact 1672x941 framing, every border, protagonist pose/face/cap/hands/clothes/necklace, left dialogue box, mosaic lamps, top HUD/score, heading and one-line instruction, front stove control knob, heating coil, tongs, the deep bronze carrier with LONG handle, and especially the corrected REAR power cable origin and path. Keep the stove FRONT fascia and lower worktable entirely free of a power connector and cable. Change collection state only: remove the tiny coal inside the carrier so it is empty, change counter to 炭壺 0 / 3, and remove the result record 炭2 PERFECT ｜ 0.06秒遅い. Restore the original number2 charcoal in the lower-left stove target position, using image2 ONLY as the state and placement reference for that third stove coal. The stove again has coal1 at top, coal2 lower-left, and coal3 lower-right. Coal2 is the current target: gold brackets, gold circled2, small 今 to its upper-right as image2; coal1 and3 have neutral gray brackets and neutral circled numbers. Remove gold 今 from coal3. Keep the charcoal ash/red-ember material and the UI target sizes like image1 and2. Do NOT copy image2's old erroneous front power connector or foreground cable. Preserve image1's rear-right connected cable exactly, no duplicated wire. The empty carrier bowl, tall handle, pedestal and scale remain the same as image1. No tutorial legends, new explanatory panels, extra devices, charcoal in the empty pot, or additional text. Image3 is canonical Hajime identity only, not a pose change. The ONLY changes from image1 are the correct BEFORE counts and charcoal positions/target markers."
+  }
+}

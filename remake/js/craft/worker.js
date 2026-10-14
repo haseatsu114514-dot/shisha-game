@@ -67,7 +67,6 @@ export function buildWorkerScene(cs) {
   const usableFaces = new Set();
   const faceUrls = [...new Set([
     ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src),
-    makingUrl("hajime_steam_wait.png"),
   ].filter(Boolean))];
   const warmFaces = Promise.all(faceUrls.map(async url => {
     if (await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
@@ -103,13 +102,31 @@ export function buildWorkerScene(cs) {
       applyFace();
     }
   });
-  return { caption, footer, root, ready, setStep(step) {
+  const prepare = async step => {
+    const key = workerSceneKey(step, null);
+    await Promise.all([
+      actions.prepare(key),
+      key === "holes" ? holes.prepare() : null,
+      ["steam", "timer"].includes(step) ? (async () => {
+        const url = makingUrl("hajime_steam_wait.png");
+        if (url && await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+      })() : null,
+      ["pull", "care"].includes(step) ? actions.prepare("inhale") : null,
+    ]);
+    applyFace();
+    if (["steam", "timer"].includes(step) && actor && !actor.hidden) {
+      await readyWorkerImage(actor, actor.getAttribute("src"));
+    }
+  };
+  return { caption, footer, root, ready, prepare, setStep(step) {
     holes.reset();
     root.dataset.step = step;
     delete root.dataset.draw;
     mental = "steady"; root.dataset.mental = mental;
     caption.textContent = WORKER_STEPS[step] || "一台を仕上げる";
     applyFace();
+    // 装飾だけを切り替える呼出しでも、必要な工程画像だけを裏で用意する。
+    prepare(step).then(() => { if (root.isConnected && root.dataset.step === step) applyFace(); });
   }, punch(event) {
     if (root.dataset.step === "holes") holes.punch(event);
   }, setMental(level) {

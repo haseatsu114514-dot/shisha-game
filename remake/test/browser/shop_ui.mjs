@@ -70,7 +70,7 @@ await suite("shop-ui", async check => {
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /出張中/);
     await tap(page, 'shop-entry-back');
-    await page.evaluate(() => { S.core.state.day = 5; S.core.state.visitedDay.rin = 5; S.open(); });
+    await page.evaluate(() => { S.core.state.day = 5; S.core.state.slot = 1; S.core.state.visitedDay.rin = 5; S.open(); });
     assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
     assert.match(await page.locator('.showroom').innerText(), /訪問済み/);
     await tap(page, 'shop-entry-back');
@@ -170,19 +170,41 @@ await suite("shop-ui", async check => {
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
     await go(); await tap(page, 'shop-enter'); await tap(page, 'buy-mint'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
-    await page.evaluate(() => { S.core.state.stamina = 5; });
+    await go();
+    assert(await page.locator('[data-test="shop-upstairs"]').isDisabled(), 'The daytime showroom must stay closed');
+    await tap(page, 'shop-entry-back'); await page.locator('.map:not(.done)').waitFor();
+    await page.evaluate(() => { S.core.state.slot = 1; S.core.state.stamina = 5; });
+    const beforeCancel = await snapshot(page);
     await go(); await tap(page, 'shop-upstairs');
     await page.getByRole('button', { name: 'やめておく', exact: true }).click();
     await page.locator('.map:not(.done)').waitFor();
-    assert.equal((await snapshot(page)).slot, 0); assert.equal((await snapshot(page)).stamina, 5);
+    assert.deepEqual(await snapshot(page), beforeCancel, 'The cancelled night visit must preserve money, stock, stamina and its action');
+    assert.equal((await snapshot(page)).slot, 1); assert.equal((await snapshot(page)).stamina, 5);
     await page.evaluate(() => { S.curtain = S.transitions.createSceneCurtain(S.ui.layers.fx, {}); });
     assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, 'Stamina cancellation leaked the showroom arrival');
     await page.evaluate(() => S.curtain.release());
-    await page.evaluate(() => { S.core.state.stamina = 100; });
+    await page.evaluate(() => {
+      S.core.state.stamina = 100;
+      // Observe the real action save before the night is followed by sleep; never change its payload.
+      const originalSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(key, value) {
+        if (key === 'suien_remake_save') {
+          const saved = JSON.parse(value);
+          if (saved.day === 5 && saved.slot === 2 && saved.visitedDay.rin === 5 && !S.showroomSave) S.showroomSave = saved;
+        }
+        return originalSet.call(this, key, value);
+      };
+    });
     await go(); await tap(page, 'shop-upstairs');
-    await page.waitForFunction(() => S.error || S.core.state.slot === 1 && document.querySelector('.map:not(.done)'));
+    await page.waitForFunction(() => S.error || S.core.state.day === 6 && S.core.state.slot === 0 && document.querySelector('.map:not(.done)'));
     assert.equal(await page.evaluate(() => S.error), null);
-    assert.equal((await snapshot(page)).stamina, 86);
+    const saved = await page.evaluate(() => S.showroomSave);
+    assert(saved, 'The completed showroom visit must save its cost and action before sleep');
+    assert.equal(saved.slot, 2); assert.equal(saved.day, 5);
+    assert.equal(saved.stamina, 86);
+    assert.equal(saved.money, beforeCancel.money, 'The existing free consultation must not add a fee');
+    assert.deepEqual(saved.flavorStock, beforeCancel.stock);
+    assert.equal((await snapshot(page)).slot, 0); assert.equal((await snapshot(page)).stamina, 100);
     assert.equal(await page.evaluate(() => S.core.state.visitedDay.rin), 5);
     await go(); assert(await page.locator('[data-test="shop-upstairs"]').isDisabled());
   });

@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-13 JST",
+  "issue": 514,
+  "items": [
+    {
+      "character": "ageha",
+      "source": {
+        "path": "asset_sources/ch2-interiors/ageha/source.png",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "sha256": "b5e77b316cf21dc47809250e9f3e5c409dec0cf1d57ac9d7c90a0c912ffd2048"
+      },
+      "runtime": {
+        "path": "assets/backgrounds/bg_ch2_ageha_entry.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "4cb625b8da64ae55aa1400311594a887d73dccdaf4f0d0af5a794291903b53a1"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "asset_sources/ch2-interiors/archive/revision-candidates/ageha-magazine-text/source.png"
+      ],
+      "conversion": "ImageMagick resize entire source to 1280x720 (aspect difference below 0.2%), lossless WebP; source preserved unchanged",
+      "prompt": "asset_sources/ch2-interiors/ageha/prompt.txt",
+      "prompt_sha256": "b6458dc9fbc8df9a83660daa3c389139b0cc0f98be999d7fbbdf60b41d6883ab",
+      "reference_input": {
+        "referenced_image_paths": [
+          "asset_sources/ch2-interiors/archive/revision-candidates/ageha-magazine-text/source.png"
+        ]
+      },
+      "previous_edit": {
+        "prompt": "asset_sources/ch2-interiors/archive/revision-candidates/ageha-magazine-text/prompt.txt",
+        "references": [
+          "asset_sources/ch2-interiors/archive/v1/ageha/source.png"
+        ],
+        "rejected_reason": "Typography-like magazine headings, cleaned with imagegen edit."
+      },
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
+    },
+    {
+      "character": "kumicho",
+      "source": {
+        "path": "asset_sources/ch2-interiors/kumicho/source.png",
+        "size": [
+          1672,
+          940
+        ],
+        "mode": "RGB",
+        "sha256": "bd73bd0ee6a2a7f3e7810c1bc0cc59cc806fa70f645211b0011167edbfa5cb55"
+      },
+      "runtime": {
+        "path": "assets/backgrounds/bg_ch2_kumicho_entry.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "680fa3e7a107a00b2a2cd1bf598e96d7dbb5750ba3f8f3953c50b026add6579e"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "conversation:owner-office-reference-2026-10-13",
+        "asset_sources/ch2-interiors/archive/v1/ageha/source.png",
+        "asset_sources/ch2-interiors/archive/v1/kumicho/source.png",
+        "asset_sources/ch2-interiors/archive/v1/rei/source.png",
+        "asset_sources/ch2-interiors/archive/v1/volk/source.png"
+      ],
+      "conversion": "ImageMagick resize entire source to 1280x720 (aspect difference below 0.2%), lossless WebP; source preserved unchanged",
+      "prompt": "asset_sources/ch2-interiors/kumicho/prompt.txt",
+      "prompt_sha256": "a072baa202a84b9e1f84c5ce7a97767924346c72a2efb4eef5977823fa733ed7",
+      "reference_input": {
+        "num_last_images_to_include": 5,
+        "local_attachment_original_available": false,
+        "primary": "User-attached wood-paneled office with black leather sofas, shrine and marble floor; previous four rooms are secondary and not retained for the tatami design"
+      },
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
+    },
+    {
+      "character": "rei",
+      "source": {
+        "path": "asset_sources/ch2-interiors/rei/source.png",
+        "size": [
+          1672,
+          940
+        ],
+        "mode": "RGB",
+        "sha256": "7ea0b7e0b2d71c93a1cf3ad412b93bb1be34bebddae02c0d9fae7588cc1190eb"
+      },
+      "runtime": {
+        "path": "assets/backgrounds/bg_ch2_rei_entry.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "176f8bf44a33f43bd1c18b6b9a00805269bef50910e51cac7be8141e9fca5aba"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "asset_sources/ch2-interiors/archive/v1/rei/source.png"
+      ],
+      "conversion": "ImageMagick resize entire source to 1280x720 (aspect difference below 0.2%), lossless WebP; source preserved unchanged",
+      "prompt": "asset_sources/ch2-interiors/rei/prompt.txt",
+      "prompt_sha256": "af0cababd865b953b1a1a312a4ad9fb78d91812b752ee5c8a7a75de63ee77493",
+      "reference_input": {
+        "referenced_image_paths": [
+          "asset_sources/ch2-interiors/archive/v1/rei/source.png"
+        ]
+      },
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
+    },
+    {
+      "character": "volk",
+      "source": {
+        "path": "asset_sources/ch2-interiors/volk/source.png",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB",
+        "sha256": "f8f05b75a50828add99ec2d38f5657b0ca1c796cadd0900599fc1d00c0163779"
+      },
+      "runtime": {
+        "path": "assets/backgrounds/bg_ch2_volk_entry.webp",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB",
+        "sha256": "b33bfc195b174844d1a79c8ac8b880bc6d14812bb623eb26a4581c8d18cd0017"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "asset_sources/ch2-interiors/archive/v1/volk/source.png"
+      ],
+      "conversion": "ImageMagick resize entire source to 1280x720 (aspect difference below 0.2%), lossless WebP; source preserved unchanged",
+      "prompt": "asset_sources/ch2-interiors/volk/prompt.txt",
+      "prompt_sha256": "a53dbf70071a9ed094101b30c4463e372690fb9de82820022f970a1e39e6a453",
+      "reference_input": {
+        "referenced_image_paths": [
+          "asset_sources/ch2-interiors/archive/v1/volk/source.png"
+        ]
+      },
+      "visual_qa": "Reviewed generated image and settled desktop VN overlay after C2P06: distinct decor remains visible beside normal portrait; closed ingredient storage, no visible flavor tubs; walkable furniture and readable dialogue. Local browser suites: preview10 and main9 PASS."
+    }
+  ],
+  "revision": "C2P06: office reference, V-kei belongings, Heisei gyaru bears and concealed ingredient storage",
+  "qa_scope": "Empty preparation rooms; no rendered shisha equipment. Container absence and decor require manual inspection."
+}

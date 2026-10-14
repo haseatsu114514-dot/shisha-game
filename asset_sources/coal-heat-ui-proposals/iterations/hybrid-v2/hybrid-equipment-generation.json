@@ -1,0 +1,59 @@
+{
+  "revision": "equipment-v2",
+  "user_changes": [
+    "画像下部の4段階の焼け方説明を削除",
+    "コンロにつながる電源コードを追加",
+    "炭壺の持ち手を伸ばし、熱い受け部から握る位置を離す"
+  ],
+  "planning": {
+    "人物": "はじめ。既存モックを保持。正規chr_hajime_normal.pngを本人参照として添付。",
+    "場面": "炭焼き工程。回収前と1個回収後。",
+    "台の型": "シーシャ台本体なし。電気コンロと深い金属製炭壺。",
+    "HMD": "炭焼きだけのため描かない。",
+    "炭": "前はコンロ3個/壺0個、後はコンロ2個/壺1個。灰膜と赤い熾き。",
+    "ホース": "使用中ではないため描かない。コンロの電源ケーブルを追加。",
+    "吸い口": "人物の既存アクセサリーを保持。吸引の追加なし。",
+    "構図": "元の16:9構図。上の工程HUDと左の人物枠を保持、右のコンロ/炭壺を修正。"
+  },
+  "sources": {
+    "holder_photo": "https://www.shisha.jp/shopdetail/000000003158/",
+    "canonical_character": "assets/sprites/characters/hajime/chr_hajime_normal.png"
+  },
+  "before_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v1/AB-hybrid-before.png",
+      "/workspace/scratch/coal-review/hybrid-refs/coal-holder-1.jpg",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png",
+      "/workspace/scratch/coal-review/hybrid-refs/lit-coconut-coal-iconhookah.jpg"
+    ],
+    "transparent_background": false,
+    "prompt": "Edit reference image 1, the existing 16:9 Japanese game UI static mockup. Keep its composition, art style, exact protagonist, mosaic-lamp room, top six-step HUD, score, Japanese heading, 3 glowing ash-coated pressed coconut charcoal cubes, target brackets and numbers, tongs, and the left character dialogue box unchanged. The full canvas must stay 16:9 with all existing outer borders visible. This is the BEFORE collection image: 3 charcoal cubes on the stove, 0 in the single charcoal carrier, label 炭壺 0 / 3. Make THREE specific local changes only. (1) Completely REMOVE the rectangular charcoal-state tutorial panel at the bottom under the stove (the 4 miniature charcoal icons, arrows, and 黑い芯 / 赤熱 / 芯が光る / 灰かぶり labels). Restore continuous dark wooden worktop there; no replacement explanation, legend or infographic. Keep the left character dialogue card. (2) Add a clearly visible realistic BLACK RUBBER POWER CABLE PHYSICALLY CONNECTED to the electric stove housing, with a small strain-relief/grommet on the lower right side of its metal base. From that real connection the cable naturally curves downward, runs in the now empty lower tabletop area below the stove, and exits the lower-left edge of the right gameplay panel toward an off-frame power outlet. Make it easy to trace one continuous cable from the stove, with subtle highlights so black on dark wood is visible. Do not attach the cable to the heating coil or the charcoal carrier; no loose unplugged plug, no floating wire, no cable over hot coals. (3) Redesign ONLY the right single deep metal charcoal carrier to have a MUCH TALLER HANDLE and a large visibly open air gap between the hot receptacle and the gripping apex. Reference image 2 is a real carrier: long vertical metal uprights, high arch, deep metal receptacle, pedestal, no partitions. In this mockup keep the handle apex within the right panel around y=130, move the bowl rim lower to around y=460-490, maintain a genuinely deep bowl and stable pedestal ending around y=730. The upright sides rise far above the rim, with approx 1.5 bowl-heights of clear air between rim and grip, substantially more separation than the input's handbag-like handle. The handle must connect mechanically to both sides of the vessel, and be slender enough not to block its interior. Keep the warm bronze/dark-steel worn material and simple unbranded design. The actual gripping point is high and well away from the hot bowl. Reference 3 is the canonical Hajime identity only, do not re-pose or redraw him. Reference 4 is for retaining believable thin gray/white ash and red embers on the coconut cubes only; do not draw its hookah HMD or photo background. Preserve coal cubes and charcoal counts. Do not add any extra hookah, hose, device, person, tutorial text, legend, new buttons or oversized smoke. Preserve the original UI and art except for the removed bottom legend, attached power cable, and longer separated charcoal-pot handle."
+  },
+  "after_input": {
+    "referenced_image_paths": [
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/AB-hybrid-before.png",
+      "/workspace/shisha-game/asset_sources/coal-heat-ui-proposals/iterations/hybrid-v1/AB-hybrid-after.png",
+      "/workspace/scratch/coal-review/hybrid-refs/hajime-normal.png"
+    ],
+    "transparent_background": false,
+    "prompt": "Create the AFTER-one-pickup version by editing image 1. Image 1 is the revised approved BEFORE mockup with attached electric power cable, a very tall metal charcoal carrier handle with large air gap above its bowl, and NO bottom charcoal tutorial legend. Copy its layout, dimensions and all equipment exactly. Keep the power cable visibly and continuously connected to the stove, its curved path across the empty lower tabletop, the charcoal pot's newly elongated handle and lower deep bowl, top HUD and zero score, the protagonist Hajime's pose/face/cap/clothing/necklace, tongs, room background, Japanese heading, charcoal ash/ember material and all borders unchanged. Only change the collection state: remove charcoal cube number 2 from the bottom-left stove position along with its brackets, number badge and 今 marker; retain charcoal number 1 at the top and number 3 on bottom-right. Cube 3 now gets the gold brackets, gold circled 3, and a small 今 just below it. Put exactly ONE of the same naturally ash-coated glowing coconut charcoal cubes INSIDE the one deep metal charcoal pot, resting low inside so its top is visible behind the front rim. The pot remains deep and unpartitioned; the coal must not float or sit on the rim. Update the pot counter to 炭壺 1 / 3, and add the same tiny short result record as image 2, 炭2 PERFECT ｜ 0.06秒遅い, below the pot counter. Image 2 is ONLY a reference for which coal is removed, which next target is gold, and the result-label state. DO NOT copy image 2's short handle, cableless stove, or bottom charcoal-stage legend. Image 3 is canonical character identity only, do not re-pose him. The bottom tabletop stays clear of the four-mini-charcoal tutorial panel: do NOT restore 黒い芯/赤熱/芯が光る/灰かぶり labels or diagrams. Keep the exact 16:9 image framing and art finish, with no other changes. This is a static UI mockup, not a photo or diagram."
+  },
+  "outputs": [
+    {
+      "file": "AB-hybrid-before.png",
+      "generated_path": "/workspace/generated_images/exec-4e25d2bd-ab2b-4875-a60a-057537cca530.png"
+    },
+    {
+      "file": "AB-hybrid-after.png",
+      "generated_path": "/workspace/generated_images/exec-618b42e9-e101-4a80-b1d5-bd8c2a5325dd.png"
+    }
+  ],
+  "qa": {
+    "visually_inspected": true,
+    "coal_count": "Before stove3/pot0; after stove2/pot1",
+    "bottom_legend": "Removed in both images",
+    "power_cable": "One continuous highlighted rubber cord attached via strain relief to stove housing; runs along cool tabletop and out of frame.",
+    "holder": "Long uprights from rim to high arch, visible open space; deep bowl and pedestal, no partitions.",
+    "not_playable": true
+  }
+}

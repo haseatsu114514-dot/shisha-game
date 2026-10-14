@@ -3,6 +3,7 @@
 import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
+import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
@@ -13,6 +14,7 @@ import { runDaily } from "../daily/calendar.js";
 import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/night-events.js";
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
 import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
@@ -52,7 +54,7 @@ const PRIZE = 30000;
 export function setupHooks() {
   hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
-  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
+  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(chapterDay(state)))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "記憶と気配の交差")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
@@ -119,7 +121,7 @@ async function openingPart() {
     await sleep(600);
     await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
     playBgm("tonari");
-    await play("ch1_opening", { bg: TONARI });
+    await playTonariOpening();
     progress.introDone = true;
     save();
   }
@@ -158,6 +160,7 @@ async function openingPart() {
 
 export async function resumeGame() {
   setupHooks();
+  if (state.chapter === 2) return (await import("./ch2.js")).resumeChapterTwo();
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
@@ -607,6 +610,15 @@ export async function showClear() {
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   const owner = state;
   let playing = false;
+  const next = el("button.btn.primary", { text: "第2章の初日へ", dataset: { test: "end-chapter2" }, onclick: async () => {
+    if (playing || !root.isConnected || state !== owner) return;
+    playing = true; next.disabled = true; replay.disabled = true;
+    try {
+      const chapter = await import("./ch2.js");
+      if (root.isConnected && state === owner) await chapter.beginChapterTwo();
+    } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
+    finally { playing = false; next.disabled = false; replay.disabled = false; }
+  } });
   const replay = el("button.btn.primary", { text: "次回予告をもう一度", dataset: { test: "end-preview" } });
   const root = el("div.end-screen.clear", [
     el("div.end-title", { text: "第1章 クリア" }),
@@ -615,16 +627,16 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "第2章の本編は準備中です。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
-    el("div.end-actions", [replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("div.end-actions", [next, replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
   ]);
   showScreen("end", root);
   async function preview(first = false) {
     if (playing || !root.isConnected) return;
-    playing = true; replay.disabled = true;
+    playing = true; replay.disabled = true; next.disabled = true;
     const controller = new AbortController();
     const observer = new MutationObserver(() => { if (!root.isConnected) controller.abort(); });
     observer.observe(layers.screen, { childList: true });
@@ -635,7 +647,7 @@ export async function showClear() {
       state.flags._ch1_preview_seen = true;
       save();
     }
-    playing = false; replay.disabled = false;
+    playing = false; replay.disabled = false; next.disabled = false;
     if (root.isConnected) {
       playBgm("bgm_result_emotional");
       replay.focus({ preventScroll: true });

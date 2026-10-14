@@ -27,7 +27,7 @@ const open = async (viewport, mobile, insight = 10) => {
   return page;
 };
 const ready = async page => {
-  await page.waitForFunction(() => [...document.querySelectorAll('.bench img')].every(i => i.complete && i.naturalWidth));
+  await page.waitForFunction(() => [...document.querySelectorAll('.bench img[src]')].filter(i => i.getClientRects().length).every(i => i.complete && i.naturalWidth));
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => !document.querySelector('.scene-curtain'));
 };

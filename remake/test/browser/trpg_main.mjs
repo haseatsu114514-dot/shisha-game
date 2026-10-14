@@ -1,5 +1,14 @@
 import assert from "node:assert/strict";
 import { suite, storageSnapshot, assertFits, baseURL } from "./support.mjs";
+
+// 店長の案内を加えた本棚はスクロール可能。各操作へ実際に到達できることを調べる。
+async function assertShelfControls(page) {
+  for (const control of await page.locator(".trpg-campaign button").all()) {
+    await control.scrollIntoViewIfNeeded();
+    const id = await control.getAttribute("data-test");
+    await assertFits(page, `[data-test="${id}"]`);
+  }
+}
 const button = (page, id) => page.locator('[data-test="' + id + '"]');
 async function hit(page, id) {
   const target = button(page, id);
@@ -48,7 +57,7 @@ await suite("trpg-main", async check => {
     await page.goto(new URL("trpg-campaign-preview.html", baseURL).href);
     await button(page, "trpg-club-found").waitFor();
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0);
-    await assertFits(page, ".trpg-campaign button");
+    await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-club-proposal-" + label + ".png" });
     await hit(page, "trpg-club-found");
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0, "MAX alone must not stock a book");
@@ -69,7 +78,7 @@ await suite("trpg-main", async check => {
     assert.equal(Object.keys(joined.trpg.club.members).length, 4); assert.equal(joined.slot, 1); assert.equal(joined.money, 3000);
     await hit(page, "trpg-buy-shark-last-order"); assert(await button(page, "trpg-play-shark-last-order").isEnabled());
     assert.equal(await button(page, "trpg-person-adam").getAttribute("data-available"), "false");
-    await assertFits(page, ".trpg-campaign button"); assert.deepEqual(await storageSnapshot(page), before);
+    await assertShelfControls(page); assert.deepEqual(await storageSnapshot(page), before);
   }, options);
   await check("actual-visits-recruit-and-save-members", async page => {
     await prepare(page, { club: false, money: 30000 });
@@ -138,7 +147,7 @@ await suite("trpg-main", async check => {
     ["shark-touch", "shark-last-order", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) await check(label, async page => {
     await prepare(page); const baseline = await storageSnapshot(page);
-    await open(page); await assertFits(page, ".trpg-campaign button");
+    await open(page); await assertShelfControls(page);
     await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-buy-shark-last-order");
     const bought = await snapshot(page); assert.equal(bought.money, 1700); assert.equal(bought.slot, 1);
     assert.equal(bought.stamina, 52); assert.equal(bought.reel.count, 3); assert.equal(bought.flavorStock.double_apple, 37);
@@ -151,11 +160,12 @@ await suite("trpg-main", async check => {
     assert.equal(storage.local.suien_remake_slot1, baseline.local.suien_remake_slot1);
     assert.equal(storage.local.qa_unrelated, "keep"); assert.equal(storage.session.qa_unrelated, "keep");
     assert(JSON.parse(storage.local.suien_remake_save).trpg.cleared[id], "Ending must save before the finish button");
-    await hit(page, "trpg-finish"); await page.waitForFunction(() => window.__trpgBarResult?.completed);
+    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
+    await page.waitForFunction(() => window.__trpgBarResult?.completed);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
     await open(page); assert.equal(await button(page, "trpg-play-" + id).count(), 0);
     assert((await button(page, "trpg-memory-" + id).textContent()).length > 0);
-    await assertFits(page, ".trpg-campaign button");
+    await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
     await hit(page, "trpg-campaign-close");
   }, options);
@@ -232,7 +242,7 @@ await suite("trpg-main", async check => {
     assert.equal((await snapshot(page)).slot, 1); assert.equal((await snapshot(page)).money, 2500);
     await hit(page, "pin-trpg_bar"); await hit(page, "map-go");
     await button(page, "trpg-play-ordinary-cup").waitFor();
-    await assertFits(page, ".trpg-campaign button");
+    await assertShelfControls(page);
   });
   await check("isolated-demo-and-chapter-gate", async page => {
     await prepare(page); const before = await storageSnapshot(page);

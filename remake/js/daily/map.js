@@ -14,6 +14,7 @@ import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
@@ -27,6 +28,8 @@ const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
 // 施設は大きな記号、その下に名前。顔のある店は同じ場所に店主の顔を置く。
 const PIN_SYMBOLS = {
+  axe_bar: '<path d="m7 22 7-18M12 5l7-2 3 8-8-1M11 8l4 2"/>',
+  trpg_bar: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 7h.01M17 7h.01M12 12h.01M7 17h.01M17 17h.01"/>',
   store: '<path d="M3 10v11h18V10M2 10l3-7h14l3 7M2 10h20M9 21v-7h6v7"/>',
   cafe: '<path d="M4 9h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9ZM16 10h2a3 3 0 0 1 0 6h-2M3 22h16M7 5V2M12 5V2"/>',
   kannon: '<path d="M3 4h18M4 8h16M7 4v17M17 4v17M5 21h4M15 21h4"/>',
@@ -54,6 +57,9 @@ export function interruptMap(value) {
   return true;
 }
 
+const regionOf = (opts) => opts.regions?.find(region => region.id === opts.regionId) || opts.regions?.[0];
+const backgroundOf = (region) => typeof region?.background === "function" ? region.background() : region?.background;
+
 /**
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
@@ -71,7 +77,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), setBg(bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await Promise.all([uiArtReady(), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   let walking = false;
   for (;;) {
@@ -100,11 +106,14 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, regions = null, regionId = null, onRegionChange = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
-    setBg(bgUrl(`bg_osu_map_${tod}`), { fast: true });
+    let region = regionOf({ regions, regionId });
+    const mapSpots = () => region ? typeof region.spots === "function" ? region.spots() : region.spots : allSpots();
+    const setMapBackground = () => setBg(backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`), { fast: true });
+    void setMapBackground();
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
@@ -145,7 +154,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const previewId = s.preview || SPOT_PREVIEW[s.id];
-      const pv = previewId ? sceneBg(previewId, tod) : null;
+      const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) {
         preview.classList.add("loading");
@@ -166,7 +175,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
-          s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
+          spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
+          s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
           known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
         ]),
@@ -204,13 +214,15 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
     };
 
-    for (const s of allSpots()) {
+    function renderPins() {
+      pins.replaceChildren();
+      for (const s of mapSpots()) {
       if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const face = locked ? null : spotFace(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id) : null;
+      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
@@ -233,6 +245,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
       pins.append(btn);
+      }
     }
 
     idleInfo();
@@ -240,6 +253,18 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
+      regions ? el("nav.map-regions", { "aria-label": "街を選ぶ" }, regions.map(item => el("button", {
+        type: "button", text: item.label, "aria-pressed": String(item === region),
+        dataset: { test: `map-region-${item.id}`, region: item.id },
+        onclick: () => {
+          if (moving || root.classList.contains("done") || region === item) return;
+          region = item; selected = null;
+          onRegionChange?.(item.id);
+          root.dataset.region = item.id;
+          root.querySelectorAll(".map-regions button").forEach(node => node.setAttribute("aria-pressed", String(node.dataset.region === item.id)));
+          void setMapBackground(); updateHud(); renderPins(); idleInfo();
+        },
+      }))) : null,
       canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
         SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
@@ -247,13 +272,15 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,
     ]);
+    if (region) root.dataset.region = region.id;
+    renderPins();
     showScreen("map", root);
     interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
     mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
     onShown?.();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
-    const previews = [...new Set(allSpots().filter(isUnlocked)
-      .flatMap((spot) => sceneArtUrls(sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];
+    const previews = [...new Set(mapSpots().filter(isUnlocked)
+      .flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];
     let at = 0;
     const warm = async () => {
       while (root.isConnected && !root.classList.contains("done") && at < previews.length) {

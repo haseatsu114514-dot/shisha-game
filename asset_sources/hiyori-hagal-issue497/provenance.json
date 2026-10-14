@@ -1,0 +1,94 @@
+{
+  "issue": 497,
+  "tool": "image_gen.imagegen",
+  "approved_design": {
+    "source": "asset_sources/hagal-bond-concepts-issue504/v1/04_samechan_hiyori.png",
+    "source_sha256": "6d43b520bda90543b4d051ee19bbf115446f06bf6cb137f0b8724dbb026fa72e",
+    "selection": "v1 / hiyori / bottom row / B 素顔でひと休み"
+  },
+  "gameplay_approval": {
+    "source": "owner reply in current chat 2026-10-15 JST",
+    "capacity": 20,
+    "flavor": "peach",
+    "min_grams": 3,
+    "aroma": 4,
+    "bonus": 1
+  },
+  "files": [
+    {
+      "path": "asset_sources/hiyori-hagal-issue497/cutout-v1.png",
+      "sha256": "fdf7624a40a46ba8a04f35e60d3e8fbe08dc51d60a0ac2e4a1668158278b8909",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox24": [
+        221,
+        62,
+        1030,
+        1193
+      ]
+    },
+    {
+      "path": "asset_sources/hiyori-hagal-issue497/cutout-v2.png",
+      "sha256": "c4840a6d73d93181caee7e04f829d96d09e3eeb22ec80fb970181eecbba8ccad",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox24": [
+        220,
+        61,
+        1032,
+        1195
+      ]
+    },
+    {
+      "path": "assets/ui/making/bowl_empty_hiyori.png",
+      "sha256": "c4840a6d73d93181caee7e04f829d96d09e3eeb22ec80fb970181eecbba8ccad",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox24": [
+        220,
+        61,
+        1032,
+        1195
+      ]
+    },
+    {
+      "path": "remake/img/ui/making/bowl_empty_hiyori.webp",
+      "sha256": "f7c72acebce4134295b48218b08e0e61c11b1e22c849d6b49a1e66adc43e2de9",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox24": [
+        220,
+        61,
+        1032,
+        1195
+      ]
+    }
+  ],
+  "review_status": "Draft; incomplete browser verification; not merged or published",
+  "webp_alpha_equal": true,
+  "other_manifest_entries_preserved": true
+}
