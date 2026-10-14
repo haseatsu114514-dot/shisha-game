@@ -3,12 +3,17 @@ on:
   pull_request:
     paths:
       - 'data/dialogue/hiyori.json'
+      - 'data/equipment.json'
       - 'data/dialogue/confession.json'
       - 'remake/js/core/hiyori-route.js'
       - 'remake/js/daily/hiyori.js'
       - 'remake/js/daily/bonds.js'
       - 'remake/js/daily/romance.js'
       - 'remake/test/browser/hiyori_work_relationship.mjs'
+      - 'remake/test/browser/hiyori_hagal.mjs'
+      - 'remake/js/craft/art.js'
+      - 'remake/js/motions/gift.js'
+      - 'assets/ui/making/bowl_empty_hiyori.png'
       - 'remake/test/browser/hiyori_axe_natural.mjs'
       - '.github/workflows/hiyori-work-relationship.yml'
 permissions:
@@ -52,6 +57,7 @@ jobs:
             sleep 1
           done
           node remake/test/browser/hiyori_work_relationship.mjs
+          node remake/test/browser/hiyori_hagal.mjs
           node remake/test/browser/save_load.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
       - name: Natural New Game through axe reveal to work and actual friend answer

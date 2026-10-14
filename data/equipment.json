@@ -287,6 +287,29 @@
       "description": "自宅用の台・ホース・トング・マットのフルセット。寝る前の一服が、明日の煙を変える。"
     },
     {
+      "id": "suyaki_hiyori",
+      "type": "bowl",
+      "name": "ひよりのハガル「素顔でひと休み」",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_hiyori",
+      "description": "ひよりと過ごす一服の素焼き。外側の小さな斧と葉の彫りが、思いきり笑う素顔を思わせる。容量20g。ピーチ3g以上で香りが少し開く。",
+      "capacity": 20,
+      "art": "suyaki_hiyori",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "hiyori",
+        "reason": "素顔でも気負わず、一服できる相手へ",
+        "flavor": "peach",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "suyaki_samechan",
       "type": "bowl",
       "name": "サメちゃんからの素焼きハガル",

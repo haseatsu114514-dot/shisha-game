@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-14 00:22 UTC",
+ "generated": "2026-10-14 18:24 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -339,6 +339,7 @@
  "making": [
   "bench_base.png",
   "bowl_empty_clay.png",
+  "bowl_empty_hiyori.png",
   "bowl_empty_phunnel.png",
   "bowl_empty_silicone.png",
   "bowl_packed_airy.png",
@@ -1293,6 +1294,13 @@
    0.8927,
    1.3685
   ],
+  "bowl_empty_hiyori.png": [
+   0.1754,
+   0.0486,
+   0.823,
+   0.953,
+   1.0
+  ],
   "bowl_empty_phunnel.png": [
    0.1497,
    0.1191,
@@ -1775,6 +1783,7 @@
   "sprites/characters/maezono/chr_maezono_serious.png",
   "sprites/characters/maezono/chr_maezono_smile.png",
   "sprites/characters/maezono/chr_maezono_surprise.png",
+  "sprites/characters/maki/chr_maki_normal.png",
   "sprites/characters/mashiro/chr_mashiro_normal.png",
   "sprites/characters/mashiro/chr_mashiro_sad.png",
   "sprites/characters/mashiro/chr_mashiro_serious.png",
@@ -1812,6 +1821,7 @@
   "sprites/characters/rin/chr_rin_serious.png",
   "sprites/characters/rin/chr_rin_smile.png",
   "sprites/characters/rin/chr_rin_surprise.png",
+  "sprites/characters/sai/chr_sai_normal.png",
   "sprites/characters/samechan/chr_samechan_excited.png",
   "sprites/characters/samechan/chr_samechan_normal.png",
   "sprites/characters/samechan/chr_samechan_serious.png",
@@ -1858,6 +1868,7 @@
   "ui/continue/neon_title.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
+  "ui/making/bowl_empty_hiyori.png",
   "ui/making/bowl_empty_phunnel.png",
   "ui/making/bowl_empty_silicone.png",
   "ui/making/bowl_packed_airy.png",
@@ -1935,8 +1946,6 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "sprites/characters/sai/chr_sai_normal.png",
-  "sprites/characters/maki/chr_maki_normal.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
  ]
 }
