@@ -76,6 +76,7 @@ jobs:
       - name: Save/load, legacy migration and PC/mobile controls
         run: |
           node remake/test/browser/save_load.mjs
+          node remake/test/browser/title_layout.mjs
           node remake/test/browser/sumi_contact.mjs
           node remake/test/browser/lover_hidden_growth.mjs
       - name: Saved-lover date UI routes and legacy invitation boundaries

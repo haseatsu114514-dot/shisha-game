@@ -159,9 +159,11 @@ try {
     await button(p, "title-layout-recover").click(); await ready(p);
   }, p => p.route("**/css/title-ds.css", r => r.fulfill({ status: 200, contentType: "text/css", body: "" })));
   await check("small-phone-equal-panels-and-scroll", { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true }, async p => {
+    await seed(p);
     await layout(p, "ds");
     const heights = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().height));
     assert.equal(heights[0], heights[1]);
+    await button(p, "title-new").click(); await button(p, "cancel-new").click();
     await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
     await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
   });
