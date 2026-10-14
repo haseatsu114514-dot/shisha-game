@@ -4,7 +4,8 @@ export const FLOOR = { cx: 640, horizon: 350, rise: 330, halfWidth: 600, depth: 
 export const SPAWN = { x: 0, z: .04, dir: 'up' };
 // 3入口の足元で人物高が扉高の約83%になるよう、同じ世界縮尺で校正。
 export const CHARACTER_HEIGHT = 302.4;
-export const WALK_SPEED = .75, RUN_SPEED = 1.2, STRIDE_LENGTH = .65;
+// 背景上の移動量を人物高で校正する。奥行きの二乗で縦移動を遅くしない。
+export const WALK_SPEED = 420, RUN_SPEED = 660, STRIDE_LENGTH = 250;
 export const DOORS = [
   { id: 'cafe', rect: [54, 270, 150, 270], foot: [235, 592], label: [160, 252] },
   { id: 'peppermint', rect: [1116, 280, 100, 274], foot: [1060, 592], label: [1110, 258] },
@@ -22,18 +23,29 @@ export function constrain(p) {
   return { x: Math.max(-.98, Math.min(.98, p.x)), z: Math.max(0, Math.min(FLOOR.depth, p.z)) };
 }
 export function camera(player) {
-  const progress = (project(SPAWN).y - project(player).y) / 231;
-  return cameraAtZoom(1 + 1.4 * Math.max(0, Math.min(1, progress)));
+  const ratio = project(SPAWN).scale / project(player).scale;
+  return cameraAtZoom(Math.max(1, ratio ** .55));
 }
 function cameraAtZoom(zoom) {
   // 消失点は固定。人物の足元を画面下へ引き戻すズーム/横追従をしない。
   return { zoom, tx:FLOOR.cx*(1-zoom), ty:FLOOR.horizon*(1-zoom) };
 }
 export function followCamera(current, player, dt) {
-  const target = camera(player).zoom;
-  return cameraAtZoom(current.zoom + (target-current.zoom)*(1-Math.exp(-dt/.28)));
+  // 位置との一対一対応。停止後にズームだけ進む遅れを作らない。
+  return camera(player);
 }
 export function groundDistance(a,b) { return Math.hypot(a.x-b.x,5*(a.z-b.z)); }
+export function moveOnFloor(player, dx, dy, dt, run=false, goal=null) {
+  const start=project(player),len=Math.hypot(dx,dy);
+  if(len<1e-6)return { player:{...player},distance:0,arrived:!!goal };
+  const speed=run?RUN_SPEED:WALK_SPEED,k=dy/len*speed/FLOOR.rise;
+  const step=speed*start.scale*(Math.abs(k)<1e-9?dt:Math.expm1(k*dt)/k);
+  const remaining=goal?Math.hypot(goal.x-start.x,goal.y-start.y):Infinity;
+  const amount=Math.min(step,remaining);
+  const next=constrain(unproject(start.x+dx/len*amount,start.y+dy/len*amount));
+  const end=project(next),scale=(start.scale+end.scale)/2;
+  return {player:next,distance:Math.hypot(end.x-start.x,end.y-start.y)/scale,arrived:remaining<=step};
+}
 export function toScreen(x, y, cam) { return { x: x * cam.zoom + cam.tx, y: y * cam.zoom + cam.ty }; }
 export function fromScreen(x, y, cam) { return { x: (x - cam.tx) / cam.zoom, y: (y - cam.ty) / cam.zoom }; }
 export function inRect(x, y, [rx, ry, w, h]) { return x >= rx && x <= rx + w && y >= ry && y <= ry + h; }

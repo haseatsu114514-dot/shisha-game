@@ -4,7 +4,6 @@ import { state, timeOfDay } from "../core/state.js";
 import { layers, showScreen, retire } from "../core/ui.js";
 import { spotById, hasNewEvent } from "./spots.js";
 import { spotAvailability, freeGuide } from "./spot-access.js";
-import { mountReel } from "./reel.js";
 import { cueTransition } from "../core/transitions.js";
 
 export const STREET_DOORS = Object.freeze({ cafe: "cafe", peppermint: "minto", kemurikusa: "naru" });
@@ -65,9 +64,8 @@ export function openStreet(opts, setInterrupt) {
         });
       },
     });
-    const reelHost = el("div.street-reel");
     const root = el("div.street-selection", { dataset: { destinationSelection: "true" } }, [
-      frame, reelHost,
+      frame,
       el("div.street-heading", [el("b", { text: "商店街を歩く" }),
         el("span", { text: "歩道や入口をタップして進めます。" }),
         opts.guide ? el("p", { text: opts.guide.text }) : null,
@@ -76,7 +74,7 @@ export function openStreet(opts, setInterrupt) {
     ]);
     showScreen("street", root);
     setInterrupt(finish);
-    mountReel(reelHost); // 抽選と報酬は従来どおり行動時。未提示結果を同じ筐体で見せる。
+    // 街歩きでは筐体を起動しない。保留結果はピンマップへ戻ってから従来どおり提示する。
     opts.onShown?.();
   });
 }

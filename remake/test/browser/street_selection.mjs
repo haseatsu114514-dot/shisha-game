@@ -90,20 +90,21 @@ try {
     for(const [dir,keys] of [['down',['ArrowDown']],['down_right',['ArrowDown','ArrowRight']],
       ['right',['ArrowRight']],['up_right',['ArrowUp','ArrowRight']],['up',['ArrowUp']],
       ['up_left',['ArrowUp','ArrowLeft']],['left',['ArrowLeft']],['down_left',['ArrowDown','ArrowLeft']]]) {
-      await frame.evaluate(()=>__street.place(640,432.5,'up'));await frame.locator('#view').focus();
+      const startY=dir.startsWith('down')?419.47:515;
+      await frame.evaluate(y=>__street.place(640,y,'up'),startY);await frame.locator('#view').focus();
       for(const key of keys)await page.keyboard.down(key);
       const seen=new Set(),began=Date.now();
-      while(Date.now()-began<1150){const s=await frame.evaluate(()=>__street.state());if(s.moving&&s.dir===dir)seen.add(s.gaitFrame);await page.waitForTimeout(20);}
+      while(Date.now()-began<850){const s=await frame.evaluate(()=>__street.state());if(s.moving&&s.dir===dir)seen.add(s.gaitFrame);await page.waitForTimeout(20);}
       assert.equal((await frame.evaluate(()=>__street.state())).dir,dir);
       for(const key of keys)await page.keyboard.up(key);
       await page.waitForTimeout(100);
       const s=await frame.evaluate(()=>__street.state());
       assert.equal(seen.size,4,`${dir}: all gait poses must appear`);
       assert.equal(s.moving,false,`${dir}: key release must stop`);
-      assert(s.walked>.7&&s.walked<1,`${dir}: ground speed outside expected range`);
-      distances.push(s.walked);
+      assert(s.strideDistance>320&&s.strideDistance<410,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
+      distances.push(s.strideDistance);
     }
-    assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction ground-speed spread: ${JSON.stringify(distances)}`);
+    assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction apparent-speed spread: ${JSON.stringify(distances)}`);
     await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);
@@ -247,16 +248,23 @@ try {
       const s = T.core.state; s.reel.installed = s.reel.introDone = true;
       T.reel.onAction({ spent: 10 }); T.rewardBefore = { stats: { ...s.stats }, count: s.reel.count };
     });
-    frame = await walk(); await page.waitForFunction(() => __remake.state.reel.pending.length === 0);
-    assert(await page.locator('.street-selection .reel-widget').count());
+    const pending=await page.evaluate(()=>JSON.parse(JSON.stringify(T.core.state.reel.pending)));
+    assert(pending.length>0);
+    frame = await walk(); await page.waitForTimeout(700);
+    assert.equal(await page.locator('.street-selection .reel-widget').count(),0);
+    assert.deepEqual(await page.evaluate(()=>T.core.state.reel.pending),pending,'street must not start pending slot presentation');
     assert.deepEqual(await page.evaluate(() => ({ stats: __remake.state.stats, count: __remake.state.reel.count })), await page.evaluate(() => T.rewardBefore));
     const safeUi = await frame.evaluate(() => {
       const pad = document.querySelector('#pad').getBoundingClientRect(); const stage = document.querySelector('#stage').getBoundingClientRect();
       return (pad.bottom - stage.top) / stage.height * 720 < 260;
     });
     assert(safeUi, 'controls cover entry labels or sidewalk');
-    if (SHOTS) await page.screenshot({ path: `${SHOTS}/${label}-slot.png` });
-    pass(`${label}: pending slot shown once on street, reward/count unchanged, buttons above doors`);
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/${label}-slot-sealed.png` });
+    await page.locator('[data-test="street-back"]').click();
+    await page.waitForFunction(()=>T.core.state.reel.pending.length===0);
+    assert(await page.locator('.map:not(.done) .reel-widget').count());
+    assert.deepEqual(await page.evaluate(() => ({ stats: T.core.state.stats, count: T.core.state.reel.count })), await page.evaluate(() => T.rewardBefore));
+    pass(`${label}: slot sealed on street, pending results preserved and presented on pin map without duplicate rewards`);
     assert.deepEqual(errors, []); await context.close();
   }
   // 画像欠落時も本編IDを返せる。入口選択は生成画像の完成に依存しない。

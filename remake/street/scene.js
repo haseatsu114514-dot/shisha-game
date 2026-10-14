@@ -1,13 +1,15 @@
 // 旧ハリボテ試作の8方向・反転・タップ/ダッシュを本編用の遠近通り/4コマへ。
 // 親のinfo/enter/visited/back/pausedだけを使用し、保存・訪問・報酬を変更しない。
-import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, WALK_SPEED, RUN_SPEED, STRIDE_LENGTH, camera, followCamera, groundDistance, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
+import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, STRIDE_LENGTH, camera, moveOnFloor, groundDistance, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
+import { drawWalker } from './gait.js';
 const $ = (s) => document.querySelector(s), canvas = $('#view'), ctx = canvas.getContext('2d');
 const params = new URLSearchParams(location.search), night = params.get('night') === '1';
 const dirs = ['down', 'down_right', 'right', 'up_right', 'up'];
 const mirror = { down_left: 'down_right', left: 'right', up_left: 'up_right' };
 let host, ready = false, wasPaused = true, alwaysRun = false, target = null, message = '', travel = false, dragging = false;
-let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, moving = false, last = performance.now();
-const gaitFrame = () => moving ? Math.floor(walked/STRIDE_LENGTH*(meta?.rows||4))%(meta?.rows||4) : 1;
+let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, strideDistance=0, moving = false, last = performance.now();
+const gaitPhase = () => strideDistance/STRIDE_LENGTH%1;
+const gaitFrame = () => moving ? Math.floor(gaitPhase()*4) : 1;
 const keys = new Set();
 const stop = () => { keys.clear(); target = null; moving = false; dragging = false; };
 const paused = () => !host || host.paused() || document.hidden;
@@ -44,7 +46,7 @@ function setTravel(open) {
     if (door) b.dataset.door = door;
     b.onclick = () => { if (paused()) return; callback(); setTravel(false); }; list.append(b);
   };
-  button('通りの入口', null, true, () => { player = { ...SPAWN }; cam=camera(player); walked=0; });
+  button('通りの入口', null, true, () => { player = { ...SPAWN }; cam=camera(player); walked=strideDistance=0; });
   for (const d of DOORS) button(host.visited(d.id) ? host.info(d.id).label : '？？？', d.id, host.visited(d.id), () => place(...d.foot, 'up'));
 }
 $('#btn-act').onclick = act;
@@ -69,13 +71,12 @@ function aim(e) {
   const raw = pointer(e), p = fromScreen(raw.x,raw.y,cam), d = DOORS.find(d => inRect(p.x,p.y,d.rect));
   const point = d ? {x:d.foot[0],y:d.foot[1]} : project(constrain(unproject(p.x,p.y)));
   if (!d && p.y < FLOOR.horizon + 40) return;
-  keys.clear(); target = { ...point, door:d, back:!d&&p.y>=FLOOR.horizon+FLOOR.rise,
-    run:Math.hypot(point.x-foot().x,point.y-foot().y)*cam.zoom>144 }; focus();
+  keys.clear(); target = { ...point, door:d, back:!d&&p.y>=FLOOR.horizon+FLOOR.rise }; focus();
 }
 canvas.addEventListener('pointerdown', e => { dragging = true; canvas.setPointerCapture(e.pointerId); aim(e); });
 canvas.addEventListener('pointermove', e => { if (dragging && !target?.door) aim(e); });
 canvas.addEventListener('pointerup', () => dragging = false); canvas.addEventListener('pointercancel', () => { dragging = false; stop(); });
-function place(x,y,dir='up') { stop(); player = {...constrain(unproject(x,y)),dir}; cam=camera(player); walked=0; }
+function place(x,y,dir='up') { stop(); player = {...constrain(unproject(x,y)),dir}; cam=camera(player); walked=strideDistance=0; }
 function update(dt) {
   const isPaused=paused();
   if (isPaused) { stop(); wasPaused=true; return; }
@@ -85,16 +86,15 @@ function update(dt) {
   let dx=Number(keys.has('ArrowRight')||keys.has('KeyD'))-Number(keys.has('ArrowLeft')||keys.has('KeyA'));
   let dy=Number(keys.has('ArrowDown')||keys.has('KeyS'))-Number(keys.has('ArrowUp')||keys.has('KeyW'));
   let goal;
-  if (target) { goal=unproject(target.x,target.y); dx=goal.x-player.x; dy=-5*(goal.z-player.z); }
-  const len=Math.hypot(dx,dy), run=alwaysRun||keys.has('ShiftLeft')||keys.has('ShiftRight')||target?.run;
-  const step=(run?RUN_SPEED:WALK_SPEED)*dt; moving=len>.0001;
+  if (target) { goal={x:target.x,y:target.y}; dx=goal.x-foot().x; dy=goal.y-foot().y; }
+  const len=Math.hypot(dx,dy), run=alwaysRun||keys.has('ShiftLeft')||keys.has('ShiftRight');
+  moving=len>.0001;
   if (!moving) { if (target) { const {door:d,back}=target; target=null; if(back)host.back();else if(d)enter(d); } return; }
   player.dir=direction(dx,dy);
-  if (target && len<=step) { const {door:d,back}=target; place(target.x,target.y,player.dir); if(back)host.back();else if(d)enter(d); return; }
-  const next={x:player.x+dx/len*step,z:player.z-dy/len*step/5};
-  if (next.z<0 && dy>0) { stop(); host.back(); return; }
-  const bounded=constrain(next), distance=groundDistance(player,bounded);
-  Object.assign(player,bounded); moving=distance>1e-6; walked+=distance;
+  const moved=moveOnFloor(player,dx,dy,dt,run,goal),distance=groundDistance(player,moved.player);
+  Object.assign(player,moved.player); moving=distance>1e-6; walked+=distance;strideDistance+=moved.distance;cam=camera(player);
+  if (target && moved.arrived) { const {door:d,back}=target; stop(); if(back)host.back();else if(d)enter(d); return; }
+  if (!target && player.z===0 && dy>0) { stop(); host.back(); }
 }
 function draw() {
   ctx.save();ctx.translate(cam.tx,cam.ty);ctx.scale(cam.zoom,cam.zoom);
@@ -107,12 +107,10 @@ function draw() {
   const raw=foot(), p=toScreen(raw.x,raw.y,cam), h=CHARACTER_HEIGHT*raw.scale*cam.zoom;
   const size=h/(meta?.charHeight||144);
   ctx.fillStyle='#17111a66';ctx.beginPath();ctx.ellipse(p.x,p.y-1,h*.2,h*.035,0,0,Math.PI*2);ctx.fill();
-  if(sprite&&meta){const mirrored=!!mirror[player.dir],col=dirs.indexOf(mirror[player.dir]||player.dir),row=gaitFrame();
-    const [cw,ch]=meta.cell,[ax,ay]=meta.anchor,torso=Math.round(meta.charHeight*.69);
+  if(sprite&&meta){const mirrored=!!mirror[player.dir],col=dirs.indexOf(mirror[player.dir]||player.dir);
+    const [ax,ay]=meta.anchor;
     ctx.save();ctx.translate(p.x,p.y);ctx.scale(mirrored?-size:size,size);ctx.imageSmoothingEnabled=false;
-    // 上半身は同じ登録済み姿勢を使う。歩くたびに帽子/胴体を縮めない。
-    ctx.drawImage(sprite,col*cw,row*ch+torso,cw,ch-torso,-ax,-ay+torso,cw,ch-torso);
-    ctx.drawImage(sprite,col*cw,ch,cw,torso,-ax,-ay,cw,torso);ctx.restore();
+    ctx.translate(-ax,-ay);drawWalker(ctx,sprite,meta,col,gaitPhase(),moving);ctx.restore();
   }else{ctx.fillStyle='#15111c';ctx.fillRect(p.x-h*.18,p.y-h,h*.36,h);ctx.fillStyle='#dbc3a9';ctx.fillRect(p.x-h*.13,p.y-h*.93,h*.26,h*.2);}
   for(const d of DOORS){const i=host.info(d.id),{x,y}=toScreen(...d.label,cam);if(x<-120||x>VIEW.w+120||y<-40||y>VIEW.h+40)continue;ctx.font='bold 19px system-ui';ctx.textAlign='center';
     const text=i.label,w=Math.max(108,ctx.measureText(text).width+24);ctx.fillStyle='#19131cdb';ctx.fillRect(x-w/2,y-21,w,48);
@@ -120,13 +118,13 @@ function draw() {
     ctx.font='14px system-ui';ctx.fillText(i.tag||'',x,y+19);if(i.event){ctx.fillStyle='#f9dc73';ctx.font='bold 24px system-ui';ctx.fillText('!',x,y-30);}}
   const d=nearest();if(d&&!message&&!travel){ctx.fillStyle='#ffe29d';ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.fillText('!',p.x,p.y-h-12);}
 }
-// 20fps以下でも移動時間を毎回50msへ切り捨てない。復帰時の大飛びは100msで抑える。
-function tick(now){const dt=Math.min(.1,(now-last)/1000);last=now;update(dt);if(!paused())cam=followCamera(cam,player,dt);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+// 通常のフレーム落ちは分割して全時間分進める。非表示/確認中の入力は破棄する。
+function tick(now){let dt=Math.min(.25,(now-last)/1000);last=now;do{const step=Math.min(dt,1/120);update(step);dt-=step;}while(dt>1e-6);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
 window.streetScene={connect(adapter){host=adapter;stop();wasPaused=true;focus();}};
 window.__street={
   state:()=>({ready,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,cam),z:player.z,
     worldX:foot().x,worldY:foot().y,worldScale:foot().scale,cameraZoom:cam.zoom,
-    renderHeight:CHARACTER_HEIGHT*foot().scale*cam.zoom,camX:cam.tx,vanishing:toScreen(FLOOR.cx,FLOOR.horizon,cam),dir:player.dir,gaitFrame:gaitFrame(),walked,moving,frames:meta?.rows,msg:message,busy:false,
+    renderHeight:CHARACTER_HEIGHT*foot().scale*cam.zoom,camX:cam.tx,vanishing:toScreen(FLOOR.cx,FLOOR.horizon,cam),dir:player.dir,gaitFrame:gaitFrame(),gaitPhase:gaitPhase(),strideDistance,walked,moving,frames:4,msg:message,busy:false,
     travel:DOORS.map(d=>({id:d.id,off:!host?.visited(d.id)})),character:'hajime'}),
   layout:()=>({kind:'arcade',projection:'depth',view:VIEW,doors:DOORS.map(d=>{const a=toScreen(d.rect[0],d.rect[1],cam),f=toScreen(...d.foot,cam);return {...d,rect:[a.x,a.y,d.rect[2]*cam.zoom,d.rect[3]*cam.zoom],foot:[f.x,f.y]};}),spawn:project(SPAWN),setSource:bg?'image':'placeholder'}),
   warp(id){const d=DOORS.find(d=>d.id===id);if(d)place(...d.foot,'up');},place,
