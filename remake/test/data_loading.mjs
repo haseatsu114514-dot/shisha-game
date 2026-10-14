@@ -42,11 +42,11 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 35);
-assert.equal(new Set(requests).size, 35);
+assert.equal(requests.length, 36);
+assert.equal(new Set(requests).size, 36);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 35);
+assert.equal(progress.length, 36);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -62,6 +62,9 @@ assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
+assert.equal(all.DB.characters.maki.display_name, "斧崎マキ");
+assert.equal(all.DB.characters.sai.display_name, "六角サイ");
+assert(all.DB.dialogues.venue_maki_greet.lines[0].text);
 assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond_question); // 交友の締めくくり（ch1_bonds）
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
@@ -118,4 +121,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 35 JSON files, max 4 requests, hiyori foundation, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 36 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

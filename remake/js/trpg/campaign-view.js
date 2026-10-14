@@ -1,4 +1,7 @@
 import { el, yen } from "../core/util.js";
+import { chapterDay } from "../core/chapter-clock.js";
+import { venueHost } from "../core/venue-host.js";
+import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, runTrpg } from "./index.js";
 import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
@@ -7,11 +10,18 @@ import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncT
 export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy = () => false,
   readOnly = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null, visitMember = null } = {}) {
   const abort = new AbortController();
+  const owner = getState();
+  const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
+  let trial = null;
+  let reflection = null;
   let disposed = false, resources = null, busy = false, completed = false, root = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
-    type: "button", text, disabled, dataset: { test }, onclick: () => { if (!disposed && !busy) action(); },
+    type: "button", text, disabled, dataset: { test }, onclick: () => {
+      if (getState() !== owner) { close(); return; }
+      if (!disposed && !busy) action();
+    },
   });
   function close() {
     if (disposed) return;
@@ -24,22 +34,60 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   function render(message = "") {
     if (disposed) return;
     const state = getState(), { catalog, scenarios, characters, manifest, club } = resources;
-    if (!readOnly && syncTrpgStock(state, catalog)) save();
+    if (state !== owner) { close(); return; }
+    if (!readOnly && !completed && syncTrpgStock(state, catalog)) save();
+    const daytime = !readOnly && !completed && state?.phase === "daily" && state.chapter >= catalog.unlockChapter && state.slot === 0;
+    const hostLine = key => club.branches["host_" + key][0].text;
     const options = { nightBusy: nightBusy() };
     const time = tableStatus(state, catalog, options);
     const name = id => displayName(characters, id);
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
     root.append(el("header.trpg-campaign-header", [
-      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "遊べるシーシャバー / TABLETOP NIGHT" }),
-        el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : "今夜、誰と物語を囲む？" })]),
-      el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${state.day} · ${yen(state.money)}` : "まだ本棚は空です" }),
+      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
+        el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : completed ? "この夜の物語が、本棚に残った。" : daytime ? "昼の一卓、本棚の一冊。" : "今夜、誰と物語を囲む？" })]),
+      el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ本棚は空です" }),
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
+    if (!readOnly) root.append(venueHost("sai", hostLine(completed ? reflection || "after_table" : trial
+      ? trial.done ? trial.total > 7 ? "bust" : trial.total === 7 ? "seven" : "stop" : trial.rolls.length ? "push" : "trial"
+      : daytime ? "day" : "night"), resources));
+    if (completed) {
+      root.append(el("p.trpg-campaign-notice", { text: "誰と迎えた結末か、今夜の思い出を本棚にしまった。" }));
+      if (!reflection) root.append(el("div.trpg-trial-actions", [
+        button("うまくいった場面を話す", "trpg-reflect-good", () => { reflection = "after_table_good"; render(); }),
+        button("苦戦した場面を話す", "trpg-reflect-hard", () => { reflection = "after_table_hard"; render(); }),
+      ]));
+      host.replaceChildren(root); root.focus({ preventScroll: true }); return;
+    }
     root.append(el("p.trpg-campaign-notice", { role: "status", dataset: { test: "trpg-campaign-notice" },
-      text: message || (readOnly ? "第2章から部活を作り、仲間を勧誘して、一緒に遊んだ物語を残せます。" : time.reason) }));
+      text: message || (readOnly ? "第2章から部活を作り、仲間を勧誘して、一緒に遊んだ物語を残せます。"
+        : daytime ? trial ? "試遊は無料。いつでも本棚へ戻れます。" : "昼は試遊と本選び。TRPGは夜にどうぞ。" : time.reason) }));
+    if (daytime) {
+      const canTry = () => !disposed && getState() === owner && owner.slot === 0 && owner.phase === "daily"
+        && `${owner.chapter}:${owner.day}:${owner.slot}` === visitStamp;
+      const act = update => { if (!canTry()) { trial = null; render(); return; } trial = update(); render(); };
+      const panel = el("section.trpg-day-trial", { dataset: { test: "trpg-day-trial" } }, [
+        el("h2", { text: "店長と試遊 · 七つの灯り" }),
+        el("p", { text: "サイコロの合計を7に近づけよう。振り足すか、止めるか。7を超えると失敗。無料・時間消費なし。" }),
+      ]);
+      if (trial) {
+        panel.append(el("div.trpg-trial-score", { "aria-live": "polite" }, [
+          el("span.trpg-trial-die", { text: trial.rolls.length ? "⚀⚁⚂⚃⚄⚅"[trial.rolls.at(-1) - 1] : "◇", "aria-hidden": "true" }),
+          el("strong", { text: `${trial.total} / 7`, dataset: { test: "trpg-trial-total" } }),
+          el("span", { text: trial.done ? trial.total > 7 ? "あふれた！" : trial.total === 7 ? "ぴったり！" : "ここで確定" : "" }),
+        ]), el("p", { text: trial.rolls.length ? "出た目：" + trial.rolls.join(" → ") : "最初の一振りをどうぞ。" }),
+        el("div.trpg-trial-actions", [
+          button("サイコロを振る", "trpg-trial-roll", () => act(() => rollDayTrial(trial, 1 + Math.floor(Math.random() * 6))), trial.done),
+          button("ここで止める", "trpg-trial-stop", () => act(() => stopDayTrial(trial)), trial.done || !trial.rolls.length),
+          button("本棚へ戻る", "trpg-trial-back", () => { trial = null; render(); }),
+        ]));
+      } else panel.append(button("無料で試してみる", "trpg-trial-open", () => act(newDayTrial)));
+      root.append(panel);
+      if (trial) { host.replaceChildren(root); root.focus({ preventScroll: true }); return; }
+    }
     if (!readOnly && !state?.trpg?.club?.founded && state?.chapter >= catalog.unlockChapter) {
       root.append(el("section.trpg-club-proposal", { dataset: { test: "trpg-club-proposal" } }, [
-        el("span.trpg-kicker", { text: "カウンターの店員から" }),
+        el("span.trpg-kicker", { text: "六角サイからの提案" }),
         el("h2", { text: "ここで、部活を作ってみませんか？" }),
         ...club.lines.map(line => el("p", { text: line.text })),
         button("「" + catalog.club.name + "」を作る", "trpg-club-found", () => {
@@ -90,9 +138,11 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         el("h2", { text: scenario.title }), el("p", { text: scenario.presentation.tagline }),
       ]);
       if (memory) {
+        // 旧章内日の記録はそのまま。通算日で残した第2章の記録だけ章内日へ表示する。
+        const memoryClock = { ...memory, flags: memory.day >= (state?.flags?._ch2_day1?.startDay ?? Infinity) ? state.flags : {} };
         copy.append(el("div.trpg-campaign-memory", { dataset: { test: "trpg-memory-" + book.id } }, [
           el("strong", { text: memory.endingTitle || scenario.endings[memory.ending]?.title || memory.ending }),
-          el("p", { text: `CH.${memory.chapter} · DAY ${memory.day} / ${memory.participants.map(name).join("・")}` }),
+          el("p", { text: `CH.${memory.chapter} · DAY ${chapterDay(memoryClock)} / ${memory.participants.map(name).join("・")}` }),
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
         ]));
       } else if (!stocked && !owned) {
@@ -131,7 +181,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         } });
       if (disposed) return;
       busy = false;
-      if (completed) close(); else render("卓を片付けました。本は未クリアのまま、また遊べます。");
+      if (completed) render(); else render("卓を片付けました。本は未クリアのまま、また遊べます。");
     } catch (error) {
       busy = false;
       if (!disposed) render("卓を開けませんでした。本と今夜の行動は残っています。");

@@ -239,6 +239,24 @@
    "b": 0.0167,
    "ax": 0.4736,
    "aspect": 0.7467
+  },
+  "sai": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9825,
+   "b": 0.01,
+   "ax": 0.4729,
+   "aspect": 0.7467
+  },
+  "maki": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9867,
+   "b": 0.01,
+   "ax": 0.4861,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -1917,6 +1935,8 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "sprites/characters/sai/chr_sai_normal.png",
+  "sprites/characters/maki/chr_maki_normal.png"
  ]
 }
