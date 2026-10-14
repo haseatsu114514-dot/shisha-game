@@ -4,10 +4,11 @@ import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
 import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, settledFriend } from "./bonds.js";
 import { romanceRouteOpen } from "./romance.js";
+import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
-  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", samechan: "シーシャーク",
+  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "シーシャーク",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -49,6 +50,7 @@ export function relationshipStatus(id) {
   if (friend || romance) {
     const hint = state.finales?.[id] ? "相手との大切な交流を見届けた。"
       : id === "hiyori" && !BOND_FINALES[id]?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
+      : id === "hiyori" && !hiyoriFinaleReady() ? "まだ聞いていないひよりの話を進めよう。斧投げや仕事の話を見届けてから、次の節目へ。"
       : lv >= 5 ? finaleHint(id)
       : romance ? "個別の交流を続けて♥5へ。特別なイベントの後、告白を選べる。"
       : "友人として交流を続けて♥5へ。特別なイベントと贈り物は友情でも受け取れる。";

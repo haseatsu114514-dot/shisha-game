@@ -3,6 +3,8 @@ import {suite,assertFits} from './support.mjs';
 async function setup(page){await page.evaluate(async()=>{
  window.W={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),daily:await import('./js/daily/hiyori.js'),route:await import('./js/core/hiyori-route.js'),bonds:await import('./js/daily/bonds.js'),romance:await import('./js/daily/romance.js')};
  (await import('./js/chapters/ch1.js')).setupHooks();
+ // 未登録機材を前提とする既存の拒否ケース。正式機材の接続はhiyori_hagal.mjsで別に検証する。
+ W.data.DB.hiyori.route.finale.gift=null;
  W.fresh=()=>{const s=W.core.newGame();Object.assign(s,{phase:'daily',day:10,slot:1,money:90000,stamina:80});s.met.hiyori=true;s.contacts.push('hiyori');s.affinity.hiyori=59;
   for(const f of ['_intro_hiyori','_hiyori_meeting_done','_hiyori_sumi_message_done','_hiyori_message_delivered','_hiyori_cracks_done','_hiyori_tonari_return_done','_hiyori_tonari_followup_done','_hiyori_tonari_afterwork_done','_hiyori_real_self_known'])s.flags[f]=true;
   W.core.config.textSpeed=4;W.vn.vnTest.turbo=true;W.vn.vnTest.choose=()=>0;return s;};W.fresh();
