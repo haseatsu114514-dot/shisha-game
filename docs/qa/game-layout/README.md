@@ -46,4 +46,23 @@ PC/タッチ・通常/DSの4通しで、実地図→tonari→配合/パッキン
 タッチ通しの途中版で、会話枠の自動スクロールにより座標が(0,0)へ移り、固定の通常版ボタンにタップが当たって失敗した。入力ログと[失敗JSON](initial-touch-failure.json)、[失敗画像](initial-touch-failure.png)を保存。
 外側のステージはclipし、操作パネルの内部だけをスクロールする。短い縦画面の外側スクロールは64pxの入口を除いたviewportへ限定する。切替/場面変更時は外側スクロールを戻す。LOAD直後の寸法変化を防ぎ、会話入力は表示完了を待つ。ケース間の画面/入力もブラウザごとに分離した。
 
-保全時点で最終スイート実行中。比較画像・短動画・最終結果とソースハッシュは追記予定。途中の成功だけで全体成功とは扱わない。
+最終ローカル検証：本編9ケース、タイトル18ケース、既存save_load6ケースすべてPASS。通常復帰後のMENUと、会話中のキーボード切替も検査した。未読場面を持つ旧オートセーブの起動でもDSの会話・復旧入口・所持金/好感度/読了データを確認。
+
+- [本編9結果](game-results.json)、[タイトル18結果](title-results.json)、[追加旧オートロード検査](auto-regression-results.json)、[実行ソースと不変の本体SHA256](source-sha256.json)。
+- 保存回帰6件：全枠、旧schema自動/手動、不正JSON、PC、タッチ、通常版の縦持ち案内。
+- PNGの全デコード/寸法、構文、文書リンク、diff/Git SafetyがPASS。workflowはYAMLパース確認。actionlintは未導入。
+- 最終headのCI・レビュー・競合はPRへ記録。ローカル成功をCI成功と混同しない。
+
+| 比較 | 通常版 | DS風 |
+| --- | --- | --- |
+| PCのマップ | [通常](pc-normal-map.png) | [左右](pc-ds-map.png) |
+| PCの制作 | [通常](pc-normal-mix.png) | [左右](pc-ds-mix.png) |
+| スマホのマップ（通常は横、DSは縦） | [通常](touch-normal-map.png) | [上下](touch-ds-map.png) |
+| スマホの制作（通常は横、DSは縦） | [通常](touch-normal-mix.png) | [上下](touch-ds-mix.png) |
+
+会話と3択は[PC](pc-ds-conversation.png)／[タッチ](touch-ds-conversation.png)、精算後は[PC](pc-ds-result.png)／[タッチ](touch-ds-result.png)。
+[短い操作動画](touch-walkthrough.mp4)は無音・2倍速。旧セーブから読了、通常復帰/DS再選択、配合と詰めの実入力、制作・精算・保存/実ロード・復旧URLを含む。タイミング工程は上記の既存autoを使用。[録画原本のハッシュと変換方法](video-source.json)も保存した。
+
+通常復帰後の入口は中央上へ移し、従来の右上MENU/LIMEを覆わない。会話のEnter/Spaceを入口のネイティブ操作と分離する。短い縦画面の外側スクロールも、通常復帰/場面変更時に0へ戻る。
+
+実機Safari・新規開始から全章通し・手動で全タイミング工程を完走する検証・未対応画面のDS化は未実施。予約は確認待ちとして保持し、公開・マージしない。

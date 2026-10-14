@@ -23,7 +23,9 @@ export function initGameLayout() {
     },
   }));
   const recovery = new URL(location.href); recovery.searchParams.set("titleLayout", "normal");
-  const toolbar = el("nav.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true }, [
+  const toolbar = el("nav.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true,
+    onkeydown: e => { if (["Enter", " "].includes(e.key) && e.target.closest("button,a")) e.stopPropagation(); },
+  }, [
     ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "game-layout-recover" } }), note,
   ]);
   // DS専用CSSが届かなくても、復旧入口を画面外に隠さない。
@@ -50,6 +52,10 @@ export function initGameLayout() {
     if (active) body.dataset.dsView = view; else delete body.dataset.dsView;
     visual.hidden = controls.hidden = !active;
     toolbar.hidden = !inGame || !(mode === "ds" || tried);
+    // 通常版の右上MENU/LIMEを覆わず、従来のステージ位置を維持する。
+    Object.assign(toolbar.style, active
+      ? { left: "auto", right: "10px", transform: "none" }
+      : { left: "50%", right: "auto", transform: "translateX(-50%)" });
     buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
     note.textContent = mode !== "ds" ? "" : !ready ? "表示準備ができないため通常表示" : !view ? "この画面は通常表示です" : "";
     measure();

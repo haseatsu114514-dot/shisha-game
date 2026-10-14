@@ -68,6 +68,7 @@ async function dsGeometry(p) {
 async function normalGeometry(p) {
   assert.equal(await p.locator("body.game-ds").count(),0);
   assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.offsetWidth,n.offsetHeight]),[1280,720]);
+  assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {
   // Isolate device emulation/input as well as storage between landscape/portrait fixtures.
@@ -119,7 +120,11 @@ try {
           const raw=await p.evaluate(()=>JSON.stringify(__remake.state));
           await activate(p,"game-layout-normal",touch);
           await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
+          if(touch)await p.setViewportSize({width:844,height:390});
+          await activate(p,"hud-menu",touch);
+          await p.getByRole("button",{name:"閉じる",exact:true}).click();
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
+          if(touch)await p.setViewportSize({width:390,height:844});
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
@@ -171,6 +176,14 @@ try {
           branches:{done:[{speaker:"sumi",face:"normal",text:"選択できた。"}]}},{bg:"res://assets/backgrounds/bg_tonari_inside.png"});
       });
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
+      if(!touch){
+        const before=await p.evaluate(()=>JSON.stringify(__remake.state));
+        await button(p,"game-layout-normal").focus();await p.keyboard.press("Enter");
+        await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
+        await button(p,"game-layout-ds").focus();await p.keyboard.press("Enter");await dsGeometry(p);
+        assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),before);
+        assert.equal(await p.locator(".vn-choices.show button").count(),3);
+      }
       const choices=await p.locator(".vn-choice").evaluateAll(ns=>ns.map(n=>n.getBoundingClientRect().height));assert(choices.every(h=>h>=44));
       await p.locator(".vn-choice").evaluateAll(ns=>Promise.allSettled(ns.flatMap(n=>n.getAnimations()).map(a=>a.finished)));
       await p.screenshot({path:path.join(dir,`${touch?"touch":"pc"}-ds-conversation.png`)});
@@ -194,6 +207,24 @@ try {
     await activate(p,"game-layout-normal",true);await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));
     await normalGeometry(p);
     assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.scrollLeft,n.scrollTop]),[0,0]);
+  });
+  await check("old-auto-load-ds-conversation",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async p=>{
+    await activate(p,"title-layout-ds",true);
+    await p.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),s=core.newState();
+      Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90});
+      Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_qa_ds:"preserved"});
+      s.affinity.hiyori=22;s.relationshipMemories=["actually-read"];
+      localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));core.requestResumeOnBoot();
+    });
+    await p.reload();await p.locator("#boot").waitFor({state:"detached",timeout:35000});
+    await p.waitForFunction(()=>document.body.classList.contains("in-vn") && !!document.querySelector(".vn-text")?.textContent);
+    await dsGeometry(p);assert.equal(await p.locator("body").getAttribute("data-screen"),"boot");
+    const loaded=await state(p);assert.equal(loaded.money,45678);assert.equal(loaded.slot,0);
+    assert.equal(loaded.marker,"preserved");assert.deepEqual(loaded.memory,["actually-read"]);
+    assert.equal(await p.evaluate(()=>__remake.state.affinity.hiyori),22);
+    await activate(p,"game-layout-recover",true);await ready(p);
+    assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
   });
   await check("game-css-failure-normal-recovery",{viewport:{width:1280,height:720}},async p=>{
     await activate(p,"title-layout-ds",false);await activate(p,"title-new",false);
