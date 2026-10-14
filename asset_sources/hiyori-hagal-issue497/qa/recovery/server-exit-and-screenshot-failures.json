@@ -1,0 +1,155 @@
+{
+  "name": "hiyori-hagal",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "ref": "e31dcb4b",
+  "results": [
+    {
+      "label": "production-equipment-and-unread-gates",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-0-0-friend-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-1-0-friend-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-1-1-romance-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "old-owned-gift-does-not-infer-unread-or-duplicate",
+      "status": "passed"
+    },
+    {
+      "label": "effect-requires-ownership-equipment-and-three-grams",
+      "status": "failed",
+      "error": "page.screenshot: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n    at check (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:45:18)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:109:3\n    at async suite (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "interrupted-q2-zero-resumes-once-with-real-gift",
+      "status": "passed"
+    },
+    {
+      "label": "pc-receive-select-pack-and-save",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-b-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-receive-select-pack-and-save",
+      "status": "failed",
+      "error": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-test=\"opt-suyaki_hiyori\"]')\u001b[22m\n\n    at /workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:168:53\n    at async check (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:42:7)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:149:5\n    at async suite (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": [
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_tonari_inside_overcast_day.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_home_overcast_day.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_home_overcast_night.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_shop.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_tournament_stage.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/naru/chr_naru_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/adam/chr_adam_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/minto/chr_minto_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/rin/chr_rin_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/pakki/chr_pakki_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bench_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/stove_coil.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/ui_click.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/ui_select.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/ui_back.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/lime_glass.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/shop_bell.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/coal_grab_01.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/coal_grab_02.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/hms_knock_01.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/hms_knock_02.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/foil_puncture.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/water_draw.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/water_loop.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/assets/audio/se/water_end.wav",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_serious.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_sad.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_surprise.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_smile.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/ui_craft_button.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/ui_craft_panel.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bench_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_stem.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_tray.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_silicone.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_phunnel.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_tonari_inside_overcast_day.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_clay.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bench_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_stem.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_tray.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_silicone.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bench_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/ui_craft_panel.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/ui_craft_button.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_stem.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_tray.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_silicone.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_phunnel.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/bowl_empty_clay.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/backgrounds/bg_tonari_inside_overcast_day.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_serious.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_smile.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/hookah_base.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/sprites/characters/hajime/chr_hajime_normal.webp",
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/img/ui/making/ui_craft_panel.webp"
+      ]
+    },
+    {
+      "label": "touch-gift-a-art-and-bounds",
+      "status": "failed",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8124/remake/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8124/remake/\", waiting until \"load\"\u001b[22m\n\n    at check (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:38:18)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:195:39\n    at async suite (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": [
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/"
+      ]
+    },
+    {
+      "label": "touch-gift-b-art-and-bounds",
+      "status": "failed",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8124/remake/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8124/remake/\", waiting until \"load\"\u001b[22m\n\n    at check (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:38:18)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:195:39\n    at async suite (/workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": [
+        "net::ERR_CONNECTION_REFUSED http://127.0.0.1:8124/remake/"
+      ]
+    }
+  ]
+}

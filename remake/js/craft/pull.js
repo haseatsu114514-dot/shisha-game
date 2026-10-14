@@ -103,7 +103,7 @@ export async function runCare(cs, { round = 0 } = {}) {
 }
 
 async function pullGame(cs, mode) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, mode.store);
   const tutorial = cs.mode === "tutorial";
   const bands = temperatureBands(cs), ideal = bands.ideal, center = bands.center;
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。

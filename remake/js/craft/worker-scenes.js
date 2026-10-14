@@ -7,7 +7,7 @@ export const WORKER_SCENES = Object.freeze({
   mix: { file: "hajime_craft_mix.png", description: "閉じたタッパーを前に、はじめが香りの組み合わせを考えている" },
   pack: { file: "hajime_craft_pack.png", description: "はじめの手がハガルに葉をほぐして詰めている" },
   holes: { file: "hajime_craft_holes.png", description: "掌でハガルを支え、張ったアルミに針で小穴を開けている" },
-  heat: { file: "hajime_craft_heat.png", description: "トングを持ったはじめが炭の焼け具合を待っている" },
+  heat: { file: "hajime_heat_scene.png", description: "トングを持ったはじめが炭の焼け具合を待っている" },
   pull: { file: "hajime_craft_pull_rest.png", description: "はじめがホースの硬いハンドルと吸い口を持ち、煙を確かめている" },
   inhale: { file: "hajime_craft_pull.png", description: "はじめがハンドル先端の吸い口から吸っている" },
 });
@@ -52,10 +52,15 @@ export function buildWorkerActions() {
     img: el("img.worker-action", { alt: "", hidden: true, draggable: false, dataset: { scene: key } }),
   }));
   const root = el("div.worker-actions", { "aria-hidden": "true" }, entries.map(e => e.img));
-  const ready = Promise.all(entries.map(async entry => {
-    entry.loaded = await readyWorkerImage(entry.img, makingUrl(entry.scene.file));
-  }));
-  return { root, ready, show(key) {
+  const prepare = key => {
+    const entry = entries.find(e => e.key === key);
+    if (!entry) return Promise.resolve(false);
+    entry.pending ??= readyWorkerImage(entry.img, makingUrl(entry.scene.file))
+      .then(loaded => (entry.loaded = loaded));
+    return entry.pending;
+  };
+  const ready = Promise.resolve();
+  return { root, ready, prepare, show(key) {
     const current = entries.find(e => e.key === key && e.loaded);
     entries.forEach(e => { e.img.hidden = e !== current; });
     return current?.scene || null;

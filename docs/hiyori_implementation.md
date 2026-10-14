@@ -100,6 +100,6 @@
 
 MAX時の正式台本 `hiyori_bond_finale` と `confession_hiyori`/accept/rejectを追加した。二度の実回答と正式な締めくくりの読了を確認してから恋愛へ進む。途中で友人を選んだ場合は友人の結論へ進み、既存の友人/恋人は再読で分類し直さない。最終質問の保存済み0/1も同じ反応へ戻す。
 
-**専用ハガルは後続 #497 / 旧 #345。今はroute.finale.giftがnullのままで、締めくくり・告白は本番では解禁しない。** 新しい台本だけで機材を持っている扱いにせず、過去の読了や回答を好感度から補完しない。台本と共通関係APIの検証は、既に所有するsilicone_bowlを明示的なテストfixtureとして一時登録し、本番設定とは区別する。
+**専用ハガル #497 / 旧 #345 はDraftで接続・検証中。** `route.finale.gift` に `suyaki_hiyori` を登録し、採用済みB「素顔でひと休み」を単体素材化した。容量20g、非売品・売却不可。オーナー承認に基づき、ピーチ3g以上で既存の香り+4・総合ボーナス+1を使う。正式な素顔・仕事・実回答・反応読了を経た後だけ締めくくりへ進む。過去の読了や回答を好感度・所有機材から補完しない。機材未登録を明示する共通APIのfixtureと、専用機材を使う本番設定の検証を区別する。**保存/LIMEの新規テスト3件の失敗と中断待ちが残り、自然到達・表示・既存回帰・最終CIは未完。マージ・公開可の状態ではない。** [停止時の保存・失敗・再開手順](../asset_sources/hiyori-hagal-issue497/README.md)。
 
 検証は `remake/test/browser/hiyori_work_relationship.mjs`。自然New Gameの仕事到達は `GOAL_HIYORI_WORK=1 node remake/test/browser/hiyori_axe_natural.mjs` で、seedだけ固定して実斧投げ→仕事相談→最初の友人回答まで通す。後続素材未登録のため本番ではfinales/恋人を増やさない。

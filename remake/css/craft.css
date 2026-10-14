@@ -308,69 +308,61 @@
 .ht-help p { margin: 8px 0 0; }
 .ht-current { font-size: 14px; color: var(--text-dim); }
 
-/* ---------------------------------------------------------------- 炭焼き */
-/* 炭の上には判定文字を重ねない。連続評価は同じ専用欄で更新する。 */
-.heat-feedback {
-  position: relative; width: 100%; height: 44px; display: flex;
-  align-items: center; justify-content: center; gap: 12px;
-  overflow: hidden; flex: none; pointer-events: none;
-  border-block: 1px solid #d8bb8633;
-  background: linear-gradient(90deg, transparent, #d8bb860b 25% 75%, transparent);
-}
-.heat-feedback .stamp {
-  font-size: 24px; letter-spacing: 0.02em;
-  animation: hole-feedback-in 1.1s var(--ease-out) forwards;
-  pointer-events: none;
-}
-.heat-bonus {
-  font-size: 13px; letter-spacing: 0.05em; color: #dec98f;
-  white-space: nowrap;
-}
-
-.heat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.stove { position: relative; width: 520px; }
-.stove-img { margin: 0 auto; filter: brightness(0.85); }
-.coal {
-  position: absolute;
-  width: 118px;
-  height: 118px;
-  margin: -70px 0 0 -59px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  transform: scale(var(--k, 1));
-  transition: transform 0.3s var(--ease-out), opacity 0.4s;
-}
-.coal > .art { position: absolute; left: 0; bottom: 0; }
-.coal > .art, .coal .c-core, .coal .c-burst, .heat ~ .stamp { pointer-events: none; }
-.coal .c-red { opacity: var(--red, 0); }
-.coal .c-hot { opacity: var(--hot, 0); }
-.coal .c-ash { opacity: var(--ash, 0); filter: grayscale(0.8) brightness(0.8); }
-.coal[data-phase="pre"] { filter: drop-shadow(0 0 14px rgba(255, 100, 30, 0.85)); }
-.coal[data-phase="hot"] { filter: drop-shadow(0 0 20px rgba(255, 230, 190, 0.9)); }
-.coal.soon { animation: soon 0.5s ease-in-out infinite; }
-@keyframes soon { 50% { transform: translateY(-2px) scale(var(--k, 1)); filter: drop-shadow(0 0 22px rgba(255, 140, 40, 1)); } }
-.c-core { position: absolute; left: 50%; top: 55%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; opacity: 0; background: #fff; box-shadow: 0 0 20px 10px #fff, 0 0 60px 30px rgba(255, 200, 120, 0.9); }
-.c-burst { position: absolute; inset: -30px; opacity: 0; background: conic-gradient(from 0deg, transparent 0 10deg, rgba(255, 240, 200, 0.9) 12deg, transparent 14deg 40deg, rgba(255, 240, 200, 0.9) 42deg, transparent 44deg 80deg, rgba(255, 240, 200, 0.9) 82deg, transparent 84deg 130deg, rgba(255, 240, 200, 0.9) 132deg, transparent 134deg 190deg, rgba(255, 240, 200, 0.9) 192deg, transparent 194deg 250deg, rgba(255, 240, 200, 0.9) 252deg, transparent 254deg 310deg, rgba(255, 240, 200, 0.9) 312deg, transparent 314deg); -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 70%); mask-image: radial-gradient(circle, #000 20%, transparent 70%); }
-.coal.pikan .c-core { animation: pikan 0.5s ease-out infinite; }
-.coal.pikan .c-burst { animation: burst 0.5s ease-out infinite; }
-@keyframes pikan { 0% { opacity: 1; transform: scale(0.6); } 100% { opacity: 0.2; transform: scale(1.6); } }
-@keyframes burst { 0% { opacity: 1; transform: rotate(0) scale(0.7); } 100% { opacity: 0; transform: rotate(40deg) scale(1.3); } }
-.coal.picked { transform: translateY(-60px) scale(calc(var(--k, 1) * 0.8)); opacity: 0.25; pointer-events: none; }
-.coal-number { position: absolute; left: 46px; bottom: 0; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid #ffffff44; border-radius: 50%; color: #f5ebdb; background: #17151bcc; font-size: 14px; pointer-events: none; }
-.heat-info { width: 100%; font-size: 15px; color: var(--text-dim); }
-.heat-picks { display: grid; grid-template-columns: repeat(var(--coal-count, 3), minmax(0, 1fr)); gap: 12px; list-style: none; margin: 8px 0 0; padding: 0; font-variant-numeric: tabular-nums; }
-.heat-picks li { min-width: 0; padding: 9px 10px; border: 1px solid #ffffff1a; border-radius: 8px; background: #ffffff04; line-height: 1.5; }
-.heat-picks b, .heat-picks span { display: block; }
-.heat-picks b { font-size: 14px; font-weight: 500; }
-.heat-picks [data-rating="PERFECT"] b { color: var(--accent); }
-.heat-picks [data-rating="GOOD"] b { color: #b7d2bc; }
-.heat-picks [data-rating="MISS"] b { color: #d7a5a0; }
-.heat-finished .heat-picks { visibility: hidden; }
-.hi-row { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 8px; font-size: 14px; }
-.hi-row b { color: var(--accent); flex: none; }
-.hi-row i { width: 18px; height: 1px; background: #ffffff2a; }
+/* ---------------------------------------------------------------- 炭焼き：中央を空けた三角配置と、別視点の炭壺 */
+.bench[data-step="heat"] .bench-left { width: 310px; }
+.bench[data-step="heat"] .bench-right { left: 348px; background: radial-gradient(ellipse at 48% 55%, #58251355, transparent 75%), linear-gradient(135deg, #190e18f2, #140c13f2); }
+.bench[data-step="heat"] .bench-title { font-family: "Craft Mincho", var(--font); font-size: 36px; }
+.heat { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; min-width: 0; height: 100%; }
+.stove { position: relative; flex: none; margin: 66px auto 0; }
+.stove-img { pointer-events: none; image-rendering: auto; }
+.coal { position: absolute; width: 100px; height: 90px; transform: translate(-50%, -100%); padding: 0; border: 0; background: none; cursor: pointer; touch-action: manipulation; transition: opacity .2s; }
+.coal-sprite { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); pointer-events: none; }
+.coal-sprite > .art { position: absolute; left: 0; bottom: 0; pointer-events: none; image-rendering: auto; }
+.c-red { opacity: var(--red, 0); }
+.c-hot { opacity: var(--hot, 0); filter: brightness(1.14) saturate(.9); }
+.c-ash { opacity: var(--ash, 0); filter: grayscale(.95) brightness(.8); }
+.coal-corners { position: absolute; inset: 0; border: 2px solid #ddd7c077; border-radius: 5px; pointer-events: none; mask-image: linear-gradient(#000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)), linear-gradient(90deg, #000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)); mask-composite: intersect; }
+.coal-now { position: absolute; top: calc(100% + 3px); left: 50%; transform: translateX(-50%); color: #ffe29a; font-family: "Craft Mincho", var(--font); font-size: 20px; line-height: 1.2; opacity: 0; text-shadow: 0 0 8px #ffab46aa; pointer-events: none; }
+.c-core { position: absolute; left: 50%; top: 44%; width: 7px; height: 7px; margin: -3.5px; border-radius: 50%; opacity: 0; background: #fff4d3; box-shadow: 0 0 8px 3px #ffe3aabb; pointer-events: none; }
+.coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #ffdc87; filter: drop-shadow(0 0 4px #ff9c40); }
+.coal.pikan .coal-now { opacity: 1; }
+.coal.pikan .c-core { animation: coal-core .5s ease-out infinite; }
+.coal.soon .coal-corners { border-color: #e6a160; }
+.coal:focus-visible { outline: 2px solid #fff0bf; outline-offset: 4px; border-radius: 5px; }
+.coal.picked { opacity: 0; pointer-events: none; }
+@keyframes coal-core { from { opacity: 1; } to { opacity: .35; } }
+.heat-info { position: relative; margin-top: 0; padding: 12px 12px 8px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; font-variant-numeric: tabular-nums; }
+.heat-carrier-head { display: flex; justify-content: space-between; align-items: start; color: #eee6d7; }
+.heat-carrier-head h2 { margin: 0; font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 27px; line-height: 1.2; }
+.heat-carrier-head small { font-size: 12px; letter-spacing: .08em; }
+.heat-collected-count { font-size: 23px; letter-spacing: .08em; white-space: nowrap; }
+.coal-carrier-view { position: relative; width: 195px; height: 232px; margin: 2px auto 0; pointer-events: none; }
+.coal-carrier-art { pointer-events: none; image-rendering: auto; }
+.coal-carrier-coals { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.coal-stored { position: absolute; width: 35px; height: 40px; transform: translate(-50%, -100%); animation: coal-stored-in .2s ease-out; }
+.coal-stored .coal-sprite { transform-origin: center bottom; }
+.coal-stored .c-core { display: none; }
+@keyframes coal-stored-in { from { opacity: 0; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
+.heat-feedback { position: relative; height: 45px; display: flex; align-items: center; justify-content: center; gap: 7px; pointer-events: none; color: #f3d68b; white-space: nowrap; }
+.heat-feedback .stamp { position: static; font-size: 16px; letter-spacing: .02em; line-height: 1.2; animation: none; text-shadow: 0 0 4px #000; transform: none; }
+.heat-feedback .perfect { color: #ffdf7d; }
+.heat-feedback .good { color: #cce1be; }
+.heat-feedback .miss { color: #eab6ab; }
+.heat-error { font-size: 11px; padding-left: 7px; border-left: 1px solid #e4c77d66; }
+.heat-bonus { color: #e5cd95; font-size: 11px; letter-spacing: .03em; }
+.heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
+.heat-compact .stove { margin-top: 56px; }
+.heat-compact .coal { width: 84px; height: 72px; }
+.heat-compact .coal-now { font-size: 17px; }
+.heat-compact .heat-info { padding: 10px 10px 6px; }
+.heat-compact .heat-carrier-head h2 { font-size: 24px; }
+.heat-compact .heat-collected-count { font-size: 20px; }
+.heat-compact .coal-carrier-view { width: 164px; height: 195px; }
+.heat-compact .heat-feedback { height: 37px; gap: 5px; }
+.heat-compact .heat-feedback .stamp { font-size: 14px; }
+.heat-compact .heat-error { font-size: 9px; padding-left: 5px; }
+@media (prefers-reduced-motion: reduce) { .coal, .coal-stored { transition: none; animation: none; } .coal.pikan .c-core { animation: none; opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }

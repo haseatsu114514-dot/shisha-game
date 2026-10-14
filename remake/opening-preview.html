@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>tonariの夕方｜冒頭プレビュー</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<link rel="stylesheet" href="css/ui-art.css">
+<link rel="stylesheet" href="css/tonari-opening.css">
+<style>
+body { background:#17100c; }
+#opening-tools { position:fixed; inset:0 0 auto; z-index:100; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px; padding:10px; background:#241910; font-size:14px; }
+#opening-tools button, #opening-tools select { border:1px solid #be9562; border-radius:5px; background:#3e2b1d; color:#fff3df; padding:8px 12px; font:inherit; }
+#opening-tools button:disabled { opacity:.5; }
+#opening-status { margin:0; color:#dfc9ad; }
+#opening-tools label { display:flex; gap:8px; align-items:center; }
+#viewport { bottom:0; height:auto; }
+@media(max-width:700px) { #opening-tools { gap:6px; padding:6px; font-size:12px; } #opening-status { flex-basis:100%; text-align:center; } }
+</style>
+</head>
+<body>
+<div id="opening-tools">
+  <label>tonariの夕方 <select id="opening-from" aria-label="見るカット">
+    <option value="room">冒頭から通して見る</option><option value="lamps">ランプと煙</option>
+    <option value="coal">炭を扱う手元</option><option value="bowl">ボウルを詰める</option>
+    <option value="customer">いつもの常連</option><option value="hose">持ち手を置く</option>
+    <option value="depart">帰り際</option><option value="empty">退店後の席</option>
+  </select></label>
+  <button id="opening-play" disabled>読み込み中…</button>
+  <button id="opening-stop" disabled>終了</button>
+  <p id="opening-status" role="status">セーブデータは変更しません</p>
+</div>
+<div id="viewport"><div id="stage">
+  <div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div>
+  <div id="fx"></div><div id="toasts"></div><div id="banners"></div><div id="wipe"></div><div id="modal"></div>
+</div></div>
+<script type="module" src="js/opening-preview.js"></script>
+</body>
+</html>

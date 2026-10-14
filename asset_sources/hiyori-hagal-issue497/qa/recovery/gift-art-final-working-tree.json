@@ -1,0 +1,23 @@
+{
+  "name": "hiyori-hagal",
+  "baseURL": "http://127.0.0.1:8125/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-b-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-b-art-and-bounds",
+      "status": "passed"
+    }
+  ]
+}

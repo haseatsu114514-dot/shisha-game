@@ -16,6 +16,7 @@ try {
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
     const vn = await import("./js/vn/engine.js"), spots = await import("./js/daily/spots.js");
     const tonari = await import("./js/daily/tonari.js"), shop = await import("./js/daily/shop.js");
+    const hours = await import("./js/daily/spot-hours.js");
     const reel = await import("./js/daily/reel.js"), craft = await import("./js/craft/session.js");
     vn.vnTest.turbo = true; craft.craftTest.auto = "good";
     function reset() { core.newGame(); core.state.phase = "daily"; core.state.day = 8;
@@ -30,6 +31,7 @@ try {
     reel.onAction();
     forced.sameReel = forced.before === JSON.stringify(core.state.reel); delete forced.before;
     const cases = [];
+    let rinRefusal = null;
     for (const [name, run] of [
       ["naru", () => spots.visitRival(spots.spotById("naru"))],
       ["adam", () => spots.visitRival(spots.spotById("adam"))],
@@ -42,12 +44,22 @@ try {
       ["rest", () => spots.restAtHome(spots.spotById("rest"))],
     ]) {
       reset(); core.state.stamina = 80;
+      if (name === "cafe") core.state.slot = 0; // 喫茶こはくの営業時間内で回復を検証。
       const previous = { ...core.state.stats };
       const { spent } = await stats.paidAction(run);
       const perStat = Object.fromEntries(core.STAT_KEYS.map(k => [k, core.state.stats[k] - previous[k]]));
       const earned = xp(); reel.onAction({ spent });
       cases.push({ name, spent, earned, perStat, spins: core.state.reel.count });
       if (spent > 0) {
+        if (name === "rin") {
+          const snapshot = JSON.stringify(core.state), count = core.state.reel.count;
+          const refused = await stats.paidAction(run);
+          reel.onAction({ spent: refused.spent });
+          rinRefusal = { spent: refused.spent, unchanged: snapshot === JSON.stringify(core.state), spins: core.state.reel.count - count };
+          // 同日再訪の拒否を確認し、既存の再訪報酬assertは次の営業夜で実行する。
+          for (let i = 0; i < 7 && hours.rinUnavailable(core.state); i++) core.state.day++;
+          if (hours.rinUnavailable(core.state)) throw new Error("No available Rin night in the next week");
+        }
         const before = xp();
         const previous = { ...core.state.stats };
         const repeat = await stats.paidAction(run);
@@ -98,11 +110,12 @@ try {
       text: vn.backlog().slice(-2).map(l => l.text).join(" ") };
     // 既存セーブの残高を初期金額で置き換えない。
     reset(); core.state.money = 12345; core.save(); core.newGame(); core.load();
-    return { money, forced, cases, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
+    return { money, forced, cases, rinRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
       restoredMoney: core.state.money };
   });
   assert.equal(report.money, 30000); assert.equal(report.restoredMoney, 12345);
   assert.deepEqual(report.forced, { xp: 0, sameReel: true });
+  assert.deepEqual(report.rinRefusal, { spent: 0, unchanged: true, spins: 0 });
   for (const entry of report.cases) {
     const recovery = ["cafe", "kannon", "rest"].includes(entry.name);
     assert.equal(entry.spins > 0, !recovery, JSON.stringify(entry));

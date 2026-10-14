@@ -66,13 +66,12 @@ try {
     await page.locator(".ht-help summary").click();
     await page.evaluate(() => { __remake.craftTest.auto = "good"; });
     await page.locator('[data-test="hole-start"]').focus(); await page.keyboard.press("Space");
-    await page.waitForFunction(() => cs.holes !== null);
+    // 自動操作は結果カードも自動で閉じる。全体の完了を待ってから手動の炭焼きへ戻す。
+    await page.evaluate(() => window.holesRun);
     await page.evaluate(() => { __remake.craftTest.auto = null; });
     const result = await page.evaluate(() => ({ template: cs.holes.templateId, outer: cs.holes.outer,
       middle: cs.holes.middle, inner: cs.holes.inner, score: cs.holes.score }));
     assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0, score: 99 });
-    await page.waitForSelector(".result-card.show");
-    await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.holesRun);
 
     // 取り出す入力だけ仮想時計で固定。炭の判定・演出・DOMは実装そのものを使う。
     await page.evaluate(() => {
@@ -94,27 +93,31 @@ try {
     assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Each rating uses the feedback strip");
     assert.equal(await page.locator(".bench-panel > .stamp").count(), 0, "Ratings must not float over the stove");
     assert(await page.evaluate(() => {
-      const stove = document.querySelector(".stove").getBoundingClientRect();
+      const carrier = document.querySelector(".heat-info").getBoundingClientRect();
       const feedback = document.querySelector(".heat-feedback").getBoundingClientRect();
-      return feedback.top >= stove.bottom - 1;
-    }), "The feedback strip must be below the clickable coals");
+      return feedback.left >= carrier.left && feedback.right <= carrier.right && feedback.bottom <= carrier.bottom;
+    }), "The feedback must stay inside the separate carrier card");
     assert.match(await page.locator('[data-test="coal-timing-2"]').textContent(), /GOOD.*0\.35秒早い/);
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .08) * 1000; });
     await page.locator('[data-test="coal-0"]').click();
     assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Consecutive ratings must not stack");
     assert.match(await page.locator('[data-test="coal-timing-0"]').textContent(), /PERFECT.*0\.08秒早い/);
     const first = await page.locator('[data-test="coal-timing-0"]').textContent();
-    await insidePanel(page, [".heat-picks"]); await capture(page, `coal-live-${name}`);
+    await insidePanel(page, [".heat-info", ".heat-feedback"]); await capture(page, `coal-live-${name}`);
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal + .35) * 1000; });
     await page.locator('[data-test="coal-1"]').click();
     await page.waitForSelector('[data-test="step-summary"]');
     const summary = await page.locator('[data-test="step-summary"]').textContent();
-    assert.match(summary, /炭1 PERFECT：0\.08秒早い/);
-    assert.match(summary, /炭2 GOOD：0\.35秒遅い/);
-    assert.match(summary, /炭3 GOOD：0\.35秒早い/);
+    assert.match(summary, /奥 PERFECT：0\.08秒早い/);
+    assert.match(summary, /手前左 GOOD：0\.35秒遅い/);
+    assert.match(summary, /手前右 GOOD：0\.35秒早い/);
     assert.match(summary, /全体のタイミング精度 80%.*平均誤差 0\.26秒/);
     assert.equal(await page.locator('[data-test="coal-timing-0"]').textContent(), first);
     assert.equal(await page.evaluate(() => cs.heat.timingAccuracy === cs.heat.score), true);
+    // DOM出現直後は結果カードが下から入場中。実際の完了を待って最終配置を測る。
+    await page.locator(".result-card.show").evaluate(async card => {
+      await Promise.all(card.getAnimations().map(animation => animation.finished));
+    });
     await insidePanel(page, ['[data-test="step-summary"]', ".result-card", '[data-test="step-next"]']);
     await page.waitForTimeout(200); await capture(page, `coal-results-${name}`);
     await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);

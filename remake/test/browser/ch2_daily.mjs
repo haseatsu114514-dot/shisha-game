@@ -75,7 +75,10 @@ await suite('ch2-daily',async check=>{
       });
     });
     for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
-    assert.equal(await page.locator('.spot-pin').count(),3);
+    // mainの3店舗を保持し、今回追加するカフェだけを隣町へ接続する。
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),3);
+    assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
     await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{

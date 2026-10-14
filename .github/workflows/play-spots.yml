@@ -1,0 +1,74 @@
+name: Chapter play spots
+on:
+  pull_request:
+    paths:
+      - 'remake/js/daily/axe-bar*.js'
+      - 'remake/js/daily/spots.js'
+      - 'remake/js/daily/spot-access.js'
+      - 'remake/js/daily/spot-hours.js'
+      - 'remake/js/daily/shop.js'
+      - 'remake/js/core/venue-host.js'
+      - 'remake/css/venue-host.css'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/trpg.js'
+      - 'remake/js/minigames/**'
+      - 'remake/js/chapters/ch2-preparation.js'
+      - 'remake/js/trpg/**'
+      - 'remake/test/browser/play_spots.mjs'
+      - 'remake/test/browser/venue_hours.mjs'
+      - 'remake/test/venue_hours.mjs'
+      - 'data/dialogue/venue_hours.json'
+      - 'data/dialogue/trpg_club.json'
+      - '.github/workflows/play-spots.yml'
+permissions:
+  contents: read
+concurrency:
+  group: play-spots-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  venues:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Visit, play, cancel, save and return on PC and touch
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/play-spots-server.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/play_spots.mjs
+          node remake/test/venue_hours.mjs
+          node remake/test/browser/venue_hours.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: play-spots-results
+          path: |
+            .codex/artifacts/remake-browser/play-spots*
+            ${{ runner.temp }}/play-spots-server.log
+          retention-days: 7

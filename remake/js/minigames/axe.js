@@ -21,10 +21,10 @@ const faceArt = (id, face) => art("sprites/characters/" + id + "/chr_" + id + "_
 const { x: CX, y: CY, radius: R } = TARGET;
 const cycles = { horizontal: 3200, vertical: 3600, power: 2400 };
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
-  signal, mode = "practice", opponent = "hiyori", reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  signal, mode = "practice", opponent = "hiyori", allowRetry = true, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
-  if (!Object.hasOwn(MODES, mode) || !Object.hasOwn(COMPANIONS, opponent)) return Promise.reject(new RangeError("Unknown axe mode or companion"));
+  if (!Object.hasOwn(MODES, mode) || opponent !== null && !Object.hasOwn(COMPANIONS, opponent)) return Promise.reject(new RangeError("Unknown axe mode or companion"));
   const rules = MODES[mode], companion = COMPANIONS[opponent];
   const result = (completed, shots) => ({ completed, cancelled: !completed, throws: structuredClone(shots), total: totalOf(shots),
     grade: completed ? gradeOf(totalOf(shots), rules.max) : null, ruleset: RULESET, mode, opponent, throwCount: rules.throws, maximum: rules.max });
@@ -44,9 +44,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const heading = el("header.axe-header", [el("div", [el("h1", { text: "AXE THROW" }),
     el("p", { text: mode === "league" ? "10投の競技練習" : "3投の練習" })]), round, rulesButton,
     el("button.axe-button.axe-close", { text: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) })]);
-  const portrait = el("img.axe-portrait", { alt: companion.name, dataset: { test: "axe-portrait" } });
+  const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
-  const companionCard = el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]);
+  const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
   const board = svg("svg", { viewBox: "0 0 660 520", class: "axe-target", role: "img",
     "aria-label": "5か所の赤い得点圏と4か所の青いキルショット。横・縦ゲージを止めて照準を決める", "data-test": "axe-target" });
   board.append(svg("image", { href: ART.board, x: 135, y: 50, width: 390, height: 390 }));
@@ -144,6 +144,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
       .then(manifest => {
         if (phase === "closed") return;
+        if (!companion) return Promise.all(Object.values(ART).map(decodeArt));
         portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
         if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
           throw new Error("Companion artwork missing from catalogue");
@@ -249,9 +250,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const marker = markers.get(target.id); marker.setAttribute("opacity", ks.closed.includes(target.row) ? .22 : 1);
       marker.style.filter = called === target.id ? "drop-shadow(0 0 6px #fff5b1)" : "";
     }
-    const line = reaction(opponent, phase, shots, called);
-    if (comment.textContent !== line.text) comment.textContent = line.text;
-    if (portraitKey) { const url = faceArt(portraitKey, line.face); if (portrait.src !== url) portrait.src = url; }
+    if (companion) {
+      const line = reaction(opponent, phase, shots, called);
+      if (comment.textContent !== line.text) comment.textContent = line.text;
+      if (portraitKey) { const url = faceArt(portraitKey, line.face); if (portrait.src !== url) portrait.src = url; }
+    }
     crosshair.setAttribute("transform", "translate(" + (CX + landing.x * R) + " " + (CY + landing.y * R) + ")");
     fixedAim.setAttribute("transform", "translate(" + (CX + aim.x * R) + " " + (CY + aim.y * R) + ")");
     fixedAim.setAttribute("opacity", moving ? .8 : 0);
@@ -269,7 +272,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : .5); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : .5);
     if (phase !== "flight") flying.setAttribute("opacity", 0);
     needle.style.left = power * 100 + "%";
-    calls.hidden = phase !== "choice"; reaim.hidden = !cycles[phase]; retry.hidden = phase !== "summary";
+    calls.hidden = phase !== "choice"; reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary";
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = document.hidden || Boolean(helpPanel) || focusUsed || performance.now() - lastAction < 250;
     const remaining = Math.max(0, focusUntil - held);

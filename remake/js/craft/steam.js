@@ -38,7 +38,7 @@ export function refreshEffect() {
 }
 
 export async function runSteamDodge(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "steam");
   SE.coalPlace();
   const stock = refreshStock();
   const effect = refreshEffect();

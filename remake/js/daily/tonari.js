@@ -29,7 +29,7 @@ export function tonariMenu() {
       ]);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
-      el("p.sub-lead", { text: "カウンターの奥で、スミさんが炭を切っている。今日はどうする？" }),
+      el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
         opt("お客さんとして一服", tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("一台を通して練習", "配合から提供・2回の調整まで。材料は店の葉を使う", "practice", "tonari-practice"),
@@ -45,6 +45,7 @@ export function tonariMenu() {
 
 export async function tonariCustomer() {
   addStamina(-10);
+  await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
   await meetHiyoriAtTonari();
   await visitChar("tsumugi");
 }
