@@ -9,7 +9,7 @@ class Element {
   constructor(spec) {
     const [tag, ...classes] = spec.split(".");
     this.tag = tag; this.classes = new Set(classes); this.children = []; this.listeners = {}; this.dataset = {};
-    this.style = { setProperty() {} };
+    this.style = { setProperty(name, value) { this[name] = value; }, getPropertyValue(name) { return this[name] || ""; } };
     this.classList = { add: (...v) => v.forEach((c) => this.classes.add(c)), remove: (...v) => v.forEach((c) => this.classes.delete(c)),
       contains: (c) => this.classes.has(c), toggle: (c, yes) => yes ? this.classes.add(c) : this.classes.delete(c) };
     if (classes.includes("dodge-word") || classes.includes("dodge-object")) spawned++;
@@ -18,6 +18,12 @@ class Element {
   }
   append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); }
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
+  cloneNode(deep = false) {
+    const node = new Element([this.tag, ...this.classes].join("."));
+    node.dataset = { ...this.dataset }; Object.assign(node.style, this.style);
+    if (deep) node.append(this.children.map(child => child.cloneNode?.(true) || child));
+    return node;
+  }
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
   getAttribute(name) { return this[name] ?? null; }
@@ -50,7 +56,7 @@ const mocks = {
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
   "craft/session.js": { waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
-  "craft/art.js": { artImg: () => el("img") },
+  "craft/art.js": { artImg: () => el("img"), artHeight: () => 80 },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
   "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
   "craft/smoke-art.js": { smokeUrl: () => "" },

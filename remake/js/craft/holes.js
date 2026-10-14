@@ -75,7 +75,7 @@ async function chooseTemplate(panel, cs) {
 }
 
 export async function runHoles(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
   const template = await chooseTemplate(panel, cs);

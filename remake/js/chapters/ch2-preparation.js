@@ -1,5 +1,5 @@
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
-import { DB, bgUrl } from "../core/data.js";
+import { bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { imageReady, setBg, toast } from "../core/ui.js";
@@ -9,23 +9,22 @@ import { allSpots, VISIT_COST } from "../daily/spots.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
+import { chapterTwoNights } from "./ch2-story.js";
 
-const stat = { ageha: "sense", kumicho: "guts", rei: "charm", volk: "technique" };
+const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 const descriptions = {
   ageha: "平成ギャルのMELTY PUFF。あげはと客席づくりや香りの話をする。",
   kumicho: "黒革の応接室で神崎の丁寧な仕事について話す。",
   rei: "CDとギターのある零-ZERO-。REIの好きな曲や客への気遣いを聞く。",
-  volk: "滞在中の技術展示を訪ね、ヴォルクの道具と準備の考え方を聞く。県大会の出場者ではない。",
 };
 const unknownDescriptions = {
   ageha: "白・ピンクのクマと平成ギャルの小物が並ぶシーシャ店。店主に話を聞いてみよう。",
   kumicho: "木壁と黒革ソファの重厚な店内。看板は煙草店だが、事務所のようにも見える。",
   rei: "CDとギター、薔薇の格子が並ぶV系コンセプトの店。",
-  volk: "運搬ケースと計器がある一時技術展示。準備の考え方を聞いてみよう。",
 };
 export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop => ({
   ...stop, id: `ch2_${stop.id}`, charId: stop.id, kind: "rival", region: "widehanga",
-  label: stop.name, area: stop.id === "volk" ? "一時技術展示" : "ワイドハンガ街",
+  label: stop.name, area: "ワイドハンガ街",
   theme: "store", glyph: "煙", cost: VISIT_COST, stamina: -16, desc: descriptions[stop.id],
   unknownDesc: unknownDescriptions[stop.id],
   previewUrl: ROOMS[stop.id],
@@ -70,7 +69,7 @@ export async function runChapterTwoPreparation() {
   state.flags._ch2_region ||= "home";
   save();
   await runDaily({
-    startNextDay: true, untilDay: startDay + 3, tournamentName: "HAZE: OPEN CLOUD",
+    startNextDay: true, untilDay: startDay + 13, tournamentName: "HAZE: OPEN CLOUD",
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
       regions: [
@@ -81,16 +80,6 @@ export async function runChapterTwoPreparation() {
     }),
     spotById: id => PREPARATION_SPOTS.find(spot => spot.id === id),
     performSpot: visitPreparationSpot,
-    nightEvents: {
-      [startDay + 2]: {
-        id: "ch2_naru_warm", pin: "naru", schedule: "fixed", label: "なるの祝福",
-        done: () => !!state.flags._ch2_naru_warm_done,
-        run: async () => {
-          const result = await play("ch2_naru_warm", { bg: "res://assets/backgrounds/kemurikusa.png" });
-          if (!result || result.cancelled) throw new Error("なるの会話を読み終えていません");
-          state.flags._ch2_naru_warm_done = true;
-        },
-      },
-    },
+    nightEvents: chapterTwoNights(startDay),
   });
 }

@@ -51,11 +51,6 @@
           "speaker": "",
           "face": "",
           "text": "──この頃はまだ、二人で笑っていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
         }
       ]
     },
@@ -158,7 +153,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それから、なるのLIMEの返信が途絶えた。"
+          "text": "その夜送った「すみません」に、帰りの電車でも返事はつかなかった。"
         }
       ]
     },
@@ -276,7 +271,7 @@
     {
       "dialogue_id": "ch2_tsumugi_color",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {

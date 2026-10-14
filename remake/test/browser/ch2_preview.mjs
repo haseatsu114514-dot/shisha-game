@@ -9,7 +9,7 @@ const root = fileURLToPath(new URL("../../../", import.meta.url));
 const evidence = path.join(root, "docs/qa/ch2-preview");
 const route = new URL("chapter2-preview.html", baseURL).href;
 const test = name => `[data-test="ch2-preview-${name}"]`;
-const pins = ["ageha", "kumicho", "rei", "volk", "c_station"];
+const pins = ["ageha", "kumicho", "rei", "c_station"];
 const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "零", volk: "ヴォルク" };
 fs.mkdirSync(evidence, { recursive: true });
 
@@ -75,6 +75,10 @@ async function visit(page, id, { double = false, touch = false, inside = false }
   if (id !== "c_station") {
     await page.locator(test("stop")).waitFor();
     await assertFits(page, `${test("inside")}, ${test("back-map")}`);
+    const logo = page.locator(`[data-store-logo="ch2_${id}"] img`);
+    assert.equal(await logo.evaluate(async img => { await img.decode(); return img.naturalWidth; }), 768);
+    await assertFits(page, `[data-store-logo="ch2_${id}"]`);
+    await screenshot(page, `${touch ? 'touch' : 'desktop'}-logo-${id}.png`);
     const next = page.locator(test(inside ? "inside" : "back-map"));
     if (touch) await next.tap(); else await next.click();
   }
@@ -107,7 +111,7 @@ async function mapLayout(page) {
 }
 
 async function screenshot(page, filename) {
-  if (/map-|end/.test(filename)) {
+  if (/map-|end|logo-/.test(filename)) {
     await page.waitForFunction(() => !document.querySelector('#vn.active') && Number(getComputedStyle(document.getElementById('vn')).opacity) < .02);
   }
   await page.screenshot({ path: path.join(evidence, filename) });
@@ -174,6 +178,8 @@ async function manualToMap(page, { watch = null, captureUnknown = null, inside =
 }
 
 await suite("ch2-preview", async check => {
+  const run = check;
+  check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
   await check("desktop-arbitrary-order-full-run", async page => {
     const before = await seedAndOpen(page);
     await assertFits(page, test("start"));
@@ -192,11 +198,11 @@ await suite("ch2-preview", async check => {
     await mapLayout(page);
     await screenshot(page, "desktop-map-night.png");
     await changeTime(page, "day");
-    for (const id of ["volk", "ageha", "c_station", "rei", "kumicho"]) await visit(page, id, { double: id === "volk" });
-    assert.deepEqual(await progress(page), ["volk", "ageha", "c_station", "rei", "kumicho"]);
+    for (const id of ["ageha", "c_station", "rei", "kumicho"]) await visit(page, id, { double: id === "ageha" });
+    assert.deepEqual(await progress(page), ["ageha", "c_station", "rei", "kumicho"]);
     await page.locator(test("return")).dblclick({ delay: 30 });
     await page.locator(test("end")).waitFor();
-    assert.match(await page.locator(test("end")).textContent(), /5|全|歩/);
+    assert.match(await page.locator(test("end")).textContent(), /4|全|歩/);
     await screenshot(page, "desktop-end.png");
     await preserved(page, before);
     await page.locator(test("restart")).click();
@@ -215,12 +221,12 @@ await suite("ch2-preview", async check => {
     await page.locator(test("map")).waitFor();
     await mapLayout(page);
     await screenshot(page, "touch-map-day.png");
-    for (const id of ["rei", "c_station", "kumicho", "ageha", "volk"]) {
+    for (const id of ["rei", "c_station", "kumicho", "ageha"]) {
       await visit(page, id, { touch: true, inside: id !== "c_station" });
       if (id !== "c_station") assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
     }
     await visit(page, "rei", { touch: true });
-    assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha", "volk"], "Revisiting counted the same destination twice");
+    assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha"], "Revisiting counted the same destination twice");
     await changeTime(page, "night", true);
     await screenshot(page, "touch-map-night.png");
     await page.locator(test("return")).tap();
@@ -238,7 +244,7 @@ await suite("ch2-preview", async check => {
     await launch(page, false);
     const arrival = await manualToMap(page);
     assert(arrival.some(frame => frame.text), "Arrival dialogue was empty");
-    for (const id of ["ageha", "rei", "kumicho", "volk"]) {
+    for (const id of ["ageha", "rei", "kumicho"]) {
       assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.met[id], id), false);
       await page.locator(test(`pin-${id}`)).click();
       const frames = await manualToMap(page, { watch: id, captureUnknown: id === "ageha" ? "desktop-unknown-name.png" : null, inside: true, captureRoom: `desktop-room-${id}.png` });

@@ -4,44 +4,230 @@
     {
       "dialogue_id": "remake_ch2_departure",
       "lines": [
-        { "speaker": "", "text": "優勝の翌朝。tonariのカウンターに、次の大会の案内が置かれていた。" },
-        { "speaker": "sumi", "face": "normal", "text": "県大会。HAZE: OPEN CLOUDだ。本番は十三日後" },
-        { "speaker": "hajime", "face": "normal", "text": "ワイドハンガ街……隣の街ですね" },
-        { "speaker": "sumi", "face": "normal", "text": "ああ。今日は先に、会場まで行ってこい。店と同じビルの、借りたイベントホールだ" },
-        { "speaker": "hajime", "face": "surprise", "text": "同じC.STATIONでも、ホールは違うんですね" },
-        { "speaker": "sumi", "face": "normal", "text": "規模も違う。入口と搬入場所、今のうちに見とけ" },
-        { "speaker": "", "text": "案内を折って、鞄にしまう。昨日の採点表も、その下に入っていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "……周りのお店も、少し見ていいですか？" },
-        { "speaker": "sumi", "face": "smile", "text": "いいぞ。会場だけ分かれば、寄り道もしてこい" },
-        { "speaker": "hajime", "face": "smile", "text": "じゃあ、行ってきます" },
-        { "speaker": "sumi", "face": "normal", "text": "おう。帰ってきたら、見たもんを聞かせろ" },
-        { "speaker": "", "text": "店のドアを開ける。いつもの商店街を抜けて、隣町へ向かう電車に乗った。" }
+        {
+          "speaker": "",
+          "text": "優勝の翌朝。tonariのカウンターに、次の大会の案内が置かれていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "県大会。HAZE: OPEN CLOUDだ。本番は十三日後"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ワイドハンガ街……隣の街ですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。今日は先に、会場まで行ってこい。店と同じビルの、借りたイベントホールだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "同じC.STATIONでも、ホールは違うんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "規模も違う。入口と搬入場所、今のうちに見とけ"
+        },
+        {
+          "speaker": "",
+          "text": "案内を折って、鞄にしまう。昨日の採点表も、その下に入っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……周りのお店も、少し見ていいですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "いいぞ。会場だけ分かれば、寄り道もしてこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、行ってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。帰ってきたら、見たもんを聞かせろ"
+        },
+        {
+          "speaker": "",
+          "text": "店のドアを開ける。いつもの商店街を抜けて、隣町へ向かう電車に乗った。"
+        }
       ]
     },
     {
       "dialogue_id": "remake_ch2_day1_night",
       "lines": [
-        { "speaker": "", "text": "tonariへ戻ると、スミさんがカウンターを拭いていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "ただいま戻りました。会場と搬入口、分かりました" },
-        { "speaker": "sumi", "face": "normal", "text": "おう。街は、どうだった" },
-        { "speaker": "hajime", "face": "surprise", "text": "駅を出たところから、大きくて。人も、ケースを持った人も多かったです" },
-        { "speaker": "sumi", "face": "normal", "text": "あそこは、遠くからも集まるからな" },
-        { "type": "condition", "condition_type": "flag", "flag": "_ch2_city_met_shop", "next_true": "shops", "next_false": "venue_only" },
-        { "speaker": "hajime", "face": "normal", "text": "……俺も、あそこで作るんですね" },
-        { "speaker": "sumi", "face": "normal", "text": "そうだ。今日は道を覚えて、ちゃんと帰ってきた。まずは、そこまで" },
-        { "speaker": "", "text": "案内を鞄から出して、もう一度開いた。搬入する入口に、小さく丸をつける。" },
-        { "speaker": "hajime", "face": "smile", "text": "明日、荷物の中も確認してみます" },
-        { "speaker": "sumi", "face": "smile", "text": "おう。今日は、早めに休め" },
-        { "speaker": "", "text": "カウンターの上に残っていた水を飲む。窓の向こうでは、商店街の明かりが消え始めていた。" }
+        {
+          "speaker": "",
+          "text": "tonariへ戻ると、スミさんがカウンターを拭いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ただいま戻りました。会場と搬入口、分かりました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。街は、どうだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "駅を出たところから、大きくて。人も、ケースを持った人も多かったです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あそこは、遠くからも集まるからな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_city_met_shop",
+          "next_true": "shops",
+          "next_false": "venue_only"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、あそこで作るんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうだ。今日は道を覚えて、ちゃんと帰ってきた。まずは、そこまで"
+        },
+        {
+          "speaker": "",
+          "text": "案内を鞄から出して、もう一度開いた。搬入する入口に、小さく丸をつける。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "明日、荷物の中も確認してみます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう。今日は、早めに休め"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの上に残っていた水を飲む。窓の向こうでは、商店街の明かりが消え始めていた。"
+        }
       ],
       "branches": {
         "shops": [
-          { "speaker": "hajime", "face": "normal", "text": "店の入口でも、ご挨拶してきました。人が変わると、準備の感じも違って" },
-          { "speaker": "sumi", "face": "normal", "text": "そうか。店に立ってる時間は、それぞれ違うからな" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "店の入口でも、ご挨拶してきました。人が変わると、準備の感じも違って"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "そうか。店に立ってる時間は、それぞれ違うからな"
+          }
         ],
         "venue_only": [
-          { "speaker": "hajime", "face": "normal", "text": "今日は会場を先に。途中で気になる店もあったので、次は寄ってみたいです" },
-          { "speaker": "sumi", "face": "normal", "text": "ああ。一日で、全部回らなくてもいい" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は会場を先に。途中で気になる店もあったので、次は寄ってみたいです"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ああ。一日で、全部回らなくてもいい"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_eve_arrival",
+      "comment": "DAY13。つむぎの水から隣町の会場前へ。店を訪ねなかった保存でも、あげはとの前夜の会話を名乗りからつなぐ。無料の場面で有料相談・連絡先を捏造しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を飲んでから、明日の案内をもう一度開いた。集合場所を確かめておきたい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariを出て、隣町へ向かう。車窓の明かりがノートの上を流れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場の前には、搬入口を確認する選手が何人かいた。ピンクの小物をつけた鞄が目に入る。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "ageha",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あたし、搬入の確認してくる。ハジメっちも、帰りの電車なくなる前に帰りなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手を振るあげはさんを見送って、会場の外のベンチに座った。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "あれ、ハジメっち。あんたも下見？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。明日、よろしくお願いします"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……あ！ 商店街で、荷物ばらまいてた子じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時の……。蒸野はじめです。tonariで働いてます"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "あげは。MELTY PUFFの店長。明日、あたしも出るんだ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_ageha"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "じゃ、ハジメっちだ。明日はお互い、ちゃんと寝てこよ"
+          }
         ]
       }
     }

@@ -4,6 +4,7 @@ import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
 import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
+import { imageReady } from "../core/ui.js";
 
 /**
  * 吹き出しと同じ文節単位の改行で、枠の幅に合わせて折る（TH91: 「見なが／ら」のような語の途中の改行を防ぐ）。
@@ -44,6 +45,15 @@ const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinki
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
 
+/** 今この一台を見ている人と実況の、実際に使う表情だけ。 */
+export function audienceAssetUrls(cs) {
+  const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
+  if (!ids.length) return [];
+  return [...new Set([...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])].flatMap(id =>
+    ["watch", "nod", "concern", "think"].flatMap(mood => ["just", "good"].map(kind =>
+      portraitInfo(id, faceFor(id, mood, kind))?.src))).filter(Boolean))];
+}
+
 export function buildAudience(cs) {
   const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
   if (!ids.length) return null;
@@ -80,10 +90,7 @@ export function buildAudience(cs) {
       image.classList.add("audience-icon");
     }
   };
-  for (const id of [...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])]) for (const mood of ["watch", "nod", "concern", "think"]) {
-    const p = portraitInfo(id, faceFor(id, mood, "just"));
-    if (p) { const warm = new Image(); warm.src = p.src; }
-  }
+  audienceAssetUrls(cs).forEach(url => imageReady(url, 15000, { keep: true }));
   showPerson(active, "watch");
   return {
     root,

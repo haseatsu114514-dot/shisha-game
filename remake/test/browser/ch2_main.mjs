@@ -113,14 +113,14 @@ await suite('ch2-main', async check => {
   await check('touch-visits-rooms-and-first-day-ending', async page => {
     const before = await setup(page);
     await begin(page);
-    for (const id of ['volk', 'ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
+    for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
     await page.locator(test('return')).tap();
     await page.locator(test('complete')).waitFor();
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
-    for (const id of ['volk', 'ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
-    assert.match(await page.locator(test('complete')).textContent(), /DAY2.*制作中/);
+    for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
+    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*制作中/);
     await screenshot(page, 'touch-first-day-complete.png');
     await preserved(page, before);
     await reloadSaved(page);

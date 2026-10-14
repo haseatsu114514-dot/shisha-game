@@ -12,6 +12,7 @@ on:
       - 'data/dialogue/remake_ch2.json'
       - 'data/dialogue/ch2_preparation.json'
       - 'data/dialogue/ch2_isolation.json'
+      - 'data/dialogue/ch2_main.json'
       - 'data/lime_messages.json'
       - 'data/characters.json'
       - 'remake/data/manifest.json'
@@ -26,6 +27,8 @@ on:
       - 'remake/img/sprites/characters/volk/**'
       - 'remake/js/vn/**'
       - 'remake/js/core/data.js'
+      - 'remake/js/core/store-logos.js'
+      - 'assets/ui/store_logos/**'
       - 'remake/js/core/state.js'
       - 'remake/js/core/chapter-clock.js'
       - 'remake/js/scenes/saves.js'
@@ -55,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [ch2_preview, ch2_main, ch2_daily]
+        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story]
     steps:
       - uses: actions/checkout@v7.0.1
         with:

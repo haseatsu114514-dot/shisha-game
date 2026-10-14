@@ -44,6 +44,5 @@
       "status": "passed"
     }
   ],
-  "verified_content_commit": "252a1210a0b173d4e94279e990eb31c5345a3177",
-  "verification_note": "TEST_REF was unset. Art/dialogue content checked against 252a121 after this run; docs and evidence were updated afterward."
+  "content_basis": "three chapter-two shops; DAY13 continuation; 2026-10-13"
 }

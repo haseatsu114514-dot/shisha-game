@@ -79,6 +79,26 @@ export function newSession(mode) {
 
 let bench = null;
 
+// 同時に待つベース/工程の準備を一つにまとめる。キャッシュ済みなら幕を出さない。
+function waitForBenchAssets(b, task) {
+  b.pendingAssets = (b.pendingAssets || 0) + 1;
+  b.root.inert = true;
+  b.root.setAttribute("aria-busy", "true");
+  if (!b.loadingTimer && !b.loading) b.loadingTimer = setTimeout(() => {
+    b.loadingTimer = null;
+    if (!b.pendingAssets || !b.root.isConnected) return;
+    b.loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
+    b.root.append(b.loading);
+  }, 220);
+  return Promise.resolve(task).finally(() => {
+    if (--b.pendingAssets) return;
+    clearTimeout(b.loadingTimer); b.loadingTimer = null;
+    b.loading?.remove(); b.loading = null;
+    b.root.inert = false;
+    b.root.removeAttribute("aria-busy");
+  });
+}
+
 /**
  * 作業台画面を開く（すでに開いていれば再利用）。
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
@@ -86,7 +106,7 @@ let bench = null;
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => setBg(bgUrl(cs.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
-  if (bench && bench.cs === cs && bench.root.isConnected) { bench.ready = Promise.all([bench.ready, bg()]); return bench; }
+  if (bench && bench.cs === cs && bench.root.isConnected) { bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, bg()])); return bench; }
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -112,22 +132,33 @@ export function openBench(cs, { steps = [] } = {}) {
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker, cs);
   showScreen("bench", root);
-  const loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
-  root.append(loading);
-  root.inert = true;
-  root.setAttribute("aria-busy", "true");
-  const ready = Promise.all([bg(), warmCraftAssets(cs.mode), worker.ready]).finally(() => {
-    root.inert = false;
-    root.removeAttribute("aria-busy");
-    loading.remove();
-  });
-  bench = { cs, root, ready, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score,
+    sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
+  bench.ready = waitForBenchAssets(bench, Promise.all([bg(), warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]));
   renderFatigue();
   return bench;
 }
 
-export async function waitBenchReady(cs) {
-  if (bench?.cs === cs) await bench.ready;
+export async function waitBenchReady(cs, step = null, options = {}) {
+  const b = bench;
+  if (b?.cs !== cs) return;
+  if (!step) { await b.ready; return; }
+  await waitForBenchAssets(b, Promise.all([
+    b.ready,
+    warmCraftAssets(cs.mode, { cs, step, ...options }),
+    b.worker.prepare(step),
+  ]));
+  const current = b.sequence.indexOf(step === "timer" ? "steam" : step);
+  const next = current >= 0 ? b.sequence[current + 1] : null;
+  if (next && !b.prefetchSteps.has(next)) {
+    b.prefetchSteps.add(next);
+    setTimeout(() => {
+      if (b.root.isConnected) {
+        warmCraftAssets(cs.mode, { cs, step: next });
+        b.worker.prepare(next);
+      }
+    }, 0);
+  }
 }
 export function benchRoot(cs) {
   return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
