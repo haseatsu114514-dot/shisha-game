@@ -63,3 +63,5 @@ STATUS: 38613895764 SUCCESS / actual CLAIM_VALIDATED_ISSUE=497 / RUN=38613748541
 - 旧保存headの診断3FAIL、サーバー終了とスクリーンショットの失敗、通常NEW GAME初回の停止を別JSONで保持。自然workのPC初回はDAY3練習で45秒の停止検出、タッチはサーバー終了/接続拒否。どちらも成功扱いしない。
 - 通常NEW GAMEから斧投げ→仕事→実友人回答→ギフトまで進める追加モードを独立CI jobで検証する。旧axe/workモードとIssue556の待ち・停止条件は保持する。結果が未確認ならマージしない。
 - LIME本番VM PASS（通知・保留・競合再案内・旧名・予定・告白条件を含む）、台詞lint ERROR 0 / WARN 328、confession flags・agent docs・actionlint・JS構文・diff check PASS。実機Safari・全章通しは未実施。
+
+贈り物の最終寸法380pxと名前非重複を入れた再実行は4/4 PASS（PC・タッチ × a/b）。[`PC a`](qa/recovery/pc-gift-a.png) / [`PC b`](qa/recovery/pc-gift-b.png) / [`タッチa`](qa/recovery/touch-gift-a.png) / [`タッチb`](qa/recovery/touch-gift-b.png)。最初の再実行はPC aの見せ場待ち10秒でFAILし、3/4。待ち上限・assertを変更せず、他のローカルブラウザが終了した状態で同じテストを再実行して4/4。前の失敗をなかったことにはしない。自然到達と最終CIは別に確認する。
