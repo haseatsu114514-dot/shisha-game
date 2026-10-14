@@ -70,19 +70,22 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('[data-test="craft-loading"]').count(), 0);
   });
 
-  await check("real-vn-skip-with-delayed-tournament-art", async page => {
+  for (const variant of ["current-unread", "current-read", "baseline-unread"]) await check(`real-vn-skip-with-delayed-tournament-art-${variant}`, async page => {
     await init(page);
     let release;
     const held = new Promise(resolve => { release = resolve; });
     await page.route("**/img/ui/making/ui_craft_panel.webp", async route => { await held; await route.continue(); });
     try {
       // module初期化は画像を保留する前に完了し、本番の開始は同期で呼ぶ。
-      await page.evaluate(() => {
+      const baselineArrival = variant === "baseline-unread" ? JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue508-theme/baseline-scenes.json", import.meta.url))).scenes.ch1_tournament_arrival : null;
+      await page.evaluate(async ({ variant, baselineArrival }) => {
         const { chapter, vn, intro } = T;
         const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
         Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
+        if (variant === "current-read") state.flags._ev_first_practice = true;
+        if (baselineArrival) (await import("./js/core/data.js")).DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
         for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
@@ -94,7 +97,7 @@ await suite("ch1-tournament", async check => {
           if (id === "ch1_tournament_opening") openingRead = true;
         };
         window.tournamentRun = chapter.devTournament();
-      });
+      }, { variant, baselineArrival });
       // 本番のSKIPボタンで各会話を送る。制作のテスト自動操作は使わない。
       const deadline = Date.now() + 15000;
       while (!(await page.evaluate(() => openingRead && !document.querySelector('#vn.active')))) {
@@ -103,7 +106,9 @@ await suite("ch1-tournament", async check => {
         if (await skip.count()) await skip.click();
         await page.waitForTimeout(60);
       }
-      console.log("Tournament SKIP measurement:", JSON.stringify(await page.evaluate(() => ({ elapsedMs: Math.round(performance.now() - skipStarted), trace: skipTrace }))));
+      const timing = await page.evaluate(() => ({ elapsedMs: Math.round(performance.now() - skipStarted), trace: skipTrace }));
+      if (process.env.ARTIFACT_DIR) fs.writeFileSync(`${process.env.ARTIFACT_DIR}/tournament-skip-${variant}.json`, JSON.stringify(timing, null, 2) + "\n");
+      console.log("Tournament SKIP measurement:", JSON.stringify({ variant, elapsedMs: timing.elapsedMs, lines: timing.trace.length }));
       // 15秒を超えると入場演出は代替表示で続行できるが、作業台の時計はまだ開始しない。
       assert.equal(await page.locator('.foil-cursor, [data-test="coal-0"], [data-test="dodge"]').count(), 0, "SKIP started a minigame before preparation");
       if (await page.locator('.bench').count()) assert.equal(await page.locator('.bench').evaluate(n => n.inert), true);
