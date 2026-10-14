@@ -24,15 +24,21 @@
 
 ## マップの表示バランス（#546）
 
+**2026-10-15の最終指示は「白い四角い看板へ戻す／観音堂のアイコンは残す」。採用は本編の白い四角い看板です。** 保存head `b53aa9e6` の本編は白い下地を維持していたため、縮小・顔拡大を保持して最新mainを通常マージしました。観音堂は現行のSVGアイコンを保持しています。施設の3案シートは生成履歴として保存し、本編採用と混同しません。
+
 看板を少し小さく、店主の丸アイコンを少し大きくするオーナーの依頼に対応。看板幅を112→100px、ロゴの表示範囲を104×60→92×52px、看板内の高さを60→52pxへ調整しました。顔は26→32pxとし、左上へ4pxずらしてロゴとイベント印の余白を確保しています。採用ロゴの原画・縦横比と入店時の表示サイズは維持しています。
 
 [変更前（PC）](ingame-qa/pin-balance-546/before-desktop.png) / [変更後（PC）](ingame-qa/pin-balance-546/after-desktop.png) / [変更後（スマートフォン幅）](ingame-qa/pin-balance-546/after-mobile.png) / [変更後（夜）](ingame-qa/pin-balance-546/after-night.png)
 
-`store_logos.mjs` の18ケース、`compact_gains_map.mjs` の3画面幅・通知・未解放・休業・移動、`navigation_transitions.mjs` の7ケースを確認。施設の絵柄は今回変更せず、観音堂は朱塗りのお堂、家は既存の部屋に合わせたベッドとランプ、喫茶こはくはカップと焼き菓子を描いた小さな情景イラストを提案しています。施設を店舗ロゴにはしません。
+最新main `f256c779` を取り込んだ `52e4eb03` で再検証。`store_logos.mjs` の18ケース、`compact_gains_map.mjs` の3画面幅・通知・未解放・休業・移動、`navigation_transitions.mjs` の7ケースがPASS。Chromium 151 / Playwright 1.62.1を使用しました。
 
-### 白い下地を抑える比較案
+[現在のPC・昼](ingame-qa/pin-white-final-546/pc-day.png) / [PC・夜](ingame-qa/pin-white-final-546/pc-night.png) / [横持ちタッチ・昼](ingame-qa/pin-white-final-546/touch-day.png) / [横持ちタッチ・夜](ingame-qa/pin-white-final-546/touch-night.png)。4画面を目視し、白い看板・顔・イベント印・既存施設・観音堂のアイコンを確認しました。[記録](ingame-qa/pin-white-final-546/results.json)と[再撮影スクリプト](ingame-qa/pin-white-final-546/capture.mjs)も保存。既知の店主・DAY4・所持金を設定した表示fixtureで、自然進行とは区別します。マップ表示前後のstateと保存内容は同一、ページエラー・読込失敗0。実機Safariと全章の手動通しプレイは未実施です。
 
-追加の相談「ロゴの背景が真っ白すぎて安っぽく見える」に対し、実際のマップで3案を比較しました。[昼夜を切り替える比較ページ](ingame-qa/pin-background-546/index.html) / [夜の一覧](ingame-qa/pin-background-546/comparison-night.png)。Aは温かいグレージュと真鍮色の縁、Bは青灰色のスモークガラス、Cは店ごとの淡い色と共通の縁・陰影です。Cを推奨案として提示し、tonariは薄い琥珀色、PEPPERMINTはくすんだミント色など、小さな違いで店の個性を残しています。
+過去の施設案（朱塗りのお堂、ベッドとランプ、カップと焼き菓子）は提案履歴です。今回の採用へ広げず、現行の施設アイコンを維持します。
+
+### 過去の比較案（未採用）
+
+追加の相談「ロゴの背景が真っ白すぎて安っぽく見える」に対し、当時の実際のマップで3案を比較しました。[昼夜を切り替える旧比較ページ](ingame-qa/pin-background-546/index.html) / [夜の旧一覧](ingame-qa/pin-background-546/comparison-night.png)。Aは温かいグレージュと真鍮色の縁、Bは青灰色のスモークガラス、Cは店ごとの淡い色と共通の縁・陰影です。当時のC推奨は撤回済みで、今回の最終採用は白い四角い看板です。枠なし案も採用しません。
 
 候補は採用前の比較資料です。本編の背景CSS、ロゴ原画と配色、直前のサイズ調整は変更していません。`pin-background-546/` の共通CSSと各候補CSSを使い捨てブラウザの実マップへ重ね、昼夜8画面を撮影しています。撮影元は `d23c35c`、再撮影は同フォルダーの `capture.cjs`。比較ページは画像表示だけで、本編のセーブを読み書きしません。PCとスマートフォン幅の表示・画像の縦横比・昼夜切替・画像読込を確認し、結果を `review.json` に保存しています。
 
