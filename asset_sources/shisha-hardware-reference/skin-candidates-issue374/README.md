@@ -63,3 +63,19 @@ Git Safety・diff check・4PNGデコード／透明角／ハッシュPASS。`ass
 3. PC／スマホ／縦回転、明暗背景、ホース接続・装着時の縮尺、保存／読込／旧セーブの画面QAと証跡。
 
 本採用記録では原画の加工・再生成・ゲーム導入を行っていない。トングは引き続き対象外。親 #374 は採用記録PRのレビュー・反映までopenとし、導入の未完は #437 で追跡する。
+
+## 独立した外観カタログの確認（#437 第1段階）
+
+リポジトリルートから実行する。Python 3.10以降の標準ライブラリのみを使用する。
+
+```sh
+python3 tools/shisha_appearance_catalog.py
+python3 tools/shisha_appearance_catalog.py --json
+python3 -m unittest discover -s tools -p test_shisha_appearance_catalog.py
+```
+
+`candidates.json` が引き続きID・名称・カテゴリ・原画パス・SHA256・寸法・採用範囲の唯一の正本。ツールは実行のたびに正本を読み、独立カタログを標準出力へ導出する。別のカタログJSONは保存せず、ゲームのmanifestや装備へ登録しない。出力の `adoption` と `approved` / `approval_scope` / `runtime_integrated` を分け、デザイン採用をゲーム導入完了と扱わない。`source_sha256` は読んだ正本の照合用。
+
+正常時は終了コード0と `PASS: 4 originals validated ...` を出力する。4点とも1536×1024・RGBA・`approval=design_only`・`runtime_integrated=False`。異常時は終了コード1と、該当項目の位置・ID・理由（例：`duplicate id`、`SHA256 mismatch`、`invalid category`）を標準エラーへ出す。重複ID・JSON同名キー・欠落原画・ハッシュ不一致・不正カテゴリ・寸法/モード不整合・不正な採用情報をfixtureで検査する。原画・正本が取得できない場合も成功扱いにしない。`--source` で検査するJSONも原画パスも、このリポジトリ内に限定する（外部へ向かうsymlinkも拒否）。過去の `generated_original` は生成履歴なので検査対象外。
+
+PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画像全体のデコード、実ピクセルのalpha再測定、実機嵌合や画面QAではない。`alpha_extrema` と長さ目安は正本メタデータの継承で、配信用仕上げ済み／実寸検証済みの主張ではない。切り抜き・bbox・アンカー・相対縮尺・接続位置/径・組合せ・配信用パス・透過処理は、派生カタログの `render_contract` ではすべて `null`（未確定）。後続の素材仕上げ・選択・描画・保存導入は本段階の対象外。
