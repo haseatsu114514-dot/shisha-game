@@ -74,7 +74,11 @@ jobs:
           retention-days: 7
   natural-gift:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [pc, mobile]
     env:
       TEST_REF: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
@@ -106,11 +110,11 @@ jobs:
             if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
             sleep 1
           done
-          GOAL_HIYORI_GIFT=1 ARTIFACT_DIR=.codex/artifacts/remake-browser/hiyori-gift-natural node remake/test/browser/hiyori_axe_natural.mjs
+          GOAL_HIYORI_GIFT=1 ONLY_DEVICE=${{ matrix.device }} ARTIFACT_DIR=.codex/artifacts/remake-browser/hiyori-gift-natural node remake/test/browser/hiyori_axe_natural.mjs
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
-          name: hiyori-gift-natural-results
+          name: hiyori-gift-natural-${{ matrix.device }}-results
           path: |
             .codex/artifacts/remake-browser/hiyori-gift-natural
             ${{ runner.temp }}/hiyori-gift-preview.log

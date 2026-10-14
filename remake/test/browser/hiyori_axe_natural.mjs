@@ -27,6 +27,7 @@ try {
     ['pc', { viewport: { width: 1280, height: 720 } }],
     ['mobile', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) {
+    if (process.env.ONLY_DEVICE && process.env.ONLY_DEVICE !== label) continue;
     const context = await browser.newContext(options);
     const page = await context.newPage();
     const errors = [], failedResources = [], cache = { cold: 0, warm: 0 };
@@ -77,7 +78,9 @@ try {
       await page.waitForFunction(() => Q.core.state);
       // Only random seeds are fixed; all progress, payments and rewards come from normal gameplay.
       await page.evaluate(() => { Q.core.state.seed = 131; Q.core.state.weatherSeed = 4; Q.core.state.reel.seed = 4321; });
-      const deadline = Date.now() + 8 * 60000;
+      // The gift adds another real visit beyond the original axe/work scope.
+      // Keep those existing modes' budget and all game-state assertions intact.
+      const deadline = Date.now() + (giftGoal ? 12 : 8) * 60000;
       let lastKey = '', lastProgress = Date.now(), lastMapKey = '';
       while (Date.now() < deadline) {
         await page.waitForTimeout(90);
@@ -251,4 +254,5 @@ try {
   await browser.close();
   fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, results }, null, 2)+'\n');
 }
+assert(results.length > 0, 'No device was selected');
 assert.equal(results.filter(r => r.status !== 'passed').length, 0, 'Public walkthrough failures');

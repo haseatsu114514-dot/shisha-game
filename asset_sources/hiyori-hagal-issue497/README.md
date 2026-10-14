@@ -65,3 +65,5 @@ STATUS: 38613895764 SUCCESS / actual CLAIM_VALIDATED_ISSUE=497 / RUN=38613748541
 - LIME本番VM PASS（通知・保留・競合再案内・旧名・予定・告白条件を含む）、台詞lint ERROR 0 / WARN 328、confession flags・agent docs・actionlint・JS構文・diff check PASS。実機Safari・全章通しは未実施。
 
 贈り物の最終寸法380pxと名前非重複を入れた再実行は4/4 PASS（PC・タッチ × a/b）。[`PC a`](qa/recovery/pc-gift-a.png) / [`PC b`](qa/recovery/pc-gift-b.png) / [`タッチa`](qa/recovery/touch-gift-a.png) / [`タッチb`](qa/recovery/touch-gift-b.png)。最初の再実行はPC aの見せ場待ち10秒でFAILし、3/4。待ち上限・assertを変更せず、他のローカルブラウザが終了した状態で同じテストを再実行して4/4。前の失敗をなかったことにはしない。自然到達と最終CIは別に確認する。
+
+自然giftのPC初回は8分上限でDAY9の会話途中、`hiyori_axe_reveal` 未到達としてFAIL（console error/通信失敗0）。成功や本体不具合の確定とは扱わない。仕事後の追加訪問まで含む新giftモードに限り12分の上限を設定し、CIはPC/タッチの独立matrix jobにした。既存axe/workモードの8分・45秒停止検知・全順序/料金/slot assertは保持する。`ONLY_DEVICE` はCIの個別デバイス選択で、省略時は従来の両方を実行し、選択0件も失敗する。
