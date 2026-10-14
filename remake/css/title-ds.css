@@ -11,8 +11,6 @@
 .title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
 .title-layout-note:empty { display: none; }
 .title-layout-note { flex-basis: 100%; padding: 2px 8px; font-size: 12px; }
-/* タイトルの選択と復旧入口は縦持ちでも操作できる。ゲームに入れば既存の案内へ戻る。 */
-body[data-screen="title"]:not(.vn-open) #rotate-hint { display: none; }
 .title-logo-fallback { position: absolute; top: 90px; font-size: 36px; color: #f5d79f; }
 .title-ds-panel[hidden], .title-logo[hidden], .title-logo-fallback[hidden] { display: none; }
 

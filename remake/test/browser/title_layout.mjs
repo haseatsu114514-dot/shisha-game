@@ -76,6 +76,11 @@ try {
         await p.reload(); await ready(p);
         assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
         assert.deepEqual(await snapshot(p), before, "display/reload changed game data");
+        // 通常版の縦持ち案内を保持する。既存メニューは従来どおり横持ちで操作。
+        if (device === "phone" && mode === "normal") {
+          assert.equal(await p.locator("#rotate-hint").isVisible(), true);
+          await p.setViewportSize({ width: 844, height: 390 });
+        }
         // Native keyboard activation remains available in both modes.
         await button(p, "title-config").focus(); await p.keyboard.press("Enter");
         await p.locator("#modal.show .cfg").waitFor();
@@ -94,6 +99,7 @@ try {
       });
       await check(`${device}-${mode}-legacy-continue`, options, async p => {
         await seed(p); await layout(p, mode);
+        if (device === "phone" && mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
         await button(p, "title-load").click(); await button(p, "slot-1").click();
         await p.locator("body.vn-open").waitFor(); await stageIsOriginal(p);
         const saved = await p.evaluate(async () => {
@@ -124,11 +130,14 @@ try {
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
       await button(p, "title-layout-ds").click();
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
+      await p.setViewportSize({ width: 844, height: 390 });
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
       await p.locator("#modal.show .modal-actions button").click();
       await button(p, "title-layout-recover").click(); await ready(p);
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
     }, p => p.addInitScript(operation => {
+      // 保存済みDS設定がある端末でも、読み書き不能なら通常版へ戻す。
+      localStorage.setItem("suien_title_layout", "ds");
       const original = Storage.prototype[operation];
       Storage.prototype[operation] = function(k, ...args) {
         if (k === "suien_title_layout") throw new DOMException("blocked", "SecurityError");
@@ -140,6 +149,7 @@ try {
     await check(`${mode}-image-failure`, sizes.phone, async p => {
       await layout(p, mode); assert.equal(await p.locator(".title-item").count(), 5);
       await p.locator(".title-logo-fallback:not([hidden])").waitFor();
+      if (mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
       await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
     }, p => p.route(/(?:title_arts\/|bg_title|ui_title_logo_rich)/, route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid-image" })));
@@ -159,6 +169,29 @@ try {
     await layout(p, "ds"); await button(p, "title-new").click();
     await p.locator("body.vn-open").waitFor(); await stageIsOriginal(p);
     assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+  });
+  await check("real-map-and-craft-do-not-inherit-layout", sizes.pc, async p => {
+    await layout(p, "ds");
+    await p.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.newGame(); Object.assign(core.state, { phase: "daily", day: 5, slot: 1 });
+      const map = await import("./js/daily/map.js");
+      window.titleScopeQA = { map, pending: map.chooseSpot() };
+    });
+    await p.locator('#screen[data-screen="map"]').waitFor(); await stageIsOriginal(p);
+    assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+    await p.evaluate(async () => {
+      titleScopeQA.map.interruptMap(null); await titleScopeQA.pending;
+      const { showTitle } = await import("./js/scenes/title.js"); showTitle();
+    });
+    await ready(p); await layout(p, "ds");
+    await p.evaluate(async () => {
+      const craft = await import("./js/craft/session.js");
+      window.titleScopeQA.bench = craft.openBench(craft.newSession("rehearsal"));
+    });
+    await p.locator('#screen[data-screen="bench"]').waitFor(); await stageIsOriginal(p);
+    assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
+    assert.equal(await p.locator(".title-ds-panel").count(), 0);
   });
 } finally {
   await browser.close();

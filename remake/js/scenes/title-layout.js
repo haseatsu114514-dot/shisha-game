@@ -47,14 +47,14 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "title-layout-recover" } }), note,
   ]);
   // 専用CSSが欠落しても、復旧ボタンは画面の上端で操作できる。
-  Object.assign(toolbar.style, { position: "absolute", top: "8px", right: "10px", zIndex: "1100",
+  Object.assign(toolbar.style, { position: "fixed", top: "8px", right: "10px", zIndex: "1100",
     maxWidth: "calc(100% - 20px)", backgroundColor: "#1b1023", color: "#f6dfaf" });
   buttons.forEach(b => Object.assign(b.style, { minHeight: "44px", minWidth: "60px" }));
   const hint = document.querySelector("#rotate-hint");
   const hintDisplay = hint?.style.display;
-  if (hint) hint.style.display = "none";
   function apply(mode) {
     root.dataset.layout = mode;
+    if (hint) hint.style.display = mode === "ds" ? "none" : hintDisplay;
     visual.hidden = controls.hidden = mode !== "ds";
     if (mode === "ds") {
       visual.append(art, brand); controls.insertBefore(menu, controls.firstChild);
@@ -64,7 +64,7 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     buttons.forEach((button, i) => button.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
   }
   apply(readLayout());
-  document.querySelector("#viewport").prepend(toolbar);
+  document.body.append(toolbar);
   // タイトルを離れたら入口も片付ける。ゲーム画面のDOM/寸法には設定を持ち越さない。
   let seen = root.isConnected;
   const observer = new MutationObserver(() => {
