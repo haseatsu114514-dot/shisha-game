@@ -2,7 +2,7 @@
 
 PR [#545](https://github.com/haseatsu114514-dot/shisha-game/pull/545) / Issue [#540](https://github.com/haseatsu114514-dot/shisha-game/issues/540)。**Draft・オーナーの仕上がり確認待ち。マージ・公開・Issue closeはしていない。**
 
-今回の検証対象は `e43b2aaad3b6d4b2a52024498d4d253c7983378a`。旧担当の保存済みhead `84d2a01d3dfbd5cc381836a4458df2affbb92dbe`を引き継ぎ、main `b69cb548718a963e88c05e1b3dec1fe6fe154964`を通常mergeして両側を維持した。**#524はマージ済みで、待機理由ではない。**
+今回の検証対象は `f323c0376d71957a1e110a739555d823064d9f82`。旧担当の保存済みhead `84d2a01d3dfbd5cc381836a4458df2affbb92dbe`を引き継ぎ、main `b69cb548718a963e88c05e1b3dec1fe6fe154964`を通常mergeして両側を維持した。**#524はマージ済みで、待機理由ではない。**
 
 SHA・ファイルのSHA-256・環境・予約・CI取得時点は [current-source.json](current-source.json)。後続のQA記録専用commitは `assets/`・`data/`・`remake/` のGit tree一致を確認する。ローカル結果のrefを新しいheadへ書き換えず、最終PR headのCIは [Checks](https://github.com/haseatsu114514-dot/shisha-game/pull/545/checks) とrunの対象SHAで追跡する。
 
@@ -28,9 +28,12 @@ DAY8の承認は [Issueの記録](https://github.com/haseatsu114514-dot/shisha-g
 | ひより正式イベント | [11/11 PASS](current-hiyori-results.json)。前後の会話・実3投・未読／中断・旧保存・友情／恋人・料金・LIME・既読を保持。 |
 | TRPG・部活の回帰 | [13/13 PASS](current-trpg-results.json)。設立、実訪問の対面勧誘、取消、購入、二人卓／代役、GM勤務／先約、結末即時保存、読取専用本棚、通信再試行、画面撤去／別保存、独立試遊の保存非干渉。独立試遊の成功だけを本編日程の成功とは扱わない。 |
 | 昼夜・店員・試遊 | [10/10 PASS](current-hours-results.json)。PC／タッチ、営業時間外と直呼びの拒否、無料試遊の停止／超過／再試遊、凛と無料購入、夜の試遊不可、別保存後の古い試遊ボタン、無人ジム・夜の観音堂。 |
+| 凛の本編店舗回帰 | [10/10 PASS](current-shop-results.json)。昼の2階拒否、昼の無料購入、夜の体力不足取消、体力14と夜1行動の実保存、相談料なし、翌朝帰還。取消・消費・保存のassertを削除せず、承認済みの夜営業に合わせた。 |
 | モデル・旧保存・ローダ | [実行結果](current-unit-results.json)。斧16＋TRPG11＋部活/日程14＝41/41 PASS。schema13/14自動・手動LOAD、schema15、43種類の不正な旧TRPG保存を自動／手動両方で検査。昼夜モデル20assert、章境界、JSON36件の並列上限・HTTP/JSON/通信/タイムアウトもPASS。 |
 
 古い購入／終了ボタンの連打と確定前後の保存で二重確定を検査。残高不足、体力0、同日利用、取消、完走後の未確定取消、実reloadの未完走離脱、二重起動、別セーブへの実LOAD、pagehide、画面撤去も検査。未完走・所有セーブの切替後には確定しない。ブラウザ例外・失敗リソースは各ケース0件。
+
+合計64/64ブラウザケースPASS。現在のcurrent-*結果・画面は、店舗回帰fixture修正後の上記SHAで全て再実行したもの。
 
 Chromium、PC1280×720、タッチ844×390（`tap()`）。日常保存fixtureからの操作と本編SAVE/LOAD後の再開であり、NEW GAMEから全章の通し検査ではない。
 
@@ -53,6 +56,10 @@ Chromium、PC1280×720、タッチ844×390（`tap()`）。日常保存fixtureか
 ## 修正・未確認・引継ぎ
 
 [integration-failures.json](integration-failures.json)にmain統合後の失敗・対象head・CIログ・修正理由を保存。フォローアップ順序とピン重なりはコードを修正。従来3店の厳密assertにカフェ込み4ピンの完全一致を追加し、JSON件数は35→36の完全一致へ更新。凛の同日拒否を追加し、元の反復報酬assertは次の営業日に維持。既存assertの削除・弱体化はしていない。
+
+1fb95a4aの共通CIでは、古いshop_ui fixtureが昼に凛の2階へ入ろうとして失敗した。昼の拒否を追加し、取消・消費・保存・帰還は夜に実施するよう修正。実保存の体力86と訪問日5の検査を維持し、相談料が増えないことも確認した。
+
+同headの街歩き章通しCIは初回レモン購入未達で失敗したが、コード・assertを変更しない1回の再実行で成功。練習回数は条件を満たしていた。初回失敗と同じコードの成功runを記録し、通しドライバの乱数・操作タイミング・行動計画の再現性は別の残課題として残す。
 
 新規離脱検査の754388beでの失敗は、取消の自動保存で`savedAt`だけが更新されるため。Dateだけ固定し、保存全文の厳密比較を維持した。ゲームの保存処理を抑止・変更していない。
 
