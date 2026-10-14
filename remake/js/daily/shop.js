@@ -10,6 +10,7 @@ import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
+import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
@@ -79,7 +80,7 @@ function productArt(item, flavor, size = 66) {
 function shopHeader(sub, money) {
   return el("header.shop-head", [el("h2", { text: "Dr.fookah" }), el("span.shop-sub", { text: sub }), money]);
 }
-const rinUnavailable = () => state.day % 7 === RIN_AWAY_DAY ? "今日は担当者が出張中" : state.visitedDay.rin === state.day ? "今日は訪問済み" : "";
+const rinUnavailable = () => rinVisitReason(state);
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
@@ -115,7 +116,7 @@ function chooseShopFloor() {
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
         card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
-        card("2F", "ショールーム", unavailable || "1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
+        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
     ]));
@@ -298,6 +299,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
 }
 
 export async function visitRin() {
+  if (state.phase !== "daily" || rinUnavailable()) return false;
   cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
   state.visitedDay.rin = state.day;
@@ -308,4 +310,5 @@ export async function visitRin() {
     addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
     toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
   }
+  return true;
 }

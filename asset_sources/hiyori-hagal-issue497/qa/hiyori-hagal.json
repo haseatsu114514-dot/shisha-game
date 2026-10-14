@@ -1,0 +1,47 @@
+{
+  "name": "hiyori-hagal",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "production-equipment-and-unread-gates",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-0-0-friend-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(r.done && !r.replay && !r.duplicate && r.stable && r.limeStable)\n\n    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:82:7\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:42:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:57:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "real-gift-1-0-friend-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(r.done && !r.replay && !r.duplicate && r.stable && r.limeStable)\n\n    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:82:7\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:42:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:57:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "real-gift-1-1-romance-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(r.done && !r.replay && !r.duplicate && r.stable && r.limeStable)\n\n    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:82:7\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:42:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:57:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "old-owned-gift-does-not-infer-unread-or-duplicate",
+      "status": "passed"
+    },
+    {
+      "label": "effect-requires-ownership-equipment-and-three-grams",
+      "status": "passed"
+    },
+    {
+      "label": "interrupted-q2-zero-resumes-once-with-real-gift",
+      "status": "failed",
+      "error": "page.evaluate: Target page, context or browser has been closed\n    at /Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:132:77\n    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:42:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:117:3\n    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/support.mjs:57:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-15/codex-17-github-1-547-https/work/shisha-game/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    }
+  ]
+}

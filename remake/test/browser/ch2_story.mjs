@@ -134,7 +134,10 @@ await suite('ch2-story', async check => {
   await check('legacy-volk-records-kept-without-chapter2-entrance', async page => {
     await seed(page, { legacyVolk: true }); await atMap(page, 4, 0);
     await page.locator(t('map-region-widehanga')).click();
-    assert.equal(await page.locator('.spot-pin').count(), 3); assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 3);
+    assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
+    assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
     }); assert.deepEqual(logos, [768,768,768]);

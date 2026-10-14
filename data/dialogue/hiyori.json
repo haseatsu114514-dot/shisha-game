@@ -1,5 +1,5 @@
 {
-  "_comment": "キャラ設定はdata/characters.json。正式斧投げの読了後に仕事相談と実回答の質問へ。質問は反応の読了も保存し、専用ハガル登録まで締めくくりを解禁しない。preview_onlyは表示確認用。innerはプレイヤーだけに見える。",
+  "_comment": "キャラ設定はdata/characters.json。正式斧投げの読了後に仕事相談と実回答の質問へ。反応を読み終えた後だけ、専用ハガルを受け取る締めくくりへ進める。preview_onlyは表示確認用。innerはプレイヤーだけに見える。",
   "route": {
     "enabled": true,
     "storyEvents": [
@@ -17,7 +17,7 @@
     "finale": {
       "dialogue": "hiyori_bond_finale",
       "question": "bond_q2_hiyori",
-      "gift": null,
+      "gift": "suyaki_hiyori",
       "flag": "_hiyori_bond_finale_done",
       "night": true
     },

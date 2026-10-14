@@ -1,0 +1,133 @@
+{
+  "characters": [
+    {
+      "id": "maki",
+      "source": "asset_sources/venue-staff/maki/normal-source.png",
+      "runtime": "assets/sprites/characters/maki/chr_maki_normal.png",
+      "webp": "remake/img/sprites/characters/maki/chr_maki_normal.webp",
+      "prompt": "asset_sources/venue-staff/maki/normal-prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": true,
+      "faces": [
+        "normal"
+      ],
+      "source_sha256": "0634483fa1a617bb7ba55aa1436c3c37ae67200a3e0c74bd49ea514eb38fef12",
+      "source_image": {
+        "size": [
+          1086,
+          1448
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          274,
+          2,
+          802,
+          1437
+        ]
+      },
+      "runtime_sha256": "d762ff2e09e14c6747ebc91379c7b9032380a1834a48d185f56a7f95832190a8",
+      "runtime_image": {
+        "size": [
+          896,
+          1200
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          226,
+          4,
+          662,
+          1188
+        ]
+      },
+      "webp_sha256": "640c73c65a17c3611585b4f3c5671e9cb902f9e4006eb43235af4b8fc0d73313",
+      "webp_image": {
+        "size": [
+          896,
+          1200
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          226,
+          4,
+          662,
+          1188
+        ]
+      },
+      "prompt_sha256": "1000d2718839507b4b712e5dea1974bc91d939f6785793bea3b37dfa2f7044e2"
+    },
+    {
+      "id": "sai",
+      "source": "asset_sources/venue-staff/sai/normal-source.png",
+      "runtime": "assets/sprites/characters/sai/chr_sai_normal.png",
+      "webp": "remake/img/sprites/characters/sai/chr_sai_normal.webp",
+      "prompt": "asset_sources/venue-staff/sai/normal-prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": true,
+      "faces": [
+        "normal"
+      ],
+      "source_sha256": "388a72cbf01021685e6f092ca52d414cc0d08785c01057cd2a9d00bb8873e3db",
+      "source_image": {
+        "size": [
+          1086,
+          1448
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          355,
+          9,
+          719,
+          1437
+        ]
+      },
+      "runtime_sha256": "8ac2f8a17d45a29b3cb97913b910fe2614fb93f94c111517a85e46bde52dd5f1",
+      "runtime_image": {
+        "size": [
+          896,
+          1200
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          293,
+          9,
+          593,
+          1188
+        ]
+      },
+      "webp_sha256": "2dae3aed772bac7122f461da4db71f9f2deedfcbdf4245b0cf46d6a50edb6d2e",
+      "webp_image": {
+        "size": [
+          896,
+          1200
+        ],
+        "alpha_range": [
+          0,
+          255
+        ],
+        "visible_bbox": [
+          293,
+          9,
+          593,
+          1188
+        ]
+      },
+      "prompt_sha256": "2220ccec0d6215f4ca0eb917358c9f1e7c44696ba3d8d85d5a2f056e28c7f970"
+    }
+  ],
+  "processing": "ImageMagick: aspect-preserving resize to fit 896x1200 and transparent center padding; no redraw, color change or body edits."
+}

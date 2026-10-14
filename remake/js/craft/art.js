@@ -73,6 +73,8 @@ const BOWL_ART = {
   silicone_bowl: { empty: "bowl_empty_silicone.png", packed: (p) => `bowl_packed_${p}.png`, w: 116, rim: 0.12 },
   hagal_80beat: { empty: "bowl_empty_phunnel.png", packed: (p) => `bowl_packed_phunnel_${p}.png`, w: 150, rim: 0.27 },
   suyaki_hagal: { empty: "bowl_empty_clay.png", packed: null, w: 150, rim: 0.24 },
+  suyaki_hiyori: { empty: "bowl_empty_hiyori.png", packed: null, w: 150, rim: 0.20,
+    packRim: { fluffy: .20, normal: .21, firm: .22 } },
 };
 const PACK_ART = { fluffy: "airy", normal: "normal", firm: "firm" };
 
@@ -96,7 +98,7 @@ export function packingBowlPreview(cs, pack) {
       backgroundImage: `url("${makingUrl(`bowl_packed_${variant}.png`)}")`,
       backgroundSize: "220% auto", backgroundPosition: `center ${-width * .22}px`,
       left: "50%", transform: "translateX(-50%)", width: `${width * density[0]}px`, height: `${leafHeight}px`,
-      bottom: `${artHeight(name, width) * (1 - density[2]) - leafHeight / 2}px`,
+      bottom: `${artHeight(name, width) * (1 - (spec.packRim?.[pack] ?? density[2])) - leafHeight / 2}px`,
     } }));
   }
   return root;

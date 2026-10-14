@@ -9,6 +9,7 @@ import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { openTrpgRoom } from "./trpg-room.js";
+import { mountTitleLayout } from "./title-layout.js";
 
 export function showTitle(preparedArt = null) {
   setBg(bgUrl("bg_title"), { instant: true });
@@ -60,6 +61,14 @@ export function showTitle(preparedArt = null) {
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
   ]);
   showScreen("title", root);
+  const brand = root.querySelector(".title-brand");
+  const fallback = el("strong.title-logo-fallback", { text: "水煙前線 — EN:CODE", hidden: true });
+  brand.append(fallback);
+  const logo = brand.querySelector("img");
+  const fallbackLogo = () => { logo.hidden = true; fallback.hidden = false; };
+  logo.addEventListener("error", fallbackLogo);
+  if (logo.complete && !logo.naturalWidth) fallbackLogo();
+  mountTitleLayout(root, { art: artNode, brand, menu, left: root.querySelector(".title-left"), background: bgUrl("bg_title") });
   const place = (loaded) => {
     // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
     artNode.dataset.character = loaded.character;

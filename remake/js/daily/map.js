@@ -14,6 +14,7 @@ import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
@@ -27,6 +28,8 @@ const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
 // 施設は大きな記号、その下に名前。顔のある店は同じ場所に店主の顔を置く。
 const PIN_SYMBOLS = {
+  axe_bar: '<path d="m7 22 7-18M12 5l7-2 3 8-8-1M11 8l4 2"/>',
+  trpg_bar: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 7h.01M17 7h.01M12 12h.01M7 17h.01M17 17h.01"/>',
   store: '<path d="M3 10v11h18V10M2 10l3-7h14l3 7M2 10h20M9 21v-7h6v7"/>',
   cafe: '<path d="M4 9h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9ZM16 10h2a3 3 0 0 1 0 6h-2M3 22h16M7 5V2M12 5V2"/>',
   kannon: '<path d="M3 4h18M4 8h16M7 4v17M17 4v17M5 21h4M15 21h4"/>',
@@ -172,7 +175,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
-          s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
+          spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
+          s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
           known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
         ]),
@@ -218,7 +222,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const face = locked ? null : spotFace(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id) : null;
+      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
