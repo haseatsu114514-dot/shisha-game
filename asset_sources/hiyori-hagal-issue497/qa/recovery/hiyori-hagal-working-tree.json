@@ -1,0 +1,59 @@
+{
+  "name": "hiyori-hagal",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "ref": "e31dcb4b",
+  "results": [
+    {
+      "label": "production-equipment-and-unread-gates",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-0-0-friend-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-1-0-friend-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-1-1-romance-save-and-no-replay",
+      "status": "passed"
+    },
+    {
+      "label": "old-owned-gift-does-not-infer-unread-or-duplicate",
+      "status": "passed"
+    },
+    {
+      "label": "effect-requires-ownership-equipment-and-three-grams",
+      "status": "passed"
+    },
+    {
+      "label": "interrupted-q2-zero-resumes-once-with-real-gift",
+      "status": "passed"
+    },
+    {
+      "label": "pc-receive-select-pack-and-save",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-b-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-receive-select-pack-and-save",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-b-art-and-bounds",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "name": "hiyori-hagal",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "ref": "688085af446e942de680d25c1447f70353df6f92",
+  "results": [
+    {
+      "label": "production-equipment-and-unread-gates",
+      "status": "passed"
+    },
+    {
+      "label": "real-gift-0-0-friend-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: {\"done\":true,\"before\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"friend\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":0,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"]}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\"},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true}},\"after\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"friend\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":0,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"],\"originId\":\"keep\",\"replyState\":\"none\"}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\",\"originId\":null,\"afterClose\":false},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true}},\"replay\":false,\"duplicate\":false,\"stable\":true,\"payment\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"stock\":{\"double_apple\":50}},\"limeStable\":false}\n    at file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:82:7\n    at async check (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:42:7)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "real-gift-1-0-friend-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: {\"done\":true,\"before\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"friend\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11},\"bond_q2_hiyori\":{\"char\":\"hiyori\",\"value\":0,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"]}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\"},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true}},\"after\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"friend\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11},\"bond_q2_hiyori\":{\"char\":\"hiyori\",\"value\":0,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"],\"originId\":\"keep\",\"replyState\":\"none\"}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\",\"originId\":null,\"afterClose\":false},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true}},\"replay\":false,\"duplicate\":false,\"stable\":true,\"payment\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"stock\":{\"double_apple\":50}},\"limeStable\":false}\n    at file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:82:7\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:502:9)\n    at async check (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:42:7)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "real-gift-1-1-romance-save-and-no-replay",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: {\"done\":true,\"before\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"romance\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11},\"bond_q2_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"]}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\"},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true,\"_confession_due\":\"hiyori\"}},\"after\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"owned\":[\"silicone_bowl\",\"lotos_hagal\",\"flat_charcoal\",\"suyaki_hiyori\"],\"equip\":{\"bowl\":\"silicone_bowl\",\"hms\":\"lotos_hagal\",\"charcoal\":\"flat_charcoal\"},\"flavorStock\":{\"double_apple\":50},\"finales\":{\"hiyori\":{\"day\":11,\"chapter\":1,\"route\":\"romance\"}},\"choices\":{\"bond_q1_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11},\"bond_q2_hiyori\":{\"char\":\"hiyori\",\"value\":1,\"day\":11}},\"lovers\":[],\"contacts\":[\"sumi\",\"hiyori\"],\"inbox\":[{\"id\":\"keep\",\"read\":false,\"msg\":{\"sender\":\"rin\"},\"log\":[\"keep\"],\"originId\":\"keep\",\"replyState\":\"none\"}],\"pendingInvite\":{\"sender\":\"rin\",\"day\":12,\"slot\":1,\"event\":\"date_rin\",\"originId\":null,\"afterClose\":false},\"affinity\":{\"hiyori\":74},\"flags\":{\"_intro_hiyori\":true,\"_hiyori_meeting_done\":true,\"_hiyori_sumi_message_done\":true,\"_hiyori_message_delivered\":true,\"_hiyori_cracks_done\":true,\"_hiyori_tonari_return_done\":true,\"_hiyori_tonari_followup_done\":true,\"_hiyori_tonari_afterwork_done\":true,\"_hiyori_real_self_known\":true,\"_hiyori_work_talk_done\":true,\"_hiyori_affinity_waiting_released\":true,\"_hiyori_affinity_released_pts\":0,\"_hiyori_bond_question_done\":true,\"_hiyori_bond_finale_done\":true,\"_confession_due\":\"hiyori\"}},\"replay\":false,\"duplicate\":false,\"stable\":true,\"payment\":{\"money\":90000,\"stamina\":80,\"slot\":1,\"stock\":{\"double_apple\":50}},\"limeStable\":false}\n    at file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:82:7\n    at async check (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:42:7)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:66:5\n    at async suite (file:///workspace/shisha-game-recovery-20261015/remake/test/browser/support.mjs:57:5)\n    at async file:///workspace/shisha-game-recovery-20261015/remake/test/browser/hiyori_hagal.mjs:37:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "old-owned-gift-does-not-infer-unread-or-duplicate",
+      "status": "passed"
+    },
+    {
+      "label": "effect-requires-ownership-equipment-and-three-grams",
+      "status": "passed"
+    },
+    {
+      "label": "interrupted-q2-zero-resumes-once-with-real-gift",
+      "status": "passed"
+    },
+    {
+      "label": "pc-receive-select-pack-and-save",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "pc-gift-b-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-receive-select-pack-and-save",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-a-art-and-bounds",
+      "status": "passed"
+    },
+    {
+      "label": "touch-gift-b-art-and-bounds",
+      "status": "passed"
+    }
+  ]
+}

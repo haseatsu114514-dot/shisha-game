@@ -51,3 +51,15 @@ STATUS: 38613895764 SUCCESS / actual CLAIM_VALIDATED_ISSUE=497 / RUN=38613748541
 - 既存関係UIの「未読なのに告白を案内しない」assertを保持。正式機材が登録された現在も、未読時は斧投げ・仕事を案内し、全読了後はtonariの節目を案内する。
 - 画像の白/暗背景での目視では、赤い素焼き・斧と葉・斜め帯・底の孔を保持し、外縁の白い矩形や目立つ色フリンジはない。画像の再生成はしていない。
 - PC/タッチの実g操作と回答ボタンを追加したテストは再検証中。自然NEW GAMEは別runnerで実行中。CI・最終QAが揃うまでDraftと予約を保持する。
+
+### 再開後の実入力・画面QA
+
+`qa/recovery/` は旧QAを上書きせず保存した追跡資料。`hiyori-hagal-working-tree.json` は13/13 PASS、`relationship-ui-working-tree.json` は8/8 PASS。これらはe31dcb4b後の作業ツリーで実行し、最後の贈り物寸法調整・名前非重複assertを入れる前の結果で、最終head CIの代わりではない。
+
+- PCと844×390タッチの実Q2ボタン、友人/恋愛の反応、専用ギフト1個、実機材選択、ピーチ3g＋ミント17gを実＋ボタンで入力。21gは拒否、3gの既存効果と20g表示を確認。
+- 専用器の配合・パッキングを撮影し、機材と1個の所有をSAVE/LOADで保持。前提のイベント読了・所持葉はfixtureであり、通常NEW GAMEからの獲得証明ではない。
+- [`PC操作動画`](qa/recovery/pc-receive-mix-pack.webm) / [`横持ちタッチ操作動画`](qa/recovery/touch-receive-mix-pack.webm)、[`PC配合`](qa/recovery/pc-mix.png) / [`タッチ配合`](qa/recovery/touch-mix.png)、[`PCパッキング`](qa/recovery/pc-pack.png) / [`タッチパッキング`](qa/recovery/touch-pack.png)、[`白/暗の透過比較`](qa/recovery/alpha-white-dark.png)。動画はPlaywrightの縮小録画で、実機Safariではない。
+- 贈り物a/bの見せ場を固定秒ではなく名前の表示完了で一時保持して撮影。忙しい環境で空の退場を撮る誤判定を防ぎ、器と名前の画面内表示・非重複を検証する。ひよりだけ最大高さを380pxへ調整し、他キャラの寸法は維持。
+- 旧保存headの診断3FAIL、サーバー終了とスクリーンショットの失敗、通常NEW GAME初回の停止を別JSONで保持。自然workのPC初回はDAY3練習で45秒の停止検出、タッチはサーバー終了/接続拒否。どちらも成功扱いしない。
+- 通常NEW GAMEから斧投げ→仕事→実友人回答→ギフトまで進める追加モードを独立CI jobで検証する。旧axe/workモードとIssue556の待ち・停止条件は保持する。結果が未確認ならマージしない。
+- LIME本番VM PASS（通知・保留・競合再案内・旧名・予定・告白条件を含む）、台詞lint ERROR 0 / WARN 328、confession flags・agent docs・actionlint・JS構文・diff check PASS。実機Safari・全章通しは未実施。

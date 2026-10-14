@@ -33,7 +33,8 @@ function bowlArt(w = BOWL_W, gear = null) {
   const file = bowlFile(gear), url = makingUrl(file);
   const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[file] || BOWL_BOX;
   // 背の高い専用ハガルも、縦横比を保って文字より上へ収める。
-  w = Math.min(w, 440 * (r - l) * aspect / (b - t));
+  const maxHeight = gear?.id === "suyaki_hiyori" ? 380 : 440;
+  w = Math.min(w, maxHeight * (r - l) * aspect / (b - t));
   const fullW = w / (r - l), fullH = fullW / aspect;
   const h = Math.round(fullH * (b - t));
   const size = `${fullW}px ${fullH}px`, pos = `${-l * fullW}px ${-t * fullH}px`;

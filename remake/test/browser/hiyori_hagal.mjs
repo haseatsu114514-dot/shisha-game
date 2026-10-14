@@ -34,7 +34,10 @@ async function setup(page, answer = 0) {
   }, answer);
 }
 const work = page => page.evaluate(() => H.daily.playHiyoriEvent('work_talk'));
-await suite('hiyori-hagal', async check => {
+await suite('hiyori-hagal', async allCheck => {
+  // Focused reruns are optional; CI executes every assertion by default.
+  const check = (label, body, options) => !process.env.CASE_FILTER || label.includes(process.env.CASE_FILTER)
+    ? allCheck(label, body, options) : Promise.resolve();
   await check('production-equipment-and-unread-gates', async page => {
     await setup(page);
     const r = await page.evaluate(() => {
@@ -191,15 +194,36 @@ await suite('hiyori-hagal', async check => {
         return { bowl: H.core.state.equip.bowl, count: H.core.state.owned.filter(id => id === 'suyaki_hiyori').length };
       });
       assert.equal(saved.bowl, gift); assert.equal(saved.count, 1);
-    }, options);
+    }, { ...options, recordVideo: { dir: process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser' } });
     for (const variant of ['a', 'b']) await check(`${device}-gift-${variant}-art-and-bounds`, async page => {
       await setup(page); await page.emulateMedia({ reducedMotion: 'no-preference' });
-      await page.evaluate(variant => { H.running = H.motions[variant](H.data.DB.equipById.suyaki_hiyori); }, variant);
+      await page.evaluate(variant => {
+        // Hold the completed title entrance for visual QA. A fixed wall-clock delay
+        // can otherwise capture the exit on a busy runner, hiding the bowl.
+        H.nativeAnimate = Element.prototype.animate;
+        Element.prototype.animate = function(frames, options) {
+          const animation = H.nativeAnimate.call(this, frames, options);
+          if (this.matches('.mo-gift-title .mg-char:last-child') && frames.at(-1)?.opacity === 1) {
+            Object.defineProperty(animation, 'finished', { value: animation.finished.then(() =>
+              new Promise(resolve => { H.releasePresentation = resolve; })) });
+          }
+          return animation;
+        };
+        H.running = H.motions[variant](H.data.DB.equipById.suyaki_hiyori);
+      }, variant);
+      await page.waitForFunction(() => H.releasePresentation);
       const bowl = page.locator('.mo-gift-bowl'); await bowl.waitFor();
       assert.match(await bowl.evaluate(n => n.style.backgroundImage), /bowl_empty_hiyori\.webp/);
-      // Wait for the hero to rise into its final presentation before judging its bounds.
-      await page.waitForTimeout(1800); await assertFits(page, '.mo-gift-bowl');
+      assert.equal(await page.locator('.mo-gift-hero').evaluate(n => Number(getComputedStyle(n).opacity)), 1);
+      await assertFits(page, '.mo-gift-bowl,.mo-gift-name');
+      const separation = await page.evaluate(() => {
+        const bowl = document.querySelector('.mo-gift-bowl').getBoundingClientRect();
+        const name = document.querySelector('.mo-gift-name').getBoundingClientRect();
+        return bowl.bottom <= name.top || name.bottom <= bowl.top;
+      });
+      assert(separation, 'The gift name must not overlap the bowl');
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/hiyori-hagal-${device}-gift-${variant}-visible.png` });
+      await page.evaluate(() => { Element.prototype.animate = H.nativeAnimate; H.releasePresentation(); });
       await page.evaluate(() => H.running);
     }, options);
   }
