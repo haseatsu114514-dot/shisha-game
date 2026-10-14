@@ -110,3 +110,22 @@ node --test remake/test/axe_throw.mjs remake/test/trpg.mjs remake/test/trpg_camp
 node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
 node --experimental-vm-modules remake/test/illness.mjs
 ```
+
+## 再引き継ぎのレビューと操作動画
+
+ソース `651efca68d7b8c98f337cb8bbe9d97332e8dc8cc` を正式transfer38566024845／そのrun指定status38566190607の成功後に確認。ゲーム・素材・台詞・テストのassertionは変更していない。`f323c037`とassets/data/remakeのtreeも一致。旧18画面を再利用し、不足する操作動画のみ追加した。
+
+同headでモデル41/41、旧schema13/14のauto/manual・schema15・不正旧保存43種、昼夜モデル20assertがPASS。本編接続は[初回20ケース中19PASS/1FAIL](handoff-browser-initial.json)。失敗は本編操作前のpage.gotoの10秒上限で、[初回画面](handoff-initial-load-timeout.png)とログを保持。同じhead・同じassertion・既存CASE_FILTERで[失敗1ケースのみ再実行してPASS](handoff-browser-retry.json)。初回を20/20成功へ書き換えていない。[昼夜ブラウザ10/10](handoff-hours.json)も再実行してPASS。
+
+| 操作動画（無音・2倍速） | PC | 横持ちタッチ |
+| --- | --- | --- |
+| 斧3投・結果・保存と帰還 | [3投](handoff-videos/pc-axe-3.mp4) | [3投](handoff-videos/touch-axe-3.mp4) |
+| 斧10投・結果・保存と帰還 | [10投](handoff-videos/pc-axe-10.mp4) | [10投](handoff-videos/touch-axe-10.mp4) |
+| 第1短編・購入・結末・保存 | [第1短編](handoff-videos/pc-trpg-ordinary.mp4) | [第1短編](handoff-videos/touch-trpg-ordinary.mp4) |
+| 承認DAY8・第2短編・結末・LOAD | [第2短編](handoff-videos/pc-trpg-day8-shark.mp4) | [第2短編](handoff-videos/touch-trpg-day8-shark.mp4) |
+
+[検証と動画原本/配布MP4のhash・対象tree](handoff-review.json)。動画は既存の本編操作テストを実行したブラウザから記録し、新しいゲーム進行は実装していない。復旧・旧保存・消費条件のassertionも維持。録画のみを加える[補助](record-video.cjs)はルートでNODE_OPTIONS=--require=./docs/qa/play-spots/record-video.cjs、CAPTURE_DIRに出力先を指定して既存play_spots.mjsを実行する。
+
+最初の録画実行はPlaywrightのFFmpeg未導入によりゲーム検査前に停止。固定依存のFFmpegを導入してから上記を実行した。一般のゲームコードやテスト期待値を変えた対処ではない。
+
+元workerの別環境の現在の未保存・未追跡・未push差分はアクセスできず未確認。停止は所有者申告を根拠とする。同一チャットの複数タスク保持は所有者の今回限りの明示例外であり、タスク別ID・別ブランチ・別PRのまま順番に検証する。実機Safari・全章手動通し・DSとの統合QAは未実施。Draft・予約を維持し、マージ・公開・Issue終了は行わない。
