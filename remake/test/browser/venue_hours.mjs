@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 
 const t = id => `[data-test="${id}"]`;
-const hit = (page, id) => page.locator(t(id)).click();
+async function hit(page, id) {
+  const button = page.locator(t(id));
+  if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
+}
 async function setup(page, { chapter = 1, slot = 0 } = {}) {
   await page.evaluate(async ({ chapter, slot }) => {
     window.V = { core: await import("./js/core/state.js"), data: await import("./js/core/data.js"),

@@ -177,7 +177,8 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 尽きたら、途中の質問の訪問 → 好感度MAXの締めくくり（一度だけ・専用ハガル）→ 通い訪問の小会話の順。
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
-export async function visitChar(charId) {
+export async function visitChar(charId, { welcome = null } = {}) {
+  const owner = state;
   if (charId === "sumi") await meetHiyoriAtTonari();
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
@@ -186,6 +187,11 @@ export async function visitChar(charId) {
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
   const followup = spotFollowupDue(charId, state, DB.dialogues);
   if (followup) await play(followup, { bg });
+  // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
+  if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
+    const result = await play(welcome, { bg });
+    if (state !== owner || result?.cancelled) return;
+  }
   if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
     await play("ch1_minto_identity_reveal");
@@ -227,8 +233,7 @@ export async function visitRival(spot) {
   addStamina(spot.stamina || -16);
   playBgm("tonari");
   const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
-  if (state.story[spot.charId] > 0 && DB.dialogues[welcome]) await play(welcome, { bg: bgRef(VISIT_BG[spot.charId]) });
-  await visitChar(spot.charId);
+  await visitChar(spot.charId, { welcome });
 }
 
 /** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */

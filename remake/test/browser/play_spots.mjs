@@ -1,16 +1,20 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+const shots = process.env.COMPARISON_DIR;
+if (shots) fs.mkdirSync(shots, { recursive: true });
+const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
 async function hit(page, id) {
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
-async function setup(page, { chapter = 1, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, run = true } = {}) {
+async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, run = true } = {}) {
   page.setDefaultTimeout(20000);
-  await page.evaluate(async ({ chapter, slot, money, club, run }) => {
+  await page.evaluate(async ({ chapter, day, slot, money, club, run }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
-    Object.assign(s, { chapter, day: chapter === 1 ? 5 : 16, slot, money, phase: "daily", stamina: 80 });
+    Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _lime_tut: true, _lime_opened: true,
       _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
@@ -30,7 +34,7 @@ async function setup(page, { chapter = 1, slot = chapter === 1 ? 1 : 0, money = 
       await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
       void (await import("./js/chapters/ch2-preparation.js")).runChapterTwoPreparation();
     } else void (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
-  }, { chapter, slot, money, club, run });
+  }, { chapter, day, slot, money, club, run });
   if (run) await page.locator(map).waitFor();
 }
 async function value(page) {
@@ -38,7 +42,9 @@ async function value(page) {
     const s = spotCore.state;
     return structuredClone({ money: s.money, stamina: s.stamina, day: s.day, slot: s.slot, stats: s.stats, affinity: s.affinity,
       story: s.story, met: s.met, reel: s.reel, records: s.flags._axe_bar_records || null,
-      axeVisited: s.visitedDay.axe_bar || null, trpg: s.trpg });
+      axeVisited: s.visitedDay.axe_bar || null, trpg: s.trpg,
+      hiyoriFlags: Object.fromEntries(Object.entries(s.flags).filter(([key]) => key.includes("hiyori"))),
+      lovers: s.lovers, relationshipMemories: s.relationshipMemories });
   });
 }
 async function go(page, id) {
@@ -46,37 +52,61 @@ async function go(page, id) {
   await page.locator(t(id === "axe_bar" ? "axe-bar-practice" : "trpg-campaign-notice")).waitFor();
 }
 async function phase(page, phase) { await page.waitForFunction(p => document.querySelector('[data-test="axe-game"]')?.dataset.phase === p, phase); }
-async function finishAxe(page, count) {
+async function finishAxe(page, count, confirm = true, aimed = false) {
   for (let i = 0; i < count; i++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-    await phase(page, p); await hit(page, "axe-action");
+    await phase(page, p);
+    if (aimed && ["horizontal", "vertical", "power"].includes(p)) {
+      // 既存axe_throw.mjsと同じ、画面に描かれている針を読んで止める操作。
+      await page.waitForFunction(target => {
+        const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
+        return !root.querySelector('[data-test="axe-action"]').disabled && n >= target - .02 && n <= target + .005;
+      }, p === "power" ? .62 : .5);
+    }
+    await hit(page, "axe-action");
   }
   await phase(page, "summary");
   assert(!await page.locator(t("axe-retry")).isVisible());
-  await hit(page, "axe-action");
+  if (confirm) {
+    await page.evaluate(() => { window.oldAxeFinish = document.querySelector('[data-test="axe-action"]'); });
+    await hit(page, "axe-action");
+  }
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
 async function roll(page) { await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 
 await suite("play-spots", async runCheck => {
   const check = (name, ...args) => !process.env.CASE_FILTER || name.includes(process.env.CASE_FILTER) ? runCheck(name, ...args) : Promise.resolve();
-  for (const [label, mode, count, options] of [
+  for (const [label, mode, count, options, aimed] of [
     ["pc", "league", 10, {}], ["touch", "practice", 3, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["pc-practice", "practice", 3, {}, true], ["touch-league", "league", 10, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(label + "-map-solo-record-save", async page => {
     await setup(page); const before = await value(page);
     assert.equal(await page.locator(t("pin-trpg_bar")).count(), 0);
     // ピンの装飾はボタン枠から出るため、文字そのものの収まりを検査する。
     await assertFits(page, ".spot-pin .sub-label");
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await page.locator('[data-test="venue-host-maki"] img').evaluate(img => img.decode());
+    await capture(page, label + "-axe-entry");
     assert.deepEqual(await value(page), before);
     await hit(page, "axe-bar-" + mode); await phase(page, "choice");
     assert.equal(await page.locator(".axe-companion").count(), 0, "Solo must not reveal an unmet character");
     await assertFits(page, ".axe-game button:visible");
-    await finishAxe(page, count); await page.locator(map).waitFor();
+    await finishAxe(page, count, false, aimed);
+    await capture(page, label + "-axe-result");
+    await page.evaluate(() => { window.oldAxeFinish = document.querySelector('[data-test="axe-action"]'); });
+    await hit(page, "axe-action"); await page.locator(map).waitFor();
     const after = await value(page);
     assert.equal(after.money, before.money - 3000); assert.equal(after.stamina, before.stamina - 10 + 14, "Night play is followed by one sleep recovery");
     assert.equal(after.day, 6); assert.equal(after.slot, 0); assert.equal(after.axeVisited, 5); assert.equal(after.stats.guts, before.stats.guts + 1);
     assert.equal(after.records[mode].plays, 1); assert.equal(after.records[mode].last.throws.length, count);
+    assert.equal(after.records[mode].last.total, after.records[mode].last.throws.reduce((sum, shot) => sum + shot.score, 0));
+    assert.deepEqual(after.records[mode].best, after.records[mode].last);
+    if (aimed) assert(after.records[mode].best.total > 0, "Real aimed throws must produce a nonzero best");
+    await capture(page, label + "-axe-return");
     assert.deepEqual(after.affinity, before.affinity); assert.deepEqual(after.met, before.met); assert.deepEqual(after.story, before.story);
+    for (const key of ["hiyoriFlags", "lovers", "relationshipMemories"]) assert.deepEqual(after[key], before[key]);
+    await page.evaluate(() => { oldAxeFinish.click(); oldAxeFinish.click(); });
+    assert.deepEqual(await value(page), after, "A stale finish button must not charge or record twice");
     await hit(page, "pin-axe_bar"); assert.equal(await page.locator(t("map-go")).count(), 0, "The bar is closed next morning");
     // 次の営業中の記録閲覧は無料。別日に再プレイできることも確認する。
     await page.evaluate(() => { spotCore.state.slot = 1; });
@@ -106,6 +136,26 @@ await suite("play-spots", async runCheck => {
     await hit(page, "axe-bar-back"); await page.locator(map).waitFor();
     await page.evaluate(() => { spotCore.state.stamina = 80; spotCore.state.visitedDay.axe_bar = spotCore.state.day; });
     await go(page, "axe_bar"); assert(await page.locator(t("axe-bar-practice")).isDisabled());
+  });
+
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(label + "-axe-summary-cancel-is-uncommitted", async page => {
+      await setup(page); const before = await value(page);
+      await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+      await finishAxe(page, 3, false);
+      assert.deepEqual(await value(page), before, "Scored throws are not a committed venue result before confirmation");
+      await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+      assert.deepEqual(await value(page), before);
+    }, options);
+  }
+
+  await check("axe-real-navigation-keeps-unfinished-save", async page => {
+    await setup(page);
+    const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
+    await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+    await phase(page, "choice"); await hit(page, "axe-action"); await phase(page, "horizontal");
+    await page.reload(); await page.locator(t("title-new")).waitFor();
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before);
   });
 
   for (const where of ["menu", "game", "pagehide", "screen"]) await check("axe-abort-" + where, async page => {
