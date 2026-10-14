@@ -48,7 +48,7 @@ try {
     assert.deepEqual(info.logos.map(n=>n.id).sort(), [...stores].sort());
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
     assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
-    assert(info.owners.every(n=>n.loaded && n.width===26 && n.clear));
+    assert(info.owners.every(n=>n.loaded && n.width===32 && n.clear));
     assert(info.eventBadges.includes("naru"));
     assert(info.labels.includes("喫茶こはく") && !info.overflow);
     if (shots) await page.screenshot({path:`${shots}/map-${size.width}.png`});

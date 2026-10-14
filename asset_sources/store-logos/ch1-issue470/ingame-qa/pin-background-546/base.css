@@ -1,0 +1,10 @@
+
+.spot-pin.branded .shield { background: none; }
+.spot-pin.branded .shield::before {
+ background-color: var(--plate-mid);
+ background-image: linear-gradient(125deg, rgba(255,255,255,.13), transparent 48%), linear-gradient(180deg,var(--plate-hi),var(--plate-mid) 46%,var(--plate-low));
+ background-blend-mode: normal; border: 1px solid var(--plate-edge); border-radius: 6px;
+ box-shadow: inset 0 1px 0 rgba(255,248,222,.48), inset 0 0 0 3px rgba(40,34,26,.055), 0 3px 0 var(--plate-edge), 0 7px 10px rgba(8,7,12,.4);
+}
+.spot-pin.branded .shield::after { left: 8px; right: 8px; bottom: -4px; height: 1px; background: var(--plate-edge); opacity: .45; -webkit-mask: none; mask: none; }
+.spot-pin.branded:is(:hover,.sel) .shield::before { filter: brightness(1.06); }
