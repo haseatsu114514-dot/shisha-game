@@ -1,0 +1,421 @@
+{
+  "sourceCommit": "e43b2aaad3b6d4b2a52024498d4d253c7983378a",
+  "previousOwnerSavedHead": "84d2a01d3dfbd5cc381836a4458df2affbb92dbe",
+  "integratedMain": "b69cb548718a963e88c05e1b3dec1fe6fe154964",
+  "checkedAtUtc": "2026-10-14T11:05:55.409959+00:00",
+  "worker": "codex-play540-20261014-893386c8",
+  "transferRun": 38544778342,
+  "statusRun": 38545145863,
+  "previousOwnerStopped": true,
+  "previousOwnerExternalUncommittedOrUnpushed": "unconfirmed",
+  "runtimeTrees": {
+    "assets": "60e552aa60cfad9afcfc77ed35a942c40001c523",
+    "data": "2d911a4c07d8554510e914caa35045e07a4506bb",
+    "remake": "82fc9aa431e7bca8583cb09b9330727ce02b2dc7"
+  },
+  "files": {
+    ".github/workflows/play-spots.yml": "66b9f110fe228408400fa9b39b2bf80aab72ed834b1e5e72497a9dac7edb4f95",
+    "assets/sprites/characters/maki/chr_maki_normal.png": "d762ff2e09e14c6747ebc91379c7b9032380a1834a48d185f56a7f95832190a8",
+    "assets/sprites/characters/sai/chr_sai_normal.png": "8ac2f8a17d45a29b3cb97913b910fe2614fb93f94c111517a85e46bde52dd5f1",
+    "data/characters.json": "968f5a65966d1ba15c7075b07c6d54d9e3a4bae0c38acb2311cf5ffaa900e727",
+    "data/dialogue/ch1_spots.json": "2f6c42e2d6b0a01c99941fed9138bea5fa9d3ab75d5bef896ea71de165414bdb",
+    "data/dialogue/trpg_club.json": "d507f85a641faeb0df048167cee99a9a3a98117d4c437ebf2f56ddbad784af5b",
+    "data/dialogue/venue_hours.json": "6bfd00634133a21f47b7e266151c1adee97b5087dcc0269cba2211351e4bf3a3",
+    "remake/README.md": "df5965a26fa76a7fbe4ded3c0a3fb3254af0ba80eed1b65f8b822ee86851e5c0",
+    "remake/css/axe-throw.css": "4d857c6c197c2919bf8264122a110888233e743e17d840f2524a6004940b8c3e",
+    "remake/css/trpg.css": "41b55cc730d9da594dd813d88f980e89df3dd0458b0d079e2790e7e2d8e1a004",
+    "remake/css/venue-host.css": "5e52326c82a764f507b4b0d8f4f19bf122983d29bf700831c143b20b9a40b1ab",
+    "remake/data/manifest.json": "5c9894af0969c6cfc83bea245992ed8daaa750fb3b4204717d331552e3891215",
+    "remake/img/sprites/characters/maki/chr_maki_normal.webp": "640c73c65a17c3611585b4f3c5671e9cb902f9e4006eb43235af4b8fc0d73313",
+    "remake/img/sprites/characters/sai/chr_sai_normal.webp": "2dae3aed772bac7122f461da4db71f9f2deedfcbdf4245b0cf46d6a50edb6d2e",
+    "remake/js/chapters/ch2-preparation.js": "1067337b1917760b4cf8a054a0e96e5fc9dc5cedc3c1f5138c2632e67875166d",
+    "remake/js/chapters/ch2-progress.js": "1732e4628b50b7a49b01e7ba7741192f657ec87b7a1dbbd9c34cef7ed16ae429",
+    "remake/js/core/data.js": "5b3179243a13c5c900f5895ec5f3cebb93ab5a4752f593382fab2b066f8089d9",
+    "remake/js/core/venue-host.js": "dfe0f1e50014368d4f791590bf8c7d36777c3d229c3eae51fbe9648b1f757dd3",
+    "remake/js/daily/axe-bar-data.js": "a22b44fe538a01881f8bd5b351968fc2d5dd8394f5dd6be44644fd1c54e034e7",
+    "remake/js/daily/axe-bar.js": "89947f3c0778f951d5246c9a0456e9e40a3b99ca47937b929585a1fd9cd94ef5",
+    "remake/js/daily/calendar.js": "ac2b1b49443931f291da09b66e2551a90a5cac4c8ca211a1667f931ed93a2c4f",
+    "remake/js/daily/kuji.js": "75b7f86fc0ad68ed52ac1aea7763cd4e507fa5701586cbb1779e3465d9263976",
+    "remake/js/daily/map.js": "4f72ab1578ad4283274b226cd187f4f1a6a266a20ae34a19029f87493faa2b63",
+    "remake/js/daily/relationship-status.js": "043900dc237e278f3a113393b6d275314f3822743a7dcbbb3c14a5f5ae01070f",
+    "remake/js/daily/shop.js": "93f4acd4c46bf500fa360caaeb5731ea7ce343fb3523c5f610d08e3be7b8db02",
+    "remake/js/daily/spot-access.js": "0dd93f034b323aa109d638b5bdac2b94b46a522d8a5cde49356ff878b6718839",
+    "remake/js/daily/spot-encounters.js": "88fb102a503ad96d13eec0bd3e7007e974960e86d8d64d496a1a8f40e98cd2b8",
+    "remake/js/daily/spot-hours.js": "5c1490290294fbf93be3d8cf9cdbf1ccde823440668afc1fd805dbcced30571e",
+    "remake/js/daily/spots.js": "ccab0794df468e152b46bc9b7e8096716742343d13ea704cccedb75edb42d026",
+    "remake/js/daily/tonari.js": "00bae8f22aa16f24200c12cb34ff997e1002b13e18273b0b8f0b93647c48d807",
+    "remake/js/daily/trpg.js": "4718f1b60a69b84c1d154ff5b84585f128377e0cfaf8f8da6a7eb56f4a25c66c",
+    "remake/js/minigames/axe.js": "076185289eea1d47acefdb824d3ec9148b658f556dc925a046dbff4acf0ebeae",
+    "remake/js/trpg/campaign-view.js": "6843e78ca10f8166b5f73f57812ba867714b33d70b92f0b40534e6d3fc15ed4c",
+    "remake/js/trpg/day-trial.js": "85c68a815d9f2375cb160bb8757b5d981f2586ecc3021cc9e0920cf04478ffb5",
+    "remake/test/browser/ch2_daily.mjs": "4d5801bb83a32afca9179f9c59a9269d3f735defd701fd6431a7abd8ad49b858",
+    "remake/test/browser/ch2_story.mjs": "83a8385bd668516999d548e1c9ca32b4c1f01d61678bfebd3b675e47addb9cdd",
+    "remake/test/browser/play_spots.mjs": "681ff7c806c2d022fbdba44d390f2ec1cbb63fe92b624e968255fed0c48368bc",
+    "remake/test/browser/shop_ui.mjs": "3b485f5792a744367f3ae16877a42f7167f0e5270fe1fffa58ad744964f3d1d6",
+    "remake/test/browser/trpg_main.mjs": "a6f245ec53947668d41a00e0e7817c96f4f23027255d62760dea889bb0f30ba1",
+    "remake/test/browser/venue_hours.mjs": "683b770bf2dd3db3c87ef1f3f51d3d74da25ecd102707efe1a2cdd5f463680c9",
+    "remake/test/data_loading.mjs": "6d64d5b7d21ac728a4cb337826307806e6684c60e8fe76eae35605a4565c46ae",
+    "remake/test/illness.mjs": "eb3f881c362f169f236763814d99a3398ecf87413f9fa775420f8dd1b05dfce6",
+    "remake/test/paid_action_growth.mjs": "e113d8ff5673e37f5afa6d14b6b9c0ff6662b98dd239c97840279de54d6b03bf",
+    "remake/test/trpg_campaign.mjs": "83243f2445ed1a7a02c02ab72594737bde32854f7c0bd1edaae4105bf44a0426",
+    "remake/test/venue_hours.mjs": "33d3eeb6464d7f1b5c788ae3ba349ad5ccea8e22c26bbce844bb30299b5639c5"
+  },
+  "screenshots": {
+    "current-pc-axe-entry.png": "b54afd9f67f2119d40f13064f2f5d025d8db4e4b02c5c100bcef33b96481b719",
+    "current-pc-cafe-entry.png": "510dc0c157f5e87ae3534b30057b8ade79273bea58468e8104b431924e9de18c",
+    "current-pc-cafe-map.png": "c877cca9124d0b6a967443ce7efc9673d3d7575607eaceb27db78eca140853ea",
+    "current-pc-cafe-result.png": "f5363ee10d61a4a47308b5875035b0805e5ae5cca96f7f45a354eff96f34f001",
+    "current-pc-cafe-return.png": "be0ad67342a8d476c3b188fe3b41fbadfd8a65efb96bc8441b330f608d4d5890",
+    "current-pc-ordinary-result.png": "d7d58d8c6235bb8105cc8b2ebe11bb0e8bbfcf2aa4f09bd7fb9bfda843a6a0a7",
+    "current-pc-practice-axe-result.png": "49aebda4595b1f5df1f71074d8f7dec45232797d8bdb4723b0518e2e8d1a8f29",
+    "current-pc-practice-axe-return.png": "c2666d65a45b01d4210ac383f411290a58da8b3f5815a4abf6146f0b5813b3b5",
+    "current-touch-cafe-entry.png": "589898fec2066d8b5d5d4fa030e1aa35d46df9a49e76f5f040813fd066832313",
+    "current-touch-cafe-map.png": "27d5652016179fc73b519aad8c4f90dbbcf2d740fce7e39e5337bf89a1516e5d",
+    "current-touch-cafe-result.png": "20ef3bcd9c431e3854620ca6a36ecc2cc60a22e041c4f6216eaa402de2bdd36b",
+    "current-touch-cafe-return.png": "bd8eb951674912ad1c8228ba678686a6b11e466cc3b353b387fa8d1d2cac3b1f",
+    "current-touch-league-axe-entry.png": "7582a5e72b074b77e6ccc792eb193a1a9321ceb556e71bbcc0851a73bf8bbb72",
+    "current-touch-league-axe-result.png": "fef870b86b13315fb12738c01444301080958ae2a84ba6cc33e6e607f599dd88",
+    "current-touch-league-axe-return.png": "d3b847bbeea13f909bea1349c5158e5f6f03e22d842a02caa10dd3c2485d03ac",
+    "current-touch-ordinary-result.png": "5d3c9319ce4cc31d80edfe27b532ab5ae160aa63c95714949f452fd7b10b8543",
+    "current-trial-pc.png": "f3ba16d8950ff0bfd76b48ed5de9595a400979a362e09f3f4cfaaf023a1425ab",
+    "current-trial-touch.png": "138f4d83152eff28bde12b0f0c87600c20b8b36903f41acc83b1c31eeea7a070"
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "playwright": "1.62.1",
+    "browser": "bundled Chromium (Linux), headless",
+    "pcViewport": [
+      1280,
+      720
+    ],
+    "touchViewport": [
+      844,
+      390
+    ],
+    "touchInput": "tap(), isMobile=true, hasTouch=true",
+    "baseURL": "http://127.0.0.1:8123/remake/",
+    "newGameFullChapterPlaythrough": false,
+    "realDeviceSafari": false
+  },
+  "ciAtCapture": {
+    "headRefOid": "e43b2aaad3b6d4b2a52024498d4d253c7983378a",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489852/job/115813573346",
+        "name": "story",
+        "startedAt": "2026-10-14T10:53:41Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "Hiyori formal axe story"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489843/job/115813696005",
+        "name": "chromium",
+        "startedAt": "2026-10-14T10:54:55Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "Remake browser regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:36Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489839/job/115813542331",
+        "name": "check",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "AI documentation checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:42Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489825/job/115813543422",
+        "name": "contexts",
+        "startedAt": "2026-10-14T10:51:35Z",
+        "status": "COMPLETED",
+        "workflowName": "Action and night scene contexts"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:58:37Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489941/job/115813543991",
+        "name": "game",
+        "startedAt": "2026-10-14T10:53:21Z",
+        "status": "COMPLETED",
+        "workflowName": "Axe throw minigame regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:54:44Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489777/job/115813542645",
+        "name": "cg-art",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 CG art"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:19Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489828/job/115813543398",
+        "name": "facility-art",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 facility art"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489744/job/115813542602",
+        "name": "presentation",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 presentation and feedback"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:05Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489708/job/115813543566",
+        "name": "browser (selection)",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 street selection"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:58:06Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489936/job/115813544243",
+        "name": "browser (ch2_preview)",
+        "startedAt": "2026-10-14T10:54:36Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 2 first day and city preview"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:58:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489814/job/115813543216",
+        "name": "venues",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter play spots"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489735/job/115813542223",
+        "name": "scenes",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Craft scene readiness and actions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:40Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489703/job/115813542695",
+        "name": "encounters",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Facility encounters and Eden service"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:54:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489940/job/115813543671",
+        "name": "rest",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Full-day rest regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489754/job/115813542304",
+        "name": "art",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Hiyori axe art regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:07Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489827/job/115813543638",
+        "name": "illustrations",
+        "startedAt": "2026-10-14T10:53:06Z",
+        "status": "COMPLETED",
+        "workflowName": "Hiyori five title illustrations"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489851/job/115813542911",
+        "name": "browser",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Issue 439 playtest regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489816/job/115813542815",
+        "name": "invitations",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "LIME invitation regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:26Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489835/job/115813542232",
+        "name": "lint",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Lint dialogue"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:42Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489752/job/115813542981",
+        "name": "motion-endings",
+        "startedAt": "2026-10-14T10:51:31Z",
+        "status": "COMPLETED",
+        "workflowName": "Motion endings"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:59:54Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489890/job/115813543808",
+        "name": "recovery",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Progression recovery regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:53:48Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489837/job/115813542730",
+        "name": "Data loading smoke",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Remake fast smoke tests"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:54:35Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489832/job/115813543635",
+        "name": "dates",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Samechan date regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:55:34Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489797/job/115813544388",
+        "name": "preview",
+        "startedAt": "2026-10-14T10:51:55Z",
+        "status": "COMPLETED",
+        "workflowName": "TRPG two-story collection"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:04:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489708/job/115813543533",
+        "name": "browser (direct)",
+        "startedAt": "2026-10-14T10:53:38Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 street selection"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:57:07Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489936/job/115813544350",
+        "name": "browser (ch2_main)",
+        "startedAt": "2026-10-14T10:54:45Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 2 first day and city preview"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:04:54Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489708/job/115813543718",
+        "name": "browser (street)",
+        "startedAt": "2026-10-14T10:53:50Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 1 street selection"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:54:48Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489936/job/115813543781",
+        "name": "browser (ch2_daily)",
+        "startedAt": "2026-10-14T10:51:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 2 first day and city preview"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:56:47Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489936/job/115813544144",
+        "name": "browser (ch2_story)",
+        "startedAt": "2026-10-14T10:53:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Chapter 2 first day and city preview"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:03:34Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489843/job/115813695766",
+        "name": "Chapter 1 eve choices and saves",
+        "startedAt": "2026-10-14T10:54:50Z",
+        "status": "COMPLETED",
+        "workflowName": "Remake browser regressions"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:59:30Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38552489843/job/115813695488",
+        "name": "Chapter 1 focused practice and saves",
+        "startedAt": "2026-10-14T10:53:55Z",
+        "status": "COMPLETED",
+        "workflowName": "Remake browser regressions"
+      }
+    ]
+  },
+  "finalHeadCI": "https://github.com/haseatsu114514-dot/shisha-game/pull/545/checks",
+  "otherWorkers": {
+    "dsPR555ObservedHead": "ba0e09aef52ee829393027447898d5ae0c2da611",
+    "boundaryComment": "https://github.com/haseatsu114514-dot/shisha-game/issues/554#issuecomment-6165573309",
+    "dsIntegrationTested": false
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "ref": "e43b2aaad3b6d4b2a52024498d4d253c7983378a",
+  "results": [
+    {
+      "name": "models",
+      "command": "node --test remake/test/axe_throw.mjs remake/test/trpg.mjs remake/test/trpg_campaign.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "result": "41 tests, 41 pass, 0 fail",
+      "stdout": "✔ painted circles match scores; black boundaries use lower neighbouring zones (2.484994ms)\n✔ three independently stopped gauges determine aim and strength deterministically (0.613387ms)\n✔ underpowered and overrotated axes drop rather than earning center points (0.831372ms)\n✔ called Killshot inner 8 / outer 7, misses zero; uncalled blue is an ordinary ring (0.578492ms)\n✔ successful Killshot closes both at its height, persists across half; calls consumed by misses and drops (1.011315ms)\n✔ 3 and 10 throw maximums include two different-height Killshots, without invented rewards (0.301708ms)\n✔ horizontal, vertical and strength gauges traverse both directions (0.69748ms)\n✔ companion reacts to actual result, with canonical voice and distinct expressions (2.381415ms)\n✔ invalid input cannot produce NaN or illegally call a closed target (0.509921ms)\n✔ waiting and overgripping increase visible sway; focus genuinely reduces it (0.589438ms)\n✔ a locked center is no longer an automatic bull; timely focus restores precision (1.56748ms)\n✔ visible release positions remain finite and legal at the edges (0.455554ms)\n✔ flight shrinks toward the board and contacts the scored blade point without a pose jump (8.914861ms)\n✔ first-person forward tumble shortens the handle, reverses it, then embeds the front cutting edge (0.844036ms)\n✔ frontal mesh swaps visible steel/wood faces during the pitch and keeps depth ordering (8.749993ms)\n✔ missed rotation visibly falls after contact; stuck axes keep their final pose (31.732336ms)\n✔ each traveler has clues for every spot; all dialogue references resolve to canonical lines (2.992601ms)\n✔ all three matching proposals and a mismatched proposal reach distinct endings (2.557691ms)\n✔ all choices, including low rolls without help, remain finishable (11.673697ms)\n✔ rerolls are shared across checks and take the new die; aids are spent once (0.879481ms)\n✔ invalid phase, double submission and unknown choices cannot advance or consume randomness (32.426064ms)\n✔ snapshots and results are detached; equal seeds and decisions are reproducible (0.754069ms)\n✔ the three individual trumps compete for two shared teamwork cards (0.734514ms)\n✔ the shark movie offers three planned escapes and a rescue with a sequel (1.100423ms)\n✔ limited investigation consumes tide only once; rereading and consulting stay available (1.632496ms)\n✔ all 243 shark plans finish; both risk variants exist and risk stays bounded (10.458351ms)\n✔ a matching shark hypothesis improves preparation, and an unknown plan field is inert (1.517201ms)\n✔ chapter two DAY8 is a playable shark night with only the approved individual shift (4.526529ms)\n✔ the DAY8 exception preserves explicit appointments and does not admit unknown or unrecruited people (2.166781ms)\n✔ chapter one cannot stock, buy or call a table (1.64268ms)\n✔ MAX is recruitment eligibility, never automatic membership or stocking (1.982928ms)\n✔ known MAX friends or lovers may join; work does not prevent face-to-face recruitment (2.89974ms)\n✔ buy once, charge once, preserve the clock, and keep purchased books when shifts change (0.663093ms)\n✔ work, explicit shift overrides, temporary closure and existing appointments affect participants (0.427227ms)\n✔ noon, story nights, pending appointments and non-daily phases cannot start a table (2.924527ms)\n✔ Sumi/Naru never join; unrecruited companions are not invited (2.904822ms)\n✔ a required shark GM cannot be replaced, while Adam fills Hiyori's optional seat with authored lines (7.011626ms)\n✔ all eligible small/full tables remain finishable, without absent helpers or lines (93.312175ms)\n✔ reading an ending records its cast and advances exactly one action; cancelled/stale results are inert (1.954732ms)\n✔ alternate dialogue, small-table intro and cast have canonical actors and fit the line limits (3.988785ms)\n✔ club copy fits dialogue limits and the catalog explicitly marks interest (0.224274ms)\nℹ tests 41\nℹ suites 0\nℹ pass 41\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 946.819811\n"
+    },
+    {
+      "name": "legacy-save",
+      "command": "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "result": "schema 13/14 auto/manual, schema15, 43 malformed fixtures via auto/manual PASS",
+      "stdout": "PASS: schema 13/14 auto/manual migration; schema 15 membership, books, clears and shifts\nPASS: 43 malformed TRPG fixtures via auto/manual load; valid records, money and relationships preserved\n(node:26787) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "name": "hours-model",
+      "command": "node remake/test/venue_hours.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "result": "20 assertions PASS",
+      "stdout": "Venue hours and day trial: 20 assertions PASS\n"
+    },
+    {
+      "name": "chapter-boundary",
+      "command": "node remake/test/ch2_progress.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "result": "PASS",
+      "stdout": "PASS: chapter boundary preserves assets and relationships, elapsed dates, local day and single transition\n"
+    },
+    {
+      "name": "data-loader",
+      "command": "node --experimental-vm-modules remake/test/data_loading.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "result": "36 JSON files and failure/timeout coverage PASS",
+      "stdout": "(node:33898) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n[remake data] 36 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS\n"
+    }
+  ]
+}
