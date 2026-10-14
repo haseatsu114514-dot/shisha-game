@@ -74,7 +74,9 @@ jobs:
           retention-days: 7
   chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The full suite reached the final developer-tool checks before its 30m
+    # job limit on PR #555. Keep every assertion and allow the suite to finish.
+    timeout-minutes: 40
     env:
       TEST_REF: ${{ github.sha }}
     steps:
