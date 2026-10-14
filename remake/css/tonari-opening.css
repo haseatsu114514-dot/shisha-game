@@ -1,0 +1,39 @@
+/* 1280×720の舞台内だけで切り替える。本文枠・文字・操作ボタンには触れない。 */
+.tonari-opening { overflow: hidden; pointer-events: none; isolation: isolate; }
+.tonari-opening .to-room { position: absolute; inset: 0; background-size: cover; background-position: center; transform-origin: 44% 42%; transition: transform .65s ease, filter .4s ease; }
+.tonari-opening[data-shot="lamps"] .to-room { transform: scale(1.25); transform-origin: 52% 0%; }
+.tonari-opening[data-shot="empty"] .to-room { transform: scale(1.32); transform-origin: 42% 65%; }
+.tonari-opening[data-shot="coal"] .to-room,
+.tonari-opening[data-shot="bowl"] .to-room { transform: scale(1.3); filter: blur(7px) brightness(.66); }
+.tonari-opening .to-workbench { position: absolute; inset: 45% 0 0; background: linear-gradient(165deg, #815031, #40291d 70%) center bottom / cover; filter: brightness(1.15) saturate(.75); opacity: 0; transition: opacity .3s; }
+.tonari-opening .to-coal,
+.tonari-opening .to-bowl,
+.tonari-opening .to-customer { position: absolute; opacity: 0; transition: opacity .3s ease; }
+/* 既存のトングの先端に既存の角炭を置く。炭を手の下に描き、両側の顎で挟む。 */
+.tonari-opening .to-coal { width: 1280px; height: 853px; left: -620px; top: -670px; transform: scale(1.4); transform-origin: 0 0; }
+.tonari-opening .to-hand { position: absolute; width: 1280px; height: 853px; inset: 0; }
+.tonari-opening .to-ember { position: absolute; width: 43px; height: 48px; left: 1158px; top: 733px; filter: drop-shadow(0 0 9px #d95e2588); }
+.tonari-opening .to-bowl { width: 1152px; height: auto; left: 64px; top: -52px; }
+.tonari-opening .to-customer { width: 1280px; height: 720px; inset: 0; object-fit: cover; transform-origin: 56% 44%; transition: opacity .4s ease, transform .65s ease; }
+.tonari-opening[data-shot="coal"] .to-coal,
+.tonari-opening[data-shot="bowl"] .to-bowl,
+.tonari-opening[data-shot="coal"] .to-workbench,
+.tonari-opening[data-shot="bowl"] .to-workbench,
+.tonari-opening[data-shot="customer"] .to-customer,
+.tonari-opening[data-shot="hose"] .to-customer { opacity: 1; }
+.tonari-opening[data-shot="hose"] .to-customer { transform: scale(1.16) translateY(-22px); }
+.tonari-opening .to-smoke { position: absolute; width: 1050px; height: auto; left: 110px; top: -170px; opacity: .075; mix-blend-mode: screen; animation: tonari-haze 14s ease-in-out infinite alternate; transition: opacity .3s; }
+.tonari-opening[data-shot="lamps"] .to-smoke { opacity: .14; }
+.tonari-opening[data-shot="coal"] .to-smoke,
+.tonari-opening[data-shot="bowl"] .to-smoke,
+.tonari-opening[data-shot="customer"] .to-smoke,
+.tonari-opening[data-shot="hose"] .to-smoke { opacity: 0; }
+.tonari-opening .to-departure { position: absolute; inset: 0; opacity: 0; background: linear-gradient(105deg, transparent 64%, #26150755 80%, transparent 98%); }
+.tonari-opening[data-shot="depart"] .to-departure { animation: tonari-depart 1.2s ease-out both; }
+@keyframes tonari-haze { from { transform: translate(-14px, 15px) scale(.98); } to { transform: translate(16px, -12px) scale(1.035); } }
+@keyframes tonari-depart { 0% { opacity: .7; transform: translateX(-160px); } 100% { opacity: 0; transform: translateX(320px); } }
+/* カット自体は残し、移動と待ち時間だけをなくす。 */
+.vn-skip .tonari-opening * { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .tonari-opening * { animation: none !important; transition: none !important; }
+}

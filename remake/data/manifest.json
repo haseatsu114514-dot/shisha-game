@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-13 15:08 UTC",
+ "generated": "2026-10-14 00:22 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -276,6 +276,7 @@
   "bg_street_overcast_day.png",
   "bg_street_overcast_night.png",
   "bg_title.png",
+  "bg_tonari_customer_hands.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
   "bg_tonari_inside_night.png",
@@ -1696,6 +1697,7 @@
   "backgrounds/bg_street_overcast_day.png",
   "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
+  "backgrounds/bg_tonari_customer_hands.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
   "backgrounds/bg_tonari_inside_night.png",
@@ -1749,6 +1751,7 @@
   "sprites/characters/hiyori/chr_hiyori_student_smile.png",
   "sprites/characters/hiyori/chr_hiyori_surprise.png",
   "sprites/characters/hiyori/chr_hiyori_tears.png",
+  "sprites/characters/kumicho/chr_kumicho_normal.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -1785,6 +1788,7 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rin/chr_rin_normal.png",
   "sprites/characters/rin/chr_rin_sad.png",
   "sprites/characters/rin/chr_rin_serious.png",
@@ -1808,6 +1812,7 @@
   "sprites/characters/tsumugi/chr_tsumugi_serious.png",
   "sprites/characters/tsumugi/chr_tsumugi_smile.png",
   "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+  "sprites/characters/volk/chr_volk_normal.png",
   "ui/chapters/ch1_keyart.png",
   "ui/character_intros/adam.png",
   "ui/character_intros/ageha.png",
@@ -1912,11 +1917,6 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "backgrounds/trpg_ordinary_room.png",
-  "backgrounds/trpg_shark_room.png",
-  "sprites/characters/kumicho/chr_kumicho_normal.png",
-  "sprites/characters/rei/chr_rei_normal.png",
-  "sprites/characters/volk/chr_volk_normal.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
  ]
 }
