@@ -18,6 +18,7 @@ export async function suite(name, run) {
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
   });
   async function check(label, body, options = {}) {
+    if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
     const errors = [];

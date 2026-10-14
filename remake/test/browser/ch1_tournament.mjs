@@ -87,17 +87,23 @@ await suite("ch1-tournament", async check => {
         for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
         window.openingRead = false;
-        vn.hooks.onLine = id => { if (id === "ch1_tournament_opening") openingRead = true; };
+        window.skipTrace = [];
+        window.skipStarted = performance.now();
+        vn.hooks.onLine = (id, line) => {
+          skipTrace.push({ id, text: line.text, ms: Math.round(performance.now() - skipStarted) });
+          if (id === "ch1_tournament_opening") openingRead = true;
+        };
         window.tournamentRun = chapter.devTournament();
       });
       // 本番のSKIPボタンで各会話を送る。制作のテスト自動操作は使わない。
       const deadline = Date.now() + 15000;
       while (!(await page.evaluate(() => openingRead && !document.querySelector('#vn.active')))) {
-        assert(Date.now() < deadline, "Tournament opening did not finish under SKIP");
+        assert(Date.now() < deadline, `Tournament opening did not finish under SKIP: ${JSON.stringify(await page.evaluate(() => ({ elapsedMs: Math.round(performance.now() - skipStarted), trace: skipTrace })))}`);
         const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
         if (await skip.count()) await skip.click();
         await page.waitForTimeout(60);
       }
+      console.log("Tournament SKIP measurement:", JSON.stringify(await page.evaluate(() => ({ elapsedMs: Math.round(performance.now() - skipStarted), trace: skipTrace }))));
       // 15秒を超えると入場演出は代替表示で続行できるが、作業台の時計はまだ開始しない。
       assert.equal(await page.locator('.foil-cursor, [data-test="coal-0"], [data-test="dodge"]').count(), 0, "SKIP started a minigame before preparation");
       if (await page.locator('.bench').count()) assert.equal(await page.locator('.bench').evaluate(n => n.inert), true);

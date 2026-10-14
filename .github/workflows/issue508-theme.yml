@@ -11,6 +11,9 @@ on:
       - 'remake/img/sprites/characters/salaryman/**'
       - 'remake/test/browser/issue508_theme.mjs'
       - 'remake/css/vn.css'
+      - 'remake/js/vn/engine.js'
+      - 'remake/test/browser/ch1_tournament.mjs'
+      - 'remake/test/browser/support.mjs'
       - 'docs/qa/issue508-theme/baseline-scenes.json'
       - '.github/workflows/issue508-theme.yml'
   workflow_dispatch:
@@ -56,7 +59,11 @@ jobs:
             if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
             sleep 1
           done
+          node -e 'const {chromium}=require("./remake/test/browser/node_modules/playwright"); (async()=>{const b=await chromium.launch(); console.log("Browser:",b.version()); await b.close()})()'
           node remake/test/browser/issue508_theme.mjs
+      - name: Tournament regression with SKIP timing
+        if: always()
+        run: node remake/test/browser/ch1_tournament.mjs
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2
