@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | 夕方のtonari | 店内の引き | 現行の時間帯別店内＋既存の台配置 |
 | 吊りランプと薄い煙 | 照明に少し寄る | 同じ店内＋既存の薄く重ねた煙 |
-| 炭をつかむ | はじめの手とトング | `hajime_craft_heat`＋`coal_just`＋`bench_base` |
+| 炭をつかむ | はじめの手とトング | `hajime_craft_heat`＋`heat_cube_lit`＋`bench_base`（最新mainの採用炭へ同期。初版は`coal_just`） |
 | ボウルを支え、葉をほぐす | スプーンとボウル | `hajime_craft_pack`＋`bench_base` |
 | いつもの常連 | スーツの袖と手元 | 新規 `bg_tonari_customer_hands` |
 | ホースの持ち手を置く | 同じ手元へ寄る | 上記原画の再フレーミング |

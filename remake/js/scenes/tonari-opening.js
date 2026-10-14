@@ -4,9 +4,11 @@ import { DB, bgUrl, makingUrl, sceneBg } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
 import { layers, setBg, imageReady } from "../core/ui.js";
 import { renderSceneArt } from "../core/scene-art.js";
+import { artImg } from "../craft/art.js";
 import { play, hooks } from "../vn/engine.js";
 
 const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
+const COAL = "heat_cube_lit.png"; // 現行炭焼きの採用素材。余白は共通bboxで除く。
 const SHOTS = new Set(["room", "lamps", "coal", "bowl", "customer", "hose", "depart", "empty"]);
 
 export async function playTonariOpening({ signal, dialogue = DB.dialogues.ch1_opening } = {}) {
@@ -14,7 +16,7 @@ export async function playTonariOpening({ signal, dialogue = DB.dialogues.ch1_op
   const { url, tint } = sceneBg(TONARI, timeOfDay());
   const urls = {
     hand: makingUrl("hajime_craft_heat.png"),
-    coal: makingUrl("coal_just.png"),
+    coal: makingUrl(COAL),
     bowl: makingUrl("hajime_craft_pack.png"),
     bench: makingUrl("bench_base.png"),
     customer: bgUrl("bg_tonari_customer_hands"),
@@ -33,7 +35,7 @@ export async function playTonariOpening({ signal, dialogue = DB.dialogues.ch1_op
   const scene = el("div.tonari-opening.bg-img.show", { "aria-hidden": "true", dataset: { shot: "room", test: "tonari-opening" } }, [
     room,
     el("div.to-workbench", { style: available.bench ? { backgroundImage: `url("${urls.bench}")` } : {} }),
-    el("div.to-coal", [picture("coal", "to-ember"), picture("hand", "to-hand")]),
+    el("div.to-coal", [available.coal ? artImg(COAL, 36, "to-ember") : null, picture("hand", "to-hand")]),
     picture("bowl", "to-bowl"),
     picture("customer", "to-customer"),
     picture("smoke", "to-smoke"),

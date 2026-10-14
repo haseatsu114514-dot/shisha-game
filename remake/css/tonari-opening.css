@@ -12,7 +12,7 @@
 /* 既存のトングの先端に既存の角炭を置く。炭を手の下に描き、両側の顎で挟む。 */
 .tonari-opening .to-coal { width: 1280px; height: 853px; left: -620px; top: -670px; transform: scale(1.4); transform-origin: 0 0; }
 .tonari-opening .to-hand { position: absolute; width: 1280px; height: 853px; inset: 0; }
-.tonari-opening .to-ember { position: absolute; width: 43px; height: 48px; left: 1158px; top: 733px; filter: drop-shadow(0 0 9px #d95e2588); }
+.tonari-opening .to-ember { position: absolute; left: 1162px; top: 737px; filter: drop-shadow(0 0 9px #d95e2588); }
 .tonari-opening .to-bowl { width: 1152px; height: auto; left: 64px; top: -52px; }
 .tonari-opening .to-customer { width: 1280px; height: 720px; inset: 0; object-fit: cover; transform-origin: 56% 44%; transition: opacity .4s ease, transform .65s ease; }
 .tonari-opening[data-shot="coal"] .to-coal,

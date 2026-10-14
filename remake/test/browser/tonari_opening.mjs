@@ -54,6 +54,19 @@ await suite("tonari-opening", async check => {
           if (["coal", "bowl", "hose", "empty", "lamps"].includes(cue)) {
             await page.screenshot({ path: path.join(captures, `${label}-${cue}.png`) });
           }
+          if (cue === "coal") {
+            assert.match(await page.locator(".to-ember").evaluate(node => getComputedStyle(node).backgroundImage), /heat_cube_lit\.webp/);
+            // LOGは冒頭のカットや本文を進めず、閉じた後に同じ場面へ戻る。
+            await page.locator('[data-test="vn-log"]').click();
+            await page.locator(".vn-log.show").waitFor();
+            assert.ok((await page.locator(".vn-log .log-row").count()) > 0);
+            await assertFits(page, ".log-head button");
+            await page.keyboard.press("Enter");
+            assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), cue);
+            assert.equal(await page.evaluate(() => O531.lines.length), before.count);
+            await page.locator(".vn-log button").getByText("閉じる", { exact: true }).click();
+            await page.locator(".vn-log.show").waitFor({ state: "hidden" });
+          }
           saved.add(cue);
         }
         if (await page.evaluate(() => O531.cues.length === 10)) break; // スミさんで店内の引きへ戻る
