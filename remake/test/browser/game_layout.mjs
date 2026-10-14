@@ -111,7 +111,9 @@ try {
         assert.equal(await p.locator(".title").getAttribute("data-layout"),mode,"requested title mode did not activate");
         await p.evaluate(async()=>{__remake.vnTest.turbo=false;(await import("./js/core/state.js")).config.textSpeed=4;});
         await activate(p,"title-load",touch);await activate(p,"slot-1",touch);
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open"),touch);
+        // Legacy LOAD may replay several authored unread scenes. Let real taps
+        // finish those scenes, using the same bounded budget as practice below.
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open"),touch,90000);
         if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
         const before=await state(p);assert.equal(before.money,45678);assert.equal(before.slot,0);
         assert.deepEqual(before.lovers,["hiyori"]);assert(before.memory.includes("actually-read"));
