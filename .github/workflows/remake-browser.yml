@@ -34,6 +34,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ds-layout:
+    name: Reversible game display on PC and touch
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start production preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ds-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ds-preview.log"
+          exit 1
+      - name: Shared progression, old saves, reversible layout and style failure
+        run: node remake/test/browser/game_layout.mjs
+      - name: Preserve display results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: game-layout-results
+          path: |
+            .codex/artifacts/game-layout/
+            ${{ runner.temp }}/ds-preview.log
+          retention-days: 7
   chromium:
     runs-on: ubuntu-latest
     timeout-minutes: 30

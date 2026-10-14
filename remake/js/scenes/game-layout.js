@@ -1,0 +1,73 @@
+// 表示だけの試作。既存のDOM・入力・進行・保存処理をそのまま使う。
+import { el } from "../core/util.js";
+import { readTitleLayout, TITLE_LAYOUT_KEY } from "./title-layout.js";
+
+export function initGameLayout() {
+  const body = document.body, stage = document.querySelector("#stage"), viewport = document.querySelector("#viewport");
+  const visual = el("div.game-ds-panel.game-ds-visual", { "aria-hidden": "true" });
+  const controls = el("div.game-ds-panel.game-ds-controls", { "aria-hidden": "true" });
+  stage.append(visual, controls);
+  const note = el("span.game-layout-note", { role: "status" });
+  let tried = false;
+  const buttons = ["normal", "ds"].map(mode => el("button", {
+    text: mode === "normal" ? "通常版" : "DS風", type: "button", dataset: { test: `game-layout-${mode}` },
+    onclick: () => {
+      try {
+        localStorage.setItem(TITLE_LAYOUT_KEY, mode);
+        if (mode === "ds") {
+          const url = new URL(location.href); url.searchParams.delete("titleLayout");
+          history.replaceState(null, "", url);
+        }
+      } catch { /* 保存できない環境はreadTitleLayoutが通常版に戻す。 */ }
+      update();
+    },
+  }));
+  const recovery = new URL(location.href); recovery.searchParams.set("titleLayout", "normal");
+  const toolbar = el("nav.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true }, [
+    ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "game-layout-recover" } }), note,
+  ]);
+  // DS専用CSSが届かなくても、復旧入口を画面外に隠さない。
+  Object.assign(toolbar.style, { position: "fixed", top: "8px", right: "10px", zIndex: "1100",
+    maxWidth: "calc(100% - 20px)", backgroundColor: "#1b1023", color: "#f6dfaf" });
+  buttons.forEach(button => Object.assign(button.style, { minHeight: "44px", minWidth: "60px" }));
+  body.append(toolbar);
+  function update() {
+    const mode = readTitleLayout(), screen = body.dataset.screen;
+    body.dataset.gameLayout = mode;
+    const vn = body.classList.contains("vn-open");
+    const view = vn ? "vn" : ["map", "tonari", "bench"].includes(screen) ? screen : null;
+    const inGame = vn || screen !== "boot" && screen !== "title";
+    const ready = getComputedStyle(document.documentElement).getPropertyValue("--game-layout-ready").trim() === "1";
+    tried ||= inGame && mode === "ds";
+    const active = inGame && mode === "ds" && ready && !!view;
+    const wasActive = body.classList.contains("game-ds");
+    const previousView = body.dataset.dsView;
+    body.classList.toggle("game-ds", active);
+    if (wasActive !== active || active && previousView !== view) {
+      stage.scrollTop = stage.scrollLeft = 0;
+      viewport.scrollTop = viewport.scrollLeft = 0;
+    }
+    if (active) body.dataset.dsView = view; else delete body.dataset.dsView;
+    visual.hidden = controls.hidden = !active;
+    toolbar.hidden = !inGame || !(mode === "ds" || tried);
+    buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
+    note.textContent = mode !== "ds" ? "" : !ready ? "表示準備ができないため通常表示" : !view ? "この画面は通常表示です" : "";
+    measure();
+  }
+  function measure() {
+    const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
+    const portrait = w <= 760 && h > w;
+    const x = 12, y = 0, header = 64, gap = 10;
+    const pw = portrait ? w - 24 : (w - 24 - gap) / 2;
+    const ph = portrait ? Math.max(300, (h - header - 12 - gap) / 2) : h - header - 12;
+    const values = { vx: x, vy: y, vw: pw, vh: ph, cx: portrait ? x : x + pw + gap,
+      cy: portrait ? y + ph + gap : y, cw: pw, ch: ph };
+    for (const [key, value] of Object.entries(values)) stage.style.setProperty(`--ds-${key}`, `${value}px`);
+  }
+  // DOMを移動・複製しない。シーン変更と会話の開始/終了を表示に反映するだけ。
+  new MutationObserver(update).observe(body, { attributes: true, attributeFilter: ["data-screen", "class"] });
+  window.addEventListener("display-layout-change", update);
+  window.addEventListener("resize", measure);
+  window.visualViewport?.addEventListener("resize", measure);
+  update();
+}

@@ -1,4 +1,4 @@
-// Title-only prototype: real pointer/keyboard inputs, isolated storage, no player's saves.
+// Title + game display prototype: real inputs, isolated storage, no player's saves.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -37,7 +37,17 @@ async function layout(p, mode) {
 }
 async function stageIsOriginal(p) {
   const size = await p.locator("#stage").evaluate(n => [n.offsetWidth, n.offsetHeight]);
-  assert.deepEqual(size, [1280, 720], "DS sizing leaked outside title");
+  assert.deepEqual(size, [1280, 720], "normal/unsupported screen must retain original sizing");
+}
+async function gameIsDS(p) {
+  await p.locator("body.game-ds").waitFor();
+  const panels = await p.locator(".game-ds-panel").evaluateAll(ns => ns.map(n => {
+    const r = n.getBoundingClientRect(); return { w:r.width, h:r.height, hidden:n.hidden };
+  }));
+  assert.equal(panels.length, 2);
+  assert(panels.every(n => !n.hidden && n.w > 0 && n.h > 0));
+  assert(Math.abs(panels[0].w-panels[1].w) < 1 && Math.abs(panels[0].h-panels[1].h) < 1);
+  assert.equal(await button(p, "game-layout-normal").isVisible(), true);
 }
 async function check(name, options, run, setup = null) {
   const context = await browser.newContext(options); const p = await context.newPage();
@@ -101,7 +111,8 @@ try {
         await seed(p); await layout(p, mode);
         if (device === "phone" && mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
         await button(p, "title-load").click(); await button(p, "slot-1").click();
-        await p.locator("body.vn-open").waitFor(); await stageIsOriginal(p);
+        await p.locator("body.vn-open").waitFor();
+        if (mode === "ds") await gameIsDS(p); else await stageIsOriginal(p);
         const saved = await p.evaluate(async () => {
           const { state } = await import("./js/core/state.js");
           return { money:state.money, lovers:state.lovers, memory:state.relationshipMemories, marker:state.flags._qa_preserved };
@@ -167,12 +178,12 @@ try {
     await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
     await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
   });
-  await check("new-game-leaves-title-layout", sizes.pc, async p => {
+  await check("new-game-enters-game-layout", sizes.pc, async p => {
     await layout(p, "ds"); await button(p, "title-new").click();
-    await p.locator("body.vn-open").waitFor(); await stageIsOriginal(p);
+    await p.locator("body.vn-open").waitFor(); await gameIsDS(p);
     assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
   });
-  await check("real-map-and-craft-do-not-inherit-layout", sizes.pc, async p => {
+  await check("real-map-and-craft-enter-game-layout-and-return", sizes.pc, async p => {
     await layout(p, "ds");
     await p.evaluate(async () => {
       const core = await import("./js/core/state.js");
@@ -180,7 +191,7 @@ try {
       const map = await import("./js/daily/map.js");
       window.titleScopeQA = { map, pending: map.chooseSpot() };
     });
-    await p.locator('#screen[data-screen="map"]').waitFor(); await stageIsOriginal(p);
+    await p.locator('#screen[data-screen="map"]').waitFor(); await gameIsDS(p);
     assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
     await p.evaluate(async () => {
       titleScopeQA.map.interruptMap(null); await titleScopeQA.pending;
@@ -191,9 +202,14 @@ try {
       const craft = await import("./js/craft/session.js");
       window.titleScopeQA.bench = craft.openBench(craft.newSession("rehearsal"));
     });
-    await p.locator('#screen[data-screen="bench"]').waitFor(); await stageIsOriginal(p);
+    await p.locator('#screen[data-screen="bench"]').waitFor(); await gameIsDS(p);
     assert.equal(await p.locator(".title-layout-toolbar").count(), 0);
     assert.equal(await p.locator(".title-ds-panel").count(), 0);
+    const before = await p.evaluate(() => JSON.stringify(window.__remake.state));
+    await button(p, "game-layout-normal").click();
+    await p.waitForFunction(() => !document.body.classList.contains("game-ds"));
+    await stageIsOriginal(p);
+    assert.equal(await p.evaluate(() => JSON.stringify(window.__remake.state)), before);
   });
 } finally {
   await browser.close();

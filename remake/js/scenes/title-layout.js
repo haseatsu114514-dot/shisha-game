@@ -5,7 +5,7 @@ export const TITLE_LAYOUT_KEY = "suien_title_layout";
 export const isNormalTitleForced = () => new URL(location.href).searchParams.get("titleLayout") === "normal";
 const styleReady = () => getComputedStyle(document.documentElement).getPropertyValue("--title-layout-ready").trim() === "1";
 
-function readLayout() {
+export function readTitleLayout() {
   if (isNormalTitleForced() || !styleReady()) return "normal";
   try {
     // 読めても書けない端末では通常版へ戻す。
@@ -62,8 +62,9 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
       root.prepend(art); left.append(brand, menu);
     }
     buttons.forEach((button, i) => button.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
+    window.dispatchEvent(new Event("display-layout-change"));
   }
-  apply(readLayout());
+  apply(readTitleLayout());
   document.body.append(toolbar);
   // タイトルを離れたら入口も片付ける。ゲーム画面のDOM/寸法には設定を持ち越さない。
   let seen = root.isConnected;
