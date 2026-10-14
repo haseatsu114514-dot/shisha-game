@@ -1,6 +1,6 @@
 # ひより専用ハガル：停止時の保存・引き継ぎ
 
-**未完成のDraft。オーナーの停止指示で保全した。マージ・公開・Issue終了は行わない。**
+**前担当の停止時記録を保持したDraft。2026-10-15の再開指示は、安全条件が揃った後のマージ・公開確認・予約解除を含む。以下の旧結果を新headの成功として扱わない。**
 
 採用済みの正本は [v1の選定](../hagal-bond-concepts-issue504/selection.json) の、ひよりB「素顔でひと休み」。画像選びからやり直さない。元の4案シートは変更していない。
 
@@ -42,3 +42,12 @@ BRANCH: codex/497-hiyori-hagal-recovery
 CLAIM: 38613748541 SUCCESS / actual CLAIMED_ISSUE=497  
 STATUS: 38613895764 SUCCESS / actual CLAIM_VALIDATED_ISSUE=497 / RUN=38613748541  
 予約を保持して停止。次のIssueを並行予約していない。
+
+## 2026-10-15 正式な再開・診断
+
+- 所有者が旧担当の終了・再開禁止を指示。Macのlive停止・未保存変更はこのクラウドから未確認で、行政上の終了例外であることをIssue承認記録に明記。TRANSFER `38618544044` SUCCESS / `CLAIMED_ISSUE=497`、そのrun指定STATUS `38618972148` SUCCESS / `CLAIM_VALIDATED_ISSUE=497`。新worker `codex-resume497-20261015-78909ed2f9`。
+- 保存head `688085af446e942de680d25c1447f70353df6f92` の診断再実行で、3失敗はいずれも `limeStable=false` だけ。LOADが不完全なfixtureへ `originId` / `replyState` / `afterClose` を補完していた。本番の保存形式は変えず、fixtureを現在の予約スキーマへ修正。全体一致・LIME一致・重複・料金の元assertは維持した。修正後の3ケースはPASS。
+- 未再検証だった実会話の中断入口はPASS。回答0を保存→LOADで旧会話をキャンセル→質問を再表示せず友人として1個だけ受領。
+- 既存関係UIの「未読なのに告白を案内しない」assertを保持。正式機材が登録された現在も、未読時は斧投げ・仕事を案内し、全読了後はtonariの節目を案内する。
+- 画像の白/暗背景での目視では、赤い素焼き・斧と葉・斜め帯・底の孔を保持し、外縁の白い矩形や目立つ色フリンジはない。画像の再生成はしていない。
+- PC/タッチの実g操作と回答ボタンを追加したテストは再検証中。自然NEW GAMEは別runnerで実行中。CI・最終QAが揃うまでDraftと予約を保持する。

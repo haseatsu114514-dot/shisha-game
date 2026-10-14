@@ -67,8 +67,13 @@ await suite('hiyori-hagal', async check => {
       await setup(page, q1); assert(await work(page));
       const r = await page.evaluate(async ({ q2 }) => {
         const s = H.core.state;
-        s.pendingInvite = { sender: 'rin', day: 12, slot: 1, event: 'date_rin' };
-        s.inbox = [{ id: 'keep', read: false, msg: { sender: 'rin' }, log: ['keep'] }];
+        // A current-schema appointment, including its real source message.
+        // Incomplete legacy fixtures acquire originId/replyState on LOAD;
+        // that migration must not be confused with a gift changing LIME.
+        s.pendingInvite = { sender: 'rin', day: 12, slot: 1, event: 'date_rin', originId: 'keep', afterClose: false };
+        s.inbox = [{ id: 'keep', originId: 'keep', day: 11, chapter: 1, read: true, done: true,
+          replyState: 'replied', result: 'accepted',
+          msg: { sender: 'rin', type: 'invitation', accept_event: 'date_rin' }, log: ['keep'] }];
         const payment = { money: s.money, stamina: s.stamina, slot: s.slot, stock: structuredClone(s.flavorStock) };
         const lime = JSON.stringify({ inbox: s.inbox, pending: s.pendingInvite });
         H.vn.vnTest.choose = () => q2;
@@ -142,21 +147,43 @@ await suite('hiyori-hagal', async check => {
   for (const [device, touch, options] of [['pc', false, {}], ['touch', true,
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${device}-receive-select-pack-and-save`, async page => {
-      await setup(page); assert(await work(page));
-      assert(await page.evaluate(() => H.bonds.playFinale('hiyori')));
+      await setup(page, 1); assert(await work(page));
+      const press = selector => touch ? page.locator(selector).tap() : page.locator(selector).click();
+      await page.evaluate(() => { H.vn.vnTest.turbo = false; H.running = H.daily.meetHiyoriAtTonari(); });
+      await page.locator('#vn.active').waitFor(); await press('[data-test="vn-skip"]');
+      const answer = touch ? 1 : 0;
+      await page.locator(`[data-test="choice-${answer}"]`).waitFor();
+      await assertFits(page, '.vn-choices,.vn-choice'); await press(`[data-test="choice-${answer}"]`);
+      assert(await page.evaluate(() => H.running));
+      const received = await page.evaluate(() => ({ answer: H.core.state.romanceChoices.bond_q2_hiyori.value,
+        route: H.core.state.finales.hiyori.route, count: H.core.state.owned.filter(id => id === 'suyaki_hiyori').length }));
+      assert.deepEqual(received, { answer, route: touch ? 'romance' : 'friend', count: 1 });
       await page.evaluate(async () => {
-        H.cs = H.session.newSession('tutorial'); await H.session.openBench(H.cs).ready;
+        // This is an explicit equipment UI fixture, not natural inventory acquisition.
+        H.shop.addFlavorStock('peach', 50); H.shop.addFlavorStock('mint', 50);
+        H.cs = H.session.newSession('drill'); await H.session.openBench(H.cs).ready;
         H.running = H.steps.stepSetup(H.cs);
       });
       const choose = page.locator('[data-test="opt-suyaki_hiyori"]');
       await choose.waitFor(); await (touch ? choose.tap() : choose.click());
       await page.evaluate(() => H.running);
       assert.equal(await page.evaluate(() => H.core.state.equip.bowl), gift);
-      await page.evaluate(() => { H.cs.mix = { peach: 3, mint: 9 }; H.running = H.steps.stepPack(H.cs); });
+      await page.evaluate(() => { H.running = H.steps.stepMix(H.cs); });
+      await page.locator('[data-test="mix-plus-peach"]').waitFor();
+      for (let n = 0; n < 3; n++) await press('[data-test="mix-plus-peach"]');
+      for (let n = 0; n < 17; n++) await press('[data-test="mix-plus-mint"]');
+      await press('[data-test="mix-plus-mint"]');
+      assert.deepEqual(await page.evaluate(() => H.cs.mix), { peach: 3, mint: 17 }, 'The 21st gram must be refused');
+      assert.match(await page.locator('.mix-amount .lcd').innerText(), /20\.0 g \/ 20 g/);
+      await assertFits(page, '.mix-vessel,.mix-footer');
+      await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/hiyori-hagal-${device}-mix.png` });
+      await press('[data-test="mix-ok"]'); await page.evaluate(() => H.running);
+      await page.evaluate(() => { H.running = H.steps.stepPack(H.cs); });
       await page.locator('[data-test="pack-confirm"]').waitFor();
       const url = await page.locator('.pack-vessel-art > .art').evaluate(n => n.style.backgroundImage);
       assert.match(url, /bowl_empty_hiyori\.webp/);
       await assertFits(page, '.pack-vessel-art,.pack-choice,.pack-footer');
+      await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/hiyori-hagal-${device}-pack.png` });
       await (touch ? page.locator('[data-test="pack-confirm"]').tap() : page.locator('[data-test="pack-confirm"]').click());
       await page.evaluate(() => H.running);
       const saved = await page.evaluate(() => {

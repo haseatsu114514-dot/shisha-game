@@ -185,12 +185,20 @@ await suite("relationship-ui", async check => {
         s.flags._hiyori_tonari_return_done = true;
         s.romanceChoices.bond_q1_hiyori = { char: "hiyori", value: 1, day: 7 };
         const unfinished = R.view.relationshipStatus("hiyori");
-        return { tsumugi, minto, hiyori, unfinished };
+        s.affinity.hiyori = 66; s.met.hiyori = true;
+        for (const id of R.data.DB.hiyori.route.storyEvents) {
+          s.flags[R.data.DB.hiyori.route.events.find(e => e.id === id).flag] = true;
+        }
+        s.flags._hiyori_bond_question_done = true;
+        const ready = R.view.relationshipStatus("hiyori");
+        return { tsumugi, minto, hiyori, unfinished, ready };
       });
       assert.match(summaries.tsumugi.hint, /応募/);
       assert.match(summaries.minto.hint, /LIMEの私的な約束/);
       assert.equal(summaries.hiyori.label, "スミさんとの再会待ち");
       assert(!summaries.unfinished.hint.includes("告白"), "Unfinished hiyori finale was advertised");
+      assert.match(summaries.unfinished.hint, /斧投げや仕事/);
+      assert.match(summaries.ready.hint, /tonari.*特別なイベント/, "The registered gift must have reachable guidance");
 
       await page.evaluate(() => {
         const s = R.fresh();

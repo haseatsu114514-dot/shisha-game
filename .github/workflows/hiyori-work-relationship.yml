@@ -68,6 +68,7 @@ jobs:
           name: hiyori-work-relationship-results
           path: |
             .codex/artifacts/remake-browser/hiyori-work*
+            .codex/artifacts/remake-browser/hiyori-hagal*
             .codex/artifacts/remake-browser/save-load*
             ${{ runner.temp }}/hiyori-work-preview.log
           retention-days: 7
