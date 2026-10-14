@@ -693,6 +693,13 @@
           "text": "ま、説教くさくなったな。ほら、一服してけ。今日のは試作のキャラメル・マキアート風だ"
         },
         {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_naru_third",
+          "next_true": "coal_note_seen",
+          "next_false": "coal_note_unseen"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（なるさんの言葉は、優しかった。なのに、なんでだろう。胸の奥が少しだけチクッとした）"
@@ -703,7 +710,51 @@
           "text": "（──多分、気のせいだ）"
         }
       ],
-      "branches": {}
+      "branches": {
+        "coal_note_seen": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは台に目を落とし、炭をひとつ、少し動かした。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……炭の位置、変えたんですか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ああ。お前に言われてから、最後の置き方をいくつか試してる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日のにも？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "同じ置き方でいいかは、まだ分かんねえけどな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "開いたノートには、炭の位置を描いた小さな丸が並んでいた。"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ほら。今日のも、最後のひと吸いまで頼むぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。ちゃんと吸ってみます"
+          }
+        ],
+        "coal_note_unseen": []
+      }
     },
     {
       "dialogue_id": "ch1_naru_fifth",

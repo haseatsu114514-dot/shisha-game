@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-14 00:22 UTC",
+ "generated": "2026-10-14 14:43 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -238,6 +238,16 @@
    "h": 0.9692,
    "b": 0.0167,
    "ax": 0.4736,
+   "aspect": 0.7467
+  },
+  "salaryman": {
+   "faces": [
+    "normal",
+    "smile"
+   ],
+   "h": 0.915,
+   "b": 0.0208,
+   "ax": 0.5318,
    "aspect": 0.7467
   }
  },
@@ -1917,6 +1927,8 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "sprites/characters/salaryman/chr_salaryman_normal.png",
+  "sprites/characters/salaryman/chr_salaryman_smile.png"
  ]
 }

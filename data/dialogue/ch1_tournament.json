@@ -137,11 +137,48 @@
           "text": "みんな「自分のシーシャ」を持っている。準備の仕方も、向き合い方も、それぞれ違う。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持ち直す。親指に、余計な力が入っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度、開いて閉じる。今度は、少しゆっくり。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_first_practice",
+          "next_true": "sumi_practice_recalled",
+          "next_false": "sumi_practice_unread"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモを開き、持ってきた道具を順に確かめる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のテーブルを見かけて、手元へ目を戻した。"
+        },
+        {
           "speaker": "hajime",
           "face": "serious",
           "text": "（……今の俺にできることを、やるしかない）"
         }
-      ]
+      ],
+      "branches": {
+        "sumi_practice_recalled": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんの「１つずつ手を動かして覚えろ」が浮かんだ。"
+          }
+        ],
+        "sumi_practice_unread": []
+      }
     },
     {
       "dialogue_id": "ch1_tournament_opening",
@@ -1119,6 +1156,46 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "（優勝って、味まで変えるんだなあ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターのトロフィーを、客席の方へ少し向け直した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これ見て、俺に頼んでくれる人もいるんですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "いるだろうな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そっか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "置きかけたホースを持ち直して、もう一口吸った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次も、これくらいのを出さないとな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さを確かめる。まだ、うまい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度トロフィーを見ると、自然と背筋が伸びた。"
         },
         {
           "type": "condition",
