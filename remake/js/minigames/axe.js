@@ -39,6 +39,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let finish;
   const promise = new Promise(resolve => { finish = resolve; }); active.set(host, promise);
   const previousFocus = document.activeElement, lifetime = new AbortController();
+  // A stage caller can replace #screen while the match overlay is its sibling.
+  const callerScreen = versus && host.id === "stage" ? host.querySelector("#screen") : null;
+  const callerContent = callerScreen ? [...callerScreen.childNodes] : [];
   let phase = "loading", elapsed = 0, stamp = null, frame = 0, aim = { x: 0, y: 0 }, power = POWER.ideal;
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null;
@@ -345,7 +348,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function tick(now) {
     if (phase === "closed") return;
-    if (!host.isConnected || !root.isConnected) { cleanup(false); return; }
+    if (!host.isConnected || !root.isConnected || callerScreen && (!callerScreen.isConnected
+      || callerScreen.childNodes.length !== callerContent.length
+      || callerContent.some((node, i) => callerScreen.childNodes[i] !== node))) { cleanup(false); return; }
     const delta = stamp === null ? 0 : Math.min(50, Math.max(0, now - stamp)); stamp = now;
     if (!document.hidden && !helpPanel) { elapsed += delta; if (cycles[phase]) held += delta; }
     if (phase === "opponent-ready" && !document.hidden && !helpPanel && elapsed >= 1000) {

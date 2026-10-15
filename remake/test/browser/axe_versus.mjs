@@ -25,16 +25,32 @@ async function press(page, { touch = false, keyboard = false } = {}) {
   else if (touch) await button.tap(); else await button.click();
 }
 async function stop(page, value, options) {
+  if (options?.precise) await root(page).focus();
   await page.waitForFunction(value => {
     const game = document.querySelector('[data-test="axe-game"]'), t = Number(game.dataset.timing);
     return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - .02 && t <= value + .015;
   }, value);
-  await press(page, options);
+  if (options?.precise) await page.keyboard.press("Space");
+  else await press(page, options);
 }
 async function shoot(page, options = {}) {
   await phase(page, "choice"); await press(page, options); await phase(page, "horizontal");
   await stop(page, .5, options); await phase(page, "vertical");
   await stop(page, .5, options); await phase(page, "power");
+  if (options.focus) {
+    const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
+    if (Math.hypot(x, y) > .06) {
+      // Leave room inside the radius .1 bull for focused sway and the power correction.
+      assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
+      await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
+      return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
+    }
+    await page.waitForFunction(() => {
+      const game = document.querySelector('[data-test="axe-game"]');
+      return Number(game.dataset.timing) >= .4 && Number(game.dataset.timing) <= .5;
+    });
+    await page.locator('[data-test="axe-focus"]').click();
+  }
   await stop(page, options.power ?? .62, options); await phase(page, "result");
   assert.equal(await root(page).getAttribute("data-actor"), "player");
 }
@@ -104,18 +120,53 @@ await suite("axe-versus", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   }, context);
 
+  await check("seeded-draw-ends-at-ten-and-retry-clears-both-histories", async page => {
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.evaluate(async () => {
+      const mini = await import("./js/minigames/axe.js");
+      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 9 });
+    });
+    await phase(page, "choice");
+    const before = await storageSnapshot(page);
+    for (let i = 1; i <= 10; i++) {
+      await shoot(page, { focus: true, precise: true });
+      assert.match(await page.locator('.axe-note').textContent(), /6点/, "real focused bull must score six");
+      await press(page); await phase(page, "opponent-ready"); await phase(page, "result"); await press(page);
+    }
+    await phase(page, "summary");
+    assert.equal(await root(page).getAttribute("data-player-throws"), "10");
+    assert.equal(await root(page).getAttribute("data-opponent-throws"), "10");
+    assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
+    assert.match(await page.locator('.axe-note').textContent(), /引き分け.*延長なし/);
+    assert.match(await page.locator('.axe-comment').textContent(), /引き分け/);
+    await capture(page, "seeded-draw-summary");
+    await page.locator('[data-test="axe-retry"]:not([disabled])').click(); await phase(page, "choice");
+    assert.equal(await root(page).getAttribute("data-player-throws"), "0");
+    assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
+    assert.match(await page.locator('.axe-call-status').textContent(), /残り2回/);
+    await page.keyboard.press("Escape");
+    const result = await page.evaluate(() => window.matchPromise);
+    assert.equal(result.match.seed, 9); assert.equal(result.match.winner, null);
+    assert.deepEqual(result.match.player, []); assert.deepEqual(result.match.opponent, []);
+    assert.deepEqual(await storageSnapshot(page), before);
+  });
+
   await check("opponent-lock-pause-double-input-and-cancel", async page => {
     await start(page); const before = await storageSnapshot(page);
     await shoot(page); await press(page); await phase(page, "opponent-ready");
-    await page.evaluate(() => {
-      window.testHidden = true;
-      Object.defineProperty(document, "hidden", { configurable: true, get: () => window.testHidden });
-      document.dispatchEvent(new Event("visibilitychange"));
-    });
+    await page.waitForTimeout(300);
     await root(page).evaluate(game => {
       for (let i = 0; i < 8; i++) game.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
       for (const selector of ['[data-call="upper-left"]', '[data-test="axe-reaim"]', '[data-test="axe-focus"]'])
         game.querySelector(selector).dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    assert.equal(await root(page).getAttribute("data-phase"), "opponent-ready");
+    assert.equal(await root(page).getAttribute("data-player-throws"), "1");
+    assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
+    await page.evaluate(() => {
+      window.testHidden = true;
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => window.testHidden });
+      document.dispatchEvent(new Event("visibilitychange"));
     });
     await page.waitForTimeout(1200);
     assert.equal(await root(page).getAttribute("data-phase"), "opponent-ready");
@@ -147,20 +198,25 @@ await suite("axe-versus", async check => {
       window.gamePromise = mini.runAxeThrow({ host: document.getElementById("stage"), mode: "versus", seed: 489, signal: abort.signal });
       window.duplicate = window.gamePromise === mini.runAxeThrow({host:document.getElementById("stage")});
     });
-    for (const reason of ["abort", "detach", "load"]) {
+    for (const reason of ["abort", "detach", "load", "pagehide", "screen"]) {
       await setup(); await phase(page, "choice"); assert(await page.evaluate(() => window.duplicate));
       await shoot(page); await press(page); await phase(page, "opponent-ready");
       const before = await storageSnapshot(page);
       if (reason === "abort") await page.evaluate(() => window.abort.abort());
       if (reason === "detach") await page.evaluate(() => document.querySelector('[data-test="axe-game"]').remove());
+      if (reason === "pagehide") await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+      if (reason === "screen") await page.evaluate(async () => (await import("./js/core/ui.js")).showScreen("test", document.createElement("div")));
       if (reason === "load") await page.evaluate(async () => {
         // A real state LOAD followed by its caller's AbortSignal cancels the old game.
         core.load(); abort.abort();
       });
-      const cancelled = await page.evaluate(() => window.gamePromise);
+      const cancelled = await page.evaluate(() => Promise.race([
+        window.gamePromise, new Promise((_, reject) => setTimeout(() => reject(new Error("Match cleanup did not settle")), 2000)),
+      ]));
       assert(cancelled.cancelled && !cancelled.completed && cancelled.match.winner === null);
       assert.equal(cancelled.match.opponent.length, 0); assert.equal(await root(page).count(), 0);
       assert.deepEqual(await storageSnapshot(page), before);
+      assert(await page.evaluate(() => JSON.stringify(core.state) === beforeState), "game must preserve the live state too");
     }
     const invalid = await page.evaluate(async () => {
       const signal = new AbortController(); signal.abort();

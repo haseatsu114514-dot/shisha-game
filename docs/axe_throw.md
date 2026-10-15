@@ -61,7 +61,7 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 | ふつう | 50.4406 | 45〜56 | 0% | 72.47% |
 | むずかしい | 61.3695 | 60〜63 | 0% | 100% |
 
-プレイヤーの結果を確認してから相手の番へ進む。相手の構え・飛行中は投擲・宣言・構え直し・集中を受け付けず、投後の確認操作で次のプレイヤーの番へ戻る。背景タブとルール閲覧中は相手の進行も停止する。中断・AbortSignal・pagehide・host/画面撤去では未完の投を計上せず片付ける。LOAD時は従来どおりcallerがAbortするか画面を撤去する。
+プレイヤーの結果を確認してから相手の番へ進む。相手の構え・飛行中は投擲・宣言・構え直し・集中を受け付けず、投後の確認操作で次のプレイヤーの番へ戻る。背景タブとルール閲覧中は相手の進行も停止する。中断・AbortSignal・pagehide・host/画面撤去では未完の投を計上せず片付ける。stage上の対戦は呼出元の#screenの置換も取消として検出する。LOAD時は従来どおりcallerがAbortするか画面を撤去する。
 
 追加APIは `runAxeThrow({mode:"versus", opponent:"hiyori", difficulty:"easy"|"normal"|"hard", seed?})`。
 既存の `throws/total/grade/maximum` はプレイヤー分を保持し、`match` に `player/opponent` の履歴、`playerTotal/opponentTotal`、`difficulty/seed`、`winner:"player"|"opponent"|"draw"|null` を追加する。中断時は `winner:null`。最終結果を見て終了した時だけ `completed:true`。
