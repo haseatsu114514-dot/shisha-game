@@ -348,10 +348,10 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       el("div.trpg-choice-cards", scenario.options[session.flow.serve[0]].map(option => optionButton(session.flow.serve[0], option))),
     ]);
   }
-  function modal(title, body, actions, { dismiss = true, wide = false } = {}) {
+  function modal(title, body, actions, { dismiss = true, wide = false, skin = "" } = {}) {
     if (overlay || disposed) return null;
     const previousFocus = document.activeElement;
-    const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: wide ? "trpg-modal-wide" : "" },
+    const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: [wide ? "trpg-modal-wide" : "", skin].filter(Boolean).join(" ") },
       [el("h2", { text: title }), el("div.trpg-modal-body", { tabindex: "0", role: "region", "aria-label": title + "の内容" }, body), el("div.trpg-modal-actions", actions)]);
     overlay = el("div.trpg-overlay", box);
     root.append(overlay);
@@ -379,8 +379,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     pop = modal(presentation.hypothesisTitle, el("div.trpg-hypothesis-board", [
       el("div.trpg-choice-cards", choices),
       el("details.trpg-evidence-fold", [el("summary", { text: "手がかりを見る (" + session.snapshot().clues.length + ")" }), el("div.trpg-notes-grid", noteCards())]),
-    ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true });
-    pop?.box.classList.add("trpg-hypothesis-stage");
+    ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true, skin: "trpg-hypothesis-stage" });
   }
   function die(value, rolling = false) {
     const node = el("div.trpg-die", { class: rolling ? "rolling" : "", role: "img", "aria-label": "サイコロ " + value });
@@ -444,8 +443,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         if (!disposed) showRollResult(pop, body);
       }, reduced ? 40 : 650);
     }, { class: "primary" });
-    pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll]);
-    pop?.box.classList.add("trpg-roll-stage");
+    pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
   }
   function showRollResult(pop, body) {
     const result = session.checkResult();
