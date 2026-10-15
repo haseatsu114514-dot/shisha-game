@@ -101,10 +101,6 @@
           "text": "ありがとうございます。また明日も、いいの作っときますね"
         },
         {
-          "type": "sfx",
-          "id": "doorbell"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "ドアが閉まる。外の空気が一瞬だけ入り込んで、フレーバーの残り香をかき乱す。",
@@ -2046,10 +2042,6 @@
         {
           "type": "hide_portrait",
           "char_id": "tsumugi"
-        },
-        {
-          "type": "sfx",
-          "id": "doorbell"
         },
         {
           "speaker": "sumi",

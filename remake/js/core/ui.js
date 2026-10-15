@@ -136,6 +136,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    curtain?.commitArrival?.(url);
     weatherBg = url || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);

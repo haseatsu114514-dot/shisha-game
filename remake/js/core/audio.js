@@ -8,6 +8,7 @@ let master = null;
 let seBus = null;
 let bgmBus = null;
 let audioUnlocked = false;
+let lastPhoneReceiveAt = -Infinity;
 let rainMode = null;
 let rainLoop = null;
 let rainBuffer = null;
@@ -327,6 +328,17 @@ export const SE = {
   },
   money: () => { tone({ freq: 1500, type: "triangle", dur: 0.06, vol: 0.1 }); tone({ freq: 2000, type: "triangle", dur: 0.12, vol: 0.1, delay: 0.06 }); },
   phone: () => { tone({ freq: 1320, type: "sine", dur: 0.08, vol: 0.14 }); tone({ freq: 1760, type: "sine", dur: 0.12, vol: 0.14, delay: 0.1 }); },
+  // LIME専用の短いオリジナル合成音。録音phone互換IDはそのまま残す。
+  phoneReceive: () => {
+    if (!seEnabled() || ctx.currentTime - lastPhoneReceiveAt < .2) return;
+    lastPhoneReceiveAt = ctx.currentTime; // 同時の通知・初回案内で受信音を重ねない。
+    tone({ freq: 880, dur: .07, vol: .1 });
+    tone({ freq: 1320, dur: .1, vol: .1, delay: .08 });
+  },
+  phoneSend: () => {
+    if (!seEnabled()) return;
+    tone({ freq: 660, to: 990, type: "triangle", dur: .09, vol: .09 });
+  },
   doorbell: () => { tone({ freq: 1568, type: "sine", dur: 0.6, vol: 0.12 }); tone({ freq: 1245, type: "sine", dur: 0.8, vol: 0.1, delay: 0.25 }); },
   coalSnip: () => { noise({ dur: 0.04, vol: 0.02, filter: 4000 }); tone({ freq: 700, to: 200, type: "triangle", dur: 0.05, vol: 0.005 }); },
   coalPlace: () => tone({ freq: 280, to: 160, type: "triangle", dur: .08, vol: .025 }),
