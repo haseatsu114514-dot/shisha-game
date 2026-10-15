@@ -253,6 +253,16 @@ async function ordinary(page, keyboard) {
   await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-exploration-pc.png" : "ordinary-exploration-touch.png") });
   for (const id of ["menu", "window", "bag"]) await inspect(page, id, { focus: keyboard });
   assert(await control(page, "trpg-interpret").isEnabled());
+  await control(page, "trpg-spot-counter").focus();
+  await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('[data-test="trpg-spot-counter"] span')).opacity) > .95);
+  assert(await page.evaluate(() => {
+    const action = document.querySelector('[data-test="trpg-interpret"]').getBoundingClientRect();
+    return [...document.querySelectorAll(".trpg-spot, [data-test='trpg-spot-counter'] span")].every(n => {
+      const r = n.getBoundingClientRect();
+      return Math.min(action.right, r.right) <= Math.max(action.left, r.left)
+        || Math.min(action.bottom, r.bottom) <= Math.max(action.top, r.top);
+    });
+  }), "The unlocked action cannot cover a hotspot or its focused label");
   await compare(page, 3, keyboard ? "ordinary-memo-comparison" : null);
   await hit(page, "trpg-interpret");
   await choiceArtwork(page);

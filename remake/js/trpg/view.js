@@ -187,7 +187,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         node.append(el("button.trpg-spot", { type: "button",
           class: checked ? "checked" : "", disabled: busy || (!checked && state.clues.length >= session.rules.exploreLimit),
           "aria-label": spot.label + (checked ? "、調査済み。もう一度読む" : "を調べる"),
-          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id },
+          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below" },
           onclick: () => {
             if (busy || overlay) return;
             const clue = session.inspect(spot.id);
