@@ -1,0 +1,89 @@
+{
+  "issue": 586,
+  "worker": "codex-c-shop-art-20261016-8e7fb2cb0e",
+  "thread": "01a140d2-7791-7aa2-9b89-4ad03675a977",
+  "claim_run": 38786636524,
+  "status_run": 38795781004,
+  "status_result": "completed/success; CLAIM_VALIDATED_ISSUE=586 OWNER matches RUN=38786636524",
+  "old_alternative_head": "7c58a04e3674d5b4a559947ee9d7da6cd77fad00",
+  "old_head_ci": "12/12 SUCCESS; not adoption approval",
+  "scope": "representative prototypes only; not consumer integration or mass generation",
+  "runtime_integrated": false,
+  "adoption": "HOLD: art direction review required; old21 retained as future alternative",
+  "official_reference_policy": "Downloaded manufacturer photos stay outside the repository; URL/hash only. No redistribution permission assumed; no product photo bundled with distributable assets. No real logos/brand text copied.",
+  "package_spec": {
+    "shape": "shallow 50g folding retail carton, front about 3:4 width:height",
+    "composition": "single front-dominant three-quarter carton, whole object, >=10% true transparent margins",
+    "layout": "upper fictional AF in plain independent typography; flavor color panel, lower own-ingredient illustration; game names shown as HTML captions",
+    "text": "AF only; no real manufacturer wordmark/crown/Arabic; flavor names in HTML captions",
+    "background": "no grass, vines, floral wallpaper, ornamental leaf patterns, loose ingredients or floor plane",
+    "size": "square source requested; actual dimensions/alpha recorded after generation"
+  },
+  "items": [
+    {
+      "id": "mint",
+      "existing_name": "アルファーヘブン ミント",
+      "existing_short_name": "AF ミント",
+      "fictional_brand": "アルファーヘブン",
+      "existing_abbreviation": "AF",
+      "manufacturer_reference_not_game_brand": "Al Fakher",
+      "reference_page": "https://www.alfakher.com/our-products-africa",
+      "reference_image_url": "https://images.squarespace-cdn.com/content/v1/66b4885f1e86da03215efed0/fc74fe1d-5197-489f-ab4e-04c380aeb703/Inner_50G_Mint_GEN.png",
+      "temporary_reference_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/inventory/retail-reference-only/official-af-mint-50g.png",
+      "reference_sha256": "35757b87438ea9ac5019b6e4213fa6344fa0a00b9a597430b56da62d64e21615",
+      "reference_photo_redistributed": false,
+      "output": "originals/mint-retail-prototype.png",
+      "status": "planned"
+    },
+    {
+      "id": "double_apple",
+      "existing_name": "アルファーヘブン ダブルアップル",
+      "existing_short_name": "AF ダブルアップル",
+      "fictional_brand": "アルファーヘブン",
+      "existing_abbreviation": "AF",
+      "manufacturer_reference_not_game_brand": "Al Fakher",
+      "reference_page": "https://www.alfakher.com/our-products-africa",
+      "reference_image_url": "https://images.squarespace-cdn.com/content/v1/66b4885f1e86da03215efed0/2c083d96-de87-4d9c-8a02-703441bb9fc4/Inner_50G_Two_Apples_GEN.png",
+      "temporary_reference_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/inventory/retail-reference-only/official-af-two-apples-50g.png",
+      "reference_sha256": "4c27e66290c7bd0284c0319e2e2721cd68693559122dcd51ab9152aa07ef3cac",
+      "reference_photo_redistributed": false,
+      "output": "originals/double_apple-retail-prototype.png",
+      "status": "planned"
+    },
+    {
+      "id": "grape",
+      "existing_name": "アルファーヘブン グレープ",
+      "existing_short_name": "AF グレープ",
+      "fictional_brand": "アルファーヘブン",
+      "existing_abbreviation": "AF",
+      "manufacturer_reference_not_game_brand": "Al Fakher",
+      "reference_page": "https://www.alfakher.com/our-products-africa",
+      "reference_image_url": "https://images.squarespace-cdn.com/content/v1/66b4885f1e86da03215efed0/12b90342-d39d-4c2b-8065-5f19032f6ece/Inner_50G_Grape_GEN.png",
+      "temporary_reference_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/inventory/retail-reference-only/official-af-grape-50g.png",
+      "reference_sha256": "f5f2e72d329346491c160c3d8adfe18bf584b1744de6cabdfb973f28ccffcbf5",
+      "reference_photo_redistributed": false,
+      "output": "originals/grape-retail-prototype.png",
+      "status": "planned"
+    },
+    {
+      "id": "tanukish_lid",
+      "output": "originals/tanukish_lid-low-profile-prototype.png",
+      "interpretation": "Remove the conspicuous tall upper cylindrical knob only; keep HMD item/function and existing vent layout. Do not add replacement holes/handles. This is the primary reading of the ambiguous request, pending human art review.",
+      "edit_target": "asset_sources/shop-art-issue586/originals/tanukish_lid.png",
+      "construction_reference": "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+      "reference_page": "https://kaloud.com/products/kaloud-lotus-i-1",
+      "reference_image_url": "https://cdn.shopify.com/s/files/1/1082/3418/products/LotusI_Niris-side.jpg?v=1721683690",
+      "pre_generation_scene": {
+        "person": "none",
+        "scene": "unused standalone product comparison",
+        "rig_type": "none; no rig in frame",
+        "hmd": "existing tanukish_lid dome retained, tall knob removed",
+        "coals": "none",
+        "hose": "none",
+        "mouthpiece": "none",
+        "composition": "same three-quarter product view on real alpha"
+      },
+      "status": "planned"
+    }
+  ]
+}
