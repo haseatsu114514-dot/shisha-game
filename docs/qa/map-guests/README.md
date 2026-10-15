@@ -15,13 +15,16 @@
 | PC 1280×720 | [before](pc-before.png) | [after](pc-after.png) |
 | タッチ 844×390 | [before](touch-before.png) | [after](touch-after.png) |
 
+[初対面のシルエット](pc-unknown.png) / [縦DSの複数人物](narrow-ds-after.png)
+
 ## 検証
 
 - `node --experimental-vm-modules remake/test/hiyori_frequency.mjs`: PASS。500seedの初対面、2800枠、実会話・日内一度だけ・不在・休業・未解禁・LIME優先・表示判定による状態不変。
-- `node remake/test/browser/map_guests.mjs`: PC/横持ちタッチ/縦DSの6ケース。結果はPRに記載。通常縦画面は既存の回転案内が操作を遮るため、縦DSを明示選択して検証する。
+- `node remake/test/browser/map_guests.mjs`: PC/横持ちタッチ/縦DSの6ケースPASS。通常縦画面は既存の回転案内が操作を遮るため、縦DSを明示選択して検証する。
 - `node remake/test/hiyori_encounters.mjs`: 正式台本・実際の料金/行動消費・LIME辞退/再送/受諾・保存/復帰・一度きりの進行・PC/横持ちの8ケースPASS。従来固定の訪問順を新しい滞在予定に従うfixtureへ更新。好感度・報酬・正体のassertは維持。
 - `node remake/test/hiyori_intro.mjs`: PC/タッチ/動きを減らす設定の3ケースPASS。既存の初対面紹介を通すseedだけを固定。
-- `daily_consistency.mjs`、文書チェック、diff check: PASS。
+- `hiyori_gate.mjs`: PC/タッチ4ケースPASS。`daily_consistency.mjs`、`illness.mjs`、文書チェック、diff check: PASS。
+- 入店中に面識・解禁・相談済み状態が更新されても、入店前に表示した予定をcalendarから引き継ぐ。料金・時間消費前の同じ予定で相席を決定する。
 
 実機Safari・公開版QAは未実施。#556の自然到達runnerは予約境界を保ち未変更。
 

@@ -91,6 +91,7 @@ reset(131, {}); state.slot = 1;
 const scheduled = shops.find(s => s.id === hiyoriShopLocation());
 scheduled.locked = true; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.locked;
 scheduled.closedOn = state.day % 7; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.closedOn;
+state.visitedDay = { [scheduled.id]: state.day }; assert.notEqual(hiyoriShopLocation(), scheduled.id); state.visitedDay = {};
 state.slot = 0; assert.notEqual(hiyoriShopLocation(), "shop");
 state.pendingInvite = { sender: "hiyori", event: "__hiyori_shop__", day: state.day };
 assert.equal(hiyoriShopLocation(), null); delete state.pendingInvite;

@@ -96,7 +96,8 @@ export function hiyoriShopLocation() {
     || !!DB.dialogues[`hiyori_shop_repeat_${Number(state.flags._hiyori_repeat_count || 0) % 4}`]?.lines?.length;
   if (!ready) return null;
   const candidates = allSpots().filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
-    && !isClosed(spot) && !spot.unavailable && (spot.kind !== "shop" || !rinUnavailable(state)))
+    && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day
+    && (spot.kind !== "shop" || !rinUnavailable(state)))
     .map(spot => ({ id: spot.id, roll: encounterRoll(spot) }))
     .filter(spot => first || spot.roll < 0.2)
     .sort((a, b) => a.roll - b.roll || a.id.localeCompare(b.id));
