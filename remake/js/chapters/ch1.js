@@ -63,6 +63,13 @@ export function setupHooks() {
   hooks.onChoice = (dialogueId, choiceId, branch, nextId, choice, line) => {
     // 途中の質問・締めくくりの最後の質問（choice.romance＝隠し恋愛値。選択肢 id ごとに一度だけ）
     recordRomanceChoice(line, choice);
+    // 下描きの実回答だけを保存する。旧セーブの読了・好感度からは補わない。
+    if (dialogueId === "ch1_tsumugi_work_in_progress" && choiceId === "tsumugi_contest_draft"
+      && ["draft_window", "draft_hands"].includes(branch)) {
+      state.flags._tsumugi_contest_draft_window = branch === "draft_window";
+      state.flags._tsumugi_contest_draft_hands = branch === "draft_hands";
+      save();
+    }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
     if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
       const progress = openingProgress();

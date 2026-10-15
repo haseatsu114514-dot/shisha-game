@@ -1868,14 +1868,11 @@
           "text": "……今日は、ここにいてほしかったので"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎの指が、窓辺の猫のそばで止まった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "うん。ここ、居心地よさそうだ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_draft_window",
+          "next_true": "submission_draft_window",
+          "next_false": "submission_draft_other"
         },
         {
           "speaker": "tsumugi",
@@ -1969,6 +1966,51 @@
         }
       ],
       "branches": {
+        "submission_draft_window": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……窓辺の煙と猫、残しました。好きって言ってくれたので"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "覚えててくれたんだ。やっぱり、居心地よさそうだ"
+          }
+        ],
+        "submission_draft_other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_tsumugi_contest_draft_hands",
+            "next_true": "submission_draft_hands",
+            "next_false": "submission_draft_neutral"
+          }
+        ],
+        "submission_draft_hands": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……カウンターの手元、描き込みました。好きって言ってくれたので"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "覚えててくれたんだ。俺の手も、ここの景色になってるね"
+          }
+        ],
+        "submission_draft_neutral": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指が、窓辺の猫のそばで止まった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。ここ、居心地よさそうだ"
+          }
+        ],
         "submission_known": [
           {
             "speaker": "hajime",
