@@ -1,0 +1,115 @@
+{
+  "issue": 586,
+  "worker": "codex-c-shop-art-20261016-8e7fb2cb0e",
+  "thread": "01a140d2-7791-7aa2-9b89-4ad03675a977",
+  "claim_run": 38786636524,
+  "status_run": 38808857759,
+  "status_request_id": "330beed5-e91e-46fd-a132-1e59a21a0f6b",
+  "status_result": "completed/success; CLAIM_VALIDATED_ISSUE=586 OWNER=codex-c-shop-art-20261016-8e7fb2cb0e RUN=38786636524",
+  "previous_prototype_head": "4e6467081959d67d759436cab8f5c83a9a55e456",
+  "previous_head_ci": "Parent confirms all 7 workflows succeeded; not rechecked or treated as adoption approval.",
+  "scope": "three representative flavor cartons only; remove AF lettering from artwork; independent original white angel mark; no game integration or HMD generation",
+  "adoption": "HOLD; human art direction review pending",
+  "runtime_integrated": false,
+  "canonical_mark": "originals/canonical-white-angel-mark.png",
+  "brand_names_in_data_unchanged": true,
+  "game_brand": "アルファーヘブン",
+  "real_brand_adopted": false,
+  "official_visual_context_only": "https://www.alfakher.com/our-products-africa",
+  "official_reference_details": "../prototype-retail-cartons-no-grass-v2/manifest.json",
+  "manufacturer_photos_added": false,
+  "mark_template": {
+    "design": "same canonical original white wing pair with three broad feather lobes per wing and separate thick oval halo; no typography/crown/body",
+    "target_normalized_width": 0.53,
+    "target_normalized_center": [
+      0.5,
+      0.185
+    ],
+    "normalization": "relative to front panel, approximate after perspective rectification",
+    "source_bytes_modified": false,
+    "in_situ_template": "originals/mint-angel-prototype.png",
+    "template_choice": "First pass ignored .34 target; mint printed width .530 chosen as readable common template. Apple .581 and grape .637 require correction; first-pass diagnostics retained."
+  },
+  "hmd_preservation": {
+    "path": "../prototype-retail-cartons-no-grass-v2/originals/tanukish_lid-low-profile-prototype.png",
+    "sha256": "e1015b5ed88d31ef81f236905aa5538c6d78ac04bf513eac83901aca57df4466",
+    "generated_in_this_revision": false
+  },
+  "items": [
+    {
+      "id": "mint",
+      "existing_name": "アルファーヘブン ミント",
+      "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/mint-retail-prototype.png",
+      "output": "candidates/mint-angel-first.png",
+      "front_panel_quad_native_px": [
+        [
+          310,
+          250
+        ],
+        [
+          890,
+          250
+        ],
+        [
+          890,
+          1048
+        ],
+        [
+          310,
+          1040
+        ]
+      ],
+      "status": "first pass; measurement pending"
+    },
+    {
+      "id": "double_apple",
+      "existing_name": "アルファーヘブン ダブルアップル",
+      "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/double_apple-retail-prototype.png",
+      "output": "candidates/double_apple-angel-first.png",
+      "front_panel_quad_native_px": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "status": "first pass; measurement pending"
+    },
+    {
+      "id": "grape",
+      "existing_name": "アルファーヘブン グレープ",
+      "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/grape-retail-prototype.png",
+      "output": "candidates/grape-angel-first.png",
+      "front_panel_quad_native_px": [
+        [
+          279,
+          195
+        ],
+        [
+          910,
+          210
+        ],
+        [
+          910,
+          1120
+        ],
+        [
+          279,
+          1102
+        ]
+      ],
+      "status": "first pass; measurement pending"
+    }
+  ]
+}

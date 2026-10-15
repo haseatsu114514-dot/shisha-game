@@ -10,6 +10,45 @@
       "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png",
       "status": "master accepted; actual transparent pixels inspected using dark QA backing",
       "source_bytes_modified": false
+    },
+    {
+      "id": "mint",
+      "prompt": "Use case: precise-object-edit. Asset type: representative fictional game flavor carton revision, NOT game integration. Input image 1 is the EDIT TARGET existing black shallow carton. Input image 2 is the CANONICAL INSERT REFERENCE, the ONE original white abstract wings-and-halo emblem. Remove ALL the AF lettering from target image 1, restoring its dark printed stock there, and print the EXACT SAME complete emblem from image 2 in its place. Do not redraw or reinterpret its design: preserve the canonical thick oval halo, the single joined pair of wings, THREE broad feather lobes on each wing, central dip and proportions. White opaque flat ink only; no crown, manufacturer logo, letters, new text, human angel, gold, grey, glow or shadow on the emblem. Enforce the shared template: emblem overall width is 34% of the carton FRONT PANEL width, centered horizontally at front-panel u=0.50; overall emblem bounding-box center at v=0.17 measured from the front panel's top to bottom. Keep the canonical aspect ratio; use the exact same normalized mark size and position on all flavor boxes. Match the front surface perspective, not the full PNG canvas. Change ONLY the AF-to-emblem print region. Preserve the existing carton outline, top/right folds, shallow construction, material, camera, black color, exact flavor-colored brush panel and ingredient print, scale, location, framing, original square canvas and transparent margins. Do not shift or enlarge the box or move the flavor panel/ingredients. Do not add grass, vines, decorative leaves, extra ingredients, outside shadows, floor, hookah or HMD. True transparent RGBA background preserved. No letter A or F or other text anywhere on the result. Preserve the cool green brush and mint ingredient exactly as in image 1.",
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-cartons-no-grass-v2/originals/mint-retail-prototype.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
+      ],
+      "transparent_background": true,
+      "source_generated_png": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-49afdfa0-ac3e-4e8d-8428-1c72a6494c48.png",
+      "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/mint-angel-first.png",
+      "source_bytes_modified": false,
+      "status": "selected unchanged as common in-situ print template; width .530, center (.504,.1855)"
+    },
+    {
+      "id": "double_apple",
+      "prompt": "Use case: precise-object-edit. Asset type: representative fictional game flavor carton revision, NOT game integration. Input image 1 is the EDIT TARGET existing black shallow carton. Input image 2 is the CANONICAL INSERT REFERENCE, the ONE original white abstract wings-and-halo emblem. Remove ALL the AF lettering from target image 1, restoring its dark printed stock there, and print the EXACT SAME complete emblem from image 2 in its place. Do not redraw or reinterpret its design: preserve the canonical thick oval halo, the single joined pair of wings, THREE broad feather lobes on each wing, central dip and proportions. White opaque flat ink only; no crown, manufacturer logo, letters, new text, human angel, gold, grey, glow or shadow on the emblem. Enforce the shared template: emblem overall width is 34% of the carton FRONT PANEL width, centered horizontally at front-panel u=0.50; overall emblem bounding-box center at v=0.17 measured from the front panel's top to bottom. Keep the canonical aspect ratio; use the exact same normalized mark size and position on all flavor boxes. Match the front surface perspective, not the full PNG canvas. Change ONLY the AF-to-emblem print region. Preserve the existing carton outline, top/right folds, shallow construction, material, camera, black color, exact flavor-colored brush panel and ingredient print, scale, location, framing, original square canvas and transparent margins. Do not shift or enlarge the box or move the flavor panel/ingredients. Do not add grass, vines, decorative leaves, extra ingredients, outside shadows, floor, hookah or HMD. True transparent RGBA background preserved. No letter A or F or other text anywhere on the result. Preserve the red/green brush and the red and green apples exactly as in image 1.",
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-cartons-no-grass-v2/originals/double_apple-retail-prototype.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
+      ],
+      "transparent_background": true,
+      "source_generated_png": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-9b771a5b-e4f0-4e75-849f-0d7dcb11ed7e.png",
+      "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/double_apple-angel-first.png",
+      "source_bytes_modified": false,
+      "status": "first pass retained; size/center differs from mint; generator correction requested"
+    },
+    {
+      "id": "grape",
+      "prompt": "Use case: precise-object-edit. Asset type: representative fictional game flavor carton revision, NOT game integration. Input image 1 is the EDIT TARGET existing black shallow carton. Input image 2 is the CANONICAL INSERT REFERENCE, the ONE original white abstract wings-and-halo emblem. Remove ALL the AF lettering from target image 1, restoring its dark printed stock there, and print the EXACT SAME complete emblem from image 2 in its place. Do not redraw or reinterpret its design: preserve the canonical thick oval halo, the single joined pair of wings, THREE broad feather lobes on each wing, central dip and proportions. White opaque flat ink only; no crown, manufacturer logo, letters, new text, human angel, gold, grey, glow or shadow on the emblem. Enforce the shared template: emblem overall width is 34% of the carton FRONT PANEL width, centered horizontally at front-panel u=0.50; overall emblem bounding-box center at v=0.17 measured from the front panel's top to bottom. Keep the canonical aspect ratio; use the exact same normalized mark size and position on all flavor boxes. Match the front surface perspective, not the full PNG canvas. Change ONLY the AF-to-emblem print region. Preserve the existing carton outline, top/right folds, shallow construction, material, camera, black color, exact flavor-colored brush panel and ingredient print, scale, location, framing, original square canvas and transparent margins. Do not shift or enlarge the box or move the flavor panel/ingredients. Do not add grass, vines, decorative leaves, extra ingredients, outside shadows, floor, hookah or HMD. True transparent RGBA background preserved. No letter A or F or other text anywhere on the result. Preserve the purple brush and grapes with bare stem exactly as in image 1.",
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-cartons-no-grass-v2/originals/grape-retail-prototype.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
+      ],
+      "transparent_background": true,
+      "source_generated_png": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-077936d4-22fe-41ac-9d59-a90ac00cd1d1.png",
+      "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/grape-angel-first.png",
+      "source_bytes_modified": false,
+      "status": "first pass retained; size/center differs from mint; generator correction requested"
     }
   ]
 }
