@@ -16,7 +16,7 @@ export const STOPS = [
 export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_city_${id}`);
 
-async function readDialogues(name, required) {
+export async function readDialogues(name, required) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {

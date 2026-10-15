@@ -52,11 +52,11 @@ async function act(page,id,{touch=false}={}) {
   await go(page,id,touch);
   await page.waitForFunction(old => window.__remake.state.day > old.day || window.__remake.state.slot > old.slot,
     { day: before.day, slot: before.slot });
-  await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
+  await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
 }
 async function reloadSave(page, slot = 0) {
   await page.reload(); await page.locator(t('title-load')).click(); await page.locator(t(`slot-${slot}`)).click();
-  await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
+  await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
   await page.evaluate(() => { window.__remake.vnTest.turbo = true; });
 }
 async function capture(page,file) { await page.waitForTimeout(700); await page.screenshot({path:evidence+file}); }

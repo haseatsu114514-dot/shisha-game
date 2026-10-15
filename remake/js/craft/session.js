@@ -50,6 +50,7 @@ export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   return {
     mode,
+    chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
     condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
     environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
@@ -121,7 +122,7 @@ export function openBench(cs, { steps = [] } = {}) {
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,

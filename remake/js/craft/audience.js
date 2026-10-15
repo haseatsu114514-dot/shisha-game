@@ -27,7 +27,7 @@ function wrapNote(note) {
 }
 
 export function audienceFor(mode, chapter) {
-  if (mode === "tournament") return chapter === 1 ? ["nagumo", "maezono", "dr_kemuri"] : [];
+  if (mode === "tournament") return [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
