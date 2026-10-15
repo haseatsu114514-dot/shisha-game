@@ -33,7 +33,23 @@
       "reference_sha256": "35757b87438ea9ac5019b6e4213fa6344fa0a00b9a597430b56da62d64e21615",
       "reference_photo_redistributed": false,
       "output": "originals/mint-retail-prototype.png",
-      "status": "planned"
+      "status": "generated prototype; visual review before adoption",
+      "sha256": "22f128aa61cf0d03a9bd8323b643e50983c0f2b1b1b143a89f85bd237fd9386f",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "visible_bbox": [
+        310,
+        215,
+        944,
+        1054
+      ]
     },
     {
       "id": "double_apple",
@@ -48,7 +64,23 @@
       "reference_sha256": "4c27e66290c7bd0284c0319e2e2721cd68693559122dcd51ab9152aa07ef3cac",
       "reference_photo_redistributed": false,
       "output": "originals/double_apple-retail-prototype.png",
-      "status": "planned"
+      "status": "generated prototype; visual review before adoption",
+      "sha256": "98304f23c32e84d9a35a36f2b16082e070303cabdb639eb0819e2877e43c5ed1",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "visible_bbox": [
+        264,
+        139,
+        991,
+        1116
+      ]
     },
     {
       "id": "grape",
@@ -63,7 +95,23 @@
       "reference_sha256": "f5f2e72d329346491c160c3d8adfe18bf584b1744de6cabdfb973f28ccffcbf5",
       "reference_photo_redistributed": false,
       "output": "originals/grape-retail-prototype.png",
-      "status": "planned"
+      "status": "generated prototype; visual review before adoption",
+      "sha256": "16d1c6b68428494da9c675c4a9f07f5a549cbb0f4afd76942e8656fe45ba3730",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "visible_bbox": [
+        279,
+        148,
+        980,
+        1123
+      ]
     },
     {
       "id": "tanukish_lid",
