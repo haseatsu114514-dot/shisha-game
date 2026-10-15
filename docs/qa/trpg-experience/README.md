@@ -4,9 +4,11 @@
 
 ## 再設計版（2026-10-15）
 
-前回UIへの「文字やウインドウが多く、ワクワクしない」という指摘を受け、場面と選ぶ物の絵を中心に組み直した。
+場面と選ぶ物の絵を中心に、短編2本のUIを組み直した。
 1280×720のステージ全体を物語の背景にし、常設サイドバーを撤去。会話がない時は人物・字幕も畳み、探索点、ノート、相談する仲間、次の行動を場面上に置く。
 会話中だけ人物カットと字幕を表示し、GMと物語内の役の区別は残す。
+
+![香りを絵から選ぶ](cinematic-choices.png)
 
 - 探索点は小さなリングで示し、対象名はhover・キーボードfocus時に表示する。通常編は必要な手がかり3つ、サメ編は残り調査数と危機コストも短い一行で伝える。
 - 準備は一度に3つの絵から選ぶ。香り・道具を選ぶと次の席・経路へ進み、小さなタブから選び直せる。前に選んだ値は保持する。長い説明はhover・focusした物に添える。
@@ -23,7 +25,7 @@
 
 ### 再設計版の画像
 
-以下は最終撮影用の保存先。旧UIの「after」画像は、この再設計版の完成画像として扱わない。
+旧UIの「after」画像と分けて、再設計版の実画面を保存した。
 
 | 場面 | 保存先 |
 | --- | --- |
@@ -34,21 +36,26 @@
 | 詳細を畳んだ判定 | [cinematic-roll.png](cinematic-roll.png) |
 | 横持ちタッチ | [cinematic-touch.png](cinematic-touch.png) |
 | サメ編 | [cinematic-shark.png](cinematic-shark.png) |
+| 会話中の人物と字幕 | [cinematic-conversation.png](cinematic-conversation.png) |
+| 結末 | [cinematic-ending.png](cinematic-ending.png) |
 
 ### 再設計版の検証
 
-前回UIの検証記録と分けて保存する。現時点で再設計版の通常編PC・横持ちタッチ2ケースはPASSを確認した。その他の最終結果は確認後に記録する。
-
-<!-- 最終確認担当: 撮影画像と実際のPASS結果だけを保存し、この表の未確認・保存待ちを実行結果に合わせて更新する。 -->
+最終ゲーム実装は `d1ed14af`、最終ブラウザ検査は `aa8b559e`。通常編の画像は最終検査時、サメ編は同じデザインの `d80ad978` 時に撮影した。`d80ad978` 以後の変更は下部地点のラベル方向・タッチCTAの位置・モーダル初期表示の色・書き出し互換性と関連検査。
 
 | 検査 | 状態 | 最終結果の保存先 |
 | --- | --- | --- |
-| `trpg_experience.mjs` 通常編 | PC・タッチ2/2 PASS。結果ファイル保存待ち | [cinematic-experience.json](cinematic-experience.json) |
-| `trpg_experience.mjs` サメ編 | 最終結果は未確認 | [cinematic-shark.json](cinematic-shark.json) |
-| 既存 `trpg.mjs` | 再設計版での最終結果は未確認 | [cinematic-stories.json](cinematic-stories.json) |
-| 本編接続 `trpg_main.mjs` | 再設計版での最終結果は未確認 | [cinematic-integration.json](cinematic-integration.json) |
+| `trpg_experience.mjs` 通常編 | 最終検査 `aa8b559e`、PC・タッチ2/2 PASS | [cinematic-experience.json](cinematic-experience.json) |
+| `trpg_experience.mjs` サメ編 | `d80ad978`、隠し情報を含む2/2 PASS | [cinematic-shark.json](cinematic-shark.json) |
+| 既存 `trpg.mjs` | 16ケースすべて通過。初回14/16、ノートのテスト文言修正とクリック待機時間切れの2件を単独で再実行してPASS | [集約](cinematic-stories.json) / [初回](cinematic-stories-initial.json) / [通常編の再実行](cinematic-retry-quiet-pc-keyboard.json) / [サメ編の再実行](cinematic-retry-shark-scent-pc.json) |
+| 本編接続 `trpg_main.mjs` | `d80ad978` CIで13/13 PASS。下記のrun取消と区別 | [cinematic-integration.json](cinematic-integration.json) |
+| 純関数・台詞・セーブ | 30件、schema移行と43破損fixture、台詞lint ERROR 0 / WARN 0 | `trpg.mjs` / `trpg_campaign.mjs` / `trpg_feedback.mjs` / `trpg_campaign_save.mjs` |
+| 静的書き出し | 最終実装48ファイルと新CSS・2枚のatlasを確認。再設計前 `origin/main` の44ファイルも書き出し成功 | `tools/export_trpg_preview.py` |
 
-追加検査は、全面の背景、常設サイドバーとidle字幕の撤去、光点のfocusラベル、実タップ領域、空のノート、絵付き3択の切り替えと選択保持、説明の表示、判定詳細の初期closedと開閉を確認する。
+`d80ad978` の [CI run 38797673607](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38797673607) は、シナリオ検査・短編16・追加4・本編13の全stepがSUCCESS。後続pushでrun全体はcancelledになったため、run全体の成功とは扱わない。[取得したstep情報](cinematic-ci-d80.json) と [追加4件](cinematic-experience-d80.json) を保持する。
+最終実装・検査headの [CI run 38798566459](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38798566459) はPR上で結果を確認する。QA画像・記録の追加による後続headでも同じTRPG検査を実行する。
+
+追加検査は、全面の背景、常設サイドバーとidle字幕の撤去、光点のfocusラベル、実タップ領域、空のノート、絵付き3択の切り替えと選択保持、説明の表示、判定詳細の初期closedと開閉を確認する。最終通常編では下部地点とラベルがCTAに重ならないこと、長押しで次の選択を選ばないことも確認した。
 従来の長押しキー、判定中のfocus、見立ての非漏洩、振り返り、Storage無アクセス・保存不変の検査も残す。
 
 再現コマンド:
