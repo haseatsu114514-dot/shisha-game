@@ -15,7 +15,10 @@ import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals
 import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
-export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
+export const REGULATION = {
+  1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" },
+  2: { flavor: "strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
+};
 export const regulationFor = (cs) => (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
 // スミさんの手本（チュートリアル中だけ、工程の頭に出す）
@@ -143,7 +146,9 @@ export async function stepMix(cs) {
     lcd.classList.toggle("ok", total >= 12 && total <= cap);
     vessel.replaceChildren(mixBowlPreview(cs, total));
     vessel.dataset.filled = String(total > 0);
-    const aroma = mixTaste(cs.mix);
+    const aroma = cs.mode === "tournament" && cs.chapter === 2
+      ? { headline: "苺の輪郭が、つかめない", detail: "配合は見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。", tags: ["味覚の不調"] }
+      : mixTaste(cs.mix);
     taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }),
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
@@ -204,6 +209,10 @@ export async function stepMix(cs) {
       // 上手=スミさんの基本形（ダブルアップル＋ミント）／下手=規定ぎりぎりの雑な配合
       if (autoSkill() === "good" || cs.mode === "tutorial") { cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 9, mint: 3 } : { double_apple: 9, mint: 3 }; }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
+      if (reg?.flavor === "strawberry") {
+        const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
+        cs.mix = { strawberry: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
+      }
       redraw();
       setTimeout(() => okBtn.click(), 60);
     }

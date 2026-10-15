@@ -49,6 +49,7 @@ export function resumeChapterTwo() { return openChapter(false); }
 async function openChapter(advance) {
   if (session) { session.active = false; session.controller?.abort(); }
   session = { state, active: true, busy: false, controller: null, scene: "loading", mapAvailable: false };
+  document.body.classList.remove("ch2-tournament");
   document.body.classList.add("ch2-city");
   showHud(false);
   if (!watchingHistory) {
@@ -66,6 +67,9 @@ async function openChapter(advance) {
   showScreen("ch2-loading", el("main.ch2-shell.ch2-loading", [el("h1", { text: "第二章・才能の壁" }), el("p", { text: "街の台本を準備しています…", role: "status" })]));
   await perform(async () => {
     const owner = session;
+    if (!advance && state.chapter === 2 && (chapterDay(state) >= 14 || state.flags._ch2_tournament)) {
+      await tournament(); return;
+    }
     await loadChapterTwoDialogues();
     if (!current(owner)) return;
     // 必要台本を読み込めた後で初めて保存を次章へ進める。通信失敗でクリア記録を失わない。
@@ -251,7 +255,7 @@ function renderComplete() {
   showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("complete") } }, [el("div.ch2-end-card", [
     el("p.ch2-kicker", { text: "第二章・DAY1 / 地元へ戻って" }), el("h1", { text: "次に持っていく、一台。" }),
     el("p.ch2-end-description", { text: "会場までの道を覚えて、tonariへ戻った。鞄の中には、大会の案内。初めての街で見たものを、少しずつ整理していこう。" }),
-    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。大会前夜のDAY13まで、行動と交流、物語が続きます。県大会の本戦は制作中です。" }),
+    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。大会前夜のDAY13まで、行動と交流、物語が続きます。DAY14は県大会本戦です。" }),
     el("div.ch2-actions", [button("翌日へ", "next-day", continuePreparation, true), button("セーブ・メニュー", "menu", openMenu)]),
   ])]));
 }
@@ -274,16 +278,13 @@ async function continuePreparation() {
   layers.screen.removeAttribute("aria-busy"); // 日常の地図は入力待ち。章のロード中として読み上げを止めない。
   await runChapterTwoPreparation();
   if (!current(owner)) return;
-  showHud(false); document.body.classList.add("ch2-city");
-  await setBg(bgUrl("bg_home", "day"), { instant: true });
-  owner.scene = "preparation-limit";
-  showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("preparation-limit") } }, [el("div.ch2-end-card", [
-    el("p.ch2-kicker", { text: `第二章・DAY ${chapterDay(state)} / 次の朝` }),
-    el("h1", { text: "県大会の朝。" }),
-    el("p.ch2-end-description", { text: "大会前夜までの進行を保存しました。DAY14の県大会本戦は制作中です。所持品・人間関係・訪問と約束の記録は引き継がれています。" }),
-    el("div.ch2-actions", [button("セーブ・メニュー", "menu", openMenu, true)]),
-  ])]));
-  focus("menu");
+  await tournament();
+}
+
+async function tournament() {
+  session.scene = "tournament";
+  showHud(false);
+  await (await import("./ch2-tournament.js")).runChapterTwoTournament();
 }
 
 function renderError(retry) {

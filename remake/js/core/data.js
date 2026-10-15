@@ -4,6 +4,8 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 const ROOT = "../";
+// 章の追加台本は必要になった時だけ読み、起動や他章の通信を増やさない。
+export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament" };
 // データローダは状態モジュールを読み込まない。天気側が表示用の読み取り関数を登録する。
 let backgroundWeather = () => null;
 export function setBackgroundWeatherSource(source) { backgroundWeather = source; }

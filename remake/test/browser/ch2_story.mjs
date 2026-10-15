@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
-const end = t('ch2-main-preparation-limit');
+const end = t('ch2-tournament-entry');
 async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, sick = false } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
@@ -85,7 +85,7 @@ await suite('ch2-story', async check => {
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
-    await assertFits(page, '.ch2-end-card .btn');
+    await assertFits(page, '.ch2-contest .btn');
     await reload(page); await page.locator(end).waitFor();
     const loaded = await state(page); assert.equal(loaded.day, 28); assert.deepEqual(loaded.stats, s.stats); assert.equal(loaded.money, s.money);
   }, { reducedMotion: 'reduce' });

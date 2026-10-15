@@ -13,6 +13,9 @@ on:
       - 'data/dialogue/ch2_preparation.json'
       - 'data/dialogue/ch2_isolation.json'
       - 'data/dialogue/ch2_main.json'
+      - 'data/dialogue/ch2_tournament.json'
+      - 'remake/css/ch2-tournament.css'
+      - 'remake/test/ch2_tournament.mjs'
       - 'data/lime_messages.json'
       - 'data/characters.json'
       - 'remake/data/manifest.json'
@@ -58,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story]
+        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story, ch2_tournament]
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -94,6 +97,7 @@ jobs:
           TEST_REF: ${{ github.sha }}
         run: |
           node remake/test/ch2_progress.mjs
+          node remake/test/ch2_tournament.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
           node remake/test/browser/${{ matrix.suite }}.mjs
       - name: Save browser evidence
