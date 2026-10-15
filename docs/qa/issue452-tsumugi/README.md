@@ -22,9 +22,12 @@ Chromium 154.0.8037.57。PC 1280×720／横持ちタッチ844×390のエミュ�
 - `relationship_memories.mjs`: 6人物の経路・分岐・再読・旧セーブ等PASS。
 - `affinity_gates.mjs`: PC／タッチ **10ケースPASS**。♥3停止と実回答後の解放、友情／恋愛、応募前後の締めくくり、再加算防止を含む。
 - `save_load.mjs`: **6ケースPASS**。全保存枠、旧セーブ、破損データ、PC／タッチの保存・再読込・再開UI、縦横回転。
+- 既存 `issue508_theme.mjs` の6場面18経路比較PASS。回答直後の保存で変わる時刻だけを下描き場面に限って別途検証し、その他の全ゲーム状態の一致と他場面の検査は維持。
 - 対象会話lint ERROR 0 / WARN 6（既存のみ）、JSON解析、JS構文、`check_agent_docs.py`、diff check、Git Safety PASS。`tidy_dialogue_text.py --dry-run` は対象外の既存oneesan台詞1行だけを提示し、今回の新規台詞に指摘なし。
 
 初回計測は、CGをCSS背景ではなくimg要素と扱うテスト側の前提誤りを見つけて中断。修正後の専用8ケースを省略なしで再実行した結果が以下の記録。
+
+既存の6場面比較も追加実行し、下描きの実回答を保存する処理による `savedAt` の更新だけで初回FAILを再現した。下描き場面のみ保存時刻が更新されることをassertし、時刻以外の全フィールド比較を維持して再実行PASS。[初回失敗](existing-theme-initial.txt)／[修正後の18経路比較](existing-theme-fixed.txt)。ゲーム状態・報酬のassertは削除していない。
 
 ### クリック数
 
@@ -57,6 +60,7 @@ CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/tsumugi_draft_
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium NODE_PATH=./remake/test/browser/node_modules node remake/test/relationship_memories.mjs
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/affinity_gates.mjs
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/save_load.mjs
+CHROME_EXECUTABLE_PATH=/usr/bin/chromium CASE_FILTER=six-scenes-branches-old-save-and-state-effects node remake/test/browser/issue508_theme.mjs
 python3 tools/lint_dialogue.py ch1_main
 python3 tools/tidy_dialogue_text.py --dry-run
 python3 tools/check_agent_docs.py
