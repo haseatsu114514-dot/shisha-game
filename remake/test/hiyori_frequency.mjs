@@ -80,6 +80,12 @@ for (let seed = 0; seed < 100; seed++) {
   }
 }
 assert(encounters > 500 && absent > 500, "Both encounter and absent slots must be exercised");
+// A store action may change meeting/unlock/consultation state; keep the entry-time schedule.
+reset(131, {}); state.slot = 1;
+const planned = hiyoriShopLocation();
+shops.find(s => s.id === planned).locked = true;
+assert(await visitHiyoriAtShop(shops.find(s => s.id === planned), { scheduledSpot: planned }));
+delete shops.find(s => s.id === planned).locked;
 // Closure, locks, daytime showroom and accepted invitations override spontaneous appearances.
 reset(131, {}); state.slot = 1;
 const scheduled = shops.find(s => s.id === hiyoriShopLocation());

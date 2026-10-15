@@ -66,7 +66,7 @@ export async function playHiyoriEvent(id, options = {}) {
   }
 }
 
-/** 買い物だけでは会わない。実際に一服する他店なら、初対面の店は固定しない。 */
+/** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
   || spot.kind === "shop" || spot.id === "c_station");
 
@@ -107,8 +107,10 @@ export function hiyoriShopLocation() {
 export const hiyoriShopEncounterDue = spot => !!spot && hiyoriShopLocation() === spot.id;
 
 /** 既存の訪問に相席を添える。同じ日の多重遭遇・無料の買い物による好感度稼ぎを防ぐ。 */
-export async function visitHiyoriAtShop(spot, { bg } = {}) {
-  if (!hiyoriShopEncounterDue(spot)) return false;
+export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLocation() } = {}) {
+  // 来店中の面識・訪問済みの更新で、入店前に示した滞在先を再抽選しない。
+  if (!hiyoriShopEligible(spot) || !scheduledSpot || scheduledSpot !== spot.id
+    || state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`) return false;
   const owner = state;
   const stamp = `${state.chapter}:${state.day}`;
   const options = { bg };
