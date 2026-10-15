@@ -16,13 +16,18 @@ import { fortuneToday } from "./fortune.js";
 import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
-/** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
-function spotFace(s) {
-  if (!s.face) return null;
-  if (s.face !== "sumi" && !state.met[s.face]) return null;
-  return faceIconUrl(s.face);
+/** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
+function peopleRow(people) {
+  if (!people.length) return null;
+  return el("span.pin-people", { "aria-label": `在店：${people.map(p => p.name).join("、")}` }, people.map(person => {
+    const face = person.known && faceIconUrl(person.id);
+    return face ? el("img.pin-person", { src: face, alt: person.name, title: person.name })
+      : el("span.pin-person.pin-unknown", { role: "img", "aria-label": person.name, title: person.name, html:
+        '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="6"/><path d="M5 30v-4a11 11 0 0 1 22 0v4Z"/></svg><b>?</b>' });
+  }));
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
@@ -221,7 +226,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
-      const face = locked ? null : spotFace(s);
+      const people = locked ? [] : spotPeople(s);
       const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -232,15 +237,15 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [logo || (face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
+          el("div.ico", [logo || (locked || !known && s.unknownLabel
             ? el("span", { text: "？" }) : pinSymbol(s))]),
-          logo && face ? el("img.pin-face.pin-owner-face", { src: face, alt: "" }) : null,
         ]),
+        peopleRow(people),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
