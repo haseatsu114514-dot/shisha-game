@@ -29,6 +29,7 @@ on:
       - 'remake/test/browser/trpg.mjs'
       - 'remake/test/browser/trpg_experience.mjs'
       - 'remake/test/browser/trpg_main.mjs'
+      - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
   push:
     branches: [main]
@@ -60,6 +61,7 @@ on:
       - 'remake/test/browser/trpg.mjs'
       - 'remake/test/browser/trpg_experience.mjs'
       - 'remake/test/browser/trpg_main.mjs'
+      - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
   workflow_dispatch:
 permissions:
@@ -110,6 +112,7 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/trpg
+          BROWSER_TIMEOUT_MS: '30000'
         run: |
           node remake/test/browser/trpg.mjs
           ARTIFACT_DIR=.codex/artifacts/trpg/experience node remake/test/browser/trpg_experience.mjs
