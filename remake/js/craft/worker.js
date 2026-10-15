@@ -54,7 +54,7 @@ export function buildWorkerScene(cs) {
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
     el("i.worker-breath", { "aria-hidden": "true" }),
-    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? "SMOKE CROWN CUP" : "TONARI" }),
+    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : "TONARI" }),
   ]);
   // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);

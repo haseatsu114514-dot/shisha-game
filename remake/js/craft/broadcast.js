@@ -53,7 +53,9 @@ function defer(cs, fn, delay) {
 
 /** 同じ種類のコメントを n 本、少しずつずらして流す */
 export function burst(cs, kind, n = null) {
-  const pool = DB.broadcast?.nico?.[kind] || [];
+  const pool = cs?.chapter === 2 && kind === "rival"
+    ? ["あげはの一台、気になる", "神崎選手、手が落ち着いてる", "REI選手も仕上げてる", "4人とも型が違って面白い"]
+    : DB.broadcast?.nico?.[kind] || [];
   if (!live(cs) || !pool.length) return;
   n = n ?? (kind === "perfect" ? 3 : 2);
   const cls = ["perfect", "miss", "rival"].includes(kind) ? kind : "";

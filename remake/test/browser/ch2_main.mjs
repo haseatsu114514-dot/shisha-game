@@ -120,7 +120,7 @@ await suite('ch2-main', async check => {
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
     for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
-    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*制作中/);
+    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*DAY14は県大会本戦/);
     await screenshot(page, 'touch-first-day-complete.png');
     await preserved(page, before);
     await reloadSaved(page);

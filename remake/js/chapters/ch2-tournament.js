@@ -141,10 +141,18 @@ function partialQuality(cs, round) {
   if (round >= 2) parts.push(cs.careHistory[0].score);
   return parts.reduce((sum, value) => sum + value, 0) / parts.length;
 }
+function contestantAvatar(who) {
+  const icon = faceIconUrl(who), portrait = portraitInfo(who, "normal");
+  const image = el("img", { src: icon || portrait?.src, alt: "" });
+  // 顔アイコン未制作の2人も、既存立ち絵の頭部を同じ枠に収める。
+  if (!icon && portrait) Object.assign(image.style, { width: "171px", height: "auto",
+    left: `${18 - portrait.ax * 171}px`, top: `${2.7 - (1 - portrait.h - portrait.b) * 171 / portrait.aspect}px`, position: "absolute" });
+  return el("span.ch2-contest-avatar", [image]);
+}
 function renderVotes(owner, final = false) {
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const row = value => el("li.ch2-contest-rival", { dataset: { contestant: value.id } }, [
-    el("b", { text: String(value.rank) }), el("img", { src: faceIconUrl(value.id) || portraitInfo(value.id, "normal")?.src, alt: "" }),
+    el("b", { text: String(value.rank) }), contestantAvatar(value.id),
     el("span", { text: displayName(value.id, state) }), el("strong", { text: `${value.points} pt` }),
   ]);
   const judges = el("div.ch2-contest-judges", JUDGES.map(judge => {
@@ -185,7 +193,7 @@ async function drive(owner) {
     const p = progress();
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "morning") {
-      if (!await message(owner, "morning", ["ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい。", "だが一つだけ言わせろ。──お前は今、誰のために作ってる？"])) { if (live(owner)) renderEntry(owner); return; }
+      if (!await message(owner, "morning", ["ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい", "だが一つだけ言わせろ。──お前は今、誰のために作ってる？"])) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
       if (!await read(owner, "lobby")) return;
@@ -226,6 +234,7 @@ async function drive(owner) {
     else if (p.stage === "result") { playBgm("bgm_tournament_wait"); renderVotes(owner, true); return; }
     else if (p.stage === "defeat") { renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
+      state.phase = "aftermath"; state.slot = 1; save();
       if (!await read(owner, "farewell")) return;
       checkpoint("tasteless");
     } else if (p.stage === "tasteless") {
@@ -233,7 +242,7 @@ async function drive(owner) {
       state.flags._ch2_taste_distant = true;
       checkpoint("tokyo");
     } else if (p.stage === "tokyo") {
-      if (!await message(owner, "tokyo", ["東京に行ったら、mukaiのムカイさんを頼れ。", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
+      if (!await message(owner, "tokyo", ["東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
       state.flags._ch2_cleared = true; state.flags._ch2_tokyo_invitation = true;
       state.phase = "cleared"; checkpoint("complete");
     } else if (p.stage === "complete") { renderComplete(owner); return; }

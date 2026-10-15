@@ -5,7 +5,7 @@ import { SAVE_SLOTS, readSlot, saveToSlot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 
-const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", cleared: "第1章クリア" };
+const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後", cleared: "第1章クリア" };
 
 function slotInfo(data) {
   if (!data) return "── 空き ──";
