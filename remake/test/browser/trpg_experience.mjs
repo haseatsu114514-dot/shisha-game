@@ -253,6 +253,7 @@ async function ordinary(page, keyboard) {
   await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-exploration-pc.png" : "ordinary-exploration-touch.png") });
   for (const id of ["menu", "window", "bag"]) await inspect(page, id, { focus: keyboard });
   assert(await control(page, "trpg-interpret").isEnabled());
+  await page.keyboard.press("Tab");
   await control(page, "trpg-spot-counter").focus();
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('[data-test="trpg-spot-counter"] span')).opacity) > .95);
   assert(await page.evaluate(() => {
