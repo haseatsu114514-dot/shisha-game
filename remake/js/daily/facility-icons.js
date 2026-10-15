@@ -1,5 +1,5 @@
 // Independent preview component. No map, unlock, guest or save dependencies.
-export const FACILITY_SHEET = new URL('../../../asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/facilities-source.png', import.meta.url).href;
+export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.png', import.meta.url).href;
 export const FACILITY_SHEET_SIZE = Object.freeze([2172, 724]);
 // Half-open source coordinates; two source pixels of breathing room around alpha > 2.
 export const FACILITY_ICONS = Object.freeze({

@@ -4,10 +4,16 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { FACILITY_ICONS, FACILITY_ICON_SIZES, FACILITY_SHEET, facilityIconLayout } from '../js/daily/facility-icons.js';
 
-const source = new URL(FACILITY_SHEET);
+const source = new URL('../../asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/facilities-source.png', import.meta.url);
 const bytes = fs.readFileSync(source);
-assert.equal(createHash('sha256').update(bytes).digest('hex'), '7289b74ffe67290a444f2e6e95dee7be209ec31ae33d31cd26b39903ed51a284');
-assert.equal(createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'), '76fea0c4c5d0fd46364b9ed5df5fa0826d11eda4');
+const published = new URL('../../assets/ui/map-facilities-579.png', import.meta.url);
+assert.equal(FACILITY_SHEET, published.href);
+const copy = fs.readFileSync(published);
+assert.deepEqual(copy, bytes, 'Published sheet must remain byte-identical to the original');
+for (const data of [bytes, copy]) {
+  assert.equal(createHash('sha256').update(data).digest('hex'), '7289b74ffe67290a444f2e6e95dee7be209ec31ae33d31cd26b39903ed51a284');
+  assert.equal(createHash('sha1').update(`blob ${data.length}\0`).update(data).digest('hex'), '76fea0c4c5d0fd46364b9ed5df5fa0826d11eda4');
+}
 assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, label]),
   [['kannondo', '観音堂'], ['home', '自宅'], ['kohaku', '喫茶こはく']]);
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.
@@ -45,4 +51,4 @@ for (const id of Object.keys(FACILITY_ICONS)) for (const size of FACILITY_ICON_S
 }
 for (const id of ['missing', '__proto__', 'constructor']) assert.throws(() => facilityIconLayout(id), RangeError);
 for (const size of [0, -1, NaN, Infinity, '48', 33]) assert.throws(() => facilityIconLayout('home', size), RangeError);
-console.log('PASS: original blob/hash, facility mapping, alpha bounds, neighbor exclusion, layout and invalid inputs');
+console.log('PASS: original/published byte equality and blob/hash, facility mapping, alpha bounds, neighbor exclusion, layout and invalid inputs');
