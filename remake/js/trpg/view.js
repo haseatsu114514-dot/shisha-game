@@ -205,7 +205,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     const state = session.snapshot(), remaining = session.rules.exploreLimit - state.clues.length;
     const ready = state.clues.length >= 3;
     return el("p.trpg-stage-investigation", { dataset: { test: "trpg-investigation", ready: String(ready) }, role: "status",
-      text: "手がかり " + state.clues.length + "/3" + (session.rules.inspectionPressure
+      text: "手がかり " + state.clues.length + (ready ? "個" : "/3") + (session.rules.inspectionPressure
         ? " · 調査あと" + remaining + "箇所 · 新規調査で危機＋" + session.rules.inspectionPressure
         : ready ? " · みんなで見立てを話せる" : " · 気になるものを調べよう") });
   }
@@ -583,6 +583,9 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     root.remove();
   }
   function keys(event) {
+    if (event.repeat && (event.key === "Enter" || event.key === " ") && event.target.closest(".trpg-object-choice")) {
+      event.preventDefault(); return;
+    }
     if (event.repeat && !overlay && busy && (event.key === "Enter" || event.key === " ")
       && (event.target === next || !event.target.closest("button,input,select,textarea"))) {
       event.preventDefault();

@@ -128,6 +128,7 @@ async function begin(page, { keyboard = false } = {}) {
   } else await hit(page, "trpg-start");
   assert(await page.locator(".trpg-dock").evaluate(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })),
     "Conversation appears as subtitles while a character speaks");
+  if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-conversation-pc.png") });
   await currentStep(page);
   await dialogue(page);
   await closedDetails(page);
@@ -264,7 +265,15 @@ async function ordinary(page, keyboard) {
   await choiceGroup(page, "aroma");
   if (keyboard) await choiceDetails(page);
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-aroma-choice-pc.png") });
-  await choosePlan(page, { aroma: "tea", seat: "window" });
+  if (keyboard) {
+    await control(page, "trpg-plan-aroma-tea").focus();
+    await page.keyboard.down("Enter");
+    assert.equal((await state(page)).plan.aroma, "tea");
+    await page.keyboard.down("Enter");
+    assert.equal((await state(page)).plan.seat, null, "Holding Enter cannot choose the next group automatically");
+    await page.keyboard.up("Enter");
+    await choosePlan(page, { seat: "window" });
+  } else await choosePlan(page, { aroma: "tea", seat: "window" });
   await hit(page, "trpg-choice-tab-aroma");
   await choiceGroup(page, "aroma");
   assert.equal(await control(page, "trpg-plan-aroma-tea").getAttribute("aria-pressed"), "true",
