@@ -59,13 +59,59 @@
           1040
         ]
       ],
-      "status": "first pass; measurement pending"
+      "status": "selected representative; human art review HOLD",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        140,
+        20,
+        1152,
+        1205
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        308,
+        212,
+        947,
+        1054
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "matches_generator_bytes": true,
+      "framing_bbox_delta_vs_v2_px": [
+        0,
+        -2,
+        1,
+        -1
+      ],
+      "measured_mark": {
+        "id": "mint",
+        "mark_bbox_in_rectified_front_px": [
+          190,
+          128,
+          512,
+          259
+        ],
+        "normalized_width": 0.46,
+        "normalized_height": 0.131,
+        "normalized_center_u": 0.5014285714285714,
+        "normalized_center_v": 0.1935,
+        "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+      }
     },
     {
       "id": "double_apple",
       "existing_name": "アルファーヘブン ダブルアップル",
       "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/double_apple-retail-prototype.png",
-      "output": "originals/double_apple-angel-aligned.png",
+      "output": "originals/double_apple-angel-positioned.png",
       "front_panel_quad_native_px": [
         [
           265,
@@ -84,7 +130,53 @@
           1090
         ]
       ],
-      "status": "first pass; measurement pending"
+      "status": "selected representative; human art review HOLD",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        103,
+        0,
+        1224,
+        1180
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        260,
+        135,
+        996,
+        1117
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "matches_generator_bytes": true,
+      "framing_bbox_delta_vs_v2_px": [
+        -3,
+        -4,
+        3,
+        1
+      ],
+      "measured_mark": {
+        "id": "double_apple",
+        "mark_bbox_in_rectified_front_px": [
+          173,
+          117,
+          497,
+          251
+        ],
+        "normalized_width": 0.46285714285714286,
+        "normalized_height": 0.134,
+        "normalized_center_u": 0.4785714285714286,
+        "normalized_center_v": 0.184,
+        "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+      }
     },
     {
       "id": "grape",
@@ -109,7 +201,85 @@
           1102
         ]
       ],
-      "status": "first pass; measurement pending"
+      "status": "selected representative; human art review HOLD",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        152,
+        25,
+        1136,
+        1206
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        274,
+        146,
+        988,
+        1124
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "matches_generator_bytes": true,
+      "framing_bbox_delta_vs_v2_px": [
+        -3,
+        -1,
+        6,
+        1
+      ],
+      "measured_mark": {
+        "id": "grape",
+        "mark_bbox_in_rectified_front_px": [
+          203,
+          122,
+          515,
+          247
+        ],
+        "normalized_width": 0.44571428571428573,
+        "normalized_height": 0.125,
+        "normalized_center_u": 0.5128571428571429,
+        "normalized_center_v": 0.1845,
+        "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+      }
     }
-  ]
+  ],
+  "canonical_mark_metadata": {
+    "path": "originals/canonical-white-angel-mark.png",
+    "decode": "PASS",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "raw_alpha_bbox": [
+      29,
+      262,
+      1200,
+      1017
+    ],
+    "visible_bbox_threshold": 8,
+    "visible_bbox": [
+      67,
+      406,
+      1187,
+      854
+    ],
+    "edge_alpha_max": 0,
+    "sha256": "909a26df9e58dcf18fba26754a3227a6c63a2811d232bc6726096aebcb509e7c",
+    "matches_generator_bytes": true
+  },
+  "mark_consistency": "Common original wing+halo design; generator size/position corrected. Approximate widths .460/.463/.446; centers (.501,.194)/(.479,.184)/(.513,.184). Contours/halo spacing remain different (pairwise IoU .847-.928), not exact uniform printing. Human review HOLD.",
+  "status_url": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38808857759",
+  "generation_calls": 9
 }

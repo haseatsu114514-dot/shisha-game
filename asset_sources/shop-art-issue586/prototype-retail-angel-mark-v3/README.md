@@ -18,3 +18,20 @@ claim `38786636524` を新status run `38808857759`（SUCCESS）で再検証。�
 PNGの実復号・RGBA/alpha・SHA256・旧資産不変は `validation.json` に記録する。元出力の微小alphaノイズを残したままの代表比較であり、production-readyな透過端処理とはしない。本編のコード/配信/dataには触れていないため、ゲームテストを不要に再実行しない。通常CIは新pushのheadへ別途動く。
 
 次は人による白い天使マークと3箱の方向性レビュー。量産・本編接続・旧案削除・merge/公開・claim releaseはしない。
+
+選定原画:
+
+- [ミント](originals/mint-angel-aligned.png)
+- [ダブルアップル](originals/double_apple-angel-positioned.png)
+- [グレープ](originals/grape-angel-prototype.png)
+- [共通の白い天使マスター](originals/canonical-white-angel-mark.png)
+
+| ID | 前面に対するマーク幅 | 中心u | 中心v |
+| --- | ---: | ---: | ---: |
+| mint | 46.0% | 0.501 | 0.194 |
+| double_apple | 46.3% | 0.479 | 0.184 |
+| grape | 44.6% | 0.513 | 0.184 |
+
+同じ翼＋輪の構成で幅と縦位置を近づけたが、羽の曲線・輪の間隔・横位置は厳密には同一でない。正規化した輪郭IoUは約0.847〜0.928。採用前にこの差を許容するか人の確認が必要。比較をレビュー可能にする代表段階で止め、本採用・量産へ進まない。
+
+実生成はマスター1回＋箱編集8回（対象は3IDだけ）。9件の元出力と、重複保存を含む11枚のネイティブPNGについて復号/RGBA/alpha/元出力SHA256一致を確認。作業前の1,234ファイルは同一で、変更は新v3フォルダだけ。HMDは今回一度も生成せず、v2のSHA256を維持した。check_agent_docs・diff-check PASS。新headのCI結果はGitHub PRのChecksとIssue/PR引継ぎコメントへ記録する。
