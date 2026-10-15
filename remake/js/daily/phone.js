@@ -409,7 +409,7 @@ export function pushNotice(count, { onOpen = null } = {}) {
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
   layers.toasts.append(card);
-  SE.phone();
+  SE.phoneReceive();
   requestAnimationFrame(() => card.classList.add("show"));
   setTimeout(() => { card.classList.remove("show"); setTimeout(() => card.remove(), 500); }, 3200);
 }
@@ -513,7 +513,7 @@ function phoneShell({ time, title }) {
     chat.append(el(`div.lime-row.${side}${animate ? "" : ".past"}`, [face, b]));
     ui.lastSide = side;
     ui.scroll();
-    if (animate) { SE.phone(); await sleep(mine ? 260 : 380); }
+    if (animate) { (mine ? SE.phoneSend : SE.phoneReceive)(); await sleep(mine ? 260 : 380); }
   };
   ui.note = (t, cls = "") => {
     chat.append(el(`div.lime-note${cls}`, { text: t }));
@@ -869,6 +869,6 @@ export function limeCoach(onOpen) {
     ]),
   ]);
   layers.fx.append(coach);
-  SE.phone();
+  SE.phoneReceive();
   return true;
 }

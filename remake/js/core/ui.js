@@ -7,7 +7,7 @@ import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 
@@ -123,9 +123,10 @@ export function uiArtReady(ms = 2000) {
 export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
+  const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
-  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip") }) : null;
+  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
@@ -136,6 +137,8 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    curtain?.commitArrival?.(url);
+    if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);

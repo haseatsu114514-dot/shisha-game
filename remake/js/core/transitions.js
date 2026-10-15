@@ -5,6 +5,8 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
+import { state } from "./state.js";
+import { createEntrySound } from "./entry-sound.js";
 import { withStoreArrival } from "./store-arrival.js";
 
 let serial = 0;
@@ -39,10 +41,16 @@ function takeCue() {
   return c && performance.now() - c.at < 3000 ? c : null;
 }
 
-export function createSceneCurtain(host, { fast = false } = {}) {
-  const reduced = reducedMotion();
+export function takeSceneArrival() {
   const cued = takeCue();
-  if (cued?.kind === "place" && !fast && !reduced) return withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced });
+  return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
+}
+
+export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
+  const reduced = reducedMotion();
+  const { cued, commitArrival: entry } = sceneArrival;
+  const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
+  if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
   const ms = reduced ? 45 : fast ? 140 : 260;
   const variant = STYLES[serial++ % STYLES.length];
   const node = el(`div.scene-curtain.${variant}`, { "aria-hidden": "true", style: { "--st-ms": `${ms}ms` }, dataset: { transition: variant } }, [
@@ -69,7 +77,7 @@ export function createSceneCurtain(host, { fast = false } = {}) {
     node.remove();
     unhold();
   } };
-  return cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain;
+  return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
 }
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝

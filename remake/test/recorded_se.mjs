@@ -8,7 +8,7 @@ const code = await fs.readFile(new URL("../js/core/audio.js", import.meta.url), 
 async function boot({ fail = false, deferred = false } = {}) {
   const config = { seVolume: .6, bgmVolume: .5 };
   const sources = [], requests = [], intervals = new Map(), timers = new Map(), listeners = new Map(), bytes = new Map();
-  let serial = 0, oscillatorCount = 0, release;
+  let serial = 0, oscillatorCount = 0, release, audioContext;
   const gate = deferred ? new Promise(resolve => { release = resolve; }) : Promise.resolve();
   class Param {
     value = 0;
@@ -26,6 +26,7 @@ async function boot({ fail = false, deferred = false } = {}) {
     stop(t) { this.stops.push(t); if (!t) this.onended?.(); }
   }
   class AudioContext {
+    constructor() { audioContext = this; }
     state = "running"; currentTime = 0; sampleRate = 8000; destination = {};
     createGain() { return new Node(); }
     createBiquadFilter() { return new Node(); }
@@ -57,6 +58,7 @@ async function boot({ fail = false, deferred = false } = {}) {
   await module.evaluate();
   return { audio: module.namespace, config, document, sources, requests, intervals, timers, release,
     oscillators: () => oscillatorCount,
+    context: () => audioContext,
     visibility(hidden) { document.hidden = hidden; listeners.get("visibilitychange")(); },
   };
 }
@@ -122,3 +124,39 @@ await Promise.resolve();
 assert(!slow.sources.some(source => source.buffer?.file), "late decoding cannot replay a completed draw");
 assert.equal(slow.intervals.size, 0);
 console.log("PASS: recorded files, cache, user unlock, mute/volume, variants, water loop/tail, visibility/resume, failed-file fallback/backoff, late-load cancellation");
+
+// New LIME IDs use the same unlock/visibility/settings contract and SE bus.
+const lime = await boot();
+lime.audio.SE.phoneReceive(); lime.audio.SE.phoneSend();
+assert.equal(lime.sources.length, 0, "new synthetic IDs cannot unlock audio themselves");
+lime.audio.unlockAudio(); await lime.audio.preloadSe();
+lime.audio.playSe("phone_receive");
+assert.deepEqual(lime.sources.slice(-2).map(s => s.frequency.value), [880, 1320]);
+const receiveBus = lime.sources.at(-1).destination.destination;
+const receivedCount = lime.sources.length;
+lime.audio.SE.phoneReceive();
+assert.equal(lime.sources.length, receivedCount, "simultaneous notices do not stack receive sounds");
+lime.context().currentTime += .3;
+lime.audio.SE.phoneReceive(); assert.equal(lime.sources.length, receivedCount + 2, "later messages still sound");
+lime.audio.playSe("phone_send");
+assert.equal(lime.sources.at(-1).frequency.value, 990);
+assert.equal(lime.sources.at(-1).destination.destination, receiveBus);
+assert.equal(receiveBus.gain.value, .6);
+for (const setting of ["mute", "muted", "seVolume", "hidden"]) {
+  lime.context().currentTime += 1;
+  const before = lime.sources.length;
+  if (setting === "hidden") lime.document.hidden = true;
+  else lime.config[setting] = setting === "seVolume" ? 0 : true;
+  lime.audio.SE.phoneReceive(); lime.audio.SE.phoneSend();
+  assert.equal(lime.sources.length, before, setting + " blocks both LIME sounds");
+  if (setting === "hidden") lime.document.hidden = false;
+  else lime.config[setting] = setting === "seVolume" ? .6 : false;
+}
+lime.audio.SE.phone(); assert.equal(lime.sources.at(-1).buffer.file, "lime_glass.wav", "legacy phone remains recorded");
+console.log("PASS: LIME send/receive identity, SE bus, unlock, hidden, mute/muted/zero volume and legacy phone");
+
+lime.context().currentTime += 1;
+lime.context().state = "suspended";
+const suspendedCount = lime.sources.length;
+lime.audio.SE.phoneReceive(); lime.audio.SE.phoneSend();
+assert.equal(lime.sources.length, suspendedCount, "suspended context blocks new sounds");
