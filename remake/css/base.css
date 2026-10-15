@@ -416,6 +416,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   40%, 60% { translate: 6px -1px; }
 }
 
+.chapter-title-shield { position: absolute; inset: 0; pointer-events: auto; }
 .chapter-card {
   position: absolute;
   inset: 0;
