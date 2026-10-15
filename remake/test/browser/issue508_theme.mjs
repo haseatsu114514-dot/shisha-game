@@ -91,7 +91,14 @@ await suite("issue508-theme", async checkAll => {
         const current = structuredClone(T.core.state), lines = T.lines();
         return { before, current, lines };
       }, { opts, previous: baseline.scenes[opts.id] });
-      assert.deepEqual(result.current, result.before, `Changed state effect: ${JSON.stringify(opts)}`);
+      if (opts.id === "ch1_tsumugi_work_in_progress") {
+        // #452 saves the actual answer immediately. Compare every game field,
+        // and check the refreshed save timestamp separately.
+        const { savedAt: beforeAt, ...beforeGame } = result.before;
+        const { savedAt: currentAt, ...currentGame } = result.current;
+        assert(Number.isFinite(beforeAt) && currentAt >= beforeAt);
+        assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
+      } else assert.deepEqual(result.current, result.before, `Changed state effect: ${JSON.stringify(opts)}`);
       const ls = result.lines;
       if (opts.id === "ch1_naru_fourth") {
         assert.equal(ls.includes("なるは台に目を落とし、炭をひとつ、少し動かした。"), opts.naru >= 3);
