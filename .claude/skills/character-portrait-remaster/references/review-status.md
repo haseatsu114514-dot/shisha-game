@@ -299,3 +299,9 @@ manifest・旧版データ・配布HTMLのビルド、旧版の身長回帰、�
 ## 2026-10-11 ひより・レース衣装
 
 オーナー選択「今のレースブラウス案」。現在5表情と学生時代1表情を生成・本編へ接続。現在はポニーテール、過去はミディアムヘア。黒パンツ、白レース、名札なし。原画・指示・RGBA比較は `asset_sources/portraits/hiyori-office-v1/`、本編とLIME・PC／スマホ確認は `asset_sources/hiyori-encounters-20261011/`。GitHubの反映状況はHY10〜17の台帳とPRを参照。
+
+## 2026-10-14 サラリーマン #508（Draft確認用）
+
+承認済み6場面と同時に、41歳のsalaryman normal／smileを生成・必要な4場面へ接続するようユーザーが指定。原画・実プロンプト・参照役割・配置は `asset_sources/portraits/salaryman-508-v1/`。初稿の顔が若く見えたため通常を年齢修正し、その原画から控えめな微笑みを生成した。現行mainに本人の採用立ち絵はなく、desktop_backupは外見参考のみ。みんと・アゲハは現行画質、スミさんは男性の年齢感の参考。
+
+共通縮小倍率・足元の896×1200 RGBA、本人のみのmanifest／可逆WebP。`style-references.json` はpendingとして登録。ユーザー確認用Draftへの接続は今回の明示指示による。main採用・マージ・公開・Issue終了は行わない。

@@ -92,7 +92,8 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……今日の、良かったよ"
+          "text": "……今日の、良かったよ",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -533,7 +534,9 @@
         {
           "speaker": "",
           "face": "",
-          "text": "いつものサラリーマンが、いつもの席に座る。ネクタイを少しだけ緩めて、無言でメニューを指差した。"
+          "text": "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。",
+          "portrait": "salaryman",
+          "portrait_face": "normal"
         },
         {
           "speaker": "hajime",
@@ -1700,12 +1703,14 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。"
+          "text": "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。",
+          "portrait": "salaryman",
+          "portrait_face": "normal"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "いつもの席に座らず、入口に近い席を選んだ。ネクタイも、緩めていない。"
+          "text": "いつもの席に座らず、入口に近い席を選んだ。鞄を膝に置いたまま、背筋を伸ばしている。"
         },
         {
           "speaker": "hajime",
@@ -1730,7 +1735,48 @@
         {
           "speaker": "",
           "face": "",
+          "text": "席を立ったところで、スマホが震えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面を見て、ドアの手前で耳に当てる。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……もしもし。うん、今から出る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を待つ間、鞄を持つ手が少し下がった。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "え、まだ決まってないの。……じゃあ、着いてから一緒に選ぼう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さく笑って電話を切り、スマホをしまった。",
+          "portrait": "salaryman",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あんなふうに笑うんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "帰り際、サラリーマンは一度だけ振り返って、小さく頭を下げた。──初めてのことだった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "salaryman"
         },
         {
           "speaker": "",
@@ -1800,6 +1846,36 @@
           "speaker": "",
           "face": "",
           "text": "窓辺には、あの猫がいる。店の中のいくつもの手元が、１枚に収まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この猫も、一緒に応募するんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。葉っぱを描かない日もあるけど、いつも、この子です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この店にも、すっかり馴染んでるね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、ここにいてほしかったので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの指が、窓辺の猫のそばで止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。ここ、居心地よさそうだ"
         },
         {
           "speaker": "tsumugi",

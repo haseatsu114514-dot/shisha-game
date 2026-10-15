@@ -1,0 +1,87 @@
+{
+  "base": "b69cb548718a963e88c05e1b3dec1fe6fe154964",
+  "approved_request": "https://github.com/haseatsu114514-dot/shisha-game/issues/508#issuecomment-6165638554",
+  "status": "Draft candidate, not main adoption",
+  "union_bbox": [
+    20,
+    15,
+    821,
+    1871
+  ],
+  "common_scale": 0.5926724137931034,
+  "placement": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "content_canvas": [
+      896,
+      1100
+    ],
+    "offset": [
+      0,
+      76
+    ],
+    "bottom_margin": 24
+  },
+  "operations": "existing normalize_sprites union bbox downscale; alpha preserved with unmasked paste; no creative Python image edit",
+  "references": [
+    {
+      "path": "asset_sources/images/desktop_backup/chr_salaryman_normal.png",
+      "role": "original appearance only, opaque backup not adopted",
+      "sha256": "e3c3525beba34b9d7cc8a8f2ce25555bfb6483a8475dbeadd8fdd0cf1f80ebf1"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "adopted rendering quality",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "adopted rendering quality",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "role": "adult male age/context only, not identity",
+      "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5"
+    }
+  ],
+  "generations": [
+    {
+      "raw": "normal-raw.png",
+      "prompt": "normal-prompt.txt",
+      "status": "superseded: face appeared too young",
+      "raw_sha256": "6dd3bb6a6b9a4a081d257361318a78ddc7a55af4f77759d618ea5b57e8cb275e",
+      "actual_reference_order": [
+        "asset_sources/images/desktop_backup/chr_salaryman_normal.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    },
+    {
+      "raw": "normal-age-raw.png",
+      "prompt": "normal-age-prompt.txt",
+      "expression": "normal",
+      "raw_sha256": "bc46ab9aa245ad8a725245a5fcb491be07726c0f94901104c6966eb622857122",
+      "actual_reference_order": [
+        "normal-raw.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    },
+    {
+      "raw": "smile-raw.png",
+      "prompt": "smile-prompt.txt",
+      "expression": "smile",
+      "raw_sha256": "3749a4b5fb560bbe97e538731cbba6a1234f3061e6eccec88b93e39ab36d9d54",
+      "actual_reference_order": [
+        "normal-age-raw.png",
+        "assets/sprites/characters/minto/chr_minto_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png"
+      ]
+    }
+  ]
+}

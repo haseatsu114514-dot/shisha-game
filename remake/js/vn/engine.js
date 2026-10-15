@@ -229,7 +229,7 @@ function firstPortraits(dlg) {
   const out = [];
   for (const l of dlg.lines || []) {
     if (out.length >= 2) break;
-    const character = l.portrait || l.speaker;
+    const character = l.portrait === false ? null : l.portrait || l.speaker;
     if (character && !NO_PORTRAIT.has(character)) {
       const p = portraitInfo(character, l.portrait_face || l.face);
       if (p && !out.includes(p.src)) out.push(p.src);
@@ -248,7 +248,7 @@ function prefetch(dlg) {
   const urls = new Set();
   const collect = (lines) => {
     for (const l of lines || []) {
-      const character = l.portrait || l.speaker;
+      const character = l.portrait === false ? null : l.portrait || l.speaker;
       if (character && !NO_PORTRAIT.has(character)) {
         const p = portraitInfo(character, l.portrait_face || l.face);
         if (p) urls.add(p.src);
@@ -535,7 +535,7 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = [
-    !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
     line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
   ].filter(Boolean);
   // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
@@ -555,7 +555,8 @@ async function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
-  const entrances = [updatePortraits(speaker, face)];
+  // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
+  const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
     entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal"));

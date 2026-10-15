@@ -257,6 +257,16 @@
    "b": 0.01,
    "ax": 0.4861,
    "aspect": 0.7467
+  },
+  "salaryman": {
+   "faces": [
+    "normal",
+    "smile"
+   ],
+   "h": 0.915,
+   "b": 0.0208,
+   "ax": 0.5318,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -1822,6 +1832,8 @@
   "sprites/characters/rin/chr_rin_smile.png",
   "sprites/characters/rin/chr_rin_surprise.png",
   "sprites/characters/sai/chr_sai_normal.png",
+  "sprites/characters/salaryman/chr_salaryman_normal.png",
+  "sprites/characters/salaryman/chr_salaryman_smile.png",
   "sprites/characters/samechan/chr_samechan_excited.png",
   "sprites/characters/samechan/chr_samechan_normal.png",
   "sprites/characters/samechan/chr_samechan_serious.png",
