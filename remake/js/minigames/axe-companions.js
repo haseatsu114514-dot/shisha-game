@@ -30,3 +30,17 @@ export function reaction(id, phase, shots, called) {
     : outcome === "bull" || outcome === "summary" ? companion.faces[1] : companion.faces[0];
   return { text, face };
 }
+
+/** Match lines come from data/dialogue/axe_versus.json, never story flags. */
+export function matchReaction(lines, phase, match, actor, pending, called) {
+  const p = match.player.reduce((sum, shot) => sum + shot.score, 0);
+  const o = match.opponent.reduce((sum, shot) => sum + shot.score, 0);
+  let key;
+  if (phase === "summary") key = p === o ? "draw" : p > o ? "player" : "opponent";
+  else if (actor === "opponent") key = phase === "result" ? match.opponent.at(-1)?.outcome
+    : pending?.called ? "call" : "before";
+  else if (phase === "result" || called) return reaction("hiyori", phase, match.player, called);
+  else key = p === o ? "level" : p > o ? "behind" : "ahead";
+  return { text: lines[key] || lines.before,
+    face: key === "killshot" ? "axe_shout" : ["bull", "player", "opponent", "draw"].includes(key) ? "axe_laugh" : "axe_normal" };
+}

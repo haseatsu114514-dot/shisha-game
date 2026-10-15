@@ -93,6 +93,23 @@
 .axe-pickers { display: flex; flex-wrap: wrap; gap: 10px; }
 .axe-button[aria-pressed="true"] { background: #5a432a; border-color: #fff0b5; box-shadow: inset 0 0 0 1px #fff0b5; }
 .axe-menu-help { color: var(--text-dim); font-size: 14px; max-width: 650px; }
+.axe-versus-menu { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid #665768; }
+.axe-versus-menu > p { font-size: 14px; color: var(--gold-hi); }
+@container (min-width: 900px) {
+  .axe-intro { position: relative; padding-right: 390px; }
+  .axe-versus-menu { position: absolute; right: clamp(20px,5vw,80px); top: 50%; transform: translateY(-50%); width: 280px; padding: 18px; border: 1px solid #665768; border-radius: 10px; background: #201728; }
+  .axe-versus-menu > p { line-height: 1.6; }
+}
+.axe-match-score { color: var(--gold-hi); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.axe-match-records { display: grid; gap: 12px; font-size: .85em; }
+.axe-match-records strong { color: var(--gold-hi); }
+.axe-match-records p { margin: 6px 0 0; line-height: 1.7; overflow-wrap: anywhere; }
+.axe-game[data-mode="versus"] .axe-header h1 { font-size: 22px; }
+.axe-game[data-mode="versus"] .axe-panel { gap: 7px; }
+.axe-game[data-mode="versus"] .axe-match-score { font-size: .9em; }
+.axe-game[data-mode="versus"][data-phase="summary"] .axe-call-status,
+.axe-game[data-mode="versus"][data-phase="summary"] .axe-steps,
+.axe-game[data-mode="versus"][data-phase="summary"] .axe-timing { display: none; }
 .axe-companion { display: flex; align-items: center; gap: 14px; padding: 8px 16px; height: 130px; flex-shrink: 0; background: rgba(18,12,24,.68); border-radius: 16px 16px 0 0; }
 .axe-portrait { width: 85px; height: 112px; object-fit: cover; object-position: center 12%; border-radius: 8px; flex-shrink: 0; }
 .axe-companion strong { color: var(--gold-hi); font-size: .8em; }
@@ -135,6 +152,14 @@
   .axe-menu-help { font-size: 11px; }
   .axe-intro .axe-pickers { gap: 8px; }
   .axe-intro .axe-pickers .axe-button { min-height: 36px; font-size: 13px; }
+  .axe-intro { position: relative; padding-right: 310px; }
+  .axe-versus-menu { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); width: 260px; padding: 14px; border: 1px solid #665768; border-radius: 10px; background: #201728; }
+  .axe-versus-menu > p { font-size: 13px; line-height: 1.6; }
+  .axe-game[data-mode="versus"] .axe-panel { gap: 4px; padding-block: 6px; }
+  .axe-game[data-mode="versus"] .axe-match-score { font-size: 13px; }
+  .axe-game[data-mode="versus"] .axe-round { font-size: 12px; }
+  .axe-game[data-mode="versus"] .axe-scores span { font-size: 10px; padding-block: 3px; }
+  .axe-game[data-mode="versus"] .axe-match-records { gap: 6px; }
 }
 .axe-portrait-frame { position: relative; overflow: hidden; flex-shrink: 0; width: 85px; height: 112px; border-radius: 8px; }
 .axe-portrait-frame .axe-portrait { position: absolute; width: 180px; max-width: none; height: auto; left: 50%; top: -4px; transform: translateX(-50%); }
