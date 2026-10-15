@@ -12,6 +12,7 @@ const artifacts = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifac
 // Each case uses a new browser context: no existing player's storage is opened.
 export async function suite(name, run) {
   fs.mkdirSync(artifacts, { recursive: true });
+  const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
   const results = [];
   const browser = await chromium.launch({
     headless: true,
@@ -23,7 +24,7 @@ export async function suite(name, run) {
     const page = await context.newPage();
     const errors = [];
     const failedResources = [];
-    page.setDefaultTimeout(10000);
+    page.setDefaultTimeout(timeoutMs);
     page.on("pageerror", error => errors.push(error.message));
     page.on("response", response => {
       if (response.status() >= 400) failedResources.push(`${response.status()} ${response.url()}`);
@@ -59,7 +60,7 @@ export async function suite(name, run) {
   } finally {
     await browser.close();
     fs.writeFileSync(path.join(artifacts, `${name}.json`), JSON.stringify({
-      name, baseURL, ref: process.env.TEST_REF || null, results,
+      name, baseURL, timeoutMs, ref: process.env.TEST_REF || null, results,
     }, null, 2) + "\n");
   }
   assert(results.length > 0, "No browser cases were selected");
