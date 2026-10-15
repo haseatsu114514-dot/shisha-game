@@ -55,6 +55,15 @@ try {
       await T.tsumugiStory.playTsumugiStory(11);
       if (!T.core.state.flags._tsumugi_contest_submitted) throw Error("Tsumugi submission was not completed");
     };
+    T.waitFor = async (selector) => {
+      const until = performance.now() + 20000;
+      while (performance.now() < until) {
+        const node = document.querySelector(selector);
+        if (node) return node;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      throw Error(`Control did not appear: ${selector}`);
+    };
     T.names = () => T.vn.backlog().filter((l) => l.name && l.name !== "▶");
     window.T = T;
   });
@@ -604,15 +613,14 @@ try {
     const cs = session.newSession("rehearsal");
     session.openBench(cs, { steps: [["setup", "SETUP"]] });
     const choosing = steps.stepSetup(cs);
-    await new Promise((r) => setTimeout(r, 150));
-    const option = document.querySelector('[data-test="opt-suyaki_tsumugi"]');
+    const option = await window.T.waitFor('[data-test="opt-suyaki_tsumugi"]');
     const offered = !!option;
-    option?.click();
+    option.click();
     await choosing;
     const equipped = cs.equip.bowl;
     const status = await import("./js/daily/status.js");
     const opened = status.openStatus();
-    await new Promise((r) => setTimeout(r, 150));
+    await window.T.waitFor('[data-tab="items"]');
     [...document.querySelectorAll(".st-tab")].find((b) => b.dataset.tab === "items").click();
     const note = document.querySelector('[data-test="gift-suyaki_tsumugi"]')?.textContent || "";
     const flavors = [...document.querySelectorAll(".st-items .chip")].map((c) => c.textContent).join("|");
