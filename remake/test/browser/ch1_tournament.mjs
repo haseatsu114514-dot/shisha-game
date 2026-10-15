@@ -10,6 +10,7 @@ async function init(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core,
+      data: await import("./js/core/data.js"),
       session: await import("./js/craft/session.js"),
       steps: await import("./js/craft/steps.js"),
       heat: await import("./js/craft/heat.js"),
@@ -78,14 +79,14 @@ await suite("ch1-tournament", async check => {
     try {
       // module初期化は画像を保留する前に完了し、本番の開始は同期で呼ぶ。
       const baselineArrival = variant === "baseline-unread" ? JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue508-theme/baseline-scenes.json", import.meta.url))).scenes.ch1_tournament_arrival : null;
-      await page.evaluate(async ({ variant, baselineArrival }) => {
+      await page.evaluate(({ variant, baselineArrival }) => {
         const { chapter, vn, intro } = T;
         const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
         Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
         if (variant === "current-read") state.flags._ev_first_practice = true;
-        if (baselineArrival) (await import("./js/core/data.js")).DB.dialogues.ch1_tournament_arrival = baselineArrival;
+        if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
         for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
