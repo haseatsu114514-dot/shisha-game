@@ -7,4 +7,14 @@ claim `38786636524` を新status run `38808857759`（SUCCESS）で再検証。�
 
 組み込み `image_gen.imagegen` によるマスター生成と3箱の実画像編集を行う。原出力PNGは無加工で保存。比較シート作成だけレイアウト処理を使う。本編接続・量産・旧案削除・merge・公開は行わず、人の方向性レビューを待つ。
 
-共通配置の基準はミントの実生成版: 前面パネルに対してマーク幅約53%、中心(u=0.50,v=0.185)。初回の34%指定は反映されず、実測53%/58%/64%だったため、ミントを共通の実物配置参照として残り2箱を生成ツールで修正する。初回候補と測定値はcandidates/とqa/first-pass-*へ保持。透視投影と実生成による差を測定し、厳密なピクセル同一とは表現しない。
+共通の原案は白い翼＋輪のマスター。実物の印刷配置参照は選定グレープ版で、前面パネルに対してマーク幅約45%、中心(u=0.50,v=0.185)を目標とする。初回候補と修正前比較は全て保持し、生成ツールでサイズ/位置を修正した。透視投影と生成結果を実測し、ピクセル同一とは表現しない。
+
+比較は `comparison-v2-af-vs-v3-angel.png` と `index.html`。3箱はmanifest.jsonのitems.outputを参照し、共通原案は `originals/canonical-white-angel-mark.png`。白い透過マークの確認用に `qa/canonical-on-dark-preview.png` も保存する。HMDは今回の比較/生成対象に含めていない。
+
+実プロンプトは `prompts.json` / `correction-prompts.json` / `alignment-prompts.json` / `position-prompt.json`、元出力と保存先は `generation-records.json`、ID・正規化パネル・参照元は `manifest.json`。v2の公式写真参照記録は文脈として維持し、新しい白いマークは独立したオリジナル。メーカー写真は追加しない。
+
+`build_review.py` は比較専用の配置と測定だけを行い、原画を変更しない。`mark-measurements.json` は手動で見た前面の4隅から近似的に正面化して白いマークを測る。前面幾何は厳密なCAD寸法ではなく、しきい値による輪郭IoUも完全同一の証明ではない。微細な輪郭/素材テクスチャ/余白の差は生成に残り得る。
+
+PNGの実復号・RGBA/alpha・SHA256・旧資産不変は `validation.json` に記録する。元出力の微小alphaノイズを残したままの代表比較であり、production-readyな透過端処理とはしない。本編のコード/配信/dataには触れていないため、ゲームテストを不要に再実行しない。通常CIは新pushのheadへ別途動く。
+
+次は人による白い天使マークと3箱の方向性レビュー。量産・本編接続・旧案削除・merge/公開・claim releaseはしない。

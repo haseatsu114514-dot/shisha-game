@@ -79,6 +79,34 @@
       "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/grape-angel-size-correction.png",
       "source_bytes_modified": false,
       "status": "selected as final in-situ common template; width .446, center (.513,.1845)"
+    },
+    {
+      "id": "mint_common_template_alignment",
+      "item_id": "mint",
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-cartons-no-grass-v2/originals/mint-retail-prototype.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/grape-angel-prototype.png"
+      ],
+      "transparent_background": true,
+      "output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/mint-angel-aligned.png",
+      "prompt": "Use case: precise-object-edit. Image 1 is the EDIT TARGET, the original mint black carton with AF letters. Image 2 is the COMMON EMBLEM PRINT TEMPLATE, the grape carton with the selected white angel mark. Copy ONLY the exact white wing-and-halo printed mark from image 2 onto image 1, replacing the AF letters completely. Same mark, not a new angel variant: preserve that template's wing curves, three broad feather lobes per side, central dip, thick oval halo and wing-to-halo spacing. No AF, no letters anywhere, no actual manufacturer's crown or logo. Most important: match the template image2 emblem's size and location RELATIVE TO THE FRONT PANEL. The total white mark spans approximately 45% of the FRONT PANEL width, centered at u=0.50, v=0.185 from panel top. It must neither be wider than half the front face nor shifted up toward its top. Same visual aspect ratio as image2; white flat ink, no grey/gold/glow/body/face. Preserve image1's carton, EXACT framing/scale/location/canvas, front/top/right folds, material, green brush and mint print as closely as possible. Do not enlarge/zoom/reframe the carton. Do not copy the grape fruit, purple color, size of carton in image2 or its framing. Only the white emblem and its panel-normalized layout come from image2. No grass/vines/decorative foliage or extra ingredients. True transparent RGBA PNG, whole carton, preserve original transparent margins. The only intended change to image1 is AF lettering replaced by this same white mark.",
+      "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/mint-angel-aligned.png",
+      "source_generated_png": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-277f9058-00b7-4f27-95f1-81cf23bae9a7.png",
+      "source_bytes_modified": false
+    },
+    {
+      "id": "double_apple_common_template_alignment",
+      "item_id": "double_apple",
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-cartons-no-grass-v2/originals/double_apple-retail-prototype.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/grape-angel-prototype.png"
+      ],
+      "transparent_background": true,
+      "output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-aligned.png",
+      "prompt": "Use case: precise-object-edit. Image 1 is the EDIT TARGET, the original double_apple black carton with AF letters. Image 2 is the COMMON EMBLEM PRINT TEMPLATE, the grape carton with the selected white angel mark. Copy ONLY the exact white wing-and-halo printed mark from image 2 onto image 1, replacing the AF letters completely. Same mark, not a new angel variant: preserve that template's wing curves, three broad feather lobes per side, central dip, thick oval halo and wing-to-halo spacing. No AF, no letters anywhere, no actual manufacturer's crown or logo. Most important: match the template image2 emblem's size and location RELATIVE TO THE FRONT PANEL. The total white mark spans approximately 45% of the FRONT PANEL width, centered at u=0.50, v=0.185 from panel top. It must neither be wider than half the front face nor shifted up toward its top. Same visual aspect ratio as image2; white flat ink, no grey/gold/glow/body/face. Preserve image1's carton, EXACT framing/scale/location/canvas, front/top/right folds, material, red/green brush and red/green apple print as closely as possible. Do not enlarge/zoom/reframe the carton. Do not copy the grape fruit, purple color, size of carton in image2 or its framing. Only the white emblem and its panel-normalized layout come from image2. No grass/vines/decorative foliage or extra ingredients. True transparent RGBA PNG, whole carton, preserve original transparent margins. The only intended change to image1 is AF lettering replaced by this same white mark.",
+      "saved_output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-aligned.png",
+      "source_generated_png": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-5709605d-afac-43be-a550-5d028e6a971c.png",
+      "source_bytes_modified": false
     }
   ]
 }

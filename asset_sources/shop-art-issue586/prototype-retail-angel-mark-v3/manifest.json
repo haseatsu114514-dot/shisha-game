@@ -40,7 +40,7 @@
       "id": "mint",
       "existing_name": "アルファーヘブン ミント",
       "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/mint-retail-prototype.png",
-      "output": "candidates/mint-angel-first.png",
+      "output": "originals/mint-angel-aligned.png",
       "front_panel_quad_native_px": [
         [
           310,
@@ -65,23 +65,23 @@
       "id": "double_apple",
       "existing_name": "アルファーヘブン ダブルアップル",
       "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/double_apple-retail-prototype.png",
-      "output": "candidates/double_apple-angel-size-correction.png",
+      "output": "originals/double_apple-angel-aligned.png",
       "front_panel_quad_native_px": [
         [
-          237,
-          140
+          265,
+          175
         ],
         [
-          940,
-          160
+          915,
+          195
         ],
         [
-          940,
-          1140
+          915,
+          1110
         ],
         [
-          237,
-          1120
+          265,
+          1090
         ]
       ],
       "status": "first pass; measurement pending"
@@ -90,7 +90,7 @@
       "id": "grape",
       "existing_name": "アルファーヘブン グレープ",
       "edit_target_relative_to_parent": "prototype-retail-cartons-no-grass-v2/originals/grape-retail-prototype.png",
-      "output": "candidates/grape-angel-size-correction.png",
+      "output": "originals/grape-angel-prototype.png",
       "front_panel_quad_native_px": [
         [
           279,
