@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'remake/js/core/audio.js'
+      - 'remake/js/vn/engine.js'
       - 'remake/js/core/entry-sound.js'
       - 'remake/js/core/transitions.js'
       - 'remake/js/core/transition-moves.js'
@@ -24,6 +25,7 @@ on:
     branches: [main]
     paths:
       - 'remake/js/core/audio.js'
+      - 'remake/js/vn/engine.js'
       - 'remake/js/core/entry-sound.js'
       - 'remake/js/core/transitions.js'
       - 'remake/js/core/transition-moves.js'

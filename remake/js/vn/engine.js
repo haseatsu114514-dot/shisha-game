@@ -291,7 +291,6 @@ function advance() {
     renderPage();
     return;
   }
-  if (!skipMode && !vnTest.turbo) SE.click();
   next();
 }
 

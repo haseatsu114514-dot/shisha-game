@@ -5,7 +5,7 @@ const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
 const first = '今日は音を確かめます。', second = '次の言葉も続けます。';
 try {
-  for (const touch of [false, true]) for (const mode of ['normal', 'auto', 'skip']) {
+  for (const touch of [false, true]) for (const mode of ['normal', 'auto', 'skip', 'rapid']) {
     const context = await browser.newContext({ viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch, isMobile: touch });
     const page = await context.newPage(), errors = [];
     page.on('pageerror', e => errors.push(e.message));
@@ -18,7 +18,7 @@ try {
       const s = A.core.newGame(); s.flags._intro_sumi = true; s.met.sumi = true;
       Object.assign(A.core.config, { textSpeed: 2, voiceBlip: true, seVolume: .8, bgmVolume: 0 });
       A.audio.stopBgm(0); A.audio.applyVolumes();
-      for (const id of ['click', 'blip', 'phoneReceive', 'phoneSend', 'doorbell']) {
+      for (const id of ['click', 'blip', 'phoneReceive', 'phoneSend', 'doorbell', 'select', 'perfect']) {
         const native = A.audio.SE[id]; A.audio.SE[id] = (...args) => {
           A.events.push({ id, time: performance.now(), mode: document.body.className }); return native(...args);
         };
@@ -28,28 +28,60 @@ try {
       unlock.onclick = () => { A.audio.unlockAudio(); unlock.remove(); }; document.body.append(unlock);
     });
     await press('#qa-audio-unlock'); await page.evaluate(() => A.audio.preloadSe());
-    await page.evaluate(({ first, second }) => {
+    const texts = mode === 'rapid' ? [first.repeat(3), second.repeat(3)] : [first, second];
+    await page.evaluate(({ first, second, rapid }) => {
+      if (rapid) A.core.config.textSpeed = 1;
       A.events.length = 0;
       A.run = A.vn.play({ dialogue_id: 'audio573_page_fixture', lines: [
-        { speaker: 'sumi', portrait: false, text: first }, { speaker: 'sumi', portrait: false, text: second } ] });
-    }, { first, second });
+        { speaker: 'sumi', portrait: false, text: first },
+        { type: 'sfx', id: 'perfect' }, { speaker: 'sumi', portrait: false, text: second } ] });
+    }, { first: texts[0], second: texts[1], rapid: mode === 'rapid' });
     await page.locator('.vn-box').waitFor({ state: 'visible' });
-    if (mode === 'normal') {
+    let skipStart = 0;
+    if (mode === 'rapid') {
+      // Let the initial 320ms open lock expire while the longer first line is typing.
+      await page.waitForTimeout(350);
+      for (const text of texts) {
+        await page.waitForFunction(text => {
+          const shown = document.querySelector('.vn-text')?.textContent;
+          return shown && text.startsWith(shown) && shown !== text && !document.querySelector('.vn-next')?.classList.contains('show');
+        }, text);
+        await press('.vn-box'); // Complete typing with a real pointer/tap.
+        await page.waitForFunction(text => document.querySelector('.vn-text')?.textContent === text && document.querySelector('.vn-next')?.classList.contains('show'), text);
+        await press('.vn-box'); // Immediately advance the completed line.
+      }
+    } else if (mode === 'normal') {
       for (const text of [first, second]) {
         await page.waitForFunction(text => document.querySelector('.vn-text')?.textContent === text && document.querySelector('.vn-next')?.classList.contains('show'), text);
         await press('.vn-box');
       }
     } else {
+      if (mode === 'skip') await page.evaluate(() => {
+        document.querySelector('[data-test="vn-skip"]').addEventListener('click', () => {
+          A.skipStart = A.events.length;
+        }, { capture: true, once: true });
+      });
       await press(`[data-test="vn-${mode}"]`);
-      if (mode === 'skip') await page.evaluate(() => { A.events.length = 0; });
+      // Preserve earlier events (including dialogue sfx); only later blips use this boundary.
+      if (mode === 'skip') skipStart = await page.evaluate(() => A.skipStart);
     }
     await page.waitForFunction(() => !A.vn.isPlaying(), null, { timeout: 15000 });
     const events = await page.evaluate(() => A.events);
     const clicks = events.filter(e => e.id === 'click').length, blips = events.filter(e => e.id === 'blip').length;
-    assert.equal(clicks, mode === 'skip' ? 0 : 2, `${touch}/${mode} actual advance clicks`);
-    if (mode === 'skip') assert.equal(blips, 0, 'SKIP emits no later typing blips'); else assert(blips > 0, `${mode} actual typing blips`);
+    assert.equal(clicks, 0, `${touch}/${mode} actual advance clicks`);
+    const postSkipBlips = mode === 'skip' ? events.slice(skipStart).filter(e => e.id === 'blip').length : null;
+    if (mode === 'skip') assert.equal(postSkipBlips, 0, 'SKIP emits no later typing blips'); else assert(blips > 0, `${mode} actual typing blips`);
+    assert.equal(events.filter(e => e.id === 'perfect').length, 1, `${mode} production dialogue sfx preserved`);
     assert(!events.some(e => e.id === 'doorbell'), 'dialogue advancing is not entry');
     if (mode === 'normal') {
+      await page.evaluate(() => {
+        A.events.length = 0;
+        A.choiceRun = A.vn.play({ dialogue_id: 'audio573_choice_fixture', lines: [
+          { type: 'choice', choices: [{ text: '音を確認する' }] } ] });
+      });
+      await press('[data-test="choice-0"]'); await page.evaluate(() => A.choiceRun);
+      assert.equal(await page.evaluate(() => A.events.filter(e => e.id === 'select').length), 1, 'real VN choice preserves select');
+      assert.equal(await page.evaluate(() => A.events.filter(e => e.id === 'click').length), 0, 'choice is not text advance click');
       await page.evaluate(() => {
         const s = A.core.newGame(); Object.assign(s, { phase: 'daily', day: 4, slot: 0 });
         Object.assign(s.flags, { _lime_opened: true, _lime_tut: 1, _intro_sumi: true }); s.met.sumi = true;
@@ -64,7 +96,10 @@ try {
       await page.locator('[data-test="phone-next"]').waitFor();
       const count = () => page.evaluate(() => ({ receive: A.events.filter(e => e.id === 'phoneReceive').length, send: A.events.filter(e => e.id === 'phoneSend').length }));
       const spoken = await count(); assert.deepEqual(spoken, { receive: 2, send: 1 });
-      await press('[data-test="phone-next"]'); await press('[data-test="lime-chat-sumi"]');
+      const beforeNext = await page.evaluate(() => A.events.filter(e => e.id === 'click').length);
+      await press('[data-test="phone-next"]');
+      assert.equal(await page.evaluate(() => A.events.filter(e => e.id === 'click').length), beforeNext + 1, 'real phone-next preserves UI click');
+      await press('[data-test="lime-chat-sumi"]');
       await page.locator('[data-test="phone-next"]').waitFor(); assert.deepEqual(await count(), spoken, 'history reopen is silent');
       await press('[data-test="phone-next"]'); await press('[data-test="phone-close"]'); await page.evaluate(() => A.phoneRun);
       console.log(JSON.stringify({ touch, phone: spoken, historyReplaySounds: 0 }));
@@ -109,7 +144,7 @@ try {
       console.log(JSON.stringify({ touch, actualMapToTonariMenu: 'PASS', entryBells: 1 }));
     }
     assert.deepEqual(errors, [], 'no production page errors');
-    console.log(JSON.stringify({ touch, mode, clicks, blips, status: 'PASS', fixture: 'page-memory production VN/phone; not a full chapter run' }));
+    console.log(JSON.stringify({ touch, mode, clicks, blips, postSkipBlips, status: 'PASS', fixture: 'page-memory production VN/phone; not a full chapter run' }));
     await context.close();
   }
 } finally { await browser.close(); }
