@@ -11,6 +11,8 @@ on:
       - 'remake/js/daily/phone.js'
       - 'data/dialogue/ch1_main.json'
       - 'remake/test/entry_phone_audio.mjs'
+      - 'remake/test/browser/audio_entry_diagnostics.mjs'
+      - 'remake/test/browser/audio_modes.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'remake/js/craft/**'
       - 'remake/test/recorded_se.mjs'
@@ -30,6 +32,8 @@ on:
       - 'remake/js/daily/phone.js'
       - 'data/dialogue/ch1_main.json'
       - 'remake/test/entry_phone_audio.mjs'
+      - 'remake/test/browser/audio_entry_diagnostics.mjs'
+      - 'remake/test/browser/audio_modes.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'assets/audio/se/**'
       - '.github/workflows/recorded-se.yml'
@@ -64,3 +68,5 @@ jobs:
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/recorded-se.log" 2>&1 &
           node remake/test/browser/recorded_se.mjs
+          node remake/test/browser/audio_entry_diagnostics.mjs
+          node remake/test/browser/audio_modes.mjs

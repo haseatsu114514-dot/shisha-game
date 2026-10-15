@@ -96,3 +96,53 @@ for (const mode of ['cancel', 'expired']) {
   assert.equal(transitionRings, before, mode);
 }
 console.log('PASS: real transition integration, normal/SKIP/reduced, one-shot cue, cancel and expiry');
+
+// Real setBg + real transitions, with only DOM/image/device boundaries replaced.
+function domNode() {
+  const n = { children: [], dataset: {}, classList: { add() {}, contains: () => false }, append(c) { this.children.push(c); c.remove = () => { this.children = this.children.filter(x => x !== c); }; } };
+  return n;
+}
+let pendingImages = [], failImages = false;
+const integrated = await load(ui, {
+  el: domNode, sceneArtUrls: url => [url], renderSceneArt() {},
+  createSceneCurtain: transitions.createSceneCurtain, takeSceneArrival: transitions.takeSceneArrival,
+  isCovering: transitions.isCovering,
+}, {
+  document: { body: { classList: { contains: () => false }, dataset: {} } },
+  Image: class { set src(url) { if (url.includes('pending')) pendingImages.push(() => this.onload()); else queueMicrotask(() => failImages ? this.onerror() : this.onload()); } },
+  setTimeout, clearTimeout, requestAnimationFrame: fn => fn(),
+});
+integrated.layers.bg = domNode(); integrated.layers.fx = domNode();
+integrated.layers.wipe = { classList: { contains: () => false } };
+const home = 'bg_home.png', shop = 'bg_tonari_inside_day.png';
+async function arrivalCase(opts = {}, cover = false) {
+  await integrated.setBg(home, { instant: true });
+  transitions.cueTransition('place', { spotId: 'tonari' });
+  const release = cover ? transitions.holdCover() : () => {};
+  const before = transitionRings;
+  await integrated.setBg(shop, opts); release();
+  assert.equal(transitionRings, before + 1, 'setBg arrival commits independently of curtain');
+}
+transitions.cueTransition('place', { spotId: 'tonari' });
+let base = transitionRings;
+await integrated.setBg(shop);
+assert.equal(transitionRings, base + 1, 'first background commits');
+for (const opts of [{}, { instant: true }, { brief: true }]) await arrivalCase(opts);
+await arrivalCase({}, true);
+integrated.layers.wipe.classList.contains = name => name === 'cover';
+await arrivalCase();
+integrated.layers.wipe.classList.contains = () => false;
+transitions.cueTransition('place', { spotId: 'tonari' }); base = transitionRings;
+await integrated.setBg(shop); await integrated.setBg(home); await integrated.setBg(shop);
+assert.equal(transitionRings, base, 'same-background cue cannot survive redraw/restore');
+transitions.cueTransition('place', { spotId: 'tonari' });
+const interrupted = integrated.setBg('pending.png');
+await integrated.setBg(home); pendingImages.splice(0).forEach(fn => fn()); await interrupted;
+await integrated.setBg(shop);
+assert.equal(transitionRings, base, 'superseded request cannot leak cue');
+failImages = true;
+await integrated.setBg(home);
+transitions.cueTransition('place', { spotId: 'tonari' });
+await integrated.setBg('bg_tonari_inside_night.png');
+assert.equal(transitionRings, base + 1, 'image failure preserves DOM-commit progression contract');
+console.log('PASS: production setBg/transition first, instant, fast, cover, redraw, interruption and image-failure integration');

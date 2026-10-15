@@ -1,4 +1,4 @@
-// 予約だけでは鳴らさない。背景の実表示に成功した移動だけを一度確定する。
+// 予約だけでは鳴らさない。背景DOMの差し替えまで確定した移動だけを一度確定する。
 export function bellEntry(spotId, chapter) {
   return spotId === "tonari" || (spotId === "mukai" && chapter === 3);
 }

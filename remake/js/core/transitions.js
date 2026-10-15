@@ -41,10 +41,14 @@ function takeCue() {
   return c && performance.now() - c.at < 3000 ? c : null;
 }
 
-export function createSceneCurtain(host, { fast = false } = {}) {
-  const reduced = reducedMotion();
+export function takeSceneArrival() {
   const cued = takeCue();
-  const entry = createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell());
+  return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
+}
+
+export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
+  const reduced = reducedMotion();
+  const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
   if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
   const ms = reduced ? 45 : fast ? 140 : 260;
