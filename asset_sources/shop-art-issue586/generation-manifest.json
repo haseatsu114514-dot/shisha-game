@@ -1,0 +1,235 @@
+{
+  "issue": 586,
+  "worker": "codex-c-shop-art-20261016-8e7fb2cb0e",
+  "claim_run": 38786636524,
+  "validated_run": 38786847504,
+  "scope": "18 flavor packages and 3 HMD shop illustrations; #437 excluded",
+  "references": [
+    {
+      "repo_path": "asset_sources/shop-ui-issue505/flavors-original.png",
+      "absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png"
+    },
+    {
+      "repo_path": "asset_sources/shop-ui-issue505/approved-concept.png",
+      "absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/approved-concept.png"
+    }
+  ],
+  "targets": [
+    {
+      "id": "mint",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/mint.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: lush fresh mint leaves."
+    },
+    {
+      "id": "double_apple",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/double_apple.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/double_apple.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: red apple, cut apple half and star anise."
+    },
+    {
+      "id": "blueberry",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/blueberry.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/blueberry.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: indigo blueberries with natural bloom and green leaves."
+    },
+    {
+      "id": "strawberry",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/strawberry.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/strawberry.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: ripe red strawberries, green leaves and tiny white flower."
+    },
+    {
+      "id": "vanilla",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/vanilla.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/vanilla.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: brown vanilla pods and ivory vanilla orchid."
+    },
+    {
+      "id": "pineapple",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/pineapple.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/pineapple.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: whole golden pineapple with leafy crown and juicy triangular wedge."
+    },
+    {
+      "id": "coconut",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/coconut.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/coconut.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: brown coconut half with white flesh and a green frond."
+    },
+    {
+      "id": "mango",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mango.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/mango.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: golden mango and orange scored cut half."
+    },
+    {
+      "id": "lemon",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/lemon.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/lemon.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: whole yellow lemon and lemon slice with leaves."
+    },
+    {
+      "id": "peach",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/peach.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/peach.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: pink peach and cut peach half with visible stone."
+    },
+    {
+      "id": "orange",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/orange.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/orange.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: whole orange and juicy orange slice with leaves."
+    },
+    {
+      "id": "grape",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/grape.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/grape.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: purple grape bunch and vine leaf."
+    },
+    {
+      "id": "melon",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/melon.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/melon.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: netted melon and orange-flesh wedge."
+    },
+    {
+      "id": "watermelon",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/watermelon.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/watermelon.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: red watermelon wedge with dark seeds and green rind."
+    },
+    {
+      "id": "banana",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/banana.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/banana.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: small bunch of ripe yellow bananas."
+    },
+    {
+      "id": "cinnamon",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/cinnamon.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/cinnamon.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: warm brown curled cinnamon sticks and green leaves."
+    },
+    {
+      "id": "rose",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/rose.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/rose.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: pink rose blossom, buds and green leaves."
+    },
+    {
+      "id": "lychee",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "reference_absolute_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-ui-issue505/flavors-original.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "original_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/originals/lychee.png",
+      "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/lychee.webp",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: red lychees and peeled white lychee with green leaf."
+    }
+  ]
+}
