@@ -26,6 +26,78 @@ await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
   for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(`${platform}-product-art-legacy-save`, async page => {
+      await setup(page);
+      // A real pre-gram-inventory save: viewing art must not rewrite it.
+      await page.evaluate(() => {
+        const old = { schema: 5, chapter: 1, phase: "daily", day: 5, slot: 0,
+          money: 12800, stamina: 100, seed: 1234, weatherSeed: 4,
+          stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
+          flags: { _qa_art_legacy: true }, flavors: ["mint", "lemon"] };
+        S.legacyRaw = JSON.stringify(old);
+        localStorage.setItem(S.core.SAVE_KEY, S.legacyRaw);
+        S.core.load();
+      });
+      const before = await page.evaluate(() => JSON.stringify(S.core.state));
+      await open(page);
+      const decodeRows = async expected => {
+        assert.equal(await page.locator('.shop-row.product').count(), expected);
+        assert.equal(await page.locator('.shop-row.product .shop-type-mark, .shop-row.product .art-missing').count(), 0);
+        const rows = await page.locator('.shop-row.product .shop-product-art').evaluateAll(async nodes => {
+          return Promise.all(nodes.map(async node => {
+            const painted = [node, ...node.querySelectorAll('*')].find(n => getComputedStyle(n).backgroundImage !== 'none');
+            const url = painted && getComputedStyle(painted).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1];
+            if (!url) return { error: 'Missing product image' };
+            const image = new Image(); image.src = url; await image.decode();
+            return { url, width: image.naturalWidth, height: image.naturalHeight };
+          }));
+        });
+        assert.equal(rows.length, expected);
+        for (const row of rows) assert(row.width > 0 && row.height > 0, JSON.stringify(row));
+        return rows;
+      };
+      const flavors = await decodeRows(18);
+      assert.equal(new Set(flavors.map(row => row.url)).size, 18, 'Each flavor needs its own carton');
+      for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
+        await tap(page, `detail-${id}`);
+        const detail = page.locator(`.shop-detail [data-product-art="${id}"]`);
+        await detail.waitFor();
+        // The stage scales the same 112px detail window to each viewport.
+        const box = await detail.evaluate(node => {
+          const style = getComputedStyle(node);
+          return { width: parseFloat(style.width), height: parseFloat(style.height) };
+        });
+        assert.equal(box.width, 112); assert.equal(box.height, 112);
+        await assertFits(page, '.shop-detail .shop-product-art');
+        await tap(page, 'shop-detail-close');
+      }
+      await page.locator('[data-tab="equip"]').click();
+      await decodeRows(8);
+      for (const id of ['lotos_hagal', 'tanukish_lid', 'amaburst_hms']) {
+        assert.equal(await page.locator(`.shop-row [data-product-art="${id}"]`).count(), 1);
+        await tap(page, `detail-${id}`);
+        await page.locator(`.shop-detail [data-product-art="${id}"]`).waitFor();
+        await tap(page, 'shop-detail-close');
+      }
+      assert.equal(await page.evaluate(() => JSON.stringify(S.core.state)), before);
+      assert(await page.evaluate(() => localStorage.getItem(S.core.SAVE_KEY) === S.legacyRaw));
+      await page.locator('[data-tab="flavor"]').click();
+      if (platform === 'touch') {
+        await page.locator('[data-test="buy-mint"]').tap();
+        await page.locator('[data-test="shop-checkout"]').tap();
+      } else {
+        await tap(page, 'buy-mint'); await tap(page, 'shop-checkout');
+      }
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+      assert.equal(saved.money, 11250); assert.equal(saved.flavorStock.mint, 100);
+      assert.equal(saved.flavorStock.lemon, 50); assert.equal(saved.flags._qa_art_legacy, true);
+      await page.locator('[data-tab="equip"]').click();
+      await tap(page, 'detail-amaburst_hms');
+      await page.locator('.modal-box.shop-dialog').evaluate(async box => {
+        await Promise.all(box.getAnimations().map(animation => animation.finished));
+      });
+      await assertFits(page, '.shop-detail .shop-product-art');
+    }, options);
     await run(`${platform}-entry`, async page => {
       await setup(page); const before = await snapshot(page);
       await page.evaluate(() => S.open());

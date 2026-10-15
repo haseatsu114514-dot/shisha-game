@@ -1,0 +1,25 @@
+// Derived by tools/build_shop_art.py from selected generated originals.
+// Each measured window retains alpha; productArt adds the same display margin.
+export const SHOP_ART = {
+  "mint": { url: new URL("../../img/shop/packages/mint.webp", import.meta.url).href, size: [512, 512], box: [106, 35, 305, 446] },
+  "double_apple": { url: new URL("../../img/shop/packages/double_apple.webp", import.meta.url).href, size: [512, 512], box: [118, 57, 277, 405] },
+  "blueberry": { url: new URL("../../img/shop/packages/blueberry.webp", import.meta.url).href, size: [512, 512], box: [116, 60, 282, 403] },
+  "strawberry": { url: new URL("../../img/shop/packages/strawberry.webp", import.meta.url).href, size: [512, 512], box: [126, 69, 272, 383] },
+  "vanilla": { url: new URL("../../img/shop/packages/vanilla.webp", import.meta.url).href, size: [512, 512], box: [112, 50, 292, 414] },
+  "pineapple": { url: new URL("../../img/shop/packages/pineapple.webp", import.meta.url).href, size: [512, 512], box: [116, 52, 282, 413] },
+  "coconut": { url: new URL("../../img/shop/packages/coconut.webp", import.meta.url).href, size: [512, 512], box: [116, 48, 285, 424] },
+  "mango": { url: new URL("../../img/shop/packages/mango.webp", import.meta.url).href, size: [512, 512], box: [107, 40, 300, 439] },
+  "lemon": { url: new URL("../../img/shop/packages/lemon.webp", import.meta.url).href, size: [512, 512], box: [105, 33, 311, 454] },
+  "peach": { url: new URL("../../img/shop/packages/peach.webp", import.meta.url).href, size: [512, 512], box: [109, 46, 311, 429] },
+  "orange": { url: new URL("../../img/shop/packages/orange.webp", import.meta.url).href, size: [512, 512], box: [107, 34, 305, 447] },
+  "grape": { url: new URL("../../img/shop/packages/grape.webp", import.meta.url).href, size: [512, 512], box: [104, 53, 310, 410] },
+  "melon": { url: new URL("../../img/shop/packages/melon.webp", import.meta.url).href, size: [512, 512], box: [105, 52, 311, 421] },
+  "watermelon": { url: new URL("../../img/shop/packages/watermelon.webp", import.meta.url).href, size: [512, 512], box: [117, 56, 281, 406] },
+  "banana": { url: new URL("../../img/shop/packages/banana.webp", import.meta.url).href, size: [512, 512], box: [112, 52, 292, 417] },
+  "cinnamon": { url: new URL("../../img/shop/packages/cinnamon.webp", import.meta.url).href, size: [512, 512], box: [110, 53, 297, 415] },
+  "rose": { url: new URL("../../img/shop/packages/rose.webp", import.meta.url).href, size: [512, 512], box: [106, 36, 304, 436] },
+  "lychee": { url: new URL("../../img/shop/packages/lychee.webp", import.meta.url).href, size: [512, 512], box: [105, 35, 307, 446] },
+  "lotos_hagal": { url: new URL("../../img/shop/equipment/lotos_hagal.webp", import.meta.url).href, size: [512, 512], box: [49, 128, 457, 267] },
+  "tanukish_lid": { url: new URL("../../img/shop/equipment/tanukish_lid.webp", import.meta.url).href, size: [512, 512], box: [37, 70, 437, 373] },
+  "amaburst_hms": { url: new URL("../../img/shop/equipment/amaburst_hms.webp", import.meta.url).href, size: [512, 512], box: [32, 125, 469, 280] },
+};

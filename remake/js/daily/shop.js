@@ -12,6 +12,7 @@ import { visitChar } from "./spots.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
 import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
+import { SHOP_ART } from "./shop-art.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -53,24 +54,19 @@ export function sellEquipment(id) {
 }
 
 const priceText = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
-const FLAVOR_ART = new URL("../../img/shop/flavors.webp", import.meta.url).href;
-// 生成原画1774×887の各イラストの窓。隣の葉を出さず、縦長の果実も切らない。
-const FLAVOR_BOXES = [
-  [24, 76, 270, 241], [322, 78, 277, 242], [609, 89, 280, 229], [891, 75, 286, 244], [1180, 83, 304, 246], [1487, 28, 270, 296],
-  [10, 335, 285, 265], [311, 335, 296, 271], [607, 334, 283, 272], [893, 336, 291, 266], [1185, 337, 301, 268], [1490, 329, 275, 276],
-  [19, 608, 280, 252], [310, 607, 288, 251], [607, 600, 281, 259], [889, 609, 288, 247], [1183, 606, 309, 255], [1485, 602, 281, 260],
-];
 const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
   suyaki_hagal: "bowl_empty_clay.png", flat_charcoal: "coal_flat_cold.png", cube_charcoal: "coal_cold.png",
 };
 function productArt(item, flavor, size = 66) {
-  if (flavor) {
-    const [x, y, w, h] = FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)];
-    const k = Math.min(size / w, size / h);
-    return el("span.shop-product-art.botanical", { "aria-hidden": "true" }, [el("span", { style: {
+  const generated = SHOP_ART[item.id];
+  if (generated) {
+    const [x, y, w, h] = generated.box;
+    const [width, height] = generated.size;
+    const k = Math.min(size * .88 / w, size * .88 / h);
+    return el("span.shop-product-art.generated", { "aria-hidden": "true", dataset: { productArt: item.id } }, [el("span", { style: {
       display: "block", width: `${w * k}px`, height: `${h * k}px`, backgroundRepeat: "no-repeat",
-      backgroundImage: `url("${FLAVOR_ART}")`, backgroundSize: `${1774 * k}px ${887 * k}px`, backgroundPosition: `${-x * k}px ${-y * k}px`,
+      backgroundImage: `url("${generated.url}")`, backgroundSize: `${width * k}px ${height * k}px`, backgroundPosition: `${-x * k}px ${-y * k}px`,
     } })]);
   }
   const art = EQUIP_ART[item.art || item.id];
@@ -129,7 +125,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
-    setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART] });
+    setBg(bgUrl("bg_shop"), { fast: true, ready: SHOP_FLAVORS.map(id => SHOP_ART[id].url) });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });

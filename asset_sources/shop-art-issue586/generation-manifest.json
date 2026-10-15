@@ -231,5 +231,52 @@
       "delivery_output_absolute_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/remake/img/shop/packages/lychee.webp",
       "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Reference 1: adopted botanical sheet; reference 2: mint carton family sample. ONE matching 50g upright ivory paper carton, same rectangular shape, restrained plum trim, three-quarter front view showing right side and top. Change only botanical flavor print and quiet side accent. Rich hand-painted botanical style. Package centered at 70% canvas height, >=12% genuinely transparent margin on every side. No letters, numbers, logo, price, labels, watermark, loose ingredients, equipment, people or smoke. Actual RGBA alpha; square source target 1024px, record actual tool size. Subject: red lychees and peeled white lychee with green leaf."
     }
+  ],
+  "status": "all 21 selected PNGs supplied; reproduction inputs and actual calls in adoption.json/generation-records.json",
+  "delivery_spec": {
+    "size": [
+      512,
+      512
+    ],
+    "format": "WebP",
+    "quality": 88,
+    "alpha_quality": 100,
+    "source_pngs": "unmodified generated originals",
+    "display_margin": "6% per side, measured alpha bbox with 2px allowance; aspect ratio preserved"
+  },
+  "equipment_targets": [
+    {
+      "id": "lotos_hagal",
+      "source": "originals/lotos_hagal.png",
+      "sha256": "d657732cc764dc824c48970ec55f30fc4a29d3e15147a0cf97399dcb12104870",
+      "delivery": "remake/img/shop/equipment/lotos_hagal.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    },
+    {
+      "id": "tanukish_lid",
+      "source": "originals/tanukish_lid.png",
+      "sha256": "76147759957dca9a8913b85cc2a9bee7d43bd536a0e653a501887e89b6643e39",
+      "delivery": "remake/img/shop/equipment/tanukish_lid.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    },
+    {
+      "id": "amaburst_hms",
+      "source": "originals/amaburst_hms.png",
+      "sha256": "d844144b25c090cb0fdd829707c17a1623e498cece925f0e915b6b78d07f065e",
+      "delivery": "remake/img/shop/equipment/amaburst_hms.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    }
   ]
 }
