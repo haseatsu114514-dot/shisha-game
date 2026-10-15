@@ -1,0 +1,18 @@
+.facility-icon { display: inline-grid; place-items: center; flex: none; vertical-align: middle; }
+.facility-icon-crop { display: block; position: relative; overflow: hidden; }
+.facility-icon-crop > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
+
+/* Dedicated preview only. No rules target the game map. */
+.facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 system-ui, sans-serif; }
+.facility-preview main { max-width: 1000px; margin: auto; }
+.facility-preview h1 { font-size: 24px; }
+.facility-preview .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.facility-preview section { padding: 16px; border-radius: 8px; }
+.facility-preview .light { background: #f4eedf; color: #292431; }
+.facility-preview .dark { background: #17131e; color: #fff4dd; }
+.facility-preview .row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin: 16px 0; }
+.facility-preview h3 { width: 100%; margin: 0; font-size: 16px; }
+.facility-preview button { display: grid; justify-items: center; align-content: center; gap: 6px; min-width: 52px; min-height: 52px; padding: 6px; border: 1px solid currentColor; border-radius: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; touch-action: manipulation; }
+.facility-preview button:focus-visible { outline: 3px solid #dc8c19; outline-offset: 3px; }
+.facility-preview button[aria-pressed="true"] { outline: 2px solid #dc8c19; outline-offset: 2px; }
+.facility-preview small { font-size: 12px; }
