@@ -91,6 +91,7 @@ async function fits(page) {
   assert.deepEqual(overlaps, [], "Investigation labels cover each other");
 }
 async function run(label, params, options, body, beforeLoad = null) {
+  if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
   await context.addInitScript(() => {
     const get = Storage.prototype.getItem, set = Storage.prototype.setItem;
@@ -325,4 +326,5 @@ try {
   await browser.close();
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify({ results }, null, 2) + "\n");
 }
+assert(results.length > 0, "No TRPG browser cases were selected");
 assert.equal(results.filter(r => r.status === "failed").length, 0, "TRPG browser cases failed");

@@ -25,7 +25,9 @@ on:
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
+      - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_experience.mjs'
       - 'remake/test/browser/trpg_main.mjs'
       - '.github/workflows/trpg-preview.yml'
   push:
@@ -54,7 +56,9 @@ on:
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
+      - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_experience.mjs'
       - 'remake/test/browser/trpg_main.mjs'
       - '.github/workflows/trpg-preview.yml'
   workflow_dispatch:
@@ -84,6 +88,7 @@ jobs:
       - name: Scenario and session checks
         run: |
           node --test remake/test/trpg.mjs
+          node --test remake/test/trpg_feedback.mjs
           node --test remake/test/trpg_campaign.mjs
           node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
           python3 tools/lint_dialogue.py trpg_
@@ -107,6 +112,7 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/trpg
         run: |
           node remake/test/browser/trpg.mjs
+          ARTIFACT_DIR=.codex/artifacts/trpg/experience node remake/test/browser/trpg_experience.mjs
           node remake/test/browser/trpg_main.mjs
       - name: Upload screenshots and results
         if: always()

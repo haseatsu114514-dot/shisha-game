@@ -2,9 +2,10 @@ import { el } from "../core/util.js";
 import { TrpgSession } from "./session.js";
 import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
+import { checkForecast, rerollOdds } from "./feedback.js";
 
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
-const PHASES = { cover: 0, listen: 1, explore: 2, prepare: 3, serve: 4, ending: 4 };
+const PHASES = ["listen", "explore", "prepare", "serve", "ending"];
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
@@ -27,11 +28,12 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     el("div.trpg-speaker-label", [speaker, role]), speech,
   ]), next]);
   const log = [];
-  let frames = [], cursor = 0, afterTalk = null, busy = false, disposed = false;
+  let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
   let resolveFinished, completed = null;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
-  const progress = el("span.trpg-step", { "aria-label": "物語の進行" });
+  const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
+  const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
   const sound = button(audio.enabled ? "音 ON" : "音 OFF", "trpg-audio", async () => {
     sound.disabled = true;
@@ -46,8 +48,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   ]);
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [el("small", { text: "小さな卓の冒険 / " + presentation.number }),
-      el("strong", { text: scenario.title }), progress]), tools,
-  ]), table, content, dock);
+      el("strong", { text: scenario.title }), teamwork]), tools,
+  ]), progress, table, content, dock);
   host.replaceChildren(root);
 
   function button(label, test, action, attrs = {}) {
@@ -68,8 +70,13 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     root.dataset.phase = state.phase;
     root.dataset.risk = state.pressure >= 5 ? "high" : "calm";
     root.style.setProperty("--risk-level", state.pressure / session.rules.pressureMax);
-    progress.replaceChildren(...[1, 2, 3, 4].map(n => el("i", { class: n <= PHASES[state.phase] ? "done" : "" })),
-      el("small", { text: "連携札 " + state.teamwork + "/2", dataset: { test: "trpg-teamwork" } }));
+    const current = PHASES.indexOf(state.phase);
+    progress.replaceChildren(el("ol", PHASES.map((phase, i) => el("li", {
+      class: i < current ? "done" : "", "aria-current": phase === state.phase ? "step" : null,
+    }, [el("i", { text: i < current ? "✓" : String(i + 1), "aria-hidden": "true" }),
+      el("span", { text: phase === "ending" ? "結末" : presentation.phases[phase].kicker.split(" / ").pop() })]))));
+    teamwork.replaceChildren(el("span", { text: "連携札 " + state.teamwork + "/2" }),
+      ...[1, 2].map(n => el("i", { class: n > state.teamwork ? "spent" : "", "aria-hidden": "true" })));
     table.replaceChildren(...scenario.cast.map(c => el("span.trpg-table-person", {
       text: name(c.id) + " · " + (c.part === "GM" ? "GM" : c.role.split("／")[0]),
       dataset: { speaker: c.id },
@@ -78,10 +85,11 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     dock.hidden = covering;
     table.hidden = covering;
     progress.hidden = covering;
+    teamwork.hidden = covering;
   }
   function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
-  function talk(lines, callback) {
-    frames = sequence(lines); cursor = 0; afterTalk = callback; busy = true;
+  function talk(lines, callback, focusTest = null) {
+    frames = sequence(lines); cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
     root.classList.remove("trpg-idle"); next.hidden = false; next.disabled = false;
     renderBody();
     showFrame();
@@ -109,10 +117,10 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   }
   function finishTalk() {
     busy = false; frames = [];
-    const callback = afterTalk; afterTalk = null;
+    const callback = afterTalk, focusTest = afterFocus; afterTalk = null; afterFocus = null;
     next.hidden = true; root.classList.add("trpg-idle");
     if (callback) callback(); else renderBody();
-    if (!overlay && !busy) root.focus({ preventScroll: true });
+    if (!overlay && !busy) (focusTest && root.querySelector('[data-test="' + focusTest + '"]') || root).focus({ preventScroll: true });
   }
   function idle(text) {
     if (busy) return;
@@ -151,13 +159,13 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         const checked = state.clues.includes(spot.id);
         node.append(el("button.trpg-spot", { type: "button",
           class: checked ? "checked" : "", disabled: busy || (!checked && state.clues.length >= session.rules.exploreLimit),
-          "aria-label": spot.label + (checked ? "、調査済み" : "を調べる"),
+          "aria-label": spot.label + (checked ? "、調査済み。もう一度読む" : "を調べる"),
           style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id },
           onclick: () => {
             if (busy || overlay) return;
             const clue = session.inspect(spot.id);
             audio.play(clue.fresh ? "clue" : "tap");
-            talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); });
+            talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); }, "trpg-spot-" + spot.id);
           },
         }, [el("i", { text: checked ? "✓" : String(i + 1) }), el("span", { text: spot.short })]));
       });
@@ -171,13 +179,37 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   function clueButtons() {
     const node = el("div.trpg-evidence");
     const clues = session.snapshot().clues;
-    if (!clues.length) node.append(el("p", { text: "見つけた手がかりを、ここに残していきます。" }));
-    clues.forEach((id, i) => {
+    node.append(el("div.trpg-evidence-head", [el("strong", { text: "調査メモ · " + clues.length }),
+      button("読み比べる", "trpg-compare-notes", openNotes, { class: "small", disabled: !clues.length })]));
+    const list = el("div.trpg-evidence-list");
+    if (!clues.length) list.append(el("p.trpg-empty-note", { text: "部屋の気になる場所を選ぼう。見つけたことが、作戦のヒントになる。" }));
+    [...clues].reverse().forEach(id => {
       const evidence = session.profile.evidence[id];
-      node.append(el("button.trpg-clue", { type: "button", dataset: { test: "trpg-clue-" + id },
-        onclick: () => openClue(id) }, [el("span", { text: String(i + 1).padStart(2, "0") }), evidence.title]));
+      list.append(el("button.trpg-clue", { type: "button", dataset: { test: "trpg-clue-" + id },
+        onclick: () => openClue(id) }, [el("span", { text: String(clues.indexOf(id) + 1).padStart(2, "0") }), evidence.title]));
     });
+    node.append(list);
     return node;
+  }
+  function investigation() {
+    const state = session.snapshot(), remaining = session.rules.exploreLimit - state.clues.length;
+    const ready = state.clues.length >= 3;
+    return el("div.trpg-investigation", { dataset: { test: "trpg-investigation", ready: String(ready) }, role: "status" }, [
+      el("div", [el("strong", { text: "手がかり " + state.clues.length + "個" }),
+        el("span", { text: ready ? "見立てを話せます" : "あと" + (3 - state.clues.length) + "個で見立てへ" })]),
+      el("div.trpg-investigation-track", { "aria-hidden": "true" }, [1, 2, 3].map(n => el("i", { class: state.clues.length >= n ? "filled" : "" }))),
+      el("small", { text: "調査はあと" + remaining + "箇所" + (session.rules.inspectionPressure ? " · 新規調査で危機＋" + session.rules.inspectionPressure : " · 時間制限なし") }),
+    ]);
+  }
+  function planSummary() {
+    const state = session.snapshot();
+    return el("div.trpg-plan-summary", { dataset: { test: "trpg-plan-summary" } }, [
+      el("strong", { text: presentation.theme === "shark" ? "みんなの脱出プラン" : "旅人への提案" }),
+      ...Object.entries(state.plan).map(([field, id]) => el("div", { class: id ? "chosen" : "pending" }, [
+        el("small", { text: presentation.fields[field] }),
+        el("span", { text: scenario.options[field].find(o => o.id === id)?.label || "これから選ぶ" }),
+      ])),
+    ]);
   }
   function renderBody() {
     if (disposed) return;
@@ -199,21 +231,21 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       if (!busy) panel.append(button("判定へ", "trpg-listen-open", () => openCheck("listen"), { class: "primary" }));
       idle(presentation.listenIdle);
     } else if (state.phase === "explore") {
-      panel.append(clueButtons(), el("div.trpg-support", [
+      panel.append(investigation(), clueButtons(), el("div.trpg-support", [
         ...Object.keys(scenario.consult).map(id => button(name(id) + "に相談", "trpg-consult-" + id, () => consult(id), { disabled: busy })),
-      ]), button(copy.button + " · " + state.clues.length + "/" + session.rules.exploreLimit, "trpg-interpret", chooseHypothesis,
+      ]), button(copy.button, "trpg-interpret", chooseHypothesis,
         { class: "primary", disabled: busy || state.clues.length < 3 }));
-      if (presentation.theme === "shark") panel.append(el("small.trpg-budget", { text: "調査はあと " + (session.rules.exploreLimit - state.clues.length) + " 箇所 · 再読と相談は無料" }));
+      panel.append(el("small.trpg-budget", { text: "メモの再読・仲間への相談は何度でも" }));
       idle(presentation.exploreIdle);
     } else if (state.phase === "prepare") {
       scene.append(preparationChoices());
       const hypothesis = scenario.hypotheses.find(h => h.id === state.hypothesis);
-      panel.append(el("div.trpg-hypothesis-note", { text: "今の見立て：" + hypothesis.label }), clueButtons(), button(copy.button, "trpg-prepare-open", () => openCheck("prepare"),
+      panel.append(el("div.trpg-hypothesis-note", { text: "今の見立て：" + hypothesis.label }), planSummary(), clueButtons(), button(copy.button, "trpg-prepare-open", () => openCheck("prepare"),
         { class: "primary", disabled: busy || session.flow.prepare.some(f => !state.plan[f]) }));
       idle(presentation.prepareIdle);
     } else if (state.phase === "serve") {
       scene.append(servingChoices());
-      panel.append(clueButtons(), button(copy.button, "trpg-serve-open", () => openCheck("serve"),
+      panel.append(planSummary(), clueButtons(), button(copy.button, "trpg-serve-open", () => openCheck("serve"),
         { class: "primary", disabled: busy || session.flow.serve.some(f => !state.plan[f]) }));
       idle(presentation.serveIdle);
     } else {
@@ -224,7 +256,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         el("div.trpg-ending-plan", Object.entries(result.plan).map(([field, id]) =>
           el("span", { text: scenario.options[field].find(o => o.id === id).label }))),
       ]));
-      panel.append(clueButtons(), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
+      panel.append(clueButtons(), button("この卓を振り返る", "trpg-recap", openRecap, { disabled: busy }), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
         { class: "primary", disabled: busy })] : []), button(closeLabel, "trpg-finish", () => finish(result), { disabled: busy }));
       idle(presentation.endingIdle);
     }
@@ -232,7 +264,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   }
   function consult(id) {
     if (busy || overlay) return;
-    talk(session.consult(id), () => { renderBody(); idle(presentation.exploreIdle); });
+    talk(session.consult(id), () => { renderBody(); idle(presentation.exploreIdle); }, "trpg-consult-" + id);
   }
   function cover() {
     const castCards = scenario.cast.map(c => el("div.trpg-cast-card", {
@@ -249,12 +281,12 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         el("h1", presentation.titleLines.map(text => el("span", { text }))),
         el("p", { text: scenario.subtitle }),
         el("div.trpg-book-author", { text: "作 · " + scenario.author }),
-        el("div.trpg-book-stamp", [el("span", { text: "短編TRPG / 約10分" }), el("span", { text: "3人＋GM" })]),
+        el("div.trpg-book-stamp", [el("span", { text: "短編TRPG / 約10分" }), el("span", { text: (scenario.cast.length - 1) + "人＋GM" })]),
       ]),
       el("div.trpg-cover-right", [
         el("h2", { text: presentation.coverHeading }),
         el("p", { text: scenario.premise }),
-        el("div.trpg-cast", castCards),
+        el("div.trpg-cast", { style: { "--cast-count": scenario.cast.length } }, castCards),
         el("div.trpg-cover-rule", { text: presentation.coverRule + " 連携札を二枚持って、物語へ。" }),
         el("div.trpg-cover-actions", [
           button("この卓を始める", "trpg-start", start, { class: "primary" }),
@@ -292,11 +324,11 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       el("div.trpg-serve-options", scenario.options[session.flow.serve[0]].map(option => optionButton(session.flow.serve[0], option))),
     ]);
   }
-  function modal(title, body, actions, { dismiss = true } = {}) {
+  function modal(title, body, actions, { dismiss = true, wide = false } = {}) {
     if (overlay || disposed) return null;
     const previousFocus = document.activeElement;
-    const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title },
-      [el("h2", { text: title }), el("div.trpg-modal-body", body), el("div.trpg-modal-actions", actions)]);
+    const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: wide ? "trpg-modal-wide" : "" },
+      [el("h2", { text: title }), el("div.trpg-modal-body", { tabindex: "0", role: "region", "aria-label": title + "の内容" }, body), el("div.trpg-modal-actions", actions)]);
     overlay = el("div.trpg-overlay", box);
     root.append(overlay);
     const close = () => {
@@ -304,7 +336,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); else root.focus({ preventScroll: true });
     };
     modalCloser = dismiss ? close : null;
-    box.querySelector("button:not(:disabled), input")?.focus({ preventScroll: true });
+    (box.querySelector("button:not(:disabled), input") || box).focus({ preventScroll: true });
     return { close, box };
   }
   function chooseHypothesis() {
@@ -318,8 +350,10 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         talk(scenario.preparation, () => renderBody());
       },
     }, [el("strong", { text: h.label }), el("span", { text: h.description })]));
-    pop = modal(presentation.hypothesisTitle, el("div.trpg-choice-list", choices),
-      [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())]);
+    pop = modal(presentation.hypothesisTitle, el("div.trpg-hypothesis-layout", [
+      el("div", [el("p.trpg-modal-intro", { text: "見つけたことをつなげて、みんなの見立てを決めよう。" }), el("div.trpg-choice-list", choices)]),
+      el("aside.trpg-hypothesis-evidence", { tabindex: "0", "aria-label": "これまでの手がかり" }, [el("h3", { text: "これまでの手がかり" }), ...noteCards()]),
+    ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true });
   }
   function die(value, rolling = false) {
     const node = el("div.trpg-die", { class: rolling ? "rolling" : "", role: "img", "aria-label": "サイコロ " + value });
@@ -330,15 +364,33 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
     const body = el("div", [el("p", { text: check.hint }),
-      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋1" })])]);
+      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋1", dataset: { test: "trpg-bonus" } })])]);
+    const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
+    function updateForecast() {
+      const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked });
+      body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
+      forecast.replaceChildren(el("div.trpg-forecast-head", [
+        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d6 ＋ 基本1" + (support?.checked ? " ＋ 助力2" : "") }),
+      ]), el("div.trpg-odds", [
+        ["success", "10以上", "うまくいく"], ["mixed", "7〜9", "ひと手間"], ["trouble", "6以下", "思わぬ出来事"],
+      ].map(([grade, threshold, label]) => el("div", { dataset: { grade } }, [
+        el("strong", { text: "約" + Math.min(predicted.odds[grade], predicted.bestOdds[grade])
+          + (predicted.potentialBonus ? "〜" + Math.max(predicted.odds[grade], predicted.bestOdds[grade]) : "") + "%",
+          dataset: { test: "trpg-odds-" + grade } }),
+        el("span", { text: label }), el("small", { text: threshold }),
+      ]))), el("p", { text: predicted.potentialBonus
+        ? "見立てが合っていれば、さらに＋" + predicted.potentialBonus + "。正誤は振ったあとに分かります。"
+        : "どの出目でも物語は続きます。出目は、途中の出来事を変えます。" }));
+    }
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
-    if (support) body.append(el("label.trpg-aid", [support,
-      name(helper) + "の「" + cast[helper].ability + "」＋2 · 連携札1枚"]));
-    if (support) support.addEventListener("change", () => {
-      body.querySelector(".trpg-dice-bonus").textContent = support.checked ? "＋3" : "＋1";
-    });
+    if (support) body.append(el("label.trpg-aid", [support, el("span", [
+      el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」を借りる" }),
+      el("small", { text: "判定＋2 · 連携札1枚を使う · この切り札は一度だけ" }),
+    ])]));
+    if (support) support.addEventListener("change", updateForecast);
     if (helper && !support) body.append(el("p", { text: "この判定では連携札を使えません。手元の作戦で進めましょう。" }));
+    body.append(forecast); updateForecast();
     let pop;
     const roll = button("サイコロを振る", "trpg-roll", () => {
       if (session.snapshot().pending) return;
@@ -346,6 +398,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       roll.disabled = true;
       modalCloser = null;
       pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
+      pop.box.focus({ preventScroll: true });
       body.querySelector(".trpg-dice-row").replaceChildren(die(1, true), die(1, true),
         el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
@@ -367,7 +420,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     body.replaceChildren(
       el("p", { text: scenario.checks[result.kind].hint }),
       el("div.trpg-dice-row", [die(result.dice[0]), die(result.dice[1]), el("span.trpg-dice-bonus", { text: "＋" + result.bonus })]),
-      el("div.trpg-dice-total", { dataset: { test: "trpg-roll-total" } }, [
+      el("div.trpg-dice-total", { role: "status", dataset: { test: "trpg-roll-total", grade: result.grade } }, [
         "合計 " + result.total, el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
       ]),
     );
@@ -376,11 +429,16 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
       body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
-      button((i + 1) + "個目を振り直す", "trpg-reroll-" + i, () => {
+      button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
         audio.play("roll");
         session.reroll(i); showRollResult(pop, body);
-      }))));
+      }, { class: "trpg-reroll-choice" }))));
+      body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(
+        el("strong", { text: (i + 1) + "個目（" + result.dice[i] + "）を振り直す" }),
+        el("small", { text: "振り直した後の成功 約" + rerollOdds(result.dice, result.bonus, i).success + "%" }),
+      ));
+      body.append(el("p.trpg-reroll-warning", { text: "新しい出目を採用します。今より低い出目になることもあります。" }));
     } else body.append(el("p.trpg-roll-trump", { text: "振り直しには、未使用の切り札と連携札1枚が必要です。" }));
     const actions = pop.box.querySelector(".trpg-modal-actions");
     actions.replaceChildren(button("物語を続ける", "trpg-settle", () => {
@@ -417,13 +475,47 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     ], [button("メモを閉じる", "trpg-clue-close", () => pop.close(), { class: "primary" })]);
   }
   function openNotes() {
-    const clues = session.snapshot().clues;
-    const rows = clues.length ? clues.map(id => {
-      const e = session.profile.evidence[id];
-      return el("div.trpg-note-text", [el("strong", { text: e.title }), el("p", { text: e.text })]);
-    }) : [el("p", { text: "部屋を調べると、ここに手がかりが残ります。" })];
     let pop;
-    pop = modal("調査メモ", rows, [button("卓に戻る", "trpg-notes-close", () => pop.close(), { class: "primary" })]);
+    pop = modal("調査メモを読み比べる", [
+      el("p.trpg-modal-intro", { text: "何を見て、何に気づいた？ メモの再読は調査回数も危機も使いません。" }),
+      el("div.trpg-notes-grid", noteCards()),
+    ], [button("卓に戻る", "trpg-notes-close", () => pop.close(), { class: "primary" })], { wide: true });
+  }
+  function noteCards() {
+    const clues = session.snapshot().clues;
+    if (!clues.length) return [el("p", { text: "部屋を調べると、ここに手がかりが残ります。" })];
+    return clues.map((id, i) => {
+      const e = session.profile.evidence[id];
+      return el("article.trpg-note-card", [
+        el("small", { text: String(i + 1).padStart(2, "0") + " / " + scenario.spots.find(s => s.id === id).label }),
+        el("h3", { text: e.title }), el("p", { text: e.text }),
+      ]);
+    });
+  }
+  function openRecap() {
+    if (busy || !completed) return;
+    const result = session.result(), state = session.snapshot();
+    const hypothesis = scenario.hypotheses.find(h => h.id === result.hypothesis);
+    let pop;
+    pop = modal("この卓の記録", [
+      el("div.trpg-recap-heading", [el("small", { text: scenario.title }),
+        el("h3", { text: scenario.endings[result.ending].title }),
+        el("p", { text: "手がかり " + result.clues.length + "個 · 判定 " + result.checks.length + "回 · 使った連携札 " + (2 - state.teamwork) + "枚" })]),
+      el("div.trpg-recap-grid", [
+        el("section", [el("h3", { text: "みんなで選んだこと" }),
+          el("p.trpg-recap-hypothesis", { text: "見立て：" + hypothesis.label }), planSummary()]),
+        el("section", [el("h3", { text: "サイコロが作った展開" }),
+          ...result.checks.map(check => el("article.trpg-recap-check", { dataset: { grade: check.grade } }, [
+            el("strong", { text: scenario.checks[check.kind].title }),
+            el("span", { text: check.dice.join(" ＋ ") + " ＋ 補正" + check.bonus + " ＝ " + check.total + " · " + LABELS[check.grade] }),
+            el("small", { text: [check.helper ? name(check.helper) + "の助力" : "",
+              check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : ""].filter(Boolean).join(" · ") || "基本の判定" }),
+          ])),
+        ]),
+      ]),
+      el("p.trpg-recap-rule", { text: "選んだ提案が結末を、サイコロがそこまでの出来事を作りました。" }),
+      el("h3", { text: "物語の途中で見つけたもの" }), el("div.trpg-notes-grid", noteCards()),
+    ], [button("結末に戻る", "trpg-recap-close", () => pop.close(), { class: "primary" })], { wide: true });
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
@@ -467,14 +559,19 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     root.remove();
   }
   function keys(event) {
-    if (event.repeat) return;
+    if (event.repeat && !overlay && busy && (event.key === "Enter" || event.key === " ")
+      && (event.target === next || !event.target.closest("button,input,select,textarea"))) {
+      event.preventDefault();
+      return;
+    }
     if (overlay) {
       if (event.key === "Escape" && modalCloser) { event.preventDefault(); modalCloser(); }
       if (event.key === "Tab") {
-        const nodes = [...overlay.querySelectorAll("button:not(:disabled),input:not(:disabled)")];
-        if (!nodes.length) return;
+        const nodes = [...overlay.querySelectorAll("button:not(:disabled),input:not(:disabled),[tabindex='0']")];
+        if (!nodes.length) { event.preventDefault(); overlay.querySelector(".trpg-modal").focus(); return; }
         const first = nodes[0], last = nodes[nodes.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        if (!nodes.includes(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first).focus(); }
+        else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
       }
       return;
