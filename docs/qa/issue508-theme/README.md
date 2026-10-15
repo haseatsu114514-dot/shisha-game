@@ -20,7 +20,7 @@
 - ch1_salaryman_regular: 無言で着席する地の文にnormal。
 - ch1_salaryman_change: 登場normal、電話後の「小さく笑って」でsmile、既存会釈後にhide。つむぎへ持ち越さない。
 - ch2_sofa_burn / ch2_sumi_silence: 既存のsmile / normalをそのまま使用。
-- 冒頭専用演出の間だけ新規salaryman立ち絵をCSSで非表示にする。冒頭本文・カット順・匿名手元CG・演出JSは未変更。通常VN・第2章・回想の名前だけの箇所に新しい配置指定を増やしていない。
+- 冒頭のsalaryman発話に `portrait: false` を指定し、自動立ち絵だけを生成しない。話者名・音声・本文・カット順・匿名手元CG・演出JSを保持し、冒頭専用CSSは削除。既存 `hide_portrait` は表示済み画像を消す命令であり、後続の本人発話で再表示されるため代用できない。通常VN・第2章・回想の名前だけの箇所に新しい配置指定を増やしていない。
 
 [全身normal/smile](portraits-normal-smile.png)／[顔と明背景の透過縁](faces-and-alpha-on-light.png)。PNG 896×1200 RGBA、透過余白・頭・手・靴を保持。原画人物高1854px以上、共通縮小倍率、足元下端一致。既存計測で足元アンカー差約0.10px、表情切替のCSS配置値は完全一致。[RGBA・透過計測](portrait-pixel-verification.json)／[顔サイズ目安](portrait-face-scale.json)。顔サイズ目安はみんと・アダム基準から+3.54%（default顔枠による近似。実画面も確認）。本人だけのmanifest更新・可逆WebP生成。他のmanifestキーを保持し、PNGとWebPのRGBAは完全一致。
 
@@ -36,7 +36,7 @@ PCと844×390タッチで、`*-salaryman-regular.png`、`*-salaryman-change-{nor
 
 台詞lintは対象4ファイルERROR 0・既存WARN 21・新規WARN 0（[基準との比較](lint-results.json)）。`text_wrap.mjs` 6623件PASS、`tidy_dialogue_text.py --dry-run` は変更対象外の既存oneesan1行のみ検出・未変更。JS構文、Git diff、共通指示リンク、actionlint v1.7.7はPASS。人物設定・セーブ・得点・演出JS等の[未変更hash](unchanged-runtime.json)も保存。
 
-関連回帰の結果・操作画像はこのディレクトリのJSONとPRへ記録する。ローカルはChromium、実機Safari、章全体の通しプレイ、施設とDSの統合は未実施。直接場面起動のQAを章通しと扱わない。第10夜の既存「ネクタイも、緩めていない」と指定の共通立ち絵はレビュー対象とし、本文や表情キーを勝手に変えていない。
+関連回帰の結果・操作画像はこのディレクトリのJSONとPRへ記録する。ローカルはChromium、実機Safari、章全体の通しプレイ、施設とDSの統合は未実施。直接場面起動のQAを章通しと扱わない。採用済みnormal/smileは変更していない。最新レビューに従い、通常来店の「ネクタイを少しだけ緩めて」を「襟元に指を入れて」、第10夜の「ネクタイも、緩めていない」を「鞄を膝に置いたまま、背筋を伸ばしている」へ最小修正。前者は既に緩んだネクタイを更に緩める動作、後者は画像と反対の服装状態となるため。第10夜の席選び・張り詰めた様子を残し、電話相手を本当の本人と決める内心は追加しない。
 
 ## 作業とレビュー
 
@@ -45,3 +45,31 @@ WORKER `codex-theme508-20261014-1408483a`、正式claim38579775021・同run指�
 共通manifestと要望台帳は施設Draft #545／資料Draft #550にも差分がある。このPRはsalarymanキー・本人WebP2件・専用THE50801〜08だけを追加し、他の採用情報を上書きしない。施設とDSを取り込んだ統合確認は未実施。
 
 ユーザー確認までDraft・予約を保持。マージ、公開、Issue終了、releaseは行わない。
+
+## 最新コメント対応（2026-10-15 JST）
+
+WORKER `codex-508-review-20261015-9e15d538`。オーナーによる旧担当停止・引き継ぎ確認後、[正式transfer38646818128](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38646818128) と [指定status38646979791](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38646979791) 成功。最新main `f8ab2c78` をmergeし、sai/makiとsalarymanの人物・WebP登録を保持。初回競合解消でWebP2登録を落とした失敗は表示QAが検出し、`caeccdcf` で修正済み。
+
+`portrait: false` はその行の話者の自動表示・先読みを抑える汎用指定。既に登場している人物の退場は従来どおり `hide_portrait` で指定する。通常行の既存挙動・話者名・音声・保存形式は変えない。
+
+大会テストは到着から開幕会話までを15秒のまま計測し、旧本文／現本文で初回指導未読／現本文で既読を比較する。通過した各行と経過msを成果物へ保存。優勝後の `ch1_tournament_after` は当該失敗のSKIP範囲に含まれない。
+
+最新ローカルChromium 154: 専用6ケース（18経路比較、PC/タッチ4場面・冒頭、途中再開）6/6 PASS。対象4ファイルlint ERROR0/WARN21、text_wrap 6666件PASS、JS構文・共通資料リンクPASS。新しい実画面は [review-20261015](review-20261015/) に保存。通常/電話/退店後・第2章2場面と冒頭をPC/タッチで目視確認し、表情位置ぶれ・文字のはみ出しなし。
+
+ローカル大会は7/8 PASS。SKIP自体は未読8.518秒（55行）、既読7.391秒（56行）、旧本文8.326秒（51行）で完了し、画像保留中の制作未開始・解放後の開始も通過した。その後、外部BGM `bgmer.net` のネットワーク接続拒否を厳密なresource検査が検出したため、ケース全体はFAILとする。assertを緩めたりBGMを差し替えたりしていない。過去の15秒超過は現環境では再現せず、過去記録だけから遅延原因を断定しない。現行未読の追加4行は最短26ms間隔で通過し、既読時の回想も停止しない。
+
+Chrome151のローカル導入は `cdn.playwright.dev` への403 Domain forbiddenで停止。固定依存playwright1.62.1（Chromium151.0.7922.34）のCIで再検証する。
+
+再開時の予約statusも [38663312507](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38663312507) SUCCESS（transfer38646818128指定）。最初のChrome151比較run38647517174は専用6/6・大会9/10。唯一の失敗は旧本文比較を開始するpage.evaluate内の動的importで `Resulting promise was garbage collected`。比較用dataモジュールを画像保留前のinitへ移し、本番開始を同期呼出しに揃えた（dd0518b6）。ゲーム側処理・15秒上限・画像ゲート判定は変更していない。
+
+最終コード `dd0518b61c83a043a060d262064e35ebd65dcd99` の [Chrome151 CI38663234376](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38663234376) は SUCCESS。151.0.7922.34を実ログで確認し、専用6/6（18経路）、大会10/10 PASS。[永続化した計測・ログ抜粋](review-20261015/chrome151-ci.json)。後続コミットはQA資料・スクリーンショットだけでゲーム／テストの変更なし。
+
+| 同一CIでのSKIP範囲（到着→開幕会話終了） | 表示行数 | 実測 |
+|---|---:|---:|
+| 旧本文・指導未読 | 51 | 6.645秒 |
+| 追加後・指導未読 | 55 | 6.730秒 |
+| 追加後・指導既読 | 56 | 6.754秒 |
+
+追加分の差は85ms／109msで、SKIPの行送り25msと整合する範囲。回想分岐のスタックではない。過去の15秒失敗は再現せず、過去の詳細トレースがないため当時の待機原因は断定できない。今回の追加を理由に15秒上限を緩和する根拠はなく、元の判定を保持する。優勝後の場面は当該SKIP範囲に含まれない。読み込み・話者の入場待ちを含めて全経路が完了し、画像保留中の制作未開始／画像解放後の開始も合格。
+
+実機Safari・章全体の通し・施設／DSを含む全統合の手動確認は未実施。局所場面のQAを章全体の確認とは扱わない。Draft／予約を保持し、マージ・公開・close・releaseなし。

@@ -8,5 +8,6 @@
     "remake/js/core/state.js": "db3c568debaeb8fba266848022c52e0f16661c45da84a347b3d8fdd8cbd8e0ca",
     "remake/js/craft/score.js": "07a148c59b7248dac31dcc7c74b23c29f520d0f445b4badc6d3efff93e7a4e4c",
     "remake/js/scenes/tonari-opening.js": "5b5754823d673a3e72e530b16fdf9e9deaff072620702a7b15e475f80fc5e0b2"
-  }
+  },
+  "historical_note": "Initial implementation record at c5ef51f7; engine.js subsequently adds portrait:false support in eb0a18e5. This is not an assertion that every current hash still matches."
 }
