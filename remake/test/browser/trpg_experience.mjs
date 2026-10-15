@@ -28,28 +28,62 @@ async function dialogue(page) {
   throw new Error("Dialogue did not terminate");
 }
 async function fits(page) {
-  const clipped = await page.locator("button:not([hidden]), .trpg-speech p").evaluateAll(nodes => {
+  const clipped = await page.locator("button:not([hidden]), summary[data-test], .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
-    return nodes.filter(n => n.offsetWidth && n.offsetHeight).filter(n => {
+    return nodes.filter(n => n.offsetWidth && n.offsetHeight
+      && n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).filter(n => {
       const r = n.getBoundingClientRect();
       return r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1
-        || r.bottom > stage.bottom + 1 || n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1;
+        || r.bottom > stage.bottom + 1 || !n.matches(".trpg-spot, .trpg-spot span, .trpg-object-choice, .trpg-object-label, .trpg-object-detail")
+          && (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1);
     }).map(n => ({ text: n.textContent, width: n.clientWidth, scroll: n.scrollWidth }));
   });
   assert.deepEqual(clipped, [], "Controls and dialogue fit the stage");
-  const blocked = await page.locator(".trpg-side > button:not(:disabled)").evaluateAll(nodes => {
-    if (document.querySelector(".trpg-overlay")) return [];
-    return nodes.filter(n => n.offsetWidth && n.offsetHeight).filter(n => {
+  const blocked = await page.locator("button[data-test]:not(:disabled), summary[data-test]").evaluateAll(nodes => {
+    const dialog = document.querySelector('[role="dialog"]');
+    return nodes.filter(n => (!dialog || dialog.contains(n)) && n.offsetWidth && n.offsetHeight
+      && n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).filter(n => {
+      // Notebook contents may scroll. Only test controls whose center is inside their scroll viewport.
       const r = n.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      for (let parent = n.parentElement; parent; parent = parent.parentElement) {
+        const style = getComputedStyle(parent), box = parent.getBoundingClientRect();
+        if (/(auto|scroll|hidden|clip)/.test(style.overflowX + style.overflowY)
+          && (r.x + r.width / 2 < box.left || r.x + r.width / 2 > box.right
+            || r.y + r.height / 2 < box.top || r.y + r.height / 2 > box.bottom)) return false;
+      }
       return !top || !n.contains(top);
     }).map(n => n.textContent);
   });
-  assert.deepEqual(blocked, [], "The conversation dock cannot cover the current action");
+  assert.deepEqual(blocked, [], "Scenery, portraits and labels cannot cover the current controls");
 }
 async function currentStep(page) {
   assert.equal(await page.locator('nav.trpg-journey[aria-label="物語の進行"] [aria-current="step"]').count(), 1);
+  assert(await page.locator("nav.trpg-journey").evaluate(n => {
+    const style = getComputedStyle(n), r = n.getBoundingClientRect();
+    return style.display !== "none" && style.visibility !== "hidden"
+      && (r.width <= 2 && r.height <= 2 || style.clipPath !== "none" || style.clip !== "auto");
+  }), "Progress remains available to screen readers without a visible navigation bar");
+}
+async function cinematicScene(page) {
+  assert.equal(await page.locator(".trpg-root.trpg-cinematic").count(), 1);
+  assert.equal(await page.locator(".trpg-side").count(), 0, "A permanent sidebar does not cover the scene");
+  const room = await page.locator(".trpg-room").boundingBox(), root = await page.locator(".trpg-root").boundingBox();
+  for (const edge of ["x", "y", "width", "height"]) assert(Math.abs(room[edge] - root[edge]) < 2,
+    "The illustrated room fills the stage");
+  assert(!await page.locator(".trpg-dock").evaluate(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })),
+    "Idle exploration and choices do not retain a dialogue window");
+  await fits(page);
+}
+async function closedDetails(page) {
+  assert.equal(await page.locator('[role="dialog"].trpg-roll-stage').count(), 1);
+  const details = control(page, "trpg-roll-details");
+  assert(await details.evaluate(n => n.tagName === "DETAILS" && !n.open), "Roll details start folded");
+  assert(!await control(page, "trpg-forecast").isVisible(), "Probabilities do not crowd the initial roll view");
+  assert(await control(page, "trpg-details-toggle").isVisible(), "Players can open the roll information when needed");
 }
 async function forecast(page, supported = false, conditional = false) {
+  if (!await control(page, "trpg-roll-details").evaluate(n => n.open)) await hit(page, "trpg-details-toggle");
+  assert(await control(page, "trpg-forecast").isVisible(), "Opening the details reveals the probability forecast");
   const odds = await control(page, "trpg-odds-success").textContent();
   const expected = conditional ? (supported ? /58.*72/ : /28.*42/) : (supported ? /58/ : /28/);
   assert.match(odds, expected, "Success odds reflect support and conditional insight");
@@ -65,10 +99,10 @@ async function roll(page, { trap = false } = {}) {
   await hit(page, "trpg-roll");
   if (trap) {
     await page.keyboard.press("Tab");
-    assert(await page.evaluate(() => !!document.activeElement.closest(".trpg-overlay")),
+    assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')),
       "Tab stays inside the modal while all rolling controls are disabled");
     await page.keyboard.press("Escape");
-    assert.equal(await page.locator(".trpg-overlay").count(), 1, "A committed roll cannot be dismissed");
+    assert.equal(await page.locator('[role="dialog"]').count(), 1, "A committed roll cannot be dismissed");
   }
   await control(page, "trpg-settle").waitFor();
   const announcement = page.locator('.trpg-dice-total[role="status"]');
@@ -92,55 +126,127 @@ async function begin(page, { keyboard = false } = {}) {
     assert.notEqual(once, before, "One Enter press advances the dialogue");
     assert.equal(repeated, once, "Holding Enter does not skip another dialogue line");
   } else await hit(page, "trpg-start");
+  assert(await page.locator(".trpg-dock").evaluate(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })),
+    "Conversation appears as subtitles while a character speaks");
   await currentStep(page);
   await dialogue(page);
+  await closedDetails(page);
   await forecast(page);
+  if (keyboard) {
+    await hit(page, "trpg-details-toggle");
+    assert(!await control(page, "trpg-forecast").isVisible(), "The forecast can be folded away again");
+    await hit(page, "trpg-details-toggle");
+  }
   await roll(page, { trap: keyboard });
   await settle(page);
   assert.equal((await state(page)).phase, "explore");
   await currentStep(page);
+  await cinematicScene(page);
 }
 async function inspect(page, id, { focus = false } = {}) {
   await hit(page, "trpg-spot-" + id);
   await dialogue(page);
   if (focus) assert.equal(await page.evaluate(() => document.activeElement.dataset.test), "trpg-spot-" + id,
     "Reading an investigation restores focus to its spot");
+  assert(!await page.locator(".trpg-dock").evaluate(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })),
+    "The scene is clear again after the clue conversation");
+}
+async function hotspots(page, keyboard) {
+  if (keyboard) {
+    await page.mouse.move(2, 2);
+    await page.locator(".trpg-root").focus();
+    await page.waitForFunction(() => {
+      const label = document.querySelector('[data-test="trpg-spot-menu"] span'), style = getComputedStyle(label);
+      return !label.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+        || Number(style.opacity) < .05;
+    });
+    await page.keyboard.press("Tab");
+    await control(page, "trpg-spot-menu").focus();
+    await page.waitForFunction(() => {
+      const label = document.querySelector('[data-test="trpg-spot-menu"] span');
+      return label.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+        && Number(getComputedStyle(label).opacity) > .95;
+    });
+    assert.match(await control(page, "trpg-spot-menu").getAttribute("aria-label"), /メニュー/);
+  }
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) {
+    const tooSmall = await page.locator(".trpg-spot").evaluateAll(nodes => nodes.filter(n => {
+      const r = n.getBoundingClientRect(); return r.width < 43.5 || r.height < 43.5;
+    }).map(n => n.getAttribute("aria-label")));
+    assert.deepEqual(tooSmall, [], "Hotspots retain a 44 px touch target after stage scaling");
+  }
 }
 async function compare(page, count, screenshot = null) {
+  assert(await page.locator('.trpg-stage-pockets [data-test="trpg-compare-notes"]').isEnabled());
   await hit(page, "trpg-compare-notes");
   assert.equal(await page.locator(".trpg-note-card").count(), count, "Every discovered clue can be compared");
-  assert(await page.evaluate(() => !!document.activeElement.closest(".trpg-overlay")));
-  const modalButtons = page.locator(".trpg-overlay button:not(:disabled)");
+  assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')));
+  const modalButtons = page.locator('[role="dialog"] button:not(:disabled)');
   await modalButtons.first().focus();
   await page.keyboard.press("Shift+Tab");
-  assert(await page.evaluate(() => !!document.activeElement.closest(".trpg-overlay")), "Reverse Tab stays in the modal");
+  assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')), "Reverse Tab stays in the modal");
   await modalButtons.last().focus();
   await page.keyboard.press("Tab");
-  assert(await page.evaluate(() => !!document.activeElement.closest(".trpg-overlay")), "Tab wraps inside the modal");
+  assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')), "Tab wraps inside the modal");
   await modalButtons.last().focus();
   for (let repeat = 0; repeat < 10; repeat++) {
     await page.keyboard.down("Tab");
-    assert(await page.evaluate(() => !!document.activeElement.closest(".trpg-overlay")),
+    assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')),
       "Holding Tab never escapes the modal");
   }
   await page.keyboard.up("Tab");
   if (screenshot) await page.screenshot({ path: path.join(artifacts, screenshot + ".png") });
   await page.keyboard.press("Escape");
-  assert.equal(await page.locator(".trpg-overlay").count(), 0);
+  assert.equal(await page.locator('[role="dialog"]').count(), 0);
   assert.equal(await page.evaluate(() => document.activeElement.dataset.test), "trpg-compare-notes",
     "Escape restores focus to the comparison button");
 }
+async function choiceGroup(page, field) {
+  const cards = page.locator(".trpg-choice-cards button.trpg-object-choice:visible");
+  assert.equal(await cards.count(), 3, "Only the current group of three illustrated choices is shown");
+  const tests = await cards.evaluateAll(nodes => nodes.map(n => n.dataset.test));
+  assert(tests.every(test => test.startsWith("trpg-plan-" + field + "-")), "The choice group follows the active preparation step");
+  await page.waitForFunction(() => [...document.querySelectorAll(".trpg-choice-cards button.trpg-object-choice")]
+    .filter(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).every(card =>
+      [card, ...card.querySelectorAll("*")].some(n => n.tagName === "IMG" ? n.complete && n.naturalWidth > 0
+        : getComputedStyle(n).backgroundImage.includes("url("))));
+  await page.evaluate(async () => {
+    const urls = new Set([...document.querySelectorAll(".trpg-object-choice, .trpg-object-choice *")]
+      .flatMap(n => [...getComputedStyle(n).backgroundImage.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(match => match[1])));
+    await Promise.all([...urls].map(src => { const image = new Image(); image.src = src; return image.decode(); }));
+  });
+  await cinematicScene(page);
+}
+async function choiceDetails(page) {
+  await page.mouse.move(2, 2);
+  await page.locator(".trpg-root").focus();
+  await page.waitForFunction(() => [...document.querySelectorAll(".trpg-object-detail")]
+    .every(n => !n.checkVisibility({ opacityProperty: true, visibilityProperty: true })));
+  await page.keyboard.press("Tab");
+  const card = page.locator(".trpg-object-choice:visible").first();
+  await card.focus();
+  await page.waitForFunction(() => [...document.querySelectorAll(".trpg-object-detail")]
+    .filter(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+      && Number(getComputedStyle(n).opacity) > .95).length === 1);
+  assert((await card.getAttribute("aria-label")).includes(await card.locator(".trpg-object-detail").textContent()),
+    "The focused illustrated choice exposes its description visually and accessibly");
+  await fits(page);
+}
 async function choosePlan(page, fields) {
-  for (const [field, value] of Object.entries(fields)) await hit(page, `trpg-plan-${field}-${value}`);
+  for (const [field, value] of Object.entries(fields)) {
+    await choiceGroup(page, field);
+    await hit(page, `trpg-plan-${field}-${value}`);
+  }
   await fits(page);
 }
 async function ordinary(page, keyboard) {
   await begin(page, { keyboard });
   const budget = await control(page, "trpg-investigation").textContent();
-  assert.match(budget, /3/);
-  assert.match(budget, /残り|あと/);
-  assert.match(budget, /時間制限なし/);
+  assert.match(budget, /手がかり\s*0\s*\/\s*3/);
+  await hotspots(page, keyboard);
+  await compare(page, 0);
   assert(await control(page, "trpg-interpret").isDisabled());
+  await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-exploration-pc.png" : "ordinary-exploration-touch.png") });
   for (const id of ["menu", "window", "bag"]) await inspect(page, id, { focus: keyboard });
   assert(await control(page, "trpg-interpret").isEnabled());
   await compare(page, 3, keyboard ? "ordinary-memo-comparison" : null);
@@ -150,12 +256,29 @@ async function ordinary(page, keyboard) {
   await dialogue(page);
   await currentStep(page);
   await compare(page, 3);
+  await choiceGroup(page, "aroma");
+  if (keyboard) await choiceDetails(page);
+  if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-aroma-choice-pc.png") });
   await choosePlan(page, { aroma: "tea", seat: "window" });
+  await hit(page, "trpg-choice-tab-aroma");
+  await choiceGroup(page, "aroma");
+  assert.equal(await control(page, "trpg-plan-aroma-tea").getAttribute("aria-pressed"), "true",
+    "Returning to an earlier choice retains its selection");
+  assert.equal((await state(page)).plan.seat, "window", "Returning to the aroma keeps the seat selection");
+  await hit(page, "trpg-choice-tab-seat");
+  await choiceGroup(page, "seat");
+  assert.equal(await control(page, "trpg-plan-seat-window").getAttribute("aria-pressed"), "true");
   const summary = await control(page, "trpg-plan-summary").textContent();
   assert.match(summary, /穏やかな紅茶/);
   assert.match(summary, /雨を眺める窓辺/);
   await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-plan-pc.png" : "ordinary-plan-touch.png") });
   await hit(page, "trpg-prepare-open");
+  await closedDetails(page);
+  const aid = await control(page, "trpg-support-adam").evaluate(n => n.closest("label")?.textContent || n.getAttribute("aria-label"));
+  assert.match(aid, /[+＋]\s*2/);
+  assert.match(aid, /札\s*1/);
+  assert(await control(page, "trpg-support-adam").isEnabled(), "Support remains usable without opening the probability details");
+  if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-roll-stage-pc.png") });
   await forecast(page);
   await control(page, "trpg-support-adam").focus();
   await page.keyboard.press("Space");
@@ -169,6 +292,7 @@ async function ordinary(page, keyboard) {
   await choosePlan(page, { approach: "quiet" });
   assert.match(await control(page, "trpg-plan-summary").textContent(), /声を添えて/);
   await hit(page, "trpg-serve-open");
+  await closedDetails(page);
   await roll(page);
   await settle(page);
   assert.equal((await state(page)).phase, "ending");
@@ -194,7 +318,10 @@ async function ordinary(page, keyboard) {
 }
 async function shark(page, correct) {
   await begin(page);
-  assert.match(await control(page, "trpg-investigation").textContent(), /危機/);
+  const budget = await control(page, "trpg-investigation").textContent();
+  assert.match(budget, /0\s*\/\s*3/);
+  assert.match(budget, /調査.*4.*箇所/);
+  assert.match(budget, /危機[+＋]\s*1/);
   for (const id of ["radio", "leaves", "fan", "lamp"]) await inspect(page, id);
   const collected = await state(page);
   assert.equal(collected.clues.length, 4);
@@ -208,6 +335,7 @@ async function shark(page, correct) {
   await dialogue(page);
   await choosePlan(page, { tool: "citrus", route: "pier" });
   await hit(page, "trpg-prepare-open");
+  await closedDetails(page);
   await forecast(page, false, true);
   const preview = (await control(page, "trpg-forecast").textContent()).replace(/\s+/g, " ").trim();
   if (correct) sharkForecast = preview;
@@ -221,6 +349,7 @@ async function shark(page, correct) {
   if (correct) {
     await choosePlan(page, { finale: "lure" });
     await hit(page, "trpg-serve-open");
+    await closedDetails(page);
     await roll(page);
     await settle(page);
     assert.equal((await state(page)).phase, "ending");
