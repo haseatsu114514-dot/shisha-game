@@ -1,0 +1,36 @@
+[
+  {
+    "theme": "harbor",
+    "source": "assets/ui/trpg/choices-harbor.png",
+    "delivery": "remake/img/ui/trpg/choices-harbor.webp",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source_sha256": "9f1aa67cdcc35c9e096f686341146b51d7691c3cbb7561aa96b17440b1c83507",
+    "delivery_sha256": "318c3313e67c3660e2ee445ee2931c0d598f32a6b80af2c060ddaf40ad953885",
+    "delivery_bytes": 1878794,
+    "grid": [
+      3,
+      3
+    ]
+  },
+  {
+    "theme": "shark",
+    "source": "assets/ui/trpg/choices-shark.png",
+    "delivery": "remake/img/ui/trpg/choices-shark.webp",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source_sha256": "7f7441fb3640fd67f37c1acd7f6a0ebfd99453c3c5ed6e9fe00c81e5fb927660",
+    "delivery_sha256": "f6e437eff8c57a11009651f1c31f263fbf394408aa5af7d962a4fe6946984140",
+    "delivery_bytes": 1907412,
+    "grid": [
+      3,
+      3
+    ]
+  }
+]
