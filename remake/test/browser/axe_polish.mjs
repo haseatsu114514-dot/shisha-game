@@ -150,6 +150,7 @@ await suite("axe-polish", async check => {
     await page.clock.runFor(1000);
     assert.equal(await effect.evaluate(n => n.outerHTML), frozen, "Rules pause the complete impact effect");
     await page.locator('[data-test="axe-rules-close"]').click();
+    await capture(page, "pc-impact");
     await page.clock.runFor(800); assert.equal(Number(await effect.getAttribute("opacity")), 0);
     await action(page); await phase(page, "opponent-ready");
     const actorBefore = await root(page).evaluate(n => ({ actor: n.dataset.actor, held: n.dataset.held,
@@ -180,4 +181,4 @@ await suite("axe-polish", async check => {
   }, { reducedMotion: "reduce" });
 });
 
-if (output) await fs.writeFile(`${output}/polish-target-sizes.json`, JSON.stringify(sizes, null, 2) + "\n");
+if (output && sizes.length) await fs.writeFile(`${output}/polish-target-sizes.json`, JSON.stringify(sizes, null, 2) + "\n");

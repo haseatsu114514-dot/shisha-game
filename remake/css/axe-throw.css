@@ -32,7 +32,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-board-pane { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid var(--axe-line); border-radius: 18px; background: radial-gradient(ellipse at 50% 40%,rgba(152,106,57,.12),rgba(8,11,11,.55) 68%); box-shadow: inset 0 1px rgba(255,255,255,.025),0 14px 40px rgba(0,0,0,.15); }
 .axe-target { display: block; width: 100%; flex: 1 1 0; min-height: 0; overflow: hidden; touch-action: none !important; }
 .axe-target image, .axe-target circle, .axe-target path, .axe-target g { pointer-events: none; }
-.axe-target { cursor: crosshair; }
+.axe-target { cursor: crosshair; outline: none; }
 .axe-target:focus-visible { outline-offset: -5px; border-radius: 12px; }
 .axe-target > image { filter: drop-shadow(0 8px 12px rgba(0,0,0,.45)); }
 .axe-crosshair, .axe-impact-mark { filter: drop-shadow(0 0 3px #0a0d0e); }
@@ -86,6 +86,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-button:active:not(:disabled) { transform: translateY(1px); }
 .axe-button:disabled { opacity: .45; cursor: default; }
 .axe-button:focus-visible, .axe-target:focus-visible { outline: 3px solid #f8e3a7; outline-offset: 3px; }
+.axe-target:focus-visible { outline-offset: -4px; }
 .axe-primary { min-height: 56px; border-color: #ecc385; background: linear-gradient(115deg,#efc280,#d8a05a); color: #201a11; font-size: 17px; font-weight: 900; box-shadow: 0 5px 18px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.3); }
 .axe-primary:hover:not(:disabled) { background: linear-gradient(115deg,#f9d49c,#edb56a); border-color: #ffe0ad; }
 .axe-primary:disabled { opacity: .6; }
