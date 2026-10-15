@@ -9,6 +9,7 @@ import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
+import { chapterTitleArt } from "./chapter-title-art.js";
 
 export const layers = {};
 
@@ -103,7 +104,7 @@ let uiArtDone = false;
 /** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls(), ...allStoreLogoUrls()];
+    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls(), ...allStoreLogoUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   return uiArt;
@@ -456,22 +457,24 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
 
 /** 章タイトル（煙の中から浮かぶ） */
 export async function chapterTitle({ no, name, read, sub }) {
-  const rich = no === "第一章";
-  const art = rich ? assetUrl("ui/chapters/ch1_keyart.png") : null;
-  const card = el(`div.chapter-card${rich ? ".rich" : ""}`, [
-    art ? el("img.cc-art", { src: art, alt: "" }) : null,
-    rich ? el("div.cc-frame", { "aria-hidden": "true" }, [el("i"), el("i")]) : null,
-    el("div.cc-copy", [
-      rich ? el("div.cc-kicker", { text: "SUIEN ZENSEN / CHAPTER 01" }) : null,
-      el("div.cc-no", { text: no }),
-      el("div.cc-name", { text: name }),
-      el("div.cc-read", { text: read }),
-      sub ? el("div.cc-sub", { text: sub }) : null,
-    ]),
+  const art = chapterTitleArt(no);
+  const copy = el("div.cc-copy", [
+    el("div.cc-no", { text: no }),
+    el("div.cc-name", { text: name }),
+    el("div.cc-read", { text: read }),
+    sub ? el("div.cc-sub", { text: sub }) : null,
   ]);
+  const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+  // 画像が準備できるまでは本編の上に空白のカードを出さない。
+  // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
+  if (art && await imageReady(art, 15000)) {
+    copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
+    card.classList.add("illustrated");
+    card.dataset.art = "ready";
+    card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+  }
   layers.fx.append(card);
   SE.jingle();
-  if (art) await imageReady(art, 15000);
   await nextFrame();
   card.classList.add("show");
   await sleep(3200);
