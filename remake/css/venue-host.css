@@ -5,8 +5,9 @@
 .venue-host-copy small { display: block; font-size: 12px; color: #c8b28f; }
 .venue-host-copy strong { display: block; margin: 4px 0 6px; font-size: 20px; }
 .venue-host-copy p { margin: 0; font-size: 17px; line-height: 1.55; overflow-wrap: anywhere; }
-.axe-bar-menu { max-height: 94%; overflow-y: auto; }
+.axe-bar-menu { max-height: 94%; overflow-y: auto; touch-action: pan-y !important; }
 .axe-bar-menu .venue-host { margin: 12px auto; max-width: 660px; }
+.axe-bar-menu .axe-bar-lesson { margin: 0 auto 12px; border-color: #b99b69; color: #ffe1a7; }
 .trpg-campaign .venue-host { flex-shrink: 0; min-height: 96px; background: linear-gradient(110deg, #2e4a40, #182b2d); }
 .trpg-campaign .venue-host-portrait { height: 96px; }
 .trpg-campaign .venue-host-copy p { font-size: 16px; }

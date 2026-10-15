@@ -6,10 +6,13 @@ import { axeRules } from "./minigames/axe-rules.js";
 const host = document.getElementById("axe-app");
 let opponent = "hiyori", difficulty = "normal";
 function menu(result = null) {
+  let lessonOpen = false;
+  const busy = () => lessonOpen || buttons.some(b => b.disabled);
   const startGame = async (mode, button) => {
-    if (buttons.some(b => b.disabled)) return; buttons.forEach(b => { b.disabled = true; });
+    if (busy() || intro.inert) return;
+    buttons.forEach(b => { b.disabled = true; }); lesson.disabled = true;
     try { menu(await runAxeThrow({ host, mode, opponent: mode === "versus" ? "hiyori" : opponent, difficulty })); }
-    catch (error) { console.error(error); buttons.forEach(b => { b.disabled = false; }); message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
+    catch (error) { console.error(error); buttons.forEach(b => { b.disabled = false; }); lesson.disabled = false; message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
   };
   const modeCard = (kind, test, count, tag, title, description, action) => el("button.axe-button.axe-menu-mode", {
     type: "button", dataset: { test, kind }, onclick: () => startGame(kind, test === "axe-start" ? start : test === "axe-league" ? league : versus),
@@ -25,20 +28,31 @@ function menu(result = null) {
   const buttons = [start, league, versus];
   const levels = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "対戦の難易度" }, Object.entries(DIFFICULTIES).map(([id, level]) => el("button.axe-button", {
     type: "button", text: level.name, "aria-pressed": String(id === difficulty), dataset: { difficulty: id }, onclick: () => {
-      if (buttons.some(b => b.disabled)) return; difficulty = id;
+      if (busy() || intro.inert) return; difficulty = id;
       for (const button of levels.children) button.setAttribute("aria-pressed", String(button.dataset.difficulty === id));
     },
   })));
   const picker = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "練習を見守る相手" }, Object.entries(COMPANIONS).map(([id, c]) => el("button.axe-button", {
     type: "button", text: c.name, "aria-pressed": String(id === opponent), dataset: { companion: id }, onclick: () => {
-      if (buttons.some(b => b.disabled)) return; opponent = id;
+      if (busy() || intro.inert) return; opponent = id;
       for (const b of picker.children) b.setAttribute("aria-pressed", String(b.dataset.companion === id));
     } })));
   const message = el("p.axe-menu-message", { "aria-live": "polite", text: result?.completed ? (result.match ? ({player:"あなたの勝ち", opponent:"ひよりの勝ち", draw:"引き分け"})[result.match.winner] + " · " + result.match.playerTotal + " 対 " + result.match.opponentTotal + " / 前回の記録 " : "前回の記録  ") + result.total + " / " + result.maximum + "点" : "狙いを定めて、気持ちいい一投を。" });
   const rules = el("button.axe-button.axe-menu-rules", { type: "button", text: "遊び方・得点ルール", dataset: { test: "axe-menu-rules" }, onclick: () => {
+    if (busy() || intro.inert) return;
     intro.inert = true;
     const panel = axeRules(() => { panel.remove(); intro.inert = false; rules.focus(); });
     host.append(panel); panel.querySelector("button").focus();
+  } });
+  const lesson = el("button.axe-button.axe-menu-lesson", { type: "button", text: "マキの無料1投レッスン", dataset: { test: "axe-menu-lesson" }, onclick: async () => {
+    if (busy() || intro.inert || !intro.isConnected) return;
+    lessonOpen = true; intro.inert = true;
+    try { await runAxeThrow({ host, tutorial: true, opponent: null, allowRetry: true }); }
+    catch (error) { console.error(error); }
+    finally {
+      lessonOpen = false;
+      if (intro.isConnected) { intro.inert = false; lesson.focus(); }
+    }
   } });
   const intro = el("section.axe-intro.axe-menu", { "aria-labelledby": "axe-menu-title" }, [
     el("header.axe-menu-masthead", [
@@ -59,7 +73,7 @@ function menu(result = null) {
     ]),
     el("footer.axe-menu-footer", [
       el("a.axe-back", { href: "./", text: "← 本編へ" }),
-      el("span.axe-menu-tip", { text: "力は緑の帯へ。息を整えると、狙いやすくなる。" }), rules,
+      el("span.axe-menu-tip", { text: "力は緑の帯へ。息を整えると、狙いやすくなる。" }), lesson, rules,
     ]),
   ]);
   host.replaceChildren(intro);

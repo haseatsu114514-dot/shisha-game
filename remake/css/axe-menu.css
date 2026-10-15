@@ -76,9 +76,10 @@
 .axe-menu .axe-back { padding: 10px 0; color: #d9c6a7; font-size: 12px; white-space: nowrap; text-decoration: none; }
 .axe-menu-tip { margin-left: auto; color: #b1a591; font-size: 11px; line-height: 1.5; }
 .axe-menu .axe-menu-rules { min-height: 40px; padding: 8px 14px; border: 1px solid #76644b; border-radius: 3px; background: rgba(18, 21, 20, .7); color: #e3c79f; font-size: 12px; white-space: nowrap; }
+.axe-menu .axe-menu-lesson { min-height: 40px; padding: 8px 14px; border: 1px solid #a18a63; border-radius: 3px; background: rgba(93, 65, 31, .5); color: #ffdfae; font-size: 12px; white-space: nowrap; }
 @media (hover: hover) {
   .axe-menu .axe-menu-mode:hover:not(:disabled) { transform: translateY(-3px); border-color: #f5d098; background: linear-gradient(125deg, #524129, #262923); }
-  .axe-menu .axe-menu-options .axe-button:hover, .axe-menu .axe-menu-rules:hover { border-color: #e6bf85; color: #ffdfae; }
+  .axe-menu .axe-menu-options .axe-button:hover, .axe-menu .axe-menu-rules:hover, .axe-menu .axe-menu-lesson:hover { border-color: #e6bf85; color: #ffdfae; }
   .axe-menu .axe-back:hover { color: #fff0d7; }
 }
 @container (max-width: 900px) {
@@ -129,6 +130,7 @@
   .axe-menu .axe-menu-options { gap: 4px; }
   .axe-menu .axe-menu-options .axe-button { min-height: 38px; padding: 8px 9px; font-size: 11px; }
   .axe-menu-footer { flex-wrap: wrap; justify-content: space-between; gap: 5px 12px; }
+  .axe-menu .axe-menu-lesson { order: -1; flex: 0 0 100%; min-height: 38px; font-size: 11px; }
   .axe-menu-tip { order: 1; flex: 0 0 100%; margin: 2px 0 0; font-size: 10px; }
   .axe-menu .axe-menu-rules { min-height: 38px; font-size: 11px; }
 }
@@ -163,6 +165,7 @@
   .axe-menu .axe-back { padding: 5px 0; font-size: 10px; }
   .axe-menu-tip { margin-left: auto; max-width: none; font-size: 9px; }
   .axe-menu .axe-menu-rules { min-height: 30px; padding: 6px 12px; font-size: 10px; }
+  .axe-menu .axe-menu-lesson { min-height: 30px; padding: 6px 12px; font-size: 10px; }
 }
 @container (max-width: 360px) and (min-height: 501px) {
   .axe-intro.axe-menu { padding-inline: 14px; gap: 10px; }
