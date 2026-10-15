@@ -1,6 +1,7 @@
 @import url("venue-host.css");
 
 #axe-app { position: fixed; inset: 0; container-type: size; }
+body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 
 /* Practice entrance. Its dedicated stylesheet can refine these shared defaults. */
 .axe-intro { --axe-bg: url("../img/backgrounds/bg_axe_lounge_night.webp"); min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(20px,7vw,100px); gap: 16px; background: linear-gradient(90deg,rgba(10,7,13,.92),rgba(10,7,13,.54)),var(--axe-bg) center/cover; }
@@ -39,11 +40,11 @@
 .axe-fixed-aim { opacity: .8; }
 .axe-legend { order: -1; align-self: center; margin: 12px 8px 0; padding: 5px 12px; color: #d2c6b2; font-size: 11px; letter-spacing: .025em; text-align: center; border: 1px solid rgba(224,183,126,.16); border-radius: 100px; background: rgba(10,13,14,.75); }
 
-.axe-panel { display: flex; flex-direction: column; justify-content: center; min-width: 0; min-height: 0; padding: clamp(16px,2vw,25px); gap: 11px; border: 1px solid var(--axe-line); border-radius: 18px; background: linear-gradient(155deg,rgba(31,34,32,.94),rgba(15,19,19,.97)); box-shadow: inset 0 1px rgba(255,255,255,.045),0 16px 40px rgba(0,0,0,.2); }
+.axe-panel { display: flex; flex-direction: column; justify-content: center; min-width: 0; min-height: 0; padding: clamp(16px,2vw,25px); gap: 10px; border: 1px solid var(--axe-line); border-radius: 18px; background: linear-gradient(155deg,rgba(31,34,32,.94),rgba(15,19,19,.97)); box-shadow: inset 0 1px rgba(255,255,255,.045),0 16px 40px rgba(0,0,0,.2); }
 .axe-panel > * { flex-shrink: 0; min-width: 0; }
 .axe-total { display: flex; align-items: baseline; gap: 7px; padding-bottom: 12px; border-bottom: 1px solid var(--axe-line); font-variant-numeric: tabular-nums; }
 .axe-total small { align-self: center; margin-right: auto; color: var(--axe-muted); font-size: 10px; font-weight: 700; letter-spacing: .13em; }
-.axe-total strong { color: #f5d6a6; font-size: 42px; font-weight: 900; line-height: 1.3; }
+.axe-total strong { color: #f5d6a6; font-size: 42px; font-weight: 900; line-height: 1.45; }
 .axe-total > span { color: var(--axe-muted); font-size: 14px; }
 .axe-scores { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 5px; }
 .axe-scores > span { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 2px; border: 1px solid rgba(255,255,255,.075); border-radius: 5px; background: rgba(0,0,0,.19); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -112,6 +113,8 @@
 .axe-game[data-outcome="killshot"] .axe-result-label { display: block; color: #b3e4f4; }
 .axe-game[data-outcome="miss"] .axe-result-value, .axe-game[data-outcome="drop"] .axe-result-value, .axe-game[data-outcome="killshot-miss"] .axe-result-value { color: #c9b9a4; }
 .axe-game:is([data-phase="result"],[data-phase="summary"]) :is(.axe-steps,.axe-timing,.axe-feedback,.axe-steadiness,.axe-stability-meter,.axe-call-status,.axe-note) { display: none; }
+.axe-game[data-phase="summary"] .axe-total { display: none; }
+.axe-game[data-phase="summary"] .axe-match-records { grid-template-columns: 1fr 1fr; gap: 12px; }
 .axe-game[data-phase="choice"] :is(.axe-steps,.axe-feedback,.axe-timing) { display: none; }
 .axe-game:not([data-phase="choice"]) .axe-help { display: none; }
 .axe-game:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"]) .axe-call-status { display: none; }
@@ -131,7 +134,7 @@
 .axe-game:is([data-mode="league"],[data-mode="versus"]) .axe-panel { gap: 7px; }
 .axe-game:is([data-mode="league"],[data-mode="versus"]) .axe-total strong { font-size: 36px; }
 .axe-game:is([data-mode="league"],[data-mode="versus"]) .axe-note { min-height: 1.5em; }
-.axe-game[data-mode="versus"] .axe-panel { gap: 6px; }
+.axe-game[data-mode="versus"] .axe-panel { gap: 4px; }
 .axe-in-stage { padding: 22px; gap: 13px; }
 .axe-in-stage .axe-body { grid-template-columns: minmax(0,1fr) 408px; }
 .axe-in-stage .axe-panel { padding: 20px; gap: 10px; }
@@ -241,7 +244,7 @@
   .axe-portrait-frame .axe-portrait { width: 98px; top: -4px; }
   .axe-companion strong { font-size: 8px; }
   .axe-comment { font-size: 10px; line-height: 1.45; margin-top: 1px; }
-  .axe-panel { position: relative; padding: 8px 12px; gap: 4px; border-radius: 12px; }
+  .axe-panel { position: relative; padding: 8px 12px; gap: 3px; border-radius: 12px; }
   .axe-total { gap: 5px; padding-bottom: 5px; }
   .axe-total small { font-size: 8px; }
   .axe-total strong { font-size: 28px; }
@@ -269,7 +272,8 @@
   .axe-result-value { display: block; margin: 3px 0; font-size: 54px; }
   .axe-result-tip { font-size: 10px; line-height: 1.4; }
   .axe-match-score { padding: 4px 6px; font-size: 11px; }
-  .axe-game:is([data-mode="league"],[data-mode="versus"]) .axe-panel { gap: 4px; }
+  .axe-game:is([data-mode="league"],[data-mode="versus"]) .axe-panel { gap: 3px; }
+  .axe-game[data-mode="league"] .axe-panel { padding-block: 6px; }
   .axe-game[data-mode="versus"] .axe-panel { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 4px; padding-block: 8px; }
   .axe-game[data-mode="versus"] .axe-panel > * { grid-column: 1/-1; }
   .axe-game[data-mode="versus"] .axe-match-score { grid-column: 1; grid-row: 1; align-self: center; padding-inline: 4px; font-size: 10px; }
@@ -281,6 +285,12 @@
   .axe-game[data-mode="versus"] .axe-scores > span { padding-block: 1px; }
   .axe-game[data-mode="versus"] .axe-match-records { gap: 5px; font-size: 10px; }
   .axe-game[data-mode="versus"] .axe-match-records p { margin-top: 2px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-match-score { grid-column: 1/-1; grid-row: 1; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-match-records { grid-column: 2; grid-row: 2; grid-template-columns: 1fr; align-content: center; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-result-card { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; justify-content: center; padding: 10px 6px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-result-value { font-size: 48px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] [data-test="axe-action"] { grid-column: 1; grid-row: 3; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-retry { grid-column: 2; grid-row: 3; min-height: 44px; padding-block: 8px; }
   .axe-rules { padding: 8px; }
   .axe-rules-card { padding: 12px; gap: 8px; font-size: 14px; }
   .axe-rules h2 { font-size: 20px; }

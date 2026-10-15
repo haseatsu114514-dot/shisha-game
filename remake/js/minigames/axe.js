@@ -246,7 +246,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       nodes[(index + (event.shiftKey ? -1 : 1) + nodes.length) % nodes.length]?.focus(); event.preventDefault(); event.stopPropagation(); return;
     }
     if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); cleanup(false); return; }
-    if (event.key.toLowerCase() === "f") {
+    if (event.key.toLowerCase() === "f" && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault(); event.stopPropagation(); if (!event.repeat) focusAim(); return;
     }
     if (event.key === " " || event.key === "Enter") {
