@@ -241,6 +241,7 @@
 
 /* A roll stays on the table; rules unfold when the player asks for them. */
 .trpg-root.trpg-cinematic .trpg-overlay:has(:is(.trpg-roll-stage, .trpg-hypothesis-stage)) { background: #081b24b5; backdrop-filter: blur(2px); padding: 35px 60px; }
+.trpg-root.trpg-cinematic:has(:is(.trpg-roll-stage, .trpg-hypothesis-stage)) :is(.trpg-stage-action, .trpg-stage-pockets, .trpg-stage-companions, .trpg-stage-cue, .trpg-selection, .trpg-spot, .trpg-header) { visibility: hidden; pointer-events: none; }
 .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage { width: 1040px; max-height: 620px; padding: 16px 32px; border: 0; border-radius: 0; background: transparent; color: #f1ead4; box-shadow: none; }
 .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { text-align: center; font-size: 27px; line-height: 1.4; font-weight: 500; letter-spacing: .07em; margin: 0 0 12px; color: #f0dfba; }
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body { color: #ece7d4; font-size: 17px; scrollbar-color: #e0d2ab4d transparent; }
@@ -324,7 +325,7 @@
 .trpg-root.trpg-cinematic .trpg-cover-person { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 72px; text-align: center; }
 .trpg-root.trpg-cinematic .trpg-cover-person :is(strong, span) { color: #e8e5d0; font-size: 12px; line-height: 1.4; font-weight: 400; }
 .trpg-root.trpg-cinematic .trpg-cover-person small { color: #becdbf; font-size: 10px; line-height: 1.4; }
-.trpg-root.trpg-cinematic .trpg-ending { z-index: 5; left: 70px; right: 300px; top: 186px; bottom: 145px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; text-shadow: 0 2px 14px #071d27, 0 2px 5px #071d27; justify-content: center; }
+.trpg-root.trpg-cinematic .trpg-ending { z-index: 5; left: 70px; right: 300px; top: 186px; bottom: 145px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; text-shadow: 0 2px 14px #071d27, 0 2px 5px #071d27; justify-content: center; }
 .trpg-root.trpg-cinematic .trpg-ending .trpg-kicker { font-size: 12px; letter-spacing: .2em; color: #ead2a2; }
 .trpg-root.trpg-cinematic .trpg-ending h2 { color: #f3e7cc; font-size: 50px; line-height: 1.4; font-weight: 500; margin: 15px 0 20px; }
 .trpg-root.trpg-cinematic .trpg-ending p { max-width: 760px; color: #eee6d2; font-size: 23px; line-height: 1.9; margin: 0 0 22px; }

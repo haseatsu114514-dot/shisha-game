@@ -210,12 +210,15 @@ async function choiceGroup(page, field) {
     .filter(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).every(card =>
       [card, ...card.querySelectorAll("*")].some(n => n.tagName === "IMG" ? n.complete && n.naturalWidth > 0
         : getComputedStyle(n).backgroundImage.includes("url("))));
+  await choiceArtwork(page);
+  await cinematicScene(page);
+}
+async function choiceArtwork(page) {
   await page.evaluate(async () => {
     const urls = new Set([...document.querySelectorAll(".trpg-object-choice, .trpg-object-choice *")]
       .flatMap(n => [...getComputedStyle(n).backgroundImage.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(match => match[1])));
     await Promise.all([...urls].map(src => { const image = new Image(); image.src = src; return image.decode(); }));
   });
-  await cinematicScene(page);
 }
 async function choiceDetails(page) {
   await page.mouse.move(2, 2);
@@ -245,12 +248,14 @@ async function ordinary(page, keyboard) {
   assert.match(budget, /手がかり\s*0\s*\/\s*3/);
   await hotspots(page, keyboard);
   await compare(page, 0);
-  assert(await control(page, "trpg-interpret").isDisabled());
+  assert.equal(await control(page, "trpg-interpret").count(), 0, "The next action appears when three clues have been discovered");
   await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-exploration-pc.png" : "ordinary-exploration-touch.png") });
   for (const id of ["menu", "window", "bag"]) await inspect(page, id, { focus: keyboard });
   assert(await control(page, "trpg-interpret").isEnabled());
   await compare(page, 3, keyboard ? "ordinary-memo-comparison" : null);
   await hit(page, "trpg-interpret");
+  await choiceArtwork(page);
+  await fits(page);
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-hypothesis-pc.png") });
   await hit(page, "trpg-hypothesis-quiet");
   await dialogue(page);

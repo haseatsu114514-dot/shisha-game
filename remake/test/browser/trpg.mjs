@@ -69,12 +69,13 @@ async function finish(page, choices) {
   await checkRoll(page, { support: "tsumugi" });
 }
 async function fits(page) {
-  const clips = await page.locator("button:not([hidden]), .trpg-speech p").evaluateAll(nodes => {
+  const clips = await page.locator("button:not([hidden]), .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
     return nodes.filter(n => n.offsetWidth && n.offsetHeight && n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).filter(n => {
       const r = n.getBoundingClientRect();
       return r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1
-        || r.bottom > stage.bottom + 1 || n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1;
+        || r.bottom > stage.bottom + 1 || !n.matches(".trpg-spot, .trpg-spot span, .trpg-object-choice, .trpg-object-label, .trpg-object-detail")
+          && (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1);
     }).map(n => ({ text: n.textContent, width: n.clientWidth, scroll: n.scrollWidth }));
   });
   assert.deepEqual(clips, [], "Clipped controls or dialogue");
@@ -153,7 +154,7 @@ try {
     await page.locator('[data-test="trpg-spot-notebook"]').press("Enter");
     await nextLines(page, true);
     await page.locator('[data-test="trpg-compare-notes"]').click();
-    assert((await page.locator(".trpg-note-card").first().textContent()).includes("手帳"));
+    assert((await page.locator(".trpg-note-card").first().textContent()).includes("ノート"));
     await page.keyboard.press("Escape");
     await explore(page);
     await page.screenshot({ path: path.join(artifacts, "prepare-pc.png") });

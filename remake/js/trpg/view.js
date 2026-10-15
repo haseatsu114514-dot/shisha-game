@@ -21,6 +21,10 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
   const presentation = scenario.presentation;
+  // Warm the first illustrated decision while the cover and opening conversation play.
+  const choiceArt = new Image();
+  choiceArt.src = new URL("../../img/ui/trpg/choices-" + (presentation.theme === "shark" ? "shark" : "harbor") + ".webp", import.meta.url).href;
+  choiceArt.decode().catch(() => {});
   const audio = providedAudio || createTrpgAudio(presentation.theme);
   audio.setTheme(presentation.theme);
   const scripts = Object.fromEntries(scenario.dialogues.map(d => [d.dialogue_id, d.lines]));
@@ -249,8 +253,6 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       }));
       scene.append(companions);
       if (state.clues.length >= 3) actions.append(button(copy.button, "trpg-interpret", chooseHypothesis, { class: "primary", disabled: busy }));
-      else actions.append(button("あと" + (3 - state.clues.length) + "つ、手がかりを探そう", "trpg-interpret", chooseHypothesis,
-        { disabled: true, "aria-label": "見立てには手がかりがあと" + (3 - state.clues.length) + "個必要です" }));
       idle(presentation.exploreIdle);
     } else if (state.phase === "prepare") {
       scene.append(preparationChoices());
