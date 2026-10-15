@@ -457,30 +457,55 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
 
 /** 章タイトル（煙の中から浮かぶ） */
 export async function chapterTitle({ no, name, read, sub }) {
-  const art = chapterTitleArt(no);
-  const copy = el("div.cc-copy", [
-    el("div.cc-no", { text: no }),
-    el("div.cc-name", { text: name }),
-    el("div.cc-read", { text: read }),
-    sub ? el("div.cc-sub", { text: sub }) : null,
-  ]);
-  const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
-  // 画像が準備できるまでは本編の上に空白のカードを出さない。
-  // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
-  if (art && await imageReady(art, 15000)) {
-    copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
-    card.classList.add("illustrated");
-    card.dataset.art = "ready";
-    card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+  // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
+  const swallow = event => { event.preventDefault(); event.stopPropagation(); };
+  const blockAdvance = event => {
+    if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
+  };
+  const shield = el("div.chapter-title-shield", {
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow,
+  });
+  layers.fx.append(shield);
+  window.addEventListener("keydown", blockAdvance, true);
+  // Controlのkeyupは既存SKIP解除へ通す。押しっぱなし状態を次の会話へ残さない。
+  const blockRelease = event => { if (event.key !== "Control") blockAdvance(event); };
+  window.addEventListener("keyup", blockRelease, true);
+  try {
+    const art = chapterTitleArt(no);
+    const copy = el("div.cc-copy", [
+      el("div.cc-no", { text: no }),
+      el("div.cc-name", { text: name }),
+      el("div.cc-read", { text: read }),
+      sub ? el("div.cc-sub", { text: sub }) : null,
+    ]);
+    const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+    // 画像が準備できるまでは本編の上に空白のカードを出さない。
+    // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
+    if (art && await imageReady(art, 15000)) {
+      copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
+      card.classList.add("illustrated");
+      card.dataset.art = "ready";
+      card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+    }
+    shield.append(card);
+    // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
+    // 透明な初期スタイルを確定してから既存のopacityトランジションを開始する。
+    void card.offsetWidth;
+    SE.jingle();
+    await nextFrame();
+    card.classList.add("show");
+    await sleep(3200);
+    card.classList.add("out");
+    // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
+    await Promise.race([
+      Promise.all(card.getAnimations().map(animation => animation.finished.catch(() => {}))),
+      sleep(1100),
+    ]);
+  } finally {
+    shield.remove();
+    window.removeEventListener("keydown", blockAdvance, true);
+    window.removeEventListener("keyup", blockRelease, true);
   }
-  layers.fx.append(card);
-  SE.jingle();
-  await nextFrame();
-  card.classList.add("show");
-  await sleep(3200);
-  card.classList.add("out");
-  await sleep(900);
-  card.remove();
 }
 
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */
