@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>施設アイコン比較 — #579</title>
+<link rel="stylesheet" href="css/facility-icons.css">
+<body class="facility-preview">
+<main>
+  <h1>施設アイコン比較</h1>
+  <p>保存原画をそのまま表示。32 / 48 / 64 / 128px。各アイコンを押すと施設名を確認できます。</p>
+  <p>専用プレビューです。本編の地図・解禁・ゲスト・保存データには未接続です。</p>
+  <p id="selection" role="status" aria-live="polite">施設を選んでください</p>
+  <div class="samples"></div>
+</main>
+<script type="module">
+  import { FACILITY_ICONS, FACILITY_ICON_SIZES, createFacilityIcon } from './js/daily/facility-icons.js';
+  for (const [theme, label] of [['light', '明るい背景'], ['dark', '暗い背景']]) {
+    const section = document.createElement('section');
+    section.className = theme;
+    const heading = document.createElement('h2'); heading.textContent = label; section.append(heading);
+    for (const [id, entry] of Object.entries(FACILITY_ICONS)) {
+      const row = document.createElement('div'); row.className = 'row';
+      const title = document.createElement('h3'); title.textContent = entry.label; row.append(title);
+      for (const size of FACILITY_ICON_SIZES) {
+        const button = document.createElement('button');
+        button.type = 'button'; button.dataset.size = size; button.dataset.facility = id;
+        button.setAttribute('aria-label', `${entry.label} ${size}px`); button.setAttribute('aria-pressed', 'false');
+        button.append(createFacilityIcon(id, { size, decorative: true }));
+        const caption = document.createElement('small'); caption.textContent = `${size}px`; button.append(caption);
+        button.addEventListener('click', () => {
+          document.querySelectorAll('button').forEach(node => node.setAttribute('aria-pressed', String(node === button)));
+          document.querySelector('#selection').textContent = `${entry.label} / ${size}px / ${label}`;
+        });
+        row.append(button);
+      }
+      section.append(row);
+    }
+    document.querySelector('.samples').append(section);
+  }
+</script>
+</body>
+</html>
