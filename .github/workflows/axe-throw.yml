@@ -6,12 +6,17 @@ on:
       - 'remake/js/axe-throw-page.js'
       - 'remake/axe-throw.html'
       - 'remake/css/axe-throw.css'
+      - 'remake/css/axe-menu.css'
       - 'remake/index.html'
       - 'remake/test/axe_throw.mjs'
       - 'remake/test/axe_match.mjs'
+      - 'remake/test/axe_presentation.mjs'
       - 'remake/test/browser/axe_throw.mjs'
       - 'remake/test/browser/axe_versus.mjs'
+      - 'remake/test/browser/axe_polish.mjs'
+      - 'remake/test/browser/axe_lesson.mjs'
       - 'data/dialogue/axe_versus.json'
+      - 'data/dialogue/axe_tutorial.json'
       - 'assets/ui/axe_throw/**'
       - 'remake/img/ui/axe_throw/**'
       - 'remake/img/backgrounds/bg_axe_lounge_night.webp'
@@ -50,7 +55,7 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
       - name: Ring boundaries, three gauges, power, Killshot calls and character voice
-        run: node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs
+        run: node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs
       - name: Actual PC, touch portrait/landscape, lifecycle and legacy relationship saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/axe-preview.log" 2>&1 &
@@ -60,6 +65,8 @@ jobs:
           done
           COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs
           COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs
+          COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs
+          COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs
           node remake/test/browser/save_load.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
       - uses: actions/upload-artifact@v7.0.2

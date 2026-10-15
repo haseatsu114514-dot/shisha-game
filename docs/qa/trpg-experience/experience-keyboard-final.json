@@ -1,0 +1,10 @@
+[
+  {
+    "label": "ordinary-keyboard-pc",
+    "status": "passed"
+  },
+  {
+    "label": "ordinary-touch-reduced-motion",
+    "status": "passed"
+  }
+]

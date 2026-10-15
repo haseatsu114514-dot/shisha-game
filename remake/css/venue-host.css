@@ -5,8 +5,16 @@
 .venue-host-copy small { display: block; font-size: 12px; color: #c8b28f; }
 .venue-host-copy strong { display: block; margin: 4px 0 6px; font-size: 20px; }
 .venue-host-copy p { margin: 0; font-size: 17px; line-height: 1.55; overflow-wrap: anywhere; }
-.axe-bar-menu { max-height: 94%; overflow-y: auto; }
-.axe-bar-menu .venue-host { margin: 12px auto; max-width: 660px; }
+.sub-menu.axe-bar-menu { width: 880px; max-height: 94%; padding: 24px 32px; overflow-y: auto; touch-action: pan-y !important; }
+.axe-bar-menu .sub-title { font-size: 30px; }
+.axe-bar-menu .venue-host { margin: 10px auto; max-width: 660px; }
+.axe-bar-menu .sub-lead { margin: 8px 0 14px; }
+.axe-bar-menu .axe-bar-lesson { margin: 0 auto 12px; border-color: #b99b69; color: #ffe1a7; }
+.axe-bar-menu .sub-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.axe-bar-menu .big-choice { padding: 14px 18px; }
+.axe-bar-menu .axe-bar-records { margin-top: 12px; padding-top: 10px; border-top: 1px solid #99816166; font-size: 14px; line-height: 1.6; }
+.axe-bar-menu .axe-bar-records p { margin: 6px 0 0; }
+.axe-bar-menu .sub-back { margin-top: 14px; }
 .trpg-campaign .venue-host { flex-shrink: 0; min-height: 96px; background: linear-gradient(110deg, #2e4a40, #182b2d); }
 .trpg-campaign .venue-host-portrait { height: 96px; }
 .trpg-campaign .venue-host-copy p { font-size: 16px; }

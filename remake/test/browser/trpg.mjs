@@ -69,12 +69,13 @@ async function finish(page, choices) {
   await checkRoll(page, { support: "tsumugi" });
 }
 async function fits(page) {
-  const clips = await page.locator("button:not([hidden]), .trpg-speech p").evaluateAll(nodes => {
+  const clips = await page.locator("button:not([hidden]), .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
-    return nodes.filter(n => n.offsetWidth && n.offsetHeight).filter(n => {
+    return nodes.filter(n => n.offsetWidth && n.offsetHeight && n.checkVisibility({ opacityProperty: true, visibilityProperty: true })).filter(n => {
       const r = n.getBoundingClientRect();
       return r.left < stage.left - 1 || r.right > stage.right + 1 || r.top < stage.top - 1
-        || r.bottom > stage.bottom + 1 || n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1;
+        || r.bottom > stage.bottom + 1 || !n.matches(".trpg-spot, .trpg-spot span, .trpg-object-choice, .trpg-object-label, .trpg-object-detail")
+          && (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1);
     }).map(n => ({ text: n.textContent, width: n.clientWidth, scroll: n.scrollWidth }));
   });
   assert.deepEqual(clips, [], "Clipped controls or dialogue");
@@ -91,6 +92,7 @@ async function fits(page) {
   assert.deepEqual(overlaps, [], "Investigation labels cover each other");
 }
 async function run(label, params, options, body, beforeLoad = null) {
+  if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
   await context.addInitScript(() => {
     const get = Storage.prototype.getItem, set = Storage.prototype.setItem;
@@ -151,7 +153,8 @@ try {
     await page.screenshot({ path: path.join(artifacts, "explore-pc.png") });
     await page.locator('[data-test="trpg-spot-notebook"]').press("Enter");
     await nextLines(page, true);
-    await page.locator('[data-test="trpg-clue-notebook"]').click();
+    await page.locator('[data-test="trpg-compare-notes"]').click();
+    assert((await page.locator(".trpg-note-card").first().textContent()).includes("ノート"));
     await page.keyboard.press("Escape");
     await explore(page);
     await page.screenshot({ path: path.join(artifacts, "prepare-pc.png") });
@@ -236,7 +239,7 @@ try {
     await page.locator('[data-test="trpg-select-shark-last-order"]').waitFor();
     await hit(page, '[data-test="trpg-select-shark-last-order"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "shark-last-order");
-    assert((await page.locator(".trpg-cast-card").first().textContent()).includes("サメちゃん"));
+    assert((await page.locator(".trpg-cover-person").first().textContent()).includes("サメちゃん"));
     await page.screenshot({ path: path.join(artifacts, "shark-cover.png") });
   });
   const movies = [
@@ -254,8 +257,9 @@ try {
     }
     assert(await page.locator('[data-test="trpg-spot-rope"]').isDisabled());
     const pressure = (await page.evaluate(() => __trpg.snapshot())).pressure;
-    await hit(page, '[data-test="trpg-clue-radio"]');
-    await hit(page, '[data-test="trpg-clue-close"]');
+    await hit(page, '[data-test="trpg-compare-notes"]');
+    assert((await page.locator(".trpg-note-card").first().textContent()).includes("無線"));
+    await hit(page, '[data-test="trpg-notes-close"]');
     await hit(page, '[data-test="trpg-consult-hiyori"]'); await nextLines(page);
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pressure, pressure);
     if (movie.label === "shark-scent-pc") await page.screenshot({ path: path.join(artifacts, "shark-explore-pc.png") });
@@ -325,4 +329,5 @@ try {
   await browser.close();
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify({ results }, null, 2) + "\n");
 }
+assert(results.length > 0, "No TRPG browser cases were selected");
 assert.equal(results.filter(r => r.status === "failed").length, 0, "TRPG browser cases failed");

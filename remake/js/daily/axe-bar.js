@@ -34,16 +34,28 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     await setBg(bgUrl(AXE_BAR.preview), { fast: true });
     if (!current()) return false;
     const mode = await new Promise(resolve => {
-      const pick = value => resolve(value);
-      abort.signal.addEventListener("abort", () => pick(null), { once: true });
+      let lessonOpen = false, picked = false;
+      const pick = value => { if (!lessonOpen && !picked) { picked = true; resolve(value); } };
+      abort.signal.addEventListener("abort", () => { picked = true; resolve(null); }, { once: true });
       const records = owner.flags._axe_bar_records || {};
       const welcome = Object.keys(records).length ? "venue_maki_return" : "venue_maki_greet";
       const status = owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
         : owner.money < AXE_BAR.playCost ? "プレイには3,000円必要。記録を見るだけなら無料。"
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
         : `参加 ${yen(AXE_BAR.playCost)}・体力10・1行動。途中でやめた場合は消費しません。`;
+      const lesson = el("button.btn.ghost.axe-bar-lesson", { type: "button", text: "マキに教わる・無料1投", dataset: { test: "axe-bar-lesson" }, onclick: async () => {
+        if (lessonOpen || picked || !current()) return;
+        lessonOpen = true; host.hidden = true; host.inert = true;
+        try { await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true }); }
+        catch (error) { if (current()) { console.error(error); toast("レッスンを開けませんでした。もう一度お試しください。"); } }
+        finally {
+          lessonOpen = false;
+          if (current() && host.isConnected) { host.hidden = false; host.inert = false; lesson.focus(); }
+        }
+      } });
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome].lines[0].text, DB), el("p.sub-lead", { text: status }),
+        lesson,
         el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
           disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
         }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]))),
