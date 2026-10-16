@@ -1,0 +1,106 @@
+{
+  "issue": 586,
+  "status": "authorized; editing",
+  "request": "ピーチマンゴーバナナとかの英語もいらない",
+  "interpretation": "Remove all flavor-name letters on every box face; retain pictorial logos and ingredient artwork. Maker names remain absent.",
+  "source_commit": "c2789dffcfae12217c5178cb86d3496b297d5a88",
+  "scope": {
+    "edit_ids": [
+      "vanilla",
+      "coconut",
+      "mango",
+      "peach",
+      "melon",
+      "banana",
+      "rose",
+      "lychee"
+    ],
+    "exact_reuse_heaven10": true,
+    "remove": [
+      "front flavor word",
+      "right-side flavor word",
+      "any remaining printed word"
+    ],
+    "retain": [
+      "pictorial maker logo",
+      "ingredient graphic",
+      "color",
+      "approved physical carton and camera"
+    ],
+    "runtime_change": false,
+    "product_data_change": false,
+    "old_art_preserved": true,
+    "existing_claim_unchanged": true
+  },
+  "budget": {
+    "additional_approved_MB": 40,
+    "approval": "追加40MBまで許可し、英字を消してマージまで進める"
+  },
+  "specs": [
+    {
+      "id": "vanilla",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-0a1ff6ac-9e63-46ab-a26d-61f44b1631c1.png",
+      "filename": "outputs/dobaj-vanilla.png",
+      "remove_word": "VANILLA",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word VANILLA. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "coconut",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-f855a754-682e-4aae-860d-68a937cda6b5.png",
+      "filename": "outputs/dobaj-coconut.png",
+      "remove_word": "COCONUT",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word COCONUT. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "mango",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-e01a6654-accc-4a1a-ab90-7e310c7c32d4.png",
+      "filename": "outputs/dobaj-mango.png",
+      "remove_word": "MANGO",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word MANGO. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "peach",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-f3a3e8b3-dd65-485b-93c0-2ca405f66df5.png",
+      "filename": "outputs/dobaj-peach.png",
+      "remove_word": "PEACH",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word PEACH. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "melon",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-22a9f274-fcca-40ac-86bf-a5f5c7b6dc90.png",
+      "filename": "outputs/dobaj-melon.png",
+      "remove_word": "MELON",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word MELON. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "banana",
+      "maker": "dobaj",
+      "reference": "/workspace/generated_images/exec-8caf02c0-e84c-447e-b6ce-bdd5ee698361.png",
+      "filename": "outputs/dobaj-banana.png",
+      "remove_word": "BANANA",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word BANANA. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "rose",
+      "maker": "afsaal",
+      "reference": "/workspace/generated_images/exec-fbd39154-4490-46aa-89d9-4875fdd617a7.png",
+      "filename": "outputs/afsaal-rose.png",
+      "remove_word": "ROSE",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word ROSE. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    },
+    {
+      "id": "lychee",
+      "maker": "afsaal",
+      "reference": "/workspace/generated_images/exec-8734c512-b977-4cb8-8da2-79ad6aa0c4ee.png",
+      "filename": "outputs/afsaal-lychee.png",
+      "remove_word": "LYCHEE",
+      "prompt": "Make a strictly localized text-removal edit on this exact approved paperboard flavor carton. Remove EVERY remaining printed letter/word from the box front and right side, specifically all instances of the flavor word LYCHEE. Manufacturer lettering was already removed and must NOT be reintroduced. Reconstruct only the letter-stroke regions using the surrounding paper color, print panel color and fine texture. The finished carton has NO written text, numbers or substitute glyphs anywhere: no brand name and no flavor name. KEEP the pictorial maker logo on front and side exactly as shown (paired arches or sunrise-in-arch), the ingredient illustration, ribbons, original body colors, material grain, folds and realistic lighting. Do not move, enlarge or redesign any pictorial element to fill empty space. Preserve the exact source composition, outer silhouette, width/height, depth, camera angle, visible top/right faces and transparent background. Do not rotate, zoom, resize or add a new layout. No code-like glyphs, labels, new words, grass decorations, HMD, handle or top protrusion. One complete isolated carton. Output is this same box with its remaining flavor-letter strokes erased; it should not look like a new product render."
+    }
+  ],
+  "base_commit": "c2789dffcfae12217c5178cb86d3496b297d5a88"
+}
