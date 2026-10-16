@@ -43,8 +43,8 @@ try {
         return { title: style('.go-title'), portrait: style('.go-left'), image: style('.go-sumi-img') };
       });
       assert.equal(normal.title.left, '58px');
-      assert.equal(normal.portrait.top, '112px');
-      assert.equal(normal.portrait.height, '608px');
+      assert.equal(normal.portrait.top, '0px');
+      assert.equal(normal.portrait.height, '720px');
       if (mode === 'normal') await page.screenshot({ path: `${out}/continue-${width}.png` });
       if (mode === 'fast') await page.evaluate(() => {
         for (let i = 0; i < 40; i++) document.querySelector('.go-dialogue').click();

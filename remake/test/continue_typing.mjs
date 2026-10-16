@@ -1,4 +1,4 @@
-// #454/#466: centered typewriter, white captions, unclipped heads and selection-only gold buttons.
+// #454/#466: centered typewriter, white captions, adopted C face framing and selection-only gold buttons.
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -40,6 +40,15 @@ async function prepare(options) {
         C.headTops.set(image.src, Math.floor((first - 3) / 4 / canvas.width) / canvas.height);
       }
       const imageBox = image.getBoundingClientRect(), clip = image.parentElement.getBoundingClientRect();
+      const { DB, portraitInfo } = await import("./js/core/data.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
+      const framing = DB.manifest.continuePortraits[info.folder][info.face];
+      const imageHeight = parseFloat(image.style.height), imageWidth = parseFloat(image.style.width);
+      const faceSize = imageHeight * framing.size;
+      const faceCenterX = (clip.left - stage.left) / stage.width * 1280
+        + parseFloat(getComputedStyle(image).left) + (framing.cx - .5) * imageWidth;
+      const faceCenterY = (clip.top - stage.top) / stage.height * 720
+        + parseFloat(image.style.top) + imageHeight * (framing.top + framing.size / 2);
       return { prefix: [...caption.querySelectorAll(".go-on")].map(n => n.textContent).join(""),
         text: caption.textContent, cue: Number(root.dataset.cue), live: root.querySelector(".go-a11y").textContent,
         count: root.querySelector(".go-count").textContent, phase: root.dataset.phase,
@@ -48,6 +57,7 @@ async function prepare(options) {
         centered: Math.abs((box.left + box.right - stage.left - stage.right) / 2) <= 1,
         fits: box.left >= stage.left - 1 && box.right <= stage.right + 1 && box.height <= stage.height / 720 * 72,
         white: [...caption.children].every(n => getComputedStyle(n).color === "rgb(255, 255, 255)"),
+        faceSize, faceCenterX, faceCenterY,
         headGap: (imageBox.top + C.headTops.get(image.src) * imageBox.height - clip.top) / stage.height * 720,
         buttons: [...root.querySelectorAll(".go-choice")].map(button => ({
           selected: getComputedStyle(button).getPropertyValue("--go-frame-selected").trim() === "1",
@@ -78,7 +88,9 @@ function captionIsStatic(value) {
   assert(value.centered && value.fits, "Visible prefix stays centered on one line inside the stage");
   assert(value.text.startsWith(value.prefix), "Only a prefix of whole Unicode characters is visible");
   assert(value.white, "All normal/reaction letters, including emphasis, stay white");
-  assert(value.headGap >= 10, `Hair/hat stays inside the portrait clip with breathing room: ${JSON.stringify(value)}`);
+  // C intentionally crops hair/hat. Every cue/reaction keeps the adopted face bbox instead.
+  assert(Math.abs(value.faceSize - 524.8) < .02 && Math.abs(value.faceCenterX - 640) < .02
+    && Math.abs(value.faceCenterY - 273) < .02, `C framing changed: ${JSON.stringify(value)}`);
 }
 
 try {
@@ -205,7 +217,7 @@ try {
     await page.clock.runFor(1900); assert.deepEqual((await read(page)).decisions, ["quit"]);
     await page.clock.runFor(1000); assert.deepEqual((await read(page)).decisions, ["quit"]);
     assert.equal(await page.evaluate(() => C.resources()), await page.evaluate(() => C.before), "No game/save changes");
-    console.log(`[continue typing] PASS: ${label} 26/s, centered white prefixes, ${await page.evaluate(() => C.headTops.size)} unclipped portrait faces, neutral/selected buttons, all ${variants.length} scripts/choices, controls, hidden-tab pause, reduced motion, 20-second timeout and unchanged state`);
+    console.log(`[continue typing] PASS: ${label} 26/s, centered white prefixes, ${await page.evaluate(() => C.headTops.size)} C-framed portrait faces, neutral/selected buttons, all ${variants.length} scripts/choices, controls, hidden-tab pause, reduced motion, 20-second timeout and unchanged state`);
     await context.close();
   }
   assert.deepEqual(errors, []);
