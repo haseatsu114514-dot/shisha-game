@@ -11,6 +11,7 @@ import { flavorColor, mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
+import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
 import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
@@ -220,14 +221,16 @@ export async function stepMix(cs) {
     return { id, g, row };
   });
 
-  // 洞察★: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）
-  const hint = star("insight") >= 2 && cs.mode !== "tutorial"
-    ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic"))
+  // 洞察★: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
+  const insightful = star("insight") >= 2;
+  const hint = cs.mode !== "tutorial"
+    ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
+      || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
 
   panel.append(el("div.mix", [
     el("div.mix-side", [vessel, taste, recipeLine,
-      hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.memo}` }) : null]),
+      hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null]),
     el("div.mix-list", [el("p.mix-list-caption", { text: "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, okBtn]),
   ]));

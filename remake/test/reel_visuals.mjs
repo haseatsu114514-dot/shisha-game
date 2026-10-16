@@ -80,7 +80,7 @@ try {
   initLayers();
   await loadAll();
   await Promise.all(["500", "700"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`)));
-  newGame(); state.phase = "daily"; state.reel.introDone = true;
+  newGame(); state.phase = "daily"; state.reel.introDone = true; state.reel.installed = true;
   await mountReel(layers.screen);
   for (const file of ["symbols.webp", "symbols-premium.webp", "bezel.webp"]) {
     const img = new Image(); img.src = `img/ui/pakki-slot/${file}`;
