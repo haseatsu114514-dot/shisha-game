@@ -1,0 +1,29 @@
+{
+  "identity_evidence": "data/flavors.json names/short_names/descriptions establish Heaven10/Dobaj6/Absal2 for SHOP18; search brand/docs master/owner requests found no separate Dobaj/Absal package logo standard. These are new proposals, not established lore or real-brand aliases.",
+  "references": [
+    {
+      "maker_proposal": "Dobaj",
+      "page": "https://dozaj.jp/flavor/",
+      "image": "https://dozaj.jp/_astro/60Mint.Cv9JnK55_ZGdTLw.webp",
+      "role": "Official Dozaj Japan white thin carton construction/white space/ingredient panel; actual pixels inspected. No logo/text copied. Game mint is Heaven; this is container inspiration only, not a new Dobaj mint product."
+    },
+    {
+      "maker_proposal": "Absal",
+      "page": "https://www.afzalshisha.com/product/afzal-sampler-pack-5-flavours/",
+      "image": "https://www.afzalshisha.com/content/2019/04/Afzal-Catalogue.png",
+      "role": "Official Afzal UK colored vertical cartons and lower flavor-band hierarchy; pixels inspected. Photo includes incidental loose fruit; exclude loose fruit/common foliage in generated assets.",
+      "limitation": "2019 image URL, UK site regional/historical carton example; not evidence of current universal packaging or fictional maker equivalence."
+    },
+    {
+      "maker_proposal": "Heaven",
+      "page": "https://www.alfakher.com/our-products-africa",
+      "role": "Previously documented/inspected black50g shallow cartons; see v2 manifest exact image URLs. Original white angel independent of manufacturer crown."
+    }
+  ],
+  "non_used": "dozaj/product first photo was equipment, not a flavor container; excluded from design inputs.",
+  "proposals": {
+    "Dobaj": "white matte shallow carton, dark abstract paired-arch/droplet emblem, narrow flavor-color base panel, own ingredient print; no Heaven wings",
+    "Absal": "burgundy/plum colored vertical matte carton, ivory abstract sunrise-in-arch emblem, lower flavor band, own ingredient print; no Heaven wings"
+  },
+  "rights": "External photos research-only in task inventory; not bundled in repo/delivery; only URLs and own generated artwork distributed."
+}

@@ -1,0 +1,238 @@
+{
+  "issue": 586,
+  "status": "selected_for_draft_review",
+  "runtime_target": "remake/ only",
+  "items": [
+    {
+      "id": "mint",
+      "source": "originals/mint.png",
+      "sha256": "3c5a6c1f6b3762aaee7bb25cb35c7841a660f7f47a13f9495d640fdd8a1a8964",
+      "delivery": "remake/img/shop/packages/mint.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "double_apple",
+      "source": "originals/double_apple.png",
+      "sha256": "58f819a24dcc96c4d1903e13b885670b2b4050ddc3b203eef6b2be8610c464cc",
+      "delivery": "remake/img/shop/packages/double_apple.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "blueberry",
+      "source": "originals/blueberry.png",
+      "sha256": "eb2b2f600382c1ee6c109a68aece5d148c0d628d4acb01185e9fbdb17ddcca4a",
+      "delivery": "remake/img/shop/packages/blueberry.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "strawberry",
+      "source": "originals/strawberry.png",
+      "sha256": "c31925d3b131adbc8c7245b6e94a3cb4d8959e51ae3bcec6ea329814f7bd04c8",
+      "delivery": "remake/img/shop/packages/strawberry.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "vanilla",
+      "source": "originals/vanilla.png",
+      "sha256": "75c9544765b284949f61fcadf53d19d32dbffc5974cc973a5ba50c2be20452fb",
+      "delivery": "remake/img/shop/packages/vanilla.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "pineapple",
+      "source": "originals/pineapple.png",
+      "sha256": "a839b15b413d1fc54a9a9719498f800c1964c86dfa75f0d39922b6e60d80afa3",
+      "delivery": "remake/img/shop/packages/pineapple.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "coconut",
+      "source": "originals/coconut.png",
+      "sha256": "4b610a793fe6ff3fbbb99ddff9f511dcc0412d59a55ac44abe84839ff204f686",
+      "delivery": "remake/img/shop/packages/coconut.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "mango",
+      "source": "originals/mango.png",
+      "sha256": "944bcab4df46a4b30794d5034594932147f2abfbcc246e85c478ceab54ba1451",
+      "delivery": "remake/img/shop/packages/mango.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "lemon",
+      "source": "originals/lemon.png",
+      "sha256": "e5a573b9a73765cc73e55068f6fb8ec0271c8577e27e5b7c5c1bbda723f70a1a",
+      "delivery": "remake/img/shop/packages/lemon.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "peach",
+      "source": "originals/peach.png",
+      "sha256": "9c5c65203287f60d3596912e5f583cdf16060de004b6c2107040c8c9a1506b86",
+      "delivery": "remake/img/shop/packages/peach.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "orange",
+      "source": "originals/orange.png",
+      "sha256": "dd7a9fa79c21aeb465133f9b2abf29bd71e2b6f6771106db0942eb22550ae343",
+      "delivery": "remake/img/shop/packages/orange.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "grape",
+      "source": "originals/grape.png",
+      "sha256": "781042ef913ccc87f0a33020bdfa4cbaf2e8a5bc72d98ccbba1a081907ffb0c5",
+      "delivery": "remake/img/shop/packages/grape.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "melon",
+      "source": "originals/melon.png",
+      "sha256": "f37de9bc82bc7c5b3b7c970536b0245a40f7cd57415e29fb99cf312044a2ada1",
+      "delivery": "remake/img/shop/packages/melon.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "watermelon",
+      "source": "originals/watermelon.png",
+      "sha256": "8b9d901efdf72d624b6092538d86113d53a4e27690f063d905b00c4d8b4e575f",
+      "delivery": "remake/img/shop/packages/watermelon.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "banana",
+      "source": "originals/banana.png",
+      "sha256": "d46e87daf107d8a0afbed9b14106acc826deec715fdb460cc7d5d05a3756e3ee",
+      "delivery": "remake/img/shop/packages/banana.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "cinnamon",
+      "source": "originals/cinnamon.png",
+      "sha256": "1084bd11baf962d4c93853698532f364961bfdb787888afbf47e969fd63fb1c8",
+      "delivery": "remake/img/shop/packages/cinnamon.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "rose",
+      "source": "originals/rose.png",
+      "sha256": "8fdda81e260f0734617f5134119f49acfd723b24f6a452c3b0e6fae89e2c907a",
+      "delivery": "remake/img/shop/packages/rose.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "lychee",
+      "source": "originals/lychee.png",
+      "sha256": "7825b6d66880fcba44f2adc9cc3b3107da74dfeb9bea6280e157ba856776bb39",
+      "delivery": "remake/img/shop/packages/lychee.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ]
+    },
+    {
+      "id": "lotos_hagal",
+      "source": "originals/lotos_hagal.png",
+      "sha256": "d657732cc764dc824c48970ec55f30fc4a29d3e15147a0cf97399dcb12104870",
+      "delivery": "remake/img/shop/equipment/lotos_hagal.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    },
+    {
+      "id": "tanukish_lid",
+      "source": "originals/tanukish_lid.png",
+      "sha256": "76147759957dca9a8913b85cc2a9bee7d43bd536a0e653a501887e89b6643e39",
+      "delivery": "remake/img/shop/equipment/tanukish_lid.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    },
+    {
+      "id": "amaburst_hms",
+      "source": "originals/amaburst_hms.png",
+      "sha256": "d844144b25c090cb0fdd829707c17a1623e498cece925f0e915b6b78d07f065e",
+      "delivery": "remake/img/shop/equipment/amaburst_hms.webp",
+      "visual_qa": "reviewed; parent selection/merge pending",
+      "references": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ]
+    }
+  ]
+}

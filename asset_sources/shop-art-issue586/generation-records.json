@@ -1,0 +1,392 @@
+{
+  "tool": "built-in image_gen.imagegen only",
+  "calls": [
+    {
+      "id": "mint",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Asset type: single transparent game shop product icon, 1024x1024 PNG. Reference image 1 is the currently adopted botanical illustration sheet; match its rich hand-painted botanical rendering and clear softly outlined forms. Primary request: create ONE small upright rectangular 50g flavor carton for MINT, three-quarter front view, front dominating, subtle visible right side and top. Pale warm ivory matte paper, restrained deep plum trim, detailed lush mint leaves printed centrally on the front in the exact botanical painting style of the top-left reference; quiet green accent on side. Keep consistent reusable carton geometry, no loose ingredients outside carton. Composition: carton centered occupying about 72% of canvas height, at least 12% genuinely transparent empty margin on every side, whole carton visible. Lighting: soft upper-left product illustration light, gentle form shading, no floor/background/shadow plane. Text: none, absolutely no letters, brands, logos, numbers, price, labels or watermarks; flavor name remains in game HTML. Avoid photoreal photography, overly glossy plastic pouch, jars, tobacco leaves, smoke, people, hookah equipment. Deliver only the single carton cutout on real alpha transparency.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-7778ca71-38b7-4422-9c9b-02ebc678e44c.png",
+      "result": "originals/mint.png",
+      "note": null
+    },
+    {
+      "id": "double_apple",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes. Flavor: Red whole apple, cut apple half and brown star anise. Ruby red accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-49620f9e-a968-4c98-90b2-87e05ddc26ca.png",
+      "result": "originals/double_apple.png",
+      "note": null
+    },
+    {
+      "id": "blueberry",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha. Flavor: BLUEBERRY. Detailed indigo-blue ripe blueberries with natural bloom and green leaves, matching the first row third botanical in image 1. Subtle blueberry blue side accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-bc867379-9f25-45bd-8964-e4f5b2d5f7b6.png",
+      "result": "originals/blueberry.png",
+      "note": null
+    },
+    {
+      "id": "strawberry",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes. Flavor: Ripe red strawberries, leaves and tiny white strawberry flower. Strawberry red accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-c104ddf7-052a-4a28-a2ca-deca9ba491bd.png",
+      "result": "originals/strawberry.png",
+      "note": null
+    },
+    {
+      "id": "vanilla",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes. Flavor: Dark brown vanilla pods and ivory vanilla orchid flower. Warm cocoa accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-cd93f3f7-a9e0-4720-89dc-524a7b54f0d4.png",
+      "result": "originals/vanilla.png",
+      "note": null
+    },
+    {
+      "id": "pineapple",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha. Flavor: PINEAPPLE. Detailed golden whole pineapple with leafy crown and a triangular juicy yellow cut wedge, matching the first row sixth botanical in image 1. Subtle golden yellow side accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-4c68da4f-6490-4e36-bf08-a6371612e21a.png",
+      "result": "rejected/pineapple-v1.png",
+      "note": null
+    },
+    {
+      "id": "pineapple",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Edit target image 1 is a pineapple flavor carton. Change ONLY the small mint leaf illustration printed on the top panel: replace it with a tiny golden pineapple and cut yellow pineapple wedge. Keep the carton shape, three-quarter camera, ivory paper, deep plum horizontal trim, all front pineapple painting, side flourishes, shading, canvas dimensions and transparent background unchanged. No mint anywhere. No text, logo, numbers, watermark, loose fruit, background or floor shadow. Retain real RGBA transparency.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/pineapple-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-7f0af375-1c04-4a39-89ce-1b4a1e7e20b3.png",
+      "result": "originals/pineapple.png",
+      "reason": "top panel retained mint"
+    },
+    {
+      "id": "coconut",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes. Flavor: Brown fibrous coconut half with bright white flesh and a green palm frond. Coconut brown accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-a446b822-79d3-4ede-996a-75b12d670328.png",
+      "result": "originals/coconut.png",
+      "note": null
+    },
+    {
+      "id": "mango",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes. Flavor: Golden mango and orange scored cut mango half. Warm orange accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-eaff4434-9b0c-4c60-99c6-73ad6f7504a0.png",
+      "result": "rejected/mango-v1.png",
+      "note": null
+    },
+    {
+      "id": "mango",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Target image 1 is an existing flavor carton. Change ONLY the incorrect citrus fruit and white citrus flower printed on FRONT: remove whole orange, orange slice and flower. The front must show ONLY a whole red-yellow mango and scored orange-flesh mango half with mango leaves, as on the top panel. Preserve carton shape, camera, ivory paper, warm accent bands, existing mango and scored half. No orange/citrus anywhere on any panel. No loose ingredients. Keep the painted botanical style and all other features unchanged. Single carton on real transparent alpha, no background, floor shadow, text, logo, labels, letters or numbers.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/mango-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-7523f900-ed05-4e51-a4ac-aae56d593add.png",
+      "result": "originals/mango.png",
+      "reason": "front included orange/citrus"
+    },
+    {
+      "id": "lemon",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "undefinedFlavor: Whole yellow lemon and lemon slice with green leaves. Yellow accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-550b09a3-77c4-4c9a-9724-ca3935705794.png",
+      "result": "rejected/lemon-v1.png",
+      "note": "Five initial calls (lemon/peach/orange/grape/melon) had a missing shared prompt base. Actual prompts retained verbatim; candidates visually checked and corrected where needed."
+    },
+    {
+      "id": "lemon",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Target image 1 is the lemon flavor carton. Remove ONLY the grey/yellow cast floor shadow outside and below the carton so the entire outside area is truly transparent. Retain subtle shading ON the carton, its exact shape, front lemon painting, top-panel lemon, yellow accent bands, camera, dimensions and all printed details unchanged. Keep only the single carton cutout. No background, floor, shadow plane, text, logo or numbers. Real RGBA alpha.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/lemon-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-0d76d495-57be-4216-b813-2a106456798a.png",
+      "result": "originals/lemon.png",
+      "reason": "outside cast floor shadow"
+    },
+    {
+      "id": "peach",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "undefinedFlavor: Pink peach and cut peach half with visible stone. Warm peach pink accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-71348a71-9f29-4465-af98-0b0e7835eb32.png",
+      "result": "rejected/peach-v1.png",
+      "note": "Five initial calls (lemon/peach/orange/grape/melon) had a missing shared prompt base. Actual prompts retained verbatim; candidates visually checked and corrected where needed."
+    },
+    {
+      "id": "peach",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Target image 1 is an existing flavor carton. Remove ALL loose peaches, leaves and flower outside the carton; only one carton remains. Recenter carton with >=12% transparent empty margin all around. Replace mint printed on the top with a tiny peach and cut peach half. Keep peach illustration printed on FRONT, ivory paper, plum bands and original camera angle. No loose ingredients. Keep the painted botanical style and all other features unchanged. Single carton on real transparent alpha, no background, floor shadow, text, logo, labels, letters or numbers.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/peach-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-e2877d6a-4708-4ced-ac54-e52264aeb738.png",
+      "result": "rejected/peach-v2.png",
+      "reason": "loose peaches and wrong top panel"
+    },
+    {
+      "id": "peach",
+      "stage": "square-framing",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Preserve the peach carton from target image 1 exactly: its peach art, ivory paper, plum trim, shape and aspect ratio. Change ONLY the canvas/framing to a SQUARE image with the WHOLE single carton centered and >=12% transparent empty margin on every side. Do not stretch/distort or crop the carton. No fruit outside the carton, background, floor shadow, text, logo, numbers or watermark. Real RGBA alpha transparency, square output.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/peach-v2.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-fafa1aa4-8769-4261-8e8b-76ebc740d097.png",
+      "result": "originals/peach.png",
+      "reason": "non-square framing after first correction"
+    },
+    {
+      "id": "orange",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "undefinedFlavor: Whole orange and juicy orange slice with leaves. Orange accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-ab89c0ff-6b44-4d7a-937d-903678f5cb2d.png",
+      "result": "originals/orange.png",
+      "note": "Five initial calls (lemon/peach/orange/grape/melon) had a missing shared prompt base. Actual prompts retained verbatim; candidates visually checked and corrected where needed."
+    },
+    {
+      "id": "grape",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "undefinedFlavor: Purple grape bunch and vine leaf. Grape purple accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-29ca2a59-98ab-440b-adc8-d9b33a027af2.png",
+      "result": "rejected/grape-v1.png",
+      "note": "Five initial calls (lemon/peach/orange/grape/melon) had a missing shared prompt base. Actual prompts retained verbatim; candidates visually checked and corrected where needed."
+    },
+    {
+      "id": "grape",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Target image 1 is a grape carton. Keep the exact grape carton and all printed artwork, shape, aspect ratio, lighting and colors unchanged. Place the WHOLE carton centered on a SQUARE transparent canvas with generous >=12% empty transparent margins on ALL sides. Do not stretch/distort or crop the carton. Single isolated carton, no loose fruit, text, logos, numbers, background or floor shadow. Real RGBA alpha transparency. Square output image.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/grape-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-9fc58c05-895d-4a59-a98f-fd2c561dd07b.png",
+      "result": "originals/grape.png",
+      "reason": "non-square source canvas"
+    },
+    {
+      "id": "melon",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "undefinedFlavor: Netted melon and orange-flesh melon wedge. Soft melon green accent.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-aa469de2-de34-4a05-bdc5-18d0dc8206ab.png",
+      "result": "rejected/melon-v1.png",
+      "note": "Five initial calls (lemon/peach/orange/grape/melon) had a missing shared prompt base. Actual prompts retained verbatim; candidates visually checked and corrected where needed."
+    },
+    {
+      "id": "melon",
+      "stage": "correction",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: precise-object-edit. Target image 1 is an existing flavor carton. Remove ALL loose melons, vines and leaves outside the carton; only one carton remains. Recenter carton with >=12% transparent empty margin all around. Replace mint printed on the top with a tiny melon and melon wedge. Keep melon illustration printed on FRONT, ivory paper, plum bands and original camera angle. No loose ingredients. Keep the painted botanical style and all other features unchanged. Single carton on real transparent alpha, no background, floor shadow, text, logo, labels, letters or numbers.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-art-issue586/rejected/melon-v1.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-5c6a3014-c02b-46aa-a41b-10a82cb757d9.png",
+      "result": "originals/melon.png",
+      "reason": "loose melons and wrong top panel"
+    },
+    {
+      "id": "watermelon",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes.  Keep horizontal bands DEEP PLUM like mint carton; no cast floor shadow. Flavor: Red watermelon wedge with dark seeds and green rind. Tiny watermelon print also on TOP panel.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-74dd5081-3356-4e41-9201-a3b86cda9ead.png",
+      "result": "originals/watermelon.png",
+      "note": null
+    },
+    {
+      "id": "banana",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes.  Keep horizontal bands DEEP PLUM like mint carton; no cast floor shadow. Flavor: Small bunch of ripe yellow bananas. Tiny banana print also on TOP panel.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-43bcd395-cdeb-4b29-a14c-58e721c91128.png",
+      "result": "originals/banana.png",
+      "note": null
+    },
+    {
+      "id": "cinnamon",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes.  Keep horizontal bands DEEP PLUM like mint carton; no cast floor shadow. Flavor: Warm brown curled cinnamon sticks with a few green leaves. Tiny cinnamon print also on TOP panel.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-e1ba6f35-ed7a-40be-a662-99536d33e7a6.png",
+      "result": "originals/cinnamon.png",
+      "note": null
+    },
+    {
+      "id": "rose",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes.  Keep horizontal bands DEEP PLUM like mint carton; no cast floor shadow. Flavor: Pink rose blossom, buds and green leaves. Tiny rose print also on TOP panel.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-ce0dba6c-6946-45bc-bd27-fe13a9547d5f.png",
+      "result": "originals/rose.png",
+      "note": null
+    },
+    {
+      "id": "lychee",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: product-mockup. Single transparent PNG game shop icon. Image 1 is the original adopted botanical style; image 2 is the approved carton family reference. Create ONE matching 50g upright ivory paper carton, SAME straight rectangular shape, plum trim, botanical front printing, three-quarter front view showing right side and top, as image 2. Change ONLY the botanical flavor illustration and its quiet side accent. Keep softly outlined richly shaded botanical painting like image 1. No text/letters/numbers/logos/labels/watermarks, no loose ingredients, no people/equipment/smoke, no ground or floor shadow. Entire package centered, make it SMALLER within the square canvas: package height exactly 70% canvas, generous 15% empty transparent margin top and bottom, true RGBA alpha.  IMPORTANT: Every illustrated panel, including top and right side, must depict ONLY this requested flavor; replace ALL mint leaf clusters from image 2, retaining only generic slim border flourishes.  Keep horizontal bands DEEP PLUM like mint carton; no cast floor shadow. Flavor: Red lychees and peeled white lychee with green leaf. Tiny lychee print also on TOP panel.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/shop-ui-issue505/flavors-original.png",
+        "asset_sources/shop-art-issue586/originals/mint.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-236bfb98-83c0-4c24-955f-fc3bf886d461.png",
+      "result": "originals/lychee.png",
+      "note": null
+    },
+    {
+      "id": "lotos_hagal",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone unused hookah heat-management device (HMD) shop inventory icon on real transparent alpha, square PNG. Reference image 1 is actual metal construction only; do not copy brand logos, distinctive proprietary surface pattern or photograph. Reference image 2 is this game's adopted equipment illustration, match its warm hand-painted pixel-painter rendering, defined edges and restrained gold/plum reflected highlights; represent the HMD itself as silver or dark metal, not purple pottery. Three-quarter view from slightly above, whole device centered occupying 70% canvas width, generous transparent margins. No bowl, ceramic neck, hookah stem/base, coal, fire, smoke, hose, people, text, letters, logos, numbers, watermarks, background, floor plane or cast shadow. The HMD must be a coherent single low metal component that could sit on a palm-width bowl rim; do not combine unrelated lids/chimneys. A compact silver shallow circular metal heat-management cup with a fitted gently domed lid, simple unobtrusive vent slots and one short dark insulated side tab. Clean functional metal, no proprietary swirling petal vent geometry. Lid rests physically on its own cup. No decoration.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-2548810f-0f1d-4cf6-a939-fe22ce58a02c.png",
+      "result": "originals/lotos_hagal.png",
+      "note": null
+    },
+    {
+      "id": "tanukish_lid",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone unused hookah heat-management device (HMD) shop inventory icon on real transparent alpha, square PNG. Reference image 1 is actual metal construction only; do not copy brand logos, distinctive proprietary surface pattern or photograph. Reference image 2 is this game's adopted equipment illustration, match its warm hand-painted pixel-painter rendering, defined edges and restrained gold/plum reflected highlights; represent the HMD itself as silver or dark metal, not purple pottery. Three-quarter view from slightly above, whole device centered occupying 70% canvas width, generous transparent margins. No bowl, ceramic neck, hookah stem/base, coal, fire, smoke, hose, people, text, letters, logos, numbers, watermarks, background, floor plane or cast shadow. The HMD must be a coherent single low metal component that could sit on a palm-width bowl rim; do not combine unrelated lids/chimneys. A low brushed-silver rounded metal heat-management lid, simple domed cover with small circular ventilation holes, a short black insulated knob on top and a slim lower metal rim. This is a detached lid product, no ceramic bowl or foot below it. Distinct from the side-tab cup model. Functional coherent construction.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-8e528f05-92db-4559-8450-f847b24e1939.png",
+      "result": "originals/tanukish_lid.png",
+      "note": null
+    },
+    {
+      "id": "amaburst_hms",
+      "stage": "initial",
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone unused hookah heat-management device (HMD) shop inventory icon on real transparent alpha, square PNG. Reference image 1 is actual metal construction only; do not copy brand logos, distinctive proprietary surface pattern or photograph. Reference image 2 is this game's adopted equipment illustration, match its warm hand-painted pixel-painter rendering, defined edges and restrained gold/plum reflected highlights; represent the HMD itself as silver or dark metal, not purple pottery. Three-quarter view from slightly above, whole device centered occupying 70% canvas width, generous transparent margins. No bowl, ceramic neck, hookah stem/base, coal, fire, smoke, hose, people, text, letters, logos, numbers, watermarks, background, floor plane or cast shadow. The HMD must be a coherent single low metal component that could sit on a palm-width bowl rim; do not combine unrelated lids/chimneys. An open low cylindrical silver-metal heat-management tray with a perforated metal floor, a mesh-like short side wall and a simple continuous lower rim, no lid and no top knob. Show empty interior from slightly above. Low broad proportions, a single coherent metal heat tray, not a tall chimney or cooking pot.",
+      "transparent_background": true,
+      "input_repo_paths": [
+        "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+        "assets/ui/making/bowl_empty_phunnel.png"
+      ],
+      "actual_tool_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-1a1a5ae0-d545-4059-958d-e7ed3391206b.png",
+      "result": "originals/amaburst_hms.png",
+      "note": null
+    }
+  ],
+  "source_files_unchanged": true,
+  "references_inspected_before_generation": true,
+  "original_runtime_art_preserved": true
+}

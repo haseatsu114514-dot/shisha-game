@@ -1,0 +1,22 @@
+{
+  "gallery": {
+    "library_file_id": "libfile_321f31ee40f88191bb7993e4b2b3c809",
+    "file_id": "file_000000000ec881f49e392627679631d8",
+    "version": 0,
+    "name": "comparison-heaven10-wings-only.png",
+    "source": "comparison-heaven10.png",
+    "confirmed_by": "wrapper LIVE 2026-10-16 04:07UTC",
+    "source_png_sha256": "a87408d406e4e0485e7bd486079e48c132dc421be1a91189136e636022e8f0a9"
+  },
+  "before_after": {
+    "library_file_id": "libfile_2b14f951c73881918b46b188ff5e9936",
+    "file_id": "file_00000000e99481f5892d6dbe3895bc14",
+    "version": 0,
+    "name": "comparison-heaven10-before-after-wings-only.png",
+    "source": "comparison-before-after-heaven10.png",
+    "confirmed_by": "inventory/library-v6-heaven10-before-after.json status succeeded/version0",
+    "source_png_sha256": "085b0c5ad27fc4b90af40a858f8d5ce9bacff4cafe365604e4e3858d23439124"
+  },
+  "existing_v5_three_preserved": "libfile_aa321c23b8cc81919004ed4808de8a28",
+  "note": "Wrapper saved previews, no C duplicate upload; source review only, no runtime adoption."
+}

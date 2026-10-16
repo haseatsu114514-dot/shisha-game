@@ -1,0 +1,326 @@
+[
+  {
+    "id": "mint",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      24,
+      76,
+      270,
+      241
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/mint.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "double_apple",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      322,
+      78,
+      277,
+      242
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/double_apple.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "blueberry",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      609,
+      89,
+      280,
+      229
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/blueberry.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "strawberry",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      891,
+      75,
+      286,
+      244
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/strawberry.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "vanilla",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1180,
+      83,
+      304,
+      246
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/vanilla.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "pineapple",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1487,
+      28,
+      270,
+      296
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/pineapple.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "coconut",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      10,
+      335,
+      285,
+      265
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/coconut.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "mango",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      311,
+      335,
+      296,
+      271
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/mango.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "lemon",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      607,
+      334,
+      283,
+      272
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/lemon.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "peach",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      893,
+      336,
+      291,
+      266
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/peach.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "orange",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1185,
+      337,
+      301,
+      268
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/orange.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "grape",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1490,
+      329,
+      275,
+      276
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/grape.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "melon",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      19,
+      608,
+      280,
+      252
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/melon.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "watermelon",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      310,
+      607,
+      288,
+      251
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/watermelon.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "banana",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      607,
+      600,
+      281,
+      259
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/banana.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "cinnamon",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      889,
+      609,
+      288,
+      247
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/cinnamon.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "rose",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1183,
+      606,
+      309,
+      255
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/rose.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "lychee",
+    "kind": "flavor",
+    "current_image": "remake/img/shop/flavors.webp",
+    "crop": [
+      1485,
+      602,
+      281,
+      260
+    ],
+    "absence_reason": null,
+    "target": "remake/img/shop/packages/lychee.webp",
+    "plan": "reuse adopted botanical as style reference; generate matching 50g package"
+  },
+  {
+    "id": "silicone_bowl",
+    "kind": "bowl",
+    "name": "シリコンボウル",
+    "current_image": "remake/img/ui/making/bowl_empty_silicone.webp",
+    "absence_reason": null,
+    "target": null,
+    "plan": "reuse unchanged"
+  },
+  {
+    "id": "hagal_80beat",
+    "kind": "bowl",
+    "name": "80beatハガル",
+    "current_image": "remake/img/ui/making/bowl_empty_phunnel.webp",
+    "absence_reason": null,
+    "target": null,
+    "plan": "reuse unchanged"
+  },
+  {
+    "id": "suyaki_hagal",
+    "kind": "bowl",
+    "name": "素焼きハガル",
+    "current_image": "remake/img/ui/making/bowl_empty_clay.webp",
+    "absence_reason": null,
+    "target": null,
+    "plan": "reuse unchanged"
+  },
+  {
+    "id": "lotos_hagal",
+    "kind": "hms",
+    "name": "ロートスハガル",
+    "current_image": null,
+    "absence_reason": "EQUIP_ART has no mapping; current HMD text fallback",
+    "target": "remake/img/shop/equipment/lotos_hagal.webp",
+    "plan": "generate HMD product illustration using actual photo references"
+  },
+  {
+    "id": "tanukish_lid",
+    "kind": "hms",
+    "name": "タヌキッシュリッド",
+    "current_image": null,
+    "absence_reason": "EQUIP_ART has no mapping; current HMD text fallback",
+    "target": "remake/img/shop/equipment/tanukish_lid.webp",
+    "plan": "generate HMD product illustration using actual photo references"
+  },
+  {
+    "id": "amaburst_hms",
+    "kind": "hms",
+    "name": "アマバースト",
+    "current_image": null,
+    "absence_reason": "EQUIP_ART has no mapping; current HMD text fallback",
+    "target": "remake/img/shop/equipment/amaburst_hms.webp",
+    "plan": "generate HMD product illustration using actual photo references"
+  },
+  {
+    "id": "flat_charcoal",
+    "kind": "charcoal",
+    "name": "フラット炭",
+    "current_image": "remake/img/ui/making/coal_flat_cold.webp",
+    "absence_reason": null,
+    "target": null,
+    "plan": "reuse unchanged"
+  },
+  {
+    "id": "cube_charcoal",
+    "kind": "charcoal",
+    "name": "キューブ炭",
+    "current_image": "remake/img/ui/making/coal_cold.webp",
+    "absence_reason": null,
+    "target": null,
+    "plan": "reuse unchanged"
+  }
+]
