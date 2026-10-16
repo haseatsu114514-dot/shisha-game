@@ -38,6 +38,8 @@ on:
     types: [created]
   issues:
     types: [opened, edited, reopened, closed]
+  pull_request:
+    types: [closed]
   push:
     branches: [main]
     paths:
@@ -60,7 +62,9 @@ jobs:
       startsWith(github.event.comment.body, '/issue-claim '))) &&
       (github.event_name != 'issues' || github.event.action == 'closed' ||
       contains(github.event.issue.body, 'claim/status') || contains(github.event.issue.body, 'status成功') ||
-      contains(github.event.issue.body, '1worker1') || contains(github.event.issue.body, 'issue-claim-policy:v2'))
+      contains(github.event.issue.body, '1worker1') || contains(github.event.issue.body, 'issue-claim-policy:v2')) &&
+      (github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:

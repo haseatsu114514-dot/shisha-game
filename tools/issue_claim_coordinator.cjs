@@ -436,6 +436,19 @@ async function runEvent(github, context, core, inputs = process.env) {
     return;
   }
   if (event === 'workflow_dispatch' && inputs.OPERATION !== 'maintain') return coordinate(github, context, core, inputs);
+  if (event === 'pull_request') {
+    const pr = context.payload.pull_request;
+    const fullName = context.repo.owner + '/' + context.repo.repo;
+    const branch = context.payload.repository?.default_branch || (await github.rest.repos.get(context.repo)).data.default_branch;
+    if (!pr?.merged || pr.head?.repo?.full_name !== fullName || pr.base?.ref !== branch) return;
+    const closed = await github.paginate(github.rest.issues.listForRepo, {...context.repo,state:'closed',per_page:100});
+    for (const issue of closed) {
+      if (issue.pull_request || !referencesIssue(pr, issue.number, context)) continue;
+      const result = await maintain(github, context, core, issue.number);
+      if (result.errors) throw Error('Merged PR maintenance has deferred items');
+    }
+    return;
+  }
   if (!['workflow_dispatch','issues','push','schedule'].includes(event)) throw Error('Unsupported event');
   if (event === 'workflow_dispatch') await requireWriter(github, context, context.actor);
   const number = event === 'issues' ? context.payload.issue?.number : (inputs.ISSUE ? Number(inputs.ISSUE) : null);

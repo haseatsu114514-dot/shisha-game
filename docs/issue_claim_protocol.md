@@ -102,7 +102,7 @@ statement that all work is pushed and editing has stopped.
 
 ## Automatic completion and procedure upkeep
 
-Issue events handle completion and common-procedure updates. A push changing
+Issue and same-repository PR-merge events handle completion and common-procedure updates. A push changing
 the coordinator/protocol and a daily 03:23 UTC run reconcile existing Issues;
 `operation=maintain` can target one Issue or sweep the repository.
 

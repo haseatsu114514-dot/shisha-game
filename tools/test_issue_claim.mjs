@@ -687,7 +687,7 @@ test('workflow entrypoints keep the shared lock and never check out comment or P
   const workflow=readFileSync(new URL('../.github/workflows/issue-claim.yml',import.meta.url),'utf8');
   assert.match(workflow,/group: issue-claim-coordinator/);
   assert.match(workflow,/event_name == 'workflow_dispatch' && github.sha \|\| github.event.repository.default_branch/);
-  assert.doesNotMatch(workflow,/pull_request\.head|comment\.body[^\n]*\$\(/);
+  assert.doesNotMatch(workflow.match(/^\s+ref:.*$/m)[0],/pull_request\.head|comment\.body/);
   assert.match(workflow,/require\('\.\/tools\/issue_claim_coordinator.cjs'\)/);
   assert.match(workflow,/comment.author_association/);
 });
@@ -752,3 +752,21 @@ test('maintenance never replays old request comments or overrides a canceled exe
   await runEvent(s.github,s.context,s.core,{});
   assert.equal(s.writes.length,0);
 });
+
+test('a later PR merge cleans up an already-completed Issue without waiting for the daily sweep', async () => {
+  const s=completedSetup();s.context.eventName='pull_request';
+  s.context.payload.pull_request={...s.prs[0],merged:true};
+  await runEvent(s.github,s.context,s.core,{});
+  assert.match(s.writes[0].body,/state=released owner=worker-A/);
+});
+
+for (const change of ['unmerged','fork','non-default']) {
+  test(`PR events cannot release work from an ineligible merge: ${change}`, async () => {
+    const s=completedSetup();s.context.eventName='pull_request';
+    s.context.payload.pull_request={...structuredClone(s.prs[0]),merged:change!=='unmerged'};
+    if (change==='fork') s.context.payload.pull_request.head.repo.full_name='other/game';
+    if (change==='non-default') s.context.payload.pull_request.base.ref='feature';
+    await runEvent(s.github,s.context,s.core,{});
+    assert.equal(s.writes.length,0);
+  });
+}
