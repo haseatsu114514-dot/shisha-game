@@ -1,0 +1,9 @@
+{
+  "scope": "source-art inspection, not runtime QA",
+  "edited": 8,
+  "exact_reuse": 10,
+  "min_silhouette_iou128": 0.9913111540262173,
+  "max_abs_aspect_change_percent": 0.55257055823692,
+  "ocr_maker_words_found": false,
+  "note": "OCR is supplemental; absence of a hit does not prove deletion without visual review."
+}
