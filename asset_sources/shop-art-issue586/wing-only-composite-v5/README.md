@@ -43,11 +43,14 @@ native投影上辺の傾きはmint約.096°/apple1.762°/grape1.395°。共通ca
 ```sh
 python3 asset_sources/shop-art-issue586/wing-only-composite-v5/compose.py
 python3 asset_sources/shop-art-issue586/wing-only-composite-v5/compose.py --check
+python3 asset_sources/shop-art-issue586/wing-only-composite-v5/verify_saved.py --check
 python3 tools/check_agent_docs.py
 git diff --check
 ```
 
 --checkは全39生成artifact bytesを再計算照合し、nativeSHA/PNGdecode/全alpha/mask外RGBA/狭いROI/中性色/前面位置とshapeをassert。最終版でPASS。Python syntaxもast.parseでPASS。依存: OpenCV4.13.0/NumPy2.4.2/Pillow12.1.1、Mac Arial（QAのラベル用）。同一環境でPNG byte再現。異なるfont/codec版でのbyte同一性は保証しません。
+
+`verify_saved.py`は合成処理から独立して、保存後の3PNGと4種類のmask PNGを実decodeし、RGBA/寸法/SHA/全alpha/許可外0差分/union一致/実changed mask一致を検証します。果実領域の1画素をメモリ上だけで改変したnegative controlも検出し、検証自体が実際に許可外変更を拒否することを確認。saved-png-checks.jsonに結果を保存し、--checkで再照合PASS。原画/出力ファイルをこの検証で変更しません。
 
 preservation.json: 編集前head0ec190c5368a10bae7124ca37415c549c274edb7（main1ec3dddbの安全merge後）と比較し、既存shop-art113ファイルをgit blob bytes一致、data/assets/remakeの差分0を確認。v2/v3/v4/旧botanical21/HMD/旧deliveryは不変。source SHAも元manifestに一致。今回の全変更はこの新規folderのみ。
 
