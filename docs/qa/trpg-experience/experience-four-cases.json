@@ -1,0 +1,18 @@
+[
+  {
+    "label": "ordinary-keyboard-pc",
+    "status": "passed"
+  },
+  {
+    "label": "ordinary-touch-reduced-motion",
+    "status": "passed"
+  },
+  {
+    "label": "shark-insight-correct",
+    "status": "passed"
+  },
+  {
+    "label": "shark-insight-hidden",
+    "status": "passed"
+  }
+]

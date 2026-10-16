@@ -1,0 +1,79 @@
+{
+  "axe_versus": {
+    "metadata": {
+      "description": "独立した斧投げ対戦の反応。物語や関係の進行を行わない。"
+    },
+    "lines": [
+      {
+        "id": "before",
+        "speaker": "hiyori",
+        "text": "……次は私の番。よく狙って……。"
+      },
+      {
+        "id": "call",
+        "speaker": "hiyori",
+        "text": "……キルショット。青い的を狙うね。"
+      },
+      {
+        "id": "hit",
+        "speaker": "hiyori",
+        "text": "……うん、刺さった。次もこの調子で。"
+      },
+      {
+        "id": "bull",
+        "speaker": "hiyori",
+        "text": "……真ん中。今のは、いい感じ。"
+      },
+      {
+        "id": "killshot",
+        "speaker": "hiyori",
+        "text": "よっしゃ！ ……こほん、当たったね。"
+      },
+      {
+        "id": "killshot-miss",
+        "speaker": "hiyori",
+        "text": "……外れちゃった。小さいね、あの青。"
+      },
+      {
+        "id": "miss",
+        "speaker": "hiyori",
+        "text": "……あ、的の外。次は落ち着いて。"
+      },
+      {
+        "id": "drop",
+        "speaker": "hiyori",
+        "text": "……力の加減、難しいね。"
+      },
+      {
+        "id": "ahead",
+        "speaker": "hiyori",
+        "text": "……まだ私が前だね。最後まで、丁寧に。"
+      },
+      {
+        "id": "behind",
+        "speaker": "hiyori",
+        "text": "……追いつけるかな。次の一投、集中。"
+      },
+      {
+        "id": "level",
+        "speaker": "hiyori",
+        "text": "……同じ点だね。次、どう狙おうかな。"
+      },
+      {
+        "id": "player",
+        "speaker": "hiyori",
+        "text": "……負けちゃった。いい勝負だったね。"
+      },
+      {
+        "id": "opponent",
+        "speaker": "hiyori",
+        "text": "……私の勝ち。また一緒に投げようね。"
+      },
+      {
+        "id": "draw",
+        "speaker": "hiyori",
+        "text": "……引き分けだね。楽しかった。"
+      }
+    ]
+  }
+}

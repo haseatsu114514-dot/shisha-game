@@ -232,7 +232,7 @@
     }
   },
   {
-    "id": "kafuka",
+    "id": "samechan",
     "name": "サメちゃん",
     "full": "",
     "title": "サメの王の側近",
@@ -243,7 +243,7 @@
     "shadow": "#082a48",
     "motif": "shark",
     "motif_label": "王冠を被ったサメ・波",
-    "portrait": "asset_sources/character-intros/personality-v2/references/kafuka-normal.png",
+    "portrait": "asset_sources/character-intros/personality-v2/references/samechan-normal.png",
     "frame": {
       "width": 1124.934,
       "left": -286.716,
@@ -251,11 +251,11 @@
     },
     "portrait_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
     "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
-    "caption_source": "data/dialogue/kafuka.json: profile.intro_cutin",
+    "caption_source": "data/dialogue/samechan.json: profile.intro_cutin",
     "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
     "backgrounds": {
       "illustrated": {
-        "src": "asset_sources/character-intros/ch1-v3/backgrounds/kafuka/source.png",
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/samechan/source.png",
         "sha256": "f5c5872656a2eb7d344333a6dc66745a1372e979492230248490b9901c26b2c6"
       }
     }
@@ -437,5 +437,25 @@
     },
     "select_label": "あげは（第2章）",
     "scope_note": "第2章の名乗り後。プロとしての目を開いたnormal表情。初遭遇版とは別素材。"
+  },
+  {
+    "id": "hiyori",
+    "color": "#cc8fa7",
+    "secondary": "#f2dce8",
+    "shadow": "#e9dde3",
+    "expression": "normal",
+    "portrait_sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+    "frame": {
+      "width": 886.667,
+      "left": -172.358,
+      "top": 17.219
+    },
+    "caption_source": "data/characters.json: hiyori.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/hiyori-senkou-v1/source.png",
+        "sha256": "1b82afc91d5e70e00c2910e627a23070c7f92e4970ebdc5e997f87cdb4339774"
+      }
+    }
   }
 ]

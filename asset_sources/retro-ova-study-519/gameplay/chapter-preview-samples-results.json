@@ -1,0 +1,23 @@
+{
+  "name": "chapter-preview-samples",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "ref": "d85e15b",
+  "results": [
+    {
+      "label": "rush-desktop",
+      "status": "passed"
+    },
+    {
+      "label": "rush-touch",
+      "status": "passed"
+    },
+    {
+      "label": "quiet-desktop",
+      "status": "passed"
+    },
+    {
+      "label": "quiet-touch",
+      "status": "passed"
+    }
+  ]
+}

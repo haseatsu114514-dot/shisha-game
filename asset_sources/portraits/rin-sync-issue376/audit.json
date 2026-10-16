@@ -1,0 +1,300 @@
+{
+  "issue": 376,
+  "worker": "codex-e-visual-20261011-01",
+  "claim_run": 38180374973,
+  "base_sha": "73cd85e0c2f40f18361a6174b9cb9c1064eaab56",
+  "adoption": "PRT45／PRT50、PR195／PR194 merged; no new design or adoption",
+  "integration_record": ".claude/skills/character-portrait-remaster/references/rin-v12-integration.json",
+  "records": [
+    {
+      "face": "normal",
+      "approved_raw": {
+        "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+        "size": [
+          1085,
+          1450
+        ],
+        "mode": "RGBA",
+        "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+      },
+      "raw_sha_matches_integration": true,
+      "adopted_png": {
+        "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09"
+      },
+      "png_sha_matches_integration": true,
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rin/chr_rin_normal.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "8301d174169de088427b789e2c7974e581e4bdbbf2b63744326a96bc2e53858e"
+      },
+      "png_webp_rgba_equal": true
+    },
+    {
+      "face": "smile",
+      "approved_raw": {
+        "path": ".claude/skills/character-portrait-remaster/references/rin-v12-smile.png",
+        "size": [
+          1085,
+          1450
+        ],
+        "mode": "RGBA",
+        "sha256": "407e21d9a1be56f9f09ec630e61e53b25aa269462264d20815efd4f8689cf66c"
+      },
+      "raw_sha_matches_integration": true,
+      "adopted_png": {
+        "path": "assets/sprites/characters/rin/chr_rin_smile.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466"
+      },
+      "png_sha_matches_integration": true,
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rin/chr_rin_smile.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "df422ac86b3c18b7b57eafa0073690bc8a1404b62788ac4f095d97af58478383"
+      },
+      "png_webp_rgba_equal": true
+    },
+    {
+      "face": "serious",
+      "approved_raw": {
+        "path": ".claude/skills/character-portrait-remaster/references/rin-v12-serious.png",
+        "size": [
+          1085,
+          1450
+        ],
+        "mode": "RGBA",
+        "sha256": "d819f1ae79dee04428d030a090a9f4b8d837c15b6a3b3dca5a79b01c51c885b8"
+      },
+      "raw_sha_matches_integration": true,
+      "adopted_png": {
+        "path": "assets/sprites/characters/rin/chr_rin_serious.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "c30f36c5b44e8335ea3b5c77f105556a8084a48f0ccef90c4a756500f9840ee2"
+      },
+      "png_sha_matches_integration": true,
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rin/chr_rin_serious.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "e692d65722f205bd6212042c786feea6d049fe17419cddb960d74ed32b527d49"
+      },
+      "png_webp_rgba_equal": true
+    },
+    {
+      "face": "surprise",
+      "approved_raw": {
+        "path": ".claude/skills/character-portrait-remaster/references/rin-v12-surprise.png",
+        "size": [
+          1085,
+          1450
+        ],
+        "mode": "RGBA",
+        "sha256": "146bbe9bec40d490f082e9024e7fcfc9b059dff3c2aa325fd658313eeec9bceb"
+      },
+      "raw_sha_matches_integration": true,
+      "adopted_png": {
+        "path": "assets/sprites/characters/rin/chr_rin_surprise.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "159a9c9ede06553ab1e4fe85647f1ea3fc8fdb94f6f315782bb8077c1c4bec1c"
+      },
+      "png_sha_matches_integration": true,
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rin/chr_rin_surprise.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "50e939f1a1a9a819bc9b22c17b067ff14902dc43597596f76aba158b2c1df8ec"
+      },
+      "png_webp_rgba_equal": true
+    },
+    {
+      "face": "sad",
+      "approved_raw": {
+        "path": ".claude/skills/character-portrait-remaster/references/rin-v12-sad.png",
+        "size": [
+          1085,
+          1450
+        ],
+        "mode": "RGBA",
+        "sha256": "0436f063b3fd871f1716fd3d0f1f2f99ac59041e5d434a76d65f8f637bbc88a6"
+      },
+      "raw_sha_matches_integration": true,
+      "adopted_png": {
+        "path": "assets/sprites/characters/rin/chr_rin_sad.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "9343dc7df3668bf9f976cb3f5be771cd2205e2501b66f7532ee418592104cb79"
+      },
+      "png_sha_matches_integration": true,
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rin/chr_rin_sad.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "3be9193307acbc04e056d8f6b735a86c470c8b79b1641df23d22c82e41d566f9"
+      },
+      "png_webp_rgba_equal": true
+    }
+  ],
+  "face_icon": {
+    "path": "assets/ui/face_icons/face_rin.png",
+    "size": [
+      160,
+      160
+    ],
+    "mode": "RGBA",
+    "sha256": "16ec3c4e65dd3562ce90fd5c856e5502dffe8f04da39552b2d3206515560b9ef",
+    "generated_in_memory_from_current_normal_equal": true,
+    "crop_config": {
+      "f": 0.188,
+      "dx": 0.011,
+      "dy": 0.158
+    }
+  },
+  "manifest_portrait": {
+    "faces": [
+      "normal",
+      "sad",
+      "serious",
+      "smile",
+      "surprise"
+    ],
+    "h": 0.8383,
+    "b": 0.0225,
+    "ax": 0.4657,
+    "aspect": 0.7467,
+    "anchor": "head"
+  },
+  "manifest_intro": {
+    "color": "#5a60b6",
+    "secondary": "#cfd5ff",
+    "shadow": "#131746",
+    "background": "ui/character_intros/rin.png",
+    "frames": {
+      "smile": {
+        "width": 1023.487,
+        "left": -204.317,
+        "top": -161.9
+      },
+      "normal": {
+        "width": 1021.44,
+        "left": -171.623,
+        "top": -159.22
+      },
+      "serious": {
+        "width": 1015.348,
+        "left": -163.537,
+        "top": -151.245
+      },
+      "surprise": {
+        "width": 1034.894,
+        "left": -176.479,
+        "top": -176.833
+      },
+      "sad": {
+        "width": 1022.462,
+        "left": -156.784,
+        "top": -161.7
+      }
+    }
+  },
+  "spriteScale": 0.97,
+  "spriteAnchor": "head",
+  "portrait_browser_results": [
+    {
+      "viewport": 1280,
+      "face": "normal",
+      "offsetPx": 0.03
+    },
+    {
+      "viewport": 1280,
+      "face": "smile",
+      "offsetPx": -1.21
+    },
+    {
+      "viewport": 1280,
+      "face": "serious",
+      "offsetPx": -4.49
+    },
+    {
+      "viewport": 1280,
+      "face": "surprise",
+      "offsetPx": -1.07
+    },
+    {
+      "viewport": 1280,
+      "face": "sad",
+      "offsetPx": -12.6
+    },
+    {
+      "viewport": 591,
+      "face": "normal",
+      "offsetPx": 0.01
+    },
+    {
+      "viewport": 591,
+      "face": "smile",
+      "offsetPx": -0.56
+    },
+    {
+      "viewport": 591,
+      "face": "serious",
+      "offsetPx": -2.07
+    },
+    {
+      "viewport": 591,
+      "face": "surprise",
+      "offsetPx": -0.5
+    },
+    {
+      "viewport": 591,
+      "face": "sad",
+      "offsetPx": -5.82
+    }
+  ],
+  "reference_sheet": {
+    "path": "asset_sources/reference-sheets/rin/rin-reference-sheet.png",
+    "size": [
+      2400,
+      2172
+    ],
+    "mode": "RGB",
+    "sha256": "60996d262c13bcc8035229ad6a76dd488881c426bee944c93b4e271d3e109726"
+  }
+}

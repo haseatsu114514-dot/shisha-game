@@ -1,0 +1,85 @@
+name: Chapter 1 retro preview
+
+on:
+  pull_request:
+    paths:
+      - 'data/chapter_previews/**'
+      - 'remake/js/chapters/ch1.js'
+      - 'remake/js/chapters/ch1-preview.js'
+      - 'remake/js/chapters/preview-score.js'
+      - 'remake/js/chapters/chapter-preview-samples.js'
+      - 'remake/js/core/audio.js'
+      - 'remake/css/chapter-preview.css'
+      - 'remake/css/chapter-preview-samples.css'
+      - 'remake/chapter-preview.html'
+      - 'remake/chapter-preview-samples.html'
+      - 'remake/js/chapter-preview.js'
+      - 'assets/ui/chapter_previews/**'
+      - 'assets/cgs/ch2_preview/**'
+      - 'assets/audio/**'
+      - 'assets/fonts/**'
+      - 'remake/img/ui/chapter_previews/**'
+      - 'remake/img/cgs/ch2_preview/**'
+      - 'remake/test/browser/ch1_preview.mjs'
+      - 'remake/test/browser/chapter_preview_samples.mjs'
+      - '.github/workflows/ch1-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ch1-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ch1-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ch1-preview.log"
+          exit 1
+      - name: Play full preview and verify PC, touch, saves and cleanup
+        env:
+          TEST_REF: ${{ github.sha }}
+        run: |
+          node remake/test/browser/ch1_preview.mjs
+          node remake/test/browser/chapter_preview_samples.mjs
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ch1-preview-results
+          path: |
+            .codex/artifacts/remake-browser/ch1-preview*
+            .codex/artifacts/remake-browser/chapter-preview-samples*
+            ${{ runner.temp }}/ch1-preview.log
+          retention-days: 7

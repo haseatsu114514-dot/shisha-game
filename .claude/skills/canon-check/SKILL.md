@@ -13,7 +13,7 @@ description: ストーリー矛盾・設定齟齬・旧名/旧設定の残存・
   `brand/character_profiles.md`・（必要時のみ）`remake/js/`・`docs/master_spec.md`
 - **読まない**: `remake/data/manifest.json`（生成物）・外部ライブラリ・`assets/**`
 - ⚠️ 正本に見えて**旧設定の残骸**であるファイルは根拠にしない。brand/docs 内に
-  旧タイトル「煙の向こう側」等が残存することがある。**矛盾したら CLAUDE.md が正**。
+  旧タイトル「煙の向こう側」等が残存することがある。**矛盾したら docs/gameplay_agent_reference.md が正**。
 
 ## 自動チェックを先に走らせる
 
@@ -27,12 +27,12 @@ python3 tools/check_char_consistency.py 2>/dev/null; python3 tools/check_speaker
 
 ## 事実ごとの「正本」
 
-各事実の正本は **CLAUDE.md「設定の一元管理（Single Source of Truth）」の表**が定義する。
+各事実の正本は **docs/gameplay_agent_reference.md「設定の一元管理（Single Source of Truth）」の表**が定義する。
 チェック時の判定手順:
 
 1. 疑わしい記述を見つけたら、まずその事実の正本を表で特定する。
 2. 正本と一致していれば矛盾ではない（二次資料側が古いだけ→二次資料を直すか「→参照」化）。
-3. 正本同士が食い違う場合のみ本物の矛盾。**CLAUDE.md > characters.json/dialogue >
+3. 正本同士が食い違う場合のみ本物の矛盾。**docs/gameplay_agent_reference.md > characters.json/dialogue >
    brand/docs** の優先順で扱い、判断が設定変更を伴うならオーナーに確認する。
 
 ## 目視チェックの頻出観点
@@ -41,7 +41,7 @@ python3 tools/check_char_consistency.py 2>/dev/null; python3 tools/check_speaker
   既知の固定: はじめ→ましろは「ましろちゃん」。スミさんははじめを「はじめ」と呼ぶ。
 - **時系列・日数**: 台詞に日数を直書きしていないか（`{daysLeft}` に一本化）。
   「来週」「明日」等の相対表現が14日制と矛盾しないか。
-- **章レギュレーション・大会名**: CLAUDE.md「大会名・大会システム」節と照合。
+- **章レギュレーション・大会名**: docs/gameplay_agent_reference.md「大会名・大会システム」節と照合。
 - **ネタバレ管理**: ch1のみんと=お姉さんの正体は好感度♥2以上・固有会話2回以上の後の来店途中で明かす（2026-10-08 PF72）。本名は後の私的な約束で本人から聞く／「-EN:CODE-」の意味はch5まで
   説明しない／ch1優勝を「実力で勝った」と書かない、などの**開示タイミング**の違反を見る。
 - **主人公の性格**: 「自信がない謙虚」（旧）も「直球でイキる」（過渡期）も NG。

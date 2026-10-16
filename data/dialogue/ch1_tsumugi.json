@@ -11,17 +11,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥の席に、一人の女の子が座っていた。大きなヘッドフォンを首にかけて、iPadに何かを描いている。"
+          "text": "奥の席に、常連のつむぎが座っていた。首にヘッドフォンをかけ、タブレットに何かを描いている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "──iPadの画面に、大きな傷が走っているのが目に入った。画面を斜めに横切る、深い亀裂。"
+          "text": "──タブレットの画面に、大きな傷が走っているのが目に入った。画面を斜めに横切る、深い亀裂。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "亀裂をよけるように、Apple Pencilを走らせている。"
+          "text": "亀裂をよけるように、スタイラスペンを走らせている。"
         },
         {
           "speaker": "",
@@ -36,12 +36,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの子、常連さんだっけ。スミさんに聞いてみよう）"
+          "text": "（つむぎちゃん、今日は絵に集中してるな）"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ、つむぎか。たまに来る。いつも隅で絵を描いてる"
+          "text": "つむぎのラベンダー、頼むぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。作ってきます"
         },
         {
           "type": "set_flag",
@@ -50,16 +55,6 @@
         {
           "type": "set_flag",
           "flag": "known_name_tsumugi"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "静かな子だ。注文以外ほとんど喋らん。ラベンダーしか頼まない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ラベンダーですね。作ってきます"
         },
         {
           "speaker": "",
@@ -138,7 +133,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "傷のあるiPadを抱える、寡黙な常連客。それが、つむぎとの出会いだった。"
+          "text": "傷のあるタブレットを抱える、寡黙な常連客。今日は、あの猫の寝方を少し覚えた。"
         },
         {
           "type": "remember",
@@ -181,7 +176,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "小さな声。目を合わせず、iPadを胸の前に抱えるようにした。"
+            "text": "小さな声。目を合わせず、タブレットを胸の前に抱えるようにした。"
           },
           {
             "speaker": "",
@@ -197,12 +192,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今日も、つむぎがいつもの席にいる。iPadに向かって、黙々とペンを走らせている。"
+          "text": "今日も、つむぎがいつもの席にいる。タブレットに向かって、黙々とペンを走らせている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターで、別のお客さんの一台に火を入れていた。"
+          "text": "カウンターで、別のお客さんの１台に火を入れていた。"
         },
         {
           "speaker": "",
@@ -247,7 +242,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "気配に気づいたつむぎが、さっとiPadを伏せた。"
+          "text": "気配に気づいたつむぎが、さっとタブレットを伏せた。"
         },
         {
           "speaker": "hajime",
@@ -327,46 +322,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "でも、iPadを伏せていた手が、ほんの少しだけ緩んだように見えた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "帰り際。つむぎが、ひびの入ったiPadの画面をこちらにそっと向けた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "表示されていたのは、LIMEの連絡先のQRコードだった。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "sad",
-          "text": "……あの。よかったら、これ。……お店の、連絡用に、……それだけ、です"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "（……たぶん、これはつむぎちゃんにとって、すごく大きな一歩だ）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "……ありがとう。大事にする"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……っ。……だ、大事にするのは、連絡先で。……わたしじゃ、なくて……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "耳まで赤くして、つむぎは画面をぱっと伏せた。──こうして、彼女と連絡先を交換した。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_lime_contact_tsumugi"
+          "text": "でも、タブレットを伏せていた手が、ほんの少しだけ緩んだように見えた。"
         },
         {
           "type": "remember",
@@ -376,8 +332,50 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_research",
+          "next_true": "second_research_known",
+          "next_false": "second_research_new"
         }
-      ]
+      ],
+      "branches": {
+        "second_research_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り際、つむぎがタブレットを開き直した。今度は、店の下描きだった。"
+          },
+          {
+            "type": "jump",
+            "next_id": "ch1_tsumugi_research"
+          }
+        ],
+        "second_research_known": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……こういう煙も、応募の絵に入ってます"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの絵を見る時、煙の形も見てみるね"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。あとで、LIMEに送ります"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "連絡先を交換した時より、つむぎの声が少し長く続いた。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_third",
@@ -385,7 +383,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シフト中、炭を替えに行った。つむぎは、いつもの席でiPadを傾けている。"
+          "text": "シフト中、炭を替えに行った。つむぎは、いつもの席でタブレットを傾けている。"
         },
         {
           "type": "condition",
@@ -402,7 +400,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "そのiPad……描きにくくない？"
+          "text": "そのタブレット……描きにくくない？"
         },
         {
           "speaker": "tsumugi",
@@ -566,7 +564,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今日のつむぎは、いつもと少し様子が違った。iPadを机に伏せたまま、シーシャを吸っている。"
+          "text": "今日のつむぎは、いつもと少し様子が違った。タブレットを机に伏せたまま、シーシャを吸っている。"
         },
         {
           "speaker": "",
@@ -610,7 +608,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎがiPadを裏返した。傷のある画面にロックを解除して、アプリを開く。"
+          "text": "つむぎがタブレットを裏返した。傷のある画面にロックを解除して、アプリを開く。"
         },
         {
           "speaker": "",
@@ -689,7 +687,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……私は、iPadを触っている時、ずっと描いてるように見えてたと思います"
+          "text": "……私は、タブレットを触っている時、ずっと描いてるように見えてたと思います"
         },
         {
           "speaker": "tsumugi",
@@ -769,7 +767,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが慌ててiPadを胸に抱えた。いつもの防御姿勢。"
+          "text": "つむぎが慌ててタブレットを胸に抱えた。いつもの防御姿勢。"
         },
         {
           "speaker": "",
@@ -873,7 +871,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "いつもの席ではない。カウンターの前。iPadを両手で持って、はじめの方を向いている。"
+          "text": "いつもの席ではない。カウンターの前。タブレットを両手で持って、はじめの方を向いている。"
         },
         {
           "speaker": "tsumugi",
@@ -888,125 +886,23 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……見て、ほしいものがあります"
+          "text": "……今日は、渡したいものがあります"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎがiPadの画面をこちらに向けた。傷のある画面。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その傷の上に──1枚の絵が描かれていた。"
+          "text": "つむぎがタブレットの画面をこちらに向けた。傷のある画面。"
         },
         {
           "type": "show_cg",
           "cg_id": "cg_ch1_tsumugi_heart_art"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "tonariの店内。カウンターの温かい照明。シーシャのボトルが並ぶ棚。そして──煙。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "白い煙が、ゆっくりと天井に向かって昇っていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ふわりと広がり、光を透かし、やがて溶けるように消えていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その煙の中に、人影がある。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターに立って、お客さんにシーシャを出している──はじめの後ろ姿だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "画面の亀裂が、絵の中を斜めに横切っている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "でも──不思議なことに、その傷が絵の一部になっていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "まるで、煙が傷に沿って流れているように見える。"
-        },
-        {
-          "type": "choice",
-          "id": "tsumugi_fifth_art",
-          "choices": [
-            {
-              "text": "……すごい",
-              "next": "art_word"
-            },
-            {
-              "text": "（言葉が出ない）",
-              "next": "art_silent"
-            }
-          ]
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……これ、tonariだ。俺が……シーシャを出してる"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……はい"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……この傷の上に描いたのは、これが初めてです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……ずっと避けてました。傷のある場所には描けない、って思ってた"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "でも……はじめさんのシーシャの煙を描いてたら、気づいたら傷の上まで線を引いてて"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "傷があるのに──いや、傷があるからこそ、煙が自然に流れてるように見えた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎの声が、少しだけ震えていた。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "sad",
-          "text": "……ここに来る前に見ていたものも、入ってます"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "いつも見てるものも、前に見てたものも、自然に混ざって"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "これも、私の絵です、……前の猫も"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_art_seen",
+          "next_true": "fifth_art_known",
+          "next_false": "fifth_art_new"
         },
         {
           "type": "choice",
@@ -1040,7 +936,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが、iPadを差し出した。傷のある画面。その上に描かれた、はじめのtonari。"
+          "text": "つむぎが、タブレットを差し出した。傷のある画面。その上に描かれた、はじめのtonari。"
         },
         {
           "speaker": "tsumugi",
@@ -1050,12 +946,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "えっ、でも、これつむぎちゃんのiPad……"
+          "text": "えっ、でも、これつむぎちゃんのタブレット……"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……データです。送ります。……iPadは、まだ使います"
+          "text": "……データです。送ります。……タブレットは、まだ使います"
         },
         {
           "speaker": "tsumugi",
@@ -1070,7 +966,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今まで見たことのない、小さくて、でも確かな笑顔だった。"
+          "text": "うつむかずに笑うつむぎと、少しだけ目が合った。"
         },
         {
           "type": "hide_cg"
@@ -1083,7 +979,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "大会でも、ちゃんと一台ずつ作ってくるよ"
+          "text": "大会でも、ちゃんと１台ずつ作ってくるよ"
         },
         {
           "speaker": "tsumugi",
@@ -1113,6 +1009,10 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_art_seen"
         }
       ],
       "branches": {
@@ -1152,6 +1052,129 @@
             "speaker": "",
             "face": "",
             "text": "言葉の代わりに、深くうなずいた。それで十分、伝わった気がした。"
+          }
+        ],
+        "fifth_art_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "応募の夜に見せてもらった絵が、タブレットに開かれていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……また見られて嬉しい。俺の手も、ここにある"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日は、はじめさんにも持っていてほしくて"
+          }
+        ],
+        "fifth_art_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "tonariの店内。カウンターの温かい照明。シーシャのボトルが並ぶ棚。そして──煙。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "白い煙が、ゆっくりと天井に向かって昇っていく。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ふわりと広がり、光を透かし、やがて溶けるように消えていく。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その煙の中に、人影がある。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターに立って、お客さんにシーシャを出している──はじめの後ろ姿だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面の亀裂が、絵の中を斜めに横切っている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "でも──不思議なことに、その傷が絵の一部になっていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "まるで、煙が傷に沿って流れているように見える。"
+          },
+          {
+            "type": "choice",
+            "id": "tsumugi_fifth_art",
+            "choices": [
+              {
+                "text": "……すごい",
+                "next": "art_word"
+              },
+              {
+                "text": "（言葉が出ない）",
+                "next": "art_silent"
+              }
+            ]
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……これ、tonariだ。俺が……シーシャを出してる"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……傷を避けないで描いたのは、この絵が初めてです"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……ずっと避けてました。傷のある場所には描けない、って思ってた"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "でも……はじめさんのシーシャの煙を描いてたら、気づいたら傷の上まで線を引いてて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "傷があるのに──いや、傷があるからこそ、煙が自然に流れてるように見えた"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの声が、少しだけ震えていた。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "sad",
+            "text": "……ここに来る前に見ていたものも、入ってます"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "いつも見てるものも、前に見てたものも、自然に混ざって"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "これも、私の絵です、……前の猫も"
           }
         ]
       }
@@ -1262,7 +1285,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎはそれだけ言うと、耳まで赤くなって、またiPadに視線を落とした。"
+          "text": "つむぎはそれだけ言うと、耳まで赤くなって、またタブレットに視線を落とした。"
         },
         {
           "speaker": "",
@@ -1283,66 +1306,489 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会前日。閉店間際。最後の客が帰っていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎがいつもの席で会計を済ませ、ドアに向かった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──と、ドアの前で立ち止まった。"
+          "text": "大会前日。閉店間際、つむぎが鞄にタブレットをしまった。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はじめさん"
+          "text": "……明日、会場へ行きます。始まる時間、LIMEでもらったので"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ん？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎがこちらを向いた。iPadを胸に抱えたまま。いつもの距離より、少しだけ近い。"
+          "text": "ありがとう。つむぎちゃんは、もう応募できたんだよね"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
+          "text": "はい。私の方は、結果待ちです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……次は、はじめさんの番ですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "先に出した人に言われると、ちょっと緊張するな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "私も、送る時は緊張したので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "明日は、客席にいます。……いつもの席じゃないけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、終わったら感想、聞かせて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。ちゃんと、見てます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアの前で、つむぎが一度だけ振り返った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
           "text": "……頑張って"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "それだけ言って、ドアの向こうに消えた。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎちゃんの結果も出たら、教えてね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……そっちも、聞いてください"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが自分から声をかけてきたのは、初めてだった。"
+          "text": "ドアベルが鳴る。LIMEには、２人の途中の絵と試作のメモが並んでいた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_eve"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_research",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "バイトの合間、常連のつむぎがタブレットを抱えてカウンターに来た。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……ありがとう。頑張るよ）"
+          "text": "つむぎちゃん、どうしたの？"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_tsumugi"
+        },
+        {
+          "type": "set_flag",
+          "flag": "known_name_tsumugi"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あの。お店を、絵に描いてもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "絵？ いつも描いてるのとは、別の？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "イラストのコンテストに、出したくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……芸大でも、記憶や感覚を絵にする課題をやっていて。今回は、公募にも出してみようと思って"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "テーマが「{tsumugiContestTheme}」なんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "ここで過ごしてる時間を、１枚にしたいです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "たった一言。でも、それだけで胸の奥が静かに熱くなった。"
+          "text": "ひびの入った画面には、窓とカウンターの下描きがあった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【根性】が少し上がった。"
+          "text": "窓辺では、葉の耳と煙の尾の猫が眠っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この店を選んでくれたんだ。スミさん、いいですよね？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "構わん。客の顔を載せる時は、本人に聞けよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。顔は描かずに、手元や座ってるところを"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入賞したら、どうなるの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "選ばれた絵は、会場に飾ってもらえます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "画面じゃなくて、歩いてる人に見てもらいたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺は煙で、つむぎちゃんは絵か。２人とも大会だね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……はい。出すなら、賞も取りたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ペンを持つ指が、少しだけ強く曲がった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_tsumugi",
+          "next_true": "research_contact_known",
+          "next_false": "research_exchange"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "試作の日も送るよ。描きたい時に、見てもらえるように"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……じゃあ、下描きも送っていいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もちろん。途中のを見せ合おう"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……途中なら、まだ直せるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "LIMEのトークに、tonariの下描きが１枚届いた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_research"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_research"
         }
       ],
-      "growth_stats": {
-        "guts": 1
+      "branches": {
+        "research_exchange": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "取材の日とか、下描きの確認とか……LIMEでも、いいですか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "連絡先？ 俺のでよければ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "うちの店の宣伝になるなら、交換しとけ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、勤務中は接客が先だぞ"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。お仕事の邪魔は、しません"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎがQRコードを出す。読み取ると、煙の尾の猫が表示された。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "この猫、アイコンにもいるんだね"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……いつも、一緒なので"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_tsumugi"
+          }
+        ],
+        "research_contact_known": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "取材の日とか、下描きとか。LIMEに送っても、いいですか"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "うちの店の宣伝になるなら、連絡し合っとけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。せっかく交換したんだし、使おう"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_work_in_progress",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの合間、つむぎがカウンターの端に来た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……下描き、少し進みました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の光。空いた席。トングを持つ、はじめの手。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、俺だ。……俺の手って、こんなふうに動いてるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "渡す前に、一度お客さんの方を見るので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "その時の手が、描きたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙を描くって聞いてたから、手も見てるとは思わなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……煙だけだと、ここの絵にならなかったんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、まだ色を置いていない場所がいくつもある。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんは、どこが好きですか"
+        },
+        {
+          "type": "choice",
+          "id": "tsumugi_contest_draft",
+          "choices": [
+            {
+              "text": "窓辺の煙と猫",
+              "next": "draft_window"
+            },
+            {
+              "text": "カウンターの手元",
+              "next": "draft_hands"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の方も試作中。今日のは、どうだった？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……好きです。でも、描きながらだと少し強くて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっか。集中する時は、もう少し軽い方がいいんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ちょっと、今の台で試してみようか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの席へ戻り、炭を少し外へずらした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し待ってから、つむぎがもう一口吸う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どう？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……こっちの方が、描いていられます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを置くと、つむぎはペンを取った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "さっき止まっていた線が、画面の上を伸びていく。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "大会の１台は、ちゃんと手を止めて吸います"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、その時の感想も聞かせて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はじめさんも、完成した絵の感想を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめはメモの「つむぎちゃん」の横に、「描いている時」と書き足した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_progress"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_progress"
+        }
+      ],
+      "branches": {
+        "draft_window": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "窓辺の、この煙。猫が寝やすそうで"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……私も、ここは残したいです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは窓辺を拡大して、猫の背中に線を１本足した。"
+          }
+        ],
+        "draft_hands": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ここの手、好きだな。顔がなくても、仕事してるのがわかる"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……よかった。手だけ、何回も描き直したので"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは手元を拡大して、トングの先に線を１本足した。"
+          }
+        ]
       }
     }
   ]

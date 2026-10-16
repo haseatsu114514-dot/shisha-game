@@ -5,7 +5,7 @@ import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { BOND_FINALES } from "./bonds.js";
+import { relationshipStatus } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -102,30 +102,32 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin"];
-// 「友達」: 告白で友達のままを選んだか、恋愛対象と友情の締めくくりを迎えた
-const friendClosed = (id) => !!state.flags[`_friend_${id}`] || (!!BOND_FINALES[id]?.question && state.finales?.[id]?.route === "friend");
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"];
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
-    const bondLv = state.loveLevel?.[id] || 1;
-    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < (lover ? bondLv : lv) ? 100 : 0), {
-      className: "heart-row", bond: lover, label: lover ? "恋人との絆" : "好感度",
+    const relation = relationshipStatus(id);
+    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < lv ? 100 : 0), {
+      className: "heart-row", bond: lover, label: lover ? "恋人（♥5）" : "好感度",
     });
-    return el(`div.pp-row${lover ? ".lover" : ""}`, [
+    return el(`div.pp-row${lover ? ".lover" : ""}`, { dataset: { person: id, relation: relation.kind } }, [
       face ? el("img.pp-face", { src: face, alt: "" }) : el("span.pp-face.ph", { text: displayName(id, state)[0] }),
-      el("span.pp-name", { text: displayName(id, state) }),
-      el("span.pp-hearts", [
-        lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
-        hearts,
-        !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
+      el("div.pp-detail", [
+        el("div.pp-heading", [
+          el("span.pp-name", { text: displayName(id, state) }),
+          el("span.pp-hearts", [hearts, el("span.pp-relation", { text: relation.label })]),
+          state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
+        ]),
+        !lover && relation.label !== "友達" ? el("p.pp-next", { text: relation.hint }) : null,
       ]),
-      state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);
   });
-  return el("div.st-people", rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]);
+  return el("div.st-people", [
+    el("p.pp-guide", { text: "♥は親しさ。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友情でも♥5の特別なイベントと贈り物があり、友達・恋人になった後もLIMEで交流は続く。" }),
+    ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
+  ]);
 }
 
 /** 常連ノート: バイトで接客した客の記録（会った客は名前・回数・メモ、未接客は？？？） */
@@ -174,7 +176,7 @@ function itemsTab() {
     el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name }))),
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
-    el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "在庫なし" })]),
+    el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
     el("p.st-note", { text: "フレーバーは1箱50g。大会では持ち込んだ在庫から詰み、使った分だけ減る（課題フレーバーは主催支給）。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(

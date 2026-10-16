@@ -9,6 +9,7 @@ import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
+import { RIN_AWAY_DAY } from "../core/rules.js";
 
 const grades = () => Object.entries(DB.kuji?.grades || {})
   .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
@@ -50,7 +51,10 @@ export function kujiRows(rerender) {
   const rows = [];
   if (!state.flags._kuji_seen) {
     state.flags._kuji_seen = true;
-    rows.push(el("p.kuji-note", { text: `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+    const staffed = state.slot === 1 && state.day % 7 !== RIN_AWAY_DAY && state.met.rin;
+    rows.push(el("p.kuji-note", { text: staffed
+      ? `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
+      : "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。" }));
   }
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {

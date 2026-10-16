@@ -1,0 +1,19 @@
+{
+  "name": "hiyori-intro",
+  "baseURL": "http://127.0.0.1:8137/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "desktop",
+      "status": "passed"
+    },
+    {
+      "label": "mobile",
+      "status": "passed"
+    },
+    {
+      "label": "reduced-motion",
+      "status": "passed"
+    }
+  ]
+}

@@ -43,22 +43,23 @@ try {
       const rect = n => { const r = n.getBoundingClientRect(); return { x:r.x, y:r.y, right:r.right, bottom:r.bottom }; };
       const overlap = (a,b) => Math.min(a.right,b.right) > Math.max(a.x,b.x) + 1 && Math.min(a.bottom,b.bottom) > Math.max(a.y,b.y) + 1;
       return { labels: pins.map(p => p.querySelector(".sub-label").textContent),
-        faces: [...document.querySelectorAll(".pin-face")].map(f => ({ width: f.offsetWidth, loaded: f.complete && f.naturalWidth > 0 })),
+        faces: [...document.querySelectorAll(".pin-face")].map(f => ({ width: f.offsetWidth, owner: f.classList.contains("pin-owner-face"), loaded: f.complete && f.naturalWidth > 0 })),
         icons: ["shop","cafe","kannon","choizap","c_station","rest"].map(k => {
           const p = document.querySelector(`[data-test="pin-${k}"]`), symbol = p.querySelector(".pin-symbol"), name = p.querySelector(".sub-label");
-          return { k, vector: !!symbol?.querySelector("svg"), below: rect(name).y > rect(symbol).y, oldGlyph: !!p.querySelector(".label") };
+          const logo = p.querySelector(".store-logo");
+          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, below: rect(name).y > rect(symbol || logo).y, oldGlyph: !!p.querySelector(".label") };
         }),
         badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
-        gym: document.querySelector('[data-test="pin-choizap"] svg').innerHTML,
-        leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-kafuka"]') };
+        gym: document.querySelector('[data-test="pin-choizap"] .store-logo img').src,
+        leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
-    assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","カフェ","観音堂","チョイザップ","C.STATION","家"]);
-    assert(map.faces.every(f => f.width === 52 && f.loaded), JSON.stringify(map.faces));
-    assert(map.icons.every(i => i.vector && i.below && !i.oldGlyph));
+    assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
+    assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
+    assert(map.icons.every(i => (i.vector || i.logo) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
     assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));
-    assert.match(map.gym, /rect/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
+    assert.match(map.gym, /store_logos\/choizap\.png/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
@@ -98,12 +99,12 @@ try {
   await page.waitForSelector('[data-test="pin-cafe"]');
   assert.equal(await page.evaluate(() => T.spots.hasNewEvent(T.spots.spotById("cafe"))), false);
   assert.equal(await page.locator('[data-test="pin-cafe"] .evt-badge').count(),0, await page.locator('[data-test="pin-cafe"]').evaluate(n=>n.outerHTML));
-  assert.equal(await page.locator('[data-test="pin-cafe"] .sub-label').textContent(),"カフェ");
+  assert.equal(await page.locator('[data-test="pin-cafe"] .sub-label').textContent(),"喫茶こはく");
 
   // 通常会話の後でも、凛の未回答の質問が残っていれば印を残す。
   await page.evaluate(async () => {
     for(const [id,seq] of Object.entries(T.spots.VISIT_SEQ)) T.core.state.story[id]=seq.length;
-    T.core.state.affinity={}; T.core.state.flags._gym_member=true;
+    T.core.state.affinity={rin:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
     T.core.state.spotVisits={cafe:1,kannon:1,choizap:1,c_station:1}; await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');
@@ -143,5 +144,5 @@ try {
   assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARKへ行く");
   assert.doesNotMatch(await page.locator('[data-test="pin-shishark"]').textContent(),/2章|準備中/);
   assert.deepEqual(errors,[]);
-  console.log("[compact map] PASS: three sizes, true 1P, STATUS UP and smoke-free metal frame, bigger faces, facility symbols, round new-event marks, read events, closures, navigation, hidden chapter-2 shop");
+  console.log("[compact map] PASS: three sizes, true 1P, STATUS UP and smoke-free metal frame, store logos and owner badges, facility symbols, round new-event marks, read events, closures, navigation, hidden chapter-2 shop");
 } finally { await browser.close(); }

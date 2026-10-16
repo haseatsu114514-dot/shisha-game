@@ -1,0 +1,113 @@
+{
+  "scope": "CG-only original registration/art; current renderer/backgrounds shared with after fixtures",
+  "results": [
+    {
+      "device": "pc",
+      "id": "cg_ch1_sumi_training",
+      "dialogue": "ch1_day5_sumi_story",
+      "registered": true
+    },
+    {
+      "device": "pc",
+      "id": "cg_ch1_tsumugi_heart_art",
+      "dialogue": "ch1_tsumugi_fifth",
+      "registered": true
+    },
+    {
+      "device": "pc",
+      "id": "cg_ch1_minto_casual_reveal",
+      "dialogue": "ch1_minto_fifth",
+      "registered": true
+    },
+    {
+      "device": "pc",
+      "id": "cg_ch1_dr_kemuri_hook",
+      "dialogue": "ch1_tournament_after",
+      "registered": true
+    },
+    {
+      "device": "pc",
+      "id": "cg_ch1_nagumo_smile",
+      "dialogue": "ch1_tournament_reveal",
+      "registered": false
+    },
+    {
+      "device": "pc",
+      "id": "cg_ch1_tournament_battle",
+      "dialogue": "ch1_tournament_match",
+      "registered": true
+    },
+    {
+      "device": "pc",
+      "id": "cg_minto_casual",
+      "dialogue": "outing_minto_1",
+      "registered": false
+    },
+    {
+      "device": "pc",
+      "id": "cg_tsumugi_smoke_color",
+      "dialogue": "ch1_tsumugi_smoke_color",
+      "registered": false
+    },
+    {
+      "device": "pc",
+      "id": "cg_oneesan_first_smoke",
+      "dialogue": "ch1_tutorial_oneesan",
+      "registered": false
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_sumi_training",
+      "dialogue": "ch1_day5_sumi_story",
+      "registered": true
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_tsumugi_heart_art",
+      "dialogue": "ch1_tsumugi_fifth",
+      "registered": true
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_minto_casual_reveal",
+      "dialogue": "ch1_minto_fifth",
+      "registered": true
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_dr_kemuri_hook",
+      "dialogue": "ch1_tournament_after",
+      "registered": true
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_nagumo_smile",
+      "dialogue": "ch1_tournament_reveal",
+      "registered": false
+    },
+    {
+      "device": "touch",
+      "id": "cg_ch1_tournament_battle",
+      "dialogue": "ch1_tournament_match",
+      "registered": true
+    },
+    {
+      "device": "touch",
+      "id": "cg_minto_casual",
+      "dialogue": "outing_minto_1",
+      "registered": false
+    },
+    {
+      "device": "touch",
+      "id": "cg_tsumugi_smoke_color",
+      "dialogue": "ch1_tsumugi_smoke_color",
+      "registered": false
+    },
+    {
+      "device": "touch",
+      "id": "cg_oneesan_first_smoke",
+      "dialogue": "ch1_tutorial_oneesan",
+      "registered": false
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # 2026-10-08 保存済み新素材の本編採用
 
-PRT78／79・MAP03・CI49／50。オーナー「新登場カットの接続頼む　あと新立ち絵や背景は一旦採用」。はじめ・アダム・なる・博士のv1各5表情と、サメちゃん `kafuka-approved-blue-inner-v1/game-ready` の6ポーズを採用。元PNGをバイト一致でコピーし、丸アイコン・可逆WebP・manifestを更新。以前のruntimeは [採用記録](../../../../asset_sources/adoptions/ch1-art-20261008/README.md)へ保持。大須・栄の昼夜マップとPR226の専用登場背景14種も採用。
+PRT78／79・MAP03・CI49／50。オーナー「新登場カットの接続頼む　あと新立ち絵や背景は一旦採用」。はじめ・アダム・なる・博士のv1各5表情と、サメちゃん `samechan-approved-blue-inner-v1/game-ready` の6ポーズを採用。元PNGをバイト一致でコピーし、丸アイコン・可逆WebP・manifestを更新。以前のruntimeは [採用記録](../../../../asset_sources/adoptions/ch1-art-20261008/README.md)へ保持。大須・栄の昼夜マップとPR226の専用登場背景14種も採用。
 
 初遭遇のアゲハはDAY4の実台本に未知名・smileで接続。第2章用normalとは別既読。以下の「確認用／未採用／未反映」は過去時点の履歴であり、今回選択した素材の採用を更新する。未選択の髪色・衣装案を採用にはしない。店内背景19枚・透過台7枚は実PNGが無く、受領後の反映待ち（BG01）。
 
@@ -18,7 +18,7 @@ PRT75: 第1章の未制作分から南雲の5表情を生成。`asset_sources/po
 
 # 2026-10-07 最新：採用青グラデの6ポーズと顔アイコン
 
-オーナー「一枚目の青のグラデのやつ採用」「これで必要なパーツを作っていって」により、採用通常・腹話術を再利用し、笑顔／真剣／驚き／熱弁を1枚ずつ生成。[6ポーズと原寸の顔](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/review.png)、[暗背景](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/review-dark.png)、[原画・プロンプト・素材一式](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/README.md)、[実際の会話画面](../../../../asset_sources/reviews/kafuka-map-20261007/portraits-in-game.png)。衣装は選択済みの黒・淡い水色・アイボリー、髪は黒＋濃い青の内側グラデ。旧銀髪や全身青の案へ戻さない。デザイン採用と追加表情の仕上がり確認は区別する。
+オーナー「一枚目の青のグラデのやつ採用」「これで必要なパーツを作っていって」により、採用通常・腹話術を再利用し、笑顔／真剣／驚き／熱弁を1枚ずつ生成。[6ポーズと原寸の顔](../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/review.png)、[暗背景](../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/review-dark.png)、[原画・プロンプト・素材一式](../../../../asset_sources/portraits/samechan-approved-blue-inner-v1/README.md)、[実際の会話画面](../../../../asset_sources/reviews/samechan-map-20261007/portraits-in-game.png)。衣装は選択済みの黒・淡い水色・アイボリー、髪は黒＋濃い青の内側グラデ。旧銀髪や全身青の案へ戻さない。デザイン採用と追加表情の仕上がり確認は区別する。
 
 全6枚は896×1200 RGBA、共通倍率0.607095046854083、足元下端1174px、足元横差1px未満。顔アイコン160×160と可逆WebPを素材フォルダへ出力し、PNGと全RGBA画素一致。実画面で6ポーズが同じ配置枠、フィルターなし、ブラウザエラー0。参照一覧は34グループ132画像、既存の全SHA-256を保持。PRT69〜74。
 
@@ -30,13 +30,13 @@ PRT75: 第1章の未制作分から南雲の5表情を生成。`asset_sources/po
 
 PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい感じ　これを採用しよう」。①の通常原画は再生成せず採用デザインとして固定。PRT68：以前の顔をコロちゃんで隠す腹話術を同じ髪色へ統一して保存。黒髪を約3/4、青い内側を約1/4にする指示で、衣装は元の黒・淡青・アイボリーを保持。青紫・淡灰は未選択の履歴、茶色は未実行。ゲーム用5表情の差し替えは未実施。
 
-[通常・腹話術の採用配色](../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/selected-comparison.png)・[実参照と制作記録](../../../../asset_sources/portraits/kafuka-hair-color-variants-v1/README.md)。髪色の本人参照であり、画質の基準はみんと／あげはを保持。カットインCI11／12は既存4人＋サメちゃんの5人で、色・模様・順次登場アニメーション付きの[モックアップ](../../../../asset_sources/character-intros/personality-v2/README.md)を保存。サメちゃんは採用通常をそのまま使用し、別の人物画風へ描き直していない。
+[通常・腹話術の採用配色](../../../../asset_sources/portraits/samechan-hair-color-variants-v1/selected-comparison.png)・[実参照と制作記録](../../../../asset_sources/portraits/samechan-hair-color-variants-v1/README.md)。髪色の本人参照であり、画質の基準はみんと／あげはを保持。カットインCI11／12は既存4人＋サメちゃんの5人で、色・模様・順次登場アニメーション付きの[モックアップ](../../../../asset_sources/character-intros/personality-v2/README.md)を保存。サメちゃんは採用通常をそのまま使用し、別の人物画風へ描き直していない。
 
 ---
 
 # 2026-10-07 以前の保存：添付の服装と黒髪、通常／腹話術
 
-この段階の指示は、本人の髪を黒＋少量の青メッシュにし、添付で選んだ3案目の黒×淡い青の服装を保つこと（PRT61／62）。これを反映した通常と、王冠のコロちゃんを両手で顔の前へ上げて本人の顔を隠す腹話術を各1枚保存。[最新比較](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison.png)、[暗い背景](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison-dark.png)、[生成元・プロンプト・実参照・検証](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/README.md)。
+この段階の指示は、本人の髪を黒＋少量の青メッシュにし、添付で選んだ3案目の黒×淡い青の服装を保つこと（PRT61／62）。これを反映した通常と、王冠のコロちゃんを両手で顔の前へ上げて本人の顔を隠す腹話術を各1枚保存。[最新比較](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison.png)、[暗い背景](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison-dark.png)、[生成元・プロンプト・実参照・検証](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/README.md)。
 
 2枚の生成元は1024×1536 RGBA・無加工保存。確認用は896×1200・共通倍率0.607095046854083、足元下端1174px、足元横差0.061px未満。全身・原寸の顔／ぬいぐるみ・明暗背景を確認。従来の青衣装と銀髪の案は履歴として保持。参照一覧は29グループ112画像、既存のパスとSHA-256を保持。**衣装と髪色の方向は指定済み。仕上がりは確認用でゲーム内画像・設定は変更していない。** [PR #206](https://github.com/haseatsu114514-dot/shisha-game/pull/206) に4人の登場カットインと保存。
 
@@ -44,7 +44,7 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
 
 # 2026-10-07 以前の保存：青ベースのシスターと腹話術
 
-オーナーが3案目を選び、主色を青へ直す指示と「サメのぬいぐるみで顔隠して喋ってる感じ」の追加ポーズを依頼。フード・ジャケット・スカートを青にした通常1枚と、コロちゃんを両手で顔の前へ持ち上げて本人の顔全体を隠した腹話術1枚を生成。[青版2枚の比較](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/comparison-dark.png)、[実参照・プロンプト・生成元・検証](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/README.md)。本人の青い瞳・ギザ歯・髪と成人の体格、王冠のコロちゃんを引き継ぐ。
+オーナーが3案目を選び、主色を青へ直す指示と「サメのぬいぐるみで顔隠して喋ってる感じ」の追加ポーズを依頼。フード・ジャケット・スカートを青にした通常1枚と、コロちゃんを両手で顔の前へ持ち上げて本人の顔全体を隠した腹話術1枚を生成。[青版2枚の比較](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/comparison-dark.png)、[実参照・プロンプト・生成元・検証](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/blue-sister-v1/README.md)。本人の青い瞳・ギザ歯・髪と成人の体格、王冠のコロちゃんを引き継ぐ。
 
 2枚の生成元は1024×1536 RGBA、無加工保存。確認用は896×1200・共通倍率0.607095046854083、足元下端1174px、足元の横差0.647px未満。四辺alpha>=16なし。全身と原寸、明暗背景を確認。**3案目の方向は選択済みで、青版の仕上がりと追加ポーズは確認用。ゲーム内の立ち絵・丸アイコン・台詞・設定は変更していない。** 参照一覧は27グループ106画像、既存の画像とSHA-256を保持。要望台帳PRT59／60。
 
@@ -52,7 +52,7 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
 
 # 2026-10-07 追記：サメちゃんのストリートシスター3案
 
-オーナー「3パターン作ってみて まずは一枚ずつ」で、服・髪・配色の変更を含む3案を通常表情の全身立ち絵で制作。[全身と原寸の顔](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/comparison-dark.png)、[保存先・実参照・プロンプト](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/README.md)、[引き継ぎ](../../../../docs/kafuka_gothic_shark_handoff.md)。3回の生成元を無加工保存。確認用は896×1200 RGBA、全身の同じ高さと足元へ拡縮・配置した。画像の描き足しやアルファ閾値処理はしていない。
+オーナー「3パターン作ってみて まずは一枚ずつ」で、服・髪・配色の変更を含む3案を通常表情の全身立ち絵で制作。[全身と原寸の顔](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison-dark.png)、[保存先・実参照・プロンプト](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/README.md)、[引き継ぎ](../../../../docs/samechan_gothic_shark_handoff.md)。3回の生成元を無加工保存。確認用は896×1200 RGBA、全身の同じ高さと足元へ拡縮・配置した。画像の描き足しやアルファ閾値処理はしていない。
 
 本人の青い瞳・ギザ歯・王冠のコロちゃんは共通。①黒／アイボリー／青緑の深海シスター、②黒／アイボリー／ボルドーのサメ映画好き、③チャコール／アイボリー／くすんだ水色のスケーター風。画風の確定基準は採用済みのみんと・あげは。**3案は未採用でゲーム素材・設定は変更していない。** 3案を追加した時点の参照一覧は22グループ78画像。後にPR #204の4人分の保存素材と最新mainを取り込み、通常／腹話術の青版を追加した一覧は27グループ106画像。既存の画像・SHA-256は保持。
 
@@ -205,8 +205,8 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
 
 ## サメちゃん：基本4表情は採用済み・組み込み
 
-- **サメちゃん（かふか／`kafuka`）基本4差分 v2**：通常／笑顔／真剣／驚き。2026-10-03、オーナー「はい」で採用。
-  [生成シート](kafuka-v2-sheet.png)、[修正プロンプト](kafuka-v2-prompt.txt)、[生成元と参照画像の役割・SHA-256](kafuka-generation.json)。
+- **サメちゃん（波多野なぎさ／内部ID `samechan`）基本4差分 v2**：通常／笑顔／真剣／驚き。2026-10-03、オーナー「はい」で採用。
+  [生成シート](samechan-v2-sheet.png)、[修正プロンプト](samechan-v2-prompt.txt)、[生成元と参照画像の役割・SHA-256](samechan-generation.json)。
   銀髪と青いメッシュ、青い瞳、サメフード、青い上着、黒タイツ、厚底スニーカー、王冠と星付きリボンのサメぬいぐるみを保ち、小さな手・肩・首の動きを付けた。
   笑顔は元の両目を閉じたギザ歯の笑顔。真剣は小さな閉じた口と説明する指先、驚きは目を開いて手を軽く広げる。
   過去の全制作セットを目視し、代表の原寸・出力の原寸と2倍表示で質感を比較。本人の実画像をデザイン用、みんと営業姿とあげはの採用済みPNGを画質・質感用に添付。
@@ -240,7 +240,7 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
   最新v7の原寸1024px／2倍2048px・補間なし、白／暗い背景、390px幅の比較とブラウザエラーなしを確認。
   v7提示前には参照一覧32画像・採用済み8／確認待ち2グループと初期基準15枚の不変を確認。採用・5表情制作後は12グループ42画像を採用済みとして記録し、全パス・SHA-256を再確認。
   **通常v7を採用し、笑顔／真剣／驚き／悲しみを同じ人物・衣装で追加生成。5枚を共通倍率で896×1200へ組み込み。** 笑顔だけ目を閉じて頬に手を添える柔らかい笑いで可愛いギャップを表現。
-  [5表情比較](rin-five-review.html)、[4差分の生成元・プロンプト・実添付参照](rin-expressions-generation.json)、[配置記録](rin-kafuka-final-integration.json)を保存。
+  [5表情比較](rin-five-review.html)、[4差分の生成元・プロンプト・実添付参照](rin-expressions-generation.json)、[配置記録](rin-samechan-final-integration.json)を保存。
   `spriteScale`・年齢・身長は維持。外見メモと再制作用の `visual_concepts` を新しい髪型・長さ・紙のない胸元に合わせ、台詞・性格・イベントは変更しない。表示用WebPと配布版PNGは原寸・透過・色を可逆で保持。
   PRは [#187](https://github.com/haseatsu114514-dot/shisha-game/pull/187)。2026-10-04に検証後のマージ指示を受領。mainへの反映結果はPR履歴を参照。
 
@@ -248,13 +248,13 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
   星の瞳と説明する指の初案v1に、オーナー「もっと大げさでコミカルにする」。v1は採用しない。
   大きな星の瞳・大きく開いた口へ修正したv2に、最新指示「さめちゃんは5枚目はちょっとオーバーすぎ　可愛さも残しつつ大袈裟なのがいい　あもはぁはぁ息切らしながら語ってる感じ」。
   **最新v3は可愛い青い虹彩と瞳孔へ戻し、赤面・小さな汗と吐息で、息切れしながらサメの話を熱弁する表情。** ぬいぐるみを抱える前のめりの仕草と指さしを保ち、巨大な星と大口を抑えた。
-  [修正版v3](kafuka-excited-v3.png)、[修正プロンプト](kafuka-excited-v3-prompt.txt)、[5表情比較](kafuka-five-review.html)、[生成元・参照・修正指示](kafuka-excited-generation.json)。
-  [初案v1](kafuka-excited-v1.png)と[初案プロンプト](kafuka-excited-v1-prompt.txt)、旧案v2と[生成記録](kafuka-excited-v2-generation.json)は制作履歴として残す。
+  [修正版v3](samechan-excited-v3.png)、[修正プロンプト](samechan-excited-v3-prompt.txt)、[5表情比較](samechan-five-review.html)、[生成元・参照・修正指示](samechan-excited-generation.json)。
+  [初案v1](samechan-excited-v1.png)と[初案プロンプト](samechan-excited-v1-prompt.txt)、旧案v2と[生成記録](samechan-excited-v2-generation.json)は制作履歴として残す。
   全制作セットを目視し、本人の採用済み4枚と採用済みみんと・あげはを実画像で添付。
   基本4枚と同じ全身高へ揃えた確認用PNGを用意し、原寸／2倍・補間なしの顔・髪・衣装、白／暗い背景の透過を比較。生成元は四辺にalpha>=24の画素なし。
   v3提示前の参照一覧は採用済み8グループ＋確認待ち2グループ、32画像。採用後の最新一覧は12グループ42画像、確認待ち0。
   **追加1枚v3を採用し、既存エンジンの `excited` キーで組み込み。基本4枚はそのまま保持。**
-  既存の `kafuka_shop_repeat_1` のサメ映画を熱弁する1行にだけ `excited` を指定。台詞の文面・イベント・解放条件は変更しない。
+  既存の `samechan_shop_repeat_1` のサメ映画を熱弁する1行にだけ `excited` を指定。台詞の文面・イベント・解放条件は変更しない。
   台詞・性格設定・イベントの変更依頼ではない。
 
 ## 2026-10-04 最終検証
@@ -262,15 +262,15 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
 凛5枚・サメちゃん5枚・つむぎ6枚の計16枚を896×1200 RGBAで確認。PNG/WebPは透過を含む全RGBA画素一致。足元の下端はセット内で一致し、横差は凛0.853px・サメちゃん0.714px・つむぎ0.895px未満。凛・サメちゃんの足元整列dry-runは変更0枚。
 実会話の全16表情は同一配置、頭の見切れなし、ブラウザエラー0。既存のサメ映画を語る行で `excited` が表示されることも確認。
 manifest・旧版データ・配布HTMLのビルド、旧版の身長回帰、現行第1章のセーブ／ロード・敗北4位→再挑戦1位100点でクリアが合格。配布HTMLへ凛5枚・サメちゃん5枚の原寸PNGがバイト一致で埋め込まれることを確認。
-参照一覧12グループ42画像のパスとSHA-256、初期採用済み15枚の不変、原寸／2倍・明暗背景・390px幅の比較を確認。全41ファイルのlintはERROR 0 / WARN 254、かふか対象はERROR 0 / 既存WARN 46。
-凛の外見メモと再制作プロンプトを新デザインに合わせ、年齢・身長・`spriteScale`は維持。かふかの既存1行の表情キー以外、台詞の文面・イベント・解放条件は維持。対象外キャラのmanifest値、サメちゃん基本4枚、つむぎ6枚はこの仕上げで変更しない。
+参照一覧12グループ42画像のパスとSHA-256、初期採用済み15枚の不変、原寸／2倍・明暗背景・390px幅の比較を確認。全41ファイルのlintはERROR 0 / WARN 254、サメちゃん対象はERROR 0 / 既存WARN 46。
+凛の外見メモと再制作プロンプトを新デザインに合わせ、年齢・身長・`spriteScale`は維持。サメちゃんの既存1行の表情キー以外、台詞の文面・イベント・解放条件は維持。対象外キャラのmanifest値、サメちゃん基本4枚、つむぎ6枚はこの仕上げで変更しない。
 
-[詳細記録](rin-kafuka-final-integration.json)。制作・組み込み・検証は完了。オーナー「全て完了したらマージ」に従いPR #187をマージする。mainの実施結果はPR履歴を参照。配布HTML約61.8MBはローカル検証済みで、公開時にPages CIが再構築する。
+[詳細記録](rin-samechan-final-integration.json)。制作・組み込み・検証は完了。オーナー「全て完了したらマージ」に従いPR #187をマージする。mainの実施結果はPR履歴を参照。配布HTML約61.8MBはローカル検証済みで、公開時にPages CIが再構築する。
 
 ## 保留・今後
 
 - 凛5枚とサメちゃん5枚は採用・組み込み済み。オーナーのマージ指示を受領。最終検証は完了。マージ実施結果はPR #187の履歴を参照。
-- **以前の次チャットの制作順：サメちゃん（`kafuka`）→ましろ（`mashiro`）→すみさん（`sumi`）。**
+- **以前の次チャットの制作順：サメちゃん（`samechan`）→ましろ（`mashiro`）→すみさん（`sumi`）。**
   オーナー「次のチャットではサメちゃん、ましろ、すみさんを作りたいです」。
   サメちゃん基本4枚と追加5枚目v3は採用・組み込み済み。
   一度凛へ対象を変更した後、2026-10-04「次のキャラ作りに進む」でましろを再開し、確認用5表情v1を保存。すみさんは次の予定として保留。
@@ -292,6 +292,16 @@ manifest・旧版データ・配布HTMLのビルド、旧版の身長回帰、�
 - 元の私服の表情キーは `ura_normal / ura_smile / ura_smug / ura_surprise / ura_sad`。
 - 採用済み15差分・スキル・つむぎ確認資料の保存は [PR #184](https://github.com/haseatsu114514-dot/shisha-game/pull/184) でマージ済み。
   初期の採用済み画風を固定して参照できるコミット：`cd76b8cf640bca11bf3b6afe2420484823247505`。
-- サメちゃんのプロフィールは `data/dialogue/kafuka.json` の `profile`。IDは `kafuka`。
+- サメちゃんのプロフィールは `data/dialogue/samechan.json` の `profile`。IDは `samechan`。
   現在の採用済み立ち絵は通常／笑顔／真剣／驚き／息切れするコミカルな熱弁の5枚。ましろは通常／笑顔／真剣／驚き／悲しみ、
   すみさんは通常／笑顔／真剣／驚き／考えるの各5枚。実際のファイルを列挙して最新状態も確認する。
+
+## 2026-10-11 ひより・レース衣装
+
+オーナー選択「今のレースブラウス案」。現在5表情と学生時代1表情を生成・本編へ接続。現在はポニーテール、過去はミディアムヘア。黒パンツ、白レース、名札なし。原画・指示・RGBA比較は `asset_sources/portraits/hiyori-office-v1/`、本編とLIME・PC／スマホ確認は `asset_sources/hiyori-encounters-20261011/`。GitHubの反映状況はHY10〜17の台帳とPRを参照。
+
+## 2026-10-14 サラリーマン #508（Draft確認用）
+
+承認済み6場面と同時に、41歳のsalaryman normal／smileを生成・必要な4場面へ接続するようユーザーが指定。原画・実プロンプト・参照役割・配置は `asset_sources/portraits/salaryman-508-v1/`。初稿の顔が若く見えたため通常を年齢修正し、その原画から控えめな微笑みを生成した。現行mainに本人の採用立ち絵はなく、desktop_backupは外見参考のみ。みんと・アゲハは現行画質、スミさんは男性の年齢感の参考。
+
+共通縮小倍率・足元の896×1200 RGBA、本人のみのmanifest／可逆WebP。`style-references.json` はpendingとして登録。ユーザー確認用Draftへの接続は今回の明示指示による。main採用・マージ・公開・Issue終了は行わない。

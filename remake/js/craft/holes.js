@@ -4,15 +4,17 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
+import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
+const foilSurface = () => artImg("foil_interactive_top.png", 430, "foil-surface", { h: 430 });
 
 async function chooseTemplate(panel, cs) {
   const templates = HOLE_TEMPLATES.filter((template) => cs.availableHoleTemplateIds
@@ -44,7 +46,7 @@ async function chooseTemplate(panel, cs) {
     ]),
   ]));
   function draw() {
-    preview.replaceChildren();
+    preview.replaceChildren(foilSurface());
     preview.setAttribute("aria-label", `${selected.label}：${templateCountsLabel(selected)}`);
     RINGS.forEach((ring) => preview.append(el("div.foil-ring", {
       style: { width: `${ring.r * 100}%`, height: `${ring.r * 100}%`, opacity: selected.counts[ring.id] ? "1" : ".2" },
@@ -52,7 +54,7 @@ async function chooseTemplate(panel, cs) {
     for (const ring of ringsForTemplate(selected)) {
       for (let k = 0; k < ring.targets; k++) {
         const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
-        preview.append(el("i.foil-hole", { style: {
+        preview.append(el("i.foil-marker.planned", { style: {
           left: `${50 + Math.cos(a) * ring.r * 50}%`, top: `${50 + Math.sin(a) * ring.r * 50}%`,
         }, dataset: { ring: ring.id } }));
       }
@@ -73,6 +75,7 @@ async function chooseTemplate(panel, cs) {
 }
 
 export async function runHoles(cs) {
+  await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
   const template = await chooseTemplate(panel, cs);
@@ -90,7 +93,7 @@ export async function runHoles(cs) {
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
   const cursor = el("div.foil-cursor");
-  disc.append(...ringEls, markers, holesLayer, cursor);
+  disc.append(foilSurface(), ...ringEls, markers, holesLayer, cursor);
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const scoreEl = el("div.hr-score");
@@ -107,7 +110,11 @@ export async function runHoles(cs) {
   const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
   const doneBtn = el("button.btn.small.ghost", { text: "この配置で仕上げる", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
-    el("div.hr-stage", [disc]),
+    el("div.hr-stage", [disc, el("div.foil-legend", { "aria-label": "穴あけの目印" }, [
+      el("span", [el("i.foil-marker.cur.next", { "aria-hidden": "true" }), "次の目標"]),
+      el("span", [el("i.foil-cursor", { "aria-hidden": "true" }), "動く光"]),
+      el("span", [el("i.foil-hole", { "aria-hidden": "true" }), "開いた穴"]),
+    ])]),
     el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
@@ -142,22 +149,45 @@ export async function runHoles(cs) {
   const complete = () => templateComplete(state);
   const ringComplete = () => state[ri].taken.every(Boolean);
 
+  let currentMarkers = [];
+  let highlighted = null;
+  const highlightNext = () => {
+    const ring = state[ri], a = cursorAngle(), turn = Math.PI * 2;
+    // 近くの判定範囲内では実際に採点される点、それ以外は次に光が通る点を案内する。
+    // 表示だけの目安で、穴を開ける順番・判定窓には制約を加えない。
+    const ranked = currentMarkers.map(entry => {
+      const angle = targetAngle(ring, entry.k), distance = angDiff(a, angle);
+      return { node: entry.node, priority: distance <= goodWin * DEG ? distance - turn : ((angle - a) % turn + turn) % turn };
+    });
+    const next = ranked.reduce((best, entry) => !best || entry.priority < best.priority ? entry : best, null)?.node || null;
+    if (next !== highlighted) {
+      highlighted?.classList.remove("next");
+      next?.classList.add("next");
+      highlighted = next;
+    }
+    cursor.hidden = ringComplete();
+  };
   const drawMarkers = () => {
     markers.replaceChildren();
+    currentMarkers = [];
+    highlighted = null;
     state.forEach((ring, idx) => {
       ring.taken.forEach((tk, k) => {
         if (tk) return;
         const m = el(`i.foil-marker${idx === ri ? ".cur" : ""}`);
         place(m, targetAngle(ring, k), ring.r);
         markers.append(m);
+        if (idx === ri) currentMarkers.push({ node: m, k });
       });
     });
     ringEls.forEach((e, idx) => e.classList.toggle("cur", idx === ri));
     ringLabel.textContent = `${state[ri].label}（${state[ri].taken.filter(Boolean).length}/${state[ri].targets}）`;
     role.textContent = state[ri].role;
+    highlightNext();
   };
   const addHoleDot = (a, r, kind) => {
     const h = el(`i.foil-hole.${kind}`);
+    h.style.setProperty("--scratch-angle", `${(holesLayer.childElementCount * 137) % 180 - 90}deg`);
     place(h, a, r);
     holesLayer.append(h);
   };
@@ -192,7 +222,7 @@ export async function runHoles(cs) {
     const ring = state[ri];
     if (ring.closed || ring.taken.every(Boolean)) return;
     const a = cursorAngle();
-    SE.punch();
+    SE.foilPunch();
     // 一番近い「まだ開けていない目印」
     let best = -1, bestD = Infinity;
     ring.taken.forEach((tk, k) => {
@@ -213,7 +243,6 @@ export async function runHoles(cs) {
       tally[kind]++;
       combo++;
       report(kind === "perfect" ? "EXCELLENT" : "GOOD", kind);
-      kind === "perfect" ? SE.perfect() : SE.good();
     } else {
       ring.holes.push({ a, d: goodWin * 1.5 });
       ring.extra++;
@@ -221,13 +250,15 @@ export async function runHoles(cs) {
       if (kind === "close") { tally.tooClose++; report("TOO CLOSE", "bad"); }
       else { tally.miss++; report("ズレた…", "miss"); }
       if (ring.id === "inner") tally.tooMany++;
-      SE.miss();
     }
     addHoleDot(a, ring.r, kind);
+    setBenchHoleAction(cs, {
+      dots: state.flatMap(rg => rg.holes.map(h => posOf(h.a, rg.r))), target: posOf(a, ring.r),
+    });
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((h) => h.d <= perfWin) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
-      SE.just();
+      SE.perfect();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
     }
@@ -240,6 +271,7 @@ export async function runHoles(cs) {
     elapsed = (now - t0) / 1000;
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
+    highlightNext();
     timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
     if (elapsed >= limit && complete()) return finish();
     hud();

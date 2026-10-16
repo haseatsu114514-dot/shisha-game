@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
@@ -28,14 +29,17 @@ const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new E
 const context = vm.createContext({ console, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
 const noop = () => {}, mods = new Map();
 const values = {
-  "util.js": { el, sleep: async () => {}, fitOneLine: () => {} },
+  "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
+  "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
+  "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
-  "ui.js": { layers }, "state.js": { state, save: noop },
-  "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
-  "audio.js": { SE: { phone: noop, select: noop, click: noop, cancel: noop } },
-  "engine.js": { hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
+  "ui.js": { layers }, "state.js": { state, save: noop, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
+  "stats.js": { gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
+  "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
+  "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "rules.js": { TOURNAMENT_DAY: 14 },
-  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id) }, "bus.js": { emit: noop },
+  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
+    isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
 };
@@ -51,7 +55,7 @@ const phone = phoneModule.namespace, romance = (await load("romance.js")).namesp
 const clone = (v) => JSON.parse(JSON.stringify(v));
 function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
-  Object.assign(state, { chapter: 1, phase: "daily", day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
+  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
   db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; playHook = async () => {};
   for (const layer of Object.values(layers)) layer.replaceChildren();
 }
@@ -125,6 +129,48 @@ state.day = 6; assert.equal(phone.deliverMorning({ fixedNight: () => false }), 1
 reset(); db.lime = []; state.pendingInvite = { day: 5, event: "date_minto", sender: "minto", slot: 1 };
 phone.expireInvitations(); assert.equal(state.pendingInvite, null); assert.equal(state.inbox.length, 1); assert(state.inbox[0].log.some((l) => /約束/.test(l.note || "")));
 
+// #485: 承諾後の所持金不足は、予約と再案内の抑止を一緒に解除する。既読・報酬は戻さない。
+reset(); const moneyInvite = invitation("money", "minto", { important: true }); db.lime = [moneyInvite];
+phone.deliverMorning(); session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session);
+const moneyBooking = state.pendingInvite, moneyHistory = state.inbox[0], moneyGains = gains.length;
+state.money = 0; phone.rescheduleInvitation(moneyBooking, "所持金が足りなかったため、約束を別の日に改めることにした");
+assert.equal(state.pendingInvite, null); assert.equal(moneyHistory.result, "expired"); assert(moneyHistory.needsResend);
+assert(!state.flags._invited_money); assert(moneyHistory.read); assert(state.limeRead.includes("money"));
+assert(moneyHistory.log.some((l) => /所持金が足りなかった/.test(l.note || ""))); assert.equal(gains.length, moneyGains);
+state.day = 7; state.money = 30000; assert.equal(phone.deliverMorning(), 1); assert.equal(phone.deliverMorning(), 0);
+assert.equal(state.inbox.at(-1).originId, "money");
+session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session);
+const retriedBooking = state.pendingInvite, retriedHistory = state.inbox.at(-1);
+phone.completeInvitation(retriedBooking); state.pendingInvite = null;
+assert(retriedHistory.completed); assert.equal(retriedHistory.result, "accepted"); assert(!retriedHistory.needsResend);
+state.day = 8; phone.deliverMorning(); assert.equal(state.inbox.filter(i => i.originId === "money").length, 2); assert.equal(retriedHistory.log.length, 2);
+
+// 予約だけ消えていた旧セーブは、未完了の重要な招待だけを救済する。後の辞退や再案内を上書きしない。
+for (const event of ["ch1_minto_fifth", "ch1_minto_private_1", "ch1_adam_outing_dagurikura", "outing_tsumugi_1", "ch1_minto_bond_finale", "hiyori_tonari_return"]) {
+  reset({ day: 7 }); const source = allMessages.find(m => m.accept_event === event);
+  db.lime = [source]; const history = item({ ...source, important: false }, { day: 6, read: true, done: true, result: "accepted" });
+  state.inbox.push(history); state.limeRead.push(source.id); state.flags[`_invited_${source.id}`] = true;
+  phone.expireInvitations(); assert.equal(history.result, "expired", event); assert(history.needsResend, event);
+  assert(!state.flags[`_invited_${source.id}`], event); assert(history.read, event); assert(state.limeRead.includes(source.id), event);
+  const logs = history.log.length; phone.expireInvitations(); assert.equal(history.log.length, logs, event);
+}
+for (const [event, done] of [
+  ["ch1_minto_fifth", () => state.flags._minto_fifth_done = true],
+  ["ch1_minto_private_1", () => state.flags._minto_private_done = true],
+  ["ch1_adam_outing_dagurikura", () => state.flags._adam_arcade_done = true],
+  ["outing_tsumugi_1", () => state.flags._outing_done_tsumugi = true],
+  ["ch1_minto_bond_finale", () => state.finales = { minto: { route: "friend" } }],
+  ["hiyori_tonari_return", () => state.flags._hiyori_tonari_return_done = true],
+]) {
+  reset({ day: 7 }); const source = allMessages.find(m => m.accept_event === event); db.lime = [source]; done();
+  const history = item(source, { day: 6, read: true, done: true, result: "accepted" }); state.inbox.push(history);
+  state.flags[`_invited_${source.id}`] = true; phone.expireInvitations();
+  assert.equal(history.result, "accepted", event); assert(!history.needsResend, event); assert(state.flags[`_invited_${source.id}`], event);
+}
+reset(); db.lime = [moneyInvite]; state.inbox.push(item(moneyInvite, { day: 5, done: true, result: "accepted" }),
+  item({ ...moneyInvite, id: "money_retry_c1_d6", origin_id: "money" }, { originId: "money", done: true, result: "declined" }));
+state.flags._invited_money = true; phone.expireInvitations(); assert.equal(state.inbox[0].result, "accepted"); assert(state.flags._invited_money);
+
 // 閉店待ちとしてslot2へ送った予約は、当日は過去slotや固定営業イベントとの衝突で消さない。
 for (const event of ["outing_minto", "date_minto"]) {
   reset({ slot: 2 }); const msg = invitation("queued", "minto", { accept_event: event, after_close: true }); db.lime = [msg];
@@ -137,6 +183,34 @@ for (const event of ["outing_minto", "date_minto"]) {
 reset({ slot: 2 }); const notQueued = invitation("notQueued", "minto", { after_close: true }); db.lime = [notQueued];
 state.inbox.push(item(notQueued, { read: true, done: true, result: "accepted" })); state.pendingInvite = { day: 6, originId: "notQueued", event: notQueued.accept_event, sender: "minto", slot: 1, afterClose: true };
 phone.expireInvitations(); assert.equal(state.pendingInvite, null);
+
+// #326: 未読・既読保留・旧版失効・保存済み予約の店LIMEは同日夜も可。日付/休日/私的外出は守る。
+const shopMsg = allMessages.find(m => m.id === "lime_minto_day4");
+for (const read of [false, true]) {
+  reset({ day: 4, slot: 0 }); const late = item(clone(shopMsg), { read }); state.inbox.push(late);
+  if (read) state.limeRead.push(shopMsg.id);
+  state.slot = 1; phone.expireInvitations({ fixedNight: () => true });
+  assert(!late.done); session = phone.openLime({ sender: "minto", fixedNight: () => true });
+  await click("reply-0"); await closeThread(session);
+  assert.equal(state.pendingInvite.slot, 1); assert.equal(state.pendingInvite.day, 4);
+  const reserved = clone(state.pendingInvite); phone.expireInvitations({ fixedNight: () => true });
+  assert.deepEqual(clone(state.pendingInvite), reserved); assert.equal(late.result, "accepted");
+  const count = gains.length; session = phone.openLime({ sender: "minto" }); await closeThread(session);
+  assert.equal(gains.length, count); assert.deepEqual(clone(state.pendingInvite), reserved);
+  state.slot = 2; phone.expireInvitations(); assert.equal(state.pendingInvite, null);
+}
+reset({ day: 4, slot: 1 }); const oldExpired = item(clone(shopMsg), { read: true, done: true, result: "expired" });
+state.inbox.push(oldExpired); phone.expireInvitations(); assert(!oldExpired.done); assert.equal(oldExpired.replyState, "waiting");
+reset({ day: 4, slot: 1 }); const oldBooking = item(clone(shopMsg), { read: true, done: true, result: "accepted" });
+state.inbox.push(oldBooking); state.pendingInvite = { day: 4, slot: 0, originId: shopMsg.id, sender: "minto", event: shopMsg.accept_event };
+phone.expireInvitations({ fixedNight: () => true }); assert.equal(state.pendingInvite.slot, 1); assert.equal(oldBooking.result, "accepted");
+for (const scenario of [{ day: 5, slot: 1, itemDay: 4 }, { day: 6, slot: 0, itemDay: 6 }, { day: 4, slot: 2, itemDay: 4 },
+  { day: 4, slot: 1, itemDay: 4, flags: { _temporary_closed_minto: "1:4" } }]) {
+  reset(scenario); const unavailable = item(clone(shopMsg), { day: scenario.itemDay }); state.inbox.push(unavailable);
+  phone.expireInvitations(); assert.equal(unavailable.result, "expired"); assert.equal(state.pendingInvite, undefined);
+}
+reset({ day: 4, slot: 1 }); const lunchOnly = item(invitation("day_outing", "tsumugi", { time_slot: "noon", accept_event: "outing_tsumugi_1" }));
+state.inbox.push(lunchOnly); phone.expireInvitations(); assert.equal(lunchOnly.result, "expired");
 
 // 雑談の返事は小さな加点。0点を尊重し、読むだけでは返信報酬を付けない。
 for (const pts of [0, 1, 2]) {
@@ -229,7 +303,7 @@ for (const known of [false, true]) {
   assert(confessionIndex > 0); assert(state.flags._minto_name_known);
   if (known) assert.equal(introIndex, -1);
   else { assert(introIndex > 0 && introIndex < confessionIndex); const lines = plays[introIndex][0].lines;
-    assert(lines.some((line) => line.speaker === "minto" && /緑川栞.*二人の時/.test(line.text)));
+    assert(lines.some((line) => line.speaker === "minto" && /緑川栞.*２人の時/.test(line.text)));
     assert(lines.some((line) => line.speaker === "hajime" && line.text.startsWith("栞さん")));
   }
 }
@@ -258,7 +332,7 @@ for (const id of ["lime_naru_day3", "lime_outing_adam_1", "lime_adam_arcade_afte
   assert.equal(invitationById[id].time_slot, "night"); assert(invitationById[id].after_close, id);
 }
 assert.equal(invitationById.lime_minto_day4.time_slot, "noon"); assert(!invitationById.lime_minto_day4.after_close); assert.equal(invitationById.lime_minto_day4.closed_on, undefined);
-reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages[0].text.includes("休みにした"));
+reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
 for (const day of [6, 11]) {
@@ -288,5 +362,24 @@ reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _min
 const oldWrongDay = item(oldHoliday, { read: true, done: true, result: "accepted" }); state.inbox.push(oldWrongDay);
 state.pendingInvite = { day: 11, originId: oldHoliday.id, event: oldHoliday.accept_event, sender: "minto", slot: 0 };
 phone.expireInvitations({ fixedNight: () => false }); assert.equal(state.pendingInvite, null); assert(oldWrongDay.needsResend); assert(oldWrongDay.log.some((l) => /別の日/.test(l.note || "")));
+
+// 第2章は通算日を保存し、朝の条件と記念日だけを適切な時計で読む。
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 }, _ch2_ageha_contact: true }, contacts: ["ageha"] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit");
+assert.equal(phone.deliverMorning(), 1); assert.equal(state.inbox[0].msg.sender, "ageha");
+assert.equal(phone.deliverMorning(), 0, "Read/unread buffers must not duplicate the new contact's message");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 }, _ch2_ageha_contact: true }, contacts: [] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit"); assert.equal(phone.deliverMorning(), 0, "No message without an actual contact exchange");
+reset({ chapter: 1, day: 3, flags: { _ch2_ageha_contact: true }, contacts: ["ageha"] });
+db.lime = allMessages.filter(m => m.id === "lime_ch2_ageha_after_visit"); phone.deliverMorning(); assert(!state.inbox.some(item => item.msg.sender === "ageha"));
+reset({ chapter: 2, day: 17, flags: { _ch2_day1: { startDay: 15 } }, contacts: ["naru"] });
+db.lime = [{ id: "ch2_clock_probe", sender: "naru", chapter: 2, type: "chat", trigger_condition: "lime_exchanged", trigger_day: 3, messages: ["章内DAY3"] }];
+assert.equal(phone.deliverMorning(), 1, "Chapter-scoped triggers use local DAY3, not elapsed day17");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["minto"], contacts: ["minto"], loverSince: { minto: 6 } });
+db.lime = []; db.lover = { anniversary: { minto: { m: ["{n}日"], r: [] } } };
+assert.equal(phone.morningMessages()[0].id, "_lover_anniv_minto_n10", "Chapter transition must preserve ten-day anniversaries");
+reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["minto"], contacts: ["minto"], lastDate: { minto: 12 } });
+db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
+assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
 
 console.log("[remake LIME] notification thread, defer, automatic conflict history/retry, six rumor replies, unread/read retry, small affinity, holiday/after-close schedules, queued closing appointment, legacy name introduction, Adam arcade, confession gate, morning copy: PASS");

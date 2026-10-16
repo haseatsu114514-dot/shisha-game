@@ -1,0 +1,12 @@
+.craft-preview-nav { position: fixed; inset: 0 0 auto; height: 52px; z-index: 40; display: flex; align-items: center; gap: 18px; padding: 0 20px; background: #16101c; border-bottom: 1px solid #8e745055; font-size: 14px; }
+.craft-preview-nav a { display: flex; align-items: center; min-height: 44px; color: #d8c7ac; text-decoration: none; padding: 0 8px; }
+.craft-preview-nav a[aria-current] { color: #fff1d2; border-bottom: 3px solid #d7ae71; }
+.craft-preview-nav a:focus-visible { outline: 2px solid #fff1d2; }
+.craft-preview-nav small { margin-left: auto; color: #b9aa9c; }
+#viewport { top: 52px; height: calc(100% - 52px); }
+#stage > #craft-preview-loading { z-index: 100; background: #100b18; display: grid; place-items: center; color: #efd6ac; font-size: 24px; }
+#stage > #craft-preview-loading[hidden] { display: none; }
+.craft-preview-end { position: absolute; inset: 0; background: #100b18e8; z-index: 30; display: grid; place-content: center; text-align: center; gap: 20px; }
+.craft-preview-end h1, .craft-preview-end p { margin: 0; }
+.craft-preview-end .btn { justify-content: center; }
+@media (max-width: 900px) { .craft-preview-nav { gap: 12px; padding: 0 12px; font-size: 12px; } .craft-preview-nav small { display: none; } }

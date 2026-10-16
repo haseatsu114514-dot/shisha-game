@@ -1,18 +1,19 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
-import { el, sleep, fitOneLine } from "../core/util.js";
+import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { playerInner, paginateInner } from "./inner.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { chekiShot, tarotFlip } from "../core/scene-motions.js";
+import { chekiShot, tarotFlip, limeExchange } from "../core/scene-motions.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -55,12 +56,13 @@ function buildDom() {
     portraits: el("div.vn-portraits"),
     name: el("div.vn-name"),
     text: el("div.vn-text", { "aria-live": "polite" }),
+    inner: el("div.vn-inner", { hidden: true, "aria-live": "polite", "aria-label": "ひよりの本心（はじめには聞こえない）" }),
     next: el("div.vn-next", { text: "▼" }),
     choices: el("div.vn-choices"),
     log: el("div.vn-log"),
     controls: el("div.vn-controls"),
   };
-  dom.box = el("div.vn-box", [dom.name, dom.text, dom.next]);
+  dom.box = el("div.vn-box", [dom.name, dom.text, dom.inner, dom.next]);
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
@@ -75,6 +77,7 @@ function buildDom() {
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
+    if (dom.log.classList.contains("show")) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
     if (e.key === "Control") setSkip(true);
   });
@@ -94,14 +97,15 @@ function setSkip(v) {
 let autoTimer = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
-  if (!running) return;
+  if (!running || !running.ready) return;
+  if (dom.log.classList.contains("show")) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
   if (running.waitingChoice) {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
   autoTimer = setTimeout(() => {
     if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -111,19 +115,34 @@ function kickAuto() {
 
 // ---------------------------------------------------------------- 再生
 
+/** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
+function waitSceneAssets(task, owner = running) {
+  let notice = null;
+  const timer = setTimeout(() => {
+    if (running !== owner) return;
+    notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
+      text: "場面を準備しています…", dataset: { test: "vn-loading" } });
+    layers.fx.append(notice);
+  }, 500);
+  return Promise.resolve(task).finally(() => { clearTimeout(timer); notice?.remove(); });
+}
+
 /**
  * 会話を再生する。
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
+ * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
   const dlg = typeof idOrDlg === "string" ? DB.dialogues[idOrDlg] : idOrDlg;
+  if (opts.signal?.aborted) return Promise.resolve({ id: dlg?.dialogue_id || "", visited: [], cancelled: true });
   if (!dlg) {
     console.warn("[vn] dialogue not found:", idOrDlg);
     return Promise.resolve();
   }
   return new Promise((resolve) => {
+    layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       id: dlg.dialogue_id || "",
       dlg,
@@ -144,12 +163,16 @@ export function play(idOrDlg, opts = {}) {
       bgmBefore: currentBgm(), // metadata.bgm で曲を替えた会話は、終わったらこの曲へ戻す
       bgmSwitched: false,
       bgmOnSpeaker: null,
-      pendingIntros: [], // 名乗りを受けて、次の台詞の前に出す初登場カットイン
+      pendingIntros: [], // 立ち絵と実際の発話を読んだ後に出す初登場カットイン
+      spoken: new Set(),
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
+    dom.inner.replaceChildren();
+    dom.inner.hidden = true;
+    dom.box.classList.remove("has-inner");
     dom.name.textContent = "";
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
@@ -163,9 +186,15 @@ export function play(idOrDlg, opts = {}) {
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
     document.body.classList.add("vn-open");
     const me = running;
+    if (opts.signal) {
+      const cancel = () => { if (running === me) finish(true); };
+      me.removeAbort = () => opts.signal.removeEventListener("abort", cancel);
+      opts.signal.addEventListener("abort", cancel, { once: true });
+      if (opts.signal.aborted) { cancel(); return; }
+    }
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
-    Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]).then(() => {
+    waitSceneAssets(Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]), me).then(() => {
       if (running !== me) return;
       me.ready = true;
       layers.vn.classList.add("active");
@@ -200,7 +229,7 @@ function firstPortraits(dlg) {
   const out = [];
   for (const l of dlg.lines || []) {
     if (out.length >= 2) break;
-    const character = l.portrait || l.speaker;
+    const character = l.portrait === false ? null : l.portrait || l.speaker;
     if (character && !NO_PORTRAIT.has(character)) {
       const p = portraitInfo(character, l.portrait_face || l.face);
       if (p && !out.includes(p.src)) out.push(p.src);
@@ -219,7 +248,7 @@ function prefetch(dlg) {
   const urls = new Set();
   const collect = (lines) => {
     for (const l of lines || []) {
-      const character = l.portrait || l.speaker;
+      const character = l.portrait === false ? null : l.portrait || l.speaker;
       if (character && !NO_PORTRAIT.has(character)) {
         const p = portraitInfo(character, l.portrait_face || l.face);
         if (p) urls.add(p.src);
@@ -232,24 +261,26 @@ function prefetch(dlg) {
   preload([...urls].slice(0, 16), 0);
 }
 
-function finish() {
+function finish(cancelled = false) {
   const r = running;
   running = null;
   clearTimeout(autoTimer);
+  clearInterval(r.typeTimer); clearTimeout(r.typeTimer);
+  r.removeAbort?.();
   const meta = r.dlg.metadata || {};
   // metadata / growth_stats の報酬（会話の最後にまとめて付く）
-  if (meta.add_stat) applyStats(meta.add_stat);
-  if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
-  if (r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
+  if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
+  if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
+  if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
   dom.effect.dataset.effect = "";
-  layers.vn.classList.remove("sepia");
+  layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
-  r.resolve({ id: r.id, visited: r.visited });
+  r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
 
 function advance() {
@@ -260,7 +291,6 @@ function advance() {
     renderPage();
     return;
   }
-  if (!skipMode && !vnTest.turbo) SE.click();
   next();
 }
 
@@ -271,7 +301,7 @@ function next() {
   // 制御行はまとめて処理し、表示する台詞行に着いたら止まる
   for (;;) {
     const line = r.queue.shift();
-    if (line === undefined) return finish();
+    if (line === undefined) return introThenShow();
     const type = line.type || "";
     if (!type) return introThenShow(line);
     if (type === "choice") return showChoices(line);
@@ -279,11 +309,23 @@ function next() {
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (line.next_id && jumpTo(line.next_id)) return; continue; }
     if (type === "set_flag") {
+      const contact = /^_lime_contact_(.+)$/.exec(line.flag || "");
+      const alreadyConnected = contact && (state.flags[line.flag] || state.contacts.includes(contact[1]));
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
       if (m) {
         markMet(m[1]);
-        if (needsIntro(m[1])) r.pendingIntros.push(m[1]); // 名乗った直後の台詞の前にカットイン
+        if (needsIntro(m[1])) queueIntro({ id: m[1] });
+      }
+      if (contact && !alreadyConnected && !vnTest.turbo) {
+        const id = contact[1];
+        const key = `_lime_exchange_shown_${id}`;
+        if (!state.flags[key]) {
+          state.flags[key] = true;
+          r.ready = false;
+          limeExchange(id).then(() => { if (running === r) { r.ready = true; next(); } });
+          return;
+        }
       }
       continue;
     }
@@ -295,8 +337,13 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip() }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context) }[line.id];
       if (!run) continue;
+      if (line.id === "lime") {
+        const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;
+        if (state.flags[key]) continue;
+        state.flags[key] = true;
+      }
       r.ready = false;
       run().then(() => { if (running === r) { r.ready = true; next(); } });
       return;
@@ -305,6 +352,8 @@ function next() {
       const id = line.char_id;
       const variant = line.variant || "";
       if (state.flags[introSeenKey(id, variant)]) continue;
+      // はじめの指定紹介以外は、本人が立ち絵で話すまで予約しておく。
+      if (id !== "hajime") { queueIntro({ id, variant, override: line.intro || {} }); continue; }
       if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
       playIntro(id, { variant, override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
@@ -321,7 +370,12 @@ function next() {
       if (branch && r.branches[branch]) r.queue.unshift(...r.branches[branch]);
       continue;
     }
-    if (type === "hide_cg") { dom.cg.classList.remove("show"); continue; }
+    if (type === "hide_cg") {
+      r.ready = false;
+      dom.cg.classList.remove("show");
+      visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
     if (type === "remember") { rememberRelationship(line.memory_id); continue; }
@@ -329,7 +383,7 @@ function next() {
     if (type === "bg") {
       if (!line.bg) continue;
       r.ready = false;
-      sceneSetBg(line.bg).then(() => {
+      waitSceneAssets(sceneSetBg(line.bg), r).then(() => {
         if (running !== r) return;
         r.ready = true;
         next();
@@ -360,7 +414,7 @@ function jumpTo(id) {
   if (target.metadata?.bg) {
     const r = running;
     r.ready = false;
-    sceneSetBg(target.metadata.bg, firstPortraits(target)).then(() => { if (running === r) { r.ready = true; next(); } });
+    waitSceneAssets(sceneSetBg(target.metadata.bg, firstPortraits(target)), r).then(() => { if (running === r) { r.ready = true; next(); } });
     return true;
   }
   return false;
@@ -376,6 +430,8 @@ function handleCondition(line) {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
+  } else if (kind === "met") {
+    ok = !!state.met[line.char_id];
   } else if (kind === "customer_note") {
     ok = (state.notes[line.note_id] || 0) >= Number(line.threshold || 1);
   } else if (kind === "affinity") {
@@ -407,6 +463,8 @@ function runFx(line) {
   else if (id === "cutin") { flash("gold"); SE.just(); }
   else if (id === "sepia") layers.vn.classList.add("sepia");
   else if (id === "sepia_off") layers.vn.classList.remove("sepia");
+  else if (id === "flashback") layers.vn.classList.add("flashback");
+  else if (id === "flashback_off") layers.vn.classList.remove("flashback");
   else if (id === "scent") scent(line.color || "#e8c27a", line.color2 || line.color || "#b8743a");
 }
 
@@ -417,9 +475,11 @@ function scent(c1, c2) {
 }
 
 async function showCg(id, effect = "") {
+  const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
-  await imageReady(url, 15000);
+  const loaded = await waitSceneAssets(imageReady(url, 15000), r);
+  if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
     dom.cg.dataset.cg = id;
@@ -429,40 +489,62 @@ async function showCg(id, effect = "") {
     if (instant) { void dom.cg.offsetWidth; dom.cg.style.transition = ""; }
   };
   if (effect === "cheki" && !vnTest.turbo) await chekiShot(url, () => place(true));
+  if (running !== r) return;
   if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
+  if (!vnTest.turbo) await visualSettled(dom.cg);
   if (hooks.onCg) hooks.onCg(id);
+}
+
+/** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。 */
+async function visualSettled(node) {
+  await nextFrame();
+  await Promise.all(node.getAnimations().map((animation) => animation.finished.catch(() => {})));
 }
 
 // ---------------------------------------------------------------- 台詞行
 
-// 初登場カットイン（vn/intro.js）: 名乗った相手・名前が出て初めて喋る相手を、台詞の前に一度だけ出す
+function queueIntro(cue) {
+  if (!running.pendingIntros.some((pending) => pending.id === cue.id && (pending.variant || "") === (cue.variant || ""))) {
+    running.pendingIntros.push(cue);
+  }
+}
+
+// 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
 function introThenShow(line) {
   const r = running;
-  const ids = r.pendingIntros.splice(0);
-  const speaker = String(line.speaker || "");
-  if (!ids.includes(speaker)) ids.push(speaker);
-  const due = ids.filter(needsIntro);
-  if (!due.length) return showLine(line);
+  const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
+  r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
+  if (!due.length) return line ? showLine(line) : finish();
   if (vnTest.turbo) {
-    due.forEach(markIntroSeen);
-    return showLine(line);
+    due.forEach(({ id, variant }) => markIntroSeen(id, variant || ""));
+    return line ? showLine(line) : finish();
   }
   r.ready = false;
   (async () => {
-    for (const id of due) await playIntro(id, { onAppear: () => speakerBgm(id) });
+    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
-    showLine(line);
+    if (line) showLine(line); else finish();
   })();
 }
 
-function showLine(line) {
+async function showLine(line) {
   const r = running;
+  if (!r) return;
+  r.ready = false;
+  clearTimeout(autoTimer);
+  const images = [
+    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
+  ].filter(Boolean);
+  // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
+  await waitSceneAssets(Promise.all(images.map((url) => imageReady(url, 15000))), r);
+  if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "kafuka" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん（腹話術）"
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
@@ -472,11 +554,15 @@ function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
-  updatePortraits(speaker, face);
+  // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
+  const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
-    updatePortraits(line.portrait, line.portrait_face || "normal");
+    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal"));
   }
+  if (!vnTest.turbo) await Promise.all(entrances);
+  if (running !== r) return;
+  r.ready = true;
   speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
@@ -498,24 +584,40 @@ function showLine(line) {
     text = clauses.length ? `……${clauses.join("。")}。` : "";
     if (!text) return next();
   }
-  log.push({ name, text: stripTags(text) });
+  let inner = playerInner(line);
+  if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
+  log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
-  r.pages = paginateForBox(text);
+  dom.box.classList.toggle("has-inner", !!inner);
+  r.pages = paginateForBox(text, dom.text, paginate, inner ? 1 : 2).map((value) => ({ text: value, inner: "" }));
+  if (inner) {
+    // 本心は最後の発言ページの下に出す。長い本心の続きでは発言を残し、打ち直さない。
+    dom.inner.hidden = false; // 本心の書体・実幅を計測する間だけ表示状態にする
+    const thoughts = paginateForBox(inner, dom.inner, paginateInner);
+    const last = r.pages.at(-1);
+    last.inner = thoughts[0];
+    r.pages.push(...thoughts.slice(1).map((value) => ({ text: last.text, inner: value, continuation: true })));
+  }
   r.pageIdx = 0;
+  if (!NO_PORTRAIT.has(speaker) && Object.hasOwn(r.slots, speaker)) {
+    r.spoken.add(speaker);
+    if (needsIntro(speaker)) queueIntro({ id: speaker });
+  }
   renderPage();
 }
 
 // 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
 let measurementContext = null;
-function paginateForBox(text) {
+function paginateForBox(text, target = dom.text, split = paginate, maxLines = 2) {
   measurementContext ||= document.createElement("canvas").getContext("2d");
-  if (!measurementContext || !dom.text.clientWidth) return paginate(text);
-  const style = getComputedStyle(dom.text);
+  if (!measurementContext || !target.clientWidth) return split(text, { maxLines });
+  const style = getComputedStyle(target);
   const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
   const tracking = parseFloat(style.letterSpacing) || 0;
-  return paginate(text, {
-    maxWidth: dom.text.clientWidth - 4,
+  return split(text, {
+    maxLines,
+    maxWidth: target.clientWidth - 4,
     measure(value) {
       measurementContext.font = normal;
       const regularWidth = measurementContext.measureText(value).width;
@@ -561,15 +663,18 @@ function autoFx(line) {
 
 function renderPage() {
   const r = running;
-  const raw = r.pages[r.pageIdx];
+  const page = r.pages[r.pageIdx];
+  const raw = page.text;
   r.fullHtml = formatHtml(raw);
-  const total = visibleLength(r.fullHtml);
+  r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
+  r.spokenLength = visibleLength(r.fullHtml);
+  const total = r.spokenLength + visibleLength(r.fullInnerHtml);
   clearInterval(r.typeTimer);
   dom.next.classList.remove("show");
   const speed = vnTest.turbo ? 4 : config.textSpeed;
   if (speed >= 4 || skipMode) {
     r.typing = false;
-    dom.text.innerHTML = r.fullHtml;
+    renderTyped(total);
     dom.next.classList.add("show");
     kickAuto();
     return;
@@ -577,15 +682,15 @@ function renderPage() {
   // 重要行（[imp]）は一拍の「溜め」を置いてから出す
   const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
   r.typing = true;
-  dom.text.innerHTML = "";
-  let shown = 0;
+  let shown = page.continuation ? r.spokenLength : 0;
+  renderTyped(shown);
   const interval = { 1: 46, 2: 26, 3: 12 }[speed] || 26;
   const step = Math.max(1, Math.round(total / 90));
   const start = () => {
     r.typeTimer = setInterval(() => {
       shown += step;
-      dom.text.innerHTML = sliceHtml(r.fullHtml, shown);
-      if (shown % 3 < step) SE.blip(r.speaker);
+      renderTyped(shown);
+      if (shown <= r.spokenLength && shown % 3 < step) SE.blip(r.speaker);
       if (shown >= total) completeTyping();
     }, interval);
   };
@@ -594,13 +699,21 @@ function renderPage() {
   kickAuto();
 }
 
+function renderTyped(shown) {
+  const r = running;
+  dom.text.innerHTML = sliceHtml(r.fullHtml, Math.min(shown, r.spokenLength));
+  const innerShown = Math.max(0, shown - r.spokenLength);
+  dom.inner.hidden = !r.fullInnerHtml || innerShown === 0;
+  dom.inner.innerHTML = innerShown ? sliceHtml(r.fullInnerHtml, innerShown) : "";
+}
+
 function completeTyping() {
   const r = running;
   if (!r) return;
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   r.typing = false;
-  dom.text.innerHTML = r.fullHtml;
+  renderTyped(r.spokenLength + visibleLength(r.fullInnerHtml));
   dom.next.classList.add("show");
   kickAuto();
 }
@@ -609,6 +722,7 @@ function completeTyping() {
 
 function updatePortraits(speaker, face) {
   const r = running;
+  let entrance = Promise.resolve();
   const info = speaker && !NO_PORTRAIT.has(speaker) ? portraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
@@ -625,13 +739,19 @@ function updatePortraits(speaker, face) {
       img = el("img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
       img.onerror = () => { img.remove(); delete r.slots[speaker]; layoutPortraits(); };
       dom.portraits.append(img);
-      requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
+      entrance = (async () => {
+        await nextFrame(); await nextFrame();
+        if (running !== r || !img.isConnected) return;
+        img.classList.remove("enter");
+        await visualSettled(img);
+      })();
     }
     if (img.getAttribute("src") !== info.src) img.src = info.src;
     frame(img, info);
   }
   for (const img of dom.portraits.querySelectorAll("img")) img.classList.toggle("active", img.dataset.speaker === speaker);
   layoutPortraits();
+  return entrance;
 }
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */
@@ -661,6 +781,7 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
+  // 関係の方向は返答と相手の反応で伝える。実回答の記録はpickChoiceのフックへ渡す。
   const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
     html: formatHtml(c.text || "……"),
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
@@ -702,12 +823,14 @@ function pickChoice(line, c) {
 
 function openLog() {
   SE.select();
+  clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
     l.name ? el("b", { text: l.name }) : null,
     el("span", { text: l.text }),
+    l.inner ? el("div.log-inner", { text: l.inner, "aria-label": "ひよりの本心（はじめには聞こえない）" }) : null,
   ])));
   dom.log.replaceChildren(
-    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); } })]),
+    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); kickAuto(); } })]),
     list,
   );
   dom.log.classList.add("show");

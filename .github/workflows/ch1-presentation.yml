@@ -1,0 +1,66 @@
+name: Chapter 1 presentation and feedback
+on:
+  pull_request:
+    paths: ['remake/**', 'data/**', '.github/workflows/ch1-presentation.yml']
+  push:
+    branches: [main]
+    paths: ['remake/**', 'data/**', '.github/workflows/ch1-presentation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ch1-presentation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TEST_REF: ${{ github.sha }}
+      ARTIFACT_DIR: .codex/artifacts/remake-browser/presentation
+      SHOTS: .codex/artifacts/remake-browser/presentation
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Actual-result and taste boundaries
+        run: |
+          node remake/test/mix_recognition.mjs
+          node --experimental-vm-modules remake/test/foil_holes.mjs
+      - name: PC, touch, seen art, opinions and celebration
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/presentation-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/ch1_presentation.mjs
+          node remake/test/browser/ch1_story_feedback.mjs
+          node remake/test/browser/craft_materials.mjs
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ch1-presentation-results
+          path: |
+            .codex/artifacts/remake-browser/presentation/
+            ${{ runner.temp }}/presentation-preview.log
+          retention-days: 7

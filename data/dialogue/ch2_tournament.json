@@ -1,0 +1,242 @@
+{
+  "comment": "第2章DAY14。実制作の前後だけ。既存関係・LIMEを消さず、味覚回復と離脱理由は後章に残す。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_tournament_lobby",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "県大会の控室。あげはが、ドアの前で足を止めた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "ageha",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "顔色、悪くないですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……なんでもない。あたしの一台、ちゃんと見てて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑っているのに、鞄を握る指はほどけなかった。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "はじめくん。来たね。今日は、同じ舞台だ"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "MELTY PUFFのあげは。……はじめくん、だよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。蒸野はじめです。よろしくお願いします"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_entrance",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "HAZE: OPEN CLOUD！　4人一斉、一発勝負でお送りします！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kumicho",
+          "next_true": "kanzaki_known",
+          "next_false": "kanzaki_first"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "神崎竜二選手！　その肩書きも、ご自身からどうぞ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "──おう、そのとおり。俺はヤクザだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "だが今日は、いち職人として来た。文句なら、俺の煙に言いな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "rei",
+          "next_true": "rei_known",
+          "next_false": "rei_first"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野はじめ選手！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "4台の向こうで、上園、チャコール博士、南雲が席についた。"
+        }
+      ],
+      "branches": {
+        "kanzaki_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（神崎さんだ。今日は、あの人も対戦相手なんだ）"
+          }
+        ],
+        "kanzaki_first": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの大きな人も、出場者か。名前を聞くのは初めてだ）"
+          }
+        ],
+        "rei_known": [
+          {
+            "speaker": "rei",
+            "face": "smile",
+            "text": "また会ったわね。今日は、煙で話しましょう"
+          }
+        ],
+        "rei_first": [
+          {
+            "speaker": "rei",
+            "face": "smile",
+            "text": "零-ZERO-のREIよ。あなたの煙、楽しみにしているわ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_rules",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "課題はストロベリー！　課題の葉はこちらで支給します"
+        },
+        {
+          "speaker": "maezono",
+          "face": "serious",
+          "text": "一人につき一台。吸い出して提供したあとも、2回の調整まで見ます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "私たちは、一人10点ずつ持っている。気になった煙へ、途中でも投入するよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "一度入れた点は戻さない。最後に合計して、県代表を決める"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（香りの輪郭が、まだつかめない。でも、手順は忘れていない）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "準備ができた選手から、制作を始めてください！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_tournament_farewell",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "県代表は、tonariの蒸野はじめ選手です！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トロフィーを受け取る。あげはの姿が、客席の出口に見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あげはさん！　もう帰るんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……ごめん。理由は、聞かないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……また、お店に行きます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは小さくうなずいて、扉の向こうへ消えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_tournament_tasteless",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの済んだ台で、自分の一台を吸う。煙は出る。味だけが遠い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（勝った。……それなのに、分からないままだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを開く。今日のおめでとうは、まだ届いていなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前のやりとりは残っている。約束も、笑った日の言葉も。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（消えたわけじゃない。俺が、ここからどうするかだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんから、新しいメッセージが届いた。"
+        }
+      ]
+    }
+  ]
+}

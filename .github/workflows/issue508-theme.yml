@@ -1,0 +1,75 @@
+name: Approved chapter 1 scenes and salaryman portraits
+on:
+  pull_request:
+    paths:
+      - 'data/dialogue/ch1_main.json'
+      - 'data/dialogue/ch1_naru.json'
+      - 'data/dialogue/ch1_tsumugi.json'
+      - 'data/dialogue/ch1_tournament.json'
+      - 'data/dialogue/ch2_main.json'
+      - 'assets/sprites/characters/salaryman/**'
+      - 'remake/img/sprites/characters/salaryman/**'
+      - 'remake/test/browser/issue508_theme.mjs'
+      - 'remake/css/vn.css'
+      - 'remake/js/vn/engine.js'
+      - 'remake/test/browser/ch1_tournament.mjs'
+      - 'remake/test/browser/support.mjs'
+      - 'docs/qa/issue508-theme/baseline-scenes.json'
+      - '.github/workflows/issue508-theme.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: issue508-theme-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  approved-scenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TEST_REF: ${{ github.sha }}
+      ARTIFACT_DIR: .codex/artifacts/remake-browser/issue508-theme
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+            docs/qa/issue508-theme
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: State effects, seen and unseen memories, PC and touch, interrupted save
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/issue508-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node -e 'const {chromium}=require("./remake/test/browser/node_modules/playwright"); (async()=>{const b=await chromium.launch(); console.log("Browser:",b.version()); await b.close()})()'
+          node remake/test/browser/issue508_theme.mjs
+      - name: Tournament regression with SKIP timing
+        if: always()
+        run: node remake/test/browser/ch1_tournament.mjs
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: approved-scenes-salaryman-results
+          path: |
+            .codex/artifacts/remake-browser/issue508-theme/
+            ${{ runner.temp }}/issue508-preview.log
+          retention-days: 7

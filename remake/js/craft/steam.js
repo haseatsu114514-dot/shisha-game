@@ -4,27 +4,32 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
-import { buildSteamWorld, HEART_ART, REFRESH_ART, PAD_ART, BULLET_ART } from "./steam-art.js";
+import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
+import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
+import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
+// 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
 export const DODGE_WORDS = [
-  "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
-  "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
-  "詰めすぎたか？", "灰、落ちないか", "客の咳ばらい", "温度、大丈夫か",
-  "香り、飛んでないか", "手が、汗ばむ", "時計の秒針", "深呼吸、わすれてた",
-  "ボウル、熱いな", "煙、薄い気がする", "スミさんなら……", "隣の水音",
+  "ちゃんと熱、入ってるかな", "時間が足りないかも", "少し急ぎすぎたかな",
+  "失敗したらどうしよう", "うまく作れるかな", "詰め方、これでよかった？", "炭、熾きてたかな",
+  "詰めすぎたか？", "灰、落ちないか", "穴、足りてたかな", "温度、大丈夫か",
+  "香り、飛んでないか", "手が、汗ばむ", "時間ばかり気になる", "深呼吸、わすれてた",
+  "熱、強すぎないかな", "煙、ちゃんと出るかな", "さっきの手順、大丈夫か", "吸い出しで崩したくない",
 ];
 const OBJECTS = ["coal", "orb", "orb", "smoke"];
 
-// SF18: 一台につき1回。根性は消去範囲と回復に効く。
+// SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
+export const REFRESH_RECHARGE_SECONDS = 8;
 export function refreshStock() { return 1; }
 export function refreshEffect() {
   const level = star("guts");
@@ -33,41 +38,63 @@ export function refreshEffect() {
 }
 
 export async function runSteamDodge(cs) {
+  await waitBenchReady(cs, "steam");
+  SE.coalPlace();
   const stock = refreshStock();
   const effect = refreshEffect();
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
-  const W = 752, H = 326;
-  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", refreshRadius: String(effect.radius) } });
-  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
+  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
+  const W = 784, H = 414;
+  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
+  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
-  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { html: PAD_ART, "aria-hidden": "true" }), knob]);
-  const refreshBtn = el("button.btn.primary.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
-  refreshBtn.append(el("span.refresh-emblem", { html: REFRESH_ART, "aria-hidden": "true" }),
+  const controlArt = name => el("img", { src: makingUrl(name), alt: "", draggable: false, "aria-hidden": "true" });
+  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_simple_base.png")]), knob]);
+  const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
+  const refreshCharge = el("span.action-recharge");
+  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
-  const thermometer = buildSteamTemperature();
+  const slashCharge = el("span.action-recharge");
+  const slashCount = el("span.slash-count", { text: "×0" });
+  const slashGrowth = el("span.slash-growth", [slashCount]);
+  const slashFeedback = el("span.slash-feedback", { role: "status", "aria-live": "polite", "aria-atomic": "true", dataset: { test: "slash-feedback" } });
+  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "Z／ボタンで前方へアタック", dataset: { test: "dodge-slash", uses: "0" } }, [
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
+    el("span.refresh-copy", { text: "アタック" }),
+  ]);
+  const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
+  const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
+  const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
+    el("span.precision-copy", [el("span.refresh-copy", { text: "精密" }), precisionState]),
+  ]);
+  const thermometer = buildSteamTemperature(cs);
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const mental = buildMentalTrace(W, H);
   const world = buildSteamWorld(W, H);
   const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
   renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(world.root, clock.root, el("span.dodge-world-title", { text: "心の中", "aria-hidden": "true" }), mental.root, heart);
+  box.append(world.root, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
-    el("div.dodge-controls", [pad, refreshBtn]),
+    el("div.dodge-controls", [refreshBtn, slashControl, precisionBtn, pad]),
     thermometer.root,
   ]);
   panel.append(steamRoot);
 
   const dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   const focus = craftCondition(cs).focus;
-  const hitR = 8 * (1 - 0.2 * tier01("guts")) / focus;
+  const hitR = heartHitRadius(tier01("guts"), focus);
+  heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
+  heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
-  let running = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
+  let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
+  let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
   const transients = [];
@@ -76,7 +103,7 @@ export async function runSteamDodge(cs) {
   let padPointer = null, axisX = 0, axisY = 0;
 
   const renderHeart = () => { heart.style.transform = `translate(${hx - 14}px, ${hy - 14}px)`; };
-  const moveTo = (x, y) => { hx = clamp(x, 14, W - 14); hy = clamp(y, 14, H - 14); renderHeart(); };
+  const moveTo = (x, y) => { hx = clamp(x, 16, W - 16); hy = clamp(y, 16, H - 16); renderHeart(); };
   const toLocal = (e) => {
     const r = box.getBoundingClientRect();
     return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
@@ -90,7 +117,8 @@ export async function runSteamDodge(cs) {
   const movePad = (e) => {
     const r = pad.getBoundingClientRect(), radius = r.width * 0.34;
     let x = (e.clientX - r.left - r.width / 2) / radius;
-    let y = (e.clientY - r.top - r.height / 2) / radius;
+    const lift = parseFloat(getComputedStyle(pad).getPropertyValue("--stick-lift")) || 0;
+    let y = (e.clientY - r.top - r.height / 2 + lift * r.height / pad.offsetHeight) / radius;
     const length = Math.hypot(x, y);
     if (length > 1) { x /= length; y /= length; }
     axisX = Math.abs(x) < 0.12 ? 0 : x;
@@ -105,23 +133,56 @@ export async function runSteamDodge(cs) {
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(pad, type, (e) => { if (e.pointerId === padPointer) resetPad(); });
   listen(window, "blur", () => { keysDown.clear(); resetPad(); });
+  const togglePrecision = () => {
+    if (!running) return;
+    precise = !precise;
+    precisionBtn.setAttribute("aria-pressed", String(precise));
+    precisionState.textContent = precise ? "オン" : "オフ";
+    SE.click();
+  };
+  // 2本目の指ではブラウザのclickが出ないことがある。refreshと同じく押した時に処理する。
+  listen(precisionBtn, "pointerdown", e => { e.preventDefault(); togglePrecision(); });
+  listen(precisionBtn, "click", e => { if (e.detail === 0) togglePrecision(); });
 
-  const clearBullets = (radius = Infinity) => {
+  const removeBullets = (touches) => {
     const cleared = [];
     for (let i = bullets.length - 1; i >= 0; i--) {
-      const b = bullets[i], x = clamp(hx, b.x, b.x + b.w), y = clamp(hy, b.y, b.y + b.h);
-      if (Math.hypot(hx - x, hy - y) <= radius) { cleared.push(b); b.node.remove(); bullets.splice(i, 1); }
+      const b = bullets[i];
+      if (touches(b)) { cleared.push(b); b.node.remove(); bullets.splice(i, 1); }
     }
     return cleared;
   };
+  const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
+  const rechargeLabel = (button, caption, remaining, duration, label) => {
+    const rounded = Math.ceil(remaining * 10) / 10;
+    button.dataset.cooldown = rounded.toFixed(1);
+    button.dataset.cooling = String(running && remaining > 0);
+    button.style.setProperty("--recharge", String(1 - remaining / duration));
+    caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
+    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    button.disabled = !running || remaining > 0;
+  };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
-    refreshBtn.setAttribute("aria-label", `リフレッシュ。残り${refreshes}回。${effect.label}の雑念を消す`);
-    refreshBtn.disabled = !running || refreshes === 0;
+    rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
+  };
+  const slashLabel = () => {
+    const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
+    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+    slashBtn.dataset.cutWords = String(wordsCut);
+    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
+    slashBtn.dataset.maxCombo = String(maxCombo);
+    slashBtn.dataset.reach = String(profile.reach);
+    slashBtn.dataset.recharge = String(profile.recharge);
+    slashBtn.dataset.tier = String(profile.tier);
+    slashCount.textContent = `×${wordsCut}`;
+    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
-    refreshes--; world.dissolve(time, clearBullets(effect.radius));
+    refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
+    world.dissolve(time, clearBullets(effect.radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
     const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
@@ -135,12 +196,45 @@ export async function runSteamDodge(cs) {
   listen(refreshBtn, "pointerdown", (e) => { e.preventDefault(); refresh(); });
   // キーボードや支援技術による click でも使える（pointerdown と重ねて消費しない）。
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
+  const slash = () => {
+    if (!running || time < slashReadyAt) return;
+    const direction = "u", angle = slashAngle(direction);
+    const before = slashProfile(wordsCut);
+    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
+    const cutWords = cleared.filter(b => b.word).length;
+    wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
+    const after = slashProfile(wordsCut);
+    slashCooldown = after.recharge;
+    slashesUsed++; slashReadyAt = time + slashCooldown;
+    slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
+    slashBtn.dataset.lastCut = String(cleared.length);
+    slashFeedback.dataset.hit = String(cleared.length > 0);
+    slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
+    world.dissolve(time, cleared, { echoWords: false });
+    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
+    box.append(fx); transients.push({ node: fx, until: time + .32 });
+    for (const b of cleared) {
+      if (b.word) {
+        const halves = buildWordCutFx(b, hx, hy, angle, before.reach);
+        box.append(halves); transients.push({ node: halves, until: time + .5 });
+      }
+      const spark = el("i.dodge-slash-impact", { "aria-hidden": "true", style: { left: `${clamp(b.x + b.w / 2, 0, W)}px`, top: `${clamp(b.y + b.h / 2, 0, H)}px` } });
+      box.append(spark); transients.push({ node: spark, until: time + .32 });
+    }
+    slashBtn.classList.remove("striking"); void slashBtn.offsetWidth; slashBtn.classList.add("striking");
+    if (cleared.length) SE.just();
+    SE.whoosh(); slashLabel();
+  };
+  listen(slashBtn, "pointerdown", e => { e.preventDefault(); slash(); });
+  listen(slashBtn, "click", e => { if (e.detail === 0) slash(); });
   const direction = { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d", a: "l", d: "r", w: "u", s: "d" };
   const unkey = keys(Object.fromEntries([
     ...Object.entries(direction).map(([key, value]) => [key, () => { if (running) keysDown.add(value); }]),
     [" ", (e) => { if (!e.repeat) refresh(); }],
     ["x", (e) => { if (!e.repeat) refresh(); }],
     ["X", (e) => { if (!e.repeat) refresh(); }],
+    ["z", (e) => { if (!e.repeat) slash(); }],
+    ["Z", (e) => { if (!e.repeat) slash(); }],
   ]));
   listen(window, "keyup", (e) => keysDown.delete(direction[e.key]));
 
@@ -179,8 +273,9 @@ export async function runSteamDodge(cs) {
 
   clock.update(seconds);
   refreshLabel();
+  slashLabel();
   await countdown();
-  running = true; refreshLabel();
+  running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
   const auto = autoSkill();
   try {
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
@@ -189,12 +284,15 @@ export async function runSteamDodge(cs) {
       const loop = (now) => {
         const dt = Math.min(0.05, (now - last) / 1000); last = now;
         time += dt;
+        if (!refreshes && time >= refreshReadyAt) refreshes = stock;
+        refreshLabel(); slashLabel();
         renderTemperature(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
         let x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
         const length = Math.max(1, Math.hypot(x, y));
         if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-        moveTo(hx + x / length * 290 * dt, hy + y / length * 290 * dt);
+        const speed = precise ? 120 : 290;
+        moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
           warning = { side: Math.round(rand(0, 1)), gap: Math.floor(rand(2, 7)), due: time + 0.75 };
@@ -206,9 +304,11 @@ export async function runSteamDodge(cs) {
         for (let i = bullets.length - 1; i >= 0; i--) {
           const b = bullets[i]; b.x += b.vx * dt; b.y += b.vy * dt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
-          const cx = clamp(hx, b.x, b.x + b.w), cy = clamp(hy, b.y, b.y + b.h);
-          if (!inv && (hx - cx) ** 2 + (hy - cy) ** 2 < hitR * hitR) {
+          if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
+            wordsCut = 0;
+            slashFeedback.textContent = "被弾。コンボが途切れた";
+            slashLabel();
             setPlayerMental(cs, mental.hit(time, hits));
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
@@ -230,7 +330,7 @@ export async function runSteamDodge(cs) {
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
@@ -240,7 +340,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed: stock - refreshes, warmingFactor: steamClimate(cs.environment).transfer };
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, warmingFactor: steamClimate(cs.environment).transfer };
   scoreStep(cs, "steam", score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
@@ -252,7 +352,7 @@ export async function runSteamDodge(cs) {
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
       cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
-      "蒸らしは温度の下ごしらえ。虹色へは吸い出しで仕上げる",
+      "蒸らしで入った熱を、吸い出しで最適温へ整える",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],
   });

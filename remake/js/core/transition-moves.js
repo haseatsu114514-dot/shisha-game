@@ -1,5 +1,5 @@
 // マップで行き先を選んだあとの「移動」の型（CI103）。比較のため複数パターンを持ち、
-// 本編の既定は door（オーナー採用・CI123）。?move=pin など、または __remake.dev.moveStyle("pin") で切り替える。
+// 本編の既定は帰宅だけ door、ほかは pin（CI127）。?move=pin など、または __remake.dev.moveStyle("pin") で比較できる。
 import { el, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
@@ -8,14 +8,14 @@ import { motionVariant } from "./mg-kit.js";
 export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
 
-export function moveStyle() {
+export function moveStyle({ spotId } = {}) {
   const q = new URLSearchParams(location.search).get("move");
   if (MOVE_STYLES.includes(q)) return q;
   try {
     const saved = localStorage.getItem(STORE_KEY);
     if (MOVE_STYLES.includes(saved)) return saved;
   } catch { /* 保存できない環境では既定 */ }
-  return "door"; // 採用（CI123）。ほかの型は ?move=pin など
+  return spotId === "rest" ? "door" : "pin";
 }
 export function setMoveStyle(style) {
   try { localStorage.setItem(STORE_KEY, style); } catch { /* 保存できない環境 */ }
@@ -215,7 +215,6 @@ function walkDoorMove(host, opts = {}) {
   }, async (node) => {
     const wait = 900 - (performance.now() - shownAt); // 扉の前まで歩く
     if (wait > 0) await sleep(wait);
-    SE.doorbell();
     light.setAttribute("opacity", "1");
     await move(doorFill, [{ transform: "scaleX(1)" }, { transform: "scaleX(0.08)" }], 300, { easing: EASE.out });
     await move(figPos, [{ opacity: 1 }, { opacity: 0 }], 240);

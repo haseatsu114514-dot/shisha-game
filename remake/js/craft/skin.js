@@ -2,7 +2,8 @@
 import { DB, makingUrl } from "../core/data.js";
 
 const SKINS = { button: "ui_craft_button.png", refresh: "ui_refresh_button.png", panel: "ui_craft_panel.png", inhale: "ui_mockup_inhale_button.png" };
-export const craftSkinUrls = () => [...Object.values(SKINS), "ui_temperature_frame.png"].map(makingUrl).filter(Boolean);
+// 初期画面の枠とボタンだけ。蒸らし・吸引の固有UIはその工程のreadinessで待つ。
+export const craftSkinUrls = () => [SKINS.button, SKINS.panel].map(makingUrl).filter(Boolean);
 
 export function applyCraftSkin(root) {
   for (const [id, file] of Object.entries(SKINS)) {

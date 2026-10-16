@@ -1,0 +1,523 @@
+{
+  "mode": "built-in image_gen",
+  "source_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
+  "claim_status_run": "38294088521",
+  "title_text_authorization": "User explicitly allowed generated chapter-title lettering",
+  "selected_ch2_light": "C",
+  "assets": [
+    {
+      "id": "ch2-01-vertical",
+      "chapter": 2,
+      "original": "originals/ch2-01-vertical.png",
+      "sha256": "aa9163ddf2f51aa0cc2f970c7dee03b047ed58a145b291d2a52013191ef504cc",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-7783eda1-7253-4498-bded-5fbcda034fd4",
+      "prompt": "prompts/ch2-01-vertical.txt",
+      "status": "review candidate",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        47,
+        1010,
+        1510
+      ],
+      "content_bbox": [
+        310,
+        117,
+        739,
+        1419
+      ],
+      "layout": {
+        "generated_crop": [
+          310,
+          117,
+          739,
+          1419
+        ],
+        "position": [
+          72,
+          155
+        ],
+        "rendered_size": [
+          128,
+          388
+        ]
+      }
+    },
+    {
+      "id": "ch2-02-horizontal",
+      "chapter": 2,
+      "original": "originals/ch2-02-horizontal.png",
+      "sha256": "0afe5217a1e1bd85a427ee4879a80f9c81d5b5d75982b14b15952b4eaaf057c9",
+      "size": [
+        1923,
+        818
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-65a90ab2-d0d2-4d38-8f90-d5be7cec21fc",
+      "prompt": "prompts/ch2-02-horizontal.txt",
+      "status": "user-approved chapter-title lettering",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        55,
+        8,
+        1861,
+        818
+      ],
+      "content_bbox": [
+        175,
+        201,
+        1782,
+        620
+      ],
+      "layout": {
+        "generated_crop": [
+          175,
+          201,
+          1782,
+          620
+        ],
+        "position": [
+          52,
+          186
+        ],
+        "rendered_size": [
+          410,
+          107
+        ]
+      }
+    },
+    {
+      "id": "ch5-01-chrome-mincho",
+      "chapter": 5,
+      "original": "originals/ch5-01-chrome-mincho.png",
+      "sha256": "1f1d98e1e1feff58560c5240bbcbb77e0359ec2bd507f2b29ed8768378f237c9",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-efa93195-27e2-4da2-85ff-851a43836a10",
+      "prompt": "prompts/ch5-01-chrome-mincho.txt",
+      "status": "review candidate",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        17,
+        17,
+        1752,
+        865
+      ],
+      "content_bbox": [
+        93,
+        107,
+        1678,
+        826
+      ],
+      "layout": {
+        "generated_crop": [
+          93,
+          107,
+          1678,
+          826
+        ],
+        "position": [
+          52,
+          212
+        ],
+        "rendered_size": [
+          420,
+          191
+        ]
+      }
+    },
+    {
+      "id": "ch5-02-platinum-brush",
+      "chapter": 5,
+      "original": "originals/ch5-02-platinum-brush.png",
+      "sha256": "2726ce69fb5d5e870ffa12bfcd950ba2274b1f73183221054a0c5139a08ef508",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-29415edd-29e3-477d-a360-6b671f8726b3",
+      "prompt": "prompts/ch5-02-platinum-brush.txt",
+      "status": "user-approved chapter-title lettering",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        33,
+        19,
+        1482,
+        1006
+      ],
+      "content_bbox": [
+        154,
+        87,
+        1381,
+        965
+      ],
+      "layout": {
+        "generated_crop": [
+          154,
+          87,
+          1381,
+          965
+        ],
+        "position": [
+          52,
+          188
+        ],
+        "rendered_size": [
+          420,
+          301
+        ]
+      }
+    },
+    {
+      "id": "ch3-01-rain-mincho",
+      "chapter": 3,
+      "original": "palette-v2/originals/ch3-dark-lettering.png",
+      "sha256": "268a00e7e3659dd90c6438f0545f5b398f6d703b998b7f296ea9592bb1d5862e",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-1bba5cfe-7917-4988-8ad6-aba7395b2788",
+      "prompt": "palette-v2/prompts/ch3-dark-lettering.txt",
+      "status": "user-approved chapter-title lettering",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        27,
+        65,
+        988,
+        1512
+      ],
+      "content_bbox": [
+        328,
+        113,
+        696,
+        1503
+      ],
+      "layout": {
+        "generated_crop": [
+          328,
+          113,
+          696,
+          1503
+        ],
+        "position": [
+          83,
+          148
+        ],
+        "rendered_size": [
+          114,
+          430
+        ]
+      },
+      "palette_variant": "ch3-dark-lettering",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/originals/ch3-01-rain-mincho.png",
+          "sha256": "2fbb5f00ffefa92c0a0bd463572c2fbc6343a47a970a421eb783c37cfc631f49",
+          "saved_copy": "palette-v2/references/ch3-dark-lettering-1-ch3-01-rain-mincho.png"
+        }
+      ]
+    },
+    {
+      "id": "ch4-01-ink-craft",
+      "chapter": 4,
+      "original": "originals/ch4-01-ink-craft.png",
+      "sha256": "5ec552f9c72418e899c0cced4868f8a10b891065972d42f1cacb51e6acf76a95",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-0e7684ea-b811-47e6-b0b8-10a8abbef2d9",
+      "prompt": "prompts/ch4-01-ink-craft.txt",
+      "status": "unused after modern-style request",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        19,
+        19,
+        1524,
+        1007
+      ],
+      "content_bbox": [
+        183,
+        97,
+        1397,
+        958
+      ]
+    },
+    {
+      "id": "ch3-crown-focus",
+      "kind": "art",
+      "chapter": 3,
+      "refs": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/plates/ch3-art.png"
+      ],
+      "original": "originals/ch3-crown-focus.png",
+      "sha256": "aa7e8238c1f38de26914dcfa4abdb362668f42126ce58a573d90b781952a7f39",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-ecd5b6e0-16e0-4543-b248-f8db4d60545e",
+      "prompt": "prompts/ch3-crown-focus.txt",
+      "status": "review candidate"
+    },
+    {
+      "id": "ch4-hajime-guardian-dubai",
+      "kind": "art",
+      "chapter": 4,
+      "refs": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ],
+      "original": "originals/ch4-hajime-guardian-dubai.png",
+      "sha256": "27d2130ec5c3d5668796066c9929ef7758a2b4ef56a9970493831e9a44ae90c8",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-ccac4882-1cfd-405e-b47d-83cc73c41710",
+      "prompt": "prompts/ch4-hajime-guardian-dubai.txt",
+      "status": "review candidate"
+    },
+    {
+      "id": "ch4-02-modern-legacy",
+      "kind": "type",
+      "chapter": 4,
+      "refs": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png"
+      ],
+      "original": "palette-v2/originals/ch4-dark-lettering.png",
+      "sha256": "a7a5e087e322790e04b161863379a911108d56972b465f699b0fe7114a37f2fc",
+      "size": [
+        2046,
+        769
+      ],
+      "mode": "RGBA",
+      "generation_id": "exec-4305bdcf-5c86-4c4f-b3d4-c2d07b449131",
+      "prompt": "palette-v2/prompts/ch4-dark-lettering.txt",
+      "status": "user-approved chapter-title lettering",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        0,
+        2032,
+        769
+      ],
+      "content_bbox": [
+        137,
+        144,
+        1902,
+        641
+      ],
+      "layout": {
+        "generated_crop": [
+          137,
+          144,
+          1902,
+          641
+        ],
+        "position": [
+          54,
+          223
+        ],
+        "rendered_size": [
+          455,
+          128
+        ]
+      },
+      "palette_variant": "ch4-dark-lettering",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/originals/ch4-02-modern-legacy.png",
+          "sha256": "eaa1d997a165043094d308d3add77fe1dca1cbc6b4799233f8a049773ffb5207",
+          "saved_copy": "palette-v2/references/ch4-dark-lettering-1-ch4-02-modern-legacy.png"
+        }
+      ]
+    },
+    {
+      "id": "ch3-silver-day",
+      "chapter": 3,
+      "kind": "art",
+      "original": "palette-v2/originals/ch3-silver-day.png",
+      "sha256": "2e2fedf45c88ededf7aaca385c1bd78a9c3747148edc41ced1173299c478be0c",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-ec7f1877-e16f-48da-9b2d-b325b71c1b81",
+      "prompt": "palette-v2/prompts/ch3-silver-day.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch3-art.png",
+          "sha256": "0e4c93807dd4ebfa04dd79faf656019d9857052e18aab6fff168e6ea06aa01d8",
+          "saved_copy": "palette-v2/references/ch3-silver-day-1-ch3-art.png"
+        }
+      ]
+    },
+    {
+      "id": "ch4-desert-sunset",
+      "chapter": 4,
+      "kind": "art",
+      "original": "palette-v2/originals/ch4-desert-sunset.png",
+      "sha256": "e8cff3efedf0ff3e6c75d5b3fbaf53e1c8e95cc3cedda4e351847c62bed5b04a",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "generation_id": "exec-4aedd952-8e1f-4423-ab87-cf7ea9aa48b2",
+      "prompt": "palette-v2/prompts/ch4-desert-sunset.txt",
+      "status": "review candidate",
+      "references": [
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/plates/ch4-art.png",
+          "sha256": "f5f211bec9c37af994d71a06aaa109921a48470f8b2b39b85b9cc2a22ec02ac1",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-1-ch4-art.png"
+        },
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/hajime/chr_hajime_normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-2-chr_hajime_normal.png"
+        },
+        {
+          "path_as_passed": "/Users/hasegawaatsuki/Documents/Codex/2026-10-13/https-github-com-haseatsu114514-dot-shisha/work/shisha-ch1-white-walk/assets/sprites/characters/sumi/chr_sumi_normal.png",
+          "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+          "saved_copy": "palette-v2/references/ch4-desert-sunset-3-chr_sumi_normal.png"
+        }
+      ]
+    }
+  ],
+  "defaults": {
+    "2": "ch2-02-horizontal",
+    "3": "ch3-01-rain-mincho",
+    "4": "ch4-02-modern-legacy",
+    "5": "ch5-02-platinum-brush"
+  },
+  "scene_sources": {
+    "2": "sources/ch2-C-art.png",
+    "3": "palette-v2/originals/ch3-silver-day.png",
+    "4": "palette-v2/originals/ch4-desert-sunset.png",
+    "5": "sources/ch5-art.png"
+  },
+  "scene_sha256": {
+    "2": "59b4431b288bbe443185166a10b35720c28ac55cb44cd13a9586657cb451217c",
+    "3": "2e2fedf45c88ededf7aaca385c1bd78a9c3747148edc41ced1173299c478be0c",
+    "4": "e8cff3efedf0ff3e6c75d5b3fbaf53e1c8e95cc3cedda4e351847c62bed5b04a",
+    "5": "83d2d7010353413372d5784339138b66bba71181d0abc5dcc732c4fc5b6f7223"
+  },
+  "references": [
+    {
+      "source_path": "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png",
+      "source_commit": "e10d7d6c99c32f320e0b61b19ac5db946c5884d7",
+      "git_blob": "ccd98b74f0e3cdc868752d7b6d28533d2ece3cb1",
+      "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972"
+    },
+    {
+      "source_path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "source_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
+      "git_blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "source_path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "source_commit": "80b0ceca309b54d47518a7664936c2e760f36953",
+      "git_blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49",
+      "sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5"
+    }
+  ],
+  "current_lineup": [
+    {
+      "chapter": 1,
+      "path": "sources/ch1-selected-D.png",
+      "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972"
+    },
+    {
+      "chapter": 2,
+      "path": "images/default-ch2.png",
+      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61"
+    },
+    {
+      "chapter": 3,
+      "path": "images/default-ch3.png",
+      "sha256": "15068735e34b21a52987c6fdfa1c94b0efa7a3bd60b96267a2e328e13f164574"
+    },
+    {
+      "chapter": 4,
+      "path": "images/default-ch4.png",
+      "sha256": "1b758ddeec7a531ebe56f386044ecb5c2358223281ee025b07c6f224e826cf79"
+    },
+    {
+      "chapter": 5,
+      "path": "images/default-ch5.png",
+      "sha256": "f0bb477424c4d486cbacf1acf926643cb3d8d559d5a402a0e57188e5bed11656"
+    }
+  ],
+  "chapter1_lineup_reference": {
+    "source_path": "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png",
+    "source_commit": "e3b9debee052fdf97fe670ebc962b173dfbd21be",
+    "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972"
+  },
+  "palette_review": {
+    "manifest": "palette-v2/manifest.json",
+    "chapters": {
+      "1": "white / walking pixel art",
+      "2": "pink / deep shadows, selected C",
+      "3": "silver grey / worn antique gold",
+      "4": "desert sunset / turquoise",
+      "5": "violet / chrome"
+    },
+    "unchanged_art_chapters": [
+      1,
+      2,
+      5
+    ]
+  },
+  "user_approval": {
+    "record": "adoption.json",
+    "date": "2026-10-13",
+    "selected_chapters": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "runtime_integrated": false
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-13 JST",
+  "issue": 514,
+  "items": [
+    {
+      "character": "kumicho",
+      "source": {
+        "path": "asset_sources/ch2-characters/kumicho/normal-source.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "0ecec88667ce5d70f9a1d90ae45681eae87f7e9cc2105c9fd8edebf98d94aaa5"
+      },
+      "runtime": {
+        "path": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "c7e51cbf4fba461e6b39d8f4004223b43eb83e0b33fa21d822c8607a8ba71f34"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "references": [],
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/kumicho/chr_kumicho_normal.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "ee5ee43d57e94e18b5ffd73a890aecc244742784e49d73bc2033caf021b08825"
+      },
+      "framing": {
+        "faces": [
+          "normal"
+        ],
+        "h": 0.9792,
+        "b": 0.0117,
+        "ax": 0.4831,
+        "aspect": 0.7467
+      },
+      "conversion": "ImageMagick aspect-preserving resize and transparent extent to 896x1200; build_manifest.py --portraits-only exports lossless WebP and measured framing"
+    },
+    {
+      "character": "rei",
+      "source": {
+        "path": "asset_sources/ch2-characters/rei/normal-source.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "06d3fdce597de61d8b548197ecee0575b9123e8e1736f82bed3223cc6f76a840"
+      },
+      "runtime": {
+        "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "references": [],
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/rei/chr_rei_normal.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "0c3429619cd715b06c699f989873296df5d449b8fe8989b694db9f564ff634b0"
+      },
+      "framing": {
+        "faces": [
+          "normal"
+        ],
+        "h": 0.985,
+        "b": 0.01,
+        "ax": 0.4833,
+        "aspect": 0.7467
+      },
+      "conversion": "ImageMagick aspect-preserving resize and transparent extent to 896x1200; build_manifest.py --portraits-only exports lossless WebP and measured framing"
+    },
+    {
+      "character": "volk",
+      "source": {
+        "path": "asset_sources/ch2-characters/volk/normal-source.png",
+        "size": [
+          887,
+          1774
+        ],
+        "mode": "RGBA",
+        "sha256": "7a071a1354f67c4cf98278f5d1c35c939018ccfaa590570c63ee3eb7ad310c99"
+      },
+      "runtime": {
+        "path": "assets/sprites/characters/volk/chr_volk_normal.png",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "7d096196d6ad952694943299e3113244804d4b6fe33c246b34ec96046bbdc917"
+      },
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "references": [],
+      "runtime_webp": {
+        "path": "remake/img/sprites/characters/volk/chr_volk_normal.webp",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA",
+        "sha256": "f4e07c7d6851d62c82ee31a2bdee498abb85b1770948c0280683092fbbf6b086"
+      },
+      "framing": {
+        "faces": [
+          "normal"
+        ],
+        "h": 0.9692,
+        "b": 0.0167,
+        "ax": 0.4736,
+        "aspect": 0.7467
+      },
+      "conversion": "ImageMagick aspect-preserving resize and transparent extent to 896x1200; build_manifest.py --portraits-only exports lossless WebP and measured framing"
+    }
+  ]
+}

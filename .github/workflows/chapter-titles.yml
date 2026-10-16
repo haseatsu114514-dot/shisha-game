@@ -1,0 +1,60 @@
+name: Approved chapter title cards
+on:
+  pull_request:
+    paths: ['remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
+  push:
+    branches: [main]
+    paths: ['remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: chapter-titles-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/chapter-title-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Approved images, real chapter entrances and fallbacks
+        env:
+          ARTIFACT_DIR: .codex/artifacts/chapter-titles
+          TEST_REF: ${{ github.sha }}
+        run: node remake/test/browser/chapter_titles.mjs
+      - name: Preserve results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: chapter-title-results
+          path: |
+            .codex/artifacts/chapter-titles/
+            ${{ runner.temp }}/chapter-title-preview.log

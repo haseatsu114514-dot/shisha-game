@@ -4,11 +4,17 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 const ROOT = "../";
+// 章の追加台本は必要になった時だけ読み、起動や他章の通信を増やさない。
+export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament" };
+// データローダは状態モジュールを読み込まない。天気側が表示用の読み取り関数を登録する。
+let backgroundWeather = () => null;
+export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
 
 /** 読み込んだ全データ。起動時に loadAll() が埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
-  kafuka: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
   flavors: [],
   flavorById: {},
   equipment: [],
@@ -35,8 +41,10 @@ const DIALOGUE_FILES = [
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
-  "kafuka", // 帰り道の出会いと、章2からのシーシャーク
+  "samechan", // 帰り道の出会いと、章2からのシーシャーク
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "venue_hours", // 店主の案内と街の昼夜差分
+  "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
@@ -93,8 +101,9 @@ export async function loadAll(onProgress = () => {}) {
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
-  DB.kafuka = raw["dlg:kafuka"] || {};
-  if (DB.kafuka.profile?.id) DB.characters[DB.kafuka.profile.id] = DB.kafuka.profile;
+  DB.samechan = raw["dlg:samechan"] || {};
+  DB.hiyori = raw["dlg:hiyori"] || {};
+  if (DB.samechan.profile?.id) DB.characters[DB.samechan.profile.id] = DB.samechan.profile;
   DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));
@@ -102,7 +111,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.equipById = Object.fromEntries(DB.equipment.map((e) => [e.id, e]));
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
-  DB.lime = [...raw.lime.messages, ...(DB.kafuka.lime || [])];
+  DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.tips = raw.tips.tips;
@@ -124,7 +133,7 @@ export async function loadAll(onProgress = () => {}) {
 
 // 最初から知っている相手・モブ。それ以外は名乗るまで「？？？」（master_spec #1）
 const ALWAYS_KNOWN = new Set([
-  "hajime", "sumi", "salaryman", "kako", "rira", "oneesan", "pakki",
+  "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
@@ -155,10 +164,10 @@ export function displayName(id, state, { context = null } = {}) {
   if (id === "oneesan" && state?.flags?._minto_identity_revealed) {
     return state.flags._minto_name_known ? DB.characters.minto?.private_name || "栞" : "みんと";
   }
-  if (id === "kafuka") {
-    if (state?.flags?._kafuka_name_known) return DB.characters.kafuka?.full_name || "波多野かふか";
-    if (state?.flags?._kafuka_nickname_known || state?.flags?._lime_contact_kafuka || state?.contacts?.includes("kafuka")
-      || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
+  if (id === "samechan") {
+    if (state?.flags?._samechan_name_known) return DB.characters.samechan?.full_name || realName(id);
+    if (state?.flags?._samechan_nickname_known || state?.flags?._lime_contact_samechan || state?.contacts?.includes("samechan")
+      || state?.limeRead?.includes("lime_naru_samechan_nickname")) return "サメちゃん";
     return "？？？";
   }
   if (id === "minto" && context === "private" && state?.flags?._minto_name_known && DB.characters.minto?.private_name) {
@@ -194,7 +203,7 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street"]);
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap"]);
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 const BG_NO_NIGHT_TINT = new Set([
   "bg_eden_shop.png", "bg_ageha_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
@@ -218,6 +227,13 @@ export function sceneBg(ref, timeOfDay = "day") {
     if (list.includes(variant)) name = variant;
   }
   if (!list.includes(name)) return { url: null, tint: null };
+  // 曇り・雨は同じ曇天画。雨粒は既存weatherレイヤーだけが描く。
+  // 差分の用意された場所だけ切り替え、未制作の場所は従来の絵を維持する。
+  const weather = backgroundWeather();
+  if (weather === "cloud" || weather === "rain") {
+    const overcast = name.replace(/_(day|night)\.png$/, "_overcast_$1.png");
+    if (list.includes(overcast)) name = overcast;
+  }
   const tint = timeOfDay === "night" && !name.endsWith("_night.png") && !BG_NO_NIGHT_TINT.has(name) ? "night" : null;
   return { url: img(`backgrounds/${name}`), tint };
 }

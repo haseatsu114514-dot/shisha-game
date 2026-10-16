@@ -1,0 +1,127 @@
+{
+  "version": 3,
+  "characterProfiles": [
+    "dialogue/samechan.json"
+  ],
+  "scenarios": [
+    {
+      "id": "ordinary-cup",
+      "file": "dialogue/trpg_ordinary.json",
+      "price": 500,
+      "stockRequires": [
+        "hiyori"
+      ]
+    },
+    {
+      "id": "shark-last-order",
+      "file": "dialogue/trpg_shark.json",
+      "price": 800,
+      "stockRequires": [
+        "samechan"
+      ]
+    }
+  ],
+  "unlockChapter": 2,
+  "participants": [
+    {
+      "id": "hiyori",
+      "maxAffinity": 66,
+      "workLabel": "仕事の時間",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "物語の役を演じるのが好き"
+    },
+    {
+      "id": "samechan",
+      "maxAffinity": 66,
+      "workLabel": "店のシフト中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "slot": 1,
+          "days": [
+            0,
+            1,
+            2,
+            4,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "サメ映画のGMに興味あり"
+    },
+    {
+      "id": "tsumugi",
+      "maxAffinity": 66,
+      "workLabel": "大学の制作時間",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            1,
+            2,
+            4
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "静かな少人数の卓が好き"
+    },
+    {
+      "id": "adam",
+      "maxAffinity": 66,
+      "workLabel": "店のシフト中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        },
+        {
+          "slot": 1,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "物語や舞台の仕掛けが好き"
+    }
+  ],
+  "club": {
+    "name": "煙とサイコロ部",
+    "file": "dialogue/trpg_club.json"
+  }
+}

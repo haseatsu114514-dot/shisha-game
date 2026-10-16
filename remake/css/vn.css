@@ -4,6 +4,14 @@
 #vn { opacity: 0; transition: opacity 0.25s ease; }
 #vn.active { opacity: 1; }
 
+.vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
+  display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;
+  background: #171221f2; color: #e4d4b4; font-size: 18px; pointer-events: none; }
+.vn-loading::before { content: ""; width: 22px; height: 22px; border: 2px solid #a58b5233; border-top-color: #dfc58e;
+  border-radius: 50%; animation: vn-loading-turn 1s linear infinite; }
+@keyframes vn-loading-turn { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .vn-loading::before { animation: none; } }
+
 .vn-cg {
   position: absolute;
   inset: 0;
@@ -13,6 +21,7 @@
   z-index: 3;
 }
 .vn-cg.show { opacity: 1; }
+.vn-skip .vn-cg { transition-duration: .14s; }
 /* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる。 */
 .vn-cg[data-cg="cg_minto_first_cheki"] {
   background-color: var(--ink);
@@ -45,6 +54,9 @@
 #vn.sepia .vn-portraits, #vn.sepia .vn-cg { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
 body.in-vn #bg { transition: filter 0.4s; }
 #vn.sepia ~ #bg, body.in-vn:has(#vn.sepia) #bg { filter: sepia(0.8) brightness(0.9); }
+#vn.flashback .vn-portraits, #vn.flashback .vn-cg,
+body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
+#vn.flashback::after { content: "回想"; position: absolute; top: 36px; left: 50%; transform: translateX(-50%); padding: 8px 24px; color: #eee; background: #19151bd9; border: 1px solid #aaa; font-size: 24px; letter-spacing: .25em; pointer-events: none; }
 
 .vn-portraits { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
 .portrait {
@@ -62,6 +74,7 @@ body.in-vn #bg { transition: filter 0.4s; }
 .portrait[data-pos="left"] { left: 30%; }
 .portrait[data-pos="right"] { left: 70%; }
 .portrait.enter { opacity: 0; translate: 0 24px; }
+.vn-skip .portrait { transition-duration: .12s; }
 
 .vn-scent {
   position: absolute;
@@ -146,6 +159,19 @@ body.in-vn #bg { transition: filter 0.4s; }
   font-feature-settings: "palt" 0;
   min-height: 96px;
 }
+/* 枠の高さは固定。本心がある発言は1行ずつ送り、本心の2行分を空ける。 */
+.vn-box.has-inner .vn-text { min-height: 48px; }
+.vn-inner {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: #ffb6cc;
+  text-shadow: 0 1px 2px #000;
+}
+.vn-inner[hidden] { display: none; }
 .tx-imp { color: var(--gold-hi); font-weight: 700; text-shadow: 0 0 16px rgba(255, 210, 120, 0.6); }
 .tx-warn { color: #ff8f8f; font-weight: 700; }
 .tx-hint { color: #9fe3ff; }
@@ -247,6 +273,7 @@ body.in-vn #bg { transition: filter 0.4s; }
 .log-list { overflow-y: auto; flex: 1; padding-right: 10px; }
 .log-row { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-size: 18px; line-height: 1.6; }
 .log-row b { display: block; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
+.log-inner { margin-top: 4px; font-size: 16px; color: #ffb6cc; }
 
 /* ---------------------------------------------------------------- 用語集 */
 .glossary-modal { width: 900px; }
@@ -305,7 +332,7 @@ body.in-vn #bg { transition: filter 0.4s; }
 .cutin.in[data-char="naru"] .ci-motif {transform:none;}
 .cutin[data-char="dr_kemuri"] .ci-halftone {background:linear-gradient(#142a3230 1px,transparent 1px),linear-gradient(90deg,#142a3230 1px,transparent 1px);background-size:32px 32px;}
 .cutin.in[data-char="dr_kemuri"] .ci-halftone {opacity:.5;}
-.cutin[data-char="kafuka"] .ci-left-field {background:linear-gradient(125deg,#d6f3ff,#77b8f5 65%,#367cf3);}
+.cutin[data-char="samechan"] .ci-left-field {background:linear-gradient(125deg,#d6f3ff,#77b8f5 65%,#367cf3);}
 @media(prefers-reduced-motion:reduce) {
  .cutin,.cutin * {transition:none!important;}
  .cutin :is(.ci-portrait,.ci-motif,.ci-tag,.ci-title,.ci-name,.ci-full,.ci-line) {transform:none!important;}

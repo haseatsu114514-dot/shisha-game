@@ -1,0 +1,379 @@
+{
+  "worker": "codex-cg360-20261012-7242bf5ca07e",
+  "head": "0ab99e95f4ae26ce43bfdcba08e62497214edee0",
+  "base": "95d9c5c06ab4c454c670542261ef174c41ec8085",
+  "candidateTree": "5c4129e849f961e84daa5c373f9670842fd88249",
+  "headLocalCG": {
+    "name": "ch1-cg-art",
+    "baseURL": "http://127.0.0.1:8123/remake/",
+    "ref": "0ab99e95f4ae26ce43bfdcba08e62497214edee0",
+    "results": [
+      {
+        "label": "pc-cg_ch1_sumi_training",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_tsumugi_heart_art",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_minto_casual_reveal",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_dr_kemuri_hook",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_tournament_battle",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_nagumo_smile",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_oneesan_first_smoke",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_minto_casual",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_tsumugi_smoke_color",
+        "status": "passed"
+      },
+      {
+        "label": "pc-delayed-new-cg",
+        "status": "passed"
+      },
+      {
+        "label": "pc-failed-cg-does-not-unlock-gallery",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_sumi_training",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_tsumugi_heart_art",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_minto_casual_reveal",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_dr_kemuri_hook",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_tournament_battle",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_nagumo_smile",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_oneesan_first_smoke",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_minto_casual",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_tsumugi_smoke_color",
+        "status": "passed"
+      },
+      {
+        "label": "touch-delayed-new-cg",
+        "status": "passed"
+      },
+      {
+        "label": "touch-failed-cg-does-not-unlock-gallery",
+        "status": "passed"
+      },
+      {
+        "label": "unused-placeholder-still-excluded",
+        "status": "passed"
+      },
+      {
+        "label": "touch-portrait-rotation",
+        "status": "passed"
+      }
+    ]
+  },
+  "headLocalEve": {
+    "name": "ch1-eve",
+    "baseURL": "http://127.0.0.1:8123/remake/",
+    "ref": "0ab99e95f4ae26ce43bfdcba08e62497214edee0",
+    "results": [
+      {
+        "label": "pc-practice",
+        "status": "passed"
+      },
+      {
+        "label": "pc-drill",
+        "status": "passed"
+      },
+      {
+        "label": "pc-talk_sumi",
+        "status": "passed"
+      },
+      {
+        "label": "pc-sleep_early",
+        "status": "passed"
+      },
+      {
+        "label": "touch-practice",
+        "status": "passed"
+      },
+      {
+        "label": "touch-drill",
+        "status": "passed"
+      },
+      {
+        "label": "touch-talk_sumi",
+        "status": "passed"
+      },
+      {
+        "label": "touch-sleep_early",
+        "status": "passed"
+      },
+      {
+        "label": "single-drill-holes",
+        "status": "passed"
+      },
+      {
+        "label": "single-drill-steam",
+        "status": "passed"
+      },
+      {
+        "label": "single-drill-pull",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-13-00",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-13-01",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-13-10",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-13-11",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-14-00",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-14-01",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-14-10",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-14-11",
+        "status": "passed"
+      },
+      {
+        "label": "legacy-rehearsal-only-practice-choice",
+        "status": "passed"
+      },
+      {
+        "label": "save-before-choice",
+        "status": "passed"
+      },
+      {
+        "label": "save-drill-menu",
+        "status": "passed"
+      },
+      {
+        "label": "save-during-practice",
+        "status": "passed"
+      },
+      {
+        "label": "save-during-drill",
+        "status": "passed"
+      },
+      {
+        "label": "save-during-talk",
+        "status": "passed"
+      },
+      {
+        "label": "save-during-feedback",
+        "status": "passed"
+      },
+      {
+        "label": "save-after-practice",
+        "status": "passed"
+      },
+      {
+        "label": "save-after-drill",
+        "status": "passed"
+      },
+      {
+        "label": "failed-full-practice-keeps-real-outcome",
+        "status": "passed"
+      },
+      {
+        "label": "stock-rescue-before-full-practice",
+        "status": "passed"
+      },
+      {
+        "label": "save-after-real-pull-stamina-cost",
+        "status": "passed"
+      },
+      {
+        "label": "already-tournament-does-not-reopen-eve",
+        "status": "passed"
+      },
+      {
+        "label": "chapter-resume-before-choice",
+        "status": "passed"
+      },
+      {
+        "label": "chapter-resume-pending-talk",
+        "status": "passed"
+      }
+    ]
+  },
+  "headNaturalProgress": {
+    "expected": [
+      "cg_oneesan_first_smoke",
+      "cg_ch1_sumi_training",
+      "cg_ch1_tsumugi_heart_art",
+      "cg_ch1_tournament_battle",
+      "cg_ch1_nagumo_smile",
+      "cg_ch1_dr_kemuri_hook"
+    ],
+    "seen": [
+      "cg_ch1_dr_kemuri_hook",
+      "cg_ch1_nagumo_smile",
+      "cg_ch1_sumi_training",
+      "cg_ch1_tournament_battle",
+      "cg_ch1_tsumugi_heart_art",
+      "cg_minto_first_cheki",
+      "cg_oneesan_first_smoke"
+    ],
+    "missing": []
+  },
+  "candidateCG": {
+    "name": "ch1-cg-art",
+    "baseURL": "http://127.0.0.1:8125/remake/",
+    "ref": "merge-candidate",
+    "results": [
+      {
+        "label": "pc-cg_ch1_sumi_training",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_tsumugi_heart_art",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_minto_casual_reveal",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_dr_kemuri_hook",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_tournament_battle",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_ch1_nagumo_smile",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_oneesan_first_smoke",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_minto_casual",
+        "status": "passed"
+      },
+      {
+        "label": "pc-cg_tsumugi_smoke_color",
+        "status": "passed"
+      },
+      {
+        "label": "pc-delayed-new-cg",
+        "status": "passed"
+      },
+      {
+        "label": "pc-failed-cg-does-not-unlock-gallery",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_sumi_training",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_tsumugi_heart_art",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_minto_casual_reveal",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_dr_kemuri_hook",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_tournament_battle",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_ch1_nagumo_smile",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_oneesan_first_smoke",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_minto_casual",
+        "status": "passed"
+      },
+      {
+        "label": "touch-cg_tsumugi_smoke_color",
+        "status": "passed"
+      },
+      {
+        "label": "touch-delayed-new-cg",
+        "status": "passed"
+      },
+      {
+        "label": "touch-failed-cg-does-not-unlock-gallery",
+        "status": "passed"
+      },
+      {
+        "label": "unused-placeholder-still-excluded",
+        "status": "passed"
+      },
+      {
+        "label": "touch-portrait-rotation",
+        "status": "passed"
+      }
+    ]
+  },
+  "candidateStoreLogos": "PASS: 18 UI cases, 7 brands, no browser errors; candidate-logos.log",
+  "claimStatusRun": 38307479783,
+  "mergeSha": "c968041be4fb923dcf3975c15fceab9f4c6afda2",
+  "mergedTreeMatchesCandidate": true
+}

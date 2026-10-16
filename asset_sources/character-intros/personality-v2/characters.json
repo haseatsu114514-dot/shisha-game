@@ -128,7 +128,7 @@
     "portrait_authority": "Previously generated remaster preview, copied byte-identically; no portrait redraw or filters."
   },
   {
-    "id": "kafuka",
+    "id": "samechan",
     "name": "サメちゃん",
     "full": "",
     "title": "サメの王の側近",
@@ -139,8 +139,8 @@
     "motif": "shark",
     "tag": "SHISHARK",
     "expression": "normal",
-    "caption_source": "data/dialogue/kafuka.json profile.intro_cutin; normal is the user-approved new design rather than an ungenerated smile. Full name stays hidden per alias rule.",
-    "portrait": "references/kafuka-normal.png",
+    "caption_source": "data/dialogue/samechan.json profile.intro_cutin; normal is the user-approved new design rather than an ungenerated smile. Full name stays hidden per alias rule.",
+    "portrait": "references/samechan-normal.png",
     "frame": {
       "width": 860,
       "left": -110,

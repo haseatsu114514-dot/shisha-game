@@ -200,7 +200,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カフェ。なるに教えてもらった店。"
+          "text": "『喫茶こはく』。なるに教えてもらった店。"
         },
         {
           "speaker": "",
@@ -273,6 +273,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "大会は、同じビルのイベントホールを借りて大々的に開かれる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "広い。とにかく広い。何十席もある大空間。過剰な装飾はなく、シンプルで洗練されたインテリア。"
         },
         {
@@ -283,17 +288,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ここが大会の会場……か。今日は普通の日だから、こんな感じなんだな）"
+          "text": "（大会を運営してる店か。参加登録は、ここの受付だな）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "フロアをぐるりと見回していると、奥のテーブルで、二人の男が打ち合わせをしているのが目に入った。"
+          "text": "フロアをぐるりと見回していると、奥のテーブルで、２人の男が打ち合わせをしているのが目に入った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "一人は白衣の男。七三分けのメガネ。"
+          "text": "１人は白衣の男。七三分けのメガネ。"
         },
         {
           "speaker": "",
@@ -308,7 +313,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（あの人……審査員の炭場さんだ。チャコール博士。もう一人は……南雲会長？）"
+          "text": "（あの人……審査員の炭場さんだ。チャコール博士。もう１人は……南雲会長？）"
         },
         {
           "type": "set_flag",
@@ -421,7 +426,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "案内のコードを読み取ると、スマホにパッキーの顔が現れた。"
+          "text": "案内のコードを読み取ると、大会のマスコット『パッキー』の顔がスマホに現れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙をモチーフにしたキャラクターらしい。"
         },
         {
           "type": "set_flag",
@@ -508,7 +518,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "もう一人が口を挟む。"
+          "text": "もう１人が口を挟む。"
         },
         {
           "speaker": "old_man",
@@ -533,7 +543,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "C.STATIONの奥に、大会ステージの準備が進んでいた。"
+          "text": "C.STATIONと同じビルのイベントホールをのぞく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会ステージの準備が進んでいた。"
         },
         {
           "speaker": "",
@@ -623,7 +638,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "南雲会長。一人で静かにシーシャを吸っている。"
+          "text": "南雲会長。１人で静かにシーシャを吸っている。"
         },
         {
           "speaker": "",
@@ -633,7 +648,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの人も、こうやって一人で吸いに来るんだ……。普通の客なんだよな、本当は）"
+          "text": "（あの人も、こうやって１人で吸いに来るんだ……。普通の客なんだよな、本当は）"
         },
         {
           "speaker": "",
@@ -643,7 +658,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（『もう一口吸いたい』──あの人にそう思わせる煙って、どんな一台だ？）"
+          "text": "（『もう一口吸いたい』──あの人にそう思わせる煙って、どんな１台だ？）"
         },
         {
           "speaker": "",
@@ -693,7 +708,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "きみに一つだけ。炭の火入れは、見た目より0.5秒長く。それだけで味が変わるよ"
+          "text": "きみに１つだけ。炭の火入れは、見た目より0.5秒長く。それだけで味が変わるよ"
         },
         {
           "speaker": "hajime",
@@ -754,7 +769,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "観音堂に来ると、砂利に箒の跡がきれいに残っていた。誰かが毎朝掃いているらしい。"
+          "text": "観音堂の砂利に、今日も箒の跡がきれいに残っていた。"
         },
         {
           "speaker": "hajime",
@@ -769,7 +784,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……焦らず、一台ずつ）"
+          "text": "（……焦らず、１台ずつ）"
         },
         {
           "speaker": "",
@@ -886,27 +901,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "チョイザップ。普段は無人の店だが、今日は月に一度、スタッフが来るミニレッスンの日らしい。"
+          "text": "チョイザップ。無人の受付を通り、アプリのフォーム動画を開く。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "「呼吸を止めないで〜」と言われながら、フォームを直される。"
+          "text": "画面の「息を止めずに」の案内を見て、軽い重さで姿勢を確かめる。"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
+          "face": "normal",
           "text": "（呼吸か……煙を扱う仕事なのに、普段意識してなかったな）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "深く吸って、ゆっくり吐く。それだけで持ち上がる重さが変わった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
+          "text": "深く吸って、ゆっくり吐く。急がず、自分のペースで繰り返した。"
         }
       ]
     },
@@ -952,39 +962,118 @@
         {
           "speaker": "",
           "face": "",
-          "text": "観音堂の石段に、見覚えのある背中があった。アダムだ。"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "はじめよ。……驚くことはない。俺とこの堂は、旧知の仲だ"
+          "text": "賽銭箱の前にアダムがいた。目を閉じ、長く手を合わせている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "アダムさんも、お参りですか？"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "果実は、静けさの中で熟す。俺の舌も、同じだ"
+          "text": "アダムさん。大会のお願いですか？"
         },
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "騒がしい日ほど、ここで舌を鎮める、……覚えておけ"
+          "text": "……荷だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "荷？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ダブルアップルが届かん。追跡画面も、昨日から動かん"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "spot_kannon_adam_done",
+          "next_true": "resume",
+          "next_false": "choose"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "並んで手を合わせた。帰り道、妙に心が静かだった。"
+          "text": "帰り際にも、アダムはもう一度だけ荷物の追跡画面を見た。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【根性】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_adam"
         }
-      ]
+      ],
+      "branches": {
+        "choose": [
+          {
+            "type": "choice",
+            "id": "spot_kannon_adam",
+            "choices": [
+              {
+                "text": "無事届くように、一緒に祈る",
+                "next": "yes"
+              },
+              {
+                "text": "ほかのダブルアップルでは駄目なんですか？",
+                "next": "no"
+              }
+            ]
+          }
+        ],
+        "resume": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_spot_choice_adam_pray",
+            "next_true": "yes",
+            "next_false": "no"
+          }
+        ],
+        "yes": [
+          {
+            "type": "set_flag",
+            "flag": "_spot_choice_adam_pray"
+          },
+          {
+            "type": "set_flag",
+            "flag": "spot_kannon_adam_done"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "隣で手を合わせる。アダムは、さっきより少しだけ深く頭を下げた。"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……果実にも、旅の無事を願う者が必要だ"
+          }
+        ],
+        "no": [
+          {
+            "type": "set_flag",
+            "flag": "spot_kannon_adam_done"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "十種類あっても、代わりにならぬ日がある"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いつもの味を待ってる人もいるんですね"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……俺も、その一人だ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "kannon_oldman",
@@ -995,47 +1084,46 @@
         {
           "speaker": "",
           "face": "",
-          "text": "観音堂に着くと、箒の音がした。作務衣の老人が砂利を掃いている。"
+          "text": "老人が箒を持ったまま、石段の猫とにらめっこしていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "そこ、まだ掃いてないんだよ。どいてくれないかね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "いつかの箒の跡は、この人のものだったらしい。"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "おや。若いのに、よく来るね"
+          "text": "猫は目を閉じた。聞こえている顔だった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ここ、落ち着くんです。……毎朝、掃いてるんですか？"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "もう五十年ね。掃くというより、場を整えてるんだよ"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "場が整うと、心も整う。あんたの仕事も、同じだろう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（場を整える……。開店前の仕込みと、同じだ）"
+          "text": "じゃあ、こっちから掃きましょうか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "手を合わせて帰る頃には、頭の中まで掃き清められた気がした。"
+          "text": "反対側を掃き終えると、猫がそちらへ歩いてきた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "……きれいな方がいいのかい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人と顔を見合わせて笑った。帰る前に、二人で手を合わせた。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【根性】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_oldman"
         }
       ]
     },
@@ -1086,44 +1174,108 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カフェのカウンターに、見覚えのある背中。なるだ。"
+          "text": "窓際の席になるがいた。目の前にはプリンとケーキ。"
         },
         {
           "speaker": "naru",
-          "face": "smile",
-          "text": "あれ、はじめ。……そっか、この店教えたの俺だっけ"
+          "face": "surprise",
+          "text": "うわ、見られた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい、通ってます。なるさんは、休憩ですか？"
+          "text": "新しいミックスのための試食ですか？"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "鼻のリセット。営業中、鼻はどんどん鈍るからさ"
+          "text": "……いや。両方うまそうで、選べなかっただけ"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "コーヒー豆の香りで、鼻の物差しがゼロに戻る。香水屋と同じ理屈ね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（戻し方まで持ってるのか……。プロの引き出しだ）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "spot_cafe_naru_done",
+          "next_true": "resume",
+          "next_false": "choose"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "少し話して、なるは店へ戻っていった。真似したい習慣がまた増えた。"
+          "text": "なるはようやくスプーンを取った。仕事の話はしないまま、休憩が終わった。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_naru_break"
         }
-      ]
+      ],
+      "branches": {
+        "choose": [
+          {
+            "type": "choice",
+            "id": "spot_cafe_naru",
+            "choices": [
+              {
+                "text": "ケーキ、少し分けてもらっていいですか？",
+                "next": "yes"
+              },
+              {
+                "text": "今日はプリンにして、ケーキは次にしませんか？",
+                "next": "no"
+              }
+            ]
+          }
+        ],
+        "resume": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_spot_choice_naru_cafe_share",
+            "next_true": "yes",
+            "next_false": "no"
+          }
+        ],
+        "yes": [
+          {
+            "type": "set_flag",
+            "flag": "_spot_choice_naru_cafe_share"
+          },
+          {
+            "type": "set_flag",
+            "flag": "spot_cafe_naru_done"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "助かる。じゃあ半分……いや、ひと口分は俺に残して"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "半分よりだいぶ多いですね"
+          }
+        ],
+        "no": [
+          {
+            "type": "set_flag",
+            "flag": "spot_cafe_naru_done"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "その手があったか。じゃあ次、ケーキ頼んで感想教えて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。プリンは今日のおすすめってことで"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cafe_master_quiz",
@@ -1132,44 +1284,48 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "カフェのカウンターで一息。マスターがいたずらっぽく笑った。"
-        },
-        {
           "speaker": "master_cafe",
           "face": "",
-          "text": "今日のブレンド、隠し味がひとつ。当てられたら大したものです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "え、……じゃあ、挑戦します"
+          "text": "すみません、蜂蜜のふたを開けてもらえますか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "一口。苦味の奥に、ほんのり丸い甘さの香りが残る。"
+          "text": "マスターが瓶を差し出した。タオルで包んでも、びくともしない。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "……カルダモン、ですか？"
+          "text": "任せてください、……あれ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で格闘してから、マスターがふたを温めた。今度はあっさり開いた。"
         },
         {
           "speaker": "master_cafe",
           "face": "",
-          "text": "惜しい。オレンジピールの蜂蜜漬けです。香りの層は読めてますよ"
+          "text": "最初からこうすればよかったですね"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "（香りを層で分けて当てる……配合の訓練と同じだ）"
+          "face": "smile",
+          "text": "腕に自信がつくところだったんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものラテを飲む。マスターは瓶を、少しだけ緩く閉めて棚へ戻した。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_master_quiz"
         }
       ]
     },
@@ -1215,37 +1371,41 @@
         {
           "speaker": "",
           "face": "",
-          "text": "チョイザップで、ベンチの使い方に迷っていると、年配の常連さんが笑った。"
+          "text": "年配の常連さんが、マシンの周りをしきりに探していた。"
         },
         {
           "speaker": "old_man",
           "face": "",
-          "text": "兄ちゃん、重さはそれでいい。惜しいのは姿勢だ。胸張って、顎引いて"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "あ、……ほんとだ。軽く感じる"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "姿勢ってのは、それだけで説得力が出るんだよ。仕事でもな"
+          "text": "イヤホンが片っぽ消えちゃってね。ここで落としたはずなんだけど"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（カウンターに立つ姿勢……明日から意識してみよう）"
+          "text": "あの、襟に引っかかってます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "帰り際、鏡の前で背筋を伸ばした。ちょっとだけ、様になっていた。"
+          "text": "常連さんは首元に手をやって、声を出して笑った。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "いやあ、今日はよく歩いた。まだ何も始めてないのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分のイヤホンも確かめてから、いつものトレーニングを始めた。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_oldman"
         }
       ]
     },
@@ -1259,120 +1419,159 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_minto_name_known",
-          "next_true": "known",
-          "next_false": "check_revealed"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "隣のマシンで並んで走った。いつもより、いい汗だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
+          "flag": "_minto_identity_revealed",
+          "next_true": "encounter",
+          "next_false": "solo"
         }
       ],
       "branches": {
-        "known": [
+        "choose": [
+          {
+            "type": "choice",
+            "id": "spot_choizap_minto",
+            "choices": [
+              {
+                "text": "あと一分だけ、一緒に続ける",
+                "next": "yes"
+              },
+              {
+                "text": "今日はここで終えて、休む",
+                "next": "no"
+              }
+            ]
+          }
+        ],
+        "resume": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_spot_choice_minto_extra_minute",
+            "next_true": "yes",
+            "next_false": "no"
+          }
+        ],
+        "yes": [
+          {
+            "type": "set_flag",
+            "flag": "_spot_choice_minto_extra_minute"
+          },
+          {
+            "type": "set_flag",
+            "flag": "spot_choizap_minto_done"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……じゃあ、一分だけ。速くしなくていいから"
+          },
           {
             "speaker": "",
             "face": "",
-            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。栞さんだ。"
+            "text": "表示の数字を見ながら走る。最後の十秒は、二人とも黙っていた。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……長かったね、一分"
+          }
+        ],
+        "no": [
+          {
+            "type": "set_flag",
+            "flag": "spot_choizap_minto_done"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……うん。そう言ってもらえると、止めやすい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "速度を落として、隣のマシンを降りる。しばらく水を飲んでいた。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……休んでても、まだ足が走ってるみたい"
+          }
+        ],
+        "encounter": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_minto_name_known",
+            "next_true": "known",
+            "next_false": "unknown"
           },
           {
             "speaker": "minto",
             "face": "ura_surprise",
-            "text": "……あ、はじめくん。来てたんだね。走ってるところ、見られちゃった"
+            "text": "……あ、はじめくん。……あと一分で終わろうと思ってたの"
           },
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "栞さんも通ってたんだ。教えてもらったジム、ちゃんと続けてるよ"
+            "text": "その「あと一分」、さっきも聞こえましたよ"
           },
           {
             "speaker": "minto",
-            "face": "ura_smile",
-            "text": "……ふふ。私も、少しずつね。お店で一日立ってると、体力がいるから"
+            "face": "ura_normal",
+            "text": "……聞こえてたんだ。……二回くらい、言ったかも"
           },
           {
-            "speaker": "minto",
-            "face": "ura_smile",
-            "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "spot_choizap_minto_done",
+            "next_true": "resume",
+            "next_false": "choose"
           },
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+            "speaker": "",
+            "face": "",
+            "text": "帰り際、隣のマシンを拭く布を手渡した。今日の運動は、ここまで。"
+          },
+          {
+            "type": "apply",
+            "stats": {
+              "charm": 4
+            }
+          },
+          {
+            "type": "set_flag",
+            "flag": "_spot_seen_choizap_minto"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ランニングマシンに、見覚えのある姿があった。栞さんだ。"
           }
         ],
         "unknown": [
           {
             "speaker": "",
             "face": "",
-            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。みんとだ。"
-          },
-          {
-            "speaker": "minto",
-            "face": "ura_surprise",
-            "text": "……あ、はじめくん。来てたんだね。……走ってるところを見られるの、ちょっと恥ずかしい"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "来てたんですね。教えてもらったジム、ちゃんと通ってますよ"
-          },
-          {
-            "speaker": "minto",
-            "face": "ura_smile",
-            "text": "……ふふ。私も、少しずつ続けてるの。お店で一日立ってると、体力がいるから"
-          },
-          {
-            "speaker": "minto",
-            "face": "ura_smile",
-            "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+            "text": "ランニングマシンに、見覚えのある姿があった。みんとだ。"
           }
         ],
-        "check_revealed": [
-          {
-            "type": "condition",
-            "condition_type": "flag",
-            "flag": "_minto_identity_revealed",
-            "next_true": "unknown",
-            "next_false": "stranger"
-          }
-        ],
-        "stranger": [
+        "solo": [
           {
             "speaker": "",
             "face": "",
-            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。tonariのお姉さんだ。"
+            "text": "空いているランニングマシンで、いつものペースで走った。"
           },
           {
-            "speaker": "oneesan",
-            "face": "ura_surprise",
-            "text": "……あ、こんにちは。……走ってるところ、見られちゃった"
+            "speaker": "",
+            "face": "",
+            "text": "終了ボタンを押すと、外の車の音が聞こえてきた。"
           },
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "こんにちは。ここ、通ってるんですね"
-          },
-          {
-            "speaker": "oneesan",
-            "face": "ura_smile",
-            "text": "……うん。立ち仕事だと、体力がいるから"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（静かな人だと思ってたけど、こういう所で鍛えてるんだ）"
+            "type": "apply",
+            "stats": {
+              "charm": 4
+            }
           }
         ]
       }
@@ -1383,7 +1582,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の前園壮一郎さんだ。"
+          "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の上園文太郎さんだ。"
         },
         {
           "speaker": "",
@@ -1413,7 +1612,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
+          "text": "吸う人の顔まで含めて１台なんだと、なんとなく分かった気がした。"
         }
       ]
     },
@@ -1423,12 +1622,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "C.STATIONの奥のステージで、二頭身のマスコットがマイクを握っていた。"
+          "text": "C.STATIONと同じビルのイベントホール。二頭身のマスコットがマイクを握っていた。"
         },
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "泣いても笑っても、勝者はたった一人ッ！ ……うーん、もう一声ほしいなあ"
+          "text": "泣いても笑っても、勝者はたった１人ッ！ ……うーん、もう一声ほしいなあ"
         },
         {
           "speaker": "",
@@ -1493,7 +1692,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（揃える強さと、揃えない強さ。……tonariの一台は、どっちだ）"
+          "text": "（揃える強さと、揃えない強さ。……tonariの１台は、どっちだ）"
         },
         {
           "speaker": "",
@@ -1501,6 +1700,274 @@
           "text": "チェーンの作業場から、思わぬ宿題をもらってしまった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "cafe_maezono_break",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席で、ノートパソコンを開いた男性がケーキを注文していた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_maezono",
+          "next_true": "known",
+          "next_false": "intro"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "コラムの締め切りでねえ。ここだと、つい長居しちゃうんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケーキが届くと、上園さんはひと口食べて、ぴたりと止まった。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "surprise",
+          "text": "……写真。食べる前に撮るつもりだったんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "おいしかった証拠は、撮れそうですね"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "それでいきましょう。……今度は二口目を食べる前に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの音がした。画面の端には、小さなコーヒーの染みも写っていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_maezono_break"
+        }
+      ],
+      "branches": {
+        "intro": [
+          {
+            "type": "set_flag",
+            "flag": "_met_maezono"
+          },
+          {
+            "speaker": "maezono",
+            "face": "normal",
+            "text": "どうも、上園です。HOOKAH PRESSというサイトで記事を書いてまして"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野です。tonariでバイトしてます"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "上園さん、こんにちは。ここにも来るんですね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "choizap_naru",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のランニングマシンで、なるが速度を上げていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "今日、焼き菓子の試作で食いすぎた。ここで帳尻合わせる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一分もしないうちに、なるの手が速度のボタンへ戻った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……これ、食べた分を一気に取り返すの無理だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ゆっくりでいいんじゃないですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "だな。しかも帰り道、またパン屋があるんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人とも速度を落とした。パン屋の看板が、少し気になる。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_naru"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_naru_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_spot_choice_naru_cafe_share",
+          "next_true": "shared",
+          "next_false": "next_time"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_naru"
+        }
+      ],
+      "branches": {
+        "shared": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "こはくのケーキ、結局俺の方が多く食ってたな。悪い"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ひと口を残すつもりが、逆になってましたね"
+          }
+        ],
+        "next_time": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "こはくのケーキ、まだ食べてないんだ。お前が頼んだら感想聞かせて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "次に寄ったら、今度こそケーキにします"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "kannon_adam_followup",
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……届いたぞ。例のダブルアップルだ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_spot_choice_adam_pray",
+          "next_true": "prayed",
+          "next_false": "asked"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "今日は、この葉で作ろう"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_adam"
+        }
+      ],
+      "branches": {
+        "prayed": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "一緒にお願いした甲斐がありましたね"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……お前の分の礼も、忘れておらん"
+          }
+        ],
+        "asked": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "代わりがきかない一種類ですね"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "うむ。待つ者のところへ、ようやく戻った"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "choizap_minto_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_spot_choice_minto_extra_minute",
+          "next_true": "minute",
+          "next_false": "rest"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_minto"
+        }
+      ],
+      "branches": {
+        "minute": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "この前の「あと一分」、今日は一回でやめられたよ♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "あの一分、意外と長かったですね"
+          }
+        ],
+        "rest": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "この前、一緒に休んでくれてありがと♪ 今日はちゃんと止められた♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "水を飲んでから帰ると、だいぶ楽でしたね"
+          }
+        ]
+      }
     }
   ]
 }

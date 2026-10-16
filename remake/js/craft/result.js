@@ -1,7 +1,7 @@
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, clamp, rand } from "../core/util.js";
-import { faceIconUrl, displayName } from "../core/data.js";
+import { faceIconUrl, displayName, portraitInfo } from "../core/data.js";
 import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE, stopBgm } from "../core/audio.js";
@@ -9,11 +9,12 @@ import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
 import { evaluationOf } from "./feedback.js";
+import { craftRecognition } from "./recognition.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
 const JUDGES = [
-  { id: "maezono", label: "前園" },
+  { id: "maezono" },
   { id: "dr_kemuri", label: "チャコール博士" },
   { id: "nagumo", label: "南雲" },
 ];
@@ -39,9 +40,23 @@ const totals = (table, upto = JUDGES.length) => {
 
 const nameOf = (id) => (id === "hajime" ? "はじめ" : displayName(id, state));
 const faceOf = (id, cls = "") => {
-  const u = faceIconUrl(id);
-  return u ? el(`img${cls}`, { src: u, alt: "" }) : el(`span${cls}.ph`, { text: nameOf(id)[0] });
+  const portrait = portraitInfo(id, "normal");
+  const u = faceIconUrl(id) || portrait?.src;
+  const fallback = el("span.face-fallback", { text: nameOf(id)[0], "aria-hidden": "true" });
+  const root = el(`span.tournament-face${cls}`, [fallback]);
+  if (u) {
+    const img = el("img", { src: u, alt: "", decoding: "async" });
+    img.addEventListener("load", () => root.classList.add("loaded"), { once: true });
+    root.append(img);
+    if (img.complete && img.naturalWidth) root.classList.add("loaded");
+  }
+  return root;
 };
+const ordered = (values) => CONTESTANTS.slice().sort((a, b) => values[b] - values[a]);
+const rankOf = (id, values) => 1 + CONTESTANTS.filter(other => values[other] > values[id]).length;
+const header = (eyebrow, title, sub) => el("header.tournament-heading", [
+  el("span.tournament-eyebrow", { text: eyebrow }), el("h1", { text: title }), el("p", { text: sub }),
+]);
 
 // ---------------------------------------------------------------- 中間発表
 
@@ -50,22 +65,28 @@ const faceOf = (id, cls = "") => {
  * @param round 1 | 2
  * @param mine  ここまでのはじめの出来（0〜100）
  */
-export async function showStandings(round, mine) {
-  const base = { naru: 82, adam: 74, minto: 67 };
-  const rows = Object.entries(base).map(([id, v]) => ({ id, v: v + rand(-2, 2) }));
-  rows.push({ id: "hajime", v: Math.min(mine * 0.9, 80) });
-  rows.sort((a, b) => b.v - a.v);
+export async function showStandings(round, mine, cs = null) {
+  // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
+  const table = round === 1
+    ? { maezono: { naru: 3, adam: 1, minto: 1 }, dr_kemuri: {}, nagumo: {} }
+    : { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 4, minto: 2, naru: 1 }, nagumo: {} };
+  const values = totals(table);
   const feed = round === 1
-    ? ["前園、なるに3点投入！", "南雲審査員長、まだ動かず"]
+    ? [`${displayName("maezono", state)}、なるに3点投入！`, "南雲審査員長、まだ動かず"]
     : ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"];
-  const board = el("div.standings", [
-    el("div.sd-title", { text: `ROUND ${round} 暫定順位` }),
-    el("div.sd-rows", rows.map((r, i) => el(`div.sd-row${r.id === "hajime" ? ".me" : ""}`, { style: { "--i": String(i) } }, [
-      el("span.sd-rank", { text: `${i + 1}` }),
-      faceOf(r.id, ".sd-face"),
-      el("span.sd-name", { text: nameOf(r.id) }),
-      el("i.sd-bar", [el("b", { style: { width: `${clamp(r.v, 5, 100)}%` } })]),
+  const review = evaluationOf(mine);
+  const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
+  const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
+    header(`SMOKE CROWN CUP / ROUND ${round}`, "現在の投票", "審査員の持ち点 · 南雲審査員長は10点を保留"),
+    el("div.sd-rows", ordered(values).map((id, i) => el(`div.sd-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(i) }, dataset: { id } }, [
+      el("span.sd-rank", { text: String(rankOf(id, values)) }),
+      faceOf(id, ".sd-face"),
+      el("span.sd-name", { text: nameOf(id) }),
+      el("i.sd-bar", [el("b", { style: { width: `${values[id] / 20 * 100}%` } })]),
+      el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
     ]))),
+    el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
+    recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
     el("div.sd-feed", feed.map((t) => el("div", { text: `▶ ${t}` }))),
   ]);
   const dim = el("div.fx-dim");
@@ -94,13 +115,14 @@ export async function resultCountdown(cs, kind) {
   const fast = !!autoSkill();
   const tick = fast ? 60 : 620;
   const num = el("div.rc-num");
+  const ring = el("div.rc-ring", { "aria-hidden": "true", html: '<svg viewBox="0 0 240 240"><circle class="rc-ring-track" cx="120" cy="120" r="110"/><circle class="rc-ring-progress" cx="120" cy="120" r="110"/></svg>' });
   const cuts = el("div.rc-cuts");
   const pray = el("div.rc-pray", CONTESTANTS.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, [
     faceOf(id, ".rc-face"),
     el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] } }),
     el("span", { text: nameOf(id) }),
   ])));
-  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [el("div.rc-title", { text: "RESULT" }), cuts, num, pray, el("div.rc-crt")]);
+  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
   showScreen("count", screen);
   const cutWords = [
     "アルミ穴あけ", cs.heat?.flash ? "炭のピカン" : "炭の赤熱", cs.heat?.just ? "ジャスト炭" : "炭の熱", "立ちのぼる煙",
@@ -109,6 +131,7 @@ export async function resultCountdown(cs, kind) {
   SE.drumroll(fast ? 0.5 : 5.5);
   for (let n = 10; n >= 0; n--) {
     num.textContent = String(n);
+    ring.style.setProperty("--count", String(n / 10));
     num.classList.remove("pop");
     void num.offsetWidth;
     num.classList.add("pop");
@@ -168,14 +191,14 @@ export async function nagumoCutin(rank) {
   const table = pointTable(rank);
   const before = totals(table, 2);
   const after = totals(table, 3);
-  const maxV = 13;
+  const maxV = Math.max(...Object.values(after), 1);
   const bars = el("div.nc-bars", CONTESTANTS.map((id) => el(`div.nc-row${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
     faceOf(id, ".nc-face"), el("span.nc-name", { text: nameOf(id) }),
     el("i.nc-bar", [el("b", { style: { width: `${(before[id] / maxV) * 100}%` } })]),
     el("span.nc-pt", { text: `${before[id]}` }),
   ])));
   const cut = el("div.nc-cut", [faceOf("nagumo", ".nc-cut-face"), el("div", [el("small", { text: "審査員長" }), el("b", { text: "南雲修二" }), el("div.nc-cut-pt", { text: "持ち点10、一括投入" })])]);
-  const ov = el("div.nagumo-cut", [el("div.nc-title", { text: "持ち点 投入状況" }), bars, cut]);
+  const ov = el("div.nagumo-cut", [header("FINAL VOTE", "南雲の10点", "もう一口、吸いたい一台へ。"), bars, cut]);
   layers.fx.append(ov);
   const fast = !!autoSkill();
   await sleep(40);
@@ -217,10 +240,10 @@ function confetti(host) {
 export function resultTable(cs, rank) {
   return new Promise((resolve) => {
     const t = totals(pointTable(rank));
-    const order = CONTESTANTS.slice().sort((a, b) => t[b] - t[a]);
+    const order = ordered(t);
     const P = cs.parts || {};
     const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) } }, [
-      el("span.rt-rank", { text: `${i + 1}位` }), faceOf(id, ".rt-face"), el("span.rt-name", { text: nameOf(id) }),
+      el("span.rt-rank", { text: `${rankOf(id, t)}位` }), faceOf(id, ".rt-face"), el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${pointTable(rank).maezono[id] || 0} · 博士 ${pointTable(rank).dr_kemuri[id] || 0} · 南雲 ${pointTable(rank).nagumo[id] || 0}` })]),
       el("i.rt-bar", [el("b", { style: { width: `${(t[id] / 20) * 100}%` } })]), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));
     const evaluation = (score) => {
@@ -229,18 +252,34 @@ export function resultTable(cs, rank) {
     };
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
-      ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["FLAVOR TRIAL", P.trial]].map(([k, v]) =>
-        el("div.rt-part", [el("span", { text: k }), evaluation(v)])),
+      ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]].map(([k, v]) =>
+        el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: `${Math.round(v || 0)} / 100` })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
       cs.arcade?.total ? el("div.rt-part.score", { dataset: { test: "result-score" } }, [el("span", { text: "SCORE" }), el("b.arcade-num", { text: String(cs.arcade.total).padStart(6, "0") })]) : null,
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
-      el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、動かなかった。" }),
+      el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、あなたには届かなかった。" }),
+      el("small.rt-next-tip", { text: improvementOf(cs) }),
     ]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
-    showScreen("result", el("div.result-table", [el("div.rt-title", { text: "SMOKE CROWN CUP  FINAL RESULT" }), el("div.rt-rows", rows), detail, btn]));
+    showScreen("result", el("div.result-table", { dataset: { test: "tournament-result", rank } }, [
+      header("SMOKE CROWN CUP / FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "蒸野 始 · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
+      el("div.rt-layout", [el("section.rt-ranking", [el("h2", { text: "最終順位 · 審査員の持ち点" }), el("div.rt-rows", rows)]), detail]), btn,
+    ]));
     if (rank === 1) SE.fanfare();
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });
+}
+
+function improvementOf(cs) {
+  const parts = cs.parts || {};
+  const weakest = Object.entries(parts).sort((a, b) => a[1] - b[1])[0]?.[0];
+  return {
+    holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
+    heat: "次の練習：炭の芯が光る瞬間を確かめよう。",
+    shisha: "次の練習：配合と、提供時の温度を確かめよう。",
+    care1: "次の練習：1回目の調整で、交換する炭の数を見直そう。",
+    care2: "次の練習：2回目まで葉を残し、最適温で仕上げよう。",
+  }[weakest] || "";
 }

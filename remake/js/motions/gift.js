@@ -7,7 +7,7 @@ import { state } from "../core/state.js";
 import { DB, displayName, makingUrl } from "../core/data.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, confetti, twinkle, kinetic, playKinetic } from "../core/mg-kit.js";
-import { flavorColor } from "../craft/art.js";
+import { flavorColor, bowlArtFiles } from "../craft/art.js";
 import { stagePlay, backdrop } from "./stage.js";
 
 // イージング。指数の曲線は短い動き用なので、長めの動きは quint／cubic のやわらかい曲線にする
@@ -28,9 +28,13 @@ function giverColor(from) {
 }
 
 /** ハガルの絵を中身の幅 w px で置く。sheen は絵の形で切り抜いた光の帯 */
-function bowlArt(w = BOWL_W) {
-  const url = makingUrl(BOWL);
-  const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[BOWL] || BOWL_BOX;
+const bowlFile = gear => gear?.art ? bowlArtFiles({ equip: { bowl: gear.id } })[0] : BOWL;
+function bowlArt(w = BOWL_W, gear = null) {
+  const file = bowlFile(gear), url = makingUrl(file);
+  const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[file] || BOWL_BOX;
+  // 背の高い専用ハガルも、縦横比を保って文字より上へ収める。
+  const maxHeight = gear?.id === "suyaki_hiyori" ? 380 : 440;
+  w = Math.min(w, maxHeight * (r - l) * aspect / (b - t));
   const fullW = w / (r - l), fullH = fullW / aspect;
   const h = Math.round(fullH * (b - t));
   const size = `${fullW}px ${fullH}px`, pos = `${-l * fullW}px ${-t * fullH}px`;
@@ -43,8 +47,8 @@ function bowlArt(w = BOWL_W) {
 }
 
 /** 絵を先に読んでおく（出てくる瞬間に欠けないように）。読めなくても長くは待たない */
-async function loadBowl() {
-  const url = makingUrl(BOWL);
+async function loadBowl(gear) {
+  const url = makingUrl(bowlFile(gear));
   if (!url) return;
   const img = new Image();
   img.src = url;
@@ -99,7 +103,8 @@ async function finish(iris, hero, fx, cx, cy, P) {
   await sleep(410); // ハガルが点になる瞬間に合わせる
   SE.select();
   ring(fx, cx, cy, { r: 120, color: P.white, width: 6, dur: 420 });
-  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 500 }));
+  // 最後の遅延分も丸い幕の520msに収める。
+  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 400 }));
   await move(iris, [{ "--mo-hole": "0%" }, { "--mo-hole": "100%" }], 520, { easing: IN_SOFT });
 }
 
@@ -113,7 +118,7 @@ export async function a(gear) {
   const ribbon = giverColor(gear.gift?.from) || P.main;
   const smoke = pick({ c: flavorColor(gear.gift?.flavor) }, { c: P.light }).c;
   const cx = W / 2, cy = 300; // ハガルの中心
-  await loadBowl();
+  await loadBowl(gear);
   await stagePlay("gift", async (node) => {
     // 背景・光・箱・ハガル・前面のはじけ・文字の順に重ねる
     const back = backdrop(P.bg);
@@ -122,7 +127,7 @@ export async function a(gear) {
     const cone = el("i.mo-gift-cone", { style: { background: `linear-gradient(${P.white}38, ${P.white}00 92%)` } });
     const iris = el("div.mo-gift-iris", [back, glow, rays, cone]);
     const shadow = el("i.mo-gift-shadow");
-    const bowl = bowlArt();
+    const bowl = bowlArt(BOWL_W, gear);
     const hero = el("div.mo-gift-hero", [shadow, bowl.node]);
     const column = el("i.mo-gift-column", { style: { background: `linear-gradient(${P.light}00, ${P.light}cc)` } });
     const band = (k) => el(`i.mo-gift-band.${k}`, { style: { background: ribbon } });
@@ -234,7 +239,7 @@ export async function b(gear) {
   const smoke = pick({ c: flavorColor(gear.gift?.flavor) }, { c: P.light }).c;
   const dark = motionIsLight(P) ? P.ink : P.white;
   const cx = W / 2, cy = 320; // ハガルの中心
-  await loadBowl();
+  await loadBowl(gear);
   const inner = `radial-gradient(circle, ${shade(P.cloth, 0.62)} 22%, transparent 24%) 0 0 / 26px 26px, ${shade(P.cloth, 0.42)}`;
   const outer = `radial-gradient(circle, ${shade(P.cloth, 0.3)} 20%, transparent 22%) 0 0 / 26px 26px, radial-gradient(circle, ${shade(P.cloth, 0.3)} 20%, transparent 22%) 13px 13px / 26px 26px, ${P.cloth}`;
   await stagePlay("gift", async (node) => {
@@ -250,7 +255,7 @@ export async function b(gear) {
     const tilt = el("div.mo-fu-tilt", [mat, knot]);
     const scene = el("div.mo-fu-scene", [tilt]);
     const shadow = el("i.mo-gift-shadow.at-b");
-    const bowl = bowlArt(500);
+    const bowl = bowlArt(500, gear);
     const hero = el("div.mo-gift-hero.at-b", [shadow, bowl.node]);
     const fx = stageSvg();
     const smokeArt = stageSvg();

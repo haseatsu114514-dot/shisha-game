@@ -1,0 +1,55 @@
+{
+  "style": "cel-1992-v2",
+  "validated_run": 38276719029,
+  "shots": [
+    {
+      "shot": "01-sumi-silence",
+      "generated_file": "exec-315d72aa-d80c-401d-ab05-5e93f5e8e7be.png",
+      "edit_target": "archive/chapter2-soft-v1/images/01-sumi-silence.png",
+      "style_reference": "style-v2/alternates/03-minto-two-shot.png",
+      "final": "images/01-sumi-silence.png",
+      "tool": "built-in image_gen.imagegen"
+    },
+    {
+      "shot": "02-naru-confrontation",
+      "generated_file": "exec-3f88327c-6604-4aab-8685-a4c28a057f3f.png",
+      "edit_target": "archive/chapter2-soft-v1/images/02-naru-confrontation.png",
+      "style_reference": "style-v2/alternates/03-minto-two-shot.png",
+      "final": "images/02-naru-confrontation.png",
+      "tool": "built-in image_gen.imagegen"
+    },
+    {
+      "shot": "03-minto-warning",
+      "generated_file": "exec-648be9d0-5430-44b9-b73b-7445222213f2.png",
+      "edit_target": "style-v2/alternates/03-minto-two-shot.png",
+      "style_reference": null,
+      "final": "images/03-minto-warning.png",
+      "tool": "built-in image_gen.imagegen",
+      "first_style_generation": "exec-53c90f20-6188-450a-a59b-dc80dae10930.png"
+    },
+    {
+      "shot": "04-tsumugi-water",
+      "generated_file": "exec-8c2ea3c3-b413-4973-b42a-b1c97f0d2aec.png",
+      "edit_target": "archive/chapter2-soft-v1/images/04-tsumugi-water.png",
+      "style_reference": "style-v2/alternates/03-minto-two-shot.png",
+      "final": "images/04-tsumugi-water.png",
+      "tool": "built-in image_gen.imagegen"
+    },
+    {
+      "shot": "05-ageha-departure",
+      "generated_file": "exec-ba489caf-6910-457a-9d30-c62c37fe0260.png",
+      "edit_target": "archive/chapter2-soft-v1/images/05-ageha-departure.png",
+      "style_reference": "style-v2/alternates/03-minto-two-shot.png",
+      "final": "images/05-ageha-departure.png",
+      "tool": "built-in image_gen.imagegen"
+    },
+    {
+      "shot": "06-empty-victory",
+      "generated_file": "exec-dcf4f92e-442c-4888-af85-b54159910ce2.png",
+      "edit_target": "archive/chapter2-soft-v1/images/06-empty-victory.png",
+      "style_reference": "style-v2/alternates/03-minto-two-shot.png",
+      "final": "images/06-empty-victory.png",
+      "tool": "built-in image_gen.imagegen"
+    }
+  ]
+}

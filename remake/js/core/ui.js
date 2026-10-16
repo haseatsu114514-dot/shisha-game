@@ -7,7 +7,9 @@ import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
+import { allStoreLogoUrls } from "./store-logos.js";
+import { chapterTitleArt } from "./chapter-title-art.js";
 
 export const layers = {};
 
@@ -25,7 +27,7 @@ export function initLayers() {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
     gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
-      evolution: starUp ? `レベル${star}に進化！` : "", fx });
+      evolution: starUp ? `Lv.${star}に到達` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -37,9 +39,11 @@ export function initLayers() {
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
-        ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
-        : levelUp ? `好感度が ${level} 段階に上がった！` : "少し打ち解けた気がする",
-      hearts: { from: heartState(prevPts), to: heartState(pts) },
+        ? (levelUp ? "恋人との絆が深まった" : "心の距離が少し近づいた")
+        : levelUp ? `仲が深まった（♥${level}）` : "好感度が少し上がった",
+      // The private growth remains hidden; lovers' ordinary hearts stay full.
+      hearts: bond ? { from: Array(5).fill(100), to: Array(5).fill(100) }
+        : { from: heartState(prevPts), to: heartState(pts) },
     });
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
@@ -56,24 +60,33 @@ let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
 
 const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
 
-/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む。keep: 読んだ絵を手放さない */
+/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false } = {}) {
-  if (!url) return Promise.resolve();
+  if (!url) return Promise.resolve(false);
   let p = bgReady.get(url);
   if (!p) {
     p = new Promise((resolve) => {
       const i = new Image();
       if (keep) keptImages.push(i);
-      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(resolve);
-      i.onerror = resolve;
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(true));
+      i.onerror = () => { bgReady.delete(url); resolve(false); };
       i.src = url;
     });
     bgReady.set(url, p);
   }
-  return Promise.race([p, sleep(ms)]);
+  if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      expiredImageWaits.set(p, Math.max(ms, expiredImageWaits.get(p) || 0));
+      resolve(false);
+    }, ms);
+    // 通信は継続する。遅れて届いた画像は通常のキャッシュへ戻し、通信失敗後の再試行も妨げない。
+    p.then((loaded) => { expiredImageWaits.delete(p); clearTimeout(timer); resolve(loaded); });
+  });
 }
 
 // ---------------------------------------------------------------- UIの絵の先読み
@@ -91,7 +104,7 @@ let uiArtDone = false;
 /** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls(), ...allStoreLogoUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   return uiArt;
@@ -105,14 +118,15 @@ export function uiArtReady(ms = 2000) {
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
- * 新しい場面が始まって見えるのを防ぐ）。戻り値の Promise で「絵が出た」を待てる
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
  */
-export function setBg(url, { instant = false, tint = null, fast = false, ready = [] } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
+  const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
-  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: document.body.classList.contains("vn-skip") }) : null;
+  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
@@ -123,6 +137,8 @@ export function setBg(url, { instant = false, tint = null, fast = false, ready =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    curtain?.commitArrival?.(url);
+    if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
@@ -133,14 +149,17 @@ export function setBg(url, { instant = false, tint = null, fast = false, ready =
     }
     requestAnimationFrame(() => next.classList.add("show"));
     setTimeout(() => olds.forEach((o) => o.remove()), fast ? 260 : 700);
-  }).finally(() => {
-    if (curtain) curtain.release().finally(() => { if (activeCurtain === curtain) activeCurtain = null; });
+  }).finally(async () => {
+    if (curtain) {
+      try { await curtain.release(); }
+      finally { if (activeCurtain === curtain) activeCurtain = null; }
+    }
   });
   return bgTask;
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
-function refreshWeather() {
+export function refreshWeather() {
   if (!layers.weather) return;
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   document.body.dataset.weather = scene?.mode || "none";
@@ -182,8 +201,12 @@ export function showScreen(name, node) {
     document.body.dataset.screen = name;
     refreshWeather();
   };
-  if (activeCurtain && name !== "none") activeCurtain.covered.then(commit);
-  else commit();
+  if (activeCurtain && name !== "none") {
+    // 覆ったところで古い地図を片付け、開いている戸口には背景だけを見せる。
+    // 後から別の画面が指定されたときは、古い予約で消したり差し替えたりしない。
+    activeCurtain.covered.then(() => { if (revision === screenRevision) host.replaceChildren(); });
+    bgTask.then(commit);
+  } else commit();
   return node;
 }
 
@@ -284,7 +307,7 @@ function pumpBanners() {
     const o = bannerQueue.shift();
     if (o.owner !== state) continue;
     bannerBusy++;
-    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
+    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
@@ -437,28 +460,55 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
 
 /** 章タイトル（煙の中から浮かぶ） */
 export async function chapterTitle({ no, name, read, sub }) {
-  const rich = no === "第一章";
-  const art = rich ? assetUrl("ui/chapters/ch1_keyart.png") : null;
-  const card = el(`div.chapter-card${rich ? ".rich" : ""}`, [
-    art ? el("img.cc-art", { src: art, alt: "" }) : null,
-    rich ? el("div.cc-frame", { "aria-hidden": "true" }, [el("i"), el("i")]) : null,
-    el("div.cc-copy", [
-      rich ? el("div.cc-kicker", { text: "SUIEN ZENSEN / CHAPTER 01" }) : null,
+  // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
+  const swallow = event => { event.preventDefault(); event.stopPropagation(); };
+  const blockAdvance = event => {
+    if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
+  };
+  const shield = el("div.chapter-title-shield", {
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow,
+  });
+  layers.fx.append(shield);
+  window.addEventListener("keydown", blockAdvance, true);
+  // Controlのkeyupは既存SKIP解除へ通す。押しっぱなし状態を次の会話へ残さない。
+  const blockRelease = event => { if (event.key !== "Control") blockAdvance(event); };
+  window.addEventListener("keyup", blockRelease, true);
+  try {
+    const art = chapterTitleArt(no);
+    const copy = el("div.cc-copy", [
       el("div.cc-no", { text: no }),
       el("div.cc-name", { text: name }),
       el("div.cc-read", { text: read }),
       sub ? el("div.cc-sub", { text: sub }) : null,
-    ]),
-  ]);
-  layers.fx.append(card);
-  SE.jingle();
-  if (art) await imageReady(art, 15000);
-  await nextFrame();
-  card.classList.add("show");
-  await sleep(3200);
-  card.classList.add("out");
-  await sleep(900);
-  card.remove();
+    ]);
+    const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+    // 画像が準備できるまでは本編の上に空白のカードを出さない。
+    // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
+    if (art && await imageReady(art, 15000)) {
+      copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
+      card.classList.add("illustrated");
+      card.dataset.art = "ready";
+      card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+    }
+    shield.append(card);
+    // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
+    // 透明な初期スタイルを確定してから既存のopacityトランジションを開始する。
+    void card.offsetWidth;
+    SE.jingle();
+    await nextFrame();
+    card.classList.add("show");
+    await sleep(3200);
+    card.classList.add("out");
+    // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
+    await Promise.race([
+      Promise.all(card.getAnimations().map(animation => animation.finished.catch(() => {}))),
+      sleep(1100),
+    ]);
+  } finally {
+    shield.remove();
+    window.removeEventListener("keydown", blockAdvance, true);
+    window.removeEventListener("keyup", blockRelease, true);
+  }
 }
 
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */

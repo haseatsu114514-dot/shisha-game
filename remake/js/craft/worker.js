@@ -1,14 +1,17 @@
-// 人物と台を一つの場面に収める。吸引中は水泡を動かし、後から工程別動画へ差し替える。
+// 工程に応じた人物・手元を既存の台へ重ねる。実入力の穴あけと吸引中の泡を表示する。
 import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
 import { artImg, artHeight } from "./art.js";
+import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-scenes.js";
+import { buildWorkerHoles } from "./worker-holes.js";
+import { imageReady } from "../core/ui.js";
 
 export const WORKER_STEPS = {
-  setup: "道具を選ぶ", concept: "今日の一台を考える", mix: "香りを合わせる",
+  setup: "道具を選ぶ", mix: "香りを合わせる",
   pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
   place: "炭を置く", steam: "蒸らしを待つ", pull: "煙の温度を合わせる",
-  care: "最後の一口まで整える", trial: "香りを届ける",
+  care: "最後の一口まで整える",
 };
 
 /** 作業台のシーシャ台（本体・ステム・受け皿・ボウル）。GAME OVER の影絵にも同じ組み方を使う。 */
@@ -29,11 +32,10 @@ export function buildHookahRig(cls) {
 export function buildWorkerScene(cs) {
   const portrait = portraitInfo("hajime", "serious");
   const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
-  for (const face of ["sad", "surprise"]) {
-    const p = portraitInfo("hajime", face);
-    if (p) { const warm = new Image(); warm.src = p.src; }
-  }
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
+  const actions = buildWorkerActions();
+  const holes = buildWorkerHoles();
+  actions.root.append(holes.root);
   const equipment = buildHookahRig("worker-equipment");
   const baseH = artHeight("hookah_base.png", 90);
   const water = el("div.worker-water", { "aria-hidden": "true", dataset: { test: "worker-bubbles" },
@@ -47,11 +49,12 @@ export function buildWorkerScene(cs) {
     actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
     equipment,
+    actions.root,
     el("div.worker-vignette"),
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
     el("i.worker-breath", { "aria-hidden": "true" }),
-    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? "SMOKE CROWN CUP" : "TONARI" }),
+    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : "TONARI" }),
   ]);
   // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);
@@ -60,21 +63,73 @@ export function buildWorkerScene(cs) {
   ]);
   // 表情: 蒸らしの雑念（揺れ）を優先し、落ち着いているときは疲れ具合で変える（TH43）。
   let mental = "steady", fatigue = 0;
+  let facesChecked = false;
+  const usableFaces = new Set();
+  const faceUrls = [...new Set([
+    ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face)?.src),
+  ].filter(Boolean))];
+  const warmFaces = Promise.all(faceUrls.map(async url => {
+    if (await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+  }));
+  const usable = url => url && (!facesChecked || usableFaces.has(url));
   const applyFace = () => {
     const waiting = root.dataset.step === "steam";
     const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
     const p = portraitInfo("hajime", face);
-    const calm = waiting && mental === "steady" && fatigue < 2 && makingUrl("hajime_steam_wait.png");
-    const src = calm || p?.src;
+    const calmUrl = makingUrl("hajime_steam_wait.png");
+    const calm = waiting && mental === "steady" && fatigue < 2 && usable(calmUrl) && calmUrl;
+    const src = calm || (usable(p?.src) ? p.src : faceUrls.find(usable));
+    if (actor) actor.hidden = !src;
     if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
     root.dataset.face = face;
     root.dataset.waiting = String(!!calm);
+    const sceneKey = workerSceneKey(root.dataset.step, root.dataset.draw);
+    const scene = actions.show(sceneKey === "holes" && !holes.available ? null : sceneKey);
+    holes.show(sceneKey === "holes" && !!scene);
+    root.dataset.scene = scene ? sceneKey : waiting ? "focus" : "fallback";
+    root.dataset.artFallback = String(!!sceneKey && !scene);
+    stage.setAttribute("aria-label", scene?.description || `はじめの作業風景：${WORKER_STEPS[root.dataset.step] || "一台を仕上げる"}`);
     if (waiting) {
       caption.textContent = WORKER_STEPS.steam;
-      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて蒸らしを待つ" : "蒸らしを待つはじめの表情に動揺が出ている");
+      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
-  return { caption, footer, root, setMental(level) {
+  const ready = Promise.all([actions.ready, holes.ready, warmFaces]).then(async () => {
+    facesChecked = true;
+    applyFace();
+    if (actor && !actor.hidden && !await readyWorkerImage(actor, actor.getAttribute("src"))) {
+      usableFaces.delete(actor.getAttribute("src"));
+      applyFace();
+    }
+  });
+  const prepare = async step => {
+    const key = workerSceneKey(step, null);
+    await Promise.all([
+      actions.prepare(key),
+      key === "holes" ? holes.prepare() : null,
+      ["steam", "timer"].includes(step) ? (async () => {
+        const url = makingUrl("hajime_steam_wait.png");
+        if (url && await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+      })() : null,
+      ["pull", "care"].includes(step) ? actions.prepare("inhale") : null,
+    ]);
+    applyFace();
+    if (["steam", "timer"].includes(step) && actor && !actor.hidden) {
+      await readyWorkerImage(actor, actor.getAttribute("src"));
+    }
+  };
+  return { caption, footer, root, ready, prepare, setStep(step) {
+    holes.reset();
+    root.dataset.step = step;
+    delete root.dataset.draw;
+    mental = "steady"; root.dataset.mental = mental;
+    caption.textContent = WORKER_STEPS[step] || "一台を仕上げる";
+    applyFace();
+    // 装飾だけを切り替える呼出しでも、必要な工程画像だけを裏で用意する。
+    prepare(step).then(() => { if (root.isConnected && root.dataset.step === step) applyFace(); });
+  }, punch(event) {
+    if (root.dataset.step === "holes") holes.punch(event);
+  }, setMental(level) {
     if (mental === level && root.dataset.mental === level) return;
     mental = level; root.dataset.mental = level;
     applyFace();
@@ -87,12 +142,13 @@ export function buildWorkerScene(cs) {
     if (kind) {
       root.dataset.draw = kind;
       root.style.setProperty("--draw-duration", `${duration}ms`);
+      applyFace();
       caption.textContent = kind === "up" ? "上げ吸い…" : kind === "down" ? "下げ吸い…" : "温度を保ちながら吸う…";
       stage.setAttribute("aria-label", `はじめの作業風景：${caption.textContent}。ベースの水が泡立っている`);
     } else {
       delete root.dataset.draw;
+      applyFace();
       caption.textContent = WORKER_STEPS[root.dataset.step] || "一台を仕上げる";
-      stage.setAttribute("aria-label", "はじめとシーシャの作業台を描いた静止イメージ");
     }
   } };
 }

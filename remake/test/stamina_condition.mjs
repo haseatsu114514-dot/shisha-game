@@ -9,7 +9,7 @@ class Element {
   constructor(spec) {
     const [tag, ...classes] = spec.split(".");
     this.tag = tag; this.classes = new Set(classes); this.children = []; this.listeners = {}; this.dataset = {};
-    this.style = { setProperty() {} };
+    this.style = { setProperty(name, value) { this[name] = value; }, getPropertyValue(name) { return this[name] || ""; } };
     this.classList = { add: (...v) => v.forEach((c) => this.classes.add(c)), remove: (...v) => v.forEach((c) => this.classes.delete(c)),
       contains: (c) => this.classes.has(c), toggle: (c, yes) => yes ? this.classes.add(c) : this.classes.delete(c) };
     if (classes.includes("dodge-word") || classes.includes("dodge-object")) spawned++;
@@ -18,9 +18,27 @@ class Element {
   }
   append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); }
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
+  cloneNode(deep = false) {
+    const node = new Element([this.tag, ...this.classes].join("."));
+    node.dataset = { ...this.dataset }; Object.assign(node.style, this.style);
+    if (deep) node.append(this.children.map(child => child.cloneNode?.(true) || child));
+    return node;
+  }
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
+  getAttribute(name) { return this[name] ?? null; }
+  querySelector(selector) {
+    assert(selector.startsWith(".") && !selector.includes(" "), `Unsupported fixture selector: ${selector}`);
+    const name = selector.slice(1);
+    for (const child of this.children) {
+      if (child.classes?.has(name)) return child;
+      const descendant = child.querySelector?.(selector);
+      if (descendant) return descendant;
+    }
+    return null;
+  }
   querySelectorAll() { return []; }
+  getContext() { return null; }
   remove() {}
 }
 function el(spec, attrs = {}, children = []) {
@@ -37,10 +55,11 @@ const mocks = {
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
-  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
-  "craft/art.js": { artImg: () => el("img") },
+  "craft/session.js": { waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
+  "craft/art.js": { artImg: () => el("img"), artHeight: () => 80 },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
   "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
+  "craft/smoke-art.js": { smokeUrl: () => "" },
 };
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },
   window: { addEventListener() {}, removeEventListener() {} },
@@ -129,9 +148,11 @@ console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live
 async function steam(ratio) {
   now = 1000; frames.clear(); spawned = 0;
   const cs = { mode: "tournament", condition: conditionForRatio(ratio), steamMin: 3 };
-  const running = steamModule.namespace.runSteamDodge(cs); await settle();
+  let error;
+  const running = steamModule.namespace.runSteamDodge(cs); running.catch(e => { error = e; }); await settle();
   for (let t = 1050; t <= 10100; t += 50) await frame(t);
-  await settle(); const count = spawned; nextButton().onclick(); await running;
+  await settle(); if (error) throw error;
+  const count = spawned; nextButton().onclick(); await running;
   return { count, hits: cs.steam.hits, score: cs.steam.score };
 }
 const steamGreen = await steam(.51), steamYellow = await steam(.5), steamRed = await steam(.25);

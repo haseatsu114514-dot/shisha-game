@@ -7,9 +7,10 @@ import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
-export const daysLeft = () => Math.max(0, TOURNAMENT_DAY - (state?.day || 1));
+export const daysLeft = () => chapterDaysLeft(state);
 
 let dom = null;
 let handlers = { phone: null, status: null, menu: null };
@@ -118,7 +119,8 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  dom.day.replaceChildren(el("b", { text: String(state.day) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
+  dom.area.textContent = state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "WIDEHANGA" : "SAKAE";
+  dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
   dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;
@@ -140,11 +142,15 @@ export function updateHud() {
 
 let recoveryObserver = null;
 
-/** 未読の赤丸（数字は出さない・通知バッジ風） */
+/** 未読件数を表示。従来の真偽値呼び出しにも互換対応する。 */
 export function setPhoneBadge(unread) {
   if (!dom) return;
-  dom.phone.classList.toggle("has", !!unread);
-  dom.phone.title = unread ? "LIME（未読あり）" : "LIME";
+  const count = typeof unread === "number" ? unread : unread ? 1 : 0;
+  const name = count ? `LIME（未読${count}件）` : "LIME";
+  dom.phone.classList.toggle("has", count > 0);
+  dom.phone.querySelector(".badge").textContent = count > 9 ? "9+" : String(count || "");
+  dom.phone.title = name;
+  dom.phone.setAttribute("aria-label", name);
 }
 
 /** 朝の家の画面で、就寝前の残量から回復後までゲージを伸ばす。 */

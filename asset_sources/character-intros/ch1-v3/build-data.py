@@ -8,7 +8,7 @@ from PIL import Image
 base = Path(__file__).resolve().parent
 root = base.parents[2]
 master = {c["id"]: c for c in json.loads((root / "data/characters.json").read_text())}
-master["kafuka"] = json.loads((root / "data/dialogue/kafuka.json").read_text())["profile"]
+master["samechan"] = json.loads((root / "data/dialogue/samechan.json").read_text())["profile"]
 previous = {c["id"]: c for c in json.loads((base.parent / "personality-v2/characters.json").read_text())}
 palette = {
  "hajime": ("#eee0bd", "#fff5dc", "smoke", "キャップ・マウスピース・煙"),
@@ -19,7 +19,7 @@ palette = {
  "adam": ("#ce3d40", "#85c96d", "duality", "左の青りんご（緑）・右の赤りんご・対になる円"),
  "minto": ("#36c59c", "#ffdbeb", "hearts", "ミントの葉・ハート・チェキ"),
  "rin": ("#5a60b6", "#cfd5ff", "witch", "サンプル缶・試香紙・ブルーベリー"),
- "kafuka": ("#298bdb", "#a6ddff", "shark", "王冠を被ったサメ・波"),
+ "samechan": ("#298bdb", "#a6ddff", "shark", "王冠を被ったサメ・波"),
  "nagumo": ("#afbccc", "#e7edf4", "judgment", "ネクタイ・審査の円"),
  "maezono": ("#398384", "#bfe5df", "press", "誌面・眼鏡・ペン"),
  "dr_kemuri": ("#39d7e7", "#cafaff", "science", "温度計・計測円・六角格子・グラフ"),
@@ -29,7 +29,7 @@ palette = {
 shadows = {
  "hajime":"#29251b", "sumi":"#351608", "tsumugi":"#251034", "oneesan":"#1a2a10",
  "naru":"#292c05", "adam":"#092d18", "minto":"#042f22", "rin":"#131746",
- "kafuka":"#082a48", "nagumo":"#152539", "maezono":"#062d30", "dr_kemuri":"#032d3a",
+ "samechan":"#082a48", "nagumo":"#152539", "maezono":"#062d30", "dr_kemuri":"#032d3a",
  "pakki":"#3a1905", "ageha":"#3b0829"
 }
 
@@ -87,8 +87,8 @@ for cid, (accent, secondary, motif, label) in palette.items():
                      "sha256": hashlib.sha256(image_path.read_bytes()).hexdigest()}
  if variants:
   record["backgrounds"] = variants
- if cid == "kafuka":
-  record["caption_source"] = "data/dialogue/kafuka.json: profile.intro_cutin"
+ if cid == "samechan":
+  record["caption_source"] = "data/dialogue/samechan.json: profile.intro_cutin"
  if cid == "hajime":
   record.update(name="はじめ", full="", caption_source="前回モックアップの提示案。ゲームの台詞・設定は変更しない")
  if cid == "ageha":

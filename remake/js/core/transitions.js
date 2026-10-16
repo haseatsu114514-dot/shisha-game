@@ -5,6 +5,9 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
+import { state } from "./state.js";
+import { createEntrySound } from "./entry-sound.js";
+import { withStoreArrival } from "./store-arrival.js";
 
 let serial = 0;
 const STYLES = ["diagonal", "smoke", "iris"];
@@ -24,17 +27,31 @@ let cue = null;
 export function cueTransition(kind, opts = {}) {
   cue = { kind, opts, at: performance.now() };
 }
+/** 入店前の体力確認などで待った場合も、同じ行き先の予約を実際の入店に使う。 */
+export function refreshPlaceCue(spotId) {
+  if (cue?.kind === "place" && cue.opts.spotId === spotId) cue.at = performance.now();
+}
+/** 入店前に街へ戻った場合は、その店の入店演出を次の移動へ持ち越さない。 */
+export function cancelPlaceCue(spotId) {
+  if (cue?.kind === "place" && cue.opts.spotId === spotId) cue = null;
+}
 function takeCue() {
   const c = cue;
   cue = null;
   return c && performance.now() - c.at < 3000 ? c : null;
 }
 
-export function createSceneCurtain(host, { fast = false } = {}) {
-  const reduced = reducedMotion();
+export function takeSceneArrival() {
   const cued = takeCue();
-  if (cued?.kind === "place" && !fast && !reduced) return moveCurtain(host, moveStyle(), cued.opts);
-  const ms = fast || reduced ? 45 : 260;
+  return { cued, commitArrival: createEntrySound(cued?.kind === "place" ? cued.opts : null, state?.chapter, () => SE.doorbell()) };
+}
+
+export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
+  const reduced = reducedMotion();
+  const { cued, commitArrival: entry } = sceneArrival;
+  const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
+  if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
+  const ms = reduced ? 45 : fast ? 140 : 260;
   const variant = STYLES[serial++ % STYLES.length];
   const node = el(`div.scene-curtain.${variant}`, { "aria-hidden": "true", style: { "--st-ms": `${ms}ms` }, dataset: { transition: variant } }, [
     el("div.st-field"),
@@ -44,12 +61,15 @@ export function createSceneCurtain(host, { fast = false } = {}) {
   ]);
   const unhold = holdKeys();
   host.append(node);
-  const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); })();
+  let coveredAt = 0;
+  const covered = (async () => { await nextFrame(); node.classList.add("cover"); await sleep(ms); coveredAt = performance.now(); })();
   let released = false;
-  return { covered, async release() {
+  const curtain = { covered, async release() {
     if (released) return;
     released = true;
     await covered;
+    // 通常の場面転換ではロゴを読む時間を確保。素材待ちの時間もこの表示時間へ含める。
+    if (!fast && !reduced) await sleep(Math.max(0, 650 - (performance.now() - coveredAt)));
     // 次の背景・画面・台詞を幕の内側で描いてから開く。
     await nextFrame(); await nextFrame();
     node.classList.add("reveal");
@@ -57,6 +77,7 @@ export function createSceneCurtain(host, { fast = false } = {}) {
     node.remove();
     unhold();
   } };
+  return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
 }
 
 // ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝
@@ -152,10 +173,7 @@ export async function nightToMorning(host, mid) {
     wx?.fadeOut(up);
     move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);
     await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], up);
-    const glow = el("div.tr-dawn-glow");
-    node.append(glow);
     node.style.pointerEvents = "none";
-    await move(glow, [{ opacity: 1 }, { opacity: 0 }], 560, { easing: EASE.out });
   } finally {
     wx?.stop();
     node.remove();

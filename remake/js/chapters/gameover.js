@@ -2,7 +2,9 @@
 // タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { state } from "../core/state.js";
 import { choosePremiumContinue, PREMIUM_CONTINUE_SCRIPTS } from "./continue-premium.js";
-import { createContinueAudio } from "../core/audio.js";
+import { createContinueAudio, preloadBgm } from "../core/audio.js";
+import { DB, img, portraitInfo } from "../core/data.js";
+import { imageReady } from "../core/ui.js";
 import { createContinueView } from "./continue-view.js";
 
 export const GAME_OVER_TEXT = {
@@ -88,15 +90,31 @@ export const SUMI_CONTINUE_SCRIPTS = [
   },
 ];
 
-// 1行を打ち出す時間と、反応の1行を見せる時間（秒）。
-const typeTime = (text, slot) => Math.max(.25, Math.min([...text].length * .05, slot * .6));
+/** 大会中に準備。抽選やセーブを動かさず、登場し得る相手の全表情とUIをデコードする。 */
+export function warmGameOver() {
+  const scripts = [...SUMI_CONTINUE_SCRIPTS,
+    ...(state?.lovers || []).map(id => PREMIUM_CONTINUE_SCRIPTS[id]).filter(Boolean)];
+  const urls = new Set((DB.manifest.continueUI || []).map(file => img(`ui/continue/${file}`)));
+  for (const script of scripts) {
+    const faces = [...script.cues.map(cue => cue.face),
+      ...Object.values(script.reactions).flatMap(reaction => reaction.faces)];
+    for (const face of faces) {
+      const url = portraitInfo(script.speaker || "sumi", face)?.src;
+      if (url) urls.add(url);
+    }
+  }
+  return Promise.all([preloadBgm("bgm_continue_urgent"), ...[...urls].map(url => imageReady(url, 15000))]);
+}
+
+// 試作と同じ26文字/秒。短いキューは既存の枠内で全文を出し、反応の保持時間は変えない。
+const typeTime = (text, slot) => Math.max(.01, Math.min([...text].length / 26, slot * .6));
 const lineTime = text => Math.max(1.1, [...text].length * .07 + .55);
 
 let nextScript = 0;
 let previousContinueSpeaker = null;
 // 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage" } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")
@@ -107,7 +125,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
   const view = createContinueView({ script, speaker, character: script.name || "スミさん",
-    premium: speaker !== "sumi", onType: () => audio.voice(speaker) });
+    premium: speaker !== "sumi", layout, background, onType: () => audio.voice(speaker) });
   const { root } = view;
   root.dataset.reason = reason;
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -116,7 +134,10 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   let currentInstant = false, hiddenAt = null, reactionAt = null, choice = null, secondFace = false, exit = 0;
   let reactionLine = -1, reactionLineAt = 0, reactionInstant = false;
   const counted = new Set();
-  const observer = new MutationObserver(() => { if (!root.isConnected) cleanup(); });
+  const observer = new MutationObserver(() => {
+    if (!started && root.isConnected) begin();
+    else if (started && !root.isConnected) cleanup();
+  });
   function setMotion() {
     reduce = reducedMotion || !!motion?.matches;
     root.dataset.reducedMotion = String(reduce);
@@ -125,11 +146,30 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   setMotion();
   motion?.addEventListener?.("change", setMotion);
 
+  // 字幕だけをフレームごとに更新。台本・残り時間・反応の保持時間は既存の時計を使う。
+  function revealCaption(elapsed = (performance.now() - speechStart) / 1000) {
+    if (!active || !started || document.hidden || choice === "timeout") return;
+    if (choice) {
+      const text = script.reactions[choice].text[reactionLine];
+      const seconds = (performance.now() - reactionLineAt) / 1000;
+      view.reveal(reactionInstant || reduce ? 1 : Math.min(1, seconds / typeTime(text, lineTime(text))));
+    } else if (cueIndex >= 0) {
+      const cue = script.cues[cueIndex];
+      const slot = (script.cues[cueIndex + 1]?.at ?? script.duration) - cue.at;
+      view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
+        : Math.min(1, Math.max(0, elapsed - cue.at) / typeTime(cue.text, slot)));
+    }
+  }
+  function animateCaption() {
+    if (!active || !root.isConnected) return;
+    revealCaption();
+    frame = requestAnimationFrame(animateCaption);
+  }
+
   function sync(at, sound = true, countAt = at) {
     const elapsed = Math.min(script.duration, Math.max(0, at));
     const index = Math.max(0, script.cues.findLastIndex(c => c.at <= elapsed));
     const cue = script.cues[index];
-    const length = (script.cues[index + 1]?.at ?? script.duration) - cue.at;
     if (index !== cueIndex) {
       // 表情が変わる区切りだけ人物を弾ませ、低い拍を鳴らす。小分けの行送りでは鳴らさない。
       const turn = index === 0 || cue.face !== script.cues[cueIndex]?.face;
@@ -137,15 +177,14 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       currentInstant = false;
       root.dataset.cue = String(index);
       root.dataset.lastCue = String(index === script.cues.length - 1);
-      view.setCaption(cue.text, cue.emphasis, length);
+      view.setCaption(cue.text, cue.emphasis);
       view.announce(cue.text);
       view.face(cue.face, turn && !reduce);
       if (sound && index > 0 && turn) audio.beat();
     }
-    view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
-      : Math.min(1, (elapsed - cue.at + .05) / typeTime(cue.text, length)));
+    revealCaption(elapsed);
     const remaining = Math.max(0, Math.ceil(script.duration - countAt));
-    view.count.textContent = String(remaining);
+    view.setCount(remaining, countAt / script.duration);
     root.classList.toggle("go-urgent", remaining > 0 && remaining <= 5);
     root.classList.toggle("go-done", remaining === 0);
     if (remaining <= 5 && !counted.has(remaining)) {
@@ -170,7 +209,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     root.dataset.timedOut = "true";
     root.classList.remove("go-urgent");
     root.classList.add("go-done");
-    view.count.textContent = "0";
+    view.setCount(0, 1);
     view.gameOver();
     if (!counted.has(0)) { counted.add(0); audio.count(0); }
     audio.expire();
@@ -219,7 +258,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       const lines = reaction.text;
       const lineElapsed = (performance.now() - reactionLineAt) / 1000;
       const hold = lineTime(lines[reactionLine]);
-      view.reveal(reactionInstant || reduce ? 1 : Math.min(1, (lineElapsed + .05) / typeTime(lines[reactionLine], hold)));
+      revealCaption();
       if (lineElapsed >= hold) {
         if (reactionLine < lines.length - 1) showReactionLine(reactionLine + 1);
         else finish();
@@ -231,7 +270,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     reactionLineAt = performance.now();
     reactionInstant = false;
     const data = script.reactions[choice];
-    view.setCaption(data.text[index], data.word, lineTime(data.text[index]));
+    view.setCaption(data.text[index], data.word);
     view.reveal(reduce ? 1 : 0);
   }
   function decide(value) {
@@ -252,6 +291,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   }
   function visibility() {
     if (!active || !started) return;
+    root.dataset.paused = String(document.hidden);
     if (document.hidden) {
       hiddenAt ??= performance.now();
       clearTimeout(deadline);
@@ -271,6 +311,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!active || started || !root.isConnected) return;
     started = true;
     start = speechStart = performance.now();
+    observer.disconnect();
     observer.observe(root.parentNode, { childList: true });
     document.addEventListener("visibilitychange", visibility);
     audio.start();
@@ -279,6 +320,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     ticker = window.setInterval(tick, 70);
     visibility();
     armDeadline();
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(animateCaption);
   }
   view.retry.addEventListener("click", () => decide("retry"));
   view.quit.addEventListener("click", () => decide("quit"));
@@ -304,7 +347,10 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     else finish();
   });
   view.setCaption(script.cues[0].text);
-  view.reveal(reduce ? 1 : .03);
+  view.reveal(reduce ? 1 : 0);
+  // 幕の終わりまでshowScreenが挿入を待つ場合にも、実際に表示されてから20秒。
+  // 接続を待つ間だけ広く観測し、開始後は親だけに切り替える。画面離脱で両方を破棄する。
+  observer.observe(document.body, { childList: true, subtree: true });
   frame = requestAnimationFrame(begin);
   root.cleanupContinue = cleanup;
   root.setContinueSoundEffects = audio.setEnabled;

@@ -1,0 +1,51 @@
+{
+  "issue": 534,
+  "worker": "codex-ch1-ova-20261013-b30a1e4f",
+  "claim_run": 38383045275,
+  "status_validation_run": 38383568123,
+  "tool": "image_gen.imagegen",
+  "status": "generated; visually reviewed",
+  "prompt": "Create a NEW, complete 16:9 cinematic everyday-scene illustration. INPUT 1 is Tsumugi's authoritative identity reference. INPUT 2 is her approved cute early-1990s OVA visual treatment for ink, face appeal, cel paint, and costume fidelity; do not repeat that scene's camera, water glass, man or action. INPUT 3 is the approved tonari interior, for wood, olive upholstery and varied Turkish mosaic-lamp colors only; do not include its hardware shelves or plants. The user explicitly prefers CUTE girls like Yoko in the 1992 BASTARD!! OVA. Preserve Tsumugi, age 21: short chestnut-brown bob with straight bangs, clear brown eyes, tiny black stud earring, purple zip hoodie with ivory/pink/gold flower embroidery, black pleated skirt. Large clear warm vertically shaped eyes, soft cheeks, short gentle chin, tiny simple nose and mouth, no mature sculpted lips or heavy makeup. She is quietly pleased and absorbed in drawing. A fresh composition DIFFERENT from the chapter-two water scene: Tsumugi occupies the LEFT half in a medium three-quarter view, sitting sideways on the window-end of the olive sofa with knees angled toward the right, a black drawing tablet supported on her lap. Her right hand holds a black stylus naturally with thumb, index and middle finger; her left hand supports the tablet's lower edge. She has paused and glanced up just slightly with a shy small warm smile, her face clearly visible. The tablet's angled screen is visible enough to show an unfinished simple CAT drawing with LEAF-shaped ears and a curling smoke-like drawn tail; this is a drawn motif, not actual smoke. A single thin diagonal hairline CRACK runs across the tablet glass; the drawing and stylus are naturally placed around it. No text or UI on the tablet. The right half shows the window and calm slanting afternoon light, one small varied colored mosaic lamp near the upper edge, warm wood detail and painted muted blue shadows. No foreground man, no water-offering pose, no glass, no generic artist easel, no floating brushes or paint. Organic tapered hand-ink; broad glossy hair bands; warm flat 2-3 tone opaque cel paint; hand-painted gouache everyday cafe background in the early BASTARD!! OVA aesthetic. No shisha devices or hoses anywhere (camera excludes those tables and shelves), no plants, no fantasy costume, no title words, labels, subtitles, brand logos, watermark or border. Exactly one finished wordless still.",
+  "referenced_image_paths": [
+    "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "asset_sources/retro-ova-study-519/images/tsumugi-ova.png",
+    "assets/backgrounds/bg_tonari_inside_day.png"
+  ],
+  "transparent_background": false,
+  "brief": {
+    "人物": "紬（21）",
+    "場面": "tonariの窓際でひび入りタブレットに猫を描く",
+    "台型": "映さない",
+    "HMD": "映さない",
+    "炭": "映さない",
+    "ホース": "映さない",
+    "吸い口": "映さない",
+    "構図": "紬は左、窓は右、タブレットは膝"
+  },
+  "source_images_are_authoritative_identity_or_style_not_real_hardware": true,
+  "output": "images/04-tsumugi-sketch.png",
+  "sha256": "0779b908903272d7f021547c3866949e77625690c2754f0450a59503907b690c",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "qa": {
+    "identity": "正規立ち絵の髪・服・年齢感を維持",
+    "composition": "新しい構図、画像に文字なし",
+    "hardware": "映らない",
+    "notes": "街は背面で帽子・黒服を確認。紬は茶髪ボブ・茶色の目・黒ピアス・花刺繍・スタイラス・ひび入りタブレット・猫の描画を目視確認。"
+  },
+  "runtime": {
+    "path": "trailer/art/04-tsumugi-sketch.webp",
+    "dimensions": [
+      1664,
+      936
+    ],
+    "conversion": "contain (no crop), WebP q93 method6",
+    "contained_dimensions": [
+      1663,
+      936
+    ]
+  },
+  "source_main": "0614327"
+}

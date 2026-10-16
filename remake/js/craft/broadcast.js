@@ -6,43 +6,60 @@
 import { el, pick } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { layers } from "../core/ui.js";
-import { tickerSay } from "./session.js";
+import { tickerSay, benchRoot } from "./session.js";
 
-const ROWS = 7;
+const ROWS = 5;
 let nextRow = 0; // 行は順番に回して、同時に流れるコメントが重ならないようにする
+let generation = 0;
+const timers = new Set();
 
 const live = (cs) => cs?.mode === "tournament";
-const bench = () => layers.screen.querySelector(":scope > .bench:not(.done)");
 
 /** 流れるコメントの帯を、作業台の上に用意する（作業台が作り直されても付け直す） */
-function ensure() {
-  const b = bench();
+function ensure(cs) {
+  const b = benchRoot(cs);
   if (!b) return null;
   let lane = b.querySelector(".bc-lane");
-  if (!lane) b.append((lane = el("div.bc-lane")));
+  if (!lane) b.append((lane = el("div.bc-lane", { "aria-hidden": "true" })));
   return { lane };
 }
 
 /** コメントを1本流す（右→左） */
 export function comment(cs, text, { cls = "", row = null } = {}) {
   if (!live(cs)) return;
-  const b = ensure();
+  const b = ensure(cs);
   if (!b) return;
-  const r = row != null ? row % ROWS : (nextRow++ % ROWS);
-  const dur = 4.2 + Math.random() * 1.8;
-  // 右上の SCORE の下（14%〜）から流す
-  const c = el(`div.nico${cls ? "." + cls : ""}`, { text, style: { top: `${14 + r * 9}%`, animationDuration: `${dur}s` } });
+  if (b.lane.children.length >= 4) return;
+  const occupied = new Set([...b.lane.children].map(node => Number(node.dataset.row)));
+  let r = row != null ? row % ROWS : nextRow++ % ROWS;
+  for (let i = 0; i < ROWS && occupied.has(r); i++) r = (r + 1) % ROWS;
+  if (occupied.has(r)) return;
+  const dur = 7.2;
+  const c = el(`div.nico${cls ? "." + cls : ""}`, { text, dataset: { row: r }, style: { top: `${5 + r * 15}%`, animationDuration: `${dur}s` } });
   b.lane.append(c);
-  setTimeout(() => c.remove(), dur * 1000 + 250);
+  c.addEventListener("animationend", () => c.remove(), { once: true });
+  defer(cs, () => c.remove(), dur * 1000 + 250);
+}
+
+function defer(cs, fn, delay) {
+  const owner = benchRoot(cs), token = generation;
+  if (!owner) return;
+  const timer = setTimeout(() => {
+    timers.delete(timer);
+    if (token === generation && benchRoot(cs) === owner) fn();
+  }, delay);
+  timers.add(timer);
 }
 
 /** 同じ種類のコメントを n 本、少しずつずらして流す */
 export function burst(cs, kind, n = null) {
-  const pool = DB.broadcast?.nico?.[kind] || [];
+  const pool = cs?.chapter === 2 && kind === "rival"
+    ? ["あげはの一台、気になる", "神崎選手、手が落ち着いてる", "REI選手も仕上げてる", "4人とも型が違って面白い"]
+    : DB.broadcast?.nico?.[kind] || [];
   if (!live(cs) || !pool.length) return;
   n = n ?? (kind === "perfect" ? 3 : 2);
   const cls = ["perfect", "miss", "rival"].includes(kind) ? kind : "";
-  for (let i = 0; i < n; i++) setTimeout(() => comment(cs, pick(pool), { cls }), i * 170);
+  for (let i = 0; i < n; i++) defer(cs, () => comment(cs, pick(pool), { cls }), i * 750);
 }
 
 /** 点数（0〜100）→ 観客の反応の段階 */
@@ -59,20 +76,32 @@ export function judge(cs, result) {
 /** 工程の頭: MC の前振り＋その工程らしい観客の声＋ライバルの進行をひとつ */
 export function block(cs, step) {
   if (!live(cs)) return;
+  clearComments();
   const bc = DB.broadcast || {};
   if (bc.mc?.[step]) tickerSay(`パッキー「${bc.mc[step]}」`);
   burst(cs, "block", 1);
   const sp = bc.step?.[step];
-  if (sp?.length) setTimeout(() => comment(cs, pick(sp)), 900);
-  const feed = bc.rivalFeed || [];
+  if (sp?.length) defer(cs, () => comment(cs, pick(sp)), 900);
+  const feed = cs.chapter === 2 ? [
+    "あげは、パッキングを終えました。台には最後まで同じ一台です",
+    "神崎選手は炭の位置を確かめています",
+    "REI選手、蒸らしに入りました",
+    "あげは、吸い出しへ。ここから提供です",
+    "神崎選手、提供した一台を確かめています",
+    "REI選手、客席の一台を調整しています",
+  ] : bc.rivalFeed || [];
   cs.feedIdx = cs.feedIdx || 0;
   if (cs.feedIdx < feed.length) {
     const r = feed[cs.feedIdx++];
-    setTimeout(() => { if (bench()) { tickerSay(`パッキー「${r}」`); burst(cs, "rival", 1); } }, 2700);
+    defer(cs, () => { tickerSay(`パッキー「${r}」`); burst(cs, "rival", 1); }, 2700);
   }
 }
 
 /** 結果発表の前に、流れているコメントを片付ける */
 export function clearComments() {
+  generation++;
+  for (const timer of timers) clearTimeout(timer);
+  timers.clear();
+  nextRow = 0;
   layers.screen.querySelectorAll(".bc-lane").forEach((l) => l.replaceChildren());
 }

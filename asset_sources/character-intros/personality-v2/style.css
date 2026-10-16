@@ -26,7 +26,7 @@ body {font-family:"Suien Gothic",sans-serif;color:#f6f5ef;}
 #stage[data-character="adam"] .left-field {background:linear-gradient(137deg,#bcebc9 0%,#8ad9a5 45%,#df493e 45%,#7c2927 100%);}
 #stage[data-character="naru"] .left-field {background:repeating-linear-gradient(132deg,transparent 0 82px,#ffffff26 82px 99px),linear-gradient(135deg,#fff1bd,#ffcb45);}
 #stage[data-character="dr_kemuri"] .halftone {background:linear-gradient(#142a3230 1px,transparent 1px),linear-gradient(90deg,#142a3230 1px,transparent 1px);background-size:32px 32px;opacity:.5;}
-#stage[data-character="kafuka"] .left-field {background:linear-gradient(125deg,#d6f3ff,#77b8f5 65%,#367cf3);}
+#stage[data-character="samechan"] .left-field {background:linear-gradient(125deg,#d6f3ff,#77b8f5 65%,#367cf3);}
 #controls {position:absolute;bottom:0;left:0;right:0;min-height:82px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 18px;background:#0b0d12;border-top:1px solid #ffffff14;}
 .character-buttons,.play-buttons {display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
 button {font:700 14px "Suien Gothic",sans-serif;border:1px solid #46505f;border-radius:6px;background:#19202b;color:#e9edf4;padding:9px 13px;cursor:pointer;}

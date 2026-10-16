@@ -31,7 +31,7 @@ try {
   await page.clock.install();
   await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
   await page.clock.runFor(1000);
-  assert.equal(await page.locator('.go-title').textContent(), 'コンティニュー？');
+  assert.equal(await page.locator('.go-title').textContent(), 'コンティニューする？');
   await page.clock.runFor(19050);
   assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'gameover');
   assert.equal(await page.locator('.go-title').textContent(), 'GAME OVER');
@@ -46,7 +46,7 @@ try {
   await page.evaluate(() => { window.__remake.craftTest.auto = 'burn'; window.__run = window.__remake.dev.tournament(); });
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
-  assert.equal(await page.locator('.end-screen.gameover .go-title').textContent(), 'コンティニュー？');
+  assert.equal(await page.locator('.end-screen.gameover .go-title').textContent(), 'コンティニューする？');
   assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
   assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
   assert.equal(await page.locator('[data-test="continue-caption"]').count(), 1);
@@ -89,6 +89,10 @@ try {
     window.__remake.craftTest.auto = 'burn';
     window.__run = ch1.devRehearsal().then(() => { window.__done = true; });
   });
+  // 新規保存には持込在庫がない。旧セーブ救済の仕入れを実操作してから制作へ進む。
+  await page.locator('[data-test="buy-blueberry"]').click();
+  await page.locator('[data-test="shop-checkout"]').click();
+  await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(() => window.__done, null, { timeout: 180000 });
   const rehearsal = await page.evaluate(() => ({ seen: window.__seen, result: window.__remake.state.rehearsal }));
   assert(rehearsal.seen.includes('remake_rehearsal_burnt') && !rehearsal.seen.includes('remake_rehearsal_rough'), rehearsal.seen.join(','));

@@ -4,6 +4,7 @@ import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
 import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
+import { imageReady } from "../core/ui.js";
 
 /**
  * 吹き出しと同じ文節単位の改行で、枠の幅に合わせて折る（TH91: 「見なが／ら」のような語の途中の改行を防ぐ）。
@@ -26,12 +27,12 @@ function wrapNote(note) {
 }
 
 export function audienceFor(mode, chapter) {
-  if (mode === "tournament") return chapter === 1 ? ["nagumo", "maezono", "dr_kemuri"] : [];
+  if (mode === "tournament") return [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
-const STEP_JUDGE = { setup: "dr_kemuri", concept: "nagumo", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri", trial: "nagumo" };
+const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
@@ -43,6 +44,15 @@ const FACE_CROPS = {
 const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
+
+/** 今この一台を見ている人と実況の、実際に使う表情だけ。 */
+export function audienceAssetUrls(cs) {
+  const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
+  if (!ids.length) return [];
+  return [...new Set([...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])].flatMap(id =>
+    ["watch", "nod", "concern", "think"].flatMap(mood => ["just", "good"].map(kind =>
+      portraitInfo(id, faceFor(id, mood, kind))?.src))).filter(Boolean))];
+}
 
 export function buildAudience(cs) {
   const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
@@ -80,10 +90,7 @@ export function buildAudience(cs) {
       image.classList.add("audience-icon");
     }
   };
-  for (const id of [...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])]) for (const mood of ["watch", "nod", "concern", "think"]) {
-    const p = portraitInfo(id, faceFor(id, mood, "just"));
-    if (p) { const warm = new Image(); warm.src = p.src; }
-  }
+  audienceAssetUrls(cs).forEach(url => imageReady(url, 15000, { keep: true }));
   showPerson(active, "watch");
   return {
     root,

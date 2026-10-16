@@ -1,0 +1,259 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "venue_maki_greet",
+      "lines": [
+        {
+          "speaker": "maki",
+          "face": "normal",
+          "text": "斧崎マキ。ここの的は逃げないよ。まずは肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_return",
+      "lines": [
+        {
+          "speaker": "maki",
+          "face": "normal",
+          "text": "来たね！　前の記録、残してあるよ。今日はどっちで投げる？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_record",
+      "lines": [
+        {
+          "speaker": "maki",
+          "face": "normal",
+          "text": "おっ、自己ベスト！　いい仕事したねえ、あんたも斧も！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_miss",
+      "lines": [
+        {
+          "speaker": "maki",
+          "face": "normal",
+          "text": "今日は刺さらなかったか。力を抜いて、斧に仕事をさせな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_finish",
+      "lines": [
+        {
+          "speaker": "maki",
+          "face": "normal",
+          "text": "お疲れ！　刺さった時の手応え、次も覚えときなよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_kannon_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムに教わった観音堂。夜の境内には、遠い車の音だけが届く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日、いちばん覚えてるのは……あの人の顔か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチで肩の力を抜く。帰ったら、仕事着を干しておこう。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_kannon_night_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂の灯りが、石段を低く照らしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一日じゅう、次のことばかり考えてたな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホをしまい、しばらく座る。呼吸の音が、やっと近くに聞こえた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_choizap_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の無人ジム。入口でアプリをかざすと、ロックが外れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "イヤホンでフォーム動画を確かめ、軽い重さから動かす。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（閉店作業のあとでも、自分のペースでできるのがいいな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "使ったマシンを拭き、次の人へ会釈して場所を空けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_choizap_night_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のチョイザップ。無人の受付の先で、数人の利用者が黙々と走っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あと一回……いや、姿勢が崩れる前に休もう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのメモに回数を残す。自分で決めた分を終えると、気分が軽くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のケムリクサ。なるが、メモとボウルを交互に見ている。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ちょうど調整してた。気になるところ、見てけよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のケムリクサ。常連がカウンター越しになるへ手を振った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "いつもの甘さでいい？　……はじめも、そこ空いてるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_adam_day",
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "昼の光だと、葉の違いがよく見える。見ろ、この二つ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（どっちもダブルアップル……袋は違うけど）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_adam_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のEDEN。常連が、メニューを開かずメーカーの名前を告げた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "今日は少し軽く、だな。任せておけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_minto_day",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "いらっしゃい♡　今なら、みんとが一人占めできちゃうよ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……と言いつつ、次のお客さんの準備も完璧なんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_minto_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のPEPPERMINT。隣の席から、みんとを呼ぶ声がした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "はーい♡　はじめくんも座ってて。ちゃんと順番に見てるから♪"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_tonari_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のtonari。窓際で、スミさんが道具をひとつずつ確かめている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "この時間は、手元がよく見えるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_tonari_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。カウンターの向こうで、常連の笑い声が重なった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お疲れ。そこ、空いてるぞ"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+name: LIME invitation regressions
+on:
+  pull_request:
+    paths:
+      - 'remake/js/daily/phone.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/invitations.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/street.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/daily/hiyori.js'
+      - 'remake/test/browser/hiyori_gate.mjs'
+      - 'remake/test/lime_consistency.mjs'
+      - 'remake/test/browser/lime_evening.mjs'
+      - 'remake/test/browser/minto_invite_reminder.mjs'
+      - '.github/workflows/lime-invitations.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/daily/phone.js'
+      - 'remake/js/daily/calendar.js'
+      - 'remake/js/daily/invitations.js'
+      - 'remake/js/daily/map.js'
+      - 'remake/js/daily/street.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/daily/hiyori.js'
+      - 'remake/test/browser/hiyori_gate.mjs'
+      - 'remake/test/lime_consistency.mjs'
+      - 'remake/test/browser/lime_evening.mjs'
+      - 'remake/test/browser/minto_invite_reminder.mjs'
+      - '.github/workflows/lime-invitations.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lime-invitations-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  invitations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+            assets/proto_street_set
+            assets/proto_walk
+            experiments/proto/street
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - run: node --experimental-vm-modules remake/test/lime_consistency.mjs
+      - name: Install pinned browser
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: PC and touch evening visit, legacy save and single payment
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/lime-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          node remake/test/browser/lime_evening.mjs
+          node remake/test/browser/minto_invite_reminder.mjs
+          node remake/test/browser/hiyori_gate.mjs
+          node --experimental-vm-modules remake/test/hiyori_frequency.mjs
+          node --experimental-vm-modules remake/test/daily_consistency.mjs
+          node --experimental-vm-modules remake/test/illness.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: lime-invitation-results
+          path: |
+            .codex/artifacts/remake-browser/lime-evening*
+            .codex/artifacts/remake-browser/venue-invite-reminder*
+            .codex/artifacts/remake-browser/hiyori-gate*
+          retention-days: 7

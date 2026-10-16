@@ -35,7 +35,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は耳まで赤くなって、消え入りそうな声でそう言った。川風が、二人の間を抜けていく。"
+          "text": "彼女は耳まで赤くなって、消え入りそうな声でそう言った。川風が、２人の間を抜けていく。"
         },
         {
           "speaker": "minto",
@@ -137,7 +137,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "栞さんが隣に並び、つないだ手の指をゆっくりと絡めてくる。街灯の下に、二人の影が伸びた。"
+          "text": "栞さんが隣に並び、つないだ手の指をゆっくりと絡めてくる。街灯の下に、２人の影が伸びた。"
         },
         {
           "speaker": "",
@@ -167,7 +167,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "川沿いの道を、二人でゆっくり歩いた。つないだ手には、今までよりずっと近い温かさがあった。"
+          "text": "川沿いの道を、２人でゆっくり歩いた。つないだ手には、今までよりずっと近い温かさがあった。"
         },
         {
           "type": "hide_cg"
@@ -191,6 +191,12 @@
           "speaker": "",
           "face": "",
           "text": "読み取ると、アカウント名はただ『栞』とだけあった。"
+        },
+        {
+          "type": "motion",
+          "id": "lime",
+          "char_id": "minto",
+          "context": "private"
         },
         {
           "speaker": "minto",
@@ -614,7 +620,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ちょっとだけ、考え事してた。……はじめくんって、うちのことどう思ってるのかなーって"
+          "text": "ちょっとだけ、考え事してた。……はじめくんって、僕のことどう思ってるのかなーって"
         },
         {
           "speaker": "hajime",
@@ -764,7 +770,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シーツ一枚だけを被ったベッドの中。俺の腕の中で、ましろちゃんが幸せそうな寝息を立てている。"
+          "text": "シーツ１枚だけを被ったベッドの中。俺の腕の中で、ましろちゃんが幸せそうな寝息を立てている。"
         },
         {
           "speaker": "hajime",
@@ -820,7 +826,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "問屋街の帰り道。シャッターの下りた通りに、二人の足音だけが響く。"
+          "text": "問屋街の帰り道。シャッターの下りた通りに、２人の足音だけが響く。"
         },
         {
           "speaker": "rin",
@@ -875,6 +881,7 @@
     {
       "dialogue_id": "confession_rin_accept",
       "metadata": {
+        "set_romance": "rin",
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
@@ -895,7 +902,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは試香紙を一本、ゆっくり置いた。それから、いつもの余裕が少しだけ剥がれた顔で笑った。"
+          "text": "凛さんは試香紙を１本、ゆっくり置いた。それから、いつもの余裕が少しだけ剥がれた顔で笑った。"
         },
         {
           "speaker": "rin",
@@ -967,6 +974,291 @@
           "speaker": "",
           "face": "",
           "text": "……一瞬だけ足が止まったのは、見なかったことにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_samechan",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "min_chapter": 2,
+        "private_scene": true,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKを出てから、もう少しだけ一緒に歩いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……お主、今日は帰るのが遅いのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう少し、サメちゃんと話したくて"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "店のことでは、ないのか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あなたといる時間が、俺には大切なんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "街灯の下で、サメちゃんが足を止めた。コロちゃんを抱く手が、少し強くなる。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……わしも、お主が来るのを待っておった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "客としてだけでは、なくてじゃ"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "好きです。俺と付き合ってください",
+              "next_id": "confession_samechan_accept"
+            },
+            {
+              "text": "これからも、友達でいてください",
+              "next_id": "confession_samechan_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_samechan_accept",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "min_chapter": 2,
+        "private_scene": true,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "set_romance": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……わしと、か？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。サメちゃんと、付き合いたいです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "そう何度も言うでない！ 顔が熱くなるじゃろう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。わしも、お主が好きじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "これからは、恋人として隣にいてほしいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、今は余の言葉より、お主の声を届けよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……はい、コロちゃん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女が空いた手を、そっとこちらへ伸ばした。俺はその手を握る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "これからも、よろしくお願いします"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。……もう少し、このまま歩くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_samechan_reject",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "min_chapter": 2,
+        "private_scene": true,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……そうか。うむ、分かったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一緒に過ごした時間は、俺にとって大切です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、今の気持ちは、友達としてのものです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "正直に言ってくれて、ありがとの"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "これからも、あの席で話せるなら嬉しいのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。また一服しに行きます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、通りの角まで歩いた。次に会う約束は、いつもの席で。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_hiyori",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "tonariを出て、帰り道。ひよりが歩幅を少し緩めた。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさん。さっきの話の続き、いいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。私も、まだ帰りたくない……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hajime",
+          "text": "一緒に遊ぶ時間も、何もせずに話す時間も、もっと過ごしたいです"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさんのことが、好きです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "はじめくん……。私も、好き……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、かっこよくは言えないな……。今、すごくうれしくて……",
+          "face": "love_blush",
+          "inner": "言えた。ちゃんと、声に出して言えた"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "恋人として、これからも一緒にいたい",
+              "next_id": "confession_hiyori_accept"
+            },
+            {
+              "text": "やっぱり、友達として一緒にいたい",
+              "next_id": "confession_hiyori_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_hiyori_accept",
+      "metadata": {
+        "private_scene": true,
+        "set_romance": "hiyori"
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "text": "……よろしく、お願いします……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "あ、でも。いつも静かにしてるわけじゃないからね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "それも、知ってます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ふふ……。じゃあ、明日はまた、儚く待ってるね……",
+          "face": "smile",
+          "inner": "明日も会いたいって、言っちゃおうかな"
+        },
+        {
+          "speaker": "",
+          "text": "笑い合ってから、ひよりと並んで歩いた。いつもの静かな微笑みも、もう遠いものには見えない。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_hiyori_reject",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "text": "……うん。ちゃんと言ってくれて、ありがとう……",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "一緒に遊べるのは、変わらないよ。次のラーメンも、忘れないでね",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりがいつもの調子で微笑んだ。大事な友達として、また会う約束をした。"
         }
       ]
     }

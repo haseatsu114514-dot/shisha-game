@@ -209,6 +209,24 @@
       "char_id": "mashiro",
       "dialogue_id": "ch3_mashiro_recovery",
       "echo": "（会った人も、今日の気持ちも入った「生きてる煙」だと、ましろちゃんは言った）"
+    },
+    {
+      "id": "tsumugi_research",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_research",
+      "echo": "（つむぎちゃんも、絵で大会に出る。途中のものから見せ合ってきた）"
+    },
+    {
+      "id": "tsumugi_progress",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_work_in_progress",
+      "echo": "（つむぎちゃんが描いた手元。客席を見る時の、俺の手だった）"
+    },
+    {
+      "id": "tsumugi_submission",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_sketch",
+      "echo": "（つむぎちゃんと確かめた「応募完了」。俺も、一台を出してくる）"
     }
   ]
 }

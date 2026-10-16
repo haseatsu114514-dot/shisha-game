@@ -15,7 +15,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会場は、シーシャチェーン『C.STATION』の旗艦店に組まれた特設ステージ。"
+          "text": "大会を運営するのは、シーシャチェーン『C.STATION』。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場は同じビルにあるイベントホール。大会のために借りた大空間だ。"
         },
         {
           "speaker": "",
@@ -79,7 +84,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お、はじめ。来たな。お前もこんな大衆チェーンのペラい空気、息苦しいだろ？"
+          "text": "お、はじめ。来たな。大衆チェーンが仕切る大会か……息苦しいだろ？"
         },
         {
           "speaker": "hajime",
@@ -132,11 +137,48 @@
           "text": "みんな「自分のシーシャ」を持っている。準備の仕方も、向き合い方も、それぞれ違う。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持ち直す。親指に、余計な力が入っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度、開いて閉じる。今度は、少しゆっくり。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_first_practice",
+          "next_true": "sumi_practice_recalled",
+          "next_false": "sumi_practice_unread"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモを開き、持ってきた道具を順に確かめる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のテーブルを見かけて、手元へ目を戻した。"
+        },
+        {
           "speaker": "hajime",
           "face": "serious",
           "text": "（……今の俺にできることを、やるしかない）"
         }
-      ]
+      ],
+      "branches": {
+        "sumi_practice_recalled": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんの「１つずつ手を動かして覚えろ」が浮かんだ。"
+          }
+        ],
+        "sumi_practice_unread": []
+      }
     },
     {
       "dialogue_id": "ch1_tournament_opening",
@@ -211,7 +253,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "まずは──この会場でもある「C.STATION」の生みの親にして、業界の鉄壁！"
+          "text": "まずは──大会を運営する「C.STATION」の生みの親、業界の鉄壁！"
         },
         {
           "speaker": "pakki",
@@ -236,7 +278,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "そしてゲスト審査員──！ シーシャはおいしいね、でおなじみ！ 前園壮一郎さんッ！"
+          "text": "そしてゲスト審査員──！ シーシャはおいしいね、でおなじみ！ 上園文太郎さんッ！"
         },
         {
           "speaker": "maezono",
@@ -254,12 +296,17 @@
         {
           "speaker": "pakki",
           "face": "normal",
+          "text": "１台を作って提供したら、調整を2回！ 最初の一口から最後の一口までが勝負ですッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
           "text": "ここで大事なルール説明ですッ！ 審査員は各自、持ち点10ポイントを持っています！"
         },
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "好きなタイミングで、好きな一台に投入できます！ ただし、一度入れたら戻せませんッ！"
+          "text": "好きなタイミングで、好きな１台に投入できます！ ただし、一度入れたら戻せませんッ！"
         },
         {
           "speaker": "pakki",
@@ -287,7 +334,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "ステージの前園と目が合う。にこりと笑って、小さく頷かれた。"
+            "text": "ステージの上園と目が合う。にこりと笑って、小さく頷かれた。"
           },
           {
             "speaker": "hajime",
@@ -411,7 +458,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（教わったことを、一つずつここまで練習した。……これが、今の俺の全力だ）"
+          "text": "（教わったことを、１つずつここまで練習した。……これが、今の俺の全力だ）"
         },
         {
           "type": "hide_cg"
@@ -424,7 +471,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "（……俺の魂の一台。今日は規定に合わせた『ダブルアップルミント』だ）"
+          "text": "（……俺の魂の１台。今日は規定に合わせた『ダブルアップルミント』だ）"
         },
         {
           "speaker": "adam",
@@ -439,7 +486,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "（3年分のノート、全部この一台に置いてきた。──出し切った）"
+          "text": "（3年分のノート、全部この１台に置いてきた。──出し切った）"
         },
         {
           "speaker": "hajime",
@@ -483,7 +530,7 @@
             "text": "南雲会長は腕を組んで目を閉じている。味に集中したいタイプか。"
           },
           {
-            "text": "前園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
+            "text": "上園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
           },
           {
             "text": "（審査員の好みはバラバラだ。でも、全員に美味しいと思わせる『芯』が必要だ）",
@@ -493,7 +540,7 @@
         ],
         "insight_low": [
           {
-            "text": "南雲会長は無表情で、何を考えているか分からない。前園さんは……ただ笑ってるだけ？"
+            "text": "南雲会長は無表情で、何を考えているか分からない。上園さんは……ただ笑ってるだけ？"
           },
           {
             "text": "（どこを見ればいいんだ……？ とにかく、自分のベストを出すしかない）",
@@ -565,7 +612,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "南雲が、わずかに眉を動かした。ほんの一瞬の出来事だったが、隣で見ていた前園が目を見張る。"
+          "text": "南雲が、わずかに眉を動かした。ほんの一瞬の出来事だったが、隣で見ていた上園が目を見張る。"
         },
         {
           "speaker": "pakki",
@@ -644,7 +691,7 @@
         {
           "speaker": "pakki",
           "face": "evil",
-          "text": "誰かの人生が変わる！ 誰かの夢が終わる！ この二つが同時に起きるんですよ〜！？ ね！？"
+          "text": "誰かの人生が変わる！ 誰かの夢が終わる！ この２つが同時に起きるんですよ〜！？ ね！？"
         },
         {
           "speaker": "pakki",
@@ -674,7 +721,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スクリーンの棒が、また少し伸びる。前園の残り持ち点が、なるの欄に積まれた。"
+          "text": "スクリーンの棒が、また少し伸びる。上園の残り持ち点が、なるの欄に積まれた。"
         },
         {
           "speaker": "",
@@ -786,7 +833,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるの計算も、アダムの覚悟も、みんとの完璧も──全部、本気の一台だった。"
+          "text": "なるの計算も、アダムの覚悟も、みんとの完璧も──全部、本気の１台だった。"
         },
         {
           "speaker": "",
@@ -881,7 +928,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "3年詰めた黄金比が、お前の一台に届かなかった。それが今日の全部だ"
+          "text": "3年詰めた黄金比が、お前の１台に届かなかった。それが今日の全部だ"
         },
         {
           "speaker": "naru",
@@ -903,7 +950,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "俺は別の街の大会から、もう一回登り直す。いつかまたお前と当たる。──その時は、俺が勝つ"
+          "text": "俺は別の街の大会から、もう１回登り直す。いつかまたお前と当たる。──その時は、俺が勝つ"
         },
         {
           "speaker": "minto",
@@ -1024,7 +1071,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ふと視線を感じて観客席を見上げると、人の捌けた席の隅に、チャコール博士が一人だけ残っていた。"
+          "text": "ふと視線を感じて観客席を見上げると、人の捌けた席の隅に、チャコール博士が１人だけ残っていた。"
         },
         {
           "type": "show_cg",
@@ -1083,7 +1130,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "どうだった"
+          "text": "おう。よくやった。今日は一杯、付き合え"
         },
         {
           "speaker": "hajime",
@@ -1093,86 +1140,17 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "そうか"
+          "text": "飾れ。客が来たら、お前が磨くんだぞ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんはそれだけ言って、シーシャを吸い始めた。ゴボゴボ、という音が響く。"
+          "text": "グラスが鳴った。スミさんが、トロフィーを置く場所を空ける。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "しばらく吸ってから、ぽつりと。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "thinking",
-          "text": "あの審査員──南雲は、技術じゃ持ち点を動かさねえよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え？ じゃあ、なんで俺が……"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "『もう一口吸いたい』と思わせたかどうか。あいつの基準はそれだけだ"
-        },
-        {
-          "type": "choice",
-          "id": "after_hitokuchi",
-          "choices": [
-            {
-              "text": "俺の一台の、何がですか？",
-              "next": "hk_ask"
-            },
-            {
-              "text": "（そういう審査だったのか）",
-              "next": "hk_think"
-            }
-          ]
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "さあな。そこから先は、俺が言うことじゃねえ。──自分で考えろ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "もう一口吸いたい、か……。（……へえ。俺の煙、そんなふうに思われてたんだ、……ふふ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんが、ふと目を細めた。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……顔つき、変わったな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "え、そうですか？ 自信ついたってことですかね"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "──そうだといいけどな"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんはそれ以上、何も言わなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "祝いに、自分用の一台を作って吸った。──馬鹿みたいに、うまい。どの一服よりも濃い。"
+          "text": "祝いに、自分用の１台を作って吸った。──馬鹿みたいに、うまい。どの一服よりも濃い。"
         },
         {
           "speaker": "hajime",
@@ -1180,11 +1158,58 @@
           "text": "（優勝って、味まで変えるんだなあ）"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターのトロフィーを、客席の方へ少し向け直した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これ見て、俺に頼んでくれる人もいるんですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "いるだろうな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そっか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "置きかけたホースを持ち直して、もう一口吸った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次も、これくらいのを出さないとな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さを確かめる。まだ、うまい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度トロフィーを見ると、自然と背筋が伸びた。"
+        },
+        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_met_tsumugi",
           "next_true": "ta_tsumugi_named",
           "next_false": "ta_tsumugi_unnamed"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_submitted",
+          "next_true": "ta_tsumugi_today",
+          "next_false": "ta_tsumugi_no_draft"
         },
         {
           "speaker": "tsumugi",
@@ -1219,12 +1244,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "はじめはすぐに忘れた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……だが、シーシャプレイヤーってのは、こういう一言ほど忘れちゃいけないんだ。"
+          "text": "ドアの方へ顔を上げる前に、スマホがまた震えた。"
         }
       ],
       "branches": {
@@ -1252,11 +1272,6 @@
           {
             "type": "set_flag",
             "flag": "interview_pride"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "──この答えを、覚えている人間がいた。"
           }
         ],
         "iv_honest": [
@@ -1273,7 +1288,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……全部、今日の一台に入ってます"
+            "text": "……全部、今日の１台に入ってます"
           },
           {
             "speaker": "",
@@ -1281,18 +1296,8 @@
             "text": "記者が「いい答えですね」と笑った。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "……でも口にした本人は、その言葉の意味をまだ半分も分かっていない。"
-          },
-          {
             "type": "set_flag",
             "flag": "interview_honest"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "──後になっても、この答えだけは嘘にならなかった。"
           }
         ],
         "iv_sumi": [
@@ -1313,7 +1318,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "──数日後、tonariに「配信で見ました」という新規のお客さんが二人来た。"
+            "text": "──数日後、tonariに「配信で見ました」という新規のお客さんが２人来た。"
           }
         ],
         "nat_ask": [
@@ -1332,7 +1337,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（懐かしい……？ 俺の一台が？）"
+            "text": "（懐かしい……？ 俺の１台が？）"
           },
           {
             "speaker": "",
@@ -1340,37 +1345,18 @@
             "text": "それだけ言って、南雲は何も説明せずに立ち去った。"
           }
         ],
-        "hk_ask": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "じゃあ、俺の一台の何が、そう思わせたんですか？"
-          }
-        ],
-        "hk_think": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（もう一口吸いたい、か。……そういう審査だったのか）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "顔に書いてあるぞ。『俺の何が刺さったんだ』ってな"
-          }
-        ],
         "promise_kept": [
           {
             "speaker": "naru",
             "face": "serious",
-            "text": "けど、約束は覚えてるよな。勝った方が作る。──それと、もう一つ"
+            "text": "けど、約束は覚えてるよな。勝った方が作る。──それと、もう１つ"
           }
         ],
         "promise_new": [
           {
             "speaker": "naru",
             "face": "serious",
-            "text": "明日、うちで一服しようぜ。勝った方が作る──今決めた。それと、もう一つ"
+            "text": "明日、うちで一服しようぜ。勝った方が作る──今決めた。それと、もう１つ"
           }
         ],
         "nat_met_before": [
@@ -1430,7 +1416,35 @@
             "face": "smile",
             "text": "ありがとう。……会場まで、来てくれてたんだ"
           }
-        ]
+        ],
+        "ta_tsumugi_today": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日も少し、描きました。あとで、見てもらえますか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指がタブレットにかかる。はじめのスマホは、通知で何度も震えていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん、あとで。今、優勝の写真を送ってて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面を開きかけた手が、鞄の中に戻った。はじめは、そこまで見ていなかった。"
+          }
+        ],
+        "ta_tsumugi_no_draft": []
       }
     },
     {
@@ -1522,7 +1536,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……そうだ。審査員じゃなくて、あの顔に出す一台だ）"
+          "text": "（……そうだ。審査員じゃなくて、あの顔に出す１台だ）"
         }
       ],
       "branches": {
@@ -1563,37 +1577,17 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "ラウンド3『熱管理』終了！ 提供から最後の一口まで、味を守り切れたのは誰だ！？"
+          "text": "1回目の調整、完了ッ！ まだ終わりじゃありません。もう一度、味を守っていただきます！"
         },
         {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "さあ最終局面ッ！ 4人とも本当によく頑張りました！ ……でも優勝は1人だけ"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "残りの3人は、今日でおしまい"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "さっきまで隣で笑ってた人が、ですよ〜♪ 諦めなくたって終わる人はいる──それが大会！ ぷぷぷっ！"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "さあ、最後まで！！"
+          "speaker": "naru",
+          "face": "normal",
+          "text": "炭の持ちも、葉の状態も変わってくる。ここからが大事だよ"
         },
         {
           "speaker": "hajime",
-          "face": "sad",
-          "text": "（泣いても笑っても、これで最後だ。やれることは、全部やった……！）"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "……お前も最後まで、丁寧に作り続けた。俺はそれを見ていた"
+          "face": "normal",
+          "text": "（さっきの温度を覚えてる。次も、落ち着いて合わせよう）"
         }
       ]
     },
@@ -1666,7 +1660,7 @@
         {
           "speaker": "pakki",
           "face": "evil",
-          "text": "どれか一つが突出してれば違ったかもですけど〜、全部が「まあまあ」って……くふふ！"
+          "text": "どれか１つが突出してれば違ったかもですけど〜、全部が「まあまあ」って……くふふ！"
         },
         {
           "speaker": "pakki",
@@ -1691,7 +1685,7 @@
         {
           "speaker": "pakki",
           "face": "evil",
-          "text": "せっかくなので一個だけアドバイスしましょうか！"
+          "text": "せっかくなので１個だけアドバイスしましょうか！"
         },
         {
           "speaker": "pakki",
@@ -1750,7 +1744,112 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──第1章「一吸目」 終。"
+          "text": "──第1章「煙がつなぐ街」 終。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_steady",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "提供と2回の調整を、すべて適温に収めた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供も、2回の調整も適温に収めた。あの熱は、お前が整えたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_recovered",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ずれた熱を、調整で適温に戻せた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "途中でずれた熱を、調整で戻したな。立て直せたのは良かった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_care",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸われた後の一台を、適温に整え直した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸われた後の一台を、適温まで整え直せたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_serve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "提供の温度を、適温に合わせた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供の温度は、丁寧に合わせていた。あれは良かった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_heat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "焼き炭を、きちんと用意できた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "焼き炭は、きちんと用意できていた。そこはよくやった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_holes",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "穴の間隔を揃え、熱の通り道を作れた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "穴の間隔が揃っていた。熱の通り道を丁寧に作れたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_craft_recognition_steam",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしの間、集中を切らさなかった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "蒸らしの間、最後まで集中できていたな"
         }
       ]
     }

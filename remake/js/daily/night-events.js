@@ -1,0 +1,105 @@
+// 日付固定の予定と、休養で見送った夜の予定を分ける。台本・報酬は章側が実行する。
+import { state, save } from "../core/state.js";
+import { TOURNAMENT_DAY } from "../core/rules.js";
+import { chapterDay } from "../core/chapter-clock.js";
+
+export const restingToday = () => state.restDay?.chapter === state.chapter
+  && state.restDay.day === state.day && state.restDay.fullDay;
+
+const postponeable = (ev) => ev?.schedule === "regular" || ev?.schedule === "preparation";
+const currentQueue = () => (state.deferredNightEvents || []).filter((entry) => entry.chapter === state.chapter);
+const eventById = (events, id) => Object.values(events).find((ev) => ev.id === id);
+const ready = (ev) => (ev.prerequisites || []).every((key) => state.flags[key]);
+
+/** 保存された延期と当日の予定を照合。キューが無い旧セーブに過去の予定を推測して作らない。 */
+export function syncNightQueue(events, { resting = restingToday() } = {}) {
+  state.deferredNightEvents ||= [];
+  state.deferredNightEvents = state.deferredNightEvents.filter((entry) => {
+    if (entry.chapter !== state.chapter) return true;
+    return !eventById(events, entry.id)?.done?.();
+  });
+  const visiting = new Set();
+  function enqueue(day, ev, reason = "scheduled") {
+    if (!postponeable(ev) || day > state.day || ev.done?.() || visiting.has(ev.id)) return;
+    visiting.add(ev.id);
+    for (const key of ev.prerequisites || []) {
+      if (state.flags[key]) continue;
+      const prerequisite = Object.entries(events).find(([, candidate]) => candidate.doneKeys?.includes(key));
+      if (prerequisite) enqueue(Number(prerequisite[0]), prerequisite[1], "prerequisite");
+    }
+    let entry = currentQueue().find((item) => item.id === ev.id);
+    if (!entry) {
+      entry = { id: ev.id, chapter: state.chapter, originalDay: day, deferredOn: day - 1,
+        reason, prerequisites: ev.prerequisites || [], doneKeys: ev.doneKeys || [] };
+      state.deferredNightEvents.push(entry);
+    }
+    if (resting) { entry.deferredOn = state.day; entry.reason = "rest"; }
+  }
+  for (const [day, ev] of Object.entries(events)) {
+    if (Number(day) === state.day) enqueue(Number(day), ev);
+  }
+  // 保存された後続予定にも、未読の先行条件を実際の会話で補う。
+  for (const entry of currentQueue()) {
+    const ev = eventById(events, entry.id);
+    if (ev) enqueue(entry.originalDay, ev, entry.reason);
+  }
+}
+
+/** 最も早い成立可能な夜に1件。期限を迎えた準備だけは休養・約束より先に救済する。 */
+export function nightPlan(events, { resting = restingToday(), appointment = state.pendingInvite } = {}) {
+  const pending = currentQueue().map((entry) => ({ entry, ev: eventById(events, entry.id) }))
+    .filter(({ ev }) => ev && !ev.done?.())
+    .sort((a, b) => a.entry.originalDay - b.entry.originalDay);
+  const urgent = pending.filter(({ ev }) => ev.schedule === "preparation" && ev.deadline <= state.day);
+  // 旧セーブで複数の期限が過ぎていた場合も、先行準備の実読了後に後続を実行する。
+  if (urgent.length) return urgent.map(({ ev }) => ev);
+  if (chapterDay(state) >= TOURNAMENT_DAY) return [];
+  const fixed = events[state.day];
+  if (fixed && !postponeable(fixed)) return fixed.done?.() ? [] : [fixed];
+  // 会話後〜翌朝の保存から再開しても、同じ夜の通常予定をもう1件実行しない。
+  if (state.flags._night_event_day === `${state.chapter}:${state.day}`) return [];
+  const bookedNight = state.flags._private_night_day === state.day
+    || appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
+  if (resting || bookedNight) return [];
+  const next = pending.find(({ entry, ev }) => entry.deferredOn < state.day && ready(ev));
+  return next ? [next.ev] : [];
+}
+
+export function nightOccupied(events, day) {
+  if (day !== state.day) return !!events[day] && !events[day].done?.();
+  // 受諾済みの約束がある夜は通常の延期候補を実行しない。新規受諾前は予定を予約する。
+  return nightPlan(events).length > 0;
+}
+
+/** 完了は章のrunが成功してから。固定イベントの前提を救済する場合にも同じ実行経路を使う。 */
+export async function runNightPlan(events, before = async () => {}) {
+  const plan = nightPlan(events);
+  const fixed = events[state.day];
+  if (fixed && !postponeable(fixed) && !fixed.done?.() && !plan.includes(fixed)) plan.push(fixed);
+  let count = 0;
+  for (const ev of plan) {
+    if (ev.done?.()) continue;
+    if (!ready(ev)) throw new Error(`Night event prerequisites missing: ${ev.id}`);
+    await before(ev);
+    await ev.run();
+    state.flags._night_event_day = `${state.chapter}:${state.day}`;
+    count++;
+    syncNightQueue(events, { resting: false });
+    save();
+  }
+  return count;
+}
+
+/** 大会前に必要な準備は含めない。大会後の通常会話を元の日付・因果関係順に補完する。 */
+export async function finishDeferredNights(events, before = async () => {}) {
+  syncNightQueue(events, { resting: false });
+  for (const entry of currentQueue().sort((a, b) => a.originalDay - b.originalDay)) {
+    const ev = eventById(events, entry.id);
+    if (!ev || ev.done?.()) continue;
+    if (ev.schedule !== "regular" || !ready(ev)) throw new Error(`Unfinished tournament preparation: ${entry.id}`);
+    await before(ev);
+    await ev.run();
+    syncNightQueue(events, { resting: false });
+    save();
+  }
+}

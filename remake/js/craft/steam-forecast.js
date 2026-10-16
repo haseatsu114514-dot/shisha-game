@@ -1,6 +1,6 @@
 // タイマー設定・蒸らしで共通の温度計。予測は現在地の矢印と別の、幅のある点線で示す。
 import { el } from "../core/util.js";
-import { IDEAL, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
+import { temperatureBands, isIdealTemperature, isOptimalTemperature, DANGER_TEMP, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildThermometer } from "./thermometer.js";
 
@@ -17,19 +17,20 @@ export function buildSteamWeather(cs) {
   ]);
 }
 
-export function buildSteamTemperature() {
-  const thermometer = buildThermometer({ compact: true, width: 64, height: 360 });
+export function buildSteamTemperature(cs) {
+  const thermometer = buildThermometer({ cs, compact: true, width: 64, height: 360 });
   const state = el("span.pull-state");
   const read = el("div.pull-read.steam-temperature-read", [state]);
   thermometer.root.append(read);
   return { ...thermometer, update(temp) {
     thermometer.update(temp);
     state.textContent = thermometer.root.getAttribute("aria-valuetext");
-    read.dataset.tone = temp >= IDEAL[0] ? "ok" : "cool";
+    const bands = temperatureBands(cs);
+    read.dataset.tone = temp >= DANGER_TEMP ? "danger" : isOptimalTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
   } };
 }
 
-const temperatureName = (temp) => temp < .2 ? "低温" : temp < IDEAL[0] ? "ぬるい" : "適温の入口";
+const temperatureName = (temp, bands) => isOptimalTemperature(temp, bands) ? "最適温" : isIdealTemperature(temp, bands) ? "適温" : temp > bands.ideal[1] ? "熱い" : temp < .2 * bands.t ? "低温" : "ぬるい";
 
 export function buildSteamForecast(cs, thermometer) {
   const rangeText = el("b.steam-forecast-value", { dataset: { test: "steam-forecast-text" } });
@@ -48,7 +49,8 @@ export function buildSteamForecast(cs, thermometer) {
       note.textContent = "";
       return;
     }
-    const low = temperatureName(bounds.low), high = temperatureName(bounds.high);
+    const bands = temperatureBands(cs);
+    const low = temperatureName(bounds.low, bands), high = temperatureName(bounds.high, bands);
     rangeText.textContent = low === high ? `${low}のあたり` : `${low}〜${high}`;
     root.dataset.low = String(bounds.low); root.dataset.high = String(bounds.high);
     note.textContent = steamClimate(cs.environment).rainy

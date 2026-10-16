@@ -79,7 +79,7 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
   },
   ageha: {
     id: "premium_ageha", title: "帰るには早くない？", name: "アゲハ",
-    bio: "恋人 / パラパラ", speaker: "ageha", duration: 20,
+    bio: "恋人 / MELTY PUFF", speaker: "ageha", duration: 20,
     audio: null,
     reactions: {
       retry: { text: ["っしゃあ！ それでこそハジメっち！", "アタシの声援、ちゃんと届いた！？"], faces: ["excited"], effect: "cheer", word: "っしゃあ！" },
@@ -100,9 +100,9 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
       { at: 17.1, face: "excited", text: "ほら、コンティニュー！ いっけえええ！" },
     ],
   },
-  kafuka: {
-    id: "premium_kafuka", title: "サメの王からの緊急命令", name: "サメちゃん",
-    bio: "恋人 / SHISHARK", speaker: "kafuka", duration: 20, audio: null,
+  samechan: {
+    id: "premium_samechan", title: "サメの王からの緊急命令", name: "サメちゃん",
+    bio: "恋人 / SHISHARK", speaker: "samechan", duration: 20, audio: null,
     reactions: {
       retry: { text: ["おおっ！ それでこそ、わしの……", "いや、コロちゃんの勇者じゃ！", "いざ、再出航じゃ！"], faces: ["surprise", "excited"], effect: "shark", word: "再出航じゃ！" },
       quit: { text: ["……うむ。サメも休むときは休むのじゃ。", "コロちゃんも『よくやった』と申しておる。"], faces: ["normal", "smile"], effect: "shark", word: "よくやった" },
@@ -114,7 +114,7 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
       { at: 3.8, face: "serious", text: "サメは泳ぐのをやめると大変なのじゃ！" },
       { at: 5.4, face: "serious", text: "……いや、種類によるが……" },
       { at: 6.7, face: "serious", text: "今はそれどころではない！" },
-      { at: 7.9, face: "ventriloquism", text: "『王命じゃ！ 大会に戻るのじゃ！』" },
+      { at: 7.9, face: "ventriloquism", text: "『王命である！ 大会へ戻れ！』" },
       { at: 9.4, face: "ventriloquism", text: "……コ、コロちゃん！" },
       { at: 10.6, face: "ventriloquism", text: "勝手に命令するでない！" },
       { at: 11.8, face: "normal", text: "……わしは勝ち負けには疎いが" },

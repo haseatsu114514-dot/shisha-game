@@ -1,5 +1,5 @@
 // 音。BGM は実ファイル（assets/audio/bgm）を優先し、まだ無い曲（大会など）は
-// WebAudio で合成したループで代用する。SE はすべて合成（素材不要・軽い）。
+// WebAudio で代用する。手元・UIのSEは録音を優先し、未読込・取得失敗時は合成で補う。
 import { config } from "./state.js";
 import { bgmUrl } from "./data.js";
 
@@ -8,17 +8,116 @@ let master = null;
 let seBus = null;
 let bgmBus = null;
 let audioUnlocked = false;
+let lastPhoneReceiveAt = -Infinity;
 let rainMode = null;
 let rainLoop = null;
 let rainBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
+const seBuffers = new Map();
+const seLoads = new Map();
+const seRetryAt = new Map();
+const seVoices = new Set();
+const activePulls = new Set();
+const lastVariant = new Map();
+const SE_ROOT = "../assets/audio/se/";
+const RECORDED_SE = {
+  click: { files: ["ui_click.wav"], gain: .3 },
+  select: { files: ["ui_select.wav"], gain: .3 },
+  cancel: { files: ["ui_back.wav"], gain: .3 },
+  phone: { files: ["lime_glass.wav"], gain: .4 },
+  doorbell: { files: ["shop_bell.wav"], gain: 1 },
+  coalSnip: { files: ["coal_grab_01.wav", "coal_grab_02.wav"], gain: 1 },
+  coalPlace: { files: ["hms_knock_01.wav", "hms_knock_02.wav"], gain: 1 },
+  foilPunch: { files: ["foil_puncture.wav"], gain: 1 },
+  bubbling: { files: ["water_draw.wav"], gain: 1 },
+};
+const WATER_LOOP = "water_loop.wav", WATER_END = "water_end.wav";
+
+const seEnabled = () => audioUnlocked && ctx?.state === "running" && !document.hidden
+  && !config.mute && !config.muted && Number(config.seVolume) > 0;
+
+function loadSeBuffer(file) {
+  if (seBuffers.has(file)) return Promise.resolve(seBuffers.get(file));
+  if (!ctx?.decodeAudioData || typeof fetch !== "function" || Date.now() < (seRetryAt.get(file) || 0)) return Promise.resolve(null);
+  if (!seLoads.has(file)) {
+    const load = (async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 5000);
+      try {
+        const response = await fetch(SE_ROOT + file, { signal: controller.signal });
+        if (!response.ok) throw new Error(`SE HTTP ${response.status}`);
+        const buffer = await ctx.decodeAudioData(await response.arrayBuffer());
+        seBuffers.set(file, buffer);
+        return buffer;
+      } catch {
+        seRetryAt.set(file, Date.now() + 30000);
+        return null;
+      } finally {
+        clearTimeout(timer);
+        seLoads.delete(file);
+      }
+    })();
+    seLoads.set(file, load);
+  }
+  return seLoads.get(file);
+}
+
+/** 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。 */
+export function preloadSe() {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END]);
+  return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+
+function recordedVoice(file, { gain = 1, rate = 1, loop = false } = {}) {
+  if (!seEnabled() || !seBuffers.has(file)) return null;
+  const source = ctx.createBufferSource(), output = ctx.createGain();
+  source.buffer = seBuffers.get(file);
+  source.loop = loop;
+  source.playbackRate.value = rate;
+  output.gain.setValueAtTime(loop ? 0 : gain, ctx.currentTime);
+  if (loop) output.gain.linearRampToValueAtTime(gain, ctx.currentTime + .04);
+  source.connect(output).connect(seBus);
+  const voice = { source, output, stop(fade = 0) {
+    if (!seVoices.has(voice)) return;
+    output.gain.cancelScheduledValues(ctx.currentTime);
+    output.gain.setValueAtTime(fade ? output.gain.value : 0, ctx.currentTime);
+    if (fade) output.gain.linearRampToValueAtTime(0, ctx.currentTime + fade);
+    try { source.stop(ctx.currentTime + fade); } catch { /* 終了済み */ }
+  } };
+  seVoices.add(voice);
+  source.onended = () => { seVoices.delete(voice); source.disconnect(); output.disconnect(); };
+  source.start();
+  return voice;
+}
+
+function recordedSe(id) {
+  if (!seEnabled()) return true; // ミュートや非表示中に代用音へ回さない。
+  const { files, gain } = RECORDED_SE[id];
+  const ready = files.filter(file => seBuffers.has(file));
+  if (!ready.length) { files.forEach(loadSeBuffer); return false; }
+  const choices = ready.filter(file => file !== lastVariant.get(id));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set(id, file);
+  recordedVoice(file, { gain });
+  return true;
+}
+
+function syncPulls() { activePulls.forEach(pull => pull.sync()); }
+function stopRecordedVoices() { seVoices.forEach(voice => voice.stop()); }
+document.addEventListener?.("visibilitychange", () => {
+  syncPulls();
+  if (document.hidden) stopRecordedVoices();
+  syncRain();
+});
 
 function ensureCtx() {
   if (ctx) return ctx;
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return null;
   ctx = new AC();
+  ctx.addEventListener?.("statechange", syncPulls);
   master = ctx.createGain();
   master.connect(ctx.destination);
   seBus = ctx.createGain();
@@ -34,8 +133,9 @@ function ensureCtx() {
 export function unlockAudio() {
   audioUnlocked = true;
   const c = ensureCtx();
-  if (c && c.state === "suspended") c.resume().then(syncRain, () => {});
-  else syncRain();
+  if (c && c.state === "suspended") c.resume().then(() => { syncRain(); syncPulls(); }, () => {});
+  else { syncRain(); syncPulls(); }
+  preloadSe();
   if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
 }
 
@@ -45,6 +145,8 @@ export function applyVolumes() {
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
   if (bgmBus) bgmBus.gain.value = muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
   if (currentEl) currentEl.volume = bgmLevel(currentKey);
+  syncPulls();
+  if (muted || !(Number(config.seVolume) > 0)) stopRecordedVoices();
   syncRain();
 }
 
@@ -98,7 +200,7 @@ function syncRain() {
   rainLoop.gain.gain.setTargetAtTime(outside ? 0.055 : 0.018, ctx.currentTime, 0.2);
 }
 
-// ---------------------------------------------------------------- SE（合成）
+// ---------------------------------------------------------------- SE（録音未読込時・演出用の合成）
 
 function tone({ freq = 440, to = null, type = "sine", dur = 0.12, vol = 0.25, delay = 0, attack = 0.005 }) {
   const c = ensureCtx();
@@ -140,26 +242,49 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   src.start(t);
 }
 
-/** 吸っている間だけ、水の低いぼこぼこ音を鳴らす。戻り値で次の泡を止める。 */
+/** 一口の間だけ録音ループ。止め際は最後の一泡。非表示/消音中は止め、同じ一口だけ再開。 */
 export function startBubbling({ strength = 1 } = {}) {
-  let stopped = false;
+  let stopped = false, voice = null, timer = null;
+  const force = Math.max(.3, Math.min(1, Number(strength) || 1));
   const bubble = () => {
-    if (stopped || !audioUnlocked || !ctx || ctx.state !== "running" || document.hidden || !(Number(config.seVolume) > 0)) return;
-    const force = Math.max(.3, Math.min(1, strength));
+    if (stopped || !seEnabled()) return;
     const freq = 95 + Math.random() * 95;
     tone({ freq, to: Math.max(35, freq * .42), dur: .075 + Math.random() * .045, vol: .09 * force });
     noise({ dur: .055, filter: 350 + Math.random() * 300, q: 1.4, vol: .025 * force });
   };
-  bubble();
-  const timer = setInterval(bubble, 85);
-  return () => { if (stopped) return; stopped = true; clearInterval(timer); };
+  const silenceFallback = () => { if (timer !== null) clearInterval(timer); timer = null; };
+  const pull = { sync() {
+    if (stopped) return;
+    if (!seEnabled()) { voice?.stop(); voice = null; silenceFallback(); return; }
+    if (voice || timer !== null) return;
+    if (seBuffers.has(WATER_LOOP)) {
+      voice = recordedVoice(WATER_LOOP, { loop: true, gain: force, rate: .88 + .12 * force });
+    } else {
+      bubble(); timer = setInterval(bubble, 85);
+      loadSeBuffer(WATER_LOOP).then(buffer => {
+        if (!buffer || stopped) return;
+        silenceFallback(); pull.sync();
+      });
+    }
+  } };
+  activePulls.add(pull);
+  pull.sync();
+  return () => {
+    if (stopped) return;
+    stopped = true; activePulls.delete(pull); silenceFallback();
+    if (voice) {
+      voice.stop(seEnabled() ? .06 : 0);
+      if (seEnabled()) recordedVoice(WATER_END, { gain: force * .65 });
+      voice = null;
+    }
+  };
 }
 
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
   sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
   pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
-  mashiro: 880, kafuka: 1250,
+  mashiro: 880, samechan: 1250,
 };
 
 export const SE = {
@@ -203,8 +328,21 @@ export const SE = {
   },
   money: () => { tone({ freq: 1500, type: "triangle", dur: 0.06, vol: 0.1 }); tone({ freq: 2000, type: "triangle", dur: 0.12, vol: 0.1, delay: 0.06 }); },
   phone: () => { tone({ freq: 1320, type: "sine", dur: 0.08, vol: 0.14 }); tone({ freq: 1760, type: "sine", dur: 0.12, vol: 0.14, delay: 0.1 }); },
+  // LIME専用の短いオリジナル合成音。録音phone互換IDはそのまま残す。
+  phoneReceive: () => {
+    if (!seEnabled() || ctx.currentTime - lastPhoneReceiveAt < .2) return;
+    lastPhoneReceiveAt = ctx.currentTime; // 同時の通知・初回案内で受信音を重ねない。
+    tone({ freq: 880, dur: .07, vol: .1 });
+    tone({ freq: 1320, dur: .1, vol: .1, delay: .08 });
+  },
+  phoneSend: () => {
+    if (!seEnabled()) return;
+    tone({ freq: 660, to: 990, type: "triangle", dur: .09, vol: .09 });
+  },
   doorbell: () => { tone({ freq: 1568, type: "sine", dur: 0.6, vol: 0.12 }); tone({ freq: 1245, type: "sine", dur: 0.8, vol: 0.1, delay: 0.25 }); },
-  coalSnip: () => { noise({ dur: 0.04, vol: 0.2, filter: 4000 }); tone({ freq: 700, to: 200, type: "square", dur: 0.05, vol: 0.05 }); },
+  coalSnip: () => { noise({ dur: 0.04, vol: 0.02, filter: 4000 }); tone({ freq: 700, to: 200, type: "triangle", dur: 0.05, vol: 0.005 }); },
+  coalPlace: () => tone({ freq: 280, to: 160, type: "triangle", dur: .08, vol: .025 }),
+  foilPunch: () => noise({ dur: .06, vol: .02, filter: 4200, q: .6 }),
   // MOKUMOKUパッキー（日常スロット）
   reelLever: () => { noise({ dur: 0.05, vol: 0.18, filter: 1800 }); tone({ freq: 220, to: 120, type: "square", dur: 0.06, vol: 0.06 }); },
   reelStop: () => { tone({ freq: 520, to: 300, type: "square", dur: 0.04, vol: 0.07 }); noise({ dur: 0.03, vol: 0.1, filter: 2600 }); },
@@ -218,6 +356,11 @@ export const SE = {
   burst: () => { tone({ freq: 90, to: 26, type: "sine", dur: 1.1, vol: 0.45 }); noise({ dur: 1, vol: 0.3, filter: 1800, sweepTo: 220 }); noise({ dur: 0.22, vol: 0.2, filter: 6000, type: "highpass" }); for (let i = 0; i < 6; i++) noise({ dur: 0.04, vol: 0.12, filter: 2000 + Math.random() * 3000, delay: 0.25 + Math.random() * 0.6, q: 2 }); },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
 };
+
+for (const id of Object.keys(RECORDED_SE)) {
+  const fallback = SE[id];
+  SE[id] = (...args) => { if (!recordedSe(id)) fallback(...args); };
+}
 
 export function playSe(id, ...args) {
   const key = String(id || "").replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -390,9 +533,37 @@ function bgmSource(url) {
   return packedSources.get(url);
 }
 
-/** 大会到着中に先読み。失敗しても進行を止めず、再生時に再試行する。 */
+// 外部MP3のCONTINUE曲も、URLの解決だけでなく再生可能なところまで準備する。
+// 演出開始時はこの要素を受け取り、遅い回線では専用の合成曲へ切り替える。
+let preparedContinue = null;
+function prepareContinueBgm(url) {
+  if (preparedContinue?.url === url) return preparedContinue.ready;
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  const prepared = { url, audio, ready: null };
+  prepared.ready = new Promise(resolve => {
+    let timer;
+    const finish = loaded => {
+      clearTimeout(timer);
+      audio.removeEventListener("canplay", loadedTrack);
+      audio.removeEventListener("error", failedTrack);
+      resolve(loaded);
+    };
+    const loadedTrack = () => finish(true), failedTrack = () => finish(false);
+    audio.addEventListener("canplay", loadedTrack, { once: true });
+    audio.addEventListener("error", failedTrack, { once: true });
+    timer = setTimeout(failedTrack, 2000);
+    audio.load();
+    if (audio.readyState >= 3) loadedTrack();
+  });
+  preparedContinue = prepared;
+  return prepared.ready;
+}
+
+/** 大会到着中に先読み。取得失敗で進行を止めない。 */
 export function preloadBgm(key) {
   const url = bgmUrl(key);
+  if (key === "bgm_continue_urgent" && url && !url.endsWith(".bgm")) return prepareContinueBgm(url);
   return url ? bgmSource(url).then(() => true, () => false) : Promise.resolve(false);
 }
 
@@ -406,7 +577,14 @@ export function playBgm(key) {
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");
-    const a = packed ? new Audio() : new Audio(url);
+    const prepared = key === "bgm_continue_urgent" && preparedContinue?.url === url ? preparedContinue : null;
+    if (prepared) preparedContinue = null;
+    if (prepared && prepared.audio.readyState < 3) {
+      prepared.audio.removeAttribute("src"); prepared.audio.load();
+      synthStop = startSynth(SYNTH_FALLBACK[key]);
+      return; // 外部曲を待っている間に、20秒のカウントだけ進ませない。
+    }
+    const a = prepared?.audio || (packed ? new Audio() : new Audio(url));
     a.loop = true;
     a.volume = 0;
     if (key === "bgm_continue_urgent") {
@@ -429,7 +607,7 @@ export function playBgm(key) {
           pendingBgm = key; currentKey = null;
         }
       });
-      fadeEl(a, () => bgmLevel(key), 1200);
+      fadeEl(a, () => bgmLevel(key), key === "bgm_continue_urgent" ? 160 : 1200);
     };
     if (packed) {
       bgmSource(url).then((source) => {

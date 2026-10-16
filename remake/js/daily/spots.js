@@ -1,16 +1,22 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
-import { RIN_AWAY_DAY } from "../core/rules.js";
+import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
-import { kafukaSpot } from "./kafuka.js";
+import { samechanSpot } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
+import { meetHiyoriAtTonari } from "./hiyori.js";
+import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
+import { AXE_BAR } from "./axe-bar-data.js";
+import { openingStatus, rinUnavailable } from "./spot-hours.js";
+
+import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
 
@@ -48,28 +54,31 @@ export const VISIT_BG = {
  * closedOn: day % 7 がこの値の日は定休日
  */
 export const SPOTS = [
+  AXE_BAR,
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
     desc: "焼き菓子みたいな甘い匂いの人気店。腕のいい若い店員がいると評判らしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
-    desc: "焼き林檎みたいな匂いが漏れてくる店。注文はなぜかいつも一種類。", stamina: -16 },
+    desc: "アニスの甘い香りが漏れてくる店。注文はなぜかいつもダブルアップル。", stamina: -16 },
   { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
-    desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
-  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+    desc: "1階の買い物は昼夜とも時間消費なし。2階のショールームで相談できるのは夜だけ。" },
+  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
-    desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
+    openSlots: [0], desc: "昼だけ開く、なる行きつけの喫茶。ラテと焼き菓子でひと息。常連の小話も聞こえる。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
-    desc: "アダムに教えてもらった静かな場所。頭が空っぽになる。" },
+    nightPool: ["venue_kannon_night", "venue_kannon_night_b"],
+    desc: "街の小さなお堂。昼は猫や街の人と会い、夜は静かな境内で今日を振り返る。" },
   { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
-    desc: "みんとに教えてもらったジム。「見た目も武器だよ」とのこと。" },
-  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
+    nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
+    desc: "昼夜とも使える無人ジム。入会はアプリから。動画でフォームを確かめ、自分のペースで汗を流す。" },
+  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
-    desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
+    desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
   // 会うまでは正体の分からない「？」の出店
   { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 78, theme: "park", glyph: "占", unknownGlyph: "？",
@@ -85,7 +94,7 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
-export const allSpots = () => { const extra = kafukaSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
+export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot()].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
@@ -105,9 +114,9 @@ const NIGHT_STORIES = new Set([
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
-/** 店に通って親しくなってから、いつもの入店に代わる道端の一度だけの会話。 */
+/** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
-  && storyCount("minto") >= 2 && affinityLevel("minto") >= 2;
+  && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
@@ -118,17 +127,18 @@ export function hasNewStory(charId) {
 
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
+  if (isClosed(spot)) return false;
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
-  if (spot.kind === "shop") return state.day % 7 !== RIN_AWAY_DAY && state.visitedDay.rin !== state.day && hasNewStory("rin");
-  if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
+  if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
+  if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;
   return spot.id === "choizap" ? !state.flags._gym_member : !(state.spotVisits?.[spot.id] > 0);
 }
 
 export function isClosed(spot) {
-  return isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+  return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
 }
 
 /** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。 */
@@ -167,24 +177,34 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 尽きたら、途中の質問の訪問 → 好感度MAXの締めくくり（一度だけ・専用ハガル）→ 通い訪問の小会話の順。
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
-export async function visitChar(charId) {
+export async function visitChar(charId, { welcome = null } = {}) {
+  const owner = state;
+  if (charId === "sumi") await meetHiyoriAtTonari();
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
+  const followup = spotFollowupDue(charId, state, DB.dialogues);
+  if (followup) await play(followup, { bg });
+  // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
+  if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
+    const result = await play(welcome, { bg });
+    if (state !== owner || result?.cancelled) return;
+  }
   if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
     await play("ch1_minto_identity_reveal");
     gainAffinity(charId, 10);
+  } else if (questionVisitDue(charId)) {
+    // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
+    await playQuestionVisit(charId, { bg });
+    gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
-  } else if (questionVisitDue(charId)) {
-    await playQuestionVisit(charId, { bg });
-    gainAffinity(charId, 5);
   } else if (finaleAtVisit(charId)) {
     await playFinale(charId, { bg });
     gainAffinity(charId, 10);
@@ -204,36 +224,47 @@ export async function visitChar(charId) {
   earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
+  await maybeRecruitTrpgMember(charId);
 }
 
 export async function visitRival(spot) {
+  refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
-  await visitChar(spot.charId);
+  const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  await visitChar(spot.charId, { welcome });
 }
 
-/** 施設スポット（一人の時間）。能力1Pに加え、場所ごとの体力の変化がある。 */
+/** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
 export async function visitSpot(spot) {
+  if (!openingStatus(spot, state).ok) return false;
+  refreshPlaceCue(spot.id);
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina || 0);
   state.spotVisits = state.spotVisits || {};
   const n = (state.spotVisits[spot.id] = (state.spotVisits[spot.id] || 0) + 1);
+  const owner = state;
+  const pool = quietSpotPool(spot, state.slot);
   let id = spot.first;
   if (spot.id === "choizap") {
-    id = state.flags._gym_member ? spot.pool[(n - 1) % spot.pool.length] : spot.first;
-  } else if (n > 1 && spot.pool) {
-    id = spot.pool[(n - 2) % spot.pool.length];
+    if (state.flags._gym_member && pool.length) id = pool[(n - 1) % pool.length];
+  } else if ((n > 1 || state.slot === 1 && spot.nightPool) && pool.length) {
+    id = pool[Math.max(0, n - 2) % pool.length];
   }
+  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues);
+  if (encounter) id = encounter;
   // 雨の日（2回目以降）は雨の回を出す
   const rainId = RAIN_SPOT_TEXTS[spot.id];
-  if (rainId && n > 1 && isRainy() && DB.dialogues[rainId]) id = rainId;
+  if (rainId && n > 1 && isRainy() && !(state.slot === 1 && spot.nightPool) && DB.dialogues[rainId]) id = rainId;
   // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
   if (spot.id === "c_station" && n > 1 && state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  if (state !== owner) return;
+  recordSpotEncounter(spot.id, id, n, state);
   if (spot.id === "c_station") {
     state.flags._c_station_registered = true;
     await installReel();
@@ -241,12 +272,12 @@ export async function visitSpot(spot) {
   earnStat(spot.stat, 4);
 }
 
-export async function restAtHome(spot) {
+export async function restAtHome(spot, { fullDay = false } = {}) {
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  await play("remake_rest");
+  await play(fullDay ? "remake_rest_day" : "remake_rest");
 }
 
 /** 好感度の段階（♥の数） */

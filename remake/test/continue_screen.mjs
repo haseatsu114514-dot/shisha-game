@@ -25,23 +25,34 @@ async function mount(variant = 0, options = {}) {
 async function geometry() {
   const boxes = await page.evaluate(() => {
     const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-    return { stage: rect("#stage"), title: rect(".go-heading"), label: rect(".go-title-label"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
+    return { layout: document.querySelector(".gameover").dataset.layout,
+      stage: rect("#stage"), title: rect(".go-heading"), label: rect(document.querySelector('.gameover').dataset.layout === 'neon' ? '.go-neon-title' : '.go-title-label'), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
       retry: rect('[data-test="retry"]'), quit: rect('[data-test="game-over-title"]'), count: rect(".go-count") };
   });
   assert(boxes.caption.bottom <= boxes.playback.top + 1, `caption overlaps controls: ${JSON.stringify(boxes)}`);
   // テロップは1行が限界（2026-10-10 オーナー指定）。
   assert(boxes.caption.height / boxes.stage.height * 720 < 72, `caption must stay on one line: ${JSON.stringify(boxes.caption)}`);
   const scale = boxes.stage.height / 720;
-  assert(boxes.title.bottom <= boxes.face.top + 1 && boxes.face.bottom <= boxes.stage.bottom + 1,
-    "portrait must fit below the heading and extend to the bottom");
-  assert(boxes.count.left >= boxes.label.right + 8 * scale
-    && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
-    "count must sit beside the heading without overlap");
-  for (const key of ["retry", "quit"]) {
-    assert(boxes.caption.bottom + 8 * scale <= boxes[key].top,
-      `caption overlaps or crowds ${key}: ${JSON.stringify(boxes)}`);
-    assert(boxes.stage.bottom - boxes[key].bottom >= 20 * scale, `${key} needs bottom breathing room`);
+  assert(boxes.face.bottom <= boxes.stage.bottom + 1, "portrait must extend to the bottom");
+  if (boxes.layout === "neon") {
+    assert(boxes.count.left >= boxes.label.right - 2 * scale, "neon title and HUD need separate spaces");
+    assert(boxes.count.left > boxes.face.left + boxes.face.width * .7, "HUD must stay to the right of the face");
+  } else {
+    assert(boxes.title.bottom <= boxes.face.top + 1, "legacy portrait fits below heading");
+    assert(boxes.count.left >= boxes.label.right + 8 * scale
+      && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
+      "legacy count must sit beside the heading without overlap");
   }
+  if (["top", "back-count"].includes(boxes.layout)) {
+    assert(boxes.retry.left >= boxes.count.right + 8 * scale && boxes.quit.left >= boxes.retry.right + 8 * scale,
+      "heading, count, retry and quit must have separate spaces");
+    assert(boxes.retry.bottom <= boxes.face.top && boxes.quit.bottom <= boxes.face.top,
+      "experimental choices must stay above the portrait and leave the footer to captions");
+  } else for (const key of ["retry", "quit"]) {
+      assert(boxes.caption.bottom + 8 * scale <= boxes[key].top,
+        `caption overlaps or crowds ${key}: ${JSON.stringify(boxes)}`);
+      assert(boxes.stage.bottom - boxes[key].bottom >= 20 * scale, `${key} needs bottom breathing room`);
+    }
   for (const key of ["face", "caption"]) {
     assert(Math.abs((boxes[key].left + boxes[key].right) / 2 - (boxes.stage.left + boxes.stage.right) / 2) <= 1,
       `${key} must be centered`);
@@ -60,7 +71,8 @@ try {
     config.bgmVolume = config.seVolume = 0;
     (await import("./js/core/audio.js")).applyVolumes();
   });
-  await page.clock.install();
+  await page.clock.install({ time: new Date("2026-10-11T09:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-11T09:00:01Z"));
   // 全台本・全反応の1行が、全角22字以内に収まる。
   const tooLong = await page.evaluate(async () => {
     const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
@@ -71,11 +83,14 @@ try {
   });
   assert.deepEqual(tooLong, []);
   await mount(2);
+  await page.locator(".go-choice-frame").evaluateAll(images => Promise.all(images.map(image => image.decode())));
   assert(await page.locator(".go-choice").evaluateAll(buttons => buttons.every(button => {
+    const frame = button.querySelector(".go-choice-frame");
+    if (frame) return frame.complete && frame.naturalWidth > 0 && !!button.querySelector(".go-choice-label").textContent;
     const style = getComputedStyle(button);
     return style.backgroundColor !== "rgba(0, 0, 0, 0)" && parseFloat(style.borderTopWidth) > 0;
   })), "choices must have visible button surfaces");
-  const art = await page.locator(".go-title-art,.go-approval").evaluateAll(async images => {
+  const art = await page.locator(".go-title-art,.go-neon-title,.go-approval").evaluateAll(async images => {
     await Promise.all(images.map(image => image.decode()));
     return images.map(image => ({ width: image.naturalWidth, src: image.src }));
   });
@@ -93,7 +108,7 @@ try {
   await page.locator('[data-test="retry"]').click();
   assert(await page.locator(".go-approval").isVisible(), "generated approval stamp appears on meeting retry");
   console.log("PASS: GAME OVER / approval assets load; stamp appears");
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "kafuka"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
   for (const variant of variants) {
     for (const choice of ["retry", "quit"]) {
       await mount(variant);
@@ -162,7 +177,8 @@ try {
   assert.deepEqual(await page.evaluate(() => window.__decisions), []);
   assert(await page.locator('[data-test="retry"]').isDisabled());
   assert(await page.locator('[data-test="game-over-title"]').isDisabled());
-  assert(await page.locator(".go-count").isVisible(), "zero remains visible");
+  assert(await page.locator(".go-count").isHidden(), "GAME OVER must hide the count");
+  assert(await page.locator(".go-title-art").isVisible(), "GAME OVER logo remains visible");
   await page.evaluate(() => {
     document.querySelector('[data-test="retry"]').click();
     document.querySelector('[data-test="game-over-title"]').click();
@@ -175,7 +191,8 @@ try {
 
   await mount(0);
   await page.clock.runFor(19900);
-  await page.locator('[data-test="retry"]').click();
+  // 期限境界は同じ時計で即時に入力。UI安定待ちによる期限越えを混ぜない（実クリックは全18分岐で確認）。
+  await page.evaluate(() => document.querySelector('[data-test="retry"]').click());
   await page.clock.runFor(200);
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
   assert.equal(await page.locator(".gameover").getAttribute("data-timed-out"), null);
@@ -233,6 +250,102 @@ try {
     await geometry();
   }
   console.log("PASS: all 9 scripts in phone landscape, reduced motion, muted controls");
+  // 実験版は同じボタン処理を使う。全台本の大きい1行と、上部の2択をPC／横持ちで検証。
+  for (const layout of ["top", "back-count"]) for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport);
+    for (const [index, variant] of variants.entries()) {
+      await mount(variant, { layout, background: layout === "back-count" ? "stage" : "purple", soundEffects: false });
+      assert.equal(await page.locator('[data-test="retry"]').textContent(), "する");
+      for (let n = 0; n < 40; n++) {
+        await page.evaluate(() => {
+          if (document.querySelector(".go-letter:not(.go-on)")) document.querySelector(".go-dialogue").click();
+        });
+        await geometry();
+        if (await page.locator('[data-test="continue-next"]').isDisabled()) break;
+        await page.locator(".go-dialogue").click();
+      }
+      assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true");
+      const choice = index % 2 ? "quit" : "retry";
+      await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
+      await geometry();
+      await page.clock.runFor(8000);
+      assert.deepEqual(await page.evaluate(() => window.__decisions), [choice]);
+    }
+    await mount(0, { layout, soundEffects: false });
+    await page.clock.runFor(20100);
+    assert(await page.locator(".go-count").isHidden());
+    assert(await page.locator('[data-test="retry"]').isHidden());
+    assert(await page.locator('[data-test="game-over-title"]').isHidden());
+    assert(await page.locator(".go-title-art").isVisible());
+    if (layout === "back-count") assert(await page.locator(".go-count-back").isHidden());
+    await page.clock.runFor(2000);
+    assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
+  }
+  console.log("PASS: both top-button experiments, all 9 scripts on PC / phone; GAME OVER hides every count and choices");
+  // 拡大は台詞送りから独立し、タブ休止・動き軽減を尊重する。
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await mount(0, { layout: "back-count", background: "stage", soundEffects: false });
+  await page.evaluate(async () => {
+    const url = getComputedStyle(document.querySelector(".gameover")).backgroundImage.match(/url\("?([^"\)]+)"?\)/)?.[1];
+    if (!url?.includes("backdrop_stage")) throw new Error("Stage backdrop missing");
+    const image = new Image(); image.src = url; await image.decode();
+  });
+  const echo = async () => page.locator(".go-count-echo").evaluate(el => ({
+    text: el.textContent, height: el.getBoundingClientRect().height,
+    scale: el.closest(".gameover").style.getPropertyValue("--go-count-scale"),
+    opacity: Number(getComputedStyle(el).opacity), transform: getComputedStyle(el).transform,
+    behind: Number(getComputedStyle(el.parentElement).zIndex) < Number(getComputedStyle(document.querySelector(".go-left")).zIndex),
+    inert: getComputedStyle(el.parentElement).pointerEvents === "none"
+  }));
+  const first = await echo();
+  assert.equal(first.text, "20");
+  assert(first.behind && first.inert && first.opacity > 0 && first.opacity <= .16, "count must be faint and behind the portrait");
+  await page.clock.runFor(5200);
+  const fifteen = await echo();
+  assert.equal(fifteen.text, "15");
+  assert(fifteen.height > first.height + 50, "back count must grow as time passes");
+  const advance = await page.evaluate(() => {
+    const root = document.querySelector(".gameover"), before = performance.now();
+    const scale = Number(root.style.getPropertyValue("--go-count-scale"));
+    for (let n = 0; n < 40; n++) document.querySelector(".go-dialogue").click();
+    return { elapsed: performance.now() - before, scale, after: Number(root.style.getPropertyValue("--go-count-scale")) };
+  });
+  assert(Math.abs(advance.after - advance.scale) <= (advance.elapsed + 70) / 20000 * .9 + .00001,
+    "caption advance must not jump beyond real elapsed time");
+  const pausedScale = await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    return document.querySelector(".gameover").style.getPropertyValue("--go-count-scale");
+  });
+  await page.clock.runFor(5000);
+  assert.equal((await echo()).scale, pausedScale, "hidden tab must pause back-count growth");
+  assert.equal((await echo()).text, "15");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: false });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await page.clock.runFor(10000);
+  const five = await echo();
+  assert.equal(five.text, "5");
+  assert(five.height > fifteen.height + 100);
+  await page.clock.runFor(4000);
+  const one = await echo();
+  assert.equal(one.text, "1");
+  assert(one.height > five.height + 50);
+  await page.clock.runFor(1100);
+  assert(await page.locator(".go-count-back,.go-clock").evaluateAll(els => els.every(el => el.hidden)));
+  assert(await page.locator(".go-title-art").isVisible());
+  await page.clock.runFor(2000);
+  assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
+  await mount(0, { layout: "back-count", background: "purple", reducedMotion: true, soundEffects: false });
+  const still = await echo();
+  await page.clock.runFor(5200);
+  assert.equal((await echo()).height, still.height, "reduced motion must keep back-count size fixed");
+  assert.equal((await echo()).transform, "none");
+  assert.equal((await echo()).text, "15");
+  assert.equal(await page.locator(".gameover").getAttribute("data-background"), "purple");
+  console.log("PASS: faint growing back count, stage backdrop, independent captions, hidden-tab pause, reduced motion and zero removal");
   await page.close();
 
   // プレビューは両分岐を見せ、セーブと恋人抽選履歴を変えない。
@@ -257,6 +370,22 @@ try {
   await preview.locator("#preview-play").click();
   await preview.clock.runFor(22000);
   assert.match(await preview.locator("#preview-error").textContent(), /20秒でGAME OVER/);
+  await preview.locator("#preview-layout").selectOption("top");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "top");
+  await preview.locator("#preview-retry").click();
+  await preview.clock.runFor(8000);
+  assert.match(await preview.locator("#preview-error").textContent(), /大会の最初/);
+  await preview.locator("#preview-layout").selectOption("bottom");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "bottom");
+  await preview.locator("#preview-layout").selectOption("back-count");
+  await preview.locator("#preview-background").selectOption("stage");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "back-count");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-background"), "stage");
+  await preview.locator("#preview-quit").click();
+  await preview.clock.runFor(8000);
+  assert.match(await preview.locator("#preview-error").textContent(), /タイトル/);
+  await preview.locator("#preview-background").selectOption("purple");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-background"), "purple");
   assert.equal(await preview.evaluate(() => localStorage.getItem("suien_remake_save")), "preview-sentinel");
   await preview.close();
   assert.deepEqual(missing, [], "all canon portraits must resolve");

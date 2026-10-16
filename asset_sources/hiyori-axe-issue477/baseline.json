@@ -1,0 +1,31 @@
+{
+  "portrait": {
+    "faces": [
+      "normal",
+      "sad",
+      "smile",
+      "student_smile",
+      "surprise",
+      "tears"
+    ],
+    "h": 0.9625,
+    "b": 0.0208,
+    "ax": 0.4685,
+    "aspect": 0.7467
+  },
+  "files": {
+    "assets/sprites/characters/hiyori/chr_hiyori_surprise.png": "75818897b6fe9b3adcf386972b823fa07395af2a275b05b2ef68451a4e3a95b9",
+    "assets/sprites/characters/hiyori/chr_hiyori_sad.png": "18f17c05c93e8250c08d827e0aa39bc1cf34006e5a837897358d466239c4a32b",
+    "assets/sprites/characters/hiyori/chr_hiyori_student_smile.png": "9c9620b66790db2bd8f5730258de1831cd17a88d6c7c9cdc9f13f88ad72d3823",
+    "assets/sprites/characters/hiyori/chr_hiyori_smile.png": "88c9c8ead7a19168aaddc61fd3cb081aec335733088df43c4b4fba76da4014aa",
+    "assets/sprites/characters/hiyori/chr_hiyori_tears.png": "3db9c8f8643e84327c3444900039891be843c5986c669f12bba6ffa3b236a155",
+    "assets/sprites/characters/hiyori/chr_hiyori_normal.png": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_tears.webp": "459ea52d1db630a25e7d5c13f40b9ad83b5ad727b940746b4aa08e8090a5df53",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_normal.webp": "9f973321e7fc05da421d01053c3a2887e9780939b2f185c693922e5a78fc8bad",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_sad.webp": "f320c66623006201bd6c8cca82979a183ef08103e47b2908afadbad7199aefc2",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_surprise.webp": "9c1f0f8dfc7b3b7797ad26bf960a03103d7a10d3bc285cbd3476a3b308d16bd8",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_student_smile.webp": "e4aa007f3ddbc379f93d3f27f55cfc759939acb5af7f203be3c0cce135569020",
+    "remake/img/sprites/characters/hiyori/chr_hiyori_smile.webp": "c821542cc756589076cae605a84267a25a759c295a0b99b387841bd979351d1e",
+    "assets/ui/face_icons/face_hiyori.png": "04e275c9cbc6be8ad5fbd7cf30f8fb403ee2f11c768bb04adbb730d5ccc71300"
+  }
+}

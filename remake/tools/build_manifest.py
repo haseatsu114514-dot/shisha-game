@@ -11,6 +11,9 @@
 制作UIのパーツだけを追加するとき（他の採用済み画像目録を維持する）:
     python3 remake/tools/build_manifest.py --making-only ui_mockup_inhale_button.png ui_mockup_flavor_leaf.png
 
+新規キャラの立ち絵だけを追加するとき（他の採用済み画像を維持する）:
+    python3 remake/tools/build_manifest.py --portraits-only kumicho rei volk
+
 依存: Pillow（必須）、numpy + scipy（推奨。無いと足元アンカー ax が
 bbox 中心で代用され、表情差分で立ち絵が左右にずれやすくなる）
 """
@@ -78,13 +81,15 @@ def measure(png: Path, anchor="feet"):
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
-def portraits():
+def portraits(character_ids=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
     base = ASSETS / "sprites" / "characters"
     anchor_modes = {c["id"]: c.get("spriteAnchor", "feet")
                     for c in json.loads((ROOT / "data" / "characters.json").read_text())}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
+        if character_ids is not None and d.name not in character_ids:
+            continue
         faces, metrics = [], {}
         for png in sorted(d.glob(f"chr_{d.name}_*.png")):
             m = re.match(rf"chr_{re.escape(d.name)}_(.+)\.png$", png.name)
@@ -134,12 +139,22 @@ def listing(sub: str, pattern: str = "*.png"):
     return sorted(p.name for p in d.glob(pattern) if p.stat().st_size > 0) if d.exists() else []
 
 
+def title_arts():
+    """採用済みPNGだけをキャラ別に登録。修正待ちの候補はassetsへコピーしない。"""
+    out = []
+    for name in listing("ui/title_arts"):
+        match = re.fullmatch(r"title_art_([a-z]+)_\d{2}_.+\.png", name)
+        if match:
+            out.append({"character": match[1], "file": name})
+    return out
+
+
 def continue_portraits():
     """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
     sys.path.insert(0, str(ROOT / "tools"))
     from make_face_icons import face_box
     out = {}
-    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "kafuka"):
+    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"):
         faces = {}
         for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
             image = Image.open(path).convert("RGBA")
@@ -212,9 +227,74 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     scope = parser.add_mutually_exclusive_group()
     scope.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
+    scope.add_argument("--title-only", action="store_true", help="採用済みタイトル絵の目録・WebPだけ更新")
+    scope.add_argument("--backgrounds-only", nargs="+", metavar="PNG", help="指定した背景の目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
+    scope.add_argument("--portraits-only", nargs="+", metavar="ID", help="指定した人物の立ち絵計測・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.portraits_only:
+        import build_images
+        ids = sorted(set(args.portraits_only))
+        known = {character["id"] for character in json.loads((ROOT / "data/characters.json").read_text())}
+        for cid in ids:
+            if cid not in known:
+                parser.error(f"人物設定がありません: {cid}")
+        entries = portraits(ids)
+        for cid in ids:
+            if cid not in entries or "normal" not in entries[cid]["faces"]:
+                parser.error(f"通常立ち絵のPNGがありません: {cid}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["portraits"].update(entries)
+        webp = list(manifest.get("webp", []))
+        for cid, entry in entries.items():
+            for face in entry["faces"]:
+                rel = f"sprites/characters/{cid}/chr_{cid}_{face}.png"
+                dst = build_images.OUT / Path(rel).with_suffix(".webp")
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+                if rel not in webp:
+                    webp.append(rel)
+        manifest["webp"] = webp
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(entries)} portrait families and WebP files (other images unchanged)")
+        return
+    if args.backgrounds_only:
+        import build_images
+        names = sorted(set(args.backgrounds_only))
+        for name in names:
+            if Path(name).name != name or not name.endswith(".png") or not (ASSETS / "backgrounds" / name).is_file():
+                parser.error(f"背景のPNGがありません: {name}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["backgrounds"] = sorted(set(manifest["backgrounds"]) | set(names))
+        webp = set(manifest.get("webp", []))
+        for name in names:
+            rel = f"backgrounds/{name}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(names)} backgrounds and WebP files (other images unchanged)")
+        return
+    if args.title_only:
+        import build_images
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest.update(generated=generated, titleArts=title_arts())
+        webp = set(manifest.get("webp", []))
+        for art in manifest["titleArts"]:
+            rel = f"ui/title_arts/{art['file']}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(manifest['titleArts'])} title arts and WebP files (other images unchanged)")
+        return
     if args.making_only:
         import build_images
         names = sorted(set(args.making_only))
@@ -257,6 +337,7 @@ def main():
         "continueUI": listing("ui/continue"),
         "continuePortraits": continue_portraits(),
         "introArt": intro_art(),
+        "titleArts": title_arts(),
         "makingBox": making_boxes(),
         "bgm": bgm,
     }

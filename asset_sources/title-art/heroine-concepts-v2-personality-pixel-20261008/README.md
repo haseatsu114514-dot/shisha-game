@@ -1,5 +1,11 @@
 # ヒロインアート・個別背景とドット感の19案
 
+## 2026-10-11 タイトルへの採用
+
+オーナー「タイトル用候補も使ってランダム化」により、凛02を除く6人18枚を現行 `remake/` のタイトル右側へ採用。凛02は下記の葉の色の修正待ちを維持する。各原画を同じSHA256のまま `assets/ui/title_arts/` にコピーし、表示用WebPを生成した。原画・生成指示・修正前の履歴は保持。最新の採用状況は `concepts.json` と `review/visual-review.json` の `title_adoption`。
+
+以下は原画制作時の比較・保存記録。制作当時の「採用待ち」は今回の18枚の本採用で更新した。
+
 2026-10-08 / TA01–12 / 現行タイトル右側のアートを検討する独立した縦2:3の原画。
 
 つむぎ・ましろ・みんと・アゲハ・凛・サメちゃんの6人×3場面と、みんとの仕事／私生活の中間の1場面。計19案。現行ましろの絵のように見える細かなドット感を生成段階で指定し、色・場所・照明・小物を各人と各場面で分けた。
@@ -15,7 +21,7 @@
 | みんと | [ミント色のお出迎え](minto/01-cafe-welcome.png) | [チェキ撮影コーナー](minto/02-instant-photo.png) | [休日の窓辺](minto/03-private-window.png) | [閉店後の素顔](minto/04-after-hours.png) |
 | アゲハ | [ピンクの試香席](ageha/01-professional-taste.png) | [昼の商店街で](ageha/02-grocery-smile.png) | [撮影スタジオの一瞬](ageha/03-model-moment.png) | |
 | 凛 | [黒い試香室](rin/01-night-tasting.png) | [輸入サンプルを選ぶ](rin/02-flavor-samples.png) | [深夜の窓辺](rin/03-late-coffee.png) | |
-| サメちゃん | [シーシャークの試運転](kafuka/01-shishark-test-run.png) | [コロちゃんとサメ映画](kafuka/02-shark-movie.png) | [水族館でコロちゃんと](kafuka/03-aquarium.png) | |
+| サメちゃん | [シーシャークの試運転](samechan/01-shishark-test-run.png) | [コロちゃんとサメ映画](samechan/02-shark-movie.png) | [水族館でコロちゃんと](samechan/03-aquarium.png) | |
 
 背景は、つむぎの創作と自然、ましろのレトロ喫茶と生活、みんとのミント色の店と休日、アゲハの都会的なポップさ、凛の無機質な試香室、サメちゃんの海とサメ映画で分けた。外の景色は現代日本の川辺・駅・商店街・水族館とし、旧案の似た欧州風の街並みを引き継がない。
 
@@ -34,7 +40,7 @@ HTMLを確認するときはリポジトリをHTTPで配信する。画面のフ
 ![みんと4案](review/minto.png)
 ![アゲハ3案](review/ageha.png)
 ![凛3案](review/rin.png)
-![サメちゃん3案](review/kafuka.png)
+![サメちゃん3案](review/samechan.png)
 
 ## 個別の実物シーシャ
 

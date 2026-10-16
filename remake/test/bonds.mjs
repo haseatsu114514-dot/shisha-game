@@ -1,4 +1,4 @@
-// 好感度の伸び（HF01）・みんとの公私の呼び名（HF02）・かふかの身長（HF03）・
+// 好感度の伸び（HF01）・みんとの公私の呼び名（HF02）・なぎさの身長（HF03）・
 // 好感度MAXの締めくくりと途中の恋愛／友情の質問（HF04/HF05）・専用ハガル（HF06）を、
 // 本番のモジュールと会話エンジンで確かめる。
 // リポジトリのルートで http.server 8123 を起動してから: node remake/test/bonds.mjs（BASE_URL で変更可）
@@ -254,7 +254,7 @@ try {
       epiHeart: /♡|みんとが|だんな様|彼女の彼女/.test(epiText), epiJump: epi.lines.at(-1),
       acceptOld: accept.includes("みんとにバレ"), rule: DB.characters.minto.appearance_rules.private_date,
       privateName: DB.characters.minto.private_name, outingExclude: outing.exclude_flag,
-      kafuka: DB.kafuka.profile.height_cm, kafukaAge: DB.kafuka.profile.age, kafukaRomance: DB.kafuka.profile.romance_available };
+      samechan: DB.samechan.profile.height_cm, samechanAge: DB.samechan.profile.age, samechanRomance: DB.samechan.profile.romance_available };
   });
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
@@ -264,8 +264,8 @@ try {
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
   // HF03
-  assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, false);
-  log("HF03 kafuka height 156cm (age and romance unchanged)");
+  assert.equal(shared.samechan, 156); assert.equal(shared.samechanAge, 20); assert.equal(shared.samechanRomance, true);
+  log("HF03 samechan height 156cm / adult age kept / formal romance enabled (#442)");
 
   // ================================================================ HF04/HF05 途中の質問と締めくくり
   // つむぎ: 友情寄りの答え → 締めくくりは友情の着地、贈り物あり、告白なし。再読で恋愛値を稼げない
@@ -311,7 +311,7 @@ try {
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
   assert(friend.finaleText.includes("いつもの席で"), "friendship landing missing");
-  assert(!friend.finaleText.includes("今度は二人で"), "romance question shown after a friendly answer");
+  assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
   assert.equal(friend.again, 1); assert.equal(friend.lavenderAfter, 50); assert.equal(friend.after, false);
@@ -325,7 +325,7 @@ try {
     await spots.visitChar("tsumugi");
     const q1 = bonds.romanceValue("tsumugi");
     state.story.tsumugi = 6; state.affinity.tsumugi = 90;
-    pick("今度は二人で");
+    pick("今度は２人で");
     vn.backlog().length = 0;
     await spots.visitChar("tsumugi");
     const text = vn.backlog().map((l) => l.text).join("|");
@@ -336,7 +336,7 @@ try {
     const confessed = await romance.maybeConfession(async () => {});
     return { q1, text, route, due, confessed, lovers: state.lovers.slice(), romance: bonds.romanceValue("tsumugi"), owned: state.owned.includes("suyaki_tsumugi") };
   });
-  assert.equal(love.q1, 1); assert(love.text.includes("二人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
+  assert.equal(love.q1, 1); assert(love.text.includes("２人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
   assert.equal(love.confessed, true); assert.deepEqual(love.lovers, ["tsumugi"]); assert.equal(love.romance, 2); assert(love.owned);
   log("HF04/05 tsumugi romance: two romantic answers -> romance route -> confession at night -> lovers, gift too");
 
@@ -360,7 +360,7 @@ try {
     localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
     state = core.load();
     const dueAfterLoad = state.flags._confession_due ?? null;
-    pick("今度は二人で");
+    pick("今度は２人で");
     await spots.visitChar("tsumugi");
     const oldRoute = { route: state.finales.tsumugi.route, due: state.flags._confession_due ?? null, missed: !state.romanceChoices.bond_q1_tsumugi };
     return { lateFriend, dueAfterLoad, oldRoute };
@@ -495,7 +495,15 @@ try {
     const moneyGain = state.money - moneyBefore;
     // 店の画面: 販売一覧に出ない・売却タブは「売却不可」
     const opening = shop.openShop();
-    await new Promise((r) => setTimeout(r, 200));
+    const waitShop = async (selector) => {
+      const until = performance.now() + 10000;
+      while (!document.querySelector(selector) && performance.now() < until) await new Promise(r => setTimeout(r, 20));
+      const node = document.querySelector(selector);
+      if (!node) throw new Error(`Shop did not show ${selector}`);
+      return node;
+    };
+    (await waitShop('[data-test="shop-enter"]')).click();
+    await waitShop('[data-tab="equip"]');
     document.querySelector('[data-tab="equip"]').click();
     const listed = [...document.querySelectorAll(".shop-row b")].map((b) => b.textContent);
     document.querySelector('[data-tab="sell"]').click();

@@ -99,7 +99,7 @@
     },
     {
       "dialogue_id": "craft_inner_default_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "手元を確かめながら、一つずつ進めよう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "手元を確かめながら、１つずつ進めよう" }]
     },
     {
       "dialogue_id": "craft_inner_default_good",
@@ -119,7 +119,7 @@
     },
     {
       "dialogue_id": "craft_inner_default_retry",
-      "lines": [{ "speaker": "hajime", "face": "serious", "text": "慌ててしまった。次は一つずつ確かめたい" }]
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "慌ててしまった。次は１つずつ確かめたい" }]
     }
   ]
 }
