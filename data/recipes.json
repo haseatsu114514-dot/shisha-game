@@ -92,6 +92,13 @@
       "idea_hint": "なるさんを思い出して浮かんだ「バナナにバニラ」"
     },
     {
+      "id": "melty_summer",
+      "name": "メルティ・サマー",
+      "flavors": ["mango", "peach", "mint"],
+      "memo": "あげはと作った夏の一台。マンゴーの厚みとピーチの香りに、ミントで出口を作る。",
+      "idea_hint": "あげはと作った「マンゴー＋ピーチ＋ミント」"
+    },
+    {
       "id": "kajitsushu_no_yume",
       "name": "果実酒の夢",
       "flavors": ["grape", "orange", "cinnamon"],

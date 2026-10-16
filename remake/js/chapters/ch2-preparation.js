@@ -10,6 +10,7 @@ import { trpgSpot } from "../daily/trpg.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit, scheduleChapterTwoTrpgNight } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
+import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 const descriptions = {
@@ -37,7 +38,10 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   const first = !state.flags._ch2_talks?.[id];
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const followup = !first && !state.flags._ch2_followup_done?.[id];
-  const scene = `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
+  // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
+  const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
+  const story = id === "ageha" && !first && !followup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  const scene = story || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
   const dialogue = DB.dialogues[scene];
   if (!dialogue?.lines?.length || followup && !dialogue.lines.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
@@ -67,6 +71,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     addMoney(-spot.cost); addStamina(spot.stamina);
     (state.flags._ch2_followup_done ||= {})[id] = true;
   }
+  if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   const talks = state.flags._ch2_talks ||= {};
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;

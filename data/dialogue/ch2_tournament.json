@@ -30,6 +30,12 @@
           "speaker": "",
           "face": "",
           "text": "笑っているのに、鞄を握る指はほどけなかった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
         }
       ],
       "branches": {
@@ -50,6 +56,18 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。蒸野はじめです。よろしくお願いします"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（朝、指を確かめる話を思い出す。……今日は、ダメな日なのかもしれない）"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……見なかったことにして。お願い"
           }
         ]
       }
