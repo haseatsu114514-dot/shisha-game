@@ -635,7 +635,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ましろちゃんのこと、お姉さんとしか見ていなかったわけじゃ……）"
+          "text": "（ましろちゃんのこと、友達としか見ていなかったわけじゃ……）"
         },
         {
           "type": "choice",
@@ -645,7 +645,7 @@
               "next_id": "confession_mashiro_accept"
             },
             {
-              "text": "「大切なお姉さんです」と答える",
+              "text": "「大切な友達です」と答える",
               "next_id": "confession_mashiro_reject"
             }
           ]
