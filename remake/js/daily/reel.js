@@ -961,6 +961,16 @@ export function noteSummary(reel) {
   };
 }
 
+// 遊び方（システムの説明。数字の確率は出さない）
+const GUIDE = [
+  ["大当たり", "パッキーの顔が光ったら大当たり。BIG（赤7・赤7・赤7）とREG（赤7・赤7・BAR）があり、直前の行動で伸びた能力がさらに伸びる。"],
+  ["外れても", "外れても能力は少し伸びる。当たりのない回転が続いても、天井で必ず当たる。"],
+  ["文字色予告", "パッキーの色付きの文字は、次の回転の期待度。青＜緑＜赤＜金＜虹の順に熱く、虹は大当たり確定。"],
+  ["設定", "スロットには設定1〜6があり、高いほど当たりやすい。設定は1週間ごとに変わる。観音堂にお参りしても変わる。"],
+  ["設定変更の合図", "設定が変わると筐体が白く光る。変わった直後とゲームを始めた直後の1回転は、リールがガクッと揺れる（ガックン）。"],
+  ["設定の手がかり", "パッキーの水色の吹き出しは、設定の手がかり。ノートの最近の一言から、今の設定を推理できる。"],
+];
+
 export function openNote() {
   if (!state?.reel?.installed) return Promise.resolve();
   const s = noteSummary(state.reel);
@@ -994,12 +1004,20 @@ export function openNote() {
           s.hints.length ? el("ul.rn-hints", s.hints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
         ]),
       ]),
+      el("span.ri-next", { text: "▼ タップで遊び方" }),
+    ]);
+    // 2ページ目: 遊び方（キャラではなくシステムの説明）
+    const guide = el("div.rn-panel.rn-guide", [
+      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの遊び方" })]),
+      el("ul.rn-guide-list", GUIDE.map(([head, body]) => el("li", [el("b", { text: head }), el("span", { text: body })]))),
       el("span.ri-next", { text: "▼ タップで閉じる" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
     layers.modal.replaceChildren(box);
     layers.modal.classList.add("show");
+    let page = 0;
     box.onclick = () => {
+      if (page++ === 0) { SE.click?.(); box.replaceChildren(guide); return; }
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       resolve();

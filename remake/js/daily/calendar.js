@@ -5,7 +5,7 @@ import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
-import { coldRisk, catchesCold } from "../core/illness.js";
+import { coldRisk, catchesCold, fitActive, FIT_DAYS } from "../core/illness.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
@@ -296,7 +296,8 @@ async function staminaGuard(cost) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
   const go = await modal({
     title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。",
+    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。"
+      + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });
   return go;
@@ -363,8 +364,14 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // 観音堂にお参りすると、副産物でスロットの設定が変わる（次に筐体が出たときに光って知らせる）
-  if (spot.id === "kannon") changeReelSetting();
+  // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
+  // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
+  if (spot.id === "kannon" && changeReelSetting()) toast("お参りした。パッキースロットの設定が変わったようだ", { kind: "good" });
+  // チョコザップ: その日から数日、風邪をひきにくい
+  if (spot.id === "choizap" && state.flags._gym_member) {
+    state.flags._fit_since = { chapter: state.chapter, day: state.day };
+    toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
+  }
   state.slot = Math.min(2, state.slot + slotsUsed);
   await afterAction({ exerted, spent });
 }
@@ -532,7 +539,7 @@ function cancelSamechanAppointment(inv) {
 /** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
 async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
-  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio())) state.flags._cold_pending = true;
+  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio(), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
   spinReel({ spent });
   save();
   // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
