@@ -2,6 +2,39 @@
 
 All Codex and Claude Code sessions are independent workers. GitHub Actions `.github/workflows/issue-claim.yml` is the central, serialized reservation coordinator.
 
+## Comments are a supported entrypoint
+
+Post one JSON command on an Issue or a PR Conversation. The same coordinator
+and concurrency group handle it; a comment alone is not a reservation.
+
+```text
+/issue-claim {"operation":"claim","issue":556,"owner":"codex-example-unique","agent":"codex"}
+```
+
+The author needs repository write/maintain/admin permission. The workflow checks
+the live comment and author, rejects unknown fields and changed requests, and
+posts a result with the run URL. Wait for that exact run's success and verify
+the current bot owner/run. Never write bot ledger markers yourself. On an Issue,
+`issue` may be omitted; on a PR, specify the target Issue explicitly. This also
+works with integrations that can post PR Conversation comments but cannot
+dispatch Actions. No PR-head code or comment text is executed as code.
+
+Supported comment operations: `claim`, `park`, `resume`, `release`, `status`,
+`transfer`, and single-Issue `maintain`. Use the existing transfer record and
+`claim_run`/`handoff_comment` fields for transfer. The exact comment ID identifies
+its response; a duplicate event delivery does not reserve twice.
+
+Comment `park`/`resume`/`release` also bind the caller to the reservation's
+verified request account (or original run actor). Knowing another worker's ID
+does not grant those operations. Unknown legacy identity uses the existing
+reviewed transfer/recovery route. Two chats under one account still need unique
+worker IDs and explicit handoff; account matching does not prove a stopped chat.
+
+GitHub may replace pending concurrency runs. Comments persist: the next
+successful coordinator/maintenance run recovers unacknowledged requests from
+the last 72 hours. If a request has no result, inspect its ledger/run before
+posting a fresh retry. A failed or canceled run still never authorizes work.
+
 ## Claim the next task
 
 1. Inspect current open PRs, branches, and any handoffs. Do not duplicate existing work.
@@ -24,22 +57,76 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 - Priority is by existing `difficulty:S` through `difficulty:D`, then P0/P1/P2 and issue number. Note: current code sorts by difficulty first; any priority override needs a separately reviewed change. Unclassified issues are excluded; parent/management issues are not recognized automatically and must be checked manually.
 - `agent` records the client type only. Codex and Claude use the same selection order; there is no character/dialogue keyword routing in the coordinator.
 - The coordinator skips issues with existing claim records, blocked labels, or open PRs that reference `#number`, `owner/repo#number`, or the repository's full Issue URL (including Draft PRs). Manual claims also reject blocked labels. It cannot guarantee detection of dependencies, loosely referenced PRs, or file-level conflicts. Manually check existing PRs before implementing.
-- Each worker should claim **one issue at a time**. The workflow checks existing claims across open and closed issues to enforce one active claim per worker ID; this depends on all agents using unique IDs.
+- Each worker has **one actively edited Issue at a time**, plus any number of explicitly parked saved PRs. Waiting Issues remain exclusively reserved. Existing records without a waiting checkpoint remain active; the workflow does not infer review wait from inactivity or Draft status.
 - Reservations prevent double booking only when every worker follows this protocol. A user manually assigning the same task outside the coordinator can still cause duplication.
 
 ## Pause, resume, merge
 
 - If work pauses, push the branch and create a draft PR / issue handoff. **Keep the claim**.
+- For review wait, use `park` below to keep the claim without blocking independent work. Do not edit parked work until `resume` succeeds.
 - The same worker can resume after verifying its current claim. A different worker must transfer ownership after the original worker stops and pushes its work. Never silently steal an existing claim.
 - After the PR is safely merged or work is explicitly abandoned, dispatch operation `release` with the same owner ID and issue number. If the issue has already been closed, the workflow must allow releasing it; verify run status.
+- Completed, merged reservations are also cleaned up automatically under the completion rules below. A pause or owner hold does not meet those rules.
 - A claim does not authorize unsafe merges. Recheck latest main, CI, tests, protection rules and conflicting file edits. Do not force-push or bypass required checks.
 - Stale claims require manual review; never auto-expire without inspecting branch/PR status.
 - GitHub Actions `concurrency` serializes coordinator runs, but queued runs are subject to GitHub's pending-run replacement semantics. A dispatched run can be canceled before execution; only a successful run confirms a claim.
 
+### Park review wait and resume
+
+After pushing **all** work and recording the remaining review/hold on the Issue,
+stop editing that work and post:
+
+```text
+/issue-claim {"operation":"park","issue":556,"owner":"codex-example-unique","agent":"codex","claim_run":"123456"}
+```
+
+The coordinator checks the current owner/run, source-run success and all
+referencing same-repository Open PR heads, rechecks before writing, then records
+their exact heads in a waiting checkpoint. This is still a v1 `claimed` marker,
+so old readers cannot mistake it for a free Issue. Use the successful park run
+as the new current reservation run. You may now claim a separate independent
+Issue with the same worker; file/dependency checks still apply.
+
+To edit the parked work again, finish/release or park the currently active
+Issue, then request `resume` with the waiting run as `claim_run`. It verifies the
+saved heads and other active work before writing a new active reservation.
+Wait for resume success and use its new run ID. A changed or missing saved PR,
+closed-unmerged PR, failed park run or unknown checkpoint prevents switching.
+If a saved head changed legitimately, inspect it and explicitly refresh `park`
+before switching. A still-open Issue with a merged saved PR may remain waiting
+for further scope decisions. No adoption or merge permission follows from park.
+
+Both operations are also available through `workflow_dispatch`; they do not
+launch agents or detect unpushed files. Issuing `park` is the worker's explicit
+statement that all work is pushed and editing has stopped.
+
+## Automatic completion and procedure upkeep
+
+Issue events handle completion and common-procedure updates. A push changing
+the coordinator/protocol and a daily 03:23 UTC run reconcile existing Issues;
+`operation=maintain` can target one Issue or sweep the repository.
+
+Automatic release requires **all** of: a closed Issue with reason `completed`,
+no blocked label, a verifiable successful current claim run, no referencing Open
+PR, and at least one referencing PR merged from this repository into the default
+branch. Issue state, ledger and merged heads are rechecked before the bot writes
+the release for the recorded owner. Open/unfinished/held Issues, closed-unmerged
+work, unknown legacy records and failed runs are preserved. The automation does
+not close Issues, merge PRs, remove branches or take another worker's task.
+
+When an open Issue's body/history contains an outdated common procedure, a
+managed `issue-claim-policy:v2` block at the top points to the current rules.
+The original body/comments and individual adoption holds, verification criteria,
+scope and stop instructions are preserved. Repeated upkeep does not duplicate
+the block; a changed body is deferred instead of overwriting a concurrent edit.
+Failed verification prevents the affected write and is reported as deferred;
+previously completed operations are not rolled back. A malformed managed block
+is kept for manual inspection.
+
 ## Limits
 
 - This coordinates **issue assignment**, not automatic cloud-session spawning or continuous autonomous work.
-- Agents must explicitly dispatch the workflow and wait for its success before coding; read-only work may proceed while waiting.
+- Agents must request the coordinator through a comment or dispatch and wait for its success before coding; read-only work may proceed while waiting.
 - GitHub Actions needs to be enabled and workflow permissions must allow issue comments. The workflow must first be merged to the default branch.
 
 ## Dispatch failure and queue contention
@@ -52,7 +139,7 @@ The current comment-based claim ledger depends on the workflow's shared concurre
 
 Each Codex chat and Claude Code session must use a **different** worker ID, including separate cloud sessions from the same account. The coordinator is a reservation mechanism, not an agent launcher. A worker cannot infer the result of a `gh workflow run` dispatch from its exit code: it must identify the corresponding run and confirm **successful completion** plus the `CLAIMED_ISSUE` log or job summary before editing code.
 
-**Starting:** Check open PRs and any prior handoff first; create a unique worker ID; reserve an eligible Issue; record the confirmed Issue and run ID; then branch from current main. If GitHub Actions cannot be dispatched from the current environment, do not assume the Issue is reserved. Ask for an authorized dispatch or use an explicitly supported integration, and do other non-conflicting work meanwhile.
+**Starting:** Check open PRs and any prior handoff first; create a unique worker ID; reserve an eligible Issue; record the confirmed Issue and run ID; then branch from current main. If CLI dispatch is unavailable, use the supported comment entrypoint and verify its result. Do not assume a reservation from an unconfirmed request; continue non-conflicting read-only work while waiting.
 
 **Pausing:** Commit and push all recoverable changes; create/update a Draft PR if unfinished; post the following fields to the Issue (without secrets):
 
@@ -92,12 +179,16 @@ List **all** referencing Open PR numbers and their current full head SHAs,
 including Drafts; describe which PR may be edited, which must be preserved and
 the evidence for stopping/pushing in the prose. Both the record author and
 dispatch actor need repository write permission. For an ordinary transfer, the
-record author must match the original claim run's `actor.login`. If the original
+record author must match the validated request account in the bot's
+`issue-claim-actor:v1` metadata, or the claim run's `actor.login` for older/dispatch
+records. This preserves the original requester when a scheduled run recovers
+a queued comment. If the original
 actor cannot provide a record, retain the existing admin-reviewed recovery path:
 both author and dispatcher must be admins and independently verify the evidence.
 The coordinator verifies the active old owner/claim run, the source run's success, the Issue's open/unblocked state,
 the exact Open PR set and same-repository heads, and that the new worker owns
-no other Issue, including closed Issues. It rechecks the record and mutable
+no other active Issue, including unfinished closed Issues; parked saved heads
+are verified separately. It rechecks the record and mutable
 state before writing. Unknown permissions, changed PR heads, an edited approval,
 missing PRs or stale/failed reservations cause refusal without a ledger write.
 Accounts do not identify individual chats: two sessions under one account have
@@ -183,7 +274,8 @@ release or a new owner may have changed it. Immediately before starting or
 resuming, verify all of the following using read-only GitHub API calls or a
 supported integration:
 
-- The Issue is open, is not a PR and has no blocked label.
+- The Issue is open, is not a PR and has no blocked label. It is active, not
+  parked: an `issue-claim-wait:v1` record requires a successful `resume` before editing.
 - Read **all pages** of comments. Among `github-actions[bot]` comments matching
   `issue-claim:v1`, the latest record is `claimed` for this worker, and its
   `issue-claim-run:v1` ID equals the confirmed claim/transfer run.
@@ -234,8 +326,10 @@ A manual check checklist is not an implemented merge queue.
 
 ## Regression tests
 
-Run `node --test tools/test_issue_claim.mjs`. It executes the actual inline
-JavaScript with mock APIs and checks refusal/recovery paths. It does not simulate
+Run `node --test tools/test_issue_claim.mjs`. It executes the same
+`tools/issue_claim_coordinator.cjs` module as all event entrypoints with mock APIs,
+including waiting checkpoints, comment permissions/idempotence, completion and
+procedure synchronization. It does not simulate
 GitHub Actions scheduling or establish that a real Claude Code session works.
 Use `actionlint .github/workflows/issue-claim.yml .github/workflows/issue-claim-checks.yml`
 for workflow syntax. Live concurrency/cancellation probes must use disposable

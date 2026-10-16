@@ -113,9 +113,10 @@ Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切�
 
 ## 複数CodexチャットのIssue予約（必須）
 
-- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。実装前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` で予約を取得する。読み取りだけの相談・調査・レビューには予約不要。
+- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。実装前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` または `/issue-claim` コメントで同じ排他的予約を取得する。読み取りだけの相談・調査・レビューには予約不要。
 - ワークフロー実行の**成功と現在のbot台帳のowner/run一致を確認するまで**実装しない。成功直後の別 `status` 実行は必須ではなく、GitHub APIで台帳と成功runを照合してよい。予約済みIssueは別セッションで作業しない。
 - 作業の継続単位はIssue/PR。現在の担当・ブランチ・採用/保留・次の手順は対象Issue/PRに記録する。スキルや過去メモの「Codex担当」「Claude担当」を現在の排他的担当とみなさない。
+- workerごとに実装中は1件。全変更をpushした保存PRを `park` すると、Issueの排他的予約を保持したレビュー待ちとなり、独立した別Issueを予約できる。待ち中のIssueは `resume` 成功と新owner/run・保存headの確認後に編集を再開する。同じworkerが複数の待ちPRを持ってよい。
 - 利用枠切れ時はpushと引き継ぎを優先し、予約を勝手に解除しない。PRの安全確認・マージは従来のGit Safetyを維持する。
 
 ### 予約からPRまでのセッション運用（クラウド/複数チャット共通）
@@ -123,5 +124,7 @@ Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切�
 - 新規実装ではセッション固有の worker ID を決め、`docs/issue_claim_protocol.md` に従って `next` または `claim` を実行する。同じworkerの再開は現在のowner/runと保存済みPRを確認して継続し、再予約は不要。別workerへの保存済みOpen PRの移管は `transfer` を使う。成功runとIssue番号を確認できなければ実装を開始しない。手動で選んだIssueも同様。
 - **他のチャットの worker ID を使い回さない**。Codexの複数チャットも各々別worker。Issue/PR/作業ブランチの紐付けを記録し、予約中のIssueを別workerが勝手に再開しない。
 - 作業中は小さな単位でcommit/pushし、PRを早めに作成する。利用枠切れ・中断時はIssueに `WORKER / ISSUE / BRANCH / PR / DONE / TODO / TEST / BLOCKERS / NEXT` を残す。未完成ならDraft PRにし、予約は保持する。
-- **作業終了時に自動解除しない**。PRが安全にマージされてIssueが完了した場合、または作業を正式に放棄した場合のみ、同じworker IDで `release` を実行する。別セッションへの引き継ぎは旧worker停止・成果物push・引き継ぎ記録を確認し、Open PRがなければ旧release→新claim、保存済みOpen PRがあれば `docs/issue_claim_protocol.md` の `transfer` を使う。通常の移管はwrite権限と旧担当側の記録で行い、追加の管理者承認は不要。移管run成功と現在の新owner/run一致を確認してから編集する。
+- 中断・採用保留だけでは予約を解除しない。Issueがcompletedで閉じ、同一repoからmainへマージされた参照PRがあり、参照Open PRがなく、成功runと現在の台帳を再確認できた完了予約は自動整理する。明示放棄などは従来どおり同じworkerで `release` する。
+- 別セッションへの引き継ぎは旧worker停止・成果物push・引き継ぎ記録を確認し、Open PRがなければ旧release→新claim、保存済みOpen PRがあれば `docs/issue_claim_protocol.md` の `transfer` を使う。通常の移管はwrite権限と旧担当側の記録で行い、追加の管理者承認は不要。移管run成功と現在の新owner/run一致を確認してから編集する。
+- 古いIssue本文・コメントの共通手順は、冒頭の自動同期欄と現行の予約手順を優先する。個別の採用保留・検証条件・範囲指定・停止指示は維持する。
 - PRをマージする前に対象ブランチと最新mainの差分、競合、必須CI、レビュー要件、テスト、未完了項目を確認する。未確認・失敗・競合時は**自動マージ禁止**。安全なPRのみ順次マージし、Issueの予約を解放する。
