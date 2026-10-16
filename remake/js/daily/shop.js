@@ -13,6 +13,7 @@ import { RIN_AWAY_DAY } from "../core/rules.js";
 import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
+import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -188,11 +189,23 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const detail = (item, flavor) => {
       if (!live()) return;
       const current = !flavor && DB.equipById[state.equip[item.type]];
+      const cmp = !flavor ? compareEquipment(item.id, current?.id) : null;
+      const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: item.short_name || item.name, className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
         el("p", { text: item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
+        cmp ? el("small.shop-compare", {
+          dataset: { test: "shop-equip-compare" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: cmp.rows.map((r) => `${r.label}：${r.value}`).join(" ／ "),
+        }) : null,
+        fGuide ? el("small.shop-flavor-guide", {
+          dataset: { test: "shop-flavor-guide" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: `${fGuide.makerLabel}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
+        }) : null,
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {

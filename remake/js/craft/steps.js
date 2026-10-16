@@ -13,6 +13,8 @@ import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
 import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
+import { flavorFamilyGrams } from "./score.js";
+import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = {
@@ -54,33 +56,56 @@ const lessonHint = (cs, id, fallback) => (cs.mode === "tutorial" && LESSON[id]) 
 
 // ---------------------------------------------------------------- 機材
 
+export const isSuyakiBowl = (bowlId) => {
+  const b = DB.equipById?.[bowlId];
+  return (b?.capacity || 0) >= 20 || String(bowlId || "").startsWith("suyaki");
+};
+
 export async function stepSetup(cs) {
   await waitBenchReady(cs, "setup");
-  const types = [["bowl", "ボウル"], ["hms", "ヒートマネジメント"], ["charcoal", "炭"]];
+  const types = [["bowl", "ボウル（ハガル）"], ["hms", "HMD（ヒートマネジメント）"], ["charcoal", "炭（チャコール）"]];
   for (const [type, label] of types) {
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
-    if (owned.length <= 1) { cs.equip[type] = owned[0]?.id || cs.equip[type]; continue; }
-    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", "手持ちの機材から選ぶ"));
-    cs.equip[type] = await choose(panel, owned.map((e) => ({ value: e.id, label: e.name, desc: e.description, auto: e.id === state.equip[type] })));
+    const suyaki = type === "hms" && isSuyakiBowl(cs.equip.bowl);
+    const selectable = owned.filter((e) => !(suyaki && e.id === "tanukish_lid"));
+    if (owned.length <= 1) {
+      cs.equip[type] = selectable[0]?.id || (suyaki ? "lotos_hagal" : owned[0]?.id || cs.equip[type]);
+      continue;
+    }
+    const currentId = state.equip[type];
+    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", EQUIP_CATEGORY_GUIDE[type] || "手持ちの機材から選ぶ"));
+    cs.equip[type] = await choose(panel, owned.map((e) => {
+      const disabled = suyaki && e.id === "tanukish_lid";
+      const cmp = compareEquipment(e.id, currentId);
+      const diffLine = cmp?.rows?.[0] ? `【${cmp.rows[0].label}】${cmp.rows[0].value}` : "";
+      return {
+        value: e.id, label: e.name,
+        desc: diffLine ? `${e.description} ／ ${diffLine}` : e.description,
+        disabled, badge: disabled ? "素焼き非対応" : e.id === currentId ? "装備中" : null,
+        auto: !disabled && e.id === currentId,
+      };
+    }));
   }
   state.equip = { ...cs.equip };
   refreshBench();
 }
 
-// ---------------------------------------------------------------- 配合
+// ---------------------------------------------------------------- ミックス
 
 function capacity(cs) {
   return DB.equipById[cs.equip.bowl]?.capacity || 12;
 }
 
-/** 配合の評価（相性・レシピ・NG・レギュレーション） */
+const familyKeyOf = (id) => DB.flavorById?.[id]?.family || id;
+
+/** ミックスの評価（相性・レシピ・NG・レギュレーション） */
 export function evaluateMix(cs) {
   const mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   const ids = Object.keys(mix);
   const total = ids.reduce((s, id) => s + mix[id], 0);
   const notes = [];
   let score = [0, 68, 84, 80, 70][Math.min(4, ids.length)] - (ids.length > 4 ? 8 : 0);
-  const key = ids.slice().sort().join("+");
+  const key = [...new Set(ids.map(familyKeyOf))].sort().join("+");
   const recipe = DB.recipes.find((r) => r.flavors.slice().sort().join("+") === key) || null;
   if (recipe) { score += 14; notes.push(`レシピ「${recipe.name}」の組み合わせ`); }
   for (const ng of DB.ngMixes) {
@@ -96,17 +121,18 @@ export function evaluateMix(cs) {
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
-  const regOk = !reg || (mix[reg.flavor] || 0) >= reg.min;
-  if (reg && (mix.mint || 0) > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
+  const regOk = !reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min;
+  if (reg && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
   const prof = {};
   for (const id of ids) {
     const st = DB.flavorById[id]?.stats || {};
     for (const [k, v] of Object.entries(st)) prof[k] = (prof[k] || 0) + (v * mix[id]) / total;
   }
+  const maker = makerMixProfile(cs);
   return {
     score: clamp(Math.round(score), 25, 100), total, recipe, notes, regOk, profile: prof,
-    count: ids.length, intensity: prof.assertiveness || 5, cooling: prof.cooling || 0,
+    count: ids.length, intensity: prof.assertiveness || 5, cooling: prof.cooling || 0, maker,
   };
 }
 
@@ -114,7 +140,7 @@ export async function stepMix(cs) {
   await waitBenchReady(cs, "mix");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
-  const panel = stepPanel("mix", "フレーバーの配合", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
+  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
   // 使えるフレーバー: 在庫のあるもの＋課題フレーバー（主催者支給）。チュートリアルは店の基本形。
   // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
   const consumes = cs.mode === "tournament";
@@ -137,7 +163,7 @@ export async function stepMix(cs) {
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
   ]);
-  const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "この配合で詰める" })]);
+  const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
 
   const redraw = () => {
@@ -147,7 +173,7 @@ export async function stepMix(cs) {
     vessel.replaceChildren(mixBowlPreview(cs, total));
     vessel.dataset.filled = String(total > 0);
     const aroma = cs.mode === "tournament" && cs.chapter === 2
-      ? { headline: "苺の輪郭が、つかめない", detail: "配合は見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。", tags: ["味覚の不調"] }
+      ? { headline: "苺の輪郭が、つかめない", detail: "ミックスは見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。", tags: ["味覚の不調"] }
       : mixTaste(cs.mix);
     taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }),
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
@@ -155,6 +181,9 @@ export async function stepMix(cs) {
     const bands = thermometer.updateBands();
     idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
     optimalLine.textContent = `虹 · 最適温 ${formatTemperatureRange(bands.optimal)}`;
+    const m = info.maker;
+    const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
+    temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
