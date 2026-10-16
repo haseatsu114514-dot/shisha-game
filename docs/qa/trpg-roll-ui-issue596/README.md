@@ -13,3 +13,5 @@
 実機Safari・物理スマートフォン未実施。タッチはChromiumエミュレーション。利用枠補助は既存のliteral-backslash-n構文エラーのため不明（修正対象外）。
 
 親レビュー修正: 初回7e4f21cの矩形検査は800×600の祖先クリップを見逃した。旧直下PNGとmeasurementsは初回履歴であり、現在の視認性の根拠には使わない。修正版の全58状態・枠/見出し/操作の祖先クリップと四隅内側6pxのhit-testは `review-fix/` を参照。本文の操作はスクロールして完全表示を確認。両編4サイズの助力付き詳細・実ロール/振り直し/続行を実行。固定ソース2b73b090b4cf145d455e3f0ff293d18f897a98ebの独立静的配信でも同じsuiteがPASS。3種の原PNG/配信用WebPは変更なし。旧overflowを再適用した負対照で祖先clipを検出した。
+
+CIリサイズ修正: `ci-resize-fix/` にLinux失敗ログ、同一矩形を再現した5点の実DOM対象、遅延resizeの負・正対照、恒久遮蔽対照、同期修正後の58状態を記録。runtime変更なし。`setViewportSize` 後、preview.fitのscale・viewport・rotate状態が一致してから元の全境界/5点assertを行う。

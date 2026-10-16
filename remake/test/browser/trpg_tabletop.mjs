@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
+import {layoutSnapshot,settledPreview} from './trpg_layout.mjs';
 import {TrpgSession} from '../../js/trpg/session.js';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const base=process.env.BASE_URL||'http://127.0.0.1:8123/remake/';
@@ -10,6 +11,8 @@ const browser=await chromium.launch({headless:true});const results=[];
 const ctl=(p,id)=>p.locator(`[data-test="${id}"]`);
 async function lines(p){for(let n=0;n<60&&await ctl(p,'trpg-next').isVisible();n++)await ctl(p,'trpg-next').click();}
 async function fit(p,label){
+ try {
+ await settledPreview(p);
  // Full rectangles must survive every clipping ancestor, not merely fit their own box.
  const visible=async (locator,frame=false)=>locator.evaluate((el,frame)=>{
    const r=el.getBoundingClientRect(), scale=document.getElementById('stage').getBoundingClientRect().width/1280;
@@ -20,17 +23,24 @@ async function fit(p,label){
      if(/hidden|clip|auto|scroll/.test(st.overflowX+' '+st.overflowY))clips.push({name:a.id||a.className,left:b.left,top:b.top,right:b.right,bottom:b.bottom});
    }
    const failures=clips.filter(c=>box.left<c.left-.1||box.top<c.top-.1||box.right>c.right+.1||box.bottom>c.bottom+.1);
-   const hits=frame||el.tagName==='H2'?[]:[[6,6],[r.width-6,6],[6,r.height-6],[r.width-6,r.height-6],[r.width/2,r.height/2]].map(([x,y])=>{const h=document.elementFromPoint(r.left+x,r.top+y);return !!h&&(el===h||el.contains(h));});
-   return {box,clips,failures,hits};
+   const hitTargets=[];
+   const hits=frame||el.tagName==='H2'?[]:[[6,6],[r.width-6,6],[6,r.height-6],[r.width-6,r.height-6],[r.width/2,r.height/2]].map(([x,y])=>{const h=document.elementFromPoint(r.left+x,r.top+y);const ancestry=[];for(let n=h;n;n=n.parentElement){const s=getComputedStyle(n);ancestry.push({tag:n.tagName,id:n.id,classes:n.className,role:n.getAttribute('role'),pointerEvents:s.pointerEvents,inert:n.inert,visibility:s.visibility,opacity:s.opacity,zIndex:s.zIndex,transform:s.transform});}hitTargets.push({x:r.left+x,y:r.top+y,ancestry});return !!h&&(el===h||el.contains(h));});
+   return {box,clips,failures,hits,hitTargets};
  },frame);
+ const saveFailure=async v=>{
+  if(v.failures.length||!v.hits.every(Boolean)){
+   fs.writeFileSync(path.join(out,label+'-probe-failure.json'),JSON.stringify({probe:v,layout:await p.evaluate(layoutSnapshot)},null,2)+'\n');
+   await p.screenshot({path:path.join(out,label+'-probe-failure.png')});
+  }
+ };
  const visibility=[];
  for(const [locator,frame] of [[p.locator('.trpg-roll-stage'),true],[p.locator('.trpg-roll-stage > h2'),false],...await p.locator('.trpg-modal-actions button').all().then(xs=>xs.map(x=>[x,false]))]){
-   const v=await visible(locator,frame);assert.deepEqual(v.failures,[],label+' clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' action corner obscured '+JSON.stringify(v));visibility.push(v);
+   const v=await visible(locator,frame);await saveFailure(v);assert.deepEqual(v.failures,[],label+' clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' action corner obscured '+JSON.stringify(v));visibility.push(v);
  }
  // Scrollable body controls must become completely visible and operable.
  for(const control of await p.locator('.trpg-modal-body button:not(:disabled), .trpg-modal-body summary, label.trpg-aid').all()){
    if(!await control.isVisible())continue;
-   await control.scrollIntoViewIfNeeded();const v=await visible(control);assert.deepEqual(v.failures,[],label+' body control clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' body control obscured '+await control.getAttribute('class')+' '+JSON.stringify(v));
+   await control.scrollIntoViewIfNeeded();const v=await visible(control);await saveFailure(v);assert.deepEqual(v.failures,[],label+' body control clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' body control obscured '+await control.getAttribute('class')+' '+JSON.stringify(v));
  }
  await p.locator('.trpg-modal-body').evaluate(n=>n.scrollTop=0);
  await p.screenshot({path:path.join(out,label+".png")});
@@ -47,6 +57,11 @@ async function fit(p,label){
  }
 
  results.push({label,visibility,...metrics});await p.screenshot({path:path.join(out,label+'.png')});
+ } catch(error) {
+  fs.writeFileSync(path.join(out,label+'-failure.json'),JSON.stringify(await p.evaluate(layoutSnapshot),null,2)+'\n');
+  await p.screenshot({path:path.join(out,label+'-failure.png')});
+  throw error;
+ }
 }
 try{
  for(const scenario of ['ordinary-cup','shark-last-order']){
