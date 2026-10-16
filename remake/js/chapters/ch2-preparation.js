@@ -1,5 +1,5 @@
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
-import { bgUrl } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { imageReady, setBg, toast } from "../core/ui.js";
@@ -33,11 +33,22 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
+  const owner = state, id = spot.charId;
+  const first = !state.flags._ch2_talks?.[id];
+  // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
+  const followup = !first && !state.flags._ch2_followup_done?.[id];
+  const scene = `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
+  const dialogue = DB.dialogues[scene];
+  if (!dialogue?.lines?.length || followup && !dialogue.lines.every(line => line && !line.type
+    && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
+    toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+    return { used: false, exerted: false };
+  }
   if (!await imageReady(ROOMS[spot.charId], 15000)) {
     toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
-  const owner = state, id = spot.charId;
+  if (state !== owner) return { used: false, exerted: false };
   // 未訪問なら先に実際の名乗りを読む。見学・顔合わせだけで交流回数を増やさない。
   if (!state.met[id]) {
     await setBg(MAP[timeOfDay()], { instant: true });
@@ -45,12 +56,18 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     recordCityVisit(state, id);
   }
-  addMoney(-spot.cost); addStamina(spot.stamina);
-  const talks = state.flags._ch2_talks ||= {};
-  const first = !talks[id];
+  // 新しい続編には制御行・報酬を持たせず、正常終端まで請求を保留する。
+  // cancelled/途中LOAD/例外で費用だけがRAMや保存に残らない。既存chat/repeatの順序は保持。
+  if (!followup) { addMoney(-spot.cost); addStamina(spot.stamina); }
   await setBg(ROOMS[id], { instant: true });
-  const result = await play(`remake_ch2_${id}_${first ? "chat" : "repeat"}`);
+  if (state !== owner) return { used: false, exerted: false };
+  const result = await play(scene);
   if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  if (followup) {
+    addMoney(-spot.cost); addStamina(spot.stamina);
+    (state.flags._ch2_followup_done ||= {})[id] = true;
+  }
+  const talks = state.flags._ch2_talks ||= {};
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
   markMet(id); recordCityVisit(state, id);

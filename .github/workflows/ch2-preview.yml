@@ -44,6 +44,7 @@ on:
       - 'remake/js/daily/night-events.js'
       - 'remake/test/browser/ch2_*.mjs'
       - 'remake/test/ch2_progress.mjs'
+      - 'remake/test/ch2_followups.mjs'
       - '.github/workflows/ch2-preview.yml'
   workflow_dispatch:
 
@@ -61,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story, ch2_tournament]
+        suite: [ch2_preview, ch2_main, ch2_daily, ch2_story, ch2_tournament, ch2_followups]
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -97,6 +98,7 @@ jobs:
           TEST_REF: ${{ github.sha }}
         run: |
           node remake/test/ch2_progress.mjs
+          node --experimental-vm-modules remake/test/ch2_followups.mjs
           node remake/test/ch2_tournament.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
           node remake/test/browser/${{ matrix.suite }}.mjs
