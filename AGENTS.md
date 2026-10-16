@@ -7,13 +7,16 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - ゲームの実装・プレイテスト・公開先は `remake/` のみ。台詞・共有データは `data/`、共有素材は `assets/` を使う。物語と人物設定: `brand/story_and_structure.md`、`brand/character_profiles.md`、`data/characters.json`。
 - 旧 `web/` と Godot 版は廃止済み。 `project.godot` が存在するチェックアウトは古い。旧パスを実装先にしない。
 - `web/` は存在不要。旧 `web/` を実装・テスト・復元の対象にせず、不在を理由に停止・確認要求しない。過去の `AGENTS.md` やメモにある `web/` 必須指定は無効とし、現行 GitHub `main` の指示と `remake/` に従う。
-- 仕様・要望: `docs/master_spec.md`、`docs/owner_requests.md`。過去の実装メモは現行コードと照合し、矛盾を勝手に確定しない。
+- 仕様・要望: `docs/master_spec.md`、`docs/owner_requests.md`。最新の明示的なユーザー依頼が仕様変更を求めている場合は、その依頼を優先する。意図が不明な矛盾は現行コードと照合する。
 - 詳細な正本一覧・引き継ぎ: `docs/current_documentation_guide.md`。
 
 ## 作業の原則
 
 - 開始時にブランチ・作業対象・安全確認を行う。別チャットの未マージPRや未コミット変更を上書きしない。
-- ゲームの挙動・UI・世界観を勝手に変更しない。小さな変更で、関連テストを実行し、未実施は明記する。
+- ユーザーの依頼には、達成に必要な調査・実装・関連調整・テスト・commit/push・PR作成を含む。依頼範囲の実装判断や、すでに得た同じ承認を聞き直さない。マージは既存の明示許可・方針と安全条件に従う。
+- 最新の明示指示と取得済みの承認を、過去の仕様・担当メモ・スキル内の履歴より優先する。依頼外の重大な仕様変更、結果を大きく変える曖昧さ、破壊的操作は確認する。軽微な判断は自律的に進め、完了時に説明する。
+- 確認待ちや重複候補は該当範囲だけ保留し、予約済みIssue内の独立した作業や読み取り調査を進める。他workerの予約は奪わず、別Issueの実装には別途予約が必要。
+- ゲームの挙動・UI・世界観の変更は依頼範囲に収める。小さな変更で、関連テストを実行し、未実施は明記する。
 - キャラ設定・台詞・報酬・改行は正本とスキーマに従う。必要時のみ `docs/gameplay_agent_reference.md` と `docs/review_scope.md` を読む。
 - シーシャ画像・キャラCG・外部素材・立ち絵作業は `docs/asset_ai_guidance.md` の該当項目を読む。画像の実物構造・ライセンス・QAを省略しない。
 - 起動・テスト: `remake/README.md`。ゲームデータを編集したら関連リンタ・テストを確認する。
@@ -31,7 +34,8 @@ Do not work from `sheesha_battle`, `シーシャバトル-(4.2)`,
 treated as stale until the user explicitly replaces the canonical path
 and updates the local config.
 
-Before any code edit or Git operation:
+At task start, after changing checkout/worktree, and before commit/push
+(the hooks also check commit/push):
 
 - verify the repo root with `git rev-parse --show-toplevel`
 - confirm that the same directory contains `data/`, `assets/` and `remake/`.
@@ -45,17 +49,19 @@ Before any code edit or Git operation:
 - if `git config --get core.hooksPath` is not `.githooks`, run
   `./tools/enable_git_hooks.sh`
 - if `git config --local --get shisha.canonicalRoot` is set, confirm
-  that it matches the repo root
+  that it matches the repo root or the canonical checkout owning this worktree
 
-If any check fails, stop. Do not create branches, do not commit, do not
-push, and do not try to merge unrelated histories.
+WARN alone does not require user confirmation. Fetching missing refs and
+enabling the documented hooks may be done autonomously after verifying origin.
+If ERROR remains, stop edits in that checkout and report the specific cause.
+Do not overwrite unrelated changes or try to merge unrelated histories.
 
 A worktree made from the canonical checkout (`git worktree add`) is
 allowed; `check_git_safety.sh` accepts it.
 
 ### Hard rules
 
-- branch from `origin/main`
+- branch new work from `origin/main`; resume a saved PR on its existing branch after verifying ownership and current remote state
 - use pull requests instead of direct pushes to `main`
 - do not use `git push --force`
 - do not use `--allow-unrelated-histories`
@@ -71,8 +77,8 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 
 - 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
   チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
-- 作業を始めるときは `git fetch origin` し、**最新の `origin/main` から新しいブランチ**を切る。
-  未コミットの変更が残った古いフォルダや、古い作業ブランチの上で続きをしない。
+- 作業を始めるときは `git fetch origin` する。新規作業は**最新の `origin/main` から新しいブランチ**を切る。
+  保存済みPRの再開は、現在のIssue予約とリモートのPR/headを確認し、必要な移管後に既存ブランチで継続する。古いローカルコピーだけを根拠に再開せず、別workerの未コミット変更を上書きしない。
 - 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
   push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
 - 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
@@ -107,14 +113,15 @@ Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切�
 
 ## 複数CodexチャットのIssue予約（必須）
 
-- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。Issueを選ぶ前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` で予約を取得する。
-- ワークフロー実行の**成功を確認するまで**実装しない。予約済みIssueは別セッションで作業しない。
+- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。実装前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` で予約を取得する。読み取りだけの相談・調査・レビューには予約不要。
+- ワークフロー実行の**成功と現在のbot台帳のowner/run一致を確認するまで**実装しない。成功直後の別 `status` 実行は必須ではなく、GitHub APIで台帳と成功runを照合してよい。予約済みIssueは別セッションで作業しない。
+- 作業の継続単位はIssue/PR。現在の担当・ブランチ・採用/保留・次の手順は対象Issue/PRに記録する。スキルや過去メモの「Codex担当」「Claude担当」を現在の排他的担当とみなさない。
 - 利用枠切れ時はpushと引き継ぎを優先し、予約を勝手に解除しない。PRの安全確認・マージは従来のGit Safetyを維持する。
 
 ### 予約からPRまでのセッション運用（クラウド/複数チャット共通）
 
-- 作業開始時にセッション固有の worker ID を決め、`docs/issue_claim_protocol.md` に従って `next` または `claim`（保存済みOpen PRの正式移管は `transfer`）を実行する。予約成功の実行IDとIssue番号を確認できなければ、実装を開始しない。手動でIssueを選んだ場合も同様。
+- 新規実装ではセッション固有の worker ID を決め、`docs/issue_claim_protocol.md` に従って `next` または `claim` を実行する。同じworkerの再開は現在のowner/runと保存済みPRを確認して継続し、再予約は不要。別workerへの保存済みOpen PRの移管は `transfer` を使う。成功runとIssue番号を確認できなければ実装を開始しない。手動で選んだIssueも同様。
 - **他のチャットの worker ID を使い回さない**。Codexの複数チャットも各々別worker。Issue/PR/作業ブランチの紐付けを記録し、予約中のIssueを別workerが勝手に再開しない。
 - 作業中は小さな単位でcommit/pushし、PRを早めに作成する。利用枠切れ・中断時はIssueに `WORKER / ISSUE / BRANCH / PR / DONE / TODO / TEST / BLOCKERS / NEXT` を残す。未完成ならDraft PRにし、予約は保持する。
-- **作業終了時に自動解除しない**。PRが安全にマージされてIssueが完了した場合、または作業を正式に放棄した場合のみ、同じworker IDで `release` を実行する。別セッションへの引き継ぎは旧worker停止・成果物push・引き継ぎ記録を確認し、Open PRがなければ旧release→新claim、保存済みOpen PRがあれば `docs/issue_claim_protocol.md` の管理者 `transfer` を使う。移管run成功と新ownerのstatus検証成功まで編集しない。
+- **作業終了時に自動解除しない**。PRが安全にマージされてIssueが完了した場合、または作業を正式に放棄した場合のみ、同じworker IDで `release` を実行する。別セッションへの引き継ぎは旧worker停止・成果物push・引き継ぎ記録を確認し、Open PRがなければ旧release→新claim、保存済みOpen PRがあれば `docs/issue_claim_protocol.md` の `transfer` を使う。通常の移管はwrite権限と旧担当側の記録で行い、追加の管理者承認は不要。移管run成功と現在の新owner/run一致を確認してから編集する。
 - PRをマージする前に対象ブランチと最新mainの差分、競合、必須CI、レビュー要件、テスト、未完了項目を確認する。未確認・失敗・競合時は**自動マージ禁止**。安全なPRのみ順次マージし、Issueの予約を解放する。
