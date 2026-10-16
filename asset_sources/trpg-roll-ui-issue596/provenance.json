@@ -1,0 +1,132 @@
+{
+  "issue": 596,
+  "generator": "built-in image_gen (orchestrator); no API fallback",
+  "reference_sha256": "bf3058438ff793d11c0a7261f881334dc9647b65e89912aee434edb5e3c6dee7",
+  "conversion": "Pillow 12.1.1 thumbnail max1024 resample=BICUBIC (default), reducing_gap=2.0; WebP quality=88 method=6 exact=True; no semantic edits",
+  "visual_review": "Native assets inspected by CLI B: text/characters/dice-free ring, felt and papers; transparent ring center/corners; no imported external stock assets. Generated decorations from owner-approved concept. Native PNGs byte-identical. Frame native maxalpha254 retained. Paper has near-zero boundary fringe, alpha>16 stays inside canvas.",
+  "assets": [
+    {
+      "name": "walnut-brass-frame",
+      "native_sha256": "400e78a3c5be7928a5ce3c297bbf4369e225c300f6c2fc0d48a4b796ef6ab812",
+      "native_dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bounds": [
+        47,
+        23,
+        1494,
+        978
+      ],
+      "native_tool_basename": "exec-35fbbcad-e93e-444d-8497-b0ce9b11c1f6.png",
+      "runtime_dimensions": [
+        1024,
+        683
+      ],
+      "runtime_sha256": "33f0275948f58d67d7ffb362b1b74d2f21419c9f9a2a42216909b22a841bc15c",
+      "runtime_bytes": 81608,
+      "runtime_mode": "RGBA",
+      "runtime_alpha_extrema": [
+        0,
+        255
+      ],
+      "runtime_alpha_bounds": [
+        31,
+        15,
+        996,
+        652
+      ]
+    },
+    {
+      "name": "deep-teal-felt",
+      "native_sha256": "72894ea6203ab77ebe2cb85fb56934806bc856006c7b81aa0bd7c8c8d0145585",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alpha_extrema": [
+        255,
+        255
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "native_tool_basename": "exec-dd52dd20-1b31-42c5-a6e0-45b55e965944.png",
+      "runtime_dimensions": [
+        1024,
+        1024
+      ],
+      "runtime_sha256": "14760fc552d83fb0a871230580e25dd54305a2aaaea3ac727753cff1ee00108d",
+      "runtime_bytes": 272228,
+      "runtime_mode": "RGB",
+      "runtime_alpha_extrema": [
+        255,
+        255
+      ],
+      "runtime_alpha_bounds": [
+        0,
+        0,
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "harbour-paper-stack",
+      "native_sha256": "46c8d3f1655801aba89b16c95ae340f98764df57fd5c89d9e681816b54c8312c",
+      "native_dimensions": [
+        1086,
+        1448
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "alpha_bounds": [
+        0,
+        15,
+        1086,
+        1448
+      ],
+      "native_tool_basename": "exec-43424afd-5105-420f-bbb6-c04e30809681.png",
+      "runtime_dimensions": [
+        768,
+        1024
+      ],
+      "runtime_sha256": "164755cf179d3d870783517cb85806fd51e6fca39649928ad36fec43ea2e753a",
+      "runtime_bytes": 228276,
+      "runtime_mode": "RGBA",
+      "runtime_alpha_extrema": [
+        0,
+        255
+      ],
+      "runtime_alpha_bounds": [
+        0,
+        11,
+        768,
+        1024
+      ]
+    }
+  ],
+  "source_files_sha256": {
+    "decoration-prompts.json": "62829a5d8d716acd6de7d150d0fe97ba0eae97a99de9446d3864292450a3278d",
+    "README.md": "d4c3b67b9bb42b8677d9df5ca5e199c8363f92a5dd216e68378970fc99ab237f",
+    "issue-596.md": "00af07bea420a29ea244836475750c09f4cbcba1972fb083b8a82e9f3d338c09",
+    "adopted-generation-prompt.txt": "26ef727541c6a34fbfc68897f0e7ddc1f6ccc2b99e59b38bea483e5605af0278",
+    "walnut-brass-frame-v1.png": "400e78a3c5be7928a5ce3c297bbf4369e225c300f6c2fc0d48a4b796ef6ab812",
+    "deep-teal-felt-v1.png": "72894ea6203ab77ebe2cb85fb56934806bc856006c7b81aa0bd7c8c8d0145585",
+    "harbour-paper-stack-v1.png": "46c8d3f1655801aba89b16c95ae340f98764df57fd5c89d9e681816b54c8312c",
+    "adopted-concept.png": "bf3058438ff793d11c0a7261f881334dc9647b65e89912aee434edb5e3c6dee7",
+    "references/trpg-current-touch.png": "bdc5b9f8b8dd478c8fd7041b969c34e980d7d89329b75710f4a94a3a055515a3",
+    "references/trpg-current-roll.png": "19ed2667603abac3971e256464a748aaf928cba1c74791ae4e63367a41ecb3b1"
+  }
+}
