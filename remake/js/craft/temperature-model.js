@@ -85,6 +85,17 @@ const MAKER_SYNERGY_SCALE = [1.00, 1.00, 0.90, 0.78, 0.65];
  * グラム重み付きのメーカー混合プロファイル（適温帯幅倍率・複数社ペナルティ・ステータス天井統一加算）。
  * 単一メーカー時どの社でも craftQuality 寄与がちょうど +2.50 になるよう設計されている。
  */
+export function makerOfFlavor(id, flavorById = DB.flavorById) {
+  const explicit = flavorById?.[id]?.maker;
+  if (explicit && MAKER_SPECS[explicit]) return explicit;
+  const s = String(id || "");
+  if (s.startsWith("forcefect_")) return "forcefect";
+  if (s.startsWith("nightside_")) return "nightside";
+  if (s.startsWith("dobaj_")) return "dobaj";
+  if (s.startsWith("absal_") || s.startsWith("afsahr_")) return "afsahr";
+  return "af";
+}
+
 export function makerMixProfile(cs, flavorById = DB.flavorById) {
   const entries = Object.entries(cs?.mix ?? {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const totalGrams = entries.reduce((sum, [, g]) => sum + g, 0);
@@ -92,8 +103,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
   const makerWeights = {};
   if (totalGrams > 0) {
     for (const [id, g] of entries) {
-      const maker = flavorById?.[id]?.maker || "af";
-      const key = MAKER_SPECS[maker] ? maker : "af";
+      const key = makerOfFlavor(id, flavorById);
       makerWeights[key] = (makerWeights[key] || 0) + g / totalGrams;
     }
   } else {
