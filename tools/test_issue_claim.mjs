@@ -689,6 +689,7 @@ test('workflow entrypoints keep the shared lock and never check out comment or P
   assert.match(workflow,/event_name == 'workflow_dispatch' && github.sha \|\| github.event.repository.default_branch/);
   assert.doesNotMatch(workflow,/pull_request\.head|comment\.body[^\n]*\$\(/);
   assert.match(workflow,/require\('\.\/tools\/issue_claim_coordinator.cjs'\)/);
+  assert.match(workflow,/comment.author_association/);
 });
 
 test('a successful later run recovers request comments whose pending runs were replaced', async () => {

@@ -55,7 +55,9 @@ jobs:
   coordinate:
     if: >-
       (github.event_name != 'issue_comment' ||
-      (github.event.comment.user.type != 'Bot' && startsWith(github.event.comment.body, '/issue-claim '))) &&
+      (github.event.comment.user.type != 'Bot' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      startsWith(github.event.comment.body, '/issue-claim '))) &&
       (github.event_name != 'issues' || github.event.action == 'closed' ||
       contains(github.event.issue.body, 'claim/status') || contains(github.event.issue.body, 'status成功') ||
       contains(github.event.issue.body, '1worker1') || contains(github.event.issue.body, 'issue-claim-policy:v2'))
