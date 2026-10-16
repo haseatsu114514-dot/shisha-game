@@ -39,7 +39,7 @@ const CH1_PEOPLE = [
   { id: "minto", x: 43, y: 319, w: 154, sx: 43, at: 2530 },
 ].map((p) => ({ ...p, from: p.w + MIST, ms: 1300 }));
 const CH1_SHADOW_Y = 618;
-const CH1_TOTAL = 4900; // 退場の前まで
+const CH1_TOTAL = 5800; // 退場の前まで（全員がそろった絵を約2秒見せる）
 const ch1Urls = () => [
   ...CH1_TITLE.map((t) => img(`ch1/${t.id}`)),
   ...CH1_GLYPHS.map((_, i) => img(`ch1/title-name${i}`)),
@@ -71,11 +71,12 @@ function mountCh1(card, full) {
     const walker = el("div.ct-walker", [shadow, body]);
     // 止まる位置のすぐ左に動かない霧の縁を置き、歩く人は体の前から順に霧を抜けて現れる
     const edge = p.x - MIST + 10;
-    const lane = el("div.ct-lane", { style: { "--ct-mist": `linear-gradient(90deg, transparent ${edge}px, #000 ${edge + MIST - 30}px)` } }, [walker]);
-    // 霧の縁に立つ薄い煙。体の高さの3か所で、歩み出た後ろへほどけていく
+    // 濃さは加速して上げる（つま先だけが白地に先に浮かないように）
+    const lane = el("div.ct-lane", { style: { "--ct-mist": `linear-gradient(90deg, transparent ${edge}px, rgba(0,0,0,.1) ${edge + 45}px, rgba(0,0,0,.45) ${edge + 82}px, #000 ${edge + MIST - 30}px)` } }, [walker]);
+    // 霧の縁に立つ薄い煙。上下にずらした2つの塊が、歩み出た後ろへ立ちのぼってほどける
     const h = 720 - 76 - p.y;
-    const puffs = [0.22, 0.52, 0.86].map((r, i) => el("i.ct-puff", { style: {
-      left: `${edge + 40 - i * 14}px`, top: `${p.y + h * r}px`, "--ct-pw": `${170 + i * 30}px`,
+    const puffs = [[0.34, 0, 240], [0.74, 26, 280]].map(([r, dx, pw]) => el("i.ct-puff", { style: {
+      left: `${edge + 30 - dx}px`, top: `${p.y + h * r}px`, "--ct-pw": `${pw}px`,
     } }));
     return { ...p, body, shadow, walker, lane, puffs };
   });
@@ -97,10 +98,10 @@ function mountCh1(card, full) {
       // 足が地面を蹴るたびに影がわずかに縮む（本体の上下と同じ間）
       p.shadow.animate(bobFrames(steps, 3.2, (y) => `scaleX(${(1 + y * 0.012).toFixed(3)})`), { ...opt, duration: p.ms, easing: "linear" });
       p.puffs.forEach((puff, i) => puff.animate([
-        { transform: "translate(-50%, -50%) scale(.55, .45)", opacity: 0, easing: SOFT },
-        { transform: "translate(-62%, -58%) scale(1, .8)", opacity: 1, offset: 0.3, easing: SINE },
-        { transform: "translate(-95%, -85%) scale(1.45, 1.1)", opacity: 0 },
-      ], { delay: p.at + 120 + i * 90, duration: 1500, fill: "both" }));
+        { transform: "translate(-50%, -50%) scale(.6) rotate(0deg)", opacity: 0, easing: SOFT },
+        { transform: "translate(-58%, -62%) scale(.95) rotate(-6deg)", opacity: 1, offset: 0.32, easing: SINE },
+        { transform: "translate(-80%, -96%) scale(1.35) rotate(-14deg)", opacity: 0 },
+      ], { delay: Math.max(0, p.at - 160) + i * 140, duration: 1700, fill: "both" })); // 煙が先に立ち、そこから歩み出る
     }
     for (const t of title) {
       const opt = { delay: t.at, fill: "both" };
@@ -140,6 +141,7 @@ const PAINTED = {
   第五章: { key: "ch5", glint: { x: 45, y: 178, w: 437, h: 312 }, origin: "70% 44%", tint: "190,160,255", core: "255,255,255", glow: 0.9 },
 };
 const PAINT_TOTAL = 4400;
+const SWAP_AT = 3800; // 採用画像へ溶かし始める時刻（寄りはここでほぼ収まっている）
 
 function mountPainted(card, full, spec) {
   const src = full.getAttribute("src");
@@ -160,16 +162,17 @@ function mountPainted(card, full, spec) {
     // ゆっくりした寄りが収まる（全体を通して1区間）
     cam.animate([{ transform: "scale(1.075)", easing: "cubic-bezier(.3,.1,.25,1)" }, { transform: "scale(1)" }], { duration: 4000, fill: "both" });
     // ピント送り: 右の人物から左の題字へ。境目に淡い光が付いて行く
-    cam.animate([{ "--ct-wipe": "122%", easing: "cubic-bezier(.45,.05,.3,1)" }, { "--ct-wipe": "-22%" }], { duration: 2100, delay: 380, fill: "both" });
+    cam.animate([{ "--ct-wipe": "122%", easing: "cubic-bezier(.42,0,.25,1)" }, { "--ct-wipe": "-22%" }], { duration: 2000, delay: 200, fill: "both" });
     plate.animate([{ filter: "blur(16px) brightness(.38) saturate(.85)", easing: SOFT }, { filter: "blur(14px) brightness(.62) saturate(.9)" }], { duration: 900, fill: "both" });
-    sweep.animate([{ opacity: 0, easing: SOFT }, { opacity: 1, offset: 0.25, easing: SINE }, { opacity: 1, offset: 0.7, easing: SINE }, { opacity: 0 }], { duration: 2100, delay: 380, fill: "both" });
+    sweep.animate([{ opacity: 0, easing: SOFT }, { opacity: 1, offset: 0.25, easing: SINE }, { opacity: 1, offset: 0.7, easing: SINE }, { opacity: 0 }], { duration: 2000, delay: 200, fill: "both" });
     // 題字の形にだけ光が一筋走る
-    band.animate([{ transform: "translateX(-60%)", easing: "cubic-bezier(.55,.1,.35,1)" }, { transform: `translateX(${g.w + 40}px)` }], { duration: 1050, delay: 2350, fill: "both" });
-    glint.animate([{ opacity: 0, easing: SOFT }, { opacity: spec.glow, offset: 0.2, easing: SINE }, { opacity: spec.glow, offset: 0.75, easing: SINE }, { opacity: 0 }], { duration: 1050, delay: 2350, fill: "both" });
-    await sleep(4060);
+    band.animate([{ transform: "translateX(-60%)", easing: "cubic-bezier(.55,.1,.35,1)" }, { transform: `translateX(${g.w + 40}px)` }], { duration: 1050, delay: 2200, fill: "both" });
+    glint.animate([{ opacity: 0, easing: SOFT }, { opacity: spec.glow, offset: 0.2, easing: SINE }, { opacity: spec.glow, offset: 0.75, easing: SINE }, { opacity: 0 }], { duration: 1050, delay: 2200, fill: "both" });
+    await sleep(SWAP_AT);
+    // 寄りの合成層は採用画像よりわずかに柔らかいので、切り替えは一瞬で替えず重ねて溶かす
     full.classList.add("ct-shown");
-    requestAnimationFrame(() => requestAnimationFrame(() => cam.remove()));
-    await sleep(PAINT_TOTAL - 4060);
+    setTimeout(() => cam.remove(), 700);
+    await sleep(PAINT_TOTAL - SWAP_AT);
   };
 }
 

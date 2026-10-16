@@ -509,7 +509,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     await nextFrame();
     card.classList.add("show");
     // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
-    if (play) await Promise.race([play().catch(() => {}), sleep(6000)]);
+    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
     else await sleep(3200);
     card.classList.add("out");
     // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。

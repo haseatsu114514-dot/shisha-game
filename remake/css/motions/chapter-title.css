@@ -3,6 +3,8 @@
 
 .chapter-card.ct-layered .cc-art.ct-final { visibility: hidden; }
 .chapter-card.ct-layered .cc-art.ct-final.ct-shown { visibility: visible; }
+.chapter-card.ct-painted .cc-art.ct-final { opacity: 0; transition: opacity .5s cubic-bezier(.37, 0, .63, 1); }
+.chapter-card.ct-painted .cc-art.ct-final.ct-shown { opacity: 1; }
 
 /* 第一章: 白い紙の上で6人と題字を組む。ドット絵はぼかさない */
 .chapter-card.ct-ch1 { background: rgb(254, 254, 254); }
@@ -14,9 +16,13 @@
 .ct-walker { position: absolute; inset: 0; will-change: transform; }
 .ct-shadow { transform-origin: 50% 50%; }
 .ct-puff {
-  position: absolute; width: var(--ct-pw); height: calc(var(--ct-pw) * .42); opacity: 0; pointer-events: none;
-  border-radius: 50%; background: radial-gradient(closest-side, rgba(196, 188, 214, .42), rgba(214, 208, 228, .2) 55%, rgba(236, 232, 244, 0));
-  filter: blur(4px);
+  position: absolute; width: var(--ct-pw); height: calc(var(--ct-pw) * .78); opacity: 0; pointer-events: none;
+  border-radius: 46% 54% 50% 50% / 58% 48% 52% 42%;
+  background:
+    radial-gradient(48% 40% at 38% 56%, rgba(168, 164, 160, .16), rgba(168, 164, 160, 0)),
+    radial-gradient(40% 46% at 64% 40%, rgba(184, 180, 176, .13), rgba(184, 180, 176, 0)),
+    radial-gradient(closest-side, rgba(200, 196, 192, .09), rgba(200, 196, 192, 0));
+  filter: blur(10px);
 }
 .ct-layer { will-change: transform, opacity; }
 
