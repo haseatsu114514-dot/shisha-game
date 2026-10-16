@@ -1,5 +1,7 @@
 // #505: 本番UIから購入・案内・行動枠・セーブ境界を検証する。
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { suite, assertFits } from "./support.mjs";
 
 async function setup(page, values = {}) {
@@ -19,13 +21,19 @@ async function open(page, opts = {}) {
   if (!opts.errand) await page.locator('[data-test="shop-enter"]').click();
   await page.locator('.shop-tabs').waitFor();
 }
+const ADOPTED = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
+const PENDING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
+const HMD = ['lotos_hagal', 'tanukish_lid', 'amaburst_hms'];
+const artifacts = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
+fs.mkdirSync(artifacts, { recursive: true });
+const capture = (page, name) => page.screenshot({ path: path.join(artifacts, `shop-art-${name}.png`) });
 const tap = (page, test) => page.locator(`[data-test="${test}"]`).click();
 const snapshot = page => page.evaluate(() => ({ money: S.core.state.money, stock: S.core.state.flavorStock, slot: S.core.state.slot, stamina: S.core.state.stamina }));
 
 await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
-  for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+  for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }], ["compact", { viewport: { width: 800, height: 600 } }]]) {
     await run(`${platform}-product-art-legacy-save`, async page => {
       await setup(page);
       // A real pre-gram-inventory save: viewing art must not rewrite it.
@@ -33,50 +41,69 @@ await suite("shop-ui", async check => {
         const old = { schema: 5, chapter: 1, phase: "daily", day: 5, slot: 0,
           money: 12800, stamina: 100, seed: 1234, weatherSeed: 4,
           stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
-          flags: { _qa_art_legacy: true }, flavors: ["mint", "lemon"] };
+          owned: ['silicone_bowl', 'lotos_hagal', 'flat_charcoal', 'hagal_80beat'],
+          equip: { bowl: 'silicone_bowl', hms: 'lotos_hagal', charcoal: 'flat_charcoal' },
+          flags: { _qa_art_legacy: true, _qa_unrelated_story: 'keep' }, flavors: ["mint", "lemon"] };
         S.legacyRaw = JSON.stringify(old);
         localStorage.setItem(S.core.SAVE_KEY, S.legacyRaw);
         S.core.load();
       });
       const before = await page.evaluate(() => JSON.stringify(S.core.state));
       await open(page);
+      const mapping = await page.evaluate(async () => Object.keys((await import('./js/daily/shop-art.js')).SHOP_ART));
+      assert.deepEqual(mapping.sort(), [...ADOPTED].sort());
       const decodeRows = async expected => {
         assert.equal(await page.locator('.shop-row.product').count(), expected);
-        assert.equal(await page.locator('.shop-row.product .shop-type-mark, .shop-row.product .art-missing').count(), 0);
-        const rows = await page.locator('.shop-row.product .shop-product-art').evaluateAll(async nodes => {
-          return Promise.all(nodes.map(async node => {
-            const painted = [node, ...node.querySelectorAll('*')].find(n => getComputedStyle(n).backgroundImage !== 'none');
-            const url = painted && getComputedStyle(painted).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1];
-            if (!url) return { error: 'Missing product image' };
-            const image = new Image(); image.src = url; await image.decode();
-            return { url, width: image.naturalWidth, height: image.naturalHeight };
-          }));
-        });
-        assert.equal(rows.length, expected);
-        for (const row of rows) assert(row.width > 0 && row.height > 0, JSON.stringify(row));
+        const rows = await page.locator('.shop-row.product .shop-product-art').evaluateAll(async nodes => Promise.all(nodes.map(async node => {
+          const image = node.querySelector('img');
+          const painted = [node, ...node.querySelectorAll('*')].find(n => getComputedStyle(n).backgroundImage !== 'none');
+          const url = image?.src || painted && getComputedStyle(painted).backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1];
+          if (!url) return { id: node.dataset.productArt, text: node.textContent.trim() };
+          const decoded = new Image(); decoded.src = url; await decoded.decode();
+          return { id: node.dataset.productArt, url, width: decoded.naturalWidth, height: decoded.naturalHeight,
+            kind: node.classList.contains('generated') ? 'generated' : node.classList.contains('botanical') ? 'botanical' : 'existing' };
+        })));
+        for (const row of rows.filter(row => row.url)) {
+          assert(row.width > 0 && row.height > 0, JSON.stringify(row));
+          assert.equal((await page.request.get(row.url)).status(), 200, row.url);
+        }
         return rows;
       };
       const flavors = await decodeRows(18);
-      assert.equal(new Set(flavors.map(row => row.url)).size, 18, 'Each flavor needs its own carton');
+      assert.deepEqual(flavors.filter(row => row.kind === 'generated').map(row => row.id).sort(), [...ADOPTED].sort());
+      assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id).sort(), [...PENDING].sort());
+      assert.equal(new Set(flavors.map(row => row.url)).size, 11, 'Ten adopted cartons + original shared sheet');
+      for (const row of flavors) {
+        assert(row.url.includes(row.kind === 'generated' ? `/heaven10/${row.id}.webp` : '/shop/flavors.webp'));
+      }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
-        await tap(page, `detail-${id}`);
+        const button = page.locator(`[data-test="detail-${id}"]`);
+        const expectedName = await page.evaluate(id => S.data.DB.flavorById[id].short_name || S.data.DB.flavorById[id].name, id);
+        assert.equal(await button.locator('b').innerText(), `${expectedName} 1箱（50g）`);
+        await button.scrollIntoViewIfNeeded();
+        // Every adopted item plus pending8's original sheet is recorded in its real list context.
+        await capture(page, `${platform}-list-${id}`);
+        await button.click();
         const detail = page.locator(`.shop-detail [data-product-art="${id}"]`);
         await detail.waitFor();
-        // The stage scales the same 112px detail window to each viewport.
-        const box = await detail.evaluate(node => {
-          const style = getComputedStyle(node);
-          return { width: parseFloat(style.width), height: parseFloat(style.height) };
-        });
+        await page.waitForFunction(() => [...document.querySelectorAll('.shop-detail img')].every(n => n.complete && n.naturalWidth > 0));
+        await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
+        const box = await detail.evaluate(node => ({ width: parseFloat(getComputedStyle(node).width), height: parseFloat(getComputedStyle(node).height) }));
         assert.equal(box.width, 112); assert.equal(box.height, 112);
         await assertFits(page, '.shop-detail .shop-product-art');
+        if (ADOPTED.includes(id) || id === 'vanilla') await capture(page, `${platform}-detail-${id}`);
         await tap(page, 'shop-detail-close');
       }
       await page.locator('[data-tab="equip"]').click();
-      await decodeRows(8);
-      for (const id of ['lotos_hagal', 'tanukish_lid', 'amaburst_hms']) {
-        assert.equal(await page.locator(`.shop-row [data-product-art="${id}"]`).count(), 1);
+      const equipment = await decodeRows(8);
+      assert.equal(equipment.filter(row => row.url).length, 5, 'Existing three bowls + two charcoal images');
+      for (const id of HMD) {
+        assert.equal(equipment.find(row => row.id === id)?.text, 'HMD');
         await tap(page, `detail-${id}`);
-        await page.locator(`.shop-detail [data-product-art="${id}"]`).waitFor();
+        assert.equal(await page.locator('.shop-detail .shop-type-mark').innerText(), 'HMD');
+        assert.equal(await page.locator('.shop-detail img').count(), 0);
+        await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
+        await capture(page, `${platform}-held-${id}`);
         await tap(page, 'shop-detail-close');
       }
       assert.equal(await page.evaluate(() => JSON.stringify(S.core.state)), before);
@@ -91,6 +118,10 @@ await suite("shop-ui", async check => {
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
       assert.equal(saved.money, 11250); assert.equal(saved.flavorStock.mint, 100);
       assert.equal(saved.flavorStock.lemon, 50); assert.equal(saved.flags._qa_art_legacy, true);
+      assert.deepEqual(saved.equip, { bowl: 'silicone_bowl', hms: 'lotos_hagal', charcoal: 'flat_charcoal' });
+      assert.deepEqual(saved.owned, ['silicone_bowl', 'lotos_hagal', 'flat_charcoal', 'hagal_80beat']);
+      assert.equal(saved.flags._qa_unrelated_story, 'keep');
+      await capture(page, `${platform}-purchased-mint`);
       await page.locator('[data-tab="equip"]').click();
       await tap(page, 'detail-amaburst_hms');
       await page.locator('.modal-box.shop-dialog').evaluate(async box => {
@@ -98,6 +129,54 @@ await suite("shop-ui", async check => {
       });
       await assertFits(page, '.shop-detail .shop-product-art');
     }, options);
+    await run(`${platform}-missing-art-fallback`, async page => {
+      // Deliberate network abort exercises the real image error event (not a synthetic dispatch).
+      let aborted = 0;
+      await page.route('**/img/shop/heaven10/mint.webp', route => { aborted++; return route.abort('aborted'); });
+      await setup(page); await open(page);
+      const mint = page.locator('[data-test="detail-mint"] .shop-product-art');
+      await page.locator('[data-test="detail-mint"] .botanical img').waitFor();
+      await page.waitForFunction(() => document.querySelector('[data-test="detail-mint"] img')?.naturalWidth > 0);
+      assert.equal(await mint.locator('.shop-type-mark').count(), 0);
+      assert(aborted > 0, 'Adopted delivery request was actually blocked');
+      await capture(page, `${platform}-failed-delivery-sheet`);
+      await tap(page, 'detail-mint');
+      await page.locator('.shop-detail .botanical img').waitFor();
+      await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
+      await capture(page, `${platform}-failed-delivery-detail`);
+      await tap(page, 'shop-detail-close');
+    }, options);
+    await run(`${platform}-both-art-fallback`, async page => {
+      // Fresh context: block both URLs BEFORE setup/open; decoded sheet cache cannot mask the failure.
+      const aborted = new Set();
+      for (const tail of ['heaven10/mint.webp', 'flavors.webp']) {
+        await page.route(`**/img/shop/${tail}`, async route => {
+          aborted.add(tail); await route.abort('aborted');
+        });
+      }
+      await setup(page); await open(page);
+      const mint = page.locator('[data-test="detail-mint"] .shop-product-art');
+      await mint.locator('.shop-type-mark').waitFor();
+      assert.deepEqual([...aborted].sort(), ['flavors.webp', 'heaven10/mint.webp']);
+      assert.equal(await mint.innerText(), 'フレーバー');
+      assert.equal(await mint.locator('img').count(), 0);
+      await assertFits(page, '[data-test="detail-mint"] .shop-type-mark');
+      await capture(page, `${platform}-failed-both-text`);
+      await tap(page, 'detail-mint');
+      await page.locator('.shop-detail .shop-type-mark').waitFor();
+      assert.equal(await page.locator('.shop-detail .shop-type-mark').innerText(), 'フレーバー');
+      assert.equal(await page.locator('.shop-detail img').count(), 0);
+      await assertFits(page, '.shop-detail .shop-type-mark');
+      await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
+      await capture(page, `${platform}-failed-both-detail`);
+      await tap(page, 'shop-detail-close');
+      await tap(page, 'buy-mint');
+      assert.equal(await page.locator('.shop-row.selected [data-test="detail-mint"]').count(), 1);
+      await tap(page, 'shop-checkout');
+      assert.equal((await snapshot(page)).money, 11250);
+      assert.equal((await snapshot(page)).stock.mint, 65);
+    }, options);
+    if (platform === 'compact') continue;
     await run(`${platform}-entry`, async page => {
       await setup(page); const before = await snapshot(page);
       await page.evaluate(() => S.open());

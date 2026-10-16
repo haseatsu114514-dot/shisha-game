@@ -1,0 +1,534 @@
+{
+  "items": [
+    {
+      "id": "mint",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          308,
+          213,
+          945,
+          1054
+        ],
+        "box": [
+          306,
+          211,
+          641,
+          845
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d65bf690203e60c140cc85b9b9789e5573938b7b672e90502574c28e76b79d71"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          126,
+          87,
+          386,
+          430
+        ],
+        "box": [
+          124,
+          85,
+          264,
+          347
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "a143ef11c31115348d4d43e525b055c5b051b386adb5e3c11be4efca9d68bc7c"
+      },
+      "path": "remake/img/shop/heaven10/mint.webp",
+      "bytes": 18524
+    },
+    {
+      "id": "double_apple",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          262,
+          135,
+          996,
+          1117
+        ],
+        "box": [
+          260,
+          133,
+          738,
+          986
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "5f663c8d24ffdf00d462aa710270564e1c9afb5f7730f22e528ce9d9eae9e674"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          55,
+          407,
+          456
+        ],
+        "box": [
+          105,
+          53,
+          304,
+          405
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "1ea4367aebc4ef92df314e1b52d31bca01dd4ab49251fc161315727aaf9eeb10"
+      },
+      "path": "remake/img/shop/heaven10/double_apple.webp",
+      "bytes": 23804
+    },
+    {
+      "id": "blueberry",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          260,
+          131,
+          997,
+          1117
+        ],
+        "box": [
+          258,
+          129,
+          741,
+          990
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "c8547279c95bae2732a1e235a409d815c975dda3b98d584d3633e97a13cd8ec8"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          407,
+          456
+        ],
+        "box": [
+          104,
+          51,
+          305,
+          407
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "d0f3a08d4848a0d2f107f115e12c7d4b54996d6282e3fc77af6697410806cc10"
+      },
+      "path": "remake/img/shop/heaven10/blueberry.webp",
+      "bytes": 29484
+    },
+    {
+      "id": "strawberry",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          260,
+          132,
+          997,
+          1117
+        ],
+        "box": [
+          258,
+          130,
+          741,
+          989
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "bcf290ed6e47530d21b4db66011bcaeafe4b529a0f15a3a7381358368f230a6b"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          407,
+          456
+        ],
+        "box": [
+          104,
+          51,
+          305,
+          407
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "a1d4f1b52a631cbc0068dd12061c2c70b62d12e64c9299fa004c5a93b04f166f"
+      },
+      "path": "remake/img/shop/heaven10/strawberry.webp",
+      "bytes": 30828
+    },
+    {
+      "id": "pineapple",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          260,
+          131,
+          999,
+          1119
+        ],
+        "box": [
+          258,
+          129,
+          743,
+          992
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "042f052fc7cf848165232b73948ea994bfad21b0839a25c81599e4274bf5ee24"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          51,
+          306,
+          408
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "99bd54972197fd0ba11cc4f901d5524b22fb14a43662f7fab4364d242924bd3b"
+      },
+      "path": "remake/img/shop/heaven10/pineapple.webp",
+      "bytes": 32074
+    },
+    {
+      "id": "lemon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          261,
+          131,
+          998,
+          1118
+        ],
+        "box": [
+          259,
+          129,
+          741,
+          991
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "eecaa5f0397cf57225e41aee9b2bb68f318fb7371cc6034d0e49d13590662695"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          51,
+          306,
+          408
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "294eae9f4cfc73871907579838365a24c79c45e9181980a56d3b01ae12e85f3a"
+      },
+      "path": "remake/img/shop/heaven10/lemon.webp",
+      "bytes": 27700
+    },
+    {
+      "id": "orange",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          260,
+          131,
+          998,
+          1119
+        ],
+        "box": [
+          258,
+          129,
+          742,
+          992
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "5124270384576d5051f5ef255011b8a796585b80afca408f332d5500b6ed3d00"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          51,
+          306,
+          408
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "2a34252ea4e8d0edbcc6e0ead3f830caca4c0a3ccf59bcdeab480f5cfb2f49f9"
+      },
+      "path": "remake/img/shop/heaven10/orange.webp",
+      "bytes": 30298
+    },
+    {
+      "id": "grape",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          274,
+          146,
+          986,
+          1123
+        ],
+        "box": [
+          272,
+          144,
+          716,
+          981
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "33a1e94de92a0ba4070865bab1f296aa484706c8b532d63eae78dcc8b998e4e8"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          112,
+          59,
+          403,
+          459
+        ],
+        "box": [
+          110,
+          57,
+          295,
+          404
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "d80e5fd169258339eaeb22b29d7312a7a5cc7bd6daafe00e94e20325b2ac72e6"
+      },
+      "path": "remake/img/shop/heaven10/grape.webp",
+      "bytes": 22568
+    },
+    {
+      "id": "watermelon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          261,
+          131,
+          997,
+          1119
+        ],
+        "box": [
+          259,
+          129,
+          740,
+          992
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "92cd6aec45700cf542ea634b5dfcad6b1f0d82abeb8aade06ed1e3abb3b0584c"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          53,
+          407,
+          457
+        ],
+        "box": [
+          104,
+          51,
+          305,
+          408
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "aeb519af8c32585dd4f57050e48c7efce50f85602b38dfd08c8b3c82001f0547"
+      },
+      "path": "remake/img/shop/heaven10/watermelon.webp",
+      "bytes": 29332
+    },
+    {
+      "id": "cinnamon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          256,
+          131,
+          999,
+          1120
+        ],
+        "box": [
+          254,
+          129,
+          747,
+          993
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d29390a0f759234ba4de2d542a12e81203f9abdac2366faa9229de5fc382f66b"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          104,
+          53,
+          408,
+          458
+        ],
+        "box": [
+          102,
+          51,
+          308,
+          409
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "66a4aeef021e894c25bbaf2c666867bd7a07fc43cb41845abc3a5bcf92c026d1"
+      },
+      "path": "remake/img/shop/heaven10/cinnamon.webp",
+      "bytes": 28692
+    }
+  ]
+}

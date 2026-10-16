@@ -1,0 +1,148 @@
+{
+  "adopted_at": "2026-10-16T04:23:41Z",
+  "base_main": "6c05ae31",
+  "scope": "Heaven10 only; pending8 original main botanical sheet; HMD3 text; no merge/publication",
+  "browser": {
+    "base_url": "http://127.0.0.1:8137/remake/",
+    "engine": "local Google Chrome via Playwright, fresh disposable contexts",
+    "platforms": {
+      "pc": [
+        1280,
+        720
+      ],
+      "touch": [
+        844,
+        390
+      ],
+      "compact": [
+        800,
+        600
+      ]
+    },
+    "input_scope": "Touch emulation; mint purchase and checkout use locator.tap() in touch legacy-save case. Other detail/tab controls use click. Not physical-device testing.",
+    "existing_gameplay_cases": [
+      {
+        "label": "pc-entry",
+        "status": "passed"
+      },
+      {
+        "label": "pc-batch",
+        "status": "passed"
+      },
+      {
+        "label": "touch-entry",
+        "status": "passed"
+      },
+      {
+        "label": "touch-batch",
+        "status": "passed"
+      },
+      {
+        "label": "availability-and-cancel-cue",
+        "status": "passed"
+      },
+      {
+        "label": "errand-expense-and-preparation",
+        "status": "passed"
+      },
+      {
+        "label": "equipment-sell-kuji",
+        "status": "passed"
+      },
+      {
+        "label": "shortfall-scroll-discard-stale-state",
+        "status": "passed"
+      },
+      {
+        "label": "delayed-entry-and-discard",
+        "status": "passed"
+      },
+      {
+        "label": "calendar-shopping-and-showroom",
+        "status": "passed"
+      }
+    ],
+    "art_cases": [
+      {
+        "label": "pc-product-art-legacy-save",
+        "status": "passed"
+      },
+      {
+        "label": "pc-missing-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "pc-both-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "touch-product-art-legacy-save",
+        "status": "passed"
+      },
+      {
+        "label": "touch-missing-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "touch-both-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "compact-product-art-legacy-save",
+        "status": "passed"
+      },
+      {
+        "label": "compact-missing-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "compact-both-art-fallback",
+        "status": "passed"
+      }
+    ],
+    "after_text_fit_fix": [
+      {
+        "label": "pc-both-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "touch-both-art-fallback",
+        "status": "passed"
+      },
+      {
+        "label": "compact-both-art-fallback",
+        "status": "passed"
+      }
+    ],
+    "assertions": [
+      "18 flavor rows: exact10 adopted individual URLs +8 prior approved botanical-sheet rows",
+      "3 HMD text only; existing 5 bowl/charcoal images decode",
+      "all10 URLs decoded and HTTP200; item labels exact; 112px detail windows fit",
+      "schema5 legacy load; viewing preserves state and raw storage; purchase money12800->11250/mint50->100g; lemon50g/equipment/owned/unrelated flags retained",
+      "real observed request.abort for adopted source and fresh-context both URLs; sheet fallback then flavor text; no unexpected page errors; purchase still works"
+    ],
+    "visual_review": "C viewed native screenshot crops of all10; full PC/touch/800x600 list/detail/HMD/sheet/text fallback captures. Text overflow found visually, fixed with flavor-only inline font sizing and assertFits; final3 rerun PASS.",
+    "local_artifact_dirs": [
+      "inventory/integration-browser-qa-wrapper",
+      "inventory/integration-browser-qa-c",
+      "inventory/integration-browser-qa-c-final"
+    ],
+    "screenshots_in_library": false,
+    "remote_publication_tested": false
+  },
+  "checks": {
+    "build_and_reencode_check": "PASS: actual WebP bytes, mapping, report reproduced; 10 deliveries 273304 bytes",
+    "unit_negative_preservation": "PASS4: selected source hashes/decode, held11 addition/replacement rejection, old source/hash/delivery rejection, native240/data71 SHA exact",
+    "daily_consistency": "PASS",
+    "agent_docs": "PASS",
+    "javascript_syntax": "PASS",
+    "diff_check": "PASS",
+    "whole_pr_scope": "Runtime code only shop.js/shop-art.js; no data/assets/state/sharedCSS/#437/gacha/axe/dice diffs vs current main. All historical source candidates and inactive old21 deliveries retained; no runtime references to packages/equipment old candidates.",
+    "source_phase_records": "v2/v3/v4/v5/v6 records and source PNGs unchanged from4b85; root historical README labels clarified"
+  },
+  "limitations": [
+    "Manual source front-plane estimates and locally inferred cardboard restoration remain as previously reviewed/adopted; no new art edits",
+    "Remaining8 maker-specific art future; no HMD art adoption",
+    "Whole latest PR review and current-head CI still required; no merge authorization"
+  ]
+}

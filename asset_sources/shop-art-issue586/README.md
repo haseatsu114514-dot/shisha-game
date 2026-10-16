@@ -1,3 +1,11 @@
+# 現在の採用範囲（2026-10-16）
+
+ユーザー04:23:41UTC採用のHeaven10のみを個別画像として統合。現行の選択・配信・在庫表は [runtime-heaven10-adoption](runtime-heaven10-adoption/README.md)。保留8種はmain採用済み植物シート、HMD3は文字表示を維持。原画・旧候補は保存する。
+
+以下は旧Draft初版の**履歴**。このフォルダ直下の `inventory.json` / `adoption.json` / `validation.json` と旧21点WebPは当時の記録で、現行buildの入力ではない。現在の採用やHMD承認を意味しない。
+
+---
+
 # ショップ商品画像 (#586)
 
 現行の果実・植物画に合わせてフレーバー18種を紙箱パッケージに揃え、文字だけだったHMD3種を商品画像へ変更。

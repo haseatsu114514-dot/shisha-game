@@ -54,24 +54,44 @@ export function sellEquipment(id) {
 }
 
 const priceText = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
+const FLAVOR_ART = new URL("../../img/shop/flavors.webp", import.meta.url).href;
+// 生成原画1774×887の各イラストの窓。隣の葉を出さず、縦長の果実も切らない。
+const FLAVOR_BOXES = [
+  [24, 76, 270, 241], [322, 78, 277, 242], [609, 89, 280, 229], [891, 75, 286, 244], [1180, 83, 304, 246], [1487, 28, 270, 296],
+  [10, 335, 285, 265], [311, 335, 296, 271], [607, 334, 283, 272], [893, 336, 291, 266], [1185, 337, 301, 268], [1490, 329, 275, 276],
+  [19, 608, 280, 252], [310, 607, 288, 251], [607, 600, 281, 259], [889, 609, 288, 247], [1183, 606, 309, 255], [1485, 602, 281, 260],
+];
 const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
   suyaki_hagal: "bowl_empty_clay.png", flat_charcoal: "coal_flat_cold.png", cube_charcoal: "coal_cold.png",
 };
+// A real <img> error handler also covers failed/aborted delivery requests.
+// Cropping retains the approved main sheet windows and the measured carton margin.
+function windowArt(item, url, box, dimensions, size, kind, fallback) {
+  const [x, y, w, h] = box;
+  const k = Math.min(size * (kind === "generated" ? .88 : 1) / w,
+                     size * (kind === "generated" ? .88 : 1) / h);
+  const root = el(`span.shop-product-art.${kind}`, { "aria-hidden": "true", dataset: { productArt: item.id } });
+  const image = el("img", { alt: "", decoding: "async", style: {
+    position: "absolute", maxWidth: "none", width: `${dimensions[0] * k}px`, height: `${dimensions[1] * k}px`,
+    left: `${-x * k}px`, top: `${-y * k}px`,
+  }, onerror: () => root.replaceWith(fallback()) });
+  root.append(el("span", { style: { position: "relative", display: "block", overflow: "hidden",
+    width: `${w * k}px`, height: `${h * k}px`, flex: "none" } }, [image]));
+  image.src = url; // Attach the error listener before starting the request.
+  return root;
+}
 function productArt(item, flavor, size = 66) {
-  const generated = SHOP_ART[item.id];
-  if (generated) {
-    const [x, y, w, h] = generated.box;
-    const [width, height] = generated.size;
-    const k = Math.min(size * .88 / w, size * .88 / h);
-    return el("span.shop-product-art.generated", { "aria-hidden": "true", dataset: { productArt: item.id } }, [el("span", { style: {
-      display: "block", width: `${w * k}px`, height: `${h * k}px`, backgroundRepeat: "no-repeat",
-      backgroundImage: `url("${generated.url}")`, backgroundSize: `${width * k}px ${height * k}px`, backgroundPosition: `${-x * k}px ${-y * k}px`,
-    } })]);
-  }
+  const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
+    el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
+  ]);
+  const botanical = () => windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
+    [1774, 887], size, "botanical", textArt);
+  const generated = flavor && SHOP_ART[item.id];
+  if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", botanical);
+  if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
-  return el("span.shop-product-art", { "aria-hidden": "true" }, art
-    ? [artImg(art, 60)] : [el("span.shop-type-mark", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" })]);
+  return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();
 }
 function shopHeader(sub, money) {
   return el("header.shop-head", [el("h2", { text: "Dr.fookah" }), el("span.shop-sub", { text: sub }), money]);
@@ -125,7 +145,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
-    setBg(bgUrl("bg_shop"), { fast: true, ready: SHOP_FLAVORS.map(id => SHOP_ART[id].url) });
+    setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });

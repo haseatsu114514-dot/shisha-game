@@ -1,3 +1,9 @@
+# 現在のQA対象
+
+Heaven10のみを新しい個別画像へ変更。保留8種はmain既存シート、HMD3は文字表示。現在のQAは [runtime採用記録](../../../asset_sources/shop-art-issue586/runtime-heaven10-adoption/README.md) を参照。以下と `results.json` は旧cream21案の履歴であり、現在headの検証結果ではない。
+
+---
+
 # ショップパッケージと欠落HMD画像のQA (#586)
 
 Draft PR #587。マージ/公開確認は親担当の判断待ち。公開版にはまだ今回の画像を反映していない。
