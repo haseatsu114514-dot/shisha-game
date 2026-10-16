@@ -97,7 +97,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -132,6 +132,11 @@ window.__remake = {
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/kafuka.js")).playKafukaEncounter();
+      }
+      if (name.startsWith("garagara")) {
+        const rank = name.split("-")[1] || "S";
+        await setBg(bgUrl("bg_shop"));
+        return (await import("./daily/kuji.js")).previewReveal(rank);
       }
       if (name.startsWith("dawn")) {
         const kind = name.split("-")[1] || "sun";

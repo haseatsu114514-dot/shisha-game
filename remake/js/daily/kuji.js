@@ -7,6 +7,7 @@ import { layers, toast } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
+import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 
 const grades = () => Object.entries(DB.kuji?.grades || {})
@@ -91,19 +92,17 @@ async function draw(g) {
   await reveal(prize, extras);
 }
 
-// 引き演出: 棚の箱から1つを引き当てる → ランクが開く。上位賞は光が走る
+// 引き演出: ガラガラ（福引きの回転抽選器）を回し、賞の色の玉が出る → 賞のカードが開く。上位賞は光が走る
+// （motions/garagara.js。SKIP中とテストの高速送りでは回さずにカードだけ出す）
 function reveal(prize, extras) {
   return new Promise((resolve) => {
-    const shelf = el("div.kuji-shelf", Array.from({ length: 6 }, (_, i) => el("i.kuji-box")));
-    const pickIdx = Math.floor(Math.random() * 6);
-    const card = el("div.kuji-card.drawing", [shelf, el("div.kuji-label", { text: "箱を引いています……" })]);
+    const card = el("div.kuji-card.drawing", [el("div.kuji-label", { text: "ガラガラ……" })]);
     const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } }, [card]);
     layers.modal.replaceChildren(ov);
     layers.modal.classList.add("show");
     SE.select();
-    requestAnimationFrame(() => shelf.children[pickIdx].classList.add("reach"));
     let open = false;
-    setTimeout(async () => {
+    const show = async () => {
       const top = prize.rank === "S" || prize.rank === "LAST";
       card.className = `kuji-card reveal rank-${prize.rank}`;
       card.replaceChildren(
@@ -116,7 +115,9 @@ function reveal(prize, extras) {
       if (top) SE.fanfare();
       open = true;
       for (const ex of extras) { await sleep(500); toast(`${ex.name} を手に入れた！`, { kind: "good" }); }
-    }, 800);
+    };
+    const skip = vnTest.turbo || document.body.classList.contains("vn-skip");
+    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank)).catch((e) => console.error(e))).then(show);
     ov.onclick = () => {
       if (!open) return;
       SE.click();
@@ -125,6 +126,13 @@ function reveal(prize, extras) {
       resolve();
     };
   });
+}
+
+/** 開発用: 景品を渡さずに、指定の賞で引く演出だけ見る（__remake.dev.motion("garagara-S") など） */
+export function previewReveal(rank = "S") {
+  const g = grades()[0];
+  const prize = g?.prizes.find((p) => p.rank === rank) || { rank, name: `${rank}賞`, desc: "" };
+  return reveal(prize, []);
 }
 
 /** 売れる小物（くじの景品など）の買い取り行 */
