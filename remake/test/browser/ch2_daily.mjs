@@ -109,8 +109,19 @@ await suite('ch2-daily',async check=>{
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
     assert.equal(v.inbox.filter(i=>i.id==='lime_ch2_ageha_after_visit').length,1);
     await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000);assert.equal(v.flags._ch2_talks.ageha,2);
-    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_followup'));
+    assert.equal(v.flags._ch2_followup_done.ageha,true);
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
+    await page.evaluate(async()=>{
+      window.__dailyTrace=[];
+      (await import('./js/vn/engine.js')).hooks.onLine=(id)=>{
+        if(window.__dailyTrace.at(-1)!==id)window.__dailyTrace.push(id);
+      };
+    });
+    await page.locator(t('map-region-home')).click();await act(page,'rest');
+    await wide(page);await act(page,'ch2_ageha');v=await value(page);
+    assert.equal(v.money,27000);assert.equal(v.flags._ch2_talks.ageha,3);
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');

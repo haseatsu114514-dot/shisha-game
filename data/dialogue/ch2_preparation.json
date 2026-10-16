@@ -396,6 +396,221 @@
           "text": "……うん。待ってる"
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_followup",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いクマの隣に座ると、あげはがこちらへ顔を向けた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、今日もその席？ すっかり定位置じゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前の、顔を見てから聞くって話。もう少し聞きたくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うん。……でもさ、「なんでそう思ったの？」って聞かれると、困るんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かってるのに、説明しにくいんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "そそ。「なんか今日はこう！」しか出てこなくて。自分でも雑すぎってなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "例えば……今なら、どんな感じですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "んー……今日は、急いで話さなくてもいい感じ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が、まだ話を聞きたそうにしてるから、とか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あ、それ。立つ気なさそうだなって、見てたかも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そう聞くと、どこを見てたのか、少し分かります"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うちも。しゃべってると、あとから言葉が追いつくんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すぐ説明できなくても、聞いてみてよかったです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うん。また聞いて。今度も「なんか」で止まるかもだけど！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_followup",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒革のソファに腰を下ろし、飲み物を机に置いた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "おう、小僧。今日は何が引っかかってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前の、いったん置いて見直すって話です。急いでると、置くのも遅く感じそうで"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "手に持ってると、そいつをどうするかばっかり考えちまうからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは自分のグラスを置き、机の上で手を開いた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "置きゃ、ほかも見える。肘の先とか、次に手を出す場所とかよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ。飲み物を持ったままだと、この空いてる所も使う気にならないですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そういうこった。急ぐ時ほど、持ったまま迷うな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "早く動くより、一度ちゃんと見られるようにするんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。置き場所だって、一度決めりゃ終いじゃねえぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。店の卓で、手を空けた時に何が見えるか、確かめてみます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "ああ。お前の手に合う場所を探せばいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_followup",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚のCDを見ていると、REIさんが前に見せてくれた一枚を指した。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……それ、気になる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。REIさんは、この曲のどんなところが好きなんですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……音が、すぐには重ならない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "重ならない？"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "ひとつ鳴って、消えかけたところに、次の音が来る"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "その間が……いい。静かになっても、まだ続きがある感じがして"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "だから、急いで次の曲にしない。……少し、そのままにしてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音が止まった後も、聴いてるんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ああ、……喋りすぎた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ。どんなふうに聴いてるのか、少し分かりました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ほかのCDの話も、また聞いていいですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。気になったら、聞いて"
+        }
+      ]
     }
   ]
 }
