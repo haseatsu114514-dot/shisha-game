@@ -468,3 +468,38 @@
 @media (orientation: portrait) and (max-width: 600px) {
   .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { max-width: none; }
 }
+
+/* Spare equipment stays outside the live 2d6 and disappears before space is tight. */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-spare-kit {
+  position: absolute; z-index: -1; pointer-events: none;
+  width: 210px; height: 140px; right: -70px; top: 90px;
+  background: url('../img/ui/trpg/spare-polyhedral-kit.webp') center / contain no-repeat;
+  filter: drop-shadow(2px 9px 7px #0007);
+}
+.trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage {
+  box-shadow: 0 12px 0 -3px #26170f, 0 15px 0 -3px #7c5732,
+    0 23px 18px -9px #000c, 0 32px 55px #0009, inset 0 3px 12px #001011cc,
+    inset 0 -2px 5px #b0a36a22;
+}
+/* The square live face remains level; blank resin edges provide depth only. */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die {
+  position: relative; isolation: isolate;
+  border: 2px solid #fff3c9; border-radius: 17%;
+  background: radial-gradient(ellipse at 22% 13%, #fff9e5 0, #f6e8c5 38%, #d9c59a 100%);
+  box-shadow: inset 3px 3px 3px #fffdf0cc, inset -4px -4px 6px #9f784d66,
+    2px 4px 0 #c3a679, 4px 7px 0 #9f8058, 6px 10px 0 #755c3e,
+    7px 13px 5px #00171899, 12px 22px 18px #00101499;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die::before {
+  content: ''; position: absolute; inset: 5%; border-radius: 14%; pointer-events: none;
+  border: 1px solid #fff7dc70;
+  background: linear-gradient(145deg, #fffdf426, transparent 42%, #78542d0d);
+  z-index: -1;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-pip {
+  background: radial-gradient(circle at 65% 75%, #3e5957, #152e30 75%);
+  box-shadow: inset 1px 2px 2px #0009, 0 1px 1px #fff7dc;
+}
+@media (max-width: 1200px), (max-height: 600px) {
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-spare-kit { display: none; }
+}
