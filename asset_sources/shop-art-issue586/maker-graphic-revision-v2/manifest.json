@@ -1,5 +1,5 @@
 {
-  "scope": "First revised representatives only: Dobaj vanilla and アフサール rose. Remaining6 held for direction and additional network approval.",
+  "scope": "Complete revised Dobaj6 and アフサール2 source set, plus normalized comparison with adopted Heaven10; no runtime integration.",
   "reason": "User found unequal box sizes and wanted to avoid close resemblance to real-world packaging/ingredient photography. User selected majority DOBAJ carton as physical standard, with realistic retail carton structure.",
   "baseline": {
     "reference": "../maker-preview-20261017/dobaj-vanilla.png",
@@ -76,6 +76,240 @@
         "/workspace/generated_images/exec-2bb5054f-d962-4753-a61e-3e3e207b0bb4.png"
       ],
       "git_blob_sha": "c97674712423f875a5c88d98a5707b075690967e"
+    },
+    {
+      "id": "coconut",
+      "maker": "ドバジ",
+      "path": "/workspace/generated_images/exec-d8c145fe-0900-480d-a6fe-daa17e26b15b.png",
+      "src": "dobaj-coconut.png",
+      "name": "ココナッツ",
+      "bytes": 1268178,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        111,
+        1021,
+        1156
+      ],
+      "window": [
+        244,
+        108,
+        780,
+        1050
+      ],
+      "aspect": 0.7428571428571429,
+      "width_at_112": 73.21600000000001,
+      "sha256": "93db640816d137b0a7cba7d35654deec9c89b39a3656c1e2395dcd334791f793",
+      "git_blob_sha": "eaa1e8e4b1fa4848f4bca39cfcf3fa8e8b527843",
+      "filename": "dobaj-coconut.png",
+      "prompt": "Edit the attached NEW approved DOBAJ VANILLA graphic carton into ONE matching flavor variant. Keep the EXACT SAME physical folded paperboard box silhouette, size and placement on the1254x1254 transparent canvas, perspective of front/right/top, shallow retail thickness, closed flush flap seams, upper-left lighting and matte paper material. The main outline is approximately x246..1019,y113..1153, width773,height1040. Do not enlarge, narrow, shrink or rotate it. Keep the charcoal LEFT vertical panel, ivory paired-arch DOBAJ symbol, DOBAJ name, ivory main paper area, bold flavor typography position and dark right-side brand label. This is an independent original graphic package, not a recreation of a real commercial package. Change ONLY the flavor word on FRONT and RIGHT SIDE, the colored sweeping printed ribbon accent, and its integrated FLAT flavor glyph. Completely remove all vanilla flower/pod symbols. The replacement must be original stylized screen-print / cut-paper graphic art: a few clear flat shapes with paper-ink texture, no photographic ingredients, no realistic fruit still life, no botanical engraving, and no full-width bottom flavor stripe. The flavor glyph is integrated into the ribbon, not a fruit photograph across the bottom. Keep the layout balanced and distinctive. No physical fruit outside the box. No leaves, grass, stems, vines, botanical border, unrelated fruit, real-world logos, crowns, wings, halo, extra words, price, promotion, HMD, hookah, bowl, charcoal, metal, handle, raised lid or protrusion. Single carton, true transparent background, clean margins, no fake checkerboard or external caption. Replace VANILLA with COCONUT on front and side. Use muted taupe / sand ribbons. Replace vanilla symbol with an original small stylized coconut glyph composed of two brown semicircle shell shapes enclosing warm-white/ivory circular flesh shapes, offset like a split coconut, with only a few angular cut-paper edge facets. It must read as coconut in restrained flat print, not a detailed coconut photo or realistic brown hair. No palm imagery.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png"
+      ],
+      "role": "new6 approved-direction expansion"
+    },
+    {
+      "id": "mango",
+      "maker": "ドバジ",
+      "path": "/workspace/generated_images/exec-c70d071e-22c6-4b13-9adb-43487ab103f1.png",
+      "src": "dobaj-mango.png",
+      "name": "マンゴー",
+      "bytes": 1272764,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        111,
+        1021,
+        1155
+      ],
+      "window": [
+        242,
+        108,
+        782,
+        1050
+      ],
+      "aspect": 0.7447619047619047,
+      "width_at_112": 73.40373333333334,
+      "sha256": "925f4ac7a0879308a8e0bae3dc941911dce14264715f4747477694d6487f9e54",
+      "git_blob_sha": "5ec7469bc8ad4bfe137fb97f551a9d7393e00bd7",
+      "filename": "dobaj-mango.png",
+      "prompt": "Edit the attached NEW approved DOBAJ VANILLA graphic carton into ONE matching flavor variant. Keep the EXACT SAME physical folded paperboard box silhouette, size and placement on the1254x1254 transparent canvas, perspective of front/right/top, shallow retail thickness, closed flush flap seams, upper-left lighting and matte paper material. The main outline is approximately x246..1019,y113..1153, width773,height1040. Do not enlarge, narrow, shrink or rotate it. Keep the charcoal LEFT vertical panel, ivory paired-arch DOBAJ symbol, DOBAJ name, ivory main paper area, bold flavor typography position and dark right-side brand label. This is an independent original graphic package, not a recreation of a real commercial package. Change ONLY the flavor word on FRONT and RIGHT SIDE, the colored sweeping printed ribbon accent, and its integrated FLAT flavor glyph. Completely remove all vanilla flower/pod symbols. The replacement must be original stylized screen-print / cut-paper graphic art: a few clear flat shapes with paper-ink texture, no photographic ingredients, no realistic fruit still life, no botanical engraving, and no full-width bottom flavor stripe. The flavor glyph is integrated into the ribbon, not a fruit photograph across the bottom. Keep the layout balanced and distinctive. No physical fruit outside the box. No leaves, grass, stems, vines, botanical border, unrelated fruit, real-world logos, crowns, wings, halo, extra words, price, promotion, HMD, hookah, bowl, charcoal, metal, handle, raised lid or protrusion. Single carton, true transparent background, clean margins, no fake checkerboard or external caption. Replace VANILLA with MANGO on front and side. Use muted ripe orange / apricot ribbons. Replace vanilla symbol with a bold simple abstract mango glyph made of two asymmetrical oval/teardrop shapes in red-orange, gold and ivory, a few broad angular facets suggesting a cut mango cheek. No realistic mango skin, diced flesh, oranges, citrus segments or photographic food.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png"
+      ],
+      "role": "new6 approved-direction expansion"
+    },
+    {
+      "id": "peach",
+      "maker": "ドバジ",
+      "path": "/workspace/generated_images/exec-035541a4-65a4-4975-afcf-75ec54c235e1.png",
+      "src": "dobaj-peach.png",
+      "name": "ピーチ",
+      "bytes": 1250344,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        245,
+        112,
+        1021,
+        1154
+      ],
+      "window": [
+        243,
+        109,
+        780,
+        1048
+      ],
+      "aspect": 0.7442748091603053,
+      "width_at_112": 73.35572519083969,
+      "sha256": "a3c13cd97f0354e876f9ad9ccc40a43e8b5de7b81d2e70540509135e7ec8bd2d",
+      "git_blob_sha": "b304bdcf2ab787883654916c97695cb4667ad905",
+      "filename": "dobaj-peach.png",
+      "prompt": "Edit the attached NEW approved DOBAJ VANILLA graphic carton into ONE matching flavor variant. Keep the EXACT SAME physical folded paperboard box silhouette, size and placement on the1254x1254 transparent canvas, perspective of front/right/top, shallow retail thickness, closed flush flap seams, upper-left lighting and matte paper material. The main outline is approximately x246..1019,y113..1153, width773,height1040. Do not enlarge, narrow, shrink or rotate it. Keep the charcoal LEFT vertical panel, ivory paired-arch DOBAJ symbol, DOBAJ name, ivory main paper area, bold flavor typography position and dark right-side brand label. This is an independent original graphic package, not a recreation of a real commercial package. Change ONLY the flavor word on FRONT and RIGHT SIDE, the colored sweeping printed ribbon accent, and its integrated FLAT flavor glyph. Completely remove all vanilla flower/pod symbols. The replacement must be original stylized screen-print / cut-paper graphic art: a few clear flat shapes with paper-ink texture, no photographic ingredients, no realistic fruit still life, no botanical engraving, and no full-width bottom flavor stripe. The flavor glyph is integrated into the ribbon, not a fruit photograph across the bottom. Keep the layout balanced and distinctive. No physical fruit outside the box. No leaves, grass, stems, vines, botanical border, unrelated fruit, real-world logos, crowns, wings, halo, extra words, price, promotion, HMD, hookah, bowl, charcoal, metal, handle, raised lid or protrusion. Single carton, true transparent background, clean margins, no fake checkerboard or external caption. Replace VANILLA with PEACH on front and side. Use muted peach-pink/coral ribbons. Replace vanilla symbol with a compact original peach glyph: two simple pink/ivory rounded lobes with a dark curved crease, beside one very simplified cut oval with a single brown stone shape. Flat paper-cut shapes only, no realistic peach fuzz, no leaf and no photographic fruit.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png"
+      ],
+      "role": "new6 approved-direction expansion"
+    },
+    {
+      "id": "melon",
+      "maker": "ドバジ",
+      "path": "/workspace/generated_images/exec-bcc5b733-5c49-4be2-abc2-782e2787b788.png",
+      "src": "dobaj-melon.png",
+      "name": "メロン",
+      "bytes": 1253633,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        112,
+        1020,
+        1154
+      ],
+      "window": [
+        244,
+        109,
+        778,
+        1048
+      ],
+      "aspect": 0.7423664122137404,
+      "width_at_112": 73.16763358778627,
+      "sha256": "75c039b9ccf6fab1fd40473694bc041a2c2015970d358dc2246d76cef5ddf1eb",
+      "git_blob_sha": "73fa5ac873154a55ffa359409f3d8761575ebaa1",
+      "filename": "dobaj-melon.png",
+      "prompt": "Edit the attached NEW approved DOBAJ VANILLA graphic carton into ONE matching flavor variant. Keep the EXACT SAME physical folded paperboard box silhouette, size and placement on the1254x1254 transparent canvas, perspective of front/right/top, shallow retail thickness, closed flush flap seams, upper-left lighting and matte paper material. The main outline is approximately x246..1019,y113..1153, width773,height1040. Do not enlarge, narrow, shrink or rotate it. Keep the charcoal LEFT vertical panel, ivory paired-arch DOBAJ symbol, DOBAJ name, ivory main paper area, bold flavor typography position and dark right-side brand label. This is an independent original graphic package, not a recreation of a real commercial package. Change ONLY the flavor word on FRONT and RIGHT SIDE, the colored sweeping printed ribbon accent, and its integrated FLAT flavor glyph. Completely remove all vanilla flower/pod symbols. The replacement must be original stylized screen-print / cut-paper graphic art: a few clear flat shapes with paper-ink texture, no photographic ingredients, no realistic fruit still life, no botanical engraving, and no full-width bottom flavor stripe. The flavor glyph is integrated into the ribbon, not a fruit photograph across the bottom. Keep the layout balanced and distinctive. No physical fruit outside the box. No leaves, grass, stems, vines, botanical border, unrelated fruit, real-world logos, crowns, wings, halo, extra words, price, promotion, HMD, hookah, bowl, charcoal, metal, handle, raised lid or protrusion. Single carton, true transparent background, clean margins, no fake checkerboard or external caption. Replace VANILLA with MELON on front and side. Use soft muted pale olive/sage-green ribbons. Replace vanilla symbol with an original compact melon glyph made of one flat tan/pale green circle with a few large geometric lattice lines, and one simple crescent slice with ivory center and green edge. Minimal broad print shapes, not realistic rind or seed photography. No red watermelon, dark stripes or decorative leaves.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png"
+      ],
+      "role": "new6 approved-direction expansion"
+    },
+    {
+      "id": "banana",
+      "maker": "ドバジ",
+      "path": "/workspace/generated_images/exec-c8934407-2f08-4280-aae9-eee5cac8aa10.png",
+      "src": "dobaj-banana.png",
+      "name": "バナナ",
+      "bytes": 1231658,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        112,
+        1021,
+        1154
+      ],
+      "window": [
+        243,
+        109,
+        780,
+        1048
+      ],
+      "aspect": 0.7442748091603053,
+      "width_at_112": 73.35572519083969,
+      "sha256": "273f346cb07328a67fa84f5eee816f54e220256f5134923d86866cb78cc8f9e8",
+      "git_blob_sha": "735eefc9c749500c9832e26e8d1d7985d10ba015",
+      "filename": "dobaj-banana.png",
+      "prompt": "Edit the attached NEW approved DOBAJ VANILLA graphic carton into ONE matching flavor variant. Keep the EXACT SAME physical folded paperboard box silhouette, size and placement on the1254x1254 transparent canvas, perspective of front/right/top, shallow retail thickness, closed flush flap seams, upper-left lighting and matte paper material. The main outline is approximately x246..1019,y113..1153, width773,height1040. Do not enlarge, narrow, shrink or rotate it. Keep the charcoal LEFT vertical panel, ivory paired-arch DOBAJ symbol, DOBAJ name, ivory main paper area, bold flavor typography position and dark right-side brand label. This is an independent original graphic package, not a recreation of a real commercial package. Change ONLY the flavor word on FRONT and RIGHT SIDE, the colored sweeping printed ribbon accent, and its integrated FLAT flavor glyph. Completely remove all vanilla flower/pod symbols. The replacement must be original stylized screen-print / cut-paper graphic art: a few clear flat shapes with paper-ink texture, no photographic ingredients, no realistic fruit still life, no botanical engraving, and no full-width bottom flavor stripe. The flavor glyph is integrated into the ribbon, not a fruit photograph across the bottom. Keep the layout balanced and distinctive. No physical fruit outside the box. No leaves, grass, stems, vines, botanical border, unrelated fruit, real-world logos, crowns, wings, halo, extra words, price, promotion, HMD, hookah, bowl, charcoal, metal, handle, raised lid or protrusion. Single carton, true transparent background, clean margins, no fake checkerboard or external caption. Replace VANILLA with BANANA on front and side. Use warm muted golden-yellow/ochre ribbons. Replace vanilla symbol with an original small banana glyph formed by two or three clear flat sweeping yellow/ivory crescents with tiny brown angular end shapes. Clean restrained screen-print silhouette, not a realistic bunch or peeled-fruit photo. No leaves and no vanilla flower.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png"
+      ],
+      "role": "new6 approved-direction expansion"
+    },
+    {
+      "id": "lychee",
+      "maker": "アフサール",
+      "path": "/workspace/generated_images/exec-ddeea472-a818-4b3b-b109-4f5f5e109d54.png",
+      "src": "afsaal-lychee.png",
+      "name": "ライチ",
+      "bytes": 1224953,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        113,
+        1020,
+        1156
+      ],
+      "window": [
+        243,
+        110,
+        780,
+        1049
+      ],
+      "aspect": 0.7435653002859867,
+      "width_at_112": 73.28579599618685,
+      "sha256": "b9c52c8ef1680fa516ee1b6fc282a3ae4596e3d56576ab3085093a4ba9134f16",
+      "git_blob_sha": "cb2d39cee1d0fa8ee8343a10936190432e249d5f",
+      "filename": "afsaal-lychee.png",
+      "prompt": "Edit the attached NEW approved アフサール ROSE graphic carton into ONE matching LYCHEE flavor variant. Preserve its EXACT physical box silhouette, size and placement on the1254x1254 transparent canvas, approximately x248..1017,y115..1154, width769,height1039. Keep the SAME broad shallow folded PAPERBOARD retail carton and front/top/right camera and lighting as the reference, plum/burgundy matte paper, closed flush flap seams, ivory sunrise-in-arch maker mark and exact Japanese name アフサール on front and right. Preserve the independent poster-like front layout, dusty-pink off-center circular graphic area and thin apricot diagonal printed ribbon, as flat ink on paper. Change ROSE to LYCHEE on BOTH front and side label. Completely REMOVE the geometric rose and all petal-shaped artwork. In the existing circular graphic area place an ORIGINAL flat stylized lychee glyph: two red/coral angular round shells defined by a few large diamond-facet pattern shapes, one ivory white round flesh shape, and one small dark-brown seed oval. Broad flat cut-paper / screen-print print shapes only, no realistic ingredient photo, glossy flesh rendering, botanical engraving or actual commercial product-label imitation. The design should clearly read lychee while being an independently composed graphic. No loose fruit outside the carton, leaf, grass, stem, vine, ornamental botanical frame, rose petals, unrelated fruit, wings, halo, crown, real-world logo, price, extra words or promotional claim. No HMD, bowl, charcoal, hookah, hose, metal, handle, raised lid or top protrusion. Keep the box size and camera identical to the reference and therefore compatible with the DOBAJ common carton standard. True transparent background, one centered carton only, no fake checkerboard or external labels.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-fc701f19-ab0c-4e41-8979-ae62236f751d.png"
+      ],
+      "role": "new6 approved-direction expansion"
     }
   ],
   "superseded_geometry_trials": [
@@ -148,14 +382,68 @@
     "fully_decoded": "4/4 new PNG;1254x1254 RGBA;alpha0..255;nativeSHA256 recorded",
     "selected_width_difference_px": 4,
     "selected_height_difference_px": 1,
-    "visual": "Both selected outputs inspected: common white-carton geometry/camera, distinct ivory/charcoal/ochre versus plum/rose/apricot graphic layouts, flat stylized flavor motifs, no photo-real lower-front ingredient still life, no decorative grass/HMD/structural top protrusions.",
-    "limits": "Geometry is visually/quantitatively close, not pixel-identical. Metrics ignore alpha<128 edge noise. Native low-alpha fringe preserved; no code retouching, cropping or compositing. No runtime, small-size or gameplay QA."
+    "visual": "All8 revised native outputs and normalized18-item browser comparison inspected. Matching everyday paper carton geometry; original flat ingredient glyphs; no decorative grass, HMD or structural top protrusions. Heaven10 native SHA/blob identities preserved.",
+    "limits": "Geometry is visually/quantitatively close, not pixel-identical. Metrics ignore alpha<128 edge noise. Native low-alpha fringe preserved; no code retouching, cropping or compositing. No runtime, small-size or gameplay QA.",
+    "new6": "All6 native PNG fully decoded;1254 square RGBA,alpha0..255,SHA256 and Git blob SHA verified.",
+    "size_comparison": "18 source images measured using alpha>16 bounds with2px padding, uniform display88 percent; this reproduces existing source window/margin calculation before WebP resampling.",
+    "browser": {
+      "cases": [
+        {
+          "size": 180,
+          "images_loaded": 18,
+          "min_window_height": 158.390625,
+          "max_window_height": 158.390625,
+          "min_window_width": 115.609375,
+          "max_window_width": 120.15625
+        },
+        {
+          "size": 112,
+          "images_loaded": 18,
+          "min_window_height": 98.546875,
+          "max_window_height": 98.546875,
+          "min_window_width": 71.921875,
+          "max_window_width": 74.765625
+        },
+        {
+          "size": 66,
+          "images_loaded": 18,
+          "min_window_height": 58.078125,
+          "max_window_height": 58.078125,
+          "min_window_width": 42.390625,
+          "max_window_width": 44.046875
+        }
+      ],
+      "page_errors": [],
+      "screenshot_sha256": "e6989178d5a5c6f80f77d928e207d0acb0ef31f5c0415a7524efa381a37a6ba2",
+      "screenshot_bytes": 596686,
+      "scope": "local source rendering comparison, not runtime/gameplay QA"
+    }
   },
-  "status": "Revised2 pending user review. Previous8 preserved as held history; no final adoption/runtime integration/name data edits/merge.",
+  "status": "Complete source-only revision, user authorized merge; runtime adoption/name data edit/gameplay QA excluded.",
   "reservation": "Latest explicit user authorization for this chat's art work persists; no original-worker stop/transfer/release was claimed, no bot ledger or old branch edited.",
   "network": {
     "new4_png_bytes": 5016766,
     "selected2_png_bytes": 2732008,
-    "note": "Cached generated references reused. Exact total network unmetered. Raw generated images, repeated-reference inputs and base64 preservation across this session now estimate around the upper40–55MB budget. Remaining6 revision would add approximately25–30MB and is held for explicit extra-budget permission."
-  }
+    "note": "New6 inputs, outputs and base64 preservation plus comparison screenshot estimate about26.4MB of known image payload, within additional30MB authorization. Exact total transport/API overhead unmetered; no full clone, browser download, external login or paid API.",
+    "additional30mb_authorized": true,
+    "new6_png_bytes": 7501530,
+    "cached_reference_input_bytes": 8065792,
+    "new6_base64_payload_bytes": 10002048,
+    "comparison_png_bytes": 596686,
+    "note_previous": "Original40–55MB authorization applied before the explicit additional30MB approval."
+  },
+  "permissions": [
+    {
+      "user_message": "箱の基準サイズは今生成したのが多いのかつ実在のに似てるのにして",
+      "effect": "Majority DOBAJ carton is physical geometry standard; real retail carton structure, original print graphics."
+    },
+    {
+      "user_message": "この方向で残り6枚を修正し、追加30MBまで許可する",
+      "effect": "Remaining6 revised graphics and additional30MB authorized."
+    },
+    {
+      "user_message": "終わったらマージ",
+      "effect": "Merge completed source PR after current CI, review and conflict checks; no runtime adoption implied."
+    }
+  ]
 }
