@@ -1,0 +1,59 @@
+{
+  "scope": "Representative comparison only: Dobaj vanilla and アフサール rose. Remaining six require user visual approval.",
+  "authorization": "User: そのチャット見当たらないからここで作るってこと　許可する",
+  "ownership": "User expressly authorized making new preview art in this chat after prior chat could not be found. This is not evidence of prior worker stopping, a successful formal reservation transfer, or release. Prior claim and source branch remain unchanged.",
+  "images": [
+    {
+      "id": "vanilla",
+      "maker": "Dobaj",
+      "filename": "dobaj-vanilla.png",
+      "native_source": "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png",
+      "sha256": "4195ec16307dca6e24cfed823748bb3a3b7d24b0cb2d460ddf3dce081022436b",
+      "bytes": 1417722
+    },
+    {
+      "id": "rose",
+      "maker": "アフサール",
+      "filename": "afsaal-rose.png",
+      "native_source": "/workspace/generated_images/exec-64693e1f-2eea-4d8a-b526-07f70088adb6.png",
+      "sha256": "2d5b754959d5cfeda65de599d23d6afd10edd289eb6f32a35a607c4c40712014",
+      "bytes": 1289573
+    }
+  ],
+  "format": {
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "transparent_background": true
+  },
+  "provenance": {
+    "tool": "image_gen.imagegen",
+    "calls": 2,
+    "referenced_images": [],
+    "reused_art": false,
+    "source_editing": false
+  },
+  "prompts": [
+    {
+      "id": "dobaj-vanilla",
+      "prompt": "Create ONE new original finished game inventory product illustration, square PNG approximately 1024x1024, true transparent background. A convincing small retail folded PAPERBOARD CARTON for the fictional manufacturer DOBAJ, flavor VANILLA. Single closed carton only, centered with at least 12 percent empty transparent margin on every edge. Three-quarter product view, showing a broad front face, a narrow RIGHT side and a modest visible top. Physical proportions: front width 70, height 95, depth 19; a shallow rectangular carton, definitely folded printed paperboard rather than a tin, casket, pouch or gift box. Subtle folded edges, a thin flush top flap seam, fine matte paper grain, coherent perspective, soft warm light from upper left, realistic edge thickness and gentle contact shading. No separate cap or lid and no protrusion. Art style: polished softly painterly hand-painted game item, botanical-food illustration printed on actual box faces, refined detailed brushwork with clear readable silhouette at thumbnail size. Manufacturer identity: predominantly clean warm WHITE matte carton with generous blank paper, restrained charcoal typography and a dark original paired-arch/droplet emblem high on the front. Print the small word DOBAJ and below it VANILLA in crisp simple lettering. Use a narrow pale vanilla-yellow lower stripe and a tiny charcoal side identification panel. On the lower front PRINT two dark-brown vanilla pods and ONE creamy ivory vanilla flower with a warm yellow center. The vanilla artwork must visibly be flat printed illustration that follows the face, not physical objects attached to or in front of the box. NO green leaves, NO grass, NO vines, NO foliage, NO all-over plant pattern, NO ornamental leaf corners or botanical frame. No loose ingredient outside the carton. No wings, halo, crown, real-world brand logo, advertising claims, price, warning blocks or extra words. No hookah, HMD, bowl, charcoal, metal, knobs, raised top, chimney, top handle or equipment. Avoid festive luxury gift packaging. The result should look like a plausible modest commercially printed individual flavor carton with its own understated manufacturer identity. Output just this single isolated original carton, no comparison panel, no mockup canvas, no checkerboard pattern, no labels outside the product."
+    },
+    {
+      "id": "afsaal-rose",
+      "prompt": "Create ONE new original finished game inventory product illustration, square PNG approximately 1024x1024, true transparent background. A convincing small retail folded PAPERBOARD CARTON for a fictional manufacturer named アフサール, flavor ROSE. Single closed carton only, centered with at least 12 percent empty transparent margin on every edge. Three-quarter product view showing broad front, narrow RIGHT side and modest visible top; soft warm light from upper left. Physical proportions front width 62, height 105, depth 27: a slender upright rectangular paper carton. Fine matte printed paper grain, subtle folded edges, thin flush top flap seam, coherent perspective, realistic paper thickness and natural gentle shading. No separate cap or lid, no raised top and no protrusion. Art style: polished softly painterly hand-painted game item with a detailed rose illustration printed onto the flat paper front, refined brushwork, readable silhouette at thumbnail size. It should have a distinct manufacturer identity: rich dark BURGUNDY / PLUM paper carton over all faces, elegant restrained IVORY lettering, an original ivory abstract sunrise enclosed inside a simple arch as a small flat printed emblem near the upper front, and a broad muted rose-pink lower flavor band. Print アフサール carefully as the only manufacturer name below the emblem, and ROSE in simple small lettering in the lower band. Do not use DOBAJ or another brand name. Central front print: ONE richly layered dusky pink rose blossom, beautifully detailed, only the flower head, with a few restrained petal shapes printed below; absolutely no green leaves, stems, grass, vines, foliage or ornamental plant frame. Rose artwork must visibly be flat printed artwork following the carton face, not a physical flower attached to the box or beside it. The dark plum vertical carton, ivory arch motif and rose-pink band should feel visibly different in manufacturer personality and layout from a white minimalist shallow carton, while preserving the same soft painterly game-item visual quality. No wings, halo, crown, real-world logos, advertising claims, price, extra words, warning blocks. No loose flower or ingredient outside the package. No hookah, HMD, bowl, charcoal, metal, knobs, top handle, chimney or equipment. This is a plausible modest commercially printed flavor carton, not a decorative gift box, tin or casket. Output just the single isolated original paper carton, no comparison panel, no mockup canvas, no checkerboard pattern, no labels outside the product."
+    }
+  ],
+  "visual_review": "Both native tool outputs inspected: distinct white shallow carton versus burgundy vertical carton; paper seams, coherent right side/top, printed flavor art, no green decorative foliage, HMD or top protrusion. Native edges have light/color fringe at transparency boundary; no cleanup performed. At-small-size game QA has not been done.",
+  "approval": "Preview pending user visual approval. No remaining-six generation or runtime adoption.",
+  "network": "Generated PNG total 2707295 bytes (2.71 MB decimal). Exact service/API/network total not metered. Cached repository reused. No paid external API, login, or account switching.",
+  "preservation": {
+    "base_commit": "cf71f73c27a4fe026240125b9523b6d42fa48145",
+    "branch": "codex/586-maker-preview-20261017",
+    "directory": "asset_sources/shop-art-issue586/maker-preview-20261017",
+    "native_pngs": "exact generated bytes; originals in /workspace/generated_images retained"
+  }
+}
