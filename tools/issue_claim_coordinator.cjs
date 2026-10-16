@@ -413,6 +413,10 @@ async function runEvent(github, context, core, inputs = process.env) {
     if (!request || Array.isArray(request) || typeof request !== 'object' || Object.keys(request).some(k => !allowed.includes(k)) ||
         Object.values(request).some(v => !['string','number'].includes(typeof v)) ||
         !['claim','release','status','transfer','park','resume','maintain'].includes(request.operation)) throw Error('Invalid comment request');
+    const attempt = Number(context.runAttempt || process.env.GITHUB_RUN_ATTEMPT || 1);
+    if (attempt > 1 && !['status','maintain'].includes(request.operation)) {
+      throw Error('Do not rerun reservation request jobs; inspect the ledger and submit a fresh comment');
+    }
     const number = request.issue === undefined ? context.payload.issue.number : Number(request.issue);
     if (!Number.isSafeInteger(number) || number < 1) throw Error('Invalid target Issue');
     const comments = await github.paginate(github.rest.issues.listComments,

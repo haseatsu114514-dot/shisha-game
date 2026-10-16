@@ -23,6 +23,10 @@ Supported comment operations: `claim`, `park`, `resume`, `release`, `status`,
 `transfer`, and single-Issue `maintain`. Use the existing transfer record and
 `claim_run`/`handoff_comment` fields for transfer. The exact comment ID identifies
 its response; a duplicate event delivery does not reserve twice.
+Do not use GitHub's rerun button for reservation-changing comment jobs: inspect
+the ledger and submit a fresh comment. Such reruns are refused so a failed or
+canceled run that already wrote a reservation cannot later authorize it merely
+by skipping an acknowledged request.
 
 Comment `park`/`resume`/`release` also bind the caller to the reservation's
 verified request account (or original run actor). Knowing another worker's ID

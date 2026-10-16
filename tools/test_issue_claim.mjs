@@ -771,3 +771,13 @@ for (const change of ['unmerged','fork','non-default']) {
     assert.equal(s.writes.length,0);
   });
 }
+
+test('rerunning an acknowledged failed comment cannot turn its persisted reservation into permission to work', async () => {
+  const s=commentSetup();
+  await runComment(s);
+  s.runs[901]={status:'completed',conclusion:'failure'};
+  s.context.runAttempt=2;
+  await assert.rejects(runComment(s),/Do not rerun reservation request jobs/);
+  assert.equal(s.writes.length,2);
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'901'}),/did not succeed/);
+});
