@@ -382,3 +382,85 @@
   .trpg-root.trpg-cinematic .trpg-object-choice:hover:not(:disabled) { transform: none; }
   .trpg-root.trpg-cinematic .trpg-stage-pockets [data-test="trpg-compare-notes"]::before { transition: none; }
 }
+
+/* Issue 596: generated materials frame the live, accessible dice controls.
+   Slice lengths include the native transparent margin; fixed corner sizes
+   keep the brass plates square while the straight rails stretch. */
+.trpg-root.trpg-cinematic .trpg-overlay:has(.trpg-roll-stage) {
+  inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: calc(100vw / var(--k, 1)); height: calc(100dvh / var(--k, 1));
+  padding: 24px;
+}
+.trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage {
+  --roll-unit: max(1px, calc(1px / var(--k, 1)));
+  isolation: isolate; width: min(1000px, calc(100vw / var(--k, 1) - 48px));
+  max-height: calc(100dvh / var(--k, 1) - 48px);
+  padding: 44px 65px 42px; border: 1px solid #b49157; border-radius: 24px;
+  background: linear-gradient(#05252966, #041b21aa), url('../img/ui/trpg/deep-teal-felt.webp') center / 500px, #082c31;
+  box-shadow: 0 18px 50px #0008, inset 0 0 35px #001517;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage::before {
+  content: ''; position: absolute; z-index: -1; inset: -14px; pointer-events: none;
+  border: 65px solid transparent;
+  border-image: url('../img/ui/trpg/walnut-brass-frame.webp') 145 145 145 145 / 65px / 0 stretch;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage::after {
+  content: ''; position: absolute; z-index: -2; pointer-events: none;
+  width: 160px; height: 250px; right: calc(100% - 24px); bottom: -16px;
+  background: url('../img/ui/trpg/harbour-paper-stack.webp') center / contain no-repeat;
+  filter: drop-shadow(0 7px 9px #0006); transform: rotate(-7deg);
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage > h2 { flex-shrink: 0; }
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions { flex-shrink: 0; }
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid {
+  border: 1px solid #ae925c88; border-radius: 8px; background: #051e22a8;
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid input { flex-shrink: 0; }
+.trpg-root.trpg-cinematic .trpg-roll-stage :is(button, summary, .trpg-aid) {
+  min-height: max(46px, calc(44 * var(--roll-unit)));
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage :is(button, input, summary, [tabindex]):focus-visible {
+  outline: 3px solid #fff2ba; outline-offset: 3px;
+}
+/* The surrounding scene keeps its existing stage layout; only this modal
+   compensates for stage scaling, including portrait phone orientation. */
+@media (max-width: 1000px), (max-height: 600px) {
+  .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage {
+    width: min(1240px, calc(100vw / var(--k, 1) - 40px));
+    max-height: calc(100dvh / var(--k, 1) - 40px);
+    padding: 40px 54px;
+  }
+  .trpg-root.trpg-cinematic .trpg-roll-stage::after { display: none; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { font-size: calc(21 * var(--roll-unit)); }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body { font-size: calc(15 * var(--roll-unit)); }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body :is(p, strong, small, span, summary) { font-size: inherit; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-row { gap: 24px; margin: 18px 0; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 145px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions .trpg-button { font-size: calc(16 * var(--roll-unit)); min-width: 0; flex: 1; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice :is(strong, small) { font-size: calc(13 * var(--roll-unit)); }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+  body:has(.trpg-roll-stage) #trpg-rotate { display: none; }
+  .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage { padding: 75px 60px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 300px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die { width: 200px; height: 200px; padding: 30px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-pip { width: 28px; height: 28px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-bonus { font-size: 70px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid { gap: 24px; padding: 24px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid input { width: 60px; height: 60px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid-art { transform: scale(2); margin: 30px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions { flex-direction: column; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-rerolls { flex-direction: column; }
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions .trpg-button {
+  min-height: max(46px, calc(44 * var(--roll-unit))); flex-shrink: 0;
+}
+@media (orientation: portrait) and (max-width: 600px) {
+  #stage:has(.trpg-roll-stage), .trpg-root.trpg-cinematic:has(.trpg-roll-stage) { overflow: visible; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions .trpg-button { flex: 0 0 auto; }
+}
+@media (max-width: 1000px), (max-height: 600px) {
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid { max-width: none; font-size: calc(15 * var(--roll-unit)); }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid strong { font-size: calc(15 * var(--roll-unit)); }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid small { font-size: calc(12 * var(--roll-unit)); }
+}

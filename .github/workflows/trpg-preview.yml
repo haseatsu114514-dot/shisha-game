@@ -30,6 +30,7 @@ on:
       - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
       - 'remake/test/browser/trpg_experience.mjs'
+      - 'remake/test/browser/trpg_tabletop.mjs'
       - 'remake/test/browser/trpg_main.mjs'
       - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
@@ -64,6 +65,7 @@ on:
       - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
       - 'remake/test/browser/trpg_experience.mjs'
+      - 'remake/test/browser/trpg_tabletop.mjs'
       - 'remake/test/browser/trpg_main.mjs'
       - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
@@ -121,6 +123,7 @@ jobs:
           node remake/test/browser/trpg.mjs
           ARTIFACT_DIR=.codex/artifacts/trpg/experience node remake/test/browser/trpg_experience.mjs
           node remake/test/browser/trpg_main.mjs
+          ARTIFACT_DIR=.codex/artifacts/trpg/tabletop node remake/test/browser/trpg_tabletop.mjs
       - name: Upload screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2
