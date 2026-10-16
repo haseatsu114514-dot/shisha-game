@@ -22,7 +22,7 @@ import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
@@ -363,6 +363,8 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
+  // 観音堂にお参りすると、副産物でスロットの設定が変わる（次に筐体が出たときに光って知らせる）
+  if (spot.id === "kannon") changeReelSetting();
   state.slot = Math.min(2, state.slot + slotsUsed);
   await afterAction({ exerted, spent });
 }

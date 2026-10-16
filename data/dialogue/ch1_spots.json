@@ -1081,6 +1081,58 @@
       }
     },
     {
+      "dialogue_id": "kannon_adam_pakki",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "境内のベンチで、アダムがスマホを見つめていた。画面の中でパッキーが跳ねている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アダムさんも、パッキーのアプリ入れてたんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "大会の連絡が来るからな。……だが、これがなかなか光らん"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ところが、渋い日にここで手を合わせると、しばらくよく回る気がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お参りで、スロットの調子が変わるんですか？"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "知らん。だが運も原点に返れば、巡り直す。それだけだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "もっとも、一週間もすれば元の木阿弥だがな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは画面を消すと、賽銭箱に深く頭を下げた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_adam_pakki"
+        }
+      ]
+    },
+    {
       "dialogue_id": "kannon_oldman",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_kannon_day.png"
