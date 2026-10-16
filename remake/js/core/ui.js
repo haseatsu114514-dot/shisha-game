@@ -466,7 +466,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
   };
   const shield = el("div.chapter-title-shield", {
-    onpointerdown: swallow, onpointerup: swallow, onclick: swallow,
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow, dataset: { motion: "chapter" },
   });
   layers.fx.append(shield);
   window.addEventListener("keydown", blockAdvance, true);
