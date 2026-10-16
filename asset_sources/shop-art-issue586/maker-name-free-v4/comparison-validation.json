@@ -1,0 +1,47 @@
+{
+  "scope": "local source image rendering; not game/runtime QA",
+  "cases": [
+    {
+      "size": 180,
+      "loaded": 18,
+      "min_height": 158.390625,
+      "max_height": 158.390625
+    },
+    {
+      "size": 112,
+      "loaded": 18,
+      "min_height": 98.546875,
+      "max_height": 98.546875
+    },
+    {
+      "size": 66,
+      "loaded": 18,
+      "min_height": 58.078125,
+      "max_height": 58.078125
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "size": 112,
+      "horizontal_overflow": false
+    },
+    {
+      "before_after_images_loaded": 16
+    }
+  ],
+  "page_errors": [],
+  "screenshots": [
+    {
+      "file": "before-after-8.png",
+      "bytes": 471116,
+      "sha256": "f01fbec442274f0f07dab4bcd93d53ebe40800decf52d5f6b69124dbccdd6198"
+    },
+    {
+      "file": "comparison-18.png",
+      "bytes": 550714,
+      "sha256": "5b786d10c8adc1fcd6da58b8af491c57af386539fbce15759a4d13042ad095a1"
+    }
+  ]
+}
