@@ -189,6 +189,21 @@ for (const change of ['missing', 'extra', 'duplicate', 'path', 'bytes', 'sha256'
   });
 }
 
+test('read actor cannot borrow the approval author write permission', async () => {
+  const s = setup();
+  s.state.permissions.newUser = 'read';
+  await assert.rejects(s.execute({actor: 'newUser'}), {code: 'PERMISSION_UNVERIFIED'});
+  assert.deepEqual(s.writes, []);
+});
+
+test('admin actor cannot borrow a different approval author even when the author has no write permission', async () => {
+  const s = setup();
+  s.state.permissions.newUser = 'admin';
+  s.state.permissions.oldUser = 'read';
+  await assert.rejects(s.execute({actor: 'newUser'}), {code: 'APPROVAL_ACTOR_MISMATCH'});
+  assert.deepEqual(s.writes, []);
+});
+
 for (const path of ['/Users/private/secret.py', '../outside.py', '.git/config', '.github/workflows/unsafe.yml']) {
   test(`rejects forbidden publication path: ${path}`, async () => {
     const s = setup();

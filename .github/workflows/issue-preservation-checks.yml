@@ -6,6 +6,8 @@ on:
       - '.github/workflows/issue-preservation-checks.yml'
       - 'tools/issue_preservation.cjs'
       - 'tools/test_issue_preservation.mjs'
+      - 'tools/issue_claim_coordinator.cjs'
+      - 'tools/test_issue_claim.mjs'
       - 'docs/issue_preservation_protocol.md'
   push:
     branches: [main]
@@ -14,6 +16,8 @@ on:
       - '.github/workflows/issue-preservation-checks.yml'
       - 'tools/issue_preservation.cjs'
       - 'tools/test_issue_preservation.mjs'
+      - 'tools/issue_claim_coordinator.cjs'
+      - 'tools/test_issue_claim.mjs'
       - 'docs/issue_preservation_protocol.md'
 permissions:
   contents: read
