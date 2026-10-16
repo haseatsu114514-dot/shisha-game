@@ -4,8 +4,40 @@ export const JUDGES = ["maezono", "dr_kemuri", "nagumo"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
 export const RIVAL_QUALITY = { ageha: 75, kumicho: 80, rei: 78 };
+
+// 審査員の品質比重・好み比重の正本定義（qualityWeight + prefWeight = 1.0）。
+// maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
+export const BASE_PREF_SCALE = 20;
+export const JUDGE_PROFILES = Object.freeze({
+  nagumo: Object.freeze({ id: "nagumo", label: "南雲", qualityWeight: 0.90, prefWeight: 0.10 }),
+  dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
+  maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
+});
+
 const copy = value => JSON.parse(JSON.stringify(value));
 const bounded = value => Math.max(0, Math.min(100, Number(value) || 0));
+const boundedPref = value => Math.max(-1, Math.min(1, Number(value) || 0));
+
+/** 審査員 j の最大好み振れ幅（派生値: BASE_PREF_SCALE * prefWeight） */
+export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
+  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  return Math.round(BASE_PREF_SCALE * prof.prefWeight * 1000) / 1000;
+}
+
+/**
+ * 審査員の最終評価点 S_j（正本式・1本化）。
+ *   S_j = clamp(qualityWeight_j * Q + prefWeight_j * clamp(Q + BASE_PREF_SCALE * P_norm, 0, 100), 0, 100)
+ * 0〜100 の内点では S_j = Q + (BASE_PREF_SCALE * prefWeight_j) * P_norm = Q + maxPrefDelta_j * P_norm に一致し、
+ * 二重乗算や未使用パラメータを生まない。
+ */
+export function evaluateJudgeScore(judgeId, quality, prefNorm = 0, profiles = JUDGE_PROFILES) {
+  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  const q = bounded(quality);
+  const p = boundedPref(prefNorm);
+  const prefAdjusted = bounded(q + BASE_PREF_SCALE * p);
+  const score = bounded(prof.qualityWeight * q + prof.prefWeight * prefAdjusted);
+  return Math.round(score * 100) / 100;
+}
 
 export function tournamentProgress(value) {
   if (value.chapter !== 2) throw new Error("第2章の保存ではありません");
@@ -56,14 +88,18 @@ export function finishStep(value, craft) {
 }
 
 /** 1回投入した点は保存後も戻らない。各審査員の累計を常に10以内にする。 */
-export function castVotes(p, round, performance) {
+export function castVotes(p, round, performance, prefByJudge = null) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
   const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
   for (const judge of JUDGES) {
     const bias = judge === "maezono" ? { ageha: 4, rei: 1 }
       : judge === "dr_kemuri" ? { kumicho: 3 } : { rei: 3 };
+    const hajimeScore = prefByJudge && judge in prefByJudge
+      ? evaluateJudgeScore(judge, quality.hajime, prefByJudge[judge])
+      : quality.hajime;
+    const scoreOf = (c) => (c === "hajime" ? hajimeScore : quality[c]) + (bias[c] || 0);
     const order = CONTESTANTS.slice().sort((a, b) =>
-      (quality[b] + (bias[b] || 0)) - (quality[a] + (bias[a] || 0)) || a.localeCompare(b));
+      scoreOf(b) - scoreOf(a) || a.localeCompare(b));
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
     if (available < amount) throw new Error("審査員の持ち点が不足しています");

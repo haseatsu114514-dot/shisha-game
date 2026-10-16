@@ -234,6 +234,19 @@ function migrate(s) {
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
+  const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
+  if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
+    let refund = 0;
+    for (const id of new Set(s.owned)) {
+      if (id in pipeRefunds) refund += pipeRefunds[id];
+    }
+    s.owned = s.owned.filter((id) => !(id in pipeRefunds));
+    s.money = (Number(s.money) || 0) + refund;
+  }
+  if (s.equip && typeof s.equip === "object" && s.equip.pipe in pipeRefunds) {
+    s.equip.pipe = "harry_the_moon";
+  }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
