@@ -132,13 +132,14 @@
   },
   "checks": {
     "build_and_reencode_check": "PASS: actual WebP bytes, mapping, report reproduced; 10 deliveries 273304 bytes",
-    "unit_negative_preservation": "PASS4: selected source hashes/decode, held11 addition/replacement rejection, old source/hash/delivery rejection, native240/data71 SHA exact",
+    "unit_negative_preservation": "PASS4: selected source hashes/decode, held11 addition/replacement rejection, old source/hash/delivery rejection, immutable native240 PNG SHA exact",
     "daily_consistency": "PASS",
     "agent_docs": "PASS",
     "javascript_syntax": "PASS",
     "diff_check": "PASS",
     "whole_pr_scope": "Runtime code only shop.js/shop-art.js; no data/assets/state/sharedCSS/#437/gacha/axe/dice diffs vs current main. All historical source candidates and inactive old21 deliveries retained; no runtime references to packages/equipment old candidates.",
-    "source_phase_records": "v2/v3/v4/v5/v6 records and source PNGs unchanged from4b85; root historical README labels clarified"
+    "source_phase_records": "v2/v3/v4/v5/v6 records and source PNGs unchanged from4b85; root historical README labels clarified",
+    "task_data_preservation_audit": "PASS for this integration only: all71 data files SHA equal pre-edit snapshot. Not frozen by permanent unit tests."
   },
   "limitations": [
     "Manual source front-plane estimates and locally inferred cardboard restoration remain as previously reviewed/adopted; no new art edits",

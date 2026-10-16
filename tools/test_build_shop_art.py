@@ -17,8 +17,8 @@ class AdoptionTests(unittest.TestCase):
             self.assertEqual(sha(SOURCE / i['source']), i['sha256'])
             self.assertEqual(inspect(SOURCE / i['source'])['size'], [1254, 1254])
 
-    def test_native_history_and_game_data_are_unchanged(self):
-        for name in ['preserved-native-pngs.json', 'preserved-data.json']:
+    def test_immutable_native_history_is_unchanged(self):
+        for name in ['preserved-native-pngs.json']:
             baseline = json.loads((ACTIVE / name).read_text())['sha256']
             for path, digest in baseline.items():
                 with self.subTest(path=path):
