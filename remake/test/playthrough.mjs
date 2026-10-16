@@ -5,6 +5,7 @@
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
+import { PLAN, nextPlanAction } from "./playthrough-plan.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
 const require = createRequire(import.meta.url);
@@ -17,25 +18,9 @@ const STREET_MODE = process.env.STREET_MODE === "1";
 const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
-// 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
+// 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
 // DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
 // （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
-const PLAN = [
-  "baito:holes",
-  "adam", "customer",
-  "minto", "baito:sumi",
-  "naru", "rest",
-  "baito:heat", "cafe",
-  "c_station", "customer",
-  "adam", "baito:sumi",
-  "rin", "kannon",
-  "baito:pull", "rest",
-  "naru", "choizap",
-  "shop:lemon", "rin", "baito:sumi",
-  "adam", "rest",
-  "baito:steam", "customer",
-  "minto", "customer", "rest", "rest",
-];
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -77,6 +62,8 @@ await page.evaluate(() => { const s = window.__remake.state; s.weatherSeed = 4; 
 let planIdx = 0;
 let pendingAfter = null;
 let pendingShopBuy = null;
+let lemonPurchased = false;
+let lastPlanTrace = "";
 let kujiDrawn = false;
 let tournamentAttempt = 0;
 let lastProgress = Date.now();
@@ -160,6 +147,10 @@ for (;;) {
       modal: document.querySelector("#modal")?.classList.contains("show"),
       day: s?.day, slot: s?.slot, phase: s?.phase, stamina: s?.stamina, money: s?.money,
       errandDone: !!s?.flags?._errand_scout_done,
+      midcheckDone: !!s?.flags?._ev_midcheck,
+      coldPending: !!s?.flags?._cold_pending,
+      sickOnce: !!s?.flags?._sick_once,
+      restDay: s?.restDay,
       deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
@@ -188,7 +179,12 @@ for (;;) {
     checkedTutorialGrowth = true;
     log("tutorial/forced growth remains zero");
   }
-  if (snap.day !== lastDay) { loadReport?.snapshot(`day-${snap.day}`); lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
+  if (snap.day !== lastDay) {
+    loadReport?.snapshot(`day-${snap.day}`); lastDay = snap.day;
+    log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`,
+      JSON.stringify({ slot: snap.slot, planIdx, next: PLAN[planIdx] || "rest", lemonPurchased,
+        coldPending: snap.coldPending, sickOnce: snap.sickOnce, restDay: snap.restDay }));
+  }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/stuck.png` });
@@ -315,8 +311,13 @@ for (;;) {
   }
   if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }
   if (snap.screen === "map") {
-    const item = PLAN[planIdx] || "rest";
+    const { item, requiredPurchase } = nextPlanAction({ planIdx, phase: snap.phase,
+      midcheckDone: snap.midcheckDone, lemonPurchased });
     const [kind, arg] = item.split(":");
+    const decision = JSON.stringify({ day: snap.day, slot: snap.slot, planIdx, item, requiredPurchase,
+      stamina: snap.stamina, midcheckDone: snap.midcheckDone, lemonPurchased,
+      coldPending: snap.coldPending, sickOnce: snap.sickOnce, restDay: snap.restDay });
+    if (decision !== lastPlanTrace) { lastPlanTrace = decision; log("plan-decision", decision); }
     // 体力が心細ければ計画を進めずに休む
     if (snap.stamina < 38 && kind !== "shop" && kind !== "rest") {
       await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]');
@@ -359,7 +360,8 @@ for (;;) {
       await purchasePlannedFlavor({
         id: pendingShopBuy, read: shoppingSnapshot, click,
         trace: event => log("shopping-purchase", JSON.stringify({ planIdx, pendingShopBuy, ...event })),
-        consume: () => { planIdx++; pendingShopBuy = null; },
+        // Buying is independent of PLAN: preserve the next time-consuming action.
+        consume: () => { lemonPurchased = true; pendingShopBuy = null; },
       });
     }
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
@@ -406,6 +408,7 @@ if (practiceRuns.length < 3 || !s.flavors.includes("lemon") || !s.flavors.includ
   || !(practiceRuns.find(run => run.kind === "midcheck")?.mix?.[prepared] > 0)) {
   throw new Error(`Missing practice/shopping: prepared=${prepared} runs=${JSON.stringify(practiceRuns)} flavors=${JSON.stringify(s.flavors)}`);
 }
+if (!lemonPurchased) throw new Error("Required lemon purchase was never confirmed");
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 const recognitionComments = await page.evaluate(() => Object.entries((window.__remake.DB || {}).dialogues || {}).flatMap(([id, d]) =>
