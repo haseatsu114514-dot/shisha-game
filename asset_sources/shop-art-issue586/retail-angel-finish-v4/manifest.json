@@ -61,6 +61,39 @@
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/grape.png",
       "sha256": "8507042fcc64b6fcd5b143d27c72cc42088b1655e791fb41b82a43b8037c015d"
+    },
+    {
+      "id": "blueberry",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to deep blue and indigo and replacing the two apple PRINTS with a small printed cluster of blueberries with their star-shaped calyxes, NO leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-5826caee-1ecc-4f67-a875-d6f99c36a634.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/blueberry.png",
+      "sha256": "ec85f47fe720c5644f16ae6e5e91c859652b927fe9490a07e017fd2f291ad8e6"
+    },
+    {
+      "id": "strawberry",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to strawberry red with pale pink and replacing the two apple PRINTS with two printed red strawberries, one cut half; small attached strawberry calyxes only, no loose leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-e4841b1d-bcf7-45c6-8b6f-c5b07c11f8a2.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/strawberry.png",
+      "sha256": "05e65c8a4bbc200ed274c61d1ab3bbff63e49c4f10f054764664138306cd2384"
+    },
+    {
+      "id": "pineapple",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to pineapple yellow and warm gold and replacing the two apple PRINTS with one printed small pineapple with its own attached short crown and one yellow pineapple wedge; no other leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-bf8f8a9b-e9b8-4a91-8e1c-f6175c78142f.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/pineapple.png",
+      "sha256": "1be28601f5e19b1626ae22c7030d28b9839af012e70bd18f846d8de7a67bd2dc"
     }
   ]
 }

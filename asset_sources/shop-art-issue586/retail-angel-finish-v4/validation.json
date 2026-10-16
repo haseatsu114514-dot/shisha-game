@@ -1,6 +1,57 @@
 {
   "method": "Approximate manually inspected front quadrilaterals, rectification and white-ink threshold; not exact calibrated camera or pixel identity. QA layouts only. Native bytes unchanged.",
   "items": {
+    "blueberry": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "ec85f47fe720c5644f16ae6e5e91c859652b927fe9490a07e017fd2f291ad8e6",
+      "visible_bbox_alpha8": [
+        259,
+        131,
+        997,
+        1118
+      ],
+      "alpha1_to7_pixels": 7284,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          501,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49714,
+          0.166
+        ]
+      }
+    },
     "double_apple": {
       "size": [
         1254,
@@ -153,11 +204,116 @@
           0.166
         ]
       }
+    },
+    "pineapple": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "1be28601f5e19b1626ae22c7030d28b9839af012e70bd18f846d8de7a67bd2dc",
+      "visible_bbox_alpha8": [
+        259,
+        130,
+        999,
+        1119
+      ],
+      "alpha1_to7_pixels": 7710,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          196,
+          103,
+          502,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49857,
+          0.166
+        ]
+      }
+    },
+    "strawberry": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "05e65c8a4bbc200ed274c61d1ab3bbff63e49c4f10f054764664138306cd2384",
+      "visible_bbox_alpha8": [
+        259,
+        131,
+        997,
+        1117
+      ],
+      "alpha1_to7_pixels": 7321,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          502,
+          229
+        ],
+        "width_ratio": 0.43857,
+        "height_ratio": 0.126,
+        "center": [
+          0.49786,
+          0.166
+        ]
+      }
     }
   },
   "mark_shape_iou_vs_template_after_bbox_normalization": {
+    "blueberry": 0.98204,
     "double_apple": 1.0,
     "grape": 0.95454,
-    "mint": 0.99014
+    "mint": 0.99014,
+    "pineapple": 0.9723,
+    "strawberry": 0.98097
   }
 }
