@@ -1,0 +1,65 @@
+{
+  "scope": "local source comparison; no game/runtime/browser purchase regression performed",
+  "cases": [
+    {
+      "size": 180,
+      "images": 18,
+      "min_height": 158.390625,
+      "max_height": 158.390625,
+      "min_width": 105.96875,
+      "max_width": 111.203125
+    },
+    {
+      "size": 112,
+      "images": 18,
+      "min_height": 98.546875,
+      "max_height": 98.546875,
+      "min_width": 65.9375,
+      "max_width": 69.1875
+    },
+    {
+      "size": 66,
+      "images": 18,
+      "min_height": 58.078125,
+      "max_height": 58.078125,
+      "min_width": 38.84375,
+      "max_width": 40.765625
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "size": 112,
+      "horizontal_overflow": false
+    }
+  ],
+  "page_errors": [],
+  "screenshots": [
+    {
+      "file": "comparison-112.png",
+      "bytes": 280478,
+      "sha256": "a8a858f9989361ac6a980a7210a686b829756ceb38fc42db41d16417a086442f"
+    },
+    {
+      "file": "comparison-18.png",
+      "bytes": 559932,
+      "sha256": "21d51e1182431db0e2db1cd30709e653a2cf214a126cc8068f2b51681a5944d4"
+    },
+    {
+      "file": "comparison-180.png",
+      "bytes": 559932,
+      "sha256": "21d51e1182431db0e2db1cd30709e653a2cf214a126cc8068f2b51681a5944d4"
+    },
+    {
+      "file": "comparison-66-dark.png",
+      "bytes": 160267,
+      "sha256": "776b09699eb43030897c98a4c66b5f4dd1d2576f962b56335fc01f0103622b68"
+    },
+    {
+      "file": "comparison-66.png",
+      "bytes": 162170,
+      "sha256": "36813b79025db906d22903054c4ffae80a26359939246e901738cb7db18b89b5"
+    }
+  ]
+}
