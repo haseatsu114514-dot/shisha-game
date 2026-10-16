@@ -196,15 +196,16 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         el("p", { text: item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
-        cmp ? el("div.shop-compare", { dataset: { test: "shop-equip-compare" } }, [
-          cmp.categoryGuide ? el("small.shop-term-guide", { text: cmp.categoryGuide }) : null,
-          ...cmp.rows.map((r) => el(`p.shop-compare-row.${r.tone}`, [el("b", { text: `${r.label}：` }), el("span", { text: r.value })])),
-          cmp.summary ? el("small.shop-compare-summary", { text: `特徴：${cmp.summary}` }) : null,
-        ]) : null,
-        fGuide ? el("div.shop-flavor-guide", { dataset: { test: "shop-flavor-guide" } }, [
-          el("p.shop-compare-row", [el("b", { text: "メーカー特性：" }), el("span", { text: `${fGuide.makerLabel}（適温帯幅 ${fGuide.widthLabel}）` })]),
-          el("p.shop-compare-row", [el("b", { text: "熱の性質：" }), el("span", { text: fGuide.tempBandLabel })]),
-        ]) : null,
+        cmp ? el("small.shop-compare", {
+          dataset: { test: "shop-equip-compare" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: cmp.rows.map((r) => `${r.label}：${r.value}`).join(" ／ "),
+        }) : null,
+        fGuide ? el("small.shop-flavor-guide", {
+          dataset: { test: "shop-flavor-guide" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: `${fGuide.makerLabel}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
+        }) : null,
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {

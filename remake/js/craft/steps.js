@@ -157,11 +157,11 @@ export async function stepMix(cs) {
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
   const thermometer = buildThermometer({ cs, bandPreview: true, height: 200, width: 36 });
-  const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal"), equipLine = el("span.mix-equip-guide", { dataset: { test: "mix-equip-guide" } });
+  const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
   const temperaturePreview = el("details.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
-    el("summary", { text: "温度の目安・装備との相性を見る" }),
+    el("summary", { text: "温度の目安を見る" }),
     thermometer.root,
-    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine, equipLine]),
+    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
@@ -182,9 +182,8 @@ export async function stepMix(cs) {
     idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
     optimalLine.textContent = `虹 · 最適温 ${formatTemperatureRange(bands.optimal)}`;
     const m = info.maker;
-    const synergyText = m.makerCount <= 1 ? "単一メーカー（適温幅・香りのまとまり◎）" : `${m.makerCount}社ミックス（適温幅 ×${m.widthPenalty.toFixed(2)}）`;
-    const tempTip = bands.t <= 0.90 ? "熱に繊細な葉が多め（フラット炭・早めの提供が安全）" : bands.t >= 1.12 ? "熱に強い葉が多め（しっかり温めると開く）" : "標準的な耐熱バランス";
-    equipLine.textContent = `相性 · 適温幅 ×${m.totalWidthScale.toFixed(2)} ／ ${synergyText} ／ ${tempTip}`;
+    const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
+    temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
