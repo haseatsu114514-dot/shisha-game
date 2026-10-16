@@ -1,0 +1,86 @@
+{
+  "issue": 586,
+  "status": "preview-only; full-set regeneration and merge paused by user",
+  "canonical_source": "asset_sources/shop-art-issue586/maker-graphic-revision-v2/dobaj-vanilla.png",
+  "preview": {
+    "file": "dobaj-vanilla-baseline-preview.png",
+    "requested_width_change": "approximately -3%",
+    "actual_bbox_alpha128": [
+      271,
+      114,
+      985,
+      1155
+    ],
+    "original_bbox_alpha128": [
+      246,
+      113,
+      1019,
+      1153
+    ],
+    "note": "Image model did not meet the requested 3% reduction: actual silhouette is about 8% narrower at comparable height. This is an unapproved shape candidate, not a locked master."
+  },
+  "authorizations": {
+    "additional_network_mb": 110,
+    "earlier_merge_authorized": true,
+    "current_pause": "一旦基準みせて / プレビューで欲しい"
+  },
+  "reservation": "Existing #586 old worker claim not changed; original-worker stop/transfer not evidenced. User explicitly authorized this separate source-art work in this chat. No formal transfer asserted.",
+  "generator_prompts": {
+    "representatives": [
+      {
+        "id": "mint",
+        "maker": "Heaven",
+        "stage": "representative",
+        "references": [
+          "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png",
+          "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/mint-wings-composite.png"
+        ],
+        "prompt": "Re-render ONE original game product carton using the TWO reference images by STRICTLY SEPARATE ROLES. REFERENCE1 is the SINGLE COMMON CAMERA/GEOMETRY MASTER for the whole18-flavor set. Copy its outer silhouette, front/right/top projected face angles, flat paperboard depth, closed flush fold seams, scale and exact placement on a1254-square transparent canvas. The target visible box outline is approximately x246..1019,y113..1153,width773,height1040. Its broad FRONT face leans with the same top and bottom edge slopes, its narrow RIGHT face and TOP have exactly the same visibility as reference1. Do not copy the second reference's old perspective. Do not enlarge, rotate, narrow or straighten the master geometry. REFERENCE2 supplies ONLY this product's PRINTED BRAND/FLAVOR ART and color identity to reproject onto that master box. Never carry over DOBAJ lettering, ivory panels, vanilla motif or ribbon from reference1 unless reference2 is itself DOBAJ. Preserve paper material and realistic gentle3D lighting but keep graphics printed flat on the correct planes. This is a plausible modest retail folded PAPERBOARD carton, not a tin, gift casket, tray or separate-lid box. No extra lid, raised top, knob, chimney, handle or structural protrusion. One isolated centered closed carton only, true clean transparent background, no checkerboard pixels, background props, loose food outside the box, price, ad claim, extra brand, unrelated fruit, generic grass/vine/leaf decoration, HMD, bowl, charcoal, hookah, hose or metal. Consistency of front/right/top face ANGLES across all products is the highest priority. This product is HEAVEN MINT, from reference2: deep BLACK matte paperboard on all faces, its original WHITE WINGS AND HALO emblem on upper front, mint-green brush-stroke swash through the middle, and the small original painterly MINT LEAF CLUSTER printed at lower front. Preserve that exact recognizable brand/flavor arrangement, not a new layout, and do NOT add a brand word or text anywhere. The mint leaves are the actual flavor illustration, not a generic foliage decoration; retain them. Do not change their species, do not add other fruit. Replace only the box geometry/camera with reference1's tilted common front/right/top angles. Do not retain the old straighter black-carton camera."
+      },
+      {
+        "id": "rose",
+        "maker": "AFSAAL",
+        "stage": "representative",
+        "references": [
+          "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png",
+          "/workspace/generated_images/exec-fc701f19-ab0c-4e41-8979-ae62236f751d.png"
+        ],
+        "prompt": "Re-render ONE original game product carton using the TWO reference images by STRICTLY SEPARATE ROLES. REFERENCE1 is the SINGLE COMMON CAMERA/GEOMETRY MASTER for the whole18-flavor set. Copy its outer silhouette, front/right/top projected face angles, flat paperboard depth, closed flush fold seams, scale and exact placement on a1254-square transparent canvas. The target visible box outline is approximately x246..1019,y113..1153,width773,height1040. Its broad FRONT face leans with the same top and bottom edge slopes, its narrow RIGHT face and TOP have exactly the same visibility as reference1. Do not copy the second reference's old perspective. Do not enlarge, rotate, narrow or straighten the master geometry. REFERENCE2 supplies ONLY this product's PRINTED BRAND/FLAVOR ART and color identity to reproject onto that master box. Never carry over DOBAJ lettering, ivory panels, vanilla motif or ribbon from reference1 unless reference2 is itself DOBAJ. Preserve paper material and realistic gentle3D lighting but keep graphics printed flat on the correct planes. This is a plausible modest retail folded PAPERBOARD carton, not a tin, gift casket, tray or separate-lid box. No extra lid, raised top, knob, chimney, handle or structural protrusion. One isolated centered closed carton only, true clean transparent background, no checkerboard pixels, background props, loose food outside the box, price, ad claim, extra brand, unrelated fruit, generic grass/vine/leaf decoration, HMD, bowl, charcoal, hookah, hose or metal. Consistency of front/right/top face ANGLES across all products is the highest priority. This product is AFSAAL ROSE. Keep reference2's independent original flat geometric rose circle / apricot diagonal ribbon / sunrise-in-arch emblem composition, but make these mandatory changes: (1) remove ALL JAPANESE writing on front and right side; replace maker lettering with exactly AFSAAL in refined spaced UPPERCASE ROMAN LETTERS, not AFZAL, not ABSAL; (2) flavor word remains ROSE in Roman letters on front and side; (3) the entire printed carton body, including front/top/right, must be a distinctive MUTED DUSTY ROSE PINK, approximately #B05B75, rather than the previous dark plum common base. Use ivory maker mark/lettering for contrast, darker rose and cream geometric petals, and keep restrained apricot accent. This manufacturer uses DIFFERENT FULL-BOX BODY COLORS by flavor, and this is its rose-pink variant. No Japanese characters anywhere. No realistic rose photograph, no leaf, no photo-like botanical engraving. Preserve a flat independently designed screen-print style. Apply precisely reference1's common camera and silhouette."
+      },
+      {
+        "id": "lychee",
+        "maker": "AFSAAL",
+        "stage": "representative",
+        "references": [
+          "/workspace/generated_images/exec-3daf379b-bb3e-4258-9849-311e93d007c3.png",
+          "/workspace/generated_images/exec-ddeea472-a818-4b3b-b109-4f5f5e109d54.png"
+        ],
+        "prompt": "Re-render ONE original game product carton using the TWO reference images by STRICTLY SEPARATE ROLES. REFERENCE1 is the SINGLE COMMON CAMERA/GEOMETRY MASTER for the whole18-flavor set. Copy its outer silhouette, front/right/top projected face angles, flat paperboard depth, closed flush fold seams, scale and exact placement on a1254-square transparent canvas. The target visible box outline is approximately x246..1019,y113..1153,width773,height1040. Its broad FRONT face leans with the same top and bottom edge slopes, its narrow RIGHT face and TOP have exactly the same visibility as reference1. Do not copy the second reference's old perspective. Do not enlarge, rotate, narrow or straighten the master geometry. REFERENCE2 supplies ONLY this product's PRINTED BRAND/FLAVOR ART and color identity to reproject onto that master box. Never carry over DOBAJ lettering, ivory panels, vanilla motif or ribbon from reference1 unless reference2 is itself DOBAJ. Preserve paper material and realistic gentle3D lighting but keep graphics printed flat on the correct planes. This is a plausible modest retail folded PAPERBOARD carton, not a tin, gift casket, tray or separate-lid box. No extra lid, raised top, knob, chimney, handle or structural protrusion. One isolated centered closed carton only, true clean transparent background, no checkerboard pixels, background props, loose food outside the box, price, ad claim, extra brand, unrelated fruit, generic grass/vine/leaf decoration, HMD, bowl, charcoal, hookah, hose or metal. Consistency of front/right/top face ANGLES across all products is the highest priority. This product is AFSAAL LYCHEE. Keep reference2's original flat angular red/coral lychee shell + ivory flesh + brown seed glyph, off-center circle and diagonal printed ribbon, and sunrise-in-arch maker identity. Mandatory changes: (1) remove ALL JAPANESE writing on front and right; replace maker lettering with exactly AFSAAL in refined spaced UPPERCASE ROMAN LETTERS, not AFZAL or ABSAL; (2) flavor word LYCHEE on front and side; (3) recolor the ENTIRE carton printed paper body (front,TOP,RIGHT) to LIGHT MUTED SAGE / LYCHEE GREEN approximately #C9D6A0, with dark charcoal-plum maker mark/lettering for readable contrast. Use a light ivory circle area and red/coral flat lychee glyph with restrained warm apricot ribbon. This green full-box variant must be clearly different from the brand's rose-pink ROSE carton, while keeping the same manufacturer graphic language. No Japanese characters, no rose/petal carry-over, no realistic ingredient photo, no leaves. Apply precisely reference1's common tilted camera and complete box silhouette, not reference2's old perspective."
+      }
+    ],
+    "first_baseline": "Edit the supplied DOBAJ VANILLA paper carton as a precisely controlled product baseline preview. Keep this exact original graphic design, all typography DOBAJ / VANILLA, logo, ivory/charcoal/ochre palette, flat stylized flower/pod, print layout, fine realistic paper texture, paper folds and closed lid. Change ONLY the physical width: make the carton about 3 percent narrower, VERY slightly, keeping its height and depth, camera viewpoint, orientation, perspective and lighting the same. Do not make a noticeably tall slim box. Preserve the current three-quarter view, front face plus narrow right face and shallow visible top, same slopes of top and bottom edges. On a 1254 square canvas, target the opaque object's overall bounds about x=258..1008, y=113..1153 (approximately 750 px wide by 1040 px tall instead of 773 by 1040). Preserve vertical scale and centered placement. Integrate the graphics naturally on the slightly narrower physical faces. This is a retail paperboard carton, with convincing shaded side/top, no stand, no protrusion, no handle, no knob, no HMD, no surrounding food or grass decorations, no added objects, no caption or comparison text. One isolated complete carton only, transparent background with clean edges. This is the common camera and geometry proposal for a set of 18 cartons.",
+    "adjusted_baseline": "Make a minimally changed geometry revision of image 1 (original DOBAJ VANILLA box). Image 2 shows a revision that was TOO NARROW, so DO NOT use image 2 width. The desired width is between these two: about 70 percent of the way from image 2 back toward image 1. Only make image 1 three percent narrower horizontally, keeping its exact vertical size, camera orientation, physical depth, folds and graphic identity. Target opaque bbox on 1254 square approximately 750px wide x1040px high, centered; image1 was773x1040, image2 was710x1044. In other words make image2 about6 percent WIDER while leaving its height alone. Result should look almost identical to original image1, the change is deliberately VERY subtle. Keep exact front-to-right-face angle, top-face visibility, front/right vertical seam location proportionally. Same original charcoal/ivory/ochre DOBAJ/VANILLA graphics, flat vanilla flower and pod emblem, fine matte paper carton texture, realistic closed paper lid. No extra objects, no handle, no protrusions or HMD. Transparent background, one full isolated product carton, no text outside product."
+  },
+  "files": [
+    {
+      "file": "trials/heaven-mint-angle.png",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6398382e-1497-443d-8608-247794c1e578.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "file": "trials/afsaal-rose-roman-pink.png",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8447e051-4f53-4f77-ae32-39b2a683c021.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "file": "trials/afsaal-lychee-roman-sage.png",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-e8eb0809-7c07-4912-8fd7-b60bf08f2ee2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "file": "trials/dobaj-vanilla-narrow-first.png",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-4a1ff653-af7d-415f-889e-9fc3cb01c66d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "file": "dobaj-vanilla-baseline-preview.png",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    }
+  ]
+}
