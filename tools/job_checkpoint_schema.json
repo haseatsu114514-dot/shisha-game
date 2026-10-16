@@ -1,0 +1,430 @@
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "enum": [
+        "same_attempt",
+        "proposed_replacement"
+      ]
+    },
+    "checkpoint": {
+      "$ref": "#/$defs/checkpoint"
+    },
+    "previous": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/checkpoint"
+        }
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "observed_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "checkpoint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "preservation": {
+          "$ref": "#/$defs/proof"
+        },
+        "stop": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/proof"
+            }
+          ]
+        },
+        "proposal": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        }
+      },
+      "required": [
+        "observed_at",
+        "checkpoint",
+        "previous",
+        "preservation",
+        "stop",
+        "proposal"
+      ],
+      "additionalProperties": false
+    },
+    "proposal": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/binding"
+        }
+      ]
+    }
+  },
+  "required": [
+    "mode",
+    "checkpoint",
+    "previous",
+    "observation",
+    "proposal"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/job-checkpoint-v1",
+  "title": "Public checkpoint validation input; no operational authorization",
+  "$defs": {
+    "checkpoint": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "enum": [
+            1
+          ]
+        },
+        "issue": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "job": {
+          "type": "string",
+          "pattern": "^job-[1-9][0-9]{0,11}$"
+        },
+        "binding": {
+          "$ref": "#/$defs/binding"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "ready",
+            "active",
+            "paused",
+            "held",
+            "cancelled",
+            "complete"
+          ]
+        },
+        "boundary": {
+          "enum": [
+            "before_execution",
+            "after_push",
+            "before_pause"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "done": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "remaining": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "holds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^hold-[1-9][0-9]{0,11}$"
+              },
+              "kind": {
+                "enum": [
+                  "hold",
+                  "cancel",
+                  "approval_pending",
+                  "denied"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "required"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        },
+        "artifact": {
+          "type": "object",
+          "properties": {
+            "route": {
+              "enum": [
+                "no_artifact",
+                "branch_only",
+                "open_pr"
+              ]
+            },
+            "branch": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^job/[1-9][0-9]{0,11}/[1-9][0-9]{0,11}$"
+                }
+              ]
+            },
+            "head": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                }
+              ]
+            },
+            "prs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "head": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{40}$"
+                  },
+                  "draft": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "number",
+                  "head",
+                  "draft"
+                ],
+                "additionalProperties": false
+              },
+              "uniqueItems": true,
+              "maxItems": 100
+            },
+            "save": {
+              "enum": [
+                "saved",
+                "never_started_verified",
+                "unpushed",
+                "unknown"
+              ]
+            },
+            "clean": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "route",
+            "branch",
+            "head",
+            "prs",
+            "save",
+            "clean"
+          ],
+          "additionalProperties": false
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "test": {
+                "type": "string",
+                "pattern": "^test-[1-9][0-9]{0,11}$"
+              },
+              "result": {
+                "enum": [
+                  "pass",
+                  "fail",
+                  "not_run"
+                ]
+              },
+              "sha": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{40}$"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "test",
+              "result",
+              "sha"
+            ],
+            "additionalProperties": false
+          },
+          "uniqueItems": true,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "version",
+        "issue",
+        "job",
+        "binding",
+        "revision",
+        "predecessor",
+        "state",
+        "boundary",
+        "created_at",
+        "updated_at",
+        "scope",
+        "done",
+        "remaining",
+        "holds",
+        "artifact",
+        "tests"
+      ],
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "attempt": {
+          "type": "string",
+          "pattern": "^attempt-[1-9][0-9]{0,11}$"
+        },
+        "worker": {
+          "type": "string",
+          "pattern": "^worker-[1-9][0-9]{0,11}$"
+        },
+        "claim_run": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "attempt",
+        "worker",
+        "claim_run",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "proof": {
+      "type": "object",
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "independent": {
+          "type": "boolean"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "snapshot": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "kind": {
+          "enum": [
+            "all_executions_stopped",
+            "saved_clean_pushed",
+            "never_started",
+            "unknown",
+            "http_404",
+            "no_response",
+            "timeout",
+            "historical_turn_completed"
+          ]
+        }
+      },
+      "required": [
+        "verified",
+        "independent",
+        "observed_at",
+        "snapshot",
+        "kind"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
