@@ -22,7 +22,7 @@ async function drawn(page, entry) {
   await card.waitFor();
   assert.equal(await card.getAttribute('data-chapter'), entry.no);
   assert.equal(await card.getAttribute('data-art'), 'ready');
-  const image = card.locator('img');
+  const image = card.locator('img.cc-art'); // 演出用の装飾レイヤー(alt="")を除いた最終の章題画像
   await image.evaluate(image => image.decode());
   assert.match(await image.getAttribute('src'), new RegExp(`/ch${entry.chapter}-title\\.webp$`));
   assert((await image.getAttribute('alt')).includes(entry.name));
@@ -146,8 +146,10 @@ await suite('chapter-titles', async check => {
     await start(page, entry); await seen;
     assert.equal(await page.locator('.chapter-card').count(), 0, 'Undecoded title obscured the game');
     assert.equal(await page.evaluate(() => window.titleFinished), false);
-    release(); await drawn(page, entry);
+    release(); await page.locator('.chapter-card.show').waitFor();
+    // 表示開始から計る。drawn()は演出アニメの完了まで待つので、その後からでは残り時間を測れない。
     const visible = Date.now();
+    await drawn(page, entry);
     await done(page);
     assert(Date.now() - visible >= 2200, 'Loading consumed the visible title duration');
   });

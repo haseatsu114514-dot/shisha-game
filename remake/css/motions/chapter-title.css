@@ -12,17 +12,13 @@
 .ct-stage img { position: absolute; display: block; max-width: none; user-select: none; }
 .ct-pixel img { image-rendering: pixelated; }
 .chapter-card.ct-ch1 { transition-duration: .6s; }
-.ct-lane { position: absolute; inset: 0; -webkit-mask-image: var(--ct-mist); mask-image: var(--ct-mist); }
-.ct-walker { position: absolute; inset: 0; will-change: transform; }
+.ct-scene { position: absolute; inset: 0; will-change: transform; }
 .ct-shadow { transform-origin: 50% 50%; }
-.ct-puff {
-  position: absolute; width: var(--ct-pw); height: calc(var(--ct-pw) * .78); opacity: 0; pointer-events: none;
-  border-radius: 46% 54% 50% 50% / 58% 48% 52% 42%;
+/* 紙にかかった薄いもや。下ほど濃い。上へ晴れていく */
+.ct-haze {
+  position: absolute; left: 0; right: 0; top: -40px; height: 900px; pointer-events: none; will-change: transform, opacity;
   background:
-    radial-gradient(48% 40% at 38% 56%, rgba(168, 164, 160, .16), rgba(168, 164, 160, 0)),
-    radial-gradient(40% 46% at 64% 40%, rgba(184, 180, 176, .13), rgba(184, 180, 176, 0)),
-    radial-gradient(closest-side, rgba(200, 196, 192, .09), rgba(200, 196, 192, 0));
-  filter: blur(10px);
+    linear-gradient(180deg, rgba(254, 254, 254, .45) 0%, rgba(254, 254, 254, .6) 35%, rgba(254, 254, 254, .78) 70%, rgba(254, 254, 254, .9) 100%);
 }
 .ct-layer { will-change: transform, opacity; }
 
@@ -54,6 +50,33 @@
 .ct-glint i {
   position: absolute; top: -10%; bottom: -10%; left: 0; width: 42%;
   background: linear-gradient(105deg, transparent 0%, rgba(var(--ct-tint), .3) 36%, rgba(var(--ct-core), .95) 50%, rgba(var(--ct-tint), .3) 64%, transparent 100%);
+}
+/* 瞳の光（第二章）。瞳の中心に置いた器から、温かいにじみ・瞳の明るみ・小さな星の光を出す */
+.ct-eyes { position: absolute; inset: 0; mix-blend-mode: screen; pointer-events: none; }
+.ct-eye { position: absolute; width: 0; height: 0; }
+.ct-eye > i { position: absolute; display: block; opacity: 0; will-change: transform, opacity; }
+.ct-eye-glow {
+  left: -48px; top: -36px; width: 96px; height: 72px;
+  background: radial-gradient(closest-side, rgba(255, 176, 96, .55), rgba(255, 128, 64, .2) 50%, rgba(255, 110, 60, 0));
+}
+.ct-eye-iris {
+  left: calc(var(--ct-r) * -1); top: calc(var(--ct-r) * -1 + 2px); width: calc(var(--ct-r) * 2); height: calc(var(--ct-r) * 2); border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 196, 120, .14) 30%, rgba(255, 186, 96, .5) 62%, rgba(255, 150, 60, .2) 85%, rgba(255, 150, 60, 0));
+}
+/* 星は瞳のハイライトの上に置き、顔の傾きに合わせて少し回す */
+.ct-eye-star { left: var(--ct-hx); top: var(--ct-hy); width: 0; height: 0; transform: rotate(-14deg); }
+.ct-eye-star b { position: absolute; display: block; }
+.ct-eye-star b:nth-child(1) {
+  left: calc(var(--ct-s) * -.5); top: -1px; width: var(--ct-s); height: 2px;
+  background: linear-gradient(90deg, rgba(255, 220, 170, 0), rgba(255, 246, 228, .95) 50%, rgba(255, 220, 170, 0));
+}
+.ct-eye-star b:nth-child(2) {
+  left: -1px; top: calc(var(--ct-s) * -.32); width: 2px; height: calc(var(--ct-s) * .64);
+  background: linear-gradient(180deg, rgba(255, 220, 170, 0), rgba(255, 246, 228, .9) 50%, rgba(255, 220, 170, 0));
+}
+.ct-eye-star b:nth-child(3) {
+  left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(closest-side, #fff, rgba(255, 236, 200, .8) 40%, rgba(255, 200, 140, 0));
 }
 
 /* 絵の無い章: 行ごとに浮かぶ */

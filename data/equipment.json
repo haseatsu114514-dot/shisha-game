@@ -30,14 +30,14 @@
       "name": "ナイトサイド プレミアハガル",
       "chapter_min": 1,
       "buy_price": 0,
-      "sell_price": 0,
+      "sell_price": 3000,
       "price": 0,
       "value": "nightside_premier_hagal",
       "art": "hagal_80beat",
       "not_for_sale": true,
       "capacity": 15,
       "description": "海外メーカーNIGHTSIDEのプレミアムモデル。シーシャくじのラストワン賞でしか手に入らない。",
-      "_comment": "性能はオーナー検討中（2026-10-16 CI132）。決まるまでは80beatハガルと同じ見た目・容量で、採点の加点なし"
+      "_comment": "性能はオーナー検討中（2026-10-16 CI132）。決まるまでは80beatハガルと同じ見た目・容量で、採点の加点なし。中古買い取りはくじの景品価格と同じ3000円"
     },
     {
       "id": "suyaki_hagal",

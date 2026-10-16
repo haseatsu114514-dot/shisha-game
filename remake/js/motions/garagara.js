@@ -1,32 +1,37 @@
-// シーシャくじのガラガラ（新井式の回転抽選器）。漆塗りの六角の胴を斜め前から見せ、側面の厚みは
-// 回転に合わせて毎フレーム立体として計算し直す。ハンドルを一度引いてから回し、中の玉が鳴る。
-// 止まったら胴を少し送って穴を下へ向け、玉が出る。樋を転がって漆の受け皿へ落ち、弾んで止まる。
-// 玉の色が賞を表す（S＝金・A＝赤・B＝青・C＝白）。終わると kuji.js が賞のカードを出す。
+// シーシャくじのガラガラ（新井式の回転抽選器）。商店街の福引きの台のように、漆塗りの六角の胴を斜め前から見せ、
+// 側面の厚みは回転に合わせて毎フレーム立体として計算し直す。ハンドルを一度引いてから回し、中の玉が鳴る。
+// 止まったら胴を少し送って穴を下へ向け、玉が出る。樋を転がって受け皿へ落ち、弾んで止まる。
+// 玉の色が賞を表す（S＝金・A＝赤・B＝青・C＝白・ラストワン＝黒地に銀の輪）。終わると kuji.js が賞のカードを出す。
+// 見た目は「本物の福引きの台」に寄せる: 落ち着いた壁とカウンター、柔らかい部屋の灯り、使い込んだ塗りと真鍮。
+// 当たりの光や紙吹雪は使わず、上位は係の人が手持ちの鐘を振って知らせる。下の賞は静かに止まるだけ。
 // 台と背景の配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。玉の色は意味を持つので配色によらず固定。
 // 道具はすべて同じ斜めの見下ろし（正射影）で描き、動きは1本の requestAnimationFrame で時刻から決める。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { svg, stageSvg, reducedMotion, W, H } from "../core/transition-kit.js";
-import { pick, ring, twinkle } from "../core/mg-kit.js";
+import { pick } from "../core/mg-kit.js";
 
-export const BALL = { S: "#f4c542", A: "#e5484d", B: "#3b82f6", C: "#f4f1ea", LAST: "#c9a7ff" };
-const BALL_EDGE = { S: "#8a5a08", A: "#7a141c", B: "#163d8c", C: "#9c9486", LAST: "#5a3aa8" };
-const BALL_HI = { S: "#fff6c8", A: "#ffb4a8", B: "#bcd8ff", C: "#ffffff", LAST: "#f1e6ff" };
+export const BALL = { S: "#f2c14a", A: "#d9453f", B: "#3b78d8", C: "#f2efe8", LAST: "#25223f" };
+const BALL_EDGE = { S: "#8a5a10", A: "#701a1a", B: "#1a3f80", C: "#a39b8e", LAST: "#07060e" };
+const BALL_HI = { S: "#fbe7a8", A: "#f2a092", B: "#a9c8f2", C: "#ffffff", LAST: "#77789a" };
+const LAST_RING = "#cfd3dc"; // ラストワンの玉の銀の輪
 
-// 漆の朱と黒・真鍮（free）／紫の濃淡（mono）。緑は使わない
+// 壁・カウンター・朱の塗りと古い真鍮（free）／紫の濃淡（mono）。緑は使わない
 const FREE = {
-  bg0: "#3a1712", bg1: "#0b0505", pat: "#e0b25a", bokeh: "#ffbf6a", spot: "#ffe6b8",
-  lacD: "#2e0506", lacL: "#c8281d", spec: "#ffe9d2", face: "#170a09", faceHi: "#5a2a22",
-  brass0: "#5e3f10", brass1: "#c79a3e", brass2: "#ffe9ae",
-  stand0: "#100707", stand1: "#3b2420", grip0: "#5a2c12", grip1: "#c98a4f",
-  counter0: "#120a07", counter1: "#4a2c1b", edge: "#c79a3e", felt0: "#0d0808", felt1: "#2e2220",
+  wallHi: "#a6896b", wall0: "#7a6350", wallLo: "#4d3c2f", shadow: "#1e130c",
+  paper: "#efe8d8", ink: "#2b211c", red: "#a8382c",
+  lacD: "#3a110d", lacL: "#a43b2d", spec: "#f0dccb", face: "#221511", faceHi: "#4b3228",
+  brass0: "#5a4423", brass1: "#a3864e", brass2: "#d4bf92",
+  stand0: "#24170f", stand1: "#4d3221", grip0: "#4f2d16", grip1: "#a5764a",
+  counter0: "#3f2818", counter1: "#6d4a2e", grain: "#2c1b10", edge: "#8b6b45", felt0: "#27110e", felt1: "#46211c",
 };
 const MONO_SET = {
-  bg0: "#2c1f5a", bg1: "#0a0716", pat: "#c9b8f0", bokeh: "#b49cf0", spot: "#efe8ff",
-  lacD: "#170f33", lacL: "#7d62d2", spec: "#f5f0ff", face: "#100a22", faceHi: "#3e2f74",
-  brass0: "#3e2f72", brass1: "#a893e6", brass2: "#f3eeff",
-  stand0: "#0b0817", stand1: "#2e2456", grip0: "#3d2a78", grip1: "#9a82d8",
-  counter0: "#0d0a1d", counter1: "#2e2257", edge: "#a893e6", felt0: "#0e0a22", felt1: "#2c2160",
+  wallHi: "#7d6eaa", wall0: "#5b4d86", wallLo: "#3b3060", shadow: "#120d22",
+  paper: "#ebe5f6", ink: "#1e1838", red: "#6b4fb0",
+  lacD: "#1f1640", lacL: "#7562b8", spec: "#eee9ff", face: "#150f27", faceHi: "#3a2f66",
+  brass0: "#3f3370", brass1: "#9a8ad0", brass2: "#d6cdf0",
+  stand0: "#130e25", stand1: "#2f2657", grip0: "#34286b", grip1: "#8b78c8",
+  counter0: "#231b41", counter1: "#3c3267", grain: "#18122e", edge: "#8576c0", felt0: "#160f2b", felt1: "#2b2251",
 };
 
 // 立体の置き方。胴の中心・外接半径・奥行き、斜めに見る角度（左へ振って少し上から）
@@ -42,7 +47,7 @@ const HW = 8; // 側面の穴の奥行きの位置
 // 道具一式を少し大きく見せる（カウンターの上の一点を中心に）
 const ZOOM = 1.08, ZX = CX, ZY = 560;
 
-// 時刻（ms）。登場 → ためて引く → 1.6回転 → 止まる → 少し送って穴を下へ → 玉が出る → 樋 → 受け皿 → 光る → カードへ
+// 時刻（ms）。登場 → ためて引く → 1.6回転 → 止まる → 少し送って穴を下へ → 玉が出る → 樋 → 受け皿 → 止まる → カードへ
 const T = {
   ant: 280, spin: 560, stop: 1900, tilt: 1990, pop: 2230, out: 2330, drop: 2440, fly: 2820, land: 2940,
   rest: 3560, accent: 3460, fade: 4080, end: 4420,
@@ -58,7 +63,6 @@ const smooth = (k) => k * k * (3 - 2 * k);
 const outCubic = (k) => 1 - (1 - k) ** 3;
 const outQuart = (k) => 1 - (1 - k) ** 4;
 const inOutSine = (k) => -(Math.cos(Math.PI * k) - 1) / 2;
-const outBack = (k) => 1 + 2.4 * (k - 1) ** 3 + 1.4 * (k - 1) ** 2;
 const seg = (t, a, b) => clamp((t - a) / (b - a));
 
 /** 胴の座標（u 右・v 上・w 手前）を見る向きへ回す */
@@ -105,36 +109,81 @@ function grad(defs, kind, attrs, stops) {
 }
 const line = (a, b, attrs) => svg("line", { x1: a[0].toFixed(1), y1: a[1].toFixed(1), x2: b[0].toFixed(1), y2: b[1].toFixed(1), ...attrs });
 
-/** 背景: 暖かいスポット、青海波の地紋、ぼけた灯り、カウンター、周辺減光 */
-function setArt(C, defs) {
-  const patId = `gg-pat-${++serial}`;
-  const wave = (cx, cy) => svg("g", {}, [38, 28, 18, 8].map((r, i) => svg("circle", { cx, cy, r, fill: i ? "none" : C.bg1, stroke: C.pat, "stroke-width": 1.4 })));
-  defs.append(svg("pattern", { id: patId, width: 80, height: 40, patternUnits: "userSpaceOnUse" }, [
-    wave(0, 0), wave(80, 0), wave(40, 20), wave(0, 40), wave(80, 40),
-  ]));
-  const back = svg("rect", { width: W, height: H, fill: grad(defs, "radialGradient", { cx: 0.46, cy: 0.38, r: 0.75 }, [[0, C.bg0], [1, C.bg1]]) });
-  // 地紋は上ほど濃く、カウンターの手前で消える
-  const patFade = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, "#fff", 1], [1, "#fff", 0.25]]);
-  const maskId = `gg-mask-${++serial}`;
-  defs.append(svg("mask", { id: maskId }, [svg("rect", { width: W, height: 452, fill: patFade })]));
-  const pattern = svg("rect", { width: W, height: 452, fill: `url(#${patId})`, opacity: 0.075, mask: `url(#${maskId})` });
-  const bokeh = [[150, 120, 46], [300, 70, 24], [1030, 110, 58], [1170, 230, 30], [900, 60, 20], [80, 300, 34], [1220, 400, 40], [760, 80, 16], [440, 160, 12], [1080, 360, 18]].map(([x, y, r], i) => {
-    const c = svg("circle", { cx: x, cy: y, r, fill: grad(defs, "radialGradient", {}, [[0, C.bokeh, 0.34], [0.7, C.bokeh, 0.12], [1, C.bokeh, 0]]) });
-    c.dataset.x = x; c.dataset.y = y; c.dataset.i = i;
-    return c;
-  });
-  const sx = CX + 40;
-  const spot = svg("polygon", { points: pts([[sx - 70, -10], [sx + 70, -10], [sx + 440, 640], [sx - 380, 640]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.spot, 0.2], [0.75, C.spot, 0.05], [1, C.spot, 0]]) });
+// 壁やカウンターの細かなざらつき（一度だけ作る小さな画像を敷き詰める）
+let grainUrl = "";
+function grainTexture() {
+  if (grainUrl) return grainUrl;
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 160;
+    const g = c.getContext("2d");
+    const img = g.createImageData(160, 160);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = 110 + Math.random() * 60;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+    grainUrl = c.toDataURL();
+  } catch { grainUrl = ""; }
+  return grainUrl;
+}
+
+/** 壁に貼った手書きの案内（賞と玉の色）。last はラストワン賞の貼り紙 */
+function posterArt(C, defs, last) {
+  const x = 92, y = 66, w = 168, h = 226;
+  const font = { "font-family": "Suien Gothic, sans-serif", "font-weight": 700, fill: C.ink, "text-anchor": "middle" };
+  const dot = (cx, cy, k, r = 9) => svg("g", {}, [
+    svg("circle", { cx, cy, r, fill: BALL[k], stroke: BALL_EDGE[k], "stroke-width": 1.2 }),
+    ...(k === "LAST" ? [svg("path", { d: `M ${cx - r} ${cy} A ${r} ${r * 0.32} 0 0 0 ${cx + r} ${cy}`, fill: "none", stroke: LAST_RING, "stroke-width": 1.4, transform: `rotate(-16 ${cx} ${cy})` })] : []),
+  ]);
+  const body = last ? [
+    svg("rect", { x: 9, y: 9, width: w - 18, height: h - 18, fill: "none", stroke: C.red, "stroke-width": 2.2 }),
+    svg("text", { ...font, x: w / 2, y: 48, "font-size": 21 }, []),
+    dot(w / 2, 104, "LAST", 22),
+    svg("text", { ...font, x: w / 2, y: 160, "font-size": 15, "font-weight": 500 }),
+    svg("text", { ...font, x: w / 2, y: 182, "font-size": 15, "font-weight": 500 }),
+  ] : [
+    svg("text", { ...font, x: w / 2, y: 38, "font-size": 19 }),
+    line([18, 50], [w - 18, 50], { stroke: C.ink, "stroke-width": 1.2, opacity: 0.6 }),
+    ...["S", "A", "B", "C"].flatMap((k, i) => [dot(48, 78 + i * 34, k), svg("text", { ...font, x: 98, y: 84 + i * 34, "font-size": 17 })]),
+    svg("text", { ...font, x: w / 2, y: 210, "font-size": 12, fill: C.red }),
+  ];
+  const words = last ? ["ラストワン賞", "最後の1枚を", "引いた方へ"] : ["シーシャくじ", "S賞", "A賞", "B賞", "C賞", "ラストワン賞あり"];
+  body.filter((n) => n.tagName === "text").forEach((n, i) => { n.textContent = words[i] || ""; });
+  const paper = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0.3, y2: 1 }, [[0, C.paper], [1, mix(C.paper, C.ink, 0.1)]]);
+  const tape = (tx, rot) => svg("rect", { x: tx - 18, y: -7, width: 36, height: 14, fill: C.paper, opacity: 0.55, transform: `rotate(${rot} ${tx} 0)` });
+  return svg("g", { transform: `translate(${x} ${y}) rotate(${last ? 1.2 : -1.4})` }, [
+    // 紙の影（壁から少し浮いている）
+    svg("rect", { x: 3, y: 5, width: w, height: h, fill: C.shadow, opacity: 0.22 }),
+    svg("rect", { width: w, height: h, fill: paper }),
+    ...body,
+    tape(18, -24), tape(w - 18, 20),
+  ]);
+}
+
+/** 背景: 柔らかい灯りの壁、貼り紙、木のカウンター、ざらつき、弱い周辺減光 */
+function setArt(C, defs, last) {
+  const wall = svg("rect", { width: W, height: 460, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.wall0], [0.75, mix(C.wall0, C.wallLo, 0.4)], [1, C.wallLo]]) });
+  // 左上の窓からのような広い明るみ
+  const light = svg("rect", { width: W, height: 460, fill: grad(defs, "radialGradient", { cx: 0.3, cy: 0.05, r: 0.8 }, [[0, C.wallHi, 0.75], [1, C.wallHi, 0]]) });
+  // 台が壁に落とす、ぼんやりした影
+  const cast = svg("ellipse", { cx: CX + 90, cy: CY + 60, rx: 300, ry: 230, fill: grad(defs, "radialGradient", {}, [[0, C.shadow, 0.28], [1, C.shadow, 0]]) });
   const counterTop = svg("polygon", { points: pts([[0, 452], [W, 452], [W, 680], [0, 680]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.counter0], [1, C.counter1]]) });
   // 壁とカウンターの境の陰
-  const seam = svg("rect", { x: 0, y: 452, width: W, height: 26, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, "#000", 0.55], [1, "#000", 0]]) });
-  const pool = svg("ellipse", { cx: CX + 150, cy: 572, rx: 540, ry: 112, fill: grad(defs, "radialGradient", {}, [[0, C.spot, 0.22], [1, C.spot, 0]]) });
-  const grain = svg("g", { stroke: C.counter0, "stroke-width": 1.2, fill: "none", opacity: 0.55 }, [470, 492, 520, 556, 598, 644].map((y, i) => svg("path", { d: `M 0 ${y} C 320 ${y - 4 + i}, 760 ${y + 5}, ${W} ${y - 2}` })));
-  const front = svg("rect", { x: 0, y: 680, width: W, height: 40, fill: C.counter0 });
-  const lip = svg("rect", { x: 0, y: 678, width: W, height: 3, fill: C.edge, opacity: 0.7 });
-  const motes = [...Array(14)].map((_, i) => svg("circle", { r: 1.4 + (i % 3) * 0.6, fill: C.spot, opacity: 0, "data-i": i }));
-  const vignette = svg("rect", { width: W, height: H, fill: grad(defs, "radialGradient", { cx: 0.5, cy: 0.46, r: 0.72 }, [[0.55, "#000", 0], [1, "#000", 0.8]]) });
-  return { back: svg("g", {}, [back, pattern, ...bokeh, counterTop, seam, pool, grain, front, lip, spot, ...motes]), vignette, bokeh, spot, motes };
+  const seam = svg("rect", { x: 0, y: 452, width: W, height: 22, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.45], [1, C.shadow, 0]]) });
+  const grain = svg("g", { stroke: C.grain, "stroke-width": 1.1, fill: "none", opacity: 0.4 }, [468, 489, 517, 553, 597, 641].map((y, i) => svg("path", { d: `M 0 ${y} C 320 ${y - 4 + i}, 760 ${y + 5}, ${W} ${y - 2}` })));
+  const front = svg("rect", { x: 0, y: 680, width: W, height: 40, fill: mix(C.counter0, C.shadow, 0.4) });
+  const lip = svg("rect", { x: 0, y: 678, width: W, height: 3, fill: C.edge, opacity: 0.45 });
+  const kids = [wall, light, cast, posterArt(C, defs, last), counterTop, seam, grain, front, lip];
+  const tex = grainTexture();
+  if (tex) {
+    const patId = `gg-grain-${++serial}`;
+    defs.append(svg("pattern", { id: patId, width: 160, height: 160, patternUnits: "userSpaceOnUse" }, [svg("image", { href: tex, width: 160, height: 160 })]));
+    kids.push(svg("rect", { width: W, height: H, fill: `url(#${patId})`, opacity: 0.07, style: "mix-blend-mode: overlay" }));
+  }
+  const vignette = svg("rect", { width: W, height: H, fill: grad(defs, "radialGradient", { cx: 0.5, cy: 0.45, r: 0.75 }, [[0.6, C.shadow, 0], [1, C.shadow, 0.5]]) });
+  return { back: svg("g", {}, kids), vignette };
 }
 
 /** 台: 黒漆の土台と、胴の前後で軸を受ける A 字の脚 */
@@ -148,7 +197,7 @@ function frameLeg(C, defs, w, side) {
     svg("polygon", { points: pts(sideFace), fill: C.stand0 }),
     svg("polygon", { points: pts(f), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.stand0], [0.5, C.stand1], [1, C.stand0]]) }),
     // 角の面取りに映る細い光
-    line(P(top[0] - wd + 2, top[1] + 14, w), P(foot[0] - wd + 2, foot[1] - 4, w), { stroke: C.brass1, "stroke-width": 1, opacity: 0.35 }),
+    line(P(top[0] - wd + 2, top[1] + 14, w), P(foot[0] - wd + 2, foot[1] - 4, w), { stroke: C.stand1, "stroke-width": 1.2, opacity: 0.6 }),
   ];
 }
 function standArt(C, defs) {
@@ -159,8 +208,8 @@ function standArt(C, defs) {
   const rightFace = [Q(x1, y0, z1), Q(x1, y0, z0), Q(x1, y1, z0), Q(x1, y1, z1)];
   // 接地の影（濃い芯と広い薄影）
   const contact = svg("g", { transform: hplane(COUNTER) }, [
-    svg("rect", { x: x0 - 40, y: z0 - 30, width: x1 - x0 + 80, height: z1 - z0 + 60, rx: 80, fill: grad(defs, "radialGradient", {}, [[0.5, "#000", 0.55], [1, "#000", 0]]) }),
-    svg("rect", { x: x0 - 4, y: z0 - 2, width: x1 - x0 + 8, height: z1 - z0 + 6, rx: 6, fill: "#000", opacity: 0.6 }),
+    svg("rect", { x: x0 - 40, y: z0 - 30, width: x1 - x0 + 80, height: z1 - z0 + 60, rx: 80, fill: grad(defs, "radialGradient", {}, [[0.45, C.shadow, 0.4], [1, C.shadow, 0]]) }),
+    svg("rect", { x: x0 - 4, y: z0 - 2, width: x1 - x0 + 8, height: z1 - z0 + 6, rx: 6, fill: C.shadow, opacity: 0.5 }),
   ]);
   const base = svg("g", {}, [
     contact,
@@ -168,42 +217,49 @@ function standArt(C, defs) {
     svg("polygon", { points: pts(frontFace), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.stand0], [0.6, C.stand1], [1, C.stand0]]) }),
     svg("polygon", { points: pts(topFace), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, C.stand1], [1, C.stand0]]) }),
     // 胴の下にたまる陰（環境光の遮り）
-    svg("ellipse", { cx: 0, cy: 0, rx: 130, ry: 70, transform: `${hplane(-FLOOR)}`, fill: grad(defs, "radialGradient", {}, [[0, "#000", 0.5], [1, "#000", 0]]) }),
-    svg("polyline", { points: pts([Q(x0, y0, z1), Q(x1, y0, z1), Q(x1, y0, z0)]), fill: "none", stroke: C.brass1, "stroke-width": 2.4 }),
+    svg("ellipse", { cx: 0, cy: 0, rx: 130, ry: 70, transform: `${hplane(-FLOOR)}`, fill: grad(defs, "radialGradient", {}, [[0, C.shadow, 0.4], [1, C.shadow, 0]]) }),
+    // 角は使い込まれて少し明るく擦れている
+    svg("polyline", { points: pts([Q(x0, y0, z1), Q(x1, y0, z1), Q(x1, y0, z0)]), fill: "none", stroke: mix(C.stand1, C.brass1, 0.35), "stroke-width": 2 }),
     svg("polyline", { points: pts([Q(x0, y1 + 3, z1), Q(x1, y1 + 3, z1), Q(x1, y1 + 3, z0)]), fill: "none", stroke: C.brass0, "stroke-width": 1.4, opacity: 0.8 }),
   ]);
   const back = svg("g", {}, [...frameLeg(C, defs, BACK - 16, -1), ...frameLeg(C, defs, BACK - 16, 1)]);
   const frontLegs = svg("g", {}, [...frameLeg(C, defs, SFRAME, -1), ...frameLeg(C, defs, SFRAME, 1),
     // 脚をつなぐ貫と、軸受けの金具
     svg("polygon", { points: pts([P(-72, 170, SFRAME), P(72, 170, SFRAME), P(74, 184, SFRAME), P(-74, 184, SFRAME)]), fill: C.stand1 }),
-    line(P(-72, 170, SFRAME), P(72, 170, SFRAME), { stroke: C.brass1, "stroke-width": 1.6, opacity: 0.8 }),
+    line(P(-72, 170, SFRAME), P(72, 170, SFRAME), { stroke: mix(C.stand1, C.brass1, 0.3), "stroke-width": 1.4, opacity: 0.8 }),
   ]);
   return { base, back, frontLegs };
 }
+
+// 板ごとの塗りのわずかな差と、擦れの長さ（毎回同じ）
+const PANEL_TINT = [0.02, -0.03, 0.01, -0.015, 0.03, -0.02];
+const PANEL_WEAR = [0.5, 0.22, 0.7, 0.35, 0.15, 0.58];
 
 /** 胴の側面（6枚）と縁金具・穴、正面（回る面）、ハンドル */
 function drumArt(C, defs) {
   const panels = [...Array(6)].map(() => svg("polygon", { "stroke-linejoin": "round" }));
   const shade = [...Array(6)].map(() => svg("polygon", { fill: "" }));
   const gloss = [...Array(6)].map(() => svg("polygon", { opacity: 0 }));
-  const corners = [...Array(6)].map(() => svg("line", { stroke: C.brass1, "stroke-width": 5, "stroke-linecap": "round" }));
+  // 手前の縁の擦れ（朱が薄れて下地の黒がのぞく、根来塗のような使い込み）
+  const wear = [...Array(6)].map(() => svg("line", { stroke: C.lacD, "stroke-width": 3, "stroke-linecap": "round", opacity: 0.35 }));
+  const corners = [...Array(6)].map(() => svg("line", { stroke: C.brass1, "stroke-width": 4.5, "stroke-linecap": "round" }));
   const rims = [...Array(6)].map(() => svg("line", { stroke: C.brass0, "stroke-width": 3.5, "stroke-linecap": "round" }));
   const holeRing = svg("polygon", { fill: C.brass1, stroke: C.brass0, "stroke-width": 1.5 });
   const hole = svg("polygon", { fill: "#050202" });
-  const holeLip = svg("polyline", { fill: "none", stroke: C.brass2, "stroke-width": 1.6, opacity: 0.8 });
+  const holeLip = svg("polyline", { fill: "none", stroke: C.brass2, "stroke-width": 1.4, opacity: 0.5 });
   // 側面の奥ほど暗く（手前の縁から奥の縁へ）
   const f0 = P(0, 0, FRONT), b0 = P(0, 0, BACK);
-  const depth = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: f0[0], y1: f0[1], x2: b0[0] + (b0[0] - f0[0]) * 0.4, y2: b0[1] + (b0[1] - f0[1]) * 0.4 }, [[0, "#000", 0], [1, "#000", 0.5]]);
+  const depth = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: f0[0], y1: f0[1], x2: b0[0] + (b0[0] - f0[0]) * 0.4, y2: b0[1] + (b0[1] - f0[1]) * 0.4 }, [[0, C.shadow, 0], [1, C.shadow, 0.45]]);
   shade.forEach((s) => s.setAttribute("fill", depth));
-  // 漆の映り込み（側面の手前寄りに細い帯）
-  const glossFill = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: f0[0], y1: f0[1], x2: b0[0], y2: b0[1] }, [[0, C.spec, 0], [0.18, C.spec, 0.5], [0.34, C.spec, 0], [1, C.spec, 0]]);
+  // 塗りの柔らかい照り（手前から奥へ広くなだらかに）
+  const glossFill = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: f0[0], y1: f0[1], x2: b0[0], y2: b0[1] }, [[0, C.spec, 0.15], [0.4, C.spec, 0.35], [1, C.spec, 0]]);
   gloss.forEach((g) => g.setAttribute("fill", glossFill));
-  const band = svg("g", {}, [...panels, ...shade, ...gloss, ...rims, ...corners, holeRing, hole, holeLip]);
+  const band = svg("g", {}, [...panels, ...shade, ...gloss, ...wear, ...rims, ...corners, holeRing, hole, holeLip]);
 
   // 正面（黒漆の面）。rot の中は胴と一緒に回る
   const hexPts = (r, a0 = 0) => [...Array(6)].map((_, i) => [r * Math.cos((a0 + i * 60) * DEG), r * Math.sin((a0 + i * 60) * DEG)]);
-  const brass = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, C.brass2], [0.45, C.brass1], [1, C.brass0]]);
-  const boss = grad(defs, "radialGradient", { cx: 0.38, cy: 0.34, r: 0.75 }, [[0, C.brass2], [0.5, C.brass1], [1, C.brass0]]);
+  const brass = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, mix(C.brass1, C.brass2, 0.5)], [0.5, C.brass1], [1, C.brass0]]);
+  const boss = grad(defs, "radialGradient", { cx: 0.4, cy: 0.36, r: 0.8 }, [[0, mix(C.brass1, C.brass2, 0.6)], [0.6, C.brass1], [1, C.brass0]]);
   const kites = hexPts(R).map(([x, y], i, all) => {
     const prev = all[(i + 5) % 6], next = all[(i + 1) % 6];
     const d = (p) => { const dx = p[0] - x, dy = p[1] - y, l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
@@ -220,7 +276,7 @@ function drumArt(C, defs) {
   const rot = svg("g", {}, [
     svg("polygon", { points: pts(hexPts(R)), fill: C.face }),
     // 軸のまわりの菊座（真鍮の細い花弁）
-    ...[...Array(16)].map((_, i) => svg("ellipse", { cx: 0, cy: -27, rx: 4.2, ry: 10, fill: "none", stroke: C.brass1, "stroke-width": 1, opacity: 0.55, transform: `rotate(${i * 22.5})` })),
+    ...[...Array(16)].map((_, i) => svg("ellipse", { cx: 0, cy: -27, rx: 4.2, ry: 10, fill: "none", stroke: C.brass1, "stroke-width": 1, opacity: 0.35, transform: `rotate(${i * 22.5})` })),
     svg("g", { "clip-path": `url(#${faceClip})` }, grainLines),
     svg("polygon", { points: pts(hexPts(R * 0.8)), fill: "none", stroke: C.brass1, "stroke-width": 1.4, opacity: 0.75 }),
     svg("polygon", { points: pts(hexPts(R * 0.74)), fill: "none", stroke: C.brass1, "stroke-width": 0.8, opacity: 0.45 }),
@@ -237,9 +293,7 @@ function drumArt(C, defs) {
   const sheenPoly = svg("polygon");
   defs.append(svg("clipPath", { id: sheenClip }, [sheenPoly]));
   const sheen = svg("g", { "clip-path": `url(#${sheenClip})` }, [
-    svg("rect", { x: -R, y: -R, width: R * 2, height: R * 2, fill: grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: -R, y1: -R, x2: R * 0.6, y2: R }, [[0, C.faceHi, 0.9], [0.45, C.faceHi, 0.12], [1, "#000", 0.3]]) }),
-    // 斜めに走る細い映り込み
-    svg("polygon", { points: pts([[-R, -R * 0.2], [-R * 0.55, -R], [-R * 0.4, -R], [-R, -R * 0.02]]), fill: C.spec, opacity: 0.07 }),
+    svg("rect", { x: -R, y: -R, width: R * 2, height: R * 2, fill: grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: -R, y1: -R, x2: R * 0.6, y2: R }, [[0, C.faceHi, 0.55], [0.5, C.faceHi, 0.08], [1, C.shadow, 0.3]]) }),
   ]);
   const face = svg("g", { transform: plane(FRONT) }, [rot, sheen]);
   // 軸と真鍮の軸頭（手前の台枠の外）
@@ -247,22 +301,22 @@ function drumArt(C, defs) {
     svg("circle", { r: 26, fill: C.stand0 }),
     svg("circle", { r: 21, fill: boss, stroke: C.brass0, "stroke-width": 1.5 }),
     svg("circle", { r: 12, fill: "none", stroke: C.brass0, "stroke-width": 1, opacity: 0.6 }),
-    svg("circle", { cx: -6, cy: -7, r: 5, fill: "#fff", opacity: 0.35 }),
+    svg("circle", { cx: -5, cy: -6, r: 8, fill: C.brass2, opacity: 0.25 }),
   ]);
   // ハンドル: 真鍮の腕と木の握り（握りは軸と平行に手前へ伸びる）
   const ARM = { len: 98, a: -128 };
   const arm = svg("g", {}, [
     svg("line", { x1: 0, y1: 0, x2: ARM.len, y2: 0, stroke: C.brass0, "stroke-width": 15, "stroke-linecap": "round" }),
     svg("line", { x1: 0, y1: -1, x2: ARM.len, y2: -1, stroke: C.brass1, "stroke-width": 10, "stroke-linecap": "round" }),
-    svg("line", { x1: 6, y1: -3, x2: ARM.len - 6, y2: -3, stroke: C.brass2, "stroke-width": 2.5, "stroke-linecap": "round", opacity: 0.8 }),
+    svg("line", { x1: 6, y1: -3, x2: ARM.len - 6, y2: -3, stroke: C.brass2, "stroke-width": 3, "stroke-linecap": "round", opacity: 0.4 }),
     svg("circle", { r: 15, fill: boss, stroke: C.brass0, "stroke-width": 1.5 }),
   ]);
   const armRot = svg("g", {}, [arm]);
   const crank = svg("g", { transform: plane(CRANK) }, [armRot]);
-  const gripShadow = svg("line", { stroke: "#000", "stroke-width": 27, "stroke-linecap": "round", opacity: 0.55, transform: "translate(3 4)" });
+  const gripShadow = svg("line", { stroke: C.shadow, "stroke-width": 27, "stroke-linecap": "round", opacity: 0.4, transform: "translate(3 4)" });
   const gripBody = svg("line", { stroke: C.grip0, "stroke-width": 23, "stroke-linecap": "round" });
   const gripMid = svg("line", { stroke: C.grip1, "stroke-width": 11, "stroke-linecap": "round", opacity: 0.85, transform: "translate(-1 -2)" });
-  const gripHi = svg("line", { stroke: "#fff", "stroke-width": 3, "stroke-linecap": "round", opacity: 0.35, transform: "translate(-3 -6)" });
+  const gripHi = svg("line", { stroke: C.grip1, "stroke-width": 4, "stroke-linecap": "round", opacity: 0.5, transform: "translate(-3 -6)" });
   const gripEnd = svg("ellipse", { fill: C.grip1, stroke: C.grip0, "stroke-width": 2, rx: 10, ry: 12 });
   const grip = svg("g", {}, [gripShadow, gripBody, gripMid, gripHi, gripEnd]);
 
@@ -277,17 +331,22 @@ function drumArt(C, defs) {
         const n = view(Math.cos(b), -Math.sin(b), 0);
         const vis = n[2] > 0.015;
         seen[k] = vis;
-        panels[k].style.display = shade[k].style.display = gloss[k].style.display = rims[k].style.display = vis ? "" : "none";
+        panels[k].style.display = shade[k].style.display = gloss[k].style.display = rims[k].style.display = wear[k].style.display = vis ? "" : "none";
         if (!vis) continue;
         const q = pts([vtx(k, FRONT), vtx(k + 1, FRONT), vtx(k + 1, BACK), vtx(k, BACK)]);
         const lam = clamp(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]);
-        const sp = clamp((n[0] * HALF[0] + n[1] * HALF[1] + n[2] * HALF[2]) / SPEC_MAX) ** 22;
-        const base = mix(C.lacD, C.lacL, 0.16 + lam * 0.88);
+        // 照りは鋭い点ではなく広くぼんやり。板ごとに塗りの色がわずかに違う
+        const sp = clamp((n[0] * HALF[0] + n[1] * HALF[1] + n[2] * HALF[2]) / SPEC_MAX) ** 5;
+        const base = mix(C.lacD, C.lacL, 0.2 + lam * 0.74 + PANEL_TINT[k]);
         panels[k].setAttribute("points", q);
-        panels[k].setAttribute("fill", sp > 0.02 ? mixRgb(base, C.spec, sp * 0.45) : base);
+        panels[k].setAttribute("fill", mixRgb(base, C.spec, sp * 0.18));
         shade[k].setAttribute("points", q);
         gloss[k].setAttribute("points", q);
-        gloss[k].setAttribute("opacity", (0.04 + 0.18 * lam ** 3).toFixed(2));
+        gloss[k].setAttribute("opacity", (0.03 + 0.1 * lam ** 2).toFixed(3));
+        // 擦れ: 手前の縁から少し奥に入ったところ
+        const [e1, e2] = [vtx(k, FRONT - 7), vtx(k + 1, FRONT - 7)];
+        const [m1, m2] = [[lerp(e1[0], e2[0], 0.12), lerp(e1[1], e2[1], 0.12)], [lerp(e1[0], e2[0], 0.12 + PANEL_WEAR[k]), lerp(e1[1], e2[1], 0.12 + PANEL_WEAR[k])]];
+        wear[k].setAttribute("x1", m1[0]); wear[k].setAttribute("y1", m1[1]); wear[k].setAttribute("x2", m2[0]); wear[k].setAttribute("y2", m2[1]);
         const [x1, y1] = vtx(k, BACK), [x2, y2] = vtx(k + 1, BACK);
         rims[k].setAttribute("x1", x1); rims[k].setAttribute("y1", y1); rims[k].setAttribute("x2", x2); rims[k].setAttribute("y2", y2);
       }
@@ -359,16 +418,16 @@ function chuteArt(C, defs) {
     const u = lerp(au, bu, k), s = lerp(as, bs, k) + 5, w = lerp(aw, bw, k);
     const top = P(u, s, w), bot = P(u, ground, w);
     return svg("g", {}, [
-      svg("ellipse", { cx: u, cy: w, rx: 9, ry: 9, fill: "#000", opacity: 0.45, transform: hplane(ground) }),
+      svg("ellipse", { cx: u, cy: w, rx: 9, ry: 9, fill: C.shadow, opacity: 0.35, transform: hplane(ground) }),
       line(top, bot, { stroke: C.brass0, "stroke-width": 7, "stroke-linecap": "round" }),
-      line([top[0] - 1.5, top[1]], [bot[0] - 1.5, bot[1]], { stroke: C.brass2, "stroke-width": 2, opacity: 0.7 }),
+      line([top[0] - 1.5, top[1]], [bot[0] - 1.5, bot[1]], { stroke: C.brass1, "stroke-width": 2.5, opacity: 0.6 }),
     ]);
   };
   const kBase = (150 - au) / (bu - au);
   // 台と床に落ちる樋の影
   const shadowPts = [[0, -1], [kBase, -1], [kBase, 1], [0, 1]].map(([k, sd]) => P(lerp(au, bu, k) + wu * HALFW * sd + 18, -FLOOR, lerp(aw, bw, k) + ww * HALFW * sd));
   const back = svg("g", {}, [
-    svg("polygon", { points: pts(shadowPts), fill: "#000", opacity: 0.32 }),
+    svg("polygon", { points: pts(shadowPts), fill: C.shadow, opacity: 0.25 }),
     post(kBase, -FLOOR), post(0.96, COUNTER),
     svg("polygon", { points: pts(backWall), fill: mix(C.felt0, C.felt1, 0.3) }),
     svg("polygon", { points: pts(endWall), fill: C.felt0 }),
@@ -378,7 +437,7 @@ function chuteArt(C, defs) {
   const front = svg("g", {}, [
     svg("polygon", { points: pts(under), fill: C.lacD }),
     svg("polygon", { points: pts(frontWall), fill: lacq }),
-    line(at(0, 1, WALL), at(1, 1, WALL), { stroke: C.brass2, "stroke-width": 3, "stroke-linecap": "round" }),
+    line(at(0, 1, WALL), at(1, 1, WALL), { stroke: C.brass1, "stroke-width": 3, "stroke-linecap": "round" }),
     line(at(0, 1, -5), at(1, 1, -5), { stroke: C.brass0, "stroke-width": 1.4, opacity: 0.8 }),
     // 端の金具
     line(at(1, -1, WALL), at(1, 1, WALL), { stroke: C.brass1, "stroke-width": 3, "stroke-linecap": "round" }),
@@ -404,12 +463,12 @@ function dishArt(C, defs) {
   const frontArc = lowerIsA1 ? a1 : a2;
   const dy = bot[0][1] - top[0][1];
   const wall = [...frontArc, ...frontArc.slice().reverse().map(([x, y]) => [x, y + dy])];
-  const wallFill = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: top[li][0], y1: 0, x2: top[ri2][0], y2: 0 }, [[0, C.lacD], [0.35, mix(C.lacD, C.lacL, 0.7)], [0.5, mix(C.lacL, C.spec, 0.25)], [0.62, mix(C.lacD, C.lacL, 0.6)], [1, C.lacD]]);
-  const rimFill = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.brass0], [0.3, C.brass2], [0.55, C.brass1], [0.8, C.brass2], [1, C.brass0]]);
+  const wallFill = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: top[li][0], y1: 0, x2: top[ri2][0], y2: 0 }, [[0, C.lacD], [0.4, mix(C.lacD, C.lacL, 0.75)], [0.55, mix(C.lacL, C.spec, 0.1)], [0.8, mix(C.lacD, C.lacL, 0.5)], [1, C.lacD]]);
+  const rimFill = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.brass0], [0.35, mix(C.brass1, C.brass2, 0.4)], [0.65, C.brass1], [1, C.brass0]]);
   const feltFill = grad(defs, "radialGradient", { cx: 0.5, cy: 0.42, r: 0.62 }, [[0, C.felt1], [0.75, mix(C.felt0, C.felt1, 0.5)], [1, C.felt0]]);
-  const innerShade = grad(defs, "radialGradient", { cx: 0.5, cy: 0.62, r: 0.56 }, [[0.6, "#000", 0], [1, "#000", 0.65]]);
+  const innerShade = grad(defs, "radialGradient", { cx: 0.5, cy: 0.62, r: 0.56 }, [[0.6, C.shadow, 0], [1, C.shadow, 0.55]]);
   const back = svg("g", {}, [
-    svg("circle", { cx: u + 10, cy: w + 6, r: r + 18, fill: grad(defs, "radialGradient", {}, [[0.55, "#000", 0.55], [1, "#000", 0]]), transform: hplane(COUNTER) }),
+    svg("circle", { cx: u + 10, cy: w + 6, r: r + 18, fill: grad(defs, "radialGradient", {}, [[0.55, C.shadow, 0.4], [1, C.shadow, 0]]), transform: hplane(COUNTER) }),
     svg("polygon", { points: pts(wall), fill: wallFill }),
     svg("circle", { cx: u, cy: w, r, fill: rimFill, transform: hplane(rim) }),
     svg("circle", { cx: u, cy: w, r: r - 3, fill: C.brass0, transform: hplane(rim) }),
@@ -423,25 +482,64 @@ function dishArt(C, defs) {
   for (let i = startAt; ring64[i % 64][1] > cy - 1 && frontRim.length < 64; i++) frontRim.push(ring64[i % 64]);
   const front = svg("g", {}, [
     svg("polyline", { points: pts(frontRim), fill: "none", stroke: C.brass1, "stroke-width": 5, "stroke-linecap": "round" }),
-    svg("polyline", { points: pts(frontRim.map(([x, y]) => [x, y - 1.6])), fill: "none", stroke: C.brass2, "stroke-width": 1.6, "stroke-linecap": "round", opacity: 0.9 }),
+    svg("polyline", { points: pts(frontRim.map(([x, y]) => [x, y - 1.6])), fill: "none", stroke: C.brass2, "stroke-width": 1.6, "stroke-linecap": "round", opacity: 0.45 }),
   ]);
   return { back, front };
 }
 
-/** 玉（艶のある球）。g は位置、body は弾むときの伸び縮み（下端を支点にする） */
-function ballArt(rank, defs) {
+/** 玉（塗りの球）。g は位置、body は弾むときの伸び縮み（下端を支点にする）。ラストワンは黒地に銀の輪 */
+function ballArt(rank, defs, C) {
   const k = BALL[rank] ? rank : "C";
-  const fill = grad(defs, "radialGradient", { cx: 0.36, cy: 0.32, r: 0.78 }, [[0, BALL_HI[k]], [0.32, BALL[k]], [0.86, BALL_EDGE[k]], [1, BALL_EDGE[k]]]);
+  const fill = grad(defs, "radialGradient", { cx: 0.38, cy: 0.34, r: 0.8 }, [[0, BALL_HI[k]], [0.4, BALL[k]], [0.9, BALL_EDGE[k]], [1, BALL_EDGE[k]]]);
   const body = svg("g", {}, [
     svg("circle", { r: BALL_R, fill }),
-    // 下の照り返しと、上の映り込み（窓の形）
-    svg("ellipse", { cx: 2, cy: 9, rx: 8, ry: 3.5, fill: "#fff", opacity: 0.16 }),
-    svg("ellipse", { cx: -5, cy: -6, rx: 4.8, ry: 3.2, fill: "#fff", opacity: 0.92, transform: "rotate(-35 -5 -6)" }),
-    svg("circle", { cx: 5.5, cy: -8.5, r: 1.3, fill: "#fff", opacity: 0.55 }),
+    ...(k === "LAST" ? [
+      // 赤道の銀の輪（手前の半分だけ見える）
+      svg("path", { d: `M ${-BALL_R} 0 A ${BALL_R} ${BALL_R * 0.34} 0 0 0 ${BALL_R} 0`, fill: "none", stroke: LAST_RING, "stroke-width": 1.6, transform: "rotate(-16)" }),
+    ] : []),
+    // 下の照り返しと、上の柔らかい映り込み
+    svg("ellipse", { cx: 2, cy: 9, rx: 8, ry: 3.5, fill: "#fff", opacity: 0.1 }),
+    svg("ellipse", { cx: -5, cy: -6, rx: 5.5, ry: 3.8, fill: "#fff", opacity: k === "LAST" ? 0.35 : 0.5, transform: "rotate(-35 -5 -6)" }),
   ]);
   const g = svg("g", { opacity: 0 }, [body]);
-  const shadow = svg("ellipse", { rx: 13, ry: 13, fill: "#000", opacity: 0 });
+  const shadow = svg("ellipse", { rx: 13, ry: 13, fill: C.shadow, opacity: 0 });
   return { g, body, shadow, color: BALL[k] };
+}
+
+/** 係の人の手持ちの鐘（真鍮の鐘に木の柄）。柄の上は画面の外で、手首を支点に振る */
+function bellArt(C, defs) {
+  const wood = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.grip0], [0.35, C.grip1], [0.75, C.grip0], [1, mix(C.grip0, C.shadow, 0.5)]]);
+  const metal = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, mix(C.brass0, C.shadow, 0.35)], [0.28, mix(C.brass1, C.brass2, 0.4)], [0.5, C.brass1], [0.82, C.brass0], [1, mix(C.brass0, C.shadow, 0.5)]]);
+  const inside = grad(defs, "radialGradient", { cx: 0.5, cy: 0.2, r: 0.8 }, [[0, mix(C.brass0, C.shadow, 0.75)], [1, mix(C.brass0, C.shadow, 0.25)]]);
+  const MY = 236; // 鐘の口の高さ
+  const mouthClip = `gg-clip-${++serial}`;
+  defs.append(svg("clipPath", { id: mouthClip }, [svg("ellipse", { cx: 0, cy: MY, rx: 52, ry: 10 })]));
+  const clapper = svg("g", {}, [
+    line([0, MY - 50], [0, MY - 4], { stroke: mix(C.brass0, C.shadow, 0.4), "stroke-width": 3 }),
+    svg("circle", { cy: MY - 2, r: 7.5, fill: C.brass0 }),
+  ]);
+  const swing = svg("g", {}, [
+    // 木の柄（ろくろ挽きの膨らみ）と真鍮の口金
+    svg("path", { d: "M -8 0 L -8 96 C -12 112, -12 128, -8 140 L 8 140 C 12 128, 12 112, 8 96 L 8 0 Z", fill: wood }),
+    svg("rect", { x: -11, y: 140, width: 22, height: 10, rx: 2, fill: metal }),
+    // 鐘の胴
+    svg("path", { d: `M -18 150 C -30 150, -32 160, -33 176 C -34 200, -40 220, -54 ${MY} L 54 ${MY} C 40 220, 34 200, 33 176 C 32 160, 30 150, 18 150 Z`, fill: metal }),
+    // 口の近くの帯（打ち出しの段）
+    svg("path", { d: `M -47 ${MY - 12} C -20 ${MY - 6}, 20 ${MY - 6}, 47 ${MY - 12}`, fill: "none", stroke: C.brass0, "stroke-width": 1.5, opacity: 0.7 }),
+    // 口（少し下から見上げるので中がのぞく）と舌
+    svg("ellipse", { cx: 0, cy: MY, rx: 54, ry: 11, fill: inside }),
+    svg("g", { "clip-path": `url(#${mouthClip})` }, [clapper]),
+    svg("ellipse", { cx: 0, cy: MY, rx: 54, ry: 11, fill: "none", stroke: mix(C.brass1, C.brass2, 0.3), "stroke-width": 2.5 }),
+  ]);
+  const g = svg("g", { opacity: 0 }, [swing]);
+  return {
+    g,
+    /** 位置（手首）と傾き（度）、舌の振れ（度） */
+    pose(x, y, ang, clap) {
+      g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(2)}) scale(1.15)`);
+      clapper.setAttribute("transform", `rotate(${clap.toFixed(2)} 0 ${MY - 50})`);
+    },
+  };
 }
 
 /** 回転の速さの山（立ち上がりは速く、止まり際は摩擦のように長く）。0〜1 の進み具合の表 */
@@ -470,69 +568,42 @@ function angleAt(t) {
   return settle + tilt + jolt;
 }
 
-/** 金箔の舞い（毎フレーム時刻から位置を決める） */
-function flakesArt(cols, n, [x0, y0], power = 1) {
-  const list = [...Array(n)].map((_, i) => {
-    const a = -Math.PI / 2 + ((i / n) - 0.5) * 2.4 + Math.sin(i * 12.9) * 0.15;
-    const v = (360 + ((i * 37) % 11) * 34) * power;
-    const node = svg("rect", { x: -4, y: -2.5, width: 8 - (i % 3), height: 5 - (i % 2), rx: 1, fill: cols[i % cols.length], opacity: 0 });
-    return { node, vx: Math.cos(a) * v, vy: Math.sin(a) * v, spin: 4 + (i % 5) * 2.3, ph: i * 1.7, delay: (i % 6) * 22 };
-  });
-  return {
-    g: svg("g", {}, list.map((f) => f.node)),
-    /** 光ってからの経過 ms */
-    at(ms) {
-      for (const f of list) {
-        const s = (ms - f.delay) / 1000;
-        if (s < 0) { f.node.setAttribute("opacity", 0); continue; }
-        // 空気の抵抗で減速し、ゆっくり落ちる。くるくる返って光る
-        const drag = (1 - Math.exp(-s * 3.2)) / 3.2;
-        const x = x0 + f.vx * drag + Math.sin(s * 5 + f.ph) * 10 * s;
-        const y = y0 - 10 + f.vy * drag + 70 * s * s;
-        const flip = Math.cos(s * f.spin * 2 + f.ph);
-        f.node.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${((s * f.spin * 60 + f.ph * 40) % 360).toFixed(1)}) scale(1 ${flip.toFixed(2)})`);
-        f.node.setAttribute("opacity", (clamp(s * 12) * clamp(1.5 - s) * (0.6 + 0.4 * Math.abs(flip))).toFixed(2));
-      }
-    },
-  };
-}
+// 鐘の出番の長さ（ms）。手で下ろす → 振る → 上げる
+const BELL = { down: 280, ring: 700, up: 320 };
+const BELL_X = 1010, BELL_Y = -66; // 手首の位置（柄の上は画面の外）
 
 /**
  * host に全面の層を置いてガラガラを回し、rank の玉を出す。終わると層を外す。
  * onHandoff は消え始めに一度呼ぶ（くじのカードを下で開いて、重ねながら受け渡す）。
+ * rank が "LAST"（ラストワン賞）のときは、貼り紙がラストワン賞に変わり、最初に係の人が鐘を鳴らしてから回す。
  * 動きを減らす設定では、止まった抽選器と受け皿の玉だけを短く見せる。
  */
 export async function garagara(host, rank = "C", { onHandoff } = {}) {
   const C = pick(FREE, MONO_SET);
   const reduced = reducedMotion();
-  const top = rank === "S" || rank === "LAST";
+  const last = rank === "LAST";
+  const top = rank === "S" || last;
+  const OFF = last ? 760 : 0; // ラストワンは先に鐘を鳴らすぶん遅らせる
   const defs = svg("defs");
-  const set = setArt(C, defs);
+  const set = setArt(C, defs, last);
   const stand = standArt(C, defs);
   const drum = drumArt(C, defs);
   const chute = chuteArt(C, defs);
   const dish = dishArt(C, defs);
-  const ball = ballArt(rank, defs);
-  const restXY = P(...REST);
-  const glow = svg("circle", { cx: restXY[0], cy: restXY[1], r: 220, fill: grad(defs, "radialGradient", {}, [[0, ball.color, 0.55], [0.35, ball.color, 0.18], [1, ball.color, 0]]), opacity: 0 });
-  const rays = svg("g", { opacity: 0 }, [...Array(16)].map((_, i) => {
-    const a = (i / 16) * Math.PI * 2, w = i % 2 ? 0.04 : 0.08, r = i % 2 ? 250 : 380;
-    return svg("polygon", { points: pts([[0, 0], [Math.cos(a - w) * r, Math.sin(a - w) * r], [Math.cos(a + w) * r, Math.sin(a + w) * r]]) });
-  }));
-  rays.setAttribute("fill", grad(defs, "radialGradient", { gradientUnits: "userSpaceOnUse", cx: 0, cy: 0, r: 380 }, [[0, ball.color, 0.5], [0.5, ball.color, 0.12], [1, ball.color, 0]]));
-  // 金箔（上位は多く、A賞は少しだけ）
-  const flakes = top ? flakesArt([BALL.S, C.brass2, "#fff3c4", "#e9b949"], 30, restXY)
-    : rank === "A" ? flakesArt([BALL.A, "#ffd6cf", C.brass2], 12, restXY, 0.7) : null;
-  const fx = svg("g");
+  const ball = ballArt(rank, defs, C);
+  const bell = bellArt(C, defs);
   // 回る道具一式（登場で据わり、回すと震える）と、手前に来る樋の壁・皿の縁
   const rig = svg("g", {}, [stand.base, stand.back, drum.back, drum.face, chute.back, stand.frontLegs, drum.cap, drum.crank, drum.grip, dish.back]);
   const rigFront = svg("g", {}, [chute.front, dish.front]);
-  const props = svg("g", { transform: `translate(${ZX} ${ZY}) scale(${ZOOM}) translate(${-ZX} ${-ZY})` }, [rig, rays, glow, ball.shadow, ball.g, rigFront, fx, ...(flakes ? [flakes.g] : [])]);
+  const props = svg("g", { transform: `translate(${ZX} ${ZY}) scale(${ZOOM}) translate(${-ZX} ${-ZY})` }, [rig, ball.shadow, ball.g, rigFront]);
   const cam = svg("g", {}, [set.back, props]);
   cam.style.transformBox = "view-box";
-  const art = stageSvg([defs, cam, set.vignette]);
+  const art = stageSvg([defs, cam, bell.g, set.vignette]);
   const node = el("div.mo-garagara", { dataset: { motion: "garagara" } }, [art]);
+  node.style.background = C.wallLo;
+  if (!reduced) node.style.opacity = "0";
   host.append(node);
+  const restXY = P(...REST);
   const place = ([u, s, w], sx = 1, sy = 1) => {
     const [x, y] = P(u, s, w);
     ball.g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
@@ -546,7 +617,7 @@ export async function garagara(host, rank = "C", { onHandoff } = {}) {
     ball.shadow.setAttribute("cy", (w + 2).toFixed(1));
     ball.shadow.setAttribute("rx", (12 * (1 + air * 0.5)).toFixed(1));
     ball.shadow.setAttribute("ry", (12 * (1 + air * 0.5)).toFixed(1));
-    ball.shadow.setAttribute("opacity", (0.55 * (1 - clamp(air) * 0.75)).toFixed(2));
+    ball.shadow.setAttribute("opacity", (0.45 * (1 - clamp(air) * 0.75)).toFixed(2));
   };
   let raf = 0;
   try {
@@ -555,6 +626,7 @@ export async function garagara(host, rank = "C", { onHandoff } = {}) {
       place(REST);
       ball.g.setAttribute("opacity", 1);
       shade(REST, DISH.floor);
+      if (top) { bell.pose(BELL_X, BELL_Y, 0, 0); bell.g.setAttribute("opacity", 1); SE.just(); }
       await sleep(900);
       return;
     }
@@ -623,25 +695,49 @@ export async function garagara(host, rank = "C", { onHandoff } = {}) {
       }
       return [sx, sy];
     };
+    // 鐘を鳴らす時刻（ラストワンは最初にも）。上位の玉が受け皿に落ちたところで
+    const rings = top ? [...(last ? [80] : []), OFF + T.land - 40] : [];
+    const HZ = 5; // 振る速さ（往復/秒）
+    /** 鐘の姿勢（出番でなければ null）。i は何回目か、t は全体の時刻 */
+    const bellAt = (t) => {
+      for (let i = 0; i < rings.length; i++) {
+        const d = t - rings[i];
+        const total = BELL.down + BELL.ring + BELL.up;
+        if (d < 0 || d > total) continue;
+        if (d < BELL.down) { // 手で下ろす（下ろし切る手前でゆるむ）
+          const k = outCubic(d / BELL.down);
+          return { i, x: BELL_X, y: lerp(BELL_Y - 300, BELL_Y, k), a: -7 * (1 - k), c: 0 };
+        }
+        const r = d - BELL.down;
+        if (r < BELL.ring) { // 手首で振る。振り始めと終わりは小さく
+          const s = r / 1000, ph = 2 * Math.PI * HZ * s;
+          const env = clamp(r / 90) * (1 - 0.35 * (r / BELL.ring));
+          return { i, x: BELL_X + 7 * Math.sin(ph + 0.5) * env, y: BELL_Y + 3 * Math.abs(Math.sin(ph)) * env, a: 19 * Math.sin(ph) * env, c: clamp(-16 * Math.sin(ph - 0.9) * env, -11, 11), r };
+        }
+        const k = inOutSine((r - BELL.ring) / BELL.up); // 上げる
+        return { i, x: BELL_X, y: lerp(BELL_Y, BELL_Y - 320, k), a: 4 * (1 - k) * Math.sin(k * 6), c: 0 };
+      }
+      return null;
+    };
     const [ax, ay] = zoomed(restXY);
+    const END = OFF + T.end;
     const t0 = performance.now();
     await new Promise((resolve) => {
       const frame = (now) => {
-        const t = now - t0;
-        const sec = t / 1000;
-        // 登場: 灯りがつき、台が少し下から据わる
-        const inK = seg(t, 0, 460);
-        cam.style.opacity = String(smooth(seg(t, 0, 240)));
-        set.spot.setAttribute("opacity", String(clamp(inK * 1.6) * (t < 240 ? 0.6 + 0.4 * Math.sin(t / 22) ** 2 : 1)));
+        const all = now - t0;
+        const t = all - OFF; // 抽選器の時刻
+        // 登場: 全体がふっと見え（前のカードの上に重なって入れ替わる）、台がわずかに沈んで据わる
+        const inK = seg(all, 0, 420);
+        const fadeIn = smooth(seg(all, 0, 300));
         // 胴の角度と速さ。速いほど台が細かく震える
-        const th = angleAt(t);
-        const dt = Math.max(1, t - prevT);
+        const th = angleAt(Math.max(0, t));
+        const dt = Math.max(1, all - prevT);
         om = lerp(om, ((th - prevTh) / dt) * 1000, 0.35);
         rattle += Math.abs(th - prevTh);
-        prevTh = th; prevT = t;
-        const tremor = clamp(Math.abs(om) / 700) * 1.2;
-        const rise = 22 * (1 - outBack(clamp(inK)));
-        const shake = `translate(${(Math.sin(t * 0.09) * tremor).toFixed(2)} ${(rise + Math.cos(t * 0.13) * tremor * 0.6).toFixed(2)})`;
+        prevTh = th; prevT = all;
+        const tremor = clamp(Math.abs(om) / 700) * 1.1;
+        const rise = 8 * (1 - outCubic(clamp(inK)));
+        const shake = `translate(${(Math.sin(all * 0.09) * tremor).toFixed(2)} ${(rise + Math.cos(all * 0.13) * tremor * 0.6).toFixed(2)})`;
         rig.setAttribute("transform", shake);
         rigFront.setAttribute("transform", shake);
         drum.pose(th);
@@ -658,9 +754,7 @@ export async function garagara(host, rank = "C", { onHandoff } = {}) {
         const b = ballAt(t);
         if (b) {
           const [sx, sy] = squash(t);
-          const pk = seg(t, T.accent, T.accent + 520); // 光るときに一度ふくらむ
-          const pulse = 1 + (top ? 0.2 : 0.1) * Math.sin(Math.PI * clamp(pk * 1.6)) * (1 - pk * 0.5);
-          place(b.p, b.sc * sx * pulse, b.sc * sy * pulse);
+          place(b.p, b.sc * sx, b.sc * sy);
           ball.g.setAttribute("opacity", 1);
           if (b.g != null) shade(b.gp || b.p, b.g, b.air || 0);
           else ball.shadow.setAttribute("opacity", 0);
@@ -671,45 +765,21 @@ export async function garagara(host, rank = "C", { onHandoff } = {}) {
         const sc = 1 + 0.22 * push + 0.07 * hand;
         cam.style.transformOrigin = `${lerp(CX + 90, ax, push).toFixed(1)}px ${lerp(H / 2 + 20, ay, push).toFixed(1)}px`;
         cam.style.transform = `scale(${sc.toFixed(4)})`;
-        // 光の名残: 背景のぼけと、スポットの中の塵
-        set.bokeh.forEach((c) => {
-          const i = +c.dataset.i;
-          c.setAttribute("cx", (+c.dataset.x + Math.sin(sec * 0.4 + i) * 10).toFixed(1));
-          c.setAttribute("cy", (+c.dataset.y + Math.cos(sec * 0.3 + i * 1.7) * 6).toFixed(1));
-        });
-        set.motes.forEach((m, i) => {
-          const y = 40 + ((i * 47 + sec * (14 + (i % 4) * 5)) % 520);
-          m.setAttribute("cx", (CX - 100 + ((i * 89) % 320) + Math.sin(sec + i) * 14).toFixed(1));
-          m.setAttribute("cy", y.toFixed(1));
-          m.setAttribute("opacity", (0.45 * Math.sin((y / 560) * Math.PI) * clamp(inK)).toFixed(2));
-        });
-        // 当たりの光: 玉の後ろから光がふくらみ、上位は光の筋が回って金箔が舞う
-        const ak = seg(t, T.accent, T.accent + 560);
-        const gk = (top ? 1 : rank === "A" ? 0.7 : 0.42) * outCubic(ak) * (1 - 0.5 * hand);
-        glow.setAttribute("opacity", gk.toFixed(3));
-        glow.setAttribute("transform", `translate(${restXY[0]} ${restXY[1]}) scale(${(0.4 + 0.6 * outCubic(ak) + 0.4 * hand).toFixed(3)}) translate(${-restXY[0]} ${-restXY[1]})`);
-        if (top) {
-          rays.setAttribute("opacity", (outCubic(ak) * (1 - hand)).toFixed(3));
-          rays.setAttribute("transform", `translate(${restXY[0]} ${restXY[1]}) rotate(${(sec * 18).toFixed(2)}) scale(${(0.45 + 0.55 * outBack(ak)).toFixed(3)})`);
-        }
-        if (flakes) flakes.at(t - T.accent);
-        once("accent", T.accent, t, () => {
-          (top ? SE.just : rank === "A" ? SE.perfect : SE.good)();
-          const [rx, ry] = restXY;
-          ring(fx, rx, ry, { r: top ? 220 : 110, color: top ? BALL.S : ball.color, width: top ? 7 : 4, dur: 640 });
-          if (top) {
-            ring(fx, rx, ry, { r: 140, color: C.brass2, width: 3, delay: 110, dur: 560 });
-            [[-140, -110], [120, -150], [-70, -200], [175, -60], [-190, -20]].forEach(([dx, dy], i) => twinkle(fx, rx + dx, ry + dy, { color: "#fff6d6", size: 18 - i * 2, delay: 80 + i * 70, dur: 620 }));
-          } else if (rank === "A") {
-            [[-90, -80], [100, -100]].forEach(([dx, dy], i) => twinkle(fx, rx + dx, ry + dy, { color: "#ffd6cf", size: 13, delay: 100 + i * 90, dur: 560 }));
-          } else {
-            twinkle(fx, rx - 7, ry - 9, { color: "#fff", size: 10, delay: 60, dur: 480 });
+        // 上位は係の人が手持ちの鐘を振る。下の賞は小さな音だけで静かに止まる
+        const bp = bellAt(all);
+        if (bp) {
+          bell.pose(bp.x, bp.y, bp.a, bp.c);
+          bell.g.setAttribute("opacity", 1);
+          if (bp.r != null) {
+            const hit = Math.floor((bp.r / 1000) * HZ * 2 + 0.5); // 振り切るたびに舌が当たる
+            if (hit % 2 === 1) once(`bell${bp.i}-${hit}`, 0, 1, () => (hit === 1 ? SE.just : SE.reelWin)());
           }
-        });
+        } else bell.g.setAttribute("opacity", 0);
+        once("accent", T.accent, t, () => { if (!top) (rank === "A" ? SE.perfect : SE.good)(); });
         // カードへの受け渡し: 寄りながら全体が暗くほどけ、その下で賞のカードが開く
         if (onHandoff) once("handoff", T.fade + 60, t, onHandoff);
-        node.style.opacity = String(1 - hand);
-        if (t >= T.end) resolve();
+        node.style.opacity = String(fadeIn * (1 - hand));
+        if (all >= END) resolve();
         else raf = requestAnimationFrame(frame);
       };
       raf = requestAnimationFrame(frame);
