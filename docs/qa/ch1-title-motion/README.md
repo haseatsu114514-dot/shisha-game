@@ -16,7 +16,11 @@
 
 専用 `node remake/test/browser/ch1_title_motion.mjs`: **12/12 PASS**（既存Playwright 1.58.2 / Chromium145.0.7632.6）。PC1440×900・横844×390の実描画、全画素一致、入力ガード撤去、実VN AUTO/SKIP/Control解除、動き軽減、画像遅延/失敗/15秒上限/遅着、abort/再呼出/host破棄、実ch1でのLOAD→再開→既読省略を確認。
 
-既存 `chapter_titles.mjs` 全回帰と `ch1_opening_resume.mjs` の関連1ケースは追加検証中。この段階では未実施/未完了をPASSとしない。最終結果を追記する。
+既存 `chapter_titles.mjs`: **18/18 PASS**。第2/4/5章・第3章保留・実入口・通常/AUTO/SKIP/LOAD・fallback・previewを含む。`ch1_opening_resume.mjs` の `new-game-first-scene-save-replays-opening`: **1/1 PASS**。
+
+専用moduleの実測はPC4.813秒／横4.816秒（画像準備を含む呼出から完了まで、描画自体は4.8秒）。PC・横の完成絵と途中フレームを目視し、全体収まり・原画保持を確認した。小さい機械検証要約は [results.json](results.json)。JS構文・diff check・Git Safety PASS。AI文書checkerはsparseで変更対象外の既存3文書が不在のためローカル未完了とし、リンク先画像の大量hydrateで埋めず通常checkoutのCIに委ねる。既存quota補助のSyntaxErrorは依頼外のため未修正。
+
+ブランチは最新main `30de5e928b1c03863a4658d90b709c6169886d01` から開始。素材変更0、新規code/test/docsだけのpackをオフラインで確認して通常push。全履歴・素材・依存の再取得は行っていない。
 
 ### ローカル焦点fixtureと確認の限界
 
