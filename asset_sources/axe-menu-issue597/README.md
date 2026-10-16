@@ -30,10 +30,10 @@ Aが組込みOpenAI image_genを2回実行。各回で採用見本を材質参�
 
 - モデル: `node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs` → 28/28 PASS。
 - 新メニュー: `node remake/test/browser/axe_menu_decor.mjs` → 6/6 PASS。4サイズ/実click・tap/Tab・Enter・Space/フォーカス/3mode開始と取消/無料レッスン終了・帰還/保存不変/画像decode失敗/reduced motion。初期viewportで全操作が収まる検査も含む。
-- 既存throw: 初回19/20、polish6/6、versus6/7、lesson5/6。throwの縦ルールとlessonのPCはローカル配信ERR_CONNECTION_RESETと待ちtimeout、versusの縦はメニューボタン切れ。公式 `python3 remake/tools/serve_preview.py --port 8124` に切替え、縦CSS修正後、失敗3ケースを**同じassert/timeout**で各再実行PASS。初回を消さず `qa/results/` に保存。既存39ケースの全ケースが少なくとも1回PASSしたが、初回全suiteが一括PASSだったとは記録しない。
+- 既存4suiteはCI job [116801687392](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38847642882/job/116801687392) の中断なし一式実行で **throw20/20・versus7/7・polish6/6・lesson6/6、計39/39 PASS**。同jobでモデル28・新メニュー6・保存6・LIMEもPASS。source head `237a57bc414bd8323be3d8c13d392ba360728fa6`、base `1ec3dddba5fd0524f544e6999e84f029a6bcde87`、実checkout merge ref `04eaff886b2c8a8c422c72efb80c7a04466a8055` を区別し、merge/sourceのtree一致と現runtime/test fingerprint18件不変を確認した。完全ログ・検証JSONは `qa/followup-20261016/`。初回ローカル36PASS/3FAILと個別再成功は履歴であり、一式成功の根拠に合算していない。今回のローカル追実行は親の新指示で中断（throw20/20 exit0、versus途中、後続未実行）。追加ブラウザ再実行は取り消し、実装変更なし。
 - 新テスト初回の誤った相手ID/見出し/レッスン終了の仮定も失敗logを保持し、現行契約へ訂正。ゲーム実装をテストに合わせて変更していない。
 - `node --check`（既存entry/新テスト）、`git diff --check`、Git Safety PASS。
-- 文書check: sparse未取得17Markdownを現mainから追加取得後も、mainにも存在しない `.agents/skills/portrait-unify/SKILL.md` への `docs/asset_ai_guidance.md:41` リンク1件でFAIL。範囲外の既存リンクを修正してPASSにはしていない。
+- 文書check原因訂正（2026-10-16追検証）: 前回の「mainにも存在しない」は誤り。HEADに `.agents/skills/portrait-unify`（mode120000、blob `456a639cff150138436f5a03a7ecb8b9330886ae`）というsymlinkがあり、内容は `../../.claude/skills/portrait-unify`。参照先 `.claude/skills/portrait-unify/SKILL.md`（blob `9d5e9c2f3a9fbe7f551f583eee0da0efa1239936`）も存在する。sparse checkoutでsymlink本体を未取得のまま、symlinkを辿らないtree検索から誤判定した。HEADからこの2追跡パスのみを復元後、同じ `python3 tools/check_agent_docs.py` はexit0 PASS。検査・リンク・ゲームコードは変更なし。前回の生ログは履歴としてそのまま保持。
 - quota helperは現mainの `tools/agent_quota_guard.py:45` にあるliteral `\n`のSyntaxErrorで実行不能。残量不明。認証/利用制限拒否ではない。
 
 ブラウザは隔離したChrome/Playwright context。ユーザーの保存/通常プロファイルに触れていない。実機Safari・物理スマホ・公開Pagesは未実施。Draft PRで保持し、merge/公開/claim解除は行わない。

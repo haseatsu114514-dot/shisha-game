@@ -65,6 +65,91 @@
     "sha256": "33c19014ad699ddd7e0b0fa704dd2b45cf6158eb1fdc2ffe066f14f6d7f85fe3"
   },
   {
+    "path": "qa/followup-20261016/README.md",
+    "bytes": 4574,
+    "sha256": "6f4cfb7f6adaa3ddbc5d0aa5d524702772429a35bd444aab6b1a0740a0cc4497"
+  },
+  {
+    "path": "qa/followup-20261016/axe_throw.exit",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "qa/followup-20261016/axe_throw.log",
+    "bytes": 776,
+    "sha256": "b9182f242fdae0ae4e1701116aeb30b22b158a122fe08385ca3f6ecff3469755"
+  },
+  {
+    "path": "qa/followup-20261016/axe_versus.log",
+    "bytes": 85,
+    "sha256": "1f0e0f3370d2219b6c00bcf2c03276c7cd0badab3e4972295ff9d22d63237811"
+  },
+  {
+    "path": "qa/followup-20261016/ci-job-116801687392-full.log.gz",
+    "bytes": 15311,
+    "sha256": "d906b7d3ec02b7850619405b57676d6063dcbc01a88f6da558de233b6fe31e6e"
+  },
+  {
+    "path": "qa/followup-20261016/ci-test-excerpt.txt",
+    "bytes": 6267,
+    "sha256": "14d89cf5b64fcfcf4abfc42a5c08a4c70c7a86d5236feac23b1ae08ae92b2125"
+  },
+  {
+    "path": "qa/followup-20261016/ci-validation.json",
+    "bytes": 3598,
+    "sha256": "b0cb329fe5b1082ddd68d5d757bb44e7b9cc39ca479e1c8da0dbf723c28cb79a"
+  },
+  {
+    "path": "qa/followup-20261016/docs-check-resumed.exit",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "qa/followup-20261016/docs-check-resumed.log",
+    "bytes": 69,
+    "sha256": "a5905402aee4400a624acfc5159b8f90fcce54708b14e108c407727e9d171c9d"
+  },
+  {
+    "path": "qa/followup-20261016/docs-check.exit",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "qa/followup-20261016/docs-check.log",
+    "bytes": 69,
+    "sha256": "a5905402aee4400a624acfc5159b8f90fcce54708b14e108c407727e9d171c9d"
+  },
+  {
+    "path": "qa/followup-20261016/head-paths.txt",
+    "bytes": 175,
+    "sha256": "5bad05d53fe2ef913ae3415e53e3e9f004e802dc4ab6614ff156b25a72f04c16"
+  },
+  {
+    "path": "qa/followup-20261016/local-interruption.json",
+    "bytes": 373,
+    "sha256": "4a8cd396bd273a7fc311dc4ad7a61a3e418be5cf67d37284cbf6886db90d330b"
+  },
+  {
+    "path": "qa/followup-20261016/main-paths.txt",
+    "bytes": 175,
+    "sha256": "5bad05d53fe2ef913ae3415e53e3e9f004e802dc4ab6614ff156b25a72f04c16"
+  },
+  {
+    "path": "qa/followup-20261016/runtime-preservation-resumed.json",
+    "bytes": 135,
+    "sha256": "f7aee55eb88da195e01e0edff2cf3be78da4399cccb4f86951f404af8411feed"
+  },
+  {
+    "path": "qa/followup-20261016/symlink-blob.txt",
+    "bytes": 35,
+    "sha256": "c8998c326815b7b4c776171d4bc8d25a5a8e110e6517fe3a8f061e2c16bb7ba5"
+  },
+  {
+    "path": "qa/followup-20261016/symlink-verification.json",
+    "bytes": 372,
+    "sha256": "569acd71565862806f936c8441ab0e75f6ac06235f9bfe1a6a35f2752adee81c"
+  },
+  {
     "path": "qa/results/axe_lesson.log",
     "bytes": 1885,
     "sha256": "0105827b58841c281ed4dd87dfd76a1d12c6bf28a83cf5a295243e7a01f5d7e1"
