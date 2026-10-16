@@ -583,7 +583,7 @@ for (const change of ['reopened','new-owner','new-pr','head']) {
 }
 
 test('policy sync preserves owner holds and original prose, and is idempotent', async () => {
-  const original = '作業はclaim/status成功後。新デザインの採用はオーナー確認まで保留。';
+  const original = '\n\n作業はclaim/status成功後。新デザインの採用はオーナー確認まで保留。';
   const s = setup({issues:[fixture(1,{body:original})]});
   const result = await maintain(s.github,s.context,s.core,1);
   assert.equal(result.updated,1);
@@ -608,6 +608,7 @@ test('a damaged managed block is preserved, and ordinary prose is not rewritten'
   const s=setup();
   assert.equal(policyBody('通常のゲーム要望',s.context),'通常のゲーム要望');
   assert.throws(()=>policyBody('<!-- issue-claim-policy:v2:start -->\n保留',s.context),/Incomplete/);
+  assert.throws(()=>policyBody('説明中の例: <!-- issue-claim-policy:v2:start -->内容<!-- issue-claim-policy:v2:end -->',s.context),/Incomplete/);
 });
 
 function commentSetup(request={operation:'claim',owner:'worker-A',agent:'codex'}, options={}) {

@@ -343,8 +343,11 @@ const policyEnd = '<!-- issue-claim-policy:v2:end -->';
 const staleProcedure = /claim\s*[\/→]\s*status|status(?:検証)?成功|1\s*worker\s*1|一度に1件|管理者[^\n]*(?:transfer|移管)/i;
 function policyBody(body, context, historicalProcedure = false) {
   body = body || '';
-  const prior = new RegExp(policyStart + '[\\s\\S]*?' + policyEnd + '\\n*');
-  if ((body.includes(policyStart) || body.includes(policyEnd)) && !prior.test(body)) throw Error('Incomplete policy block; preserve Issue body for manual review');
+  const prior = new RegExp('^' + policyStart + '[\\s\\S]*?' + policyEnd + '(?:\\n\\n)?');
+  if ((body.includes(policyStart) || body.includes(policyEnd)) &&
+      (!prior.test(body) || body.split(policyStart).length !== 2 || body.split(policyEnd).length !== 2)) {
+    throw Error('Incomplete policy block; preserve Issue body for manual review');
+  }
   if (!prior.test(body) && !staleProcedure.test(body) && !historicalProcedure) return body;
   const rest = body.replace(prior,'');
   const guide = (context.serverUrl || 'https://github.com') + '/' + context.repo.owner + '/' + context.repo.repo + '/blob/main/docs/issue_claim_protocol.md';
