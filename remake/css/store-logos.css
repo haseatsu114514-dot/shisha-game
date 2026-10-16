@@ -15,10 +15,14 @@
 .store-arrival-card > small { color: #816f52; font-size: 17px; letter-spacing: .14em; }
 
 /* 店主とゲストを看板の上辺に並べる。クリックは親のピンへ通す。 */
-.spot-pin .pin-people { position: absolute; top: -20px; left: 0; right: 0; display: flex; justify-content: center; gap: 2px; pointer-events: none; }
-.spot-pin .pin-person { display: block; flex: 0 1 30px; width: 30px; min-width: 0; height: 30px; border: 2px solid #e2d9c7; border-radius: 50%; object-fit: contain; background: #211c2b; box-shadow: 0 2px 4px #0008; }
+.spot-pin .pin-people { position: absolute; top: -20px; left: -12px; right: 20px; display: flex; justify-content: center; gap: 2px; pointer-events: none; }
+.spot-pin .pin-person { display: block; flex: 0 0 30px; width: 30px; min-width: 0; height: 30px; border: 2px solid #e2d9c7; border-radius: 50%; object-fit: contain; background: #211c2b; box-shadow: 0 2px 4px #0008; }
 .spot-pin .pin-unknown { position: relative; color: #f2e8d1; }
 .pin-unknown svg { display: block; width: 100%; height: 100%; fill: #666171; }
 .pin-unknown b { position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 sans-serif; text-shadow: 0 1px 2px #000; }
 body.game-ds .map .spot-pin .pin-people { position: static; flex-basis: 100%; justify-content: flex-start; padding: 2px; }
 body.game-ds .map .spot-pin .pin-person { flex: none; }
+/* DSのピンは看板と店名の下へ人物行を折り返す。縦方向flexの列送りにしない。 */
+body.game-ds .map .spot-pin { flex-direction: row; }
+body.game-ds .map .spot-pin .pin-people { order: 1; }
+body.game-ds .map .spot-pin .pin-status { order: 2; }

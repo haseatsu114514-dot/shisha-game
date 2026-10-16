@@ -24,8 +24,8 @@ function peopleRow(people) {
   if (!people.length) return null;
   return el("span.pin-people", { "aria-label": `在店：${people.map(p => p.name).join("、")}` }, people.map(person => {
     const face = person.known && faceIconUrl(person.id);
-    return face ? el("img.pin-person", { src: face, alt: person.name, title: person.name })
-      : el("span.pin-person.pin-unknown", { role: "img", "aria-label": person.name, title: person.name, html:
+    return face ? el("img.pin-person", { src: face, alt: person.name, title: person.name, dataset: { personRole: person.role } })
+      : el("span.pin-person.pin-unknown", { role: "img", "aria-label": person.name, title: person.name, dataset: { personRole: person.role }, html:
         '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="6"/><path d="M5 30v-4a11 11 0 0 1 22 0v4Z"/></svg><b>?</b>' });
   }));
 }

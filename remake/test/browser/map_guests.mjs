@@ -62,6 +62,12 @@ await suite("map-guests", async check => {
       await page.locator('[data-test="pin-tonari"] .pin-person').first().waitFor();
       assert.equal(await page.locator('[data-test="pin-tonari"] .pin-person').count(), 3);
       assert.equal(await page.locator('img[alt="ひより"]').count(), 1);
+      assert.deepEqual(await page.locator('[data-test="pin-tonari"] .pin-person').evaluateAll(ns=>ns.map(n=>n.dataset.personRole)), ["owner","guest","guest"]);
+      const clear = await page.locator('[data-test="pin-tonari"]').evaluate(pin=>{
+        const boxes=[...pin.querySelectorAll('.pin-person,.evt-badge')].map(n=>n.getBoundingClientRect());
+        return boxes.every((a,i)=>boxes.slice(i+1).every(b=>Math.min(a.right,b.right)<=Math.max(a.left,b.left)+1 || Math.min(a.bottom,b.bottom)<=Math.max(a.top,b.top)+1));
+      });
+      assert(clear, "Guest faces and event badge must not overlap");
       await assertFits(page, '.pin-people');
       await page.locator('[data-test="pin-tonari"]').click();
       await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();

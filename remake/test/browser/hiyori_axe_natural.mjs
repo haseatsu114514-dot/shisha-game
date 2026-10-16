@@ -58,8 +58,8 @@ try {
       assert(cache.warm > 0, 'Warm reload must actually reuse cached resources');
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
-        const spots = await import('./js/daily/spots.js'), util = await import('./js/core/util.js');
-        window.Q = { core, vn, spots, util, events: [], current: null };
+        const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
+        window.Q = { core, vn, spots, hiyori, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
@@ -99,7 +99,7 @@ try {
         assert(Date.now() - lastProgress < 45000, `Stalled: ${key}`);
         if ((giftGoal ? snap.flags._hiyori_bond_finale_done
           : workGoal ? snap.flags._hiyori_work_talk_done && snap.flags._hiyori_bond_question_done
-          : snap.flags._hiyori_real_self_known) && !snap.vn) break;
+          : snap.flags._hiyori_real_self_known) && !snap.vn && snap.slot === 2 && !snap.modal && !snap.cutin) break;
         assert(snap.day < 14, 'The natural hiyori sequence must fit before the tournament');
         const axe=page.locator('[data-test="axe-game"]');
         if(await axe.count()) {
@@ -154,16 +154,22 @@ try {
           continue;
         }
         if (!snap.live) continue;
-        if (snap.screen === 'shop') {
+        if (snap.screen === 'shop-entry') {
+          // The scheduled guest may be at the showroom, not the free shopping counter.
+          if (!await click('[data-test="shop-upstairs"]:not([disabled])')) await click('[data-test="shop-enter"]');
+        } else if (snap.screen === 'shop') {
           await click('.shop-row.errand [data-test^="buy-"]');
           await click('[data-test="shop-checkout"]');
           await click('[data-test="shop-leave"]');
         } else if (snap.screen === 'preparation') await click('[data-test="prep-flavor-blueberry"]');
         else if (snap.screen === 'tonari') {
           // DAY3's optional review can now open the same tonari drill menu.
-          if (!await click('[data-test="drill-heat"]') && !await click('[data-test="tonari-hiyori-axe"]') && !await click('[data-test="tonari-customer"]')) {
-            if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
-          }
+          if (await click('[data-test="drill-heat"]')) continue;
+          if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
+          const earn = snap.money < 6000;
+          if (earn && await click('[data-test="tonari-baito"]')) continue;
+          if (await click('[data-test="tonari-customer"]')) continue;
+          if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
         } else if (snap.map) {
           const mapKey = `${snap.day}:${snap.slot}`;
           if (lastMapKey !== mapKey) {
@@ -181,28 +187,27 @@ try {
           }
           const selected = await page.evaluate(({ workGoal, giftGoal }) => {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
+            const tonari = sp.spotById('tonari');
+            if (s.stamina < 35) return 'rest';
+            // Earn through the actual shift UI before either a paid visit or axe event.
+            // A disabled axe button must never send us back into a used customer seat.
+            if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day) return 'tonari';
             const needsTonari = f._hiyori_meeting_done && !f._hiyori_sumi_message_done
               || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done;
-            const tonari = sp.spotById('tonari');
-            if(f._hiyori_tonari_afterwork_done && s.slot===1 && !sp.isClosed(tonari)
-              && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done)) return 'tonari';
             if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day) return 'tonari';
-            if (s.stamina < 35 || f._hiyori_encounter_day === `1:${s.day}` || s.money < 3000) return 'rest';
-            const candidates = ['naru','adam','minto','c_station'].map(id => sp.spotById(id))
-              .filter(p => p && !sp.isClosed(p) && sp.isUnlocked(p) && !sp.visitedToday(p.id) && s.money >= (p.cost || 0));
-            const roll = p => {
-              let salt = 2166136261;
-              for (const c of `hiyori:1:${s.day}:${s.slot}:${p.id}`) salt = Math.imul(salt ^ c.charCodeAt(0), 16777619) >>> 0;
-              return Q.util.seeded(s.seed, salt);
-            };
-            candidates.sort((a,b) => roll(a)-roll(b));
-            return candidates[0]?.id || 'rest';
+            if (f._hiyori_tonari_afterwork_done && s.slot === 1 && !sp.isClosed(tonari)
+              && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done)) return 'tonari';
+            const location = Q.hiyori.hiyoriShopLocation();
+            const spot = location && sp.spotById(location);
+            if (spot && !sp.visitedToday(spot.id) && s.money >= (spot.cost || 0)) return spot.id;
+            return 'rest';
           }, { workGoal, giftGoal });
           await click(`[data-test="pin-${selected}"]`); await click('[data-test="map-go"]');
         }
       }
       const final = await page.evaluate(() => ({ state: structuredClone(Q.core.state), events: Q.events }));
       row.actions = actions; row.events = final.events; row.final = final.state;
+      assert(Date.now() < deadline, `Natural walkthrough exceeded its existing deadline: ${JSON.stringify({ day: final.state.day, slot: final.state.slot, money: final.state.money })}`);
       const required = ['hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
       if(workGoal) required.push('hiyori_work_talk','hiyori_bond_question');
       if(giftGoal) required.push('hiyori_bond_finale');
@@ -242,7 +247,7 @@ try {
       row.status = 'passed';
       console.log(`[hiyori-axe-natural] PASS ${label}: DAY${final.state.day}, affinity ${final.state.affinity.hiyori}, rescue ${final.state.flags._hiyori_affinity_released_pts}`);
     } catch (e) {
-      row.status = 'failed'; row.error = e.stack; row.errors = errors; row.failedResources = failedResources;
+      row.status = 'failed'; row.error = e.stack; row.errors = errors; row.failedResources = failedResources; row.actions = actions;
       row.diagnostic = await page.evaluate(() => window.Q ? { state: Q.core.state, events: Q.events, current: Q.current } : null).catch(() => null);
       await page.screenshot({ path: path.join(out, `${label}-failed.png`) });
       console.error(e.stack);
@@ -252,7 +257,7 @@ try {
   }
 } finally {
   await browser.close();
-  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, results }, null, 2)+'\n');
+  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, giftGoal, workGoal, results }, null, 2)+'\n');
 }
 assert(results.length > 0, 'No device was selected');
 assert.equal(results.filter(r => r.status !== 'passed').length, 0, 'Public walkthrough failures');
