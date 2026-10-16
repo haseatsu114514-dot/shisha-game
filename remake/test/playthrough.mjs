@@ -4,6 +4,7 @@
 //   3) 「もう一度挑戦する」→「上手」で南雲票の逆転優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
+import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
 const require = createRequire(import.meta.url);
@@ -103,8 +104,28 @@ const deadline = Date.now() + 12 * 60 * 1000;
 
 async function click(sel) {
   const el = await page.$(sel);
-  if (!el) return false;
-  try { await el.click({ timeout: 2000 }); return true; } catch { return false; }
+  let ok = false;
+  let error = null;
+  if (el) try { await el.click({ timeout: 2000 }); ok = true; } catch (e) { error = e.message; }
+  if (pendingShopBuy || /shop|buy-|kuji/.test(sel))
+    log("shopping-click", JSON.stringify({ sel, ok, error, planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
+  return ok;
+}
+
+// Read-only evidence: no inventory, money or random source is rewritten.
+async function shoppingSnapshot(id = pendingShopBuy) {
+  return page.evaluate((id) => {
+    const s = window.__remake.state;
+    return { screen: document.body.dataset.screen, day: s.day, slot: s.slot,
+      money: s.money, stock: s.flavorStock?.[id] || 0, owned: s.flavors.includes(id),
+      price: window.__remake.DB.flavorById[id]?.price,
+      quantity: Number(document.querySelector(`[data-test="quantity-${id}"]`)?.textContent || 0),
+      flavorStock: { ...s.flavorStock }, kuji: s.kuji,
+      goods: s.goods, equipment: s.owned };
+  }, id);
+}
+async function shoppingRequired(sel) {
+  if (!await click(sel)) throw new Error(`Shopping input failed: ${sel}; planIdx=${planIdx} pendingShopBuy=${pendingShopBuy}`);
 }
 
 // 任意の街歩き経由でも、同じ行動計画と大会の検証を実行する。
@@ -301,7 +322,7 @@ for (;;) {
       await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]');
       continue;
     }
-    planIdx++;
+    if (kind !== "shop") planIdx++;
     if (kind === "baito" || kind === "customer") {
       pendingAfter = kind === "baito" ? arg : null;
       await click('[data-test="pin-tonari"]'); await click('[data-test="map-go"]');
@@ -309,7 +330,10 @@ for (;;) {
       await click(kind === "baito" ? '[data-test="tonari-baito"]' : '[data-test="tonari-customer"]');
     } else if (kind === "shop" || kind === "rin") {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
-      await click('[data-test="pin-shop"]'); await click('[data-test="map-go"]');
+      log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
+      await shoppingRequired('[data-test="pin-shop"]');
+      await shoppingRequired('[data-test="map-go"]');
+      await page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 });
     } else {
       const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }
@@ -319,7 +343,7 @@ for (;;) {
   if (snap.screen === "preparation") { await click('[data-test="prep-flavor-blueberry"]'); continue; }
   if (snap.screen === "shop-entry") {
     const upstairs = pendingShopBuy === "__upstairs" && await page.$('[data-test="shop-upstairs"]:not([disabled])');
-    await click(upstairs ? '[data-test="shop-upstairs"]' : '[data-test="shop-enter"]');
+    await shoppingRequired(upstairs ? '[data-test="shop-upstairs"]' : '[data-test="shop-enter"]');
     if (pendingShopBuy === "__upstairs") pendingShopBuy = null;
     continue;
   }
@@ -332,20 +356,26 @@ for (;;) {
       await click('[data-test="shop-checkout"]');
     }
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") {
-      await page.locator('.shop-tab[data-tab="flavor"]').click();
-      await page.locator(`[data-test="buy-${pendingShopBuy}"]`).click();
-      await click('[data-test="shop-checkout"]');
+      await purchasePlannedFlavor({
+        id: pendingShopBuy, read: shoppingSnapshot, click,
+        trace: event => log("shopping-purchase", JSON.stringify({ planIdx, pendingShopBuy, ...event })),
+        consume: () => { planIdx++; pendingShopBuy = null; },
+      });
     }
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
     if (!kujiDrawn) {
+      await shoppingRequired('.shop-tab[data-tab="kuji"]');
+      const before = await shoppingSnapshot();
+      await shoppingRequired('[data-test="kuji-g500"]');
+      const after = await shoppingSnapshot();
+      log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
+      if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+        throw new Error("Kuji input did not produce expected draw/payment");
       kujiDrawn = true;
-      await click('.shop-tab[data-tab="kuji"]');
-      await click('[data-test="kuji-g500"]');
       await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
       await click('[data-test="kuji-reveal"]');
     }
-    pendingShopBuy = null;
-    await click('[data-test="shop-leave"]');
+    await shoppingRequired('[data-test="shop-leave"]');
     continue;
   }
   if (snap.screen === "tonari") {
