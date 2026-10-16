@@ -10,6 +10,12 @@ export function availableCoalLayouts(flags = {}) {
 }
 export function coalWarmth(cs) {
   const types = coalTypes(cs);
+  const n = types.length || 3;
   const power = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 1.13 : 1), 0) / 3;
-  return { power, count: types.length };
+  const response = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 1.12 : 1.00), 0) / n;
+  const widthFactor = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 0.94 : 1.04), 0) / n;
+  const burnRisk = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 3.5 : 0), 0);
+  const smokeBonus = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 2 : 0), 0);
+  const coolFactor = types.reduce((sum, type) => sum + (type === "cube_charcoal" ? 0.92 : 1.00), 0) / n;
+  return { power, count: n, response, widthFactor, burnRisk, smokeBonus, coolFactor };
 }
