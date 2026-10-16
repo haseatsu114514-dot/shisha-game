@@ -1,0 +1,62 @@
+/* 章タイトルの動き（js/motions/chapter-title.js）。最後は採用画像 img.cc-art へ差し替える */
+@property --ct-wipe { syntax: "<percentage>"; inherits: true; initial-value: -22%; }
+
+.chapter-card.ct-layered .cc-art.ct-final { visibility: hidden; }
+.chapter-card.ct-layered .cc-art.ct-final.ct-shown { visibility: visible; }
+
+/* 第一章: 白い紙の上で6人と題字を組む。ドット絵はぼかさない */
+.chapter-card.ct-ch1 { background: rgb(254, 254, 254); }
+.ct-stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; margin: -360px 0 0 -640px; pointer-events: none; }
+.ct-stage img { position: absolute; display: block; max-width: none; user-select: none; }
+.ct-pixel img { image-rendering: pixelated; }
+.chapter-card.ct-ch1 { transition-duration: .6s; }
+.ct-lane { position: absolute; inset: 0; -webkit-mask-image: var(--ct-mist); mask-image: var(--ct-mist); }
+.ct-walker { position: absolute; inset: 0; will-change: transform; }
+.ct-shadow { transform-origin: 50% 50%; }
+.ct-puff {
+  position: absolute; width: var(--ct-pw); height: calc(var(--ct-pw) * .42); opacity: 0; pointer-events: none;
+  border-radius: 50%; background: radial-gradient(closest-side, rgba(196, 188, 214, .42), rgba(214, 208, 228, .2) 55%, rgba(236, 232, 244, 0));
+  filter: blur(4px);
+}
+.ct-layer { will-change: transform, opacity; }
+
+/* 第二・四・五章: 一枚絵のピント送りと寄り */
+.chapter-card.ct-painted { background: #06040a; }
+.ct-cam { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; margin: -360px 0 0 -640px; overflow: hidden; will-change: transform; }
+.ct-cam > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.ct-plate { transform: scale(1.05); filter: blur(14px) brightness(.62) saturate(.9); }
+.ct-sharp {
+  -webkit-mask-image: linear-gradient(90deg, transparent calc(var(--ct-wipe) - 16%), #000 calc(var(--ct-wipe) + 16%));
+  mask-image: linear-gradient(90deg, transparent calc(var(--ct-wipe) - 16%), #000 calc(var(--ct-wipe) + 16%));
+}
+/* ピントの境目に付いて行く淡い光 */
+.ct-sweep {
+  position: absolute; top: 0; bottom: 0; width: 520px; left: calc(var(--ct-wipe) - 260px);
+  background: linear-gradient(90deg, transparent, rgba(var(--ct-tint), .10) 35%, rgba(var(--ct-tint), .22) 50%, rgba(var(--ct-tint), .10) 65%, transparent);
+  mix-blend-mode: screen; opacity: 0; pointer-events: none;
+}
+/* 題字の形にだけ通す光の帯。外側の器で、光った字の周りへ淡くにじませる */
+.ct-glint-wrap {
+  position: absolute; opacity: 0; mix-blend-mode: screen; pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(var(--ct-tint), .8)) drop-shadow(0 0 16px rgba(var(--ct-tint), .45));
+}
+.ct-glint {
+  position: absolute; inset: 0; overflow: hidden;
+  -webkit-mask-image: var(--ct-mask); mask-image: var(--ct-mask);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+.ct-glint i {
+  position: absolute; top: -10%; bottom: -10%; left: 0; width: 42%;
+  background: linear-gradient(105deg, transparent 0%, rgba(var(--ct-tint), .3) 36%, rgba(var(--ct-core), .95) 50%, rgba(var(--ct-tint), .3) 64%, transparent 100%);
+}
+
+/* 絵の無い章: 行ごとに浮かぶ */
+.chapter-card.ct-text .cc-no { animation: ct-line-in 1s cubic-bezier(.22, 1, .36, 1) .25s both; }
+.chapter-card.ct-text .cc-name { animation: cc-rise 2.2s var(--ease-out) .45s both; }
+.chapter-card.ct-text .cc-read { animation: ct-line-in 1s cubic-bezier(.22, 1, .36, 1) 1.15s both; }
+.chapter-card.ct-text .cc-sub { animation: ct-line-in 1s cubic-bezier(.22, 1, .36, 1) 1.4s both; }
+@keyframes ct-line-in { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-card.ct-text .cc-no, .chapter-card.ct-text .cc-name, .chapter-card.ct-text .cc-read, .chapter-card.ct-text .cc-sub { animation: none; }
+}

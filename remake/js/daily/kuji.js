@@ -106,7 +106,11 @@ function reveal(prize, extras) {
     layers.modal.classList.add("show");
     SE.select();
     let open = false;
+    let shown = false;
     const show = async () => {
+      if (shown) return;
+      shown = true;
+      card.style.visibility = "";
       const top = prize.rank === "S" || prize.rank === "LAST";
       card.className = `kuji-card reveal rank-${prize.rank}`;
       card.replaceChildren(
@@ -121,7 +125,9 @@ function reveal(prize, extras) {
       for (const ex of extras) { await sleep(500); toast(`${ex.name} を手に入れた！`, { kind: "good" }); }
     };
     const skip = vnTest.turbo || document.body.classList.contains("vn-skip");
-    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank)).catch((e) => console.error(e))).then(show);
+    // ガラガラが消え始めたところでカードを下で開き、重ねて受け渡す（回っているあいだ「ガラガラ……」の札は隠す）
+    if (!skip) card.style.visibility = "hidden";
+    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank, { onHandoff: show })).catch((e) => console.error(e))).then(show);
     ov.onclick = () => {
       if (!open) return;
       SE.click();

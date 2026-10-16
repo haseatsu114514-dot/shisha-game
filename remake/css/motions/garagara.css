@@ -1,3 +1,2 @@
 /* シーシャくじのガラガラ（remake/js/motions/garagara.js）。くじの暗幕の上に全面で重ねる */
-.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; }
-.mo-garagara-back { position: absolute; inset: 0; opacity: 0.94; }
+.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #050303; }
