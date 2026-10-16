@@ -62,5 +62,5 @@ jobs:
           name: chapter-title-results
           path: |
             .codex/artifacts/chapter-titles/
-            .codex/artifacts/ch1-title-motion/
+            .codex/artifacts/ch1-title-motion/*.json
             ${{ runner.temp }}/chapter-title-preview.log
