@@ -1,10 +1,10 @@
 name: Approved chapter title cards
 on:
   pull_request:
-    paths: ['remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
+    paths: ['remake/js/chapters/ch1.js', 'remake/js/chapters/ch1-title-motion.js', 'remake/test/browser/ch1_title_motion.mjs', 'remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
   push:
     branches: [main]
-    paths: ['remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
+    paths: ['remake/js/chapters/ch1.js', 'remake/js/chapters/ch1-title-motion.js', 'remake/test/browser/ch1_title_motion.mjs', 'remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -50,6 +50,11 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/chapter-titles
           TEST_REF: ${{ github.sha }}
         run: node remake/test/browser/chapter_titles.mjs
+      - name: Chapter one sequential reveal, input and save lifecycle
+        env:
+          ARTIFACT_DIR: .codex/artifacts/ch1-title-motion
+          TEST_REF: ${{ github.sha }}
+        run: node remake/test/browser/ch1_title_motion.mjs
       - name: Preserve results
         if: always()
         uses: actions/upload-artifact@v7.0.2
@@ -57,4 +62,5 @@ jobs:
           name: chapter-title-results
           path: |
             .codex/artifacts/chapter-titles/
+            .codex/artifacts/ch1-title-motion/*.json
             ${{ runner.temp }}/chapter-title-preview.log
