@@ -52,6 +52,57 @@
         ]
       }
     },
+    "cinnamon": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "b6c730f5970c83026231e805ab788fd4c5d0e0ee706cdd7108823d4b5d5f38b7",
+      "visible_bbox_alpha8": [
+        256,
+        130,
+        999,
+        1120
+      ],
+      "alpha1_to7_pixels": 7064,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          502,
+          229
+        ],
+        "width_ratio": 0.43857,
+        "height_ratio": 0.126,
+        "center": [
+          0.49786,
+          0.166
+        ]
+      }
+    },
     "double_apple": {
       "size": [
         1254,
@@ -154,6 +205,57 @@
         ]
       }
     },
+    "lemon": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "43c91a22ddc74733d3dc8656fa83e32eacd8fdd34a2c73c34feb9fbbcb4cc2fe",
+      "visible_bbox_alpha8": [
+        259,
+        131,
+        998,
+        1118
+      ],
+      "alpha1_to7_pixels": 6050,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          196,
+          103,
+          502,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49857,
+          0.166
+        ]
+      }
+    },
     "mint": {
       "size": [
         1254,
@@ -201,6 +303,57 @@
         "height_ratio": 0.126,
         "center": [
           0.49714,
+          0.166
+        ]
+      }
+    },
+    "orange": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "98fcb1049f2972eb70bdaa5dad4cf884d4768634948cacbe67f933190535daa4",
+      "visible_bbox_alpha8": [
+        259,
+        131,
+        999,
+        1119
+      ],
+      "alpha1_to7_pixels": 7207,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          502,
+          229
+        ],
+        "width_ratio": 0.43857,
+        "height_ratio": 0.126,
+        "center": [
+          0.49786,
           0.166
         ]
       }
@@ -306,14 +459,69 @@
           0.166
         ]
       }
+    },
+    "watermelon": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "592442bc17f205d1eeec6461bd0d1b5ee0af7f44fc228771b7714c4e9b6cd65e",
+      "visible_bbox_alpha8": [
+        260,
+        131,
+        997,
+        1119
+      ],
+      "alpha1_to7_pixels": 8499,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          501,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49714,
+          0.166
+        ]
+      }
     }
   },
   "mark_shape_iou_vs_template_after_bbox_normalization": {
     "blueberry": 0.98204,
+    "cinnamon": 0.97756,
     "double_apple": 1.0,
     "grape": 0.95454,
+    "lemon": 0.97441,
     "mint": 0.99014,
+    "orange": 0.96881,
     "pineapple": 0.9723,
-    "strawberry": 0.98097
+    "strawberry": 0.98097,
+    "watermelon": 0.98908
   }
 }

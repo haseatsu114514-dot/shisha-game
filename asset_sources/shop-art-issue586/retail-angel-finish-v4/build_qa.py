@@ -24,14 +24,14 @@ def tile(path, size):
 
 def make_comparison():
     out=Image.new('RGB',(1080,880),'#191922');d=ImageDraw.Draw(out)
-    d.text((18,12),'Heaven / v3 -> v4 common printed template (Draft)',font=FONT,fill='white')
+    d.text((18,12),'HOLD / v3 -> v4 candidates: fruit/band invariants FAILED',font=FONT,fill='#ffb4b4')
     for i,(id,old) in enumerate(zip(IDS,PREV)):
         x=i*360
         d.text((x+18,48),id+'  |  v3',font=FONT,fill='white')
         out.paste(tile(V3/old,340).convert('RGB'),(x+10,78))
-        d.text((x+18,435),'v4 / centered front-face ink',font=FONT,fill='white')
+        d.text((x+18,435),'v4 HELD / not approved',font=FONT,fill='#ffb4b4')
         out.paste(tile(ROOT/'originals'/f'{id}.png',340).convert('RGB'),(x+10,465))
-    d.text((18,842),'No AF / no common grass / HMD excluded / native PNGs preserved',font=FONT,fill='white')
+    d.text((18,842),'NO adoption: wing-only invariant failed / HMD unapproved / PNGs preserved',font=FONT,fill='#ffb4b4')
     out.save(ROOT/'comparison-representatives.png')
 
 def validate():

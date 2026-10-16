@@ -15,7 +15,7 @@
     "material": "flush white matte ink; same front-plane perspective; no shadow/emboss"
   },
   "source_bytes": "immutable generator outputs; QA composition/rectification only",
-  "adoption": "Draft; no merge authorization",
+  "adoption": "HOLD: parent review 2026-10-16 ~01:51 UTC. NOT approved; NO integration/merge.",
   "records": [
     {
       "id": "double_apple-too-wide",
@@ -27,73 +27,148 @@
         "prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/candidates/double_apple-too-wide.png",
-      "sha256": "7e5dbdee23fa01d8e53b7dadb20feb46d515ab225c6faddf1f7226161e8bd5a6"
+      "sha256": "7e5dbdee23fa01d8e53b7dadb20feb46d515ab225c6faddf1f7226161e8bd5a6",
+      "adoption_status": "HOLD"
     },
     {
       "id": "double_apple",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. Edit the attached carton. Change ONLY its upper printed white wings-and-oval-halo mark: it is currently TOO WIDE. Reduce the existing mark uniformly to 80% of its present size (target width about 294 pixels on this 1254x1254 image, front face width about650 pixels). Keep the mark's visual center at approximately x590,y350, which is u=.50,v=.185 of the FRONT panel, not the entire object including side. Same original wings contour and oval/gap, no redesign. Apply the same small perspective tilt as FRONT top edge (left at y175, right195), so mark right sits slightly LOWER than left. Flat white matte ink in cardboard plane, zero edge/drop shadow, no raised rim or physical floating halo. Keep every other detail and geometry of carton, camera, brush, apples and transparency exactly as input. No text or new element.",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-02b294ae-3b0a-4c1f-ac05-c2dc81d39742.png",
       "references": [
         "retail-angel-finish-v4/candidates/double_apple-too-wide.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/double_apple.png",
-      "sha256": "cfa07069088e54dd1da3c8655ef3b0afe413dbdb30ba5831d00617254153fc5c"
+      "sha256": "cfa07069088e54dd1da3c8655ef3b0afe413dbdb30ba5831d00617254153fc5c",
+      "adoption_status": "HOLD"
     },
     {
       "id": "mint",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to mint green and replacing the two apple PRINTS with a small realistic printed sprig of mint with three fresh serrated mint leaves; mint is the ONLY ingredient. No apples.. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-f0cb681d-97c1-4c7f-ba37-2f80dba4f491.png",
       "references": [
         "retail-angel-finish-v4/originals/double_apple.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/mint.png",
-      "sha256": "9f432e753ab7fd3a1ada4b5b51a5d4c11c28b3c9c0e6e2eea2825f29d9e2aacb"
+      "sha256": "9f432e753ab7fd3a1ada4b5b51a5d4c11c28b3c9c0e6e2eea2825f29d9e2aacb",
+      "adoption_status": "HOLD"
     },
     {
       "id": "grape",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to rich grape purple and lavender and replacing the two apple PRINTS with a small realistic printed cluster of purple grapes on its short natural brown stem, with NO LEAVES. No apples or mint.. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-479bef96-3358-47c2-b339-aec8df972f2c.png",
       "references": [
         "retail-angel-finish-v4/originals/double_apple.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/grape.png",
-      "sha256": "8507042fcc64b6fcd5b143d27c72cc42088b1655e791fb41b82a43b8037c015d"
+      "sha256": "8507042fcc64b6fcd5b143d27c72cc42088b1655e791fb41b82a43b8037c015d",
+      "adoption_status": "HOLD"
     },
     {
       "id": "blueberry",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to deep blue and indigo and replacing the two apple PRINTS with a small printed cluster of blueberries with their star-shaped calyxes, NO leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-5826caee-1ecc-4f67-a875-d6f99c36a634.png",
       "references": [
         "retail-angel-finish-v4/originals/double_apple.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/blueberry.png",
-      "sha256": "ec85f47fe720c5644f16ae6e5e91c859652b927fe9490a07e017fd2f291ad8e6"
+      "sha256": "ec85f47fe720c5644f16ae6e5e91c859652b927fe9490a07e017fd2f291ad8e6",
+      "adoption_status": "HOLD"
     },
     {
       "id": "strawberry",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to strawberry red with pale pink and replacing the two apple PRINTS with two printed red strawberries, one cut half; small attached strawberry calyxes only, no loose leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-e4841b1d-bcf7-45c6-8b6f-c5b07c11f8a2.png",
       "references": [
         "retail-angel-finish-v4/originals/double_apple.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/strawberry.png",
-      "sha256": "05e65c8a4bbc200ed274c61d1ab3bbff63e49c4f10f054764664138306cd2384"
+      "sha256": "05e65c8a4bbc200ed274c61d1ab3bbff63e49c4f10f054764664138306cd2384",
+      "adoption_status": "HOLD"
     },
     {
       "id": "pineapple",
-      "selected": true,
+      "selected": false,
       "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to pineapple yellow and warm gold and replacing the two apple PRINTS with one printed small pineapple with its own attached short crown and one yellow pineapple wedge; no other leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
       "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-bf8f8a9b-e9b8-4a91-8e1c-f6175c78142f.png",
       "references": [
         "retail-angel-finish-v4/originals/double_apple.png"
       ],
       "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/pineapple.png",
-      "sha256": "1be28601f5e19b1626ae22c7030d28b9839af012e70bd18f846d8de7a67bd2dc"
+      "sha256": "1be28601f5e19b1626ae22c7030d28b9839af012e70bd18f846d8de7a67bd2dc",
+      "adoption_status": "HOLD"
+    },
+    {
+      "id": "lemon",
+      "selected": false,
+      "adoption_status": "HOLD",
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to lemon yellow and cream and replacing the two apple PRINTS with one printed whole lemon and one cut lemon half with pale yellow pulp; NO leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-6239cd86-0cae-45c2-bfba-491b3b6e8609.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/lemon.png",
+      "sha256": "43c91a22ddc74733d3dc8656fa83e32eacd8fdd34a2c73c34feb9fbbcb4cc2fe"
+    },
+    {
+      "id": "orange",
+      "selected": false,
+      "adoption_status": "HOLD",
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to orange and tangerine and replacing the two apple PRINTS with one printed orange and one cut half showing orange segments; no mango or leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-fdaf00af-c6de-4300-8b50-c43b044dfde9.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/orange.png",
+      "sha256": "98fcb1049f2972eb70bdaa5dad4cf884d4768634948cacbe67f933190535daa4"
+    },
+    {
+      "id": "watermelon",
+      "selected": false,
+      "adoption_status": "HOLD",
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to watermelon red with a dark green accent and replacing the two apple PRINTS with one printed triangular watermelon wedge with red flesh, black seeds and green rind; no leaves. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-0b7f4b18-f12e-41aa-ab19-6870e7e95dab.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/watermelon.png",
+      "sha256": "592442bc17f205d1eeec6461bd0d1b5ee0af7f44fc228771b7714c4e9b6cd65e"
+    },
+    {
+      "id": "cinnamon",
+      "selected": false,
+      "adoption_status": "HOLD",
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to warm cinnamon brown and copper-brown (nonmetallic) and replacing the two apple PRINTS with three printed dry cinnamon bark sticks, one curled bark piece; no fruit or foliage. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-d396b4f1-a33e-45c9-a64f-abb9d769933b.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/cinnamon.png",
+      "sha256": "b6c730f5970c83026231e805ab788fd4c5d0e0ee706cdd7108823d4b5d5f38b7"
     }
-  ]
+  ],
+  "hold_reason": "v4 mint brush changed from v3 single-color to yellow-green wave; mint leaves and grape fruit enlarged/recomposed. Violates wing-only edit invariant. Prior C visual review failed to flag this; not human approval. Native outputs preserved as candidates.",
+  "mark_actual": "u .4971-.4986, width .4343-.4371, v .1655-.166. v does not meet target .185; no tolerance relabeling.",
+  "inflight_at_hold": [
+    "lemon",
+    "orange",
+    "watermelon",
+    "cinnamon"
+  ],
+  "not_started": [
+    "vanilla",
+    "coconut",
+    "mango",
+    "peach",
+    "melon",
+    "banana",
+    "rose",
+    "lychee"
+  ],
+  "records_note": "selected field records earlier candidate selection only, superseded by HOLD; no v4 asset runtime adoption",
+  "inflight_at_hold_completed": "All four completed and saved without cancellation; no further image generation."
 }
