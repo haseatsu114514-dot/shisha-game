@@ -24,7 +24,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……なんでもない。あたしの一台、ちゃんと見てて"
+          "text": "……なんでもない。うちの一台、ちゃんと見てて"
         },
         {
           "speaker": "",
@@ -37,19 +37,19 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "はじめくん。来たね。今日は、同じ舞台だ"
+            "text": "ハジメっち。来たね。今日は、同じ舞台だ"
           }
         ],
         "first": [
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "MELTY PUFFのあげは。……はじめくん、だよね"
+            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "はい。蒸野始です。よろしくお願いします"
+            "text": "はい。蒸野はじめです。よろしくお願いします"
           }
         ]
       }
@@ -94,7 +94,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野始選手！"
+          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野はじめ選手！"
         },
         {
           "speaker": "",
@@ -174,7 +174,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "県代表は、tonariの蒸野始選手です！"
+          "text": "県代表は、tonariの蒸野はじめ選手です！"
         },
         {
           "speaker": "",

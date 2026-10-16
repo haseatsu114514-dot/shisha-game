@@ -182,7 +182,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "あたし、搬入の確認してくる。ハジメっちも、帰りの電車なくなる前に帰りなよ"
+          "text": "うち、搬入の確認してくる。ハジメっちも、帰りの電車なくなる前に帰りなよ"
         },
         {
           "speaker": "",
@@ -212,12 +212,12 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あの時の……。蒸野始です。tonariで働いてます"
+            "text": "あの時の……。蒸野はじめです。tonariで働いてます"
           },
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "あげは。MELTY PUFFの店長。明日、あたしも出るんだ"
+            "text": "あげは。MELTY PUFFの店長。明日、うちも出るんだ"
           },
           {
             "type": "set_flag",

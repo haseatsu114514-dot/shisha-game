@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 蒸野 始（むしの はじめ）",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -451,7 +451,7 @@
     "spriteScale": 0.93,
     "intro_cutin": {
       "title": "バイブスの天才",
-      "line": "あたし超感覚派なんだよね〜",
+      "line": "うち超感覚派なんだよね〜",
       "face": "normal",
       "color": "#ff8fc8"
     },

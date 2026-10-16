@@ -83,7 +83,7 @@ try {
   await page.waitForTimeout(1300);
   assert.equal(await page.locator(".cutin .ci-name").textContent(), "あげは");
   assert.equal(await page.locator(".cutin .ci-title").textContent(), "バイブスの天才");
-  assert.equal(await page.locator(".cutin .ci-line").textContent(), "「あたし超感覚派なんだよね〜」");
+  assert.equal(await page.locator(".cutin .ci-line").textContent(), "「うち超感覚派なんだよね〜」");
   assert((await page.locator(".cutin .ci-portrait").getAttribute("src")).endsWith("chr_ageha_normal.webp"));
   if (shots) await page.screenshot({ path: `${shots}/ageha_professional.png` });
   await page.evaluate(() => T.done);

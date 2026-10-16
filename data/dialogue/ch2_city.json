@@ -154,7 +154,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "tonariの、蒸野始くんだね。会場を探しているのかな？"
+            "text": "tonariの、蒸野はじめくんだね。会場を探しているのかな？"
           },
           {
             "speaker": "hajime",
@@ -229,7 +229,7 @@
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "うん、雇われ店長。あたし、あげは。よろしくね！"
+            "text": "うん、雇われ店長。うち、あげは。よろしくね！"
           },
           {
             "type": "set_flag",
@@ -243,7 +243,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野始です。隣の街のtonariで働いてます"
+            "text": "蒸野はじめです。隣の街のtonariで働いてます"
           },
           {
             "speaker": "ageha",
@@ -298,7 +298,7 @@
           {
             "speaker": "ageha",
             "face": "surprise",
-            "text": "え、出るの！？ あたしも！ ウケる、今度は台の向こうで会うじゃん"
+            "text": "え、出るの！？ うちも！ ウケる、今度は台の向こうで会うじゃん"
           },
           {
             "speaker": "ageha",
