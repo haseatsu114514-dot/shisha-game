@@ -22,7 +22,7 @@
   pointer-events: none; opacity: .82; filter: drop-shadow(0 0 3px #786cf6);
   animation: go-neon-slash .65s .12s var(--ease-out) both;
 }
-.gameover[data-layout="neon"] .go-left { top: 112px; height: 608px; }
+.gameover[data-layout="neon"] .go-left { top: 0; height: 720px; }
 .gameover[data-layout="neon"] .go-clock {
   position: absolute; top: -14px; left: 828px; width: 218px; height: 218px;
   display: block; color: #ede1ff; animation: go-neon-hud .7s .18s var(--ease-out) both;

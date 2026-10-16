@@ -46,11 +46,18 @@ try {
     assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
     assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
     assert.equal(await page.locator(".go-quit").textContent(), "諦める");
-    const safe = await page.evaluate(() => {
+    const safe = await page.evaluate(async () => {
       const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
-      const k = stage.width / 1280, portrait = root.querySelector(".go-left").getBoundingClientRect();
-      const face = { x: (portrait.left - stage.left) / k + portrait.width / k / 2 - 72,
-        y: (portrait.top - stage.top) / k + 256 * .45, w: 144, h: 256 * .5 };
+      const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
+      for (const animation of image.getAnimations()) animation.finish();
+      const { DB, portraitInfo } = await import("./js/core/data.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
+      const framing = DB.manifest.continuePortraits[info.folder][info.face], r = image.getBoundingClientRect();
+      const size = r.height / k * framing.size;
+      const cx = (r.left - stage.left + r.width * framing.cx) / k;
+      const cy = (r.top - stage.top + r.height * (framing.top + framing.size / 2)) / k;
+      // 採用Cでは帽子/髪と見出しの重なりを許容。実測顔bboxの目〜口を保護する。
+      const face = { x: cx - size * .34, y: cy - size * .1, w: size * .68, h: size * .55 };
       const title = root.querySelector(".go-title"), art = root.querySelector(".go-neon-title");
       // 実際の透過筆跡をステージ座標へ描き、中心の顔にタイトルが重ならないことを検査。
       const canvas = document.createElement("canvas"); canvas.width = 1280; canvas.height = 720;
@@ -62,11 +69,13 @@ try {
       ctx.drawImage(art, -title.offsetWidth / 2, -title.offsetHeight / 2, title.offsetWidth, title.offsetHeight);
       const data = ctx.getImageData(face.x, face.y, face.w, face.h).data;
       const hud = root.querySelector(".go-clock").getBoundingClientRect();
-      return { inkOnFace: Array.from(data).filter((a, i) => i % 4 === 3 && a > 24).length,
+      return { size, cx, cy, inkOnFace: Array.from(data).filter((a, i) => i % 4 === 3 && a > 24).length,
         hudOutsideFace: (hud.left - stage.left) / k > face.x + face.w,
         imagesLoaded: [...root.querySelectorAll("img")].every(i => i.complete && i.naturalWidth > 0) };
     });
-    assert.equal(safe.inkOnFace, 0, "brush title must not obscure the face");
+    assert(Math.abs(safe.size - 524.8) < .1 && Math.abs(safe.cx - 640) < .1 && Math.abs(safe.cy - 273) < .1,
+      "adopted C face bbox must keep its size and center");
+    assert.equal(safe.inkOnFace, 0, "brush title must not obscure eyes or mouth");
     assert(safe.hudOutsideFace && safe.imagesLoaded);
   }
   console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
