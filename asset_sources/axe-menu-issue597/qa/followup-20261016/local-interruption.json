@@ -1,0 +1,16 @@
+{
+  "status": "interrupted_by_wrapper_per_parent_instruction",
+  "axe_throw": {
+    "cases_passed": 20,
+    "exit": 0
+  },
+  "axe_versus": {
+    "cases_passed_before_interrupt": 2,
+    "suite_exit": null,
+    "status": "interrupted"
+  },
+  "axe_polish": "not_started",
+  "axe_lesson": "not_started",
+  "axe_menu_decor": "not_started",
+  "not_a_complete_39_case_run": true
+}

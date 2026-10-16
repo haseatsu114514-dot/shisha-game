@@ -1,0 +1,12 @@
+{
+  "name": "axe-versus",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "timeoutMs": 10000,
+  "ref": "working-final-597",
+  "results": [
+    {
+      "label": "touch-portrait-twenty-throws",
+      "status": "passed"
+    }
+  ]
+}

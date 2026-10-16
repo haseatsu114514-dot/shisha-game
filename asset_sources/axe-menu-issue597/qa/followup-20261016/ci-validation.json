@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-16T04:10:11.531890+00:00",
+  "run": 38847642882,
+  "job": 116801687392,
+  "run_attempt": 1,
+  "conclusion": "success",
+  "job_steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:00Z",
+      "completed_at": "2026-10-16T03:52:02Z"
+    },
+    {
+      "name": "Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:02Z",
+      "completed_at": "2026-10-16T03:52:16Z"
+    },
+    {
+      "name": "Run actions/setup-node@v7.1.0",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:16Z",
+      "completed_at": "2026-10-16T03:52:18Z"
+    },
+    {
+      "name": "Install pinned browser",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:18Z",
+      "completed_at": "2026-10-16T03:52:39Z"
+    },
+    {
+      "name": "Ring boundaries, three gauges, power, Killshot calls and character voice",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:39Z",
+      "completed_at": "2026-10-16T03:52:40Z"
+    },
+    {
+      "name": "Actual PC, touch portrait/landscape, lifecycle and legacy relationship saves",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:52:40Z",
+      "completed_at": "2026-10-16T04:03:25Z"
+    },
+    {
+      "name": "Run actions/upload-artifact@v7.0.2",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T04:03:25Z",
+      "completed_at": "2026-10-16T04:03:28Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@v7.1.0",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T04:03:28Z",
+      "completed_at": "2026-10-16T04:03:28Z"
+    },
+    {
+      "name": "Post Run actions/checkout@v7.0.1",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T04:03:28Z",
+      "completed_at": "2026-10-16T04:03:28Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T04:03:28Z",
+      "completed_at": "2026-10-16T04:03:28Z"
+    }
+  ],
+  "source_head": "237a57bc414bd8323be3d8c13d392ba360728fa6",
+  "base": "1ec3dddba5fd0524f544e6999e84f029a6bcde87",
+  "checkout_merge_ref": "04eaff886b2c8a8c422c72efb80c7a04466a8055",
+  "source_and_merge_tree_equal": true,
+  "tree": "4bd0baecb1374536b7a0c79d38c715dfe66c08ff",
+  "log_bytes": 67269,
+  "log_lines": 823,
+  "log_sha256": "3b5a8a776f99dc3b08892f50d08f172443870081a056874e62e549ac1a0401c9",
+  "model": {
+    "tests": 28,
+    "pass": 28,
+    "fail": 0
+  },
+  "browser_suites": {
+    "axe-throw": {
+      "pass": 20,
+      "fail": 0
+    },
+    "axe-versus": {
+      "pass": 7,
+      "fail": 0
+    },
+    "axe-polish": {
+      "pass": 6,
+      "fail": 0
+    },
+    "axe-lesson": {
+      "pass": 6,
+      "fail": 0
+    },
+    "axe-menu-decor": {
+      "pass": 6,
+      "fail": 0
+    },
+    "save-load": {
+      "pass": 6,
+      "fail": 0
+    }
+  },
+  "existing_browser_total": 39,
+  "lime": "PASS",
+  "suite_exit_evidence": "All commands completed in one successful bash -e step; 0 for each, not separately echoed suite exit markers.",
+  "storage": {
+    "path": "ci-job-116801687392-full.log.gz",
+    "format": "gzip",
+    "lossless_raw_bytes_verified": true,
+    "archive_bytes": 15311,
+    "archive_sha256": "d906b7d3ec02b7850619405b57676d6063dcbc01a88f6da558de233b6fe31e6e"
+  }
+}

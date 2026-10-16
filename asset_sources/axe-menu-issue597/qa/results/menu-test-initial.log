@@ -1,0 +1,134 @@
+[axe-menu-decor] FAIL: 1280x720-live-controls
+locator.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-companion="samechan"]')[22m
+
+    at press (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:37:97)
+    at useSettingsAndRules (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:38:9)
+    at check.viewport.width (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:66:13)
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:53:5
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] FAIL: 800x600-live-controls
+locator.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-companion="samechan"]')[22m
+
+    at press (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:37:97)
+    at useSettingsAndRules (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:38:9)
+    at check.viewport.width (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:66:13)
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:53:5
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] FAIL: 390x844-live-controls
+locator.tap: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-companion="samechan"]')[22m
+
+    at press (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:37:66)
+    at useSettingsAndRules (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:38:9)
+    at check.viewport.width (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:66:13)
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:53:5
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] FAIL: 844x390-live-controls
+locator.tap: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-companion="samechan"]')[22m
+
+    at press (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:37:66)
+    at useSettingsAndRules (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:38:9)
+    at check.viewport.width (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:66:13)
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:53:5
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] FAIL: keyboard-modes-lesson-return-and-no-save
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /3投で練習/. Input:
+
+'AXE THROW\n' +
+  '\n' +
+  '3投の練習\n' +
+  '\n' +
+  '合計点\n' +
+  '0\n' +
+  '/ 22点\n' +
+  '1 / 3 投\n' +
+  'ルール\n' +
+  'やめる\n' +
+  '\n' +
+  '赤6点 · リング1〜5点 · 宣言した青7／8点\n' +
+  '\n' +
+  '左 ← ① 横 → 右\n' +
+  '上\n' +
+  '②縦\n' +
+  '下\n' +
+  'ひより\n' +
+  '\n' +
+  '……横、縦、力の順。焦らず止めてみて。\n' +
+  '\n' +
+  '1\n' +
+  '—\n' +
+  '2\n' +
+  '—\n' +
+  '3\n' +
+  '—\n' +
+  '\n' +
+  'キルショット宣言 · 残り2回\n' +
+  '\n' +
+  '① 横\n' +
+  '未確定\n' +
+  '② 縦\n' +
+  '未確定\n' +
+  '③ 力\n' +
+  '未確定\n' +
+  '\n' +
+  '準備しています…\n' +
+  '\n' +
+  '読み込み中…\n' +
+  '\n' +
+  '金色＝止めた狙い · 緑の線＝力による上下ずれ · 白＝予測着地点\n' +
+  '\n' +
+  '準備しています…'
+
+    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:83:14
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at process.processImmediate (node:internal/timers:472:9)
+    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:71:3
+    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] FAIL: invalid-decoration-images-and-reduced-motion
+locator.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-companion="samechan"]')[22m
+
+    at press (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:37:97)
+    at useSettingsAndRules (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:38:9)
+    at /Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:112:11
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:99:3
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: axe-menu-decor: failed browser cases
+
+6 !== 0
+
+    at suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:67:10)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 6,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.13.0
