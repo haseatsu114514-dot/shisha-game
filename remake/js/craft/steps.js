@@ -14,7 +14,7 @@ import { runSteamTimer } from "./timer.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
 import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
-import { makerMixProfile } from "./temperature-model.js";
+import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = {
@@ -63,7 +63,7 @@ export const isSuyakiBowl = (bowlId) => {
 
 export async function stepSetup(cs) {
   await waitBenchReady(cs, "setup");
-  const types = [["bowl", "ボウル"], ["hms", "ヒートマネジメント"], ["charcoal", "炭"]];
+  const types = [["bowl", "ボウル（ハガル）"], ["hms", "HMD（ヒートマネジメント）"], ["charcoal", "炭（チャコール）"]];
   for (const [type, label] of types) {
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
     const suyaki = type === "hms" && isSuyakiBowl(cs.equip.bowl);
@@ -72,13 +72,17 @@ export async function stepSetup(cs) {
       cs.equip[type] = selectable[0]?.id || (suyaki ? "lotos_hagal" : owned[0]?.id || cs.equip[type]);
       continue;
     }
-    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", "手持ちの機材から選ぶ"));
+    const currentId = state.equip[type];
+    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", EQUIP_CATEGORY_GUIDE[type] || "手持ちの機材から選ぶ"));
     cs.equip[type] = await choose(panel, owned.map((e) => {
       const disabled = suyaki && e.id === "tanukish_lid";
+      const cmp = compareEquipment(e.id, currentId);
+      const diffLine = cmp?.rows?.[0] ? `【${cmp.rows[0].label}】${cmp.rows[0].value}` : "";
       return {
-        value: e.id, label: e.name, desc: e.description,
-        disabled, badge: disabled ? "素焼き非対応" : null,
-        auto: !disabled && e.id === state.equip[type],
+        value: e.id, label: e.name,
+        desc: diffLine ? `${e.description} ／ ${diffLine}` : e.description,
+        disabled, badge: disabled ? "素焼き非対応" : e.id === currentId ? "装備中" : null,
+        auto: !disabled && e.id === currentId,
       };
     }));
   }
@@ -153,11 +157,11 @@ export async function stepMix(cs) {
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
   const thermometer = buildThermometer({ cs, bandPreview: true, height: 200, width: 36 });
-  const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
+  const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal"), equipLine = el("span.mix-equip-guide", { dataset: { test: "mix-equip-guide" } });
   const temperaturePreview = el("details.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
-    el("summary", { text: "温度の目安を見る" }),
+    el("summary", { text: "温度の目安・装備との相性を見る" }),
     thermometer.root,
-    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
+    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine, equipLine]),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
@@ -177,6 +181,10 @@ export async function stepMix(cs) {
     const bands = thermometer.updateBands();
     idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
     optimalLine.textContent = `虹 · 最適温 ${formatTemperatureRange(bands.optimal)}`;
+    const m = info.maker;
+    const synergyText = m.makerCount <= 1 ? "単一メーカー（適温幅・香りのまとまり◎）" : `${m.makerCount}社ミックス（適温幅 ×${m.widthPenalty.toFixed(2)}）`;
+    const tempTip = bands.t <= 0.90 ? "熱に繊細な葉が多め（フラット炭・早めの提供が安全）" : bands.t >= 1.12 ? "熱に強い葉が多め（しっかり温めると開く）" : "標準的な耐熱バランス";
+    equipLine.textContent = `相性 · 適温幅 ×${m.totalWidthScale.toFixed(2)} ／ ${synergyText} ／ ${tempTip}`;
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";

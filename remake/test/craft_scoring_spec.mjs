@@ -8,7 +8,7 @@ globalThis.window ||= {};
 
 const { DB } = await import("../js/core/data.js");
 const { state, newGame, setState } = await import("../js/core/state.js");
-const { MAKER_SPECS, makerMixProfile } = await import("../js/craft/temperature-model.js");
+const { MAKER_SPECS, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf } = await import("../js/craft/score.js");
 const { evaluateMix, isSuyakiBowl } = await import("../js/craft/steps.js");
@@ -144,4 +144,27 @@ assert(!migrated.owned.includes("pipe_middle") && !migrated.owned.includes("pipe
 assert.equal(migrated.equip.pipe, "harry_the_moon");
 setState(migrated);
 
-console.log("[craft scoring spec] PASS: 5 makers, +2.5 ceiling, flat vs cube charcoal, cross-brand families, canonical judge formula, and pipe refund migration verified");
+// 7. ショップ・準備画面の現在装備比較＆初心者向けリアル用語ガイド検証
+const cmp80 = compareEquipment("hagal_80beat", "silicone_bowl");
+assert.equal(cmp80.same, false);
+assert.match(cmp80.categoryGuide, /ボウル（ハガル）/);
+assert.match(cmp80.rows[0].value, /\+8%.*適温に収めやすくなる/);
+assert.match(cmp80.rows[1].value, /12g → 15g/);
+
+const cmpSuyaki = compareEquipment("suyaki_hagal", "silicone_bowl");
+assert.match(cmpSuyaki.rows[0].value, /-10%.*繊細な温度合わせが必要/);
+assert.equal(cmpSuyaki.rows[0].tone, "technical");
+
+const cmpCube = compareEquipment("cube_charcoal", "flat_charcoal");
+assert.match(cmpCube.rows[0].value, /-10%.*繊細な温度合わせが必要/);
+assert.match(cmpCube.rows[2].value, /煙量 \+6 ／ 焦げリスク \+10\.5/);
+
+const mintGuide = flavorThermalGuide(DB.flavorById.mint);
+assert.equal(mintGuide.makerLabel, "アルファーヘブン");
+assert.match(mintGuide.tempBandLabel, /高温向き/);
+
+const vanillaGuide = flavorThermalGuide(DB.flavorById.vanilla);
+assert.match(vanillaGuide.tempBandLabel, /低温・繊細/);
+
+console.log("[craft scoring spec] PASS: 5 makers, +2.5 ceiling, flat vs cube charcoal, shop equipment comparison, canonical judge formula, and pipe refund migration verified");
+
