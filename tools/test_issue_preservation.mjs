@@ -154,9 +154,37 @@ test('valid preservation only creates its dedicated reference, one commit and a 
   assert.equal(s.writes[2].body.head, s.branch);
   assert.equal(s.writes[2].body.base, 'main');
   assert.equal(s.writes[2].body.draft, true);
+  for (const field of ['Request:', 'From:', 'To:', 'Claim owner:', 'Claim comment:',
+    'Claim run:', 'Manifest SHA-256:', 'Approval:', 'Files:', 'tools/saved_fixture.py',
+    digest(source)]) assert.ok(s.writes[2].body.body.includes(field), 'Draft audit body includes ' + field);
   assert.ok(s.state.runtimeCalls.length >= 3, 'runtime evidence is rechecked at write boundaries');
   assert.equal(s.state.comments.length, 1, 'preservation must retain the old ledger');
   assert.match(s.state.comments[0].body, /owner=old-worker/);
+});
+
+for (const field of ['From:', 'To:', 'Claim owner:', 'Claim comment:', 'Claim run:',
+  'Manifest SHA-256:', 'Approval:', 'tools/saved_fixture.py', digest(source)]) {
+  test('reused Draft must retain required audit field ' + field, async () => {
+    const s = setup();
+    await s.execute();
+    s.writes.length = 0;
+    s.state.prs[0].body = s.state.prs[0].body.replace(field, 'tampered:');
+    await assert.rejects(s.execute(), {code: 'SAVED_CONTENT_MISMATCH'});
+    assert.deepEqual(s.writes, []);
+  });
+}
+
+test('PR created with a changed audit body is rejected by the post-create readback', async () => {
+  let created = false;
+  const s = setup({hook(call, state) {
+    if (call.method === 'POST' && call.path === prefix + '/pulls') created = true;
+    if (created && call.method === 'GET' && call.path.startsWith(prefix + '/pulls?')) {
+      state.prs[0].body = state.prs[0].body.replace('Claim run:', 'tampered:');
+    }
+  }});
+  await assert.rejects(s.execute(), {code: 'SAVED_CONTENT_MISMATCH'});
+  assert.equal(s.writes.filter(c => c.path === prefix + '/pulls').length, 1);
+  assert.equal(s.state.prs.length, 1);
 });
 
 test('plan copies and freezes the approved manifest and payload', () => {

@@ -169,6 +169,31 @@ function referencesIssue(pr, issue) {
     text.includes('https://github.com/' + REPO + '/issues/' + issue) ||
     text.includes(REPO + '#' + issue);
 }
+function preservationTitle(plan) {
+  return 'Preserve #' + plan.manifest.issue + ' (' + plan.manifest.request_id + ')';
+}
+function preservationBody(plan) {
+  const m = plan.manifest;
+  const files = m.files.map(file =>
+    '- ' + file.path + ' (' + file.bytes + ' bytes, SHA-256 ' + file.sha256 + ')').join('\n');
+  return 'Preservation only. Reservation and implementation authority remain unchanged.\n\nRefs #' + m.issue +
+    '\n\nRequest: ' + m.request_id +
+    '\nFrom: ' + m.from +
+    '\nTo: ' + m.to +
+    '\nClaim owner: ' + m.from +
+    '\nClaim comment: ' + m.claim_comment +
+    '\nClaim run: ' + m.claim_run +
+    '\nManifest SHA-256: ' + plan.manifestDigest +
+    '\nApproval: https://github.com/' + REPO + '/issues/' + m.issue + '#issuecomment-' + plan.envelope.approval_comment +
+    '\n\nFiles:\n' + files +
+    '\n\nTests and integration must be verified after formal transfer.';
+}
+function matchesPreservationPr(pr, plan, branch, head) {
+  return integer(pr?.number) && pr.state === 'open' && pr.draft === true &&
+    pr.title === preservationTitle(plan) && pr.body === preservationBody(plan) &&
+    pr.head?.ref === branch && pr.head?.sha === head && pr.head?.repo?.full_name === REPO &&
+    pr.base?.ref === 'main' && pr.base?.repo?.full_name === REPO;
+}
 async function permission(context, login) {
   if (typeof login !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9-]{0,38}$/.test(login)) fail('PERMISSION_UNVERIFIED');
   const data = await call(context, 'GET', ROOT + '/collaborators/' + login + '/permission');
@@ -282,7 +307,7 @@ async function preserve(envelope, payload, context) {
     await verifySaved(plan, context, sha);
     state = await verifyState(plan, context);
     await assertHead(plan, context, sha);
-    if (state.prs.length !== 1 || state.prs[0].head.sha !== sha) fail('SAVED_CONTENT_MISMATCH');
+    if (state.prs.length !== 1 || !matchesPreservationPr(state.prs[0], plan, plan.branch, sha)) fail('SAVED_CONTENT_MISMATCH');
     return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head:sha, pr:state.prs[0].number, reused:true};
   }
   if (state.prs.length) fail('RECOVERY_HEAD_CHANGED');
@@ -303,19 +328,17 @@ async function preserve(envelope, payload, context) {
   if (state.prs.length) fail('OPEN_PR_CONFLICT');
   await assertHead(plan, context, head);
   const pr = await call(context, 'POST', ROOT + '/pulls', {
-    title:'Preserve #' + plan.manifest.issue + ' (' + plan.manifest.request_id + ')',
+    title:preservationTitle(plan),
     head:plan.branch, base:'main', draft:true,
-    body:'Preservation only. Reservation and implementation authority remain unchanged.\n\nRefs #' + plan.manifest.issue +
-      '\n\nRequest: ' + plan.manifest.request_id + '\nManifest SHA-256: ' + plan.manifestDigest +
-      '\nSource claim run: ' + plan.manifest.claim_run +
-      '\nApproval: https://github.com/' + REPO + '/issues/' + plan.manifest.issue + '#issuecomment-' + plan.envelope.approval_comment +
-      '\nTests and integration must be verified after formal transfer.'
+    body:preservationBody(plan)
   }, 'create-pr');
   if (!integer(pr?.number)) fail('WRITE_OUTCOME_UNKNOWN', 'create-pr');
   state = await verifyState(plan, context);
   await assertHead(plan, context, head);
   await verifySaved(plan, context, head);
-  if (state.prs.length !== 1 || state.prs[0].number !== pr.number || state.prs[0].head.sha !== head) fail('SAVED_CONTENT_MISMATCH');
+  if (state.prs.length !== 1 || state.prs[0].number !== pr.number ||
+      !matchesPreservationPr(state.prs[0], plan, plan.branch, head) ||
+      !matchesPreservationPr(pr, plan, plan.branch, head)) fail('SAVED_CONTENT_MISMATCH');
   return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head, pr:pr.number, reused:false};
 }
 

@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/issue-preservation.yml'
       - '.github/workflows/issue-preservation-checks.yml'
+      - '.github/workflows/issue-claim.yml'
       - 'tools/issue_preservation.cjs'
       - 'tools/test_issue_preservation.mjs'
       - 'tools/issue_claim_coordinator.cjs'
@@ -14,6 +15,7 @@ on:
     paths:
       - '.github/workflows/issue-preservation.yml'
       - '.github/workflows/issue-preservation-checks.yml'
+      - '.github/workflows/issue-claim.yml'
       - 'tools/issue_preservation.cjs'
       - 'tools/test_issue_preservation.mjs'
       - 'tools/issue_claim_coordinator.cjs'
