@@ -69,6 +69,43 @@ class Contract(unittest.TestCase):
         d=successor(fixture()); d['checkpoint'].update(state='paused',boundary='before_pause'); bind(d)
         v.validate(d,NOW)
 
+    def test_saved_history_cannot_become_never_started(self):
+        for route in ('branch_only', 'open_pr'):
+            for replacement in (False, True):
+                with self.subTest(route=route, replacement=replacement):
+                    d=fixture(route, replacement)
+                    d['checkpoint'].update(done=[], remaining=[1,2]); bind(d)
+                    v.validate(d,NOW)
+                    successor(d)
+                    d['checkpoint']['artifact'].update(route='no_artifact', branch=None,
+                        head=None, prs=[], save='never_started_verified')
+                    d['checkpoint']['tests']=[]; bind(d)
+                    self.reject(d)
+
+    def test_never_started_can_save_first_artifact(self):
+        for route in ('branch_only', 'open_pr'):
+            d=successor(fixture('no_artifact'))
+            saved=fixture(route)['checkpoint']
+            d['checkpoint'].update(artifact=saved['artifact'], tests=saved['tests'])
+            bind(d); v.validate(d,NOW)
+
+    def test_test_ids_unique_in_current_and_previous(self):
+        for previous in (False, True):
+            for result in ('pass', 'fail', 'not_run'):
+                with self.subTest(previous=previous, result=result):
+                    d=fixture()
+                    d['checkpoint']['tests'].append(dict(test='test-1',result=result,sha=SHA))
+                    bind(d)
+                    if previous:
+                        successor(d)
+                        d['checkpoint']['tests']=[dict(test='test-2',result='pass',sha=SHA)]
+                        bind(d)
+                    self.reject(d)
+        d=fixture()
+        d['checkpoint']['tests'].append(dict(test='test-2',result='fail',sha=SHA))
+        bind(d); v.validate(d,NOW)
+        successor(d); v.validate(d,NOW)
+
     def test_shape_privacy_types(self):
         for path,value in [(('private',),'private-conversation'),
                            (('checkpoint','binding','account'),'private-account'),

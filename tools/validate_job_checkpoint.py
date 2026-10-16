@@ -88,6 +88,7 @@ def checkpoint_rules(c):
         require(bool(holds), 'hold_missing')
     if c['state'] == 'complete':
         require(not remaining, 'incomplete')
+    require(len({t['test'] for t in c['tests']}) == len(c['tests']), 'test_duplicate')
     a = c['artifact']
     require(a['clean'] and a['save'] not in ('unknown', 'unpushed'), 'preservation')
     require(len({p['number'] for p in a['prs']}) == len(a['prs']), 'pr_duplicate')
@@ -141,6 +142,8 @@ def validate(data, now):
                    'complete': {'complete'}}
         require(c['state'] in allowed[p['state']], 'transition')
         require(set(p['done']) <= set(c['done']), 'done_dropped')
+        require(p['artifact']['route'] == 'no_artifact'
+                or c['artifact']['route'] != 'no_artifact', 'saved_history_dropped')
     kind = 'never_started' if c['artifact']['route'] == 'no_artifact' else 'saved_clean_pushed'
     evidence(ob['preservation'], kind, snap, now)
     require(timestamp(c['updated_at']) <= timestamp(ob['preservation']['observed_at'])

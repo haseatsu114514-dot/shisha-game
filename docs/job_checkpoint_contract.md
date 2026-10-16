@@ -49,7 +49,9 @@ public reference and one of hold/cancel/approval_pending/denied; raw reasons and
 private refusal text are excluded. Tests use public numeric references with
 pass/fail/not_run and the exact tested branch SHA. Failed/not-run tests can be
 recorded consistently; PASS is not a test or merge gate. No-artifact checkpoints
-have no test entries or done work.
+have no test entries or done work. Each checkpoint, including the previous
+checkpoint, permits only one entry per test ID, regardless of result or SHA.
+Distinct test IDs may share a SHA. This is a result snapshot, not execution history.
 
 | Route | Required contents |
 | --- | --- |
@@ -79,7 +81,10 @@ immediately before any eventual write. Freshness is not proof of stopping.
 Revision 1 has no predecessor or previous object. Each subsequent revision must
 supply the complete previous checkpoint, its exact digest and revision + 1.
 Within this stage a revision retains job, issue, binding, creation time and scope;
-done work cannot disappear. The observation must match the new revision and its
+done work cannot disappear. Once either saved route has been recorded, a later
+revision in the same attempt cannot return to no_artifact/never_started_verified,
+even with empty done work and rebound observation. No-artifact may progress to
+either saved route when work first begins. The observation must match the new revision and its
 predecessor, so old revision/generation, head drift, changed PR sets/heads and
 concurrent snapshot mismatches fail closed against a current trusted observation.
 

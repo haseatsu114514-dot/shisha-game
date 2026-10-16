@@ -301,6 +301,7 @@
           "additionalProperties": false
         },
         "tests": {
+          "description": "One entry per unique test ID in each checkpoint (also previous); enforced by validator. This is a snapshot, not execution history.",
           "type": "array",
           "items": {
             "type": "object",
