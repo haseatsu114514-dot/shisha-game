@@ -5,7 +5,7 @@ import { seeded } from "../core/util.js";
 import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { afterStory, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
+import { afterStory, hiyoriQuestionReady, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
 import { on } from "../core/bus.js";
 import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
@@ -81,7 +81,7 @@ function encounterRoll(spot) {
 /** tonariの次の対面で実際にひより本人が登場する場合。スミさんへの伝言だけの日は除く。 */
 export function hiyoriAtTonari() {
   if (["tonari_followup", "tonari_afterwork", "work_talk"].some(id => hiyoriEventStatus(id) === "ready")) return true;
-  return !!state.flags._hiyori_work_talk_done && (!state.flags._hiyori_bond_question_done || finaleAtVisit("hiyori"));
+  return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori");
 }
 
 /** 時間帯ごとに一つの滞在先を選ぶ。既存のseedを使い、ロードや地図再描画で再抽選しない。 */
@@ -175,7 +175,7 @@ export async function meetHiyoriAtTonari() {
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
   if (hiyoriEventStatus("tonari_afterwork") === "ready") return playHiyoriEvent("tonari_afterwork");
   if (hiyoriEventStatus("work_talk") === "ready") return playHiyoriEvent("work_talk");
-  if (!active && !isPlaying() && state.flags._hiyori_work_talk_done && !state.flags._hiyori_bond_question_done) {
+  if (!active && !isPlaying() && hiyoriQuestionReady()) {
     const lifetime = ownedConversation(); active = true;
     try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }
