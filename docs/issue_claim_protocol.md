@@ -8,8 +8,14 @@ All Codex and Claude Code sessions are independent workers. GitHub Actions `.git
 2. Generate a unique worker ID, e.g. `codex-a-20261011-01` or `claude-b-20261011-01`. Different chats MUST use different IDs, even under the same account.
 3. Dispatch **Issue claim coordinator** on the default branch: operation `next`, owner `<worker ID>`, agent `codex` or `claude`. Leave issue blank.
    `gh workflow run issue-claim.yml -f operation=next -f owner=codex-a-20261011-01 -f agent=codex`
-4. Wait for the **specific** workflow run to complete successfully, and read its job summary / `CLAIMED_ISSUE` log. A successful dispatch alone does NOT grant a reservation. Before starting/resuming, also validate the current ledger using `status` with the claim run ID (see below).
-5. Only then create a branch from latest `origin/main`, implement, test, push, and create a PR referencing the claimed issue. Document owner, branch, PR and remaining work on the issue.
+4. Wait for the **specific** workflow run to complete successfully, read its job summary / `CLAIMED_ISSUE` log, and match the current bot ledger's owner/run to it. A successful dispatch alone does NOT grant a reservation. Read-only API verification is sufficient; a second `status` dispatch is optional (see below).
+5. For new work, create a branch from latest `origin/main`, implement, test, push, and create a PR referencing the claimed issue. Resume saved work on its existing branch after verifying ownership and any required transfer. Document owner, branch, PR and remaining work on the issue.
+
+Read-only discussion, investigation and review do not require a claim. Implementation,
+including a user-selected task, still requires one. Use the Issue/PR as the stable
+work identifier; a worker ID identifies one session and must not be shared.
+Current ownership and adoption/hold decisions belong on the Issue/PR, not in
+permanent skills or old handoff notes.
 
 To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -f issue=325 -f owner=codex-a-20261011-01 -f agent=codex`.
 
@@ -24,7 +30,7 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 ## Pause, resume, merge
 
 - If work pauses, push the branch and create a draft PR / issue handoff. **Keep the claim**.
-- To resume, transfer the owner ID and branch explicitly after stopping the original worker. Never silently steal an existing claim.
+- The same worker can resume after verifying its current claim. A different worker must transfer ownership after the original worker stops and pushes its work. Never silently steal an existing claim.
 - After the PR is safely merged or work is explicitly abandoned, dispatch operation `release` with the same owner ID and issue number. If the issue has already been closed, the workflow must allow releasing it; verify run status.
 - A claim does not authorize unsafe merges. Recheck latest main, CI, tests, protection rules and conflicting file edits. Do not force-push or bypass required checks.
 - Stale claims require manual review; never auto-expire without inspecting branch/PR status.
@@ -33,7 +39,7 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 ## Limits
 
 - This coordinates **issue assignment**, not automatic cloud-session spawning or continuous autonomous work.
-- Agents must explicitly dispatch the workflow and wait for its success before coding.
+- Agents must explicitly dispatch the workflow and wait for its success before coding; read-only work may proceed while waiting.
 - GitHub Actions needs to be enabled and workflow permissions must allow issue comments. The workflow must first be merged to the default branch.
 
 ## Dispatch failure and queue contention
@@ -62,17 +68,20 @@ BLOCKERS: <specific constraints>
 NEXT: <first safe action for the next session>
 ```
 
-**Resuming:** The same worker may continue its reserved branch after verifying the latest Issue/PR status. For a different worker with no referencing Open PR, stop the original session and push its work, then release by the original owner and claim by the new worker. For saved Open PRs, use the explicit admin transfer below; ordinary claim still rejects Open PRs. Never reuse another session's ID or manually write claim markers.
+**Resuming:** The same worker may continue its reserved branch after verifying the current bot owner/run, successful source run and latest Issue/PR heads. For a different worker with no referencing Open PR, stop the original session and push its work, then release by the original owner and claim by the new worker. For saved Open PRs, use the recorded transfer below; ordinary claim still rejects Open PRs. Never reuse another session's ID or manually write claim markers.
 
-### Admin handoff of saved Open PRs
+### Recorded handoff of saved Open PRs
 
-A repository administrator may use `operation=transfer` after independently
-confirming the original session stopped, the saved work to be handed off was pushed, and
-the handoff scope and unfinished work were recorded on the Issue. A failed chat
-message alone is not proof of a stopped worker. Inspect the session's live status
-and the current GitHub branches/PR heads. Preserve unrelated pending PRs.
+A repository writer (`write`, `maintain` or `admin`) may use `operation=transfer`
+after confirming the original session stopped, all work to be handed off was
+pushed, and the scope and unfinished work were recorded on the Issue. The account
+that dispatched the original claim writes the handoff record. This is an agent
+handoff record, not a request for the user to approve the task again. A failed
+chat message or inactivity alone is not proof of a stopped worker. Check the
+session's live status and saved branches/PR heads; do not infer `stopped` or
+`pushed` from silence. Preserve unrelated pending PRs.
 
-The admin posts a human approval comment on that same Issue containing this
+The original claim actor posts a comment on that same Issue containing this
 single-line record (replace every value with verified evidence):
 
 ```text
@@ -80,14 +89,20 @@ single-line record (replace every value with verified evidence):
 ```
 
 List **all** referencing Open PR numbers and their current full head SHAs,
-including Drafts; describe which PR may be edited and which must be preserved
-in the prose of the comment. Both the approval author and dispatch actor must
-have repository admin permission. The coordinator verifies the active old
-owner/claim run, the source run's success, the Issue's open/unblocked state,
+including Drafts; describe which PR may be edited, which must be preserved and
+the evidence for stopping/pushing in the prose. Both the record author and
+dispatch actor need repository write permission. For an ordinary transfer, the
+record author must match the original claim run's `actor.login`. If the original
+actor cannot provide a record, retain the existing admin-reviewed recovery path:
+both author and dispatcher must be admins and independently verify the evidence.
+The coordinator verifies the active old owner/claim run, the source run's success, the Issue's open/unblocked state,
 the exact Open PR set and same-repository heads, and that the new worker owns
 no other Issue, including closed Issues. It rechecks the record and mutable
 state before writing. Unknown permissions, changed PR heads, an edited approval,
 missing PRs or stale/failed reservations cause refusal without a ledger write.
+Accounts do not identify individual chats: two sessions under one account have
+the same `actor.login`. The workflow cannot prove a session stopped or find
+unpushed work; the explicit record must be based on actual session evidence.
 
 ```sh
 gh workflow run issue-claim.yml --ref main -f operation=transfer -f issue=325 \
@@ -96,13 +111,14 @@ gh workflow run issue-claim.yml --ref main -f operation=transfer -f issue=325 \
 ```
 
 The serialized coordinator writes one new bot claim record for the new worker,
-with the original owner and approval URL in its audit text. This explicitly
+with the original owner and handoff URL in its audit text. This explicitly
 relinquishes the old ownership and avoids an unreserved release/claim gap;
 do **not** run release first for this path. Wait for that exact transfer run to
-succeed and confirm `CLAIMED_ISSUE`, then run `status` with the **transfer run ID**
-as `claim_run` and confirm `CLAIM_VALIDATED_ISSUE` before editing. Cancellation
+succeed and confirm `CLAIMED_ISSUE`, then match the current bot ledger to the new
+owner and **transfer run ID** before editing. Read-only verification is enough;
+`status` with that ID as `claim_run` is optional. Cancellation
 or failure after the write retains the reservation and cannot authorize work;
-inspect it and obtain a fresh admin handoff or formal release by the new owner.
+inspect it and obtain a fresh recorded handoff or formal release by the new owner.
 This validates snapshots, not an atomic lock on PR branches: recheck live heads
 before editing and retain all existing Git Safety, test, CI and merge gates.
 
@@ -131,7 +147,8 @@ other transfer guards (admin actor/author, exact Open PR heads, open/unblocked
 Issue, one active Issue per new worker, and rechecks before writing) still apply.
 
 Dispatch with the original successful `claim_run` and that approval comment ID.
-After success, validate `status` using the **new transfer run ID** before editing.
+After success, verify the current bot owner and **new transfer run ID** before editing;
+a separate `status` dispatch is optional.
 Do not close/reopen the Draft, reuse the old worker ID, edit/delete bot history,
 or infer permission merely because a claim was released long ago.
 
@@ -163,12 +180,25 @@ the original v1 state/owner marker for existing reservations and readers.
 
 A historical successful run does not prove that a reservation is still active:
 release or a new owner may have changed it. Immediately before starting or
-resuming, dispatch a new request with `operation=status`, the same `issue` and
-`owner`, and `claim_run=<successful-claim-run-id>`. Wait for **that specific status
-run** to succeed and verify `CLAIM_VALIDATED_ISSUE` / owner / run in its log.
+resuming, verify all of the following using read-only GitHub API calls or a
+supported integration:
+
+- The Issue is open, is not a PR and has no blocked label.
+- Read **all pages** of comments. Among `github-actions[bot]` comments matching
+  `issue-claim:v1`, the latest record is `claimed` for this worker, and its
+  `issue-claim-run:v1` ID equals the confirmed claim/transfer run.
+- That exact run completed with `conclusion=success`; confirm its Issue, worker
+  and `CLAIMED_ISSUE` log/summary, not just its dispatch response.
+
+Do not write claim markers or dispatch an extra workflow just to repeat these
+reads. If convenient, `operation=status` with the same Issue/owner and
+`claim_run=<successful-claim-run-id>` performs the ledger checks instead. Wait
+for that specific status run and verify `CLAIM_VALIDATED_ISSUE` / owner / run.
 The coordinator rejects released reservations, other owners, different runs,
 closed/blocked Issues, and claims whose source run failed or was canceled.
-`status` without `claim_run` is read-only inspection and does **not** authorize work.
+`status` without `claim_run` alone does **not** authorize work. If current state
+cannot be verified, hold only that implementation and continue independent
+read-only work; do not infer that a claim is free.
 Legacy reservations without run metadata remain readable and releasable; their
 source run must be checked manually, not inferred or silently replaced.
 
@@ -185,9 +215,11 @@ same ID. A pause retains the reservation and requires a pushed handoff.
 Before implementation, compare planned paths against open PR files and other
 workers' handoffs, and check blocking Issues/dependent PRs manually. The present
 coordinator does **not** compute file overlap or parse dependency graphs.
-Unpushed work is invisible. If resuming an existing Draft PR, stop and arrange
-an explicit owner handoff; do not change `#number` to a URL to bypass its guard.
-There is no automatic takeover exemption; saved Open PRs require the explicit admin transfer above.
+Unpushed work is invisible. A different worker resuming an existing Draft PR must
+use the recorded transfer above; do not change `#number` to a URL to bypass its
+guard. A same-worker resume needs current owner/run and PR-head verification,
+not a new claim. Hold conflicting paths while continuing independent work
+within the reserved Issue. Taking a different Issue still requires a claim.
 
 This workflow does not merge PRs. For each merge, fetch latest main; compare
 base/head and changed files; check mergeability, required CI and tests on the

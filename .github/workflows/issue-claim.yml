@@ -25,7 +25,7 @@ on:
         required: false
         type: string
       handoff_comment:
-        description: Admin approval comment ID on the Issue (required for transfer)
+        description: Stopped/pushed handoff record comment ID on the Issue (required for transfer)
         required: false
         type: string
       agent:
@@ -111,16 +111,18 @@ jobs:
             if (op === 'transfer') {
               const number = Number(rawIssue);
               const existing = await issue(number);
-              async function requireAdmin(username) {
+              async function requireWriter(username) {
                 const {data} = await github.rest.repos.getCollaboratorPermissionLevel({owner:repoOwner,repo,username});
-                if (data.permission !== 'admin') throw Error('Transfer requires repository admin approval and dispatch');
+                if (!['write', 'maintain', 'admin'].includes(data.permission)) throw Error('Transfer requires repository write permission');
+                return data.permission;
               }
-              await requireAdmin(context.actor);
+              const actorPermission = await requireWriter(context.actor);
               const {data: approval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
               if (approval.issue_url !== existing.url) throw Error('Approval must belong to the target Issue');
-              await requireAdmin(approval.user?.login);
+              const authorPermission = await requireWriter(approval.user?.login);
+              const adminRecovery = actorPermission === 'admin' && authorPermission === 'admin';
               const record = approval.body?.match(/^<!-- issue-handoff:v1 (.+) -->$/m);
-              if (!record) throw Error('Missing structured admin handoff approval');
+              if (!record) throw Error('Missing structured stopped/pushed handoff record');
               const handoff = JSON.parse(record[1]);
               if (handoff.issue !== number || handoff.to !== worker || handoff.claim_run !== expectedRun ||
                   typeof handoff.from !== 'string' || handoff.from === worker ||
@@ -128,6 +130,7 @@ jobs:
                 throw Error('Approval does not match stopped/pushed owner, Issue, worker and claim run');
               }
               const recovery = handoff.recovery;
+              if ('recovery' in handoff && !adminRecovery) throw Error('Legacy recovery requires repository admin approval and dispatch');
               if ('recovery' in handoff && (!recovery || !Number.isSafeInteger(recovery.claim_comment) ||
                   !Number.isSafeInteger(recovery.released_comment) || recovery.claim_comment < 1 ||
                   recovery.released_comment < 1 || recovery.claim_comment === recovery.released_comment)) {
@@ -154,6 +157,9 @@ jobs:
                 }
                 const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
                 if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Original claim run did not succeed');
+                if (!adminRecovery && (!sourceRun.actor?.login || sourceRun.actor.login !== approval.user?.login)) {
+                  throw Error('Handoff record must be written by the original claim actor; otherwise use admin recovery');
+                }
                 if (recovery) {
                   // Legacy comments have no run ID: bind the exact bot claim to a first-attempt
                   // coordinator run on the default branch by its creation time. Admin review is
@@ -177,7 +183,7 @@ jobs:
                 }
                 const {data: currentApproval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
                 if (currentApproval.body !== approval.body || currentApproval.user?.login !== approval.user?.login ||
-                    currentApproval.issue_url !== existing.url) throw Error('Admin approval changed during transfer');
+                    currentApproval.issue_url !== existing.url) throw Error('Handoff record changed during transfer');
               }
               await validateTransfer();
               const all = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
@@ -188,11 +194,11 @@ jobs:
               }
               await validateTransfer();
               // One bot ledger write replaces ownership without an unreserved release/claim gap.
-              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' after admin approval: ' + approval.html_url +
+              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' using verified handoff: ' + approval.html_url +
                 (recovery ? '\nRecovered legacy claim/release comments ' + recovery.claim_comment + '/' + recovery.released_comment + '.' : ''));
               core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
               core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + handoff.from + ' APPROVAL=' + handoffComment);
-              await core.summary.addRaw('Transferred #' + number + ' to ' + worker + '; validate this successful run with status before editing.').write();
+              await core.summary.addRaw('Transferred #' + number + ' to ' + worker + '; after this run succeeds, verify the current bot ledger owner/run before editing. A separate status dispatch is optional.').write();
             } else if (op === 'status') {
               const number = Number(rawIssue);
               const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
