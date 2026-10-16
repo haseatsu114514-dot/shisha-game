@@ -482,7 +482,7 @@
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "……ははっ、マジ！？ やっっっば！！ アタシ、今あげみが宇宙超えてるんだけど！！"
+          "text": "……ははっ、マジ！？ やっっっば！！ うち、今あげみが宇宙超えてるんだけど！！"
         },
         {
           "speaker": "ageha",
@@ -562,7 +562,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ねえ……この後、どうする？ アタシの部屋、ワンチャン来ちゃう……？♡"
+          "text": "ねえ……この後、どうする？ うちの部屋、ワンチャン来ちゃう……？♡"
         },
         {
           "speaker": "",
@@ -635,7 +635,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ましろちゃんのこと、お姉さんとしか見ていなかったわけじゃ……）"
+          "text": "（ましろちゃんのこと、友達としか見ていなかったわけじゃ……）"
         },
         {
           "type": "choice",
@@ -645,7 +645,7 @@
               "next_id": "confession_mashiro_accept"
             },
             {
-              "text": "「大切なお姉さんです」と答える",
+              "text": "「大切な友達です」と答える",
               "next_id": "confession_mashiro_reject"
             }
           ]

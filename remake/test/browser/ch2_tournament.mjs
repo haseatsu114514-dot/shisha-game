@@ -96,7 +96,7 @@ await suite('ch2-tournament',async check=>{
   });
   await check('touch-known-loss-retry-and-preserved-consumption',async page=>{
     await seed(page,{known:true,auto:'bad'});await page.locator(t('start')).tap();await phone(page,true);await page.locator(t('ready')).waitFor();
-    const text=await page.evaluate(()=>window.__texts.join('\n'));assert.match(text,/神崎さんだ/);assert.match(text,/また会ったわね/);assert(!text.includes('名前を聞くのは初めて'));
+    const text=await page.evaluate(()=>window.__texts.join('\n'));assert.match(text,/神崎さんだ/);assert.match(text,/また会ったな/);assert(!text.includes('名前を聞くのは初めて'));
     const before=await get(page);const loss=await playAttempt(page,true);assert(loss.flags._ch2_tournament.result.rank>1);
     await page.locator(t('continue')).tap();await page.locator(t('defeat')).waitFor();
     await page.locator(t('retry')).tap();await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});
