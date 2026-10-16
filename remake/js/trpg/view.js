@@ -444,6 +444,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       }, reduced ? 40 : 650);
     }, { class: "primary" });
     pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
+    pop.box.append(el("div.trpg-spare-kit", { "aria-hidden": "true", role: "presentation" }));
   }
   function showRollResult(pop, body) {
     const result = session.checkResult();
