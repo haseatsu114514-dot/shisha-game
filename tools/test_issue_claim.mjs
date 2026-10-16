@@ -223,6 +223,46 @@ test('admin transfer preserves PRs and atomically replaces ownership with a new 
   assert.equal(s.writes.length, 1);
 });
 
+for (const permission of ['write', 'maintain']) {
+  test(`${permission} users can transfer saved work using the original actor's handoff without admin approval`, async () => {
+    const s = transferSetup({permissions: {oldUser: permission, newUser: permission},
+      runs: {800: {status: 'completed', conclusion: 'success', actor: {login: 'oldUser'}}}});
+    s.context.actor = 'newUser';
+    s.approvals[50].user.login = 'oldUser';
+    await transfer(s);
+    assert.equal(s.writes.length, 1);
+    assert.match(s.writes[0].body, /state=claimed owner=worker-B/);
+    assert.equal(s.prs[0].head.sha, savedHead);
+    await assert.rejects(s.run('claim', 1, 'worker-C'), /Already claimed/);
+  });
+}
+
+for (const change of ['actor-read', 'author-read', 'wrong-original-actor', 'unknown-original-actor', 'permission-error']) {
+  test(`ordinary handoff refuses unverifiable ownership or permissions: ${change}`, async () => {
+    const permissions = {oldUser: 'write', newUser: 'write'};
+    if (change === 'actor-read') permissions.newUser = 'read';
+    if (change === 'author-read') permissions.oldUser = 'read';
+    const s = transferSetup({permissions,
+      runs: {800: {status: 'completed', conclusion: 'success',
+        actor: change === 'unknown-original-actor' ? undefined : {login: change === 'wrong-original-actor' ? 'someoneElse' : 'oldUser'}}},
+      hook(name) { if (change === 'permission-error' && name === 'permission') throw Error('Permission unavailable'); }});
+    s.context.actor = 'newUser';
+    s.approvals[50].user.login = 'oldUser';
+    await assert.rejects(transfer(s));
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+test('ordinary handoff rechecks the original actor before replacing the ledger', async () => {
+  const source = {status: 'completed', conclusion: 'success', actor: {login: 'oldUser'}};
+  const s = transferSetup({permissions: {oldUser: 'write', newUser: 'write'}, runs: {800: source},
+    hook(name) { if (name === 'listForRepo') source.actor.login = 'someoneElse'; }});
+  s.context.actor = 'newUser';
+  s.approvals[50].user.login = 'oldUser';
+  await assert.rejects(transfer(s), /original claim actor/);
+  assert.equal(s.writes.length, 0);
+});
+
 for (const change of ['actor', 'author', 'wrong-issue-url', 'missing-record', 'issue', 'from', 'to', 'claim_run', 'stopped', 'pushed', 'empty-prs', 'duplicate-pr', 'wrong-head', 'fork']) {
   test(`transfer rejects invalid approval: ${change}`, async () => {
     const s = transferSetup(), h = approvedHandoff(), a = s.approvals[50];
@@ -318,6 +358,15 @@ test('explicit admin recovery binds a released legacy pair to its successful run
   assert.equal(s.prs[0].head.sha, savedHead);
   await s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'});
   await assert.rejects(transfer(s), /last bot claim\/release pair/);
+});
+
+test('write permission does not authorize legacy recovery even with an original-actor record', async () => {
+  const s = legacyTransferSetup({permissions: {oldUser: 'write', newUser: 'write'}});
+  s.context.actor = 'newUser';
+  s.approvals[50].user.login = 'oldUser';
+  s.sourceRun.actor = {login: 'oldUser'};
+  await assert.rejects(transfer(s), /Legacy recovery requires repository admin/);
+  assert.equal(s.writes.length, 0);
 });
 
 for (const recovery of [null, {}, {claim_comment: '10', released_comment: 20},
