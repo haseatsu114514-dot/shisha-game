@@ -42,7 +42,7 @@ for (const r of recipes) {
 assert.equal(DB.equipById.lotos_hagal.name, "ロートスHMD");
 assert.equal(DB.equipById.winkwink_hagal.name, "ビッグタヌキッシュリッド");
 assert.equal(DB.equipById.harry_the_moon.name, "ハリーザムーン");
-assert.equal(DB.characters.maezono.display_name, "上園");
+assert.equal(DB.characters.maezono.name, "上園 文太郎");
 for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].deprecated, true);
   assert.equal(DB.equipById[pid].not_for_sale, true);
