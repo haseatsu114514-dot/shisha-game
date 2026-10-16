@@ -166,7 +166,7 @@ try {
           // DAY3's optional review can now open the same tonari drill menu.
           if (await click('[data-test="drill-heat"]')) continue;
           if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
-          const earn = snap.money < 6000;
+          const earn = snap.money < 6000 && !snap.flags._hiyori_real_self_known;
           if (earn && await click('[data-test="tonari-baito"]')) continue;
           if (await click('[data-test="tonari-customer"]')) continue;
           if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
@@ -174,6 +174,7 @@ try {
           const mapKey = `${snap.day}:${snap.slot}`;
           if (lastMapKey !== mapKey) {
             lastMapKey = mapKey;
+            console.log(`[hiyori-axe-natural] ${label} DAY${snap.day}/${snap.slot}: money=${snap.money}, affinity=${snap.affinity}, goal=${giftGoal ? 'gift' : workGoal ? 'work' : 'axe'}`);
             actions.push({ day: snap.day, slot: snap.slot, money: snap.money, affinity: snap.affinity,
               held: snap.flags._hiyori_affinity_waiting_pts || 0, released: snap.flags._hiyori_affinity_released_pts || 0,
               flags: Object.fromEntries(Object.entries(snap.flags).filter(([k]) => k.startsWith('_hiyori_'))) });
@@ -189,6 +190,9 @@ try {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
             const tonari = sp.spotById('tonari');
             if (s.stamina < 35) return 'rest';
+            // Once the paid axe outing is finished, wait for the free night talks.
+            // A daytime detour would change the fee invariant for work/gift.
+            if (f._hiyori_real_self_known && workGoal) return s.slot === 1 ? 'tonari' : 'rest';
             // Earn through the actual shift UI before either a paid visit or axe event.
             // A disabled axe button must never send us back into a used customer seat.
             if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day) return 'tonari';
@@ -207,7 +211,7 @@ try {
       }
       const final = await page.evaluate(() => ({ state: structuredClone(Q.core.state), events: Q.events }));
       row.actions = actions; row.events = final.events; row.final = final.state;
-      assert(Date.now() < deadline, `Natural walkthrough exceeded its existing deadline: ${JSON.stringify({ day: final.state.day, slot: final.state.slot, money: final.state.money })}`);
+      assert(Date.now() < deadline, `Natural walkthrough exceeded its existing deadline: ${JSON.stringify({ day: final.state.day, slot: final.state.slot, money: final.state.money, events: final.events.map(e => e.id), requiredFlags: Object.fromEntries(Object.entries(final.state.flags).filter(([key]) => key.startsWith("_hiyori_"))) })}`);
       const required = ['hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
       if(workGoal) required.push('hiyori_work_talk','hiyori_bond_question');
       if(giftGoal) required.push('hiyori_bond_finale');
@@ -251,7 +255,7 @@ try {
       row.diagnostic = await page.evaluate(() => window.Q ? { state: Q.core.state, events: Q.events, current: Q.current } : null).catch(() => null);
       await page.screenshot({ path: path.join(out, `${label}-failed.png`) });
       console.error(e.stack);
-    } finally { await context.close(); }
+    } finally { row.elapsedMs = Date.now() - Date.parse(row.startedAt); await context.close(); }
     // Preserve each completed device result if a later device is interrupted.
     fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, giftGoal, workGoal, results }, null, 2)+'\n');
   }
