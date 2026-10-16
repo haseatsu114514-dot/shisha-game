@@ -1,0 +1,34 @@
+[axe-menu-decor] PASS: 1280x720-live-controls
+[axe-menu-decor] PASS: 800x600-live-controls
+[axe-menu-decor] PASS: 390x844-live-controls
+[axe-menu-decor] PASS: 844x390-live-controls
+[axe-menu-decor] FAIL: keyboard-modes-lesson-return-and-no-save
+locator.focus: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-test="axe-game"]')[22m
+
+    at /Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:92:50
+    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:71:3
+    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1
+[axe-menu-decor] PASS: invalid-decoration-images-and-reduced-motion
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: axe-menu-decor: failed browser cases
+
+1 !== 0
+
+    at suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:67:10)
+    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_menu_decor.mjs:51:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.13.0

@@ -1,0 +1,37 @@
+Opponent distributions (10000 games each): {"easy":{"mean":34.1659,"p10":25,"p90":43,"dropRate":0.16907,"killRate":0.273},"normal":{"mean":50.4406,"p10":45,"p90":56,"dropRate":0,"killRate":0.7247},"hard":{"mean":61.3695,"p10":60,"p90":63,"dropRate":0,"killRate":1}}
+✔ player starts; exactly twenty alternating throws use the common scoring model (2.729625ms)
+✔ both players can win or draw; a draw ends after ten with no overtime (0.120666ms)
+✔ calls and successful height closures belong to each individual history (0.152167ms)
+✔ seed fixes opposing inputs independently of player scores; two calls on throws five and ten (0.194333ms)
+✔ invalid settings, order and values refuse a turn without consuming it (0.106375ms)
+✔ fixed seeds 0..9999 give ordered difficulty distributions, legal calls and drop rates (116.420583ms)
+✔ canonical match lines cover opponent outcomes, point gaps, calls and final results (0.40175ms)
+✔ feedback celebrates actual central and off-center red bulls without suggesting a correction (0.529333ms)
+✔ normal aim correction uses the nearest red core, including outer bulls (0.631375ms)
+✔ declared misses explain the called blue instead of offering normal red points (0.163625ms)
+✔ drops use the actual power failure even over red or declared blue (0.1615ms)
+✔ session summaries handle empty play and count outcomes, stuck axes, rounded average and best streak (0.383083ms)
+✔ painted circles match scores; black boundaries use lower neighbouring zones (0.721416ms)
+✔ three independently stopped gauges determine aim and strength deterministically (0.184042ms)
+✔ underpowered and overrotated axes drop rather than earning center points (0.135208ms)
+✔ called Killshot inner 8 / outer 7, misses zero; uncalled blue is an ordinary ring (0.130041ms)
+✔ successful Killshot closes both at its height, persists across half; calls consumed by misses and drops (0.634709ms)
+✔ 3 and 10 throw maximums include two different-height Killshots, without invented rewards (0.678584ms)
+✔ horizontal, vertical and strength gauges traverse both directions (0.105209ms)
+✔ companion reacts to actual result, with canonical voice and distinct expressions (0.186333ms)
+✔ invalid input cannot produce NaN or illegally call a closed target (0.11325ms)
+✔ waiting and overgripping increase visible sway; focus genuinely reduces it (0.173209ms)
+✔ a locked center is no longer an automatic bull; timely focus restores precision (0.309291ms)
+✔ visible release positions remain finite and legal at the edges (0.126791ms)
+✔ flight shrinks toward the board and contacts the scored blade point without a pose jump (1.677042ms)
+✔ first-person forward tumble shortens the handle, reverses it, then embeds the front cutting edge (0.130667ms)
+✔ frontal mesh swaps visible steel/wood faces during the pitch and keeps depth ordering (1.051959ms)
+✔ missed rotation visibly falls after contact; stuck axes keep their final pose (0.119333ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 153.993875

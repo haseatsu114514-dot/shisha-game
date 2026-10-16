@@ -1,0 +1,187 @@
+[
+  {
+    "path": "qa/after/1280x720-footer.png",
+    "bytes": 823369,
+    "sha256": "eb296c630f3f7b08669423250518ea50c9d83cd5a161bb778737983a45989605"
+  },
+  {
+    "path": "qa/after/1280x720-top.png",
+    "bytes": 823268,
+    "sha256": "33b862ce2e34f145cdeeb51726938028981a078267355aad26af2c0f3ef0cac5"
+  },
+  {
+    "path": "qa/after/390x844-footer.png",
+    "bytes": 319716,
+    "sha256": "7a1af2453b4f748f0acfc7e911a8f4104290df15a237b514a0f75ef2459dc921"
+  },
+  {
+    "path": "qa/after/390x844-top.png",
+    "bytes": 317430,
+    "sha256": "9d9a6d431e4cbe4fdf9c86feb37c14b38266daf753d0e0c09c332b53c7e80f38"
+  },
+  {
+    "path": "qa/after/800x600-footer.png",
+    "bytes": 458797,
+    "sha256": "1b29acd33efb85008a0918d5e1124a4a7328ddbdfd206a4af873862a6c94ca9c"
+  },
+  {
+    "path": "qa/after/800x600-top.png",
+    "bytes": 458806,
+    "sha256": "8e46785a33daaa3ac44da406834e0e9c4977369cfab602946c52aba7acd5bcb5"
+  },
+  {
+    "path": "qa/after/844x390-footer.png",
+    "bytes": 326337,
+    "sha256": "b0e4475a4045b9d422b1a0caf4817ce321c9be154d00ec649cc4617a5cfe229c"
+  },
+  {
+    "path": "qa/after/844x390-top.png",
+    "bytes": 326406,
+    "sha256": "635415edf22934cd7e593a0359d03379c70b9ee52d5e0eb104aefcbc3bdaacaa"
+  },
+  {
+    "path": "qa/after/fallback-reduced-motion.png",
+    "bytes": 634155,
+    "sha256": "9a763650ce9bf097d2afa2c3e27ae383596bdf2c83d801ca0f1b28374c32eb7e"
+  },
+  {
+    "path": "qa/before/1280x720.png",
+    "bytes": 821051,
+    "sha256": "d724eb84b9287df2de2a6f9eeb3f17438a585caee1f27f7d6736d55cf5fd5cb7"
+  },
+  {
+    "path": "qa/before/390x844.png",
+    "bytes": 300531,
+    "sha256": "968f8c1a1761f37272cf40bc17e0e090f072c8de48871753988e38ef0772ebb2"
+  },
+  {
+    "path": "qa/before/800x600.png",
+    "bytes": 460871,
+    "sha256": "4e11d3abce489e337a3fb5c05f4d6581bd2cd4f402656e81ea3ceb25d9622df4"
+  },
+  {
+    "path": "qa/before/844x390.png",
+    "bytes": 350266,
+    "sha256": "33c19014ad699ddd7e0b0fa704dd2b45cf6158eb1fdc2ffe066f14f6d7f85fe3"
+  },
+  {
+    "path": "qa/results/axe_lesson.log",
+    "bytes": 1885,
+    "sha256": "0105827b58841c281ed4dd87dfd76a1d12c6bf28a83cf5a295243e7a01f5d7e1"
+  },
+  {
+    "path": "qa/results/axe_polish.log",
+    "bytes": 388,
+    "sha256": "523de8dbfe890e2cb07bdd874301d23602333c21cae40f7cf0209a04575c0a1e"
+  },
+  {
+    "path": "qa/results/axe_throw.log",
+    "bytes": 1983,
+    "sha256": "952998df4e04da883ff5a83b72a66a53809cf8fd0cc0184afd3b3b2d8f38af29"
+  },
+  {
+    "path": "qa/results/axe_versus.log",
+    "bytes": 2112,
+    "sha256": "ae87f40671a5bccee3637df2642fa25e19457438b53ac16a8c4e2c0dcf3868ba"
+  },
+  {
+    "path": "qa/results/docs-final.log",
+    "bytes": 90,
+    "sha256": "7bdc160f3eab73db9be392b6e48be2e14692baeb17afe7de266a05f40bc84897"
+  },
+  {
+    "path": "qa/results/docs-initial.log",
+    "bytes": 2252,
+    "sha256": "33d65a8ef50671520a822d943f47940dad9d5dba0c7d128b8a1a51cd093abf33"
+  },
+  {
+    "path": "qa/results/lesson-pc-retry-artifacts-axe-lesson.json",
+    "bytes": 232,
+    "sha256": "ea3b3819fb2514bd6cb42612b2eeee477d7a24185eae03f222f8e8b83b78090b"
+  },
+  {
+    "path": "qa/results/lesson-pc-retry.log",
+    "bytes": 51,
+    "sha256": "77455129766a02c5a4716c5b4cf963eb4e3bc62827d2a0755dc7b524fbdd933c"
+  },
+  {
+    "path": "qa/results/menu-acceptance-artifacts-axe-menu-decor.json",
+    "bytes": 659,
+    "sha256": "c6b5ae91bcdfb976aff73e887c80a03422244437e7e925e92221b5c8a6421c45"
+  },
+  {
+    "path": "qa/results/menu-acceptance.log",
+    "bytes": 313,
+    "sha256": "1e8066b9d42e812a324b7313e20ddf53da60dc69c6becdf9326977ccdef859b9"
+  },
+  {
+    "path": "qa/results/menu-server-not-ready.log",
+    "bytes": 5051,
+    "sha256": "497e8fc11bde45036eb2b38ac5d6fd7cc914daca7adb444069f083c80049d39e"
+  },
+  {
+    "path": "qa/results/menu-test-final.log",
+    "bytes": 1652,
+    "sha256": "016d73b0855530893b39a713762db071fe33a776f2da817fb8a1b90151735f5f"
+  },
+  {
+    "path": "qa/results/menu-test-initial.log",
+    "bytes": 8023,
+    "sha256": "8c6fc6641a09177c17373e1580ef0f946490fd1e56a4287897acf9fcaf5bf9a1"
+  },
+  {
+    "path": "qa/results/menu-test-verified.log",
+    "bytes": 313,
+    "sha256": "1e8066b9d42e812a324b7313e20ddf53da60dc69c6becdf9326977ccdef859b9"
+  },
+  {
+    "path": "qa/results/model-tests.log",
+    "bytes": 3098,
+    "sha256": "5f05bbeadf84b9da46ce4dbc2ed60a339d83fbd9dfb8fe304be243d5ee35fe92"
+  },
+  {
+    "path": "qa/results/regression-axe_lesson-axe-lesson.json",
+    "bytes": 1874,
+    "sha256": "c5ae63e9f5a5136f3f0ad826419aa4e48be87ed2beb5608fa5a4eca66e288495"
+  },
+  {
+    "path": "qa/results/regression-axe_polish-axe-polish.json",
+    "bytes": 756,
+    "sha256": "384a581e72cf158e816e2621c9c59b0c9febc2ce6fad9fc39be8dc061a7e3b47"
+  },
+  {
+    "path": "qa/results/regression-axe_throw-axe-throw.json",
+    "bytes": 2514,
+    "sha256": "675c193d7958ad9677200c7d3aaa2758e34d8f5bf7f0138c35511a862290d876"
+  },
+  {
+    "path": "qa/results/regression-axe_versus-axe-versus.json",
+    "bytes": 2042,
+    "sha256": "afda71fe5e6a8d44707eebc43e93734b5a1657f868697706c0da3679528b5e79"
+  },
+  {
+    "path": "qa/results/throw-rules-retry-artifacts-axe-throw.json",
+    "bytes": 220,
+    "sha256": "d34bbe4c91e279fc158946c3e0b7d862c8632cf3c1229b6ec7bfd23f7410926d"
+  },
+  {
+    "path": "qa/results/throw-rules-retry.log",
+    "bytes": 39,
+    "sha256": "13cc0c1c6406476559300589d7f6447c0e9ad5e94cf43346d2229895edb7219e"
+  },
+  {
+    "path": "qa/results/versus-portrait-retry-artifacts-axe-versus.json",
+    "bytes": 229,
+    "sha256": "326c4b36c78e08834646169def87e6093709b460adbc6702372bda1cc706124e"
+  },
+  {
+    "path": "qa/results/versus-portrait-retry.log",
+    "bytes": 48,
+    "sha256": "33af973954baa58c575808aea90751e528ec1dfade334fbb6c6a76b864f3f649"
+  },
+  {
+    "path": "qa/source-fingerprint.json",
+    "bytes": 2096,
+    "sha256": "48a63061b4ec27b6e5b2efbf77288f41394c38d745b846746ca667347f8a313c"
+  }
+]

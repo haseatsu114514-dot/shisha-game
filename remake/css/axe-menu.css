@@ -177,3 +177,126 @@
   .axe-menu .axe-menu-mode { transition: none; }
   .axe-menu .axe-menu-mode:hover:not(:disabled) { transform: none; }
 }
+
+/* Issue #597: generated, text-free walnut/iron/brass surfaces.
+   All lettering, state, focus and hit areas remain the original live DOM. */
+.axe-intro.axe-menu {
+  --menu-panel: url("../img/ui/axe_throw/menu-walnut-panel.webp");
+  --menu-line: rgba(213, 168, 96, .42);
+  --menu-amber: #f2c885;
+}
+.axe-menu-masthead {
+  padding: 10px 16px;
+  border: 1px solid #7f623e;
+  border-radius: 3px;
+  background: #211910 var(--menu-panel) center / 100% 100% no-repeat;
+  box-shadow: 0 3px 14px #0008;
+}
+.axe-menu h1 {
+  position: relative;
+  justify-self: start;
+  max-width: 100%;
+  padding: 14px 106px 16px 26px;
+  border-radius: 4px;
+  background: #24180f var(--menu-panel) center / 100% 100% no-repeat;
+  color: #ffe2a9;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -.025em;
+  text-shadow: 0 2px 0 #5a3616, 0 4px 5px #000;
+}
+.axe-menu h1::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 72px;
+  height: 72px;
+  transform: translateY(-50%);
+  background: url("../img/ui/axe_throw/menu-crossed-axes.webp") center / contain no-repeat;
+  pointer-events: none;
+}
+.axe-menu .axe-menu-mode {
+  border-color: #a27d49;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #25221c, #111514);
+  box-shadow: inset 0 0 0 4px #0b0d0b, inset 0 0 0 5px #695235, 0 5px 14px #0007;
+}
+.axe-menu .axe-menu-mode[data-kind="practice"] {
+  border-color: #e9be79;
+  background: linear-gradient(135deg, #3d2d1a, #1b1b16);
+}
+.axe-menu-mode::before {
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 10px solid #8f6e40;
+  border-image: var(--menu-panel) 32 / 10px / 0 stretch;
+  background: none;
+  pointer-events: none;
+}
+.axe-menu-mode-top {
+  padding: 6px 8px;
+  background: #261b12 var(--menu-panel) center / 100% 100% no-repeat;
+}
+.axe-menu-count, .axe-menu-tag,
+.axe-menu-mode[data-kind="practice"] .axe-menu-tag { color: #f6dfba; }
+.axe-menu-mode-description { color: #dfd4c3; }
+.axe-menu-mode-action {
+  padding: 10px 12px;
+  border: 1px solid #997448;
+  border-radius: 3px;
+  background: #342419;
+  box-shadow: inset 0 0 0 2px #1b1712;
+  color: #ffe0a9;
+}
+.axe-menu .axe-menu-options .axe-button,
+.axe-menu .axe-menu-rules, .axe-menu .axe-menu-lesson {
+  min-height: 44px;
+  border-color: #9f8156;
+  background-color: #171815;
+  box-shadow: inset 0 0 0 2px #0c0f0d;
+}
+.axe-menu .axe-menu-options .axe-button[aria-pressed="true"] {
+  background: linear-gradient(135deg, #7d562b, #49341e);
+  border-color: #f7ce88;
+  color: #fff1d3;
+  box-shadow: inset 0 0 0 2px #4d351b, inset 0 -3px 0 #e9b96f, 0 0 8px #c98a3333;
+}
+.axe-menu .axe-menu-lesson { background: #49321c; color: #fff0ce; }
+.axe-menu .axe-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #826540;
+  border-radius: 3px;
+  background: #191a16;
+}
+.axe-menu button:focus-visible, .axe-menu a:focus-visible {
+  outline: 3px solid #fff0bf;
+  outline-offset: 3px;
+}
+.axe-menu button:disabled { opacity: .55; filter: saturate(.3); cursor: wait; }
+@container (max-width: 900px) {
+  .axe-menu h1 { padding: 12px 82px 14px 22px; }
+  .axe-menu h1::after { width: 56px; height: 56px; right: 14px; }
+  .axe-menu-mode-top { padding: 5px 7px; }
+}
+@container (max-width: 600px) and (min-height: 501px) {
+  .axe-menu h1 { padding: 12px 20px; font-size: clamp(36px, 10vw, 54px); }
+  .axe-menu h1::after { display: none; }
+  .axe-menu-mode-top { padding: 4px 7px; }
+  .axe-menu-mode-action { padding: 0; border: 0; background: none; box-shadow: none; }
+  .axe-intro.axe-menu { gap: 10px; }
+  .axe-menu .axe-menu-mode { min-height: 112px; }
+  .axe-menu .axe-menu-options .axe-button { padding-inline: 10px; }
+}
+@container (max-height: 500px) {
+  .axe-menu-masthead { padding: 7px 12px; }
+  .axe-menu h1 { padding: 8px 64px 10px 18px; font-size: 38px; }
+  .axe-menu h1::after { width: 42px; height: 42px; right: 12px; }
+  .axe-menu-mode-top { padding: 4px 7px; }
+  .axe-menu-mode-action { padding: 6px 8px; }
+  .axe-menu .axe-menu-mode { min-height: 136px; }
+  .axe-menu .axe-menu-options .axe-button { padding-inline: 10px; }
+}

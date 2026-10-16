@@ -1,0 +1,37 @@
+{
+  "name": "axe-lesson",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": "working-1ec3ddd-597",
+  "results": [
+    {
+      "label": "pc-guided-one-throw-and-no-save",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-test=\"axe-coach\"][data-kind=\"welcome\"]') to be visible\u001b[22m\n\n    at start (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_lesson.mjs:68:54)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_lesson.mjs:112:20\n    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_lesson.mjs:111:6\n    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_lesson.mjs:106:1",
+      "errors": [],
+      "failedResources": [
+        "net::ERR_CONNECTION_RESET http://127.0.0.1:8123/remake/data/manifest.json"
+      ]
+    },
+    {
+      "label": "touch-portrait-guided-one-throw-and-no-save",
+      "status": "passed"
+    },
+    {
+      "label": "touch-landscape-guided-one-throw-and-no-save",
+      "status": "passed"
+    },
+    {
+      "label": "normal-live-score-and-prominent-killshot-rules",
+      "status": "passed"
+    },
+    {
+      "label": "skip-abort-and-host-removal-close-coach",
+      "status": "passed"
+    },
+    {
+      "label": "free-store-lesson-ignores-cost-and-day-use-without-mutation",
+      "status": "passed"
+    }
+  ]
+}
