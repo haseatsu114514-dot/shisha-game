@@ -1,0 +1,21 @@
+/* シーシャくじのガラガラ（remake/js/motions/garagara.js）。くじの暗幕の上に全面で重ねる（地の色は場面の壁の色を JS で入れる） */
+.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #4d3c2f; }
+
+/* ラストワン賞のカード（NIGHTSIDE の黒地に銀。虹色の文字はやめて落ち着かせる） */
+.kuji-overlay .kuji-card.rank-LAST {
+  background: linear-gradient(165deg, #15131f, #0a0910 70%);
+  border-color: rgba(214, 218, 228, 0.7);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 4px #0a0910, inset 0 0 0 5px rgba(214, 218, 228, 0.25);
+}
+.kuji-overlay .kuji-card.rank-LAST .kuji-rank {
+  font-size: 44px;
+  letter-spacing: 0.08em;
+  background: linear-gradient(180deg, #f4f5f8, #aab0bd 60%, #e2e5ec);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  animation: none;
+}
+.kuji-overlay .kuji-card.rank-LAST .kuji-name { margin-top: 14px; color: #f1f2f6; }
+.kuji-overlay .kuji-card.rank-LAST .kuji-desc { color: #a9adbb; }

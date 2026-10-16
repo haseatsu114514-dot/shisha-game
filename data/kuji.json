@@ -18,7 +18,7 @@
         { "rank": "C", "name": "AF グレープ（フレーバー1袋）", "type": "flavor", "flavorId": "grape", "sell": 0, "count": 2, "desc": "Dr.fookah入荷の人気フレーバー。当たればミックスで使えるようになる。" },
         { "rank": "C", "name": "AF ローズ（フレーバー1袋）", "type": "flavor", "flavorId": "rose", "sell": 0, "count": 1, "desc": "Dr.fookah入荷の限定フローラル。当たればミックスで使える。" }
       ],
-      "lastOne": { "rank": "LAST", "name": "ラストワン賞・木製スタンド", "type": "goods", "sell": 1000, "count": 1, "desc": "箱を引き切った人だけがもらえる、ちょっと良い木工スタンド。" }
+      "lastOne": { "rank": "LAST", "name": "ラストワン賞・ナイトサイド プレミアハガル", "equipId": "nightside_premier_hagal", "type": "equip", "sell": 3000, "count": 1, "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。" }
     },
     "g1000": {
       "price": 1000,
@@ -33,7 +33,7 @@
         { "rank": "B", "name": "ココナッツ炭（大箱）", "type": "consumable", "sell": 0, "count": 5, "desc": "大容量の炭。実用品。" },
         { "rank": "B", "name": "くじ屋オリジナル・ステッカー", "type": "goods", "sell": 100, "count": 3, "desc": "ほぼ景品。集めると可愛い、かも。" }
       ],
-      "lastOne": { "rank": "LAST", "name": "ラストワン賞・限定ボウル", "type": "goods", "sell": 3000, "count": 1, "desc": "箱を引き切った人だけの限定ボウル。" }
+      "lastOne": { "rank": "LAST", "name": "ラストワン賞・ナイトサイド プレミアハガル", "equipId": "nightside_premier_hagal", "type": "equip", "sell": 3000, "count": 1, "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。" }
     }
   }
 }
