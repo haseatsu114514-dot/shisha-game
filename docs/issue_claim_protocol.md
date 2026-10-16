@@ -30,10 +30,10 @@ does not grant those operations. Unknown legacy identity uses the existing
 reviewed transfer/recovery route. Two chats under one account still need unique
 worker IDs and explicit handoff; account matching does not prove a stopped chat.
 
-GitHub may replace pending concurrency runs. Comments persist: the next
-successful coordinator/maintenance run recovers unacknowledged requests from
-the last 72 hours. If a request has no result, inspect its ledger/run before
-posting a fresh retry. A failed or canceled run still never authorizes work.
+GitHub may replace pending concurrency runs. If a request has no result,
+inspect its ledger/run and retry with a fresh comment while the task is still
+authorized. A failed or canceled run never authorizes work. Maintenance does
+not replay old requests or undo an explicit cancellation or stop instruction.
 
 ## Claim the next task
 

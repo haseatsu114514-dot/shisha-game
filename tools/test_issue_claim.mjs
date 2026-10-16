@@ -5,7 +5,7 @@ import {createRequire} from 'node:module';
 
 // Execute the same coordinator module as every production event entrypoint.
 const require = createRequire(import.meta.url);
-const {coordinate: execute, runEvent, runWorkflow, maintain, policyBody} = require('./issue_claim_coordinator.cjs');
+const {coordinate: execute, runEvent, maintain, policyBody} = require('./issue_claim_coordinator.cjs');
 const bot = 'github-actions[bot]';
 const fixture = (number, extra = {}) => ({number, state: 'open', title: `[P1] Task ${number}`, labels: [], url: `https://api.github.com/repos/example.dot/game/issues/${number}`, ...extra});
 const entry = (state, owner, extra = {}) => ({id: 1, user: {login: bot},
@@ -692,24 +692,10 @@ test('workflow entrypoints keep the shared lock and never check out comment or P
   assert.match(workflow,/comment.author_association/);
 });
 
-test('a successful later run recovers request comments whose pending runs were replaced', async () => {
-  const s=setup({permissions:{writer:'write'},approvals:{
-    50:{id:50,user:{login:'writer',type:'User'},body:'/issue-claim {"operation":"claim","owner":"worker-A"}',
-      issue_url:fixture(1).url,created_at:new Date().toISOString()},
-    51:{id:51,user:{login:'writer',type:'User'},body:'/issue-claim {"operation":"claim","owner":"worker-B"}',
-      issue_url:fixture(2).url,created_at:new Date().toISOString()}}});
-  s.context.eventName='schedule';
-  await runWorkflow(s.github,s.context,s.core,{});
-  assert.equal(s.writes.filter(w=>w.body.startsWith('<!-- issue-claim:v1 state=claimed')).length,2);
-  await runWorkflow(s.github,s.context,s.core,{});
-  assert.equal(s.writes.length,4);
-});
-
-test('a recovered comment retains its verified requester for ordinary handoff', async () => {
+test('the verified comment requester is retained for ordinary handoff', async () => {
   const s=commentSetup();
-  s.context.eventName='schedule';s.context.actor='admin';
-  s.approvals[50].created_at=new Date().toISOString();
-  await runWorkflow(s.github,s.context,s.core,{});
+  s.context.actor='admin';
+  await runEvent(s.github,s.context,s.core,{});
   assert.match(s.writes[0].body,/issue-claim-actor:v1 login=writer/);
   s.prs.push(savedPR());
   s.approvals[70]={id:70,user:{login:'writer'},issue_url:fixture(1).url,html_url:'https://github.com/example.dot/game/issues/1#issuecomment-70',
@@ -758,4 +744,11 @@ test('the original requester can release its failed reservation and retry safely
     {comments:{1:[modernEntry()]},runs:{800:{status:'completed',conclusion:'cancelled',actor:{login:'writer'}}}});
   await runComment(s);
   assert.match(s.writes[0].body,/state=released owner=worker-A/);
+});
+
+test('maintenance never replays old request comments or overrides a canceled execution', async () => {
+  const s=commentSetup();s.context.eventName='schedule';
+  s.comments[1]=[s.approvals[50]];
+  await runEvent(s.github,s.context,s.core,{});
+  assert.equal(s.writes.length,0);
 });

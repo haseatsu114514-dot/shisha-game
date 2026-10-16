@@ -86,5 +86,5 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const {runWorkflow} = require('./tools/issue_claim_coordinator.cjs');
-            await runWorkflow(github, context, core, process.env);
+            const {runEvent} = require('./tools/issue_claim_coordinator.cjs');
+            await runEvent(github, context, core, process.env);

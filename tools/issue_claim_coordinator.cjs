@@ -444,35 +444,4 @@ async function runEvent(github, context, core, inputs = process.env) {
   if (result.errors) throw Error('Maintenance has deferred items; inspect the run summary');
 }
 
-async function drainRequests(github, context, core) {
-  // Comments survive GitHub's replacement of pending concurrency runs. A later
-  // successful run drains unacknowledged requests rather than losing them.
-  const since = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString();
-  const comments = await github.paginate(github.rest.issues.listCommentsForRepo,
-    {...context.repo, since, sort:'created', direction:'asc', per_page:100});
-  const prefix = (context.apiUrl || 'https://api.github.com') + '/repos/' + context.repo.owner + '/' + context.repo.repo + '/issues/';
-  for (const comment of comments) {
-    const created = Date.parse(comment.created_at);
-    if (comment.user?.type === 'Bot' || !comment.body?.startsWith('/issue-claim ') ||
-        !comment.issue_url?.startsWith(prefix) || !Number.isFinite(created) || created < Date.parse(since)) continue;
-    const number = Number(comment.issue_url.slice(prefix.length));
-    if (!Number.isSafeInteger(number) || number < 1) continue;
-    try {
-      const {data: issue} = await github.rest.issues.get({...context.repo, issue_number:number});
-      await runEvent(github, {...context, eventName:'issue_comment',
-        payload:{...context.payload, action:'created', issue, comment}}, core, {});
-    } catch (error) {
-      // A rejected queued request has its own result. It must not invalidate a
-      // successful reservation recorded by another request in this same run.
-      core.warning?.('Queued comment ' + comment.id + ' deferred/refused: ' + error.message);
-    }
-  }
-}
-
-async function runWorkflow(github, context, core, inputs = process.env) {
-  await runEvent(github, context, core, inputs);
-  try { await drainRequests(github, context, core); }
-  catch (error) { core.warning?.('Pending comment recovery deferred: ' + error.message); }
-}
-
-module.exports = {coordinate, runEvent, runWorkflow, maintain, policyBody};
+module.exports = {coordinate, runEvent, maintain, policyBody};
