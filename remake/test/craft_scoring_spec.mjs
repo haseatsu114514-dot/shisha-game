@@ -8,7 +8,7 @@ globalThis.window ||= {};
 
 const { DB } = await import("../js/core/data.js");
 const { state, newGame, setState } = await import("../js/core/state.js");
-const { MAKER_SPECS, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
+const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf } = await import("../js/craft/score.js");
 const { evaluateMix, isSuyakiBowl } = await import("../js/craft/steps.js");
@@ -29,13 +29,60 @@ DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー5社・表記統一・禁止語チェック
 assert.equal(flavors.length, 64);
+const expectedPrefixToMaker = {
+  "アルファーヘブン": "af",
+  "ドバジ": "dobaj",
+  "アフサール": "afsahr",
+  "ナイトサイド": "nightside",
+  "フォースフェクト": "forcefect",
+};
 for (const f of flavors) {
   assert(f.maker in MAKER_SPECS, `Invalid maker on ${f.id}: ${f.maker}`);
   assert.equal(f.leaf, "blond");
   assert(!f.name.includes("ドバージュ") && !f.name.includes("アブサル"), `Legacy brand name in ${f.id}: ${f.name}`);
   assert(!f.description.includes("キレ"), `Forbidden word キレ in ${f.id}: ${f.description}`);
   assert(!f.description.includes("配合"), `Ununified word 配合 in ${f.id}: ${f.description}`);
+
+  // 全商品の表示名と所属（maker）の完全整合
+  const prefix = f.name.split(" ")[0];
+  const expectedMaker = expectedPrefixToMaker[prefix];
+  assert(expectedMaker, `Unknown maker prefix in flavor name: ${f.name}`);
+  assert.equal(f.maker, expectedMaker, `Flavor ${f.id} maker (${f.maker}) does not match display name prefix ${prefix}`);
+  assert.equal(makerOfFlavor(f.id), f.maker, `makerOfFlavor(${f.id}) != ${f.maker}`);
+
+  // ショップ案内・温度帯ガイドの整合性
+  const guide = flavorThermalGuide(f);
+  assert.equal(guide.makerLabel, MAKER_SPECS[f.maker].label, `guide.makerLabel for ${f.id} != ${MAKER_SPECS[f.maker].label}`);
+  if (MAKER_SPECS[f.maker].widthFactor >= 1.10) {
+    assert.match(guide.widthLabel, /広め/);
+  } else if (MAKER_SPECS[f.maker].widthFactor <= 0.80) {
+    assert.match(guide.widthLabel, /狭め/);
+  } else {
+    assert.match(guide.widthLabel, /標準/);
+  }
 }
+
+// 修正対象12商品の所属・温度帯幅・単社加算の回帰テスト
+const candidateMakers = {
+  vanilla: "dobaj",
+  coconut: "dobaj",
+  mango: "dobaj",
+  rose: "afsahr",
+  peach: "dobaj",
+  melon: "dobaj",
+  banana: "dobaj",
+  lychee: "afsahr",
+  peppermint_shake: "dobaj",
+  cinnamon: "af",
+  clove: "afsahr",
+  basil: "afsahr",
+};
+for (const [fid, expected] of Object.entries(candidateMakers)) {
+  assert.equal(DB.flavorById[fid].maker, expected, `Candidate ${fid} maker != ${expected}`);
+  const prof = makerMixProfile({ mix: { [fid]: 12 }, equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" } });
+  assert.equal(prof.makerWidth, MAKER_SPECS[expected].widthFactor, `Candidate ${fid} makerWidth != ${MAKER_SPECS[expected].widthFactor}`);
+}
+
 for (const r of recipes) {
   assert(!(r.hint_text || "").includes("キレ") && !(r.memo || "").includes("キレ"), `Forbidden word キレ in recipe ${r.id}`);
 }
