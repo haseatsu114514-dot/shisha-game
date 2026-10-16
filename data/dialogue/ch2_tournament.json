@@ -49,7 +49,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "はい。蒸野はじめです。よろしくお願いします"
+            "text": "はい。蒸野始です。よろしくお願いします"
           }
         ]
       }
@@ -94,7 +94,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野はじめ選手！"
+          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野始選手！"
         },
         {
           "speaker": "",
@@ -121,14 +121,14 @@
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "また会ったわね。今日は、煙で話しましょう"
+            "text": "また会ったな。今日は、煙で話そう"
           }
         ],
         "rei_first": [
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "零-ZERO-のREIよ。あなたの煙、楽しみにしているわ"
+            "text": "零-ZERO-のREI。今日の煙、楽しみにしてる"
           }
         ]
       }
@@ -174,7 +174,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "県代表は、tonariの蒸野はじめ選手です！"
+          "text": "県代表は、tonariの蒸野始選手です！"
         },
         {
           "speaker": "",
