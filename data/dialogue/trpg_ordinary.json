@@ -948,7 +948,7 @@
           "text": "店番のノートに『呼べる距離で、少し待つ。それも接客』とある"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "hajime",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
@@ -1122,7 +1122,7 @@
           "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "hajime",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
@@ -1290,7 +1290,7 @@
           "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "hajime",
           "role": "",
           "face": "normal",
           "text": "この店の人も、毎日少しずつ違う客を見てたんだな"

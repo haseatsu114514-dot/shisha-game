@@ -24,7 +24,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……なんでもない。あたしの一台、ちゃんと見てて"
+          "text": "……なんでもない。うちの一台、ちゃんと見てて"
         },
         {
           "speaker": "",
@@ -37,14 +37,14 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "はじめくん。来たね。今日は、同じ舞台だ"
+            "text": "ハジメっち。来たね。今日は、同じ舞台だ"
           }
         ],
         "first": [
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "MELTY PUFFのあげは。……はじめくん、だよね"
+            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
           },
           {
             "speaker": "hajime",
@@ -121,14 +121,14 @@
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "また会ったわね。今日は、煙で話しましょう"
+            "text": "また会ったな。今日は、煙で話そう"
           }
         ],
         "rei_first": [
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "零-ZERO-のREIよ。あなたの煙、楽しみにしているわ"
+            "text": "零-ZERO-のREI。今日の煙、楽しみにしてる"
           }
         ]
       }

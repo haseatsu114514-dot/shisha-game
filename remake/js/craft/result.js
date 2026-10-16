@@ -264,7 +264,7 @@ export function resultTable(cs, rank) {
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
     showScreen("result", el("div.result-table", { dataset: { test: "tournament-result", rank } }, [
-      header("SMOKE CROWN CUP / FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "蒸野 始 · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
+      header("SMOKE CROWN CUP / FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "蒸野 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
       el("div.rt-layout", [el("section.rt-ranking", [el("h2", { text: "最終順位 · 審査員の持ち点" }), el("div.rt-rows", rows)]), detail]), btn,
     ]));
     if (rank === 1) SE.fanfare();
