@@ -1,0 +1,66 @@
+{
+  "scope": "SHOP_FLAVORS 18 only; Heaven10 Dobaj6 Absal2; outside46 HOLD; HMD held/current-main baseline; no gacha",
+  "owner": "codex-c-shop-art-20261016-8e7fb2cb0e",
+  "thread": "01a140d2-7791-7aa2-9b89-4ad03675a977",
+  "issue": 586,
+  "pr": 587,
+  "claim_run": 38786636524,
+  "status_run": 38836193671,
+  "status_request": "13c5b120-1b62-4457-9354-5d86db9fd350",
+  "main_baseline": "3fa40d0b",
+  "mark_standard": {
+    "u": 0.5,
+    "v": 0.185,
+    "width_ratio": 0.45,
+    "material": "flush white matte ink; same front-plane perspective; no shadow/emboss"
+  },
+  "source_bytes": "immutable generator outputs; QA composition/rectification only",
+  "adoption": "Draft; no merge authorization",
+  "records": [
+    {
+      "id": "double_apple-too-wide",
+      "selected": false,
+      "prompt": "Use case: precise-object-edit. Edit image 1 (double apple black retail carton) into the common final Heaven carton template. Image 2 is the original white angel emblem design reference only. Keep carton silhouette, thin depth, camera, matte-black card, framing, transparent background, red/lime brush band and red plus green apple PRINTS unchanged. Correct ONLY the upper white emblem: place its design at exact horizontal center of the FRONT face, u=0.500; center v=0.185 measured down that face. Width 45% of FRONT face. Its wings are joined, three broad rounded feather lobes each side, simple oval halo above with the SAME gap/proportions as reference. Crucially this is flat white ink printed ON cardboard: the entire oval and wings follow the perspective and slightly descending top/bottom edges of the front face, with subtle matte surface shading. No raised, glossy, embossed, floating, sticker, drop shadow, luminous or physical halo effect. Preserve this camera/template for subsequent flavor variants. No text at all, no AF, real crown/logo, human angel, grass, leaves or other ingredients. Apples are printed product illustration on box, no loose fruit. True transparent RGBA square cutout; preserve margins. Output one package only.",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-291fd353-17f8-4c79-875a-51e4ae381c1c.png",
+      "references": [
+        "prototype-retail-angel-mark-v3/originals/double_apple-angel-positioned.png",
+        "prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/candidates/double_apple-too-wide.png",
+      "sha256": "7e5dbdee23fa01d8e53b7dadb20feb46d515ab225c6faddf1f7226161e8bd5a6"
+    },
+    {
+      "id": "double_apple",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. Edit the attached carton. Change ONLY its upper printed white wings-and-oval-halo mark: it is currently TOO WIDE. Reduce the existing mark uniformly to 80% of its present size (target width about 294 pixels on this 1254x1254 image, front face width about650 pixels). Keep the mark's visual center at approximately x590,y350, which is u=.50,v=.185 of the FRONT panel, not the entire object including side. Same original wings contour and oval/gap, no redesign. Apply the same small perspective tilt as FRONT top edge (left at y175, right195), so mark right sits slightly LOWER than left. Flat white matte ink in cardboard plane, zero edge/drop shadow, no raised rim or physical floating halo. Keep every other detail and geometry of carton, camera, brush, apples and transparency exactly as input. No text or new element.",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-02b294ae-3b0a-4c1f-ac05-c2dc81d39742.png",
+      "references": [
+        "retail-angel-finish-v4/candidates/double_apple-too-wide.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/double_apple.png",
+      "sha256": "cfa07069088e54dd1da3c8655ef3b0afe413dbdb30ba5831d00617254153fc5c"
+    },
+    {
+      "id": "mint",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to mint green and replacing the two apple PRINTS with a small realistic printed sprig of mint with three fresh serrated mint leaves; mint is the ONLY ingredient. No apples.. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-f0cb681d-97c1-4c7f-ba37-2f80dba4f491.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/mint.png",
+      "sha256": "9f432e753ab7fd3a1ada4b5b51a5d4c11c28b3c9c0e6e2eea2825f29d9e2aacb"
+    },
+    {
+      "id": "grape",
+      "selected": true,
+      "prompt": "Use case: precise-object-edit. The reference is the FINAL common Heaven package template. Derive a new flavor by changing ONLY the red/green brush ink to rich grape purple and lavender and replacing the two apple PRINTS with a small realistic printed cluster of purple grapes on its short natural brown stem, with NO LEAVES. No apples or mint.. Everything else is LOCKED: exact black carton shape, thin side depth, camera/front face geometry, pixel framing/margins, white angel mark DESIGN/SIZE/POSITION/TILT, joined wings with 3 broad lobes/side and oval gap. Preserve the existing white mark exactly as flat matte INK flush on this front face, centered on the front excluding right side. Do not redraw, resize, lift or re-center relative to total silhouette. Ingredient illustration stays entirely PRINTED within lower front panel, with no floating objects or shadows outside carton. The brush remains blank with no text. Do not transfer apples or any other motif. No shared leaves/grass/vines, AF letters, real brand, crown, typography, shadow/glow/emboss on emblem. True transparent RGBA background, single carton, same square dimensions. ",
+      "generator_output": "/Users/hasegawaatsuki/.codex-account-c/generated_images/01a140d2-7791-7aa2-9b89-4ad03675a977/exec-479bef96-3358-47c2-b339-aec8df972f2c.png",
+      "references": [
+        "retail-angel-finish-v4/originals/double_apple.png"
+      ],
+      "path": "asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/grape.png",
+      "sha256": "8507042fcc64b6fcd5b143d27c72cc42088b1655e791fb41b82a43b8037c015d"
+    }
+  ]
+}

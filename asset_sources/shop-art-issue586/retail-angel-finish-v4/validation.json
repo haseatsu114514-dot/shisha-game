@@ -1,0 +1,163 @@
+{
+  "method": "Approximate manually inspected front quadrilaterals, rectification and white-ink threshold; not exact calibrated camera or pixel identity. QA layouts only. Native bytes unchanged.",
+  "items": {
+    "double_apple": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "cfa07069088e54dd1da3c8655ef3b0afe413dbdb30ba5831d00617254153fc5c",
+      "visible_bbox_alpha8": [
+        260,
+        131,
+        997,
+        1118
+      ],
+      "alpha1_to7_pixels": 5803,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          501,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49714,
+          0.166
+        ]
+      }
+    },
+    "grape": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "8507042fcc64b6fcd5b143d27c72cc42088b1655e791fb41b82a43b8037c015d",
+      "visible_bbox_alpha8": [
+        255,
+        107,
+        1011,
+        1133
+      ],
+      "alpha1_to7_pixels": 7567,
+      "front_quad_approx": [
+        [
+          257,
+          154
+        ],
+        [
+          928,
+          171
+        ],
+        [
+          928,
+          1129
+        ],
+        [
+          257,
+          1106
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          197,
+          104,
+          501,
+          227
+        ],
+        "width_ratio": 0.43429,
+        "height_ratio": 0.123,
+        "center": [
+          0.49857,
+          0.1655
+        ]
+      }
+    },
+    "mint": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "9f432e753ab7fd3a1ada4b5b51a5d4c11c28b3c9c0e6e2eea2825f29d9e2aacb",
+      "visible_bbox_alpha8": [
+        258,
+        130,
+        1000,
+        1120
+      ],
+      "alpha1_to7_pixels": 8824,
+      "front_quad_approx": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "mark_rectified": {
+        "bbox": [
+          195,
+          103,
+          501,
+          229
+        ],
+        "width_ratio": 0.43714,
+        "height_ratio": 0.126,
+        "center": [
+          0.49714,
+          0.166
+        ]
+      }
+    }
+  },
+  "mark_shape_iou_vs_template_after_bbox_normalization": {
+    "double_apple": 1.0,
+    "grape": 0.95454,
+    "mint": 0.99014
+  }
+}
