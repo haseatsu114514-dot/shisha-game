@@ -90,11 +90,11 @@ assert(flatShisha.aroma >= cubeShisha.aroma);
 assert(cubeShisha.smoke > flatShisha.smoke);
 
 // 4. 80beatハガル無条件+1ボーナスの撤廃と、別メーカー同系統フレーバーの横断判定
-newGame();
-state.equip.bowl = "hagal_80beat";
+const s = newGame();
+s.equip.bowl = "hagal_80beat";
 assert.equal(bonusOf({ equip: { bowl: "hagal_80beat" }, mix: { double_apple: 9, mint: 3 } }).bonus, 0);
 
-state.owned.push("suyaki_minto", "suyaki_adam");
+s.owned.push("suyaki_minto", "suyaki_adam");
 assert.equal(flavorFamilyGrams({ dobaj_mint: 3, absal_double_apple: 9 }, "mint"), 3);
 assert.equal(flavorFamilyGrams({ dobaj_mint: 3, absal_double_apple: 9 }, "double_apple"), 9);
 assert.equal(giftBowlEffect({ equip: { bowl: "suyaki_minto" }, mix: { dobaj_mint: 3, double_apple: 9 } })?.bonus, 1);
@@ -128,8 +128,7 @@ assert.equal(judgeMaxPrefDelta("guest_heavy", heavyJudge), 10.0);
 assert.deepEqual(prefs.map((p) => evaluateJudgeScore("guest_heavy", 80, p, heavyJudge)), [70.0, 75.0, 80.0, 85.0, 90.0]);
 
 // 6. 廃止パイプの返金・移行（非所有セーブは書き換えない）
-newGame();
-const legacyWithPipes = JSON.parse(JSON.stringify(state));
+const legacyWithPipes = JSON.parse(JSON.stringify(newGame()));
 legacyWithPipes.money = 10000;
 legacyWithPipes.owned.push("pipe_middle", "pipe_high");
 legacyWithPipes.equip.pipe = "pipe_high";
