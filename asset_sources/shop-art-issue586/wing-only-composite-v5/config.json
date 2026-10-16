@@ -1,0 +1,149 @@
+{
+  "kind": "code composition of existing generated PNGs; NO new image generation",
+  "authorization": "2026-10-16 03:10:18 UTC human: 画像は翼マークだけ合成でもいい; wing+halo only, representative3, no adoption/rollout",
+  "preedit_head": "0ec190c5368a10bae7124ca37415c549c274edb7",
+  "main": "1ec3dddb",
+  "source_manifest": "../prototype-retail-angel-mark-v3/manifest.json",
+  "canonical": "../prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png",
+  "canonical_sha256": "909a26df9e58dcf18fba26754a3227a6c63a2811d232bc6726096aebcb509e7c",
+  "canonical_crop": [
+    67,
+    406,
+    1187,
+    854
+  ],
+  "canonical_alpha_noise_policy": "keep source alpha>=8 only within 2px dilation of the two large alpha>=128 components; derived coverage /254 clipped; native source bytes unchanged",
+  "front_rectified_size": [
+    700,
+    1000
+  ],
+  "target_uv_center": [
+    0.5,
+    0.185
+  ],
+  "target_width_u": 0.45,
+  "old_white_min": 160,
+  "old_white_chroma_max": 28,
+  "old_mask_dilation_px": 6,
+  "inpaint_method": "local neutral-cardboard cubic surface fit from known pixels; feather only inside old glyph+6px narrow margin, no rectangular repaint",
+  "ink": "matte white RGB247 plus .08 times local cardboard luminance deviation, clipped242..250; coverage from same canonical mark, no shadow/emboss",
+  "items": [
+    {
+      "id": "mint",
+      "source": "../prototype-retail-angel-mark-v3/originals/mint-angel-aligned.png",
+      "source_sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "front_quad_tl_tr_br_bl": [
+        [
+          310,
+          250
+        ],
+        [
+          890,
+          250
+        ],
+        [
+          890,
+          1048
+        ],
+        [
+          310,
+          1040
+        ]
+      ],
+      "old_glyph_search_bbox": [
+        450,
+        335,
+        750,
+        470
+      ],
+      "brand_roi_bbox": [
+        440,
+        325,
+        760,
+        480
+      ]
+    },
+    {
+      "id": "double_apple",
+      "source": "../prototype-retail-angel-mark-v3/originals/double_apple-angel-positioned.png",
+      "source_sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "front_quad_tl_tr_br_bl": [
+        [
+          265,
+          175
+        ],
+        [
+          915,
+          195
+        ],
+        [
+          915,
+          1110
+        ],
+        [
+          265,
+          1090
+        ]
+      ],
+      "old_glyph_search_bbox": [
+        410,
+        280,
+        740,
+        425
+      ],
+      "brand_roi_bbox": [
+        400,
+        270,
+        770,
+        430
+      ]
+    },
+    {
+      "id": "grape",
+      "source": "../prototype-retail-angel-mark-v3/originals/grape-angel-prototype.png",
+      "source_sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "front_quad_tl_tr_br_bl": [
+        [
+          279,
+          195
+        ],
+        [
+          910,
+          210
+        ],
+        [
+          910,
+          1120
+        ],
+        [
+          279,
+          1102
+        ]
+      ],
+      "old_glyph_search_bbox": [
+        445,
+        300,
+        760,
+        438
+      ],
+      "brand_roi_bbox": [
+        430,
+        285,
+        775,
+        444
+      ]
+    }
+  ],
+  "restoration_feather_px": 4.5,
+  "antialias_supersampling": 4,
+  "old_margin_reason": "6px narrow contour margin includes antialias and dark edge imprint; 3px TELEA restoration showed residual old-shaped texture. Only explicit glyph silhouettes are allowed, never a full bounding rectangle.",
+  "worker": "codex-c-shop-art-20261016-8e7fb2cb0e",
+  "thread": "01a140d2-7791-7aa2-9b89-4ad03675a977",
+  "issue": 586,
+  "pr": 587,
+  "claim_run": 38786636524,
+  "scope": "3 source-only representatives; no rollout/adoption/runtime/HMD/character/gacha work",
+  "adoption": "parent review pending; no merge",
+  "reservation_proof": "source claim38786636524 completed success; all12 current Issue586 comments read; latest bot ledger original same owner/run; PR587 same headbbe1d9f6/openDraft. No fresh dispatch.",
+  "manual_front_plane_uncertainty": "Corners visually estimated to approximately +/-2 native pixels; normalized uncertainty about +/-0.0035 u, +/-0.0026 v, angles about +/-0.4 degrees. Not measured camera calibration."
+}
