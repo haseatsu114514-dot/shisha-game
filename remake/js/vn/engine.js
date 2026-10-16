@@ -116,7 +116,7 @@ function kickAuto() {
 // ---------------------------------------------------------------- 再生
 
 /** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
-function waitSceneAssets(task, owner = running) {
+function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
   let notice = null;
   const timer = setTimeout(() => {
     if (running !== owner) return;
@@ -124,7 +124,9 @@ function waitSceneAssets(task, owner = running) {
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
   }, 500);
-  return Promise.resolve(task).finally(() => { clearTimeout(timer); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
+  // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
+  return Promise.all([task, loaded]).then(([value]) => value);
 }
 
 /**
@@ -194,7 +196,8 @@ export function play(idOrDlg, opts = {}) {
     }
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
-    waitSceneAssets(Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]), me).then(() => {
+    const assetsReady = Promise.all([bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       me.ready = true;
       layers.vn.classList.add("active");
@@ -224,18 +227,22 @@ function speakerBgm(id) {
 /** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
 const sceneContext = (dlg) => (dlg?.metadata?.private_scene ? "private" : null);
 
-/** 最初の数行で出る立ち絵の URL */
+/** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
+function linePortraits(line) {
+  return [...new Set([
+    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
+  ].filter(Boolean))];
+}
+
+/** 最初の表示行に必要な絵だけを幕の内側で準備する。後続の表情は先読みへ任せる。 */
 function firstPortraits(dlg) {
-  const out = [];
   for (const l of dlg.lines || []) {
-    if (out.length >= 2) break;
-    const character = l.portrait === false ? null : l.portrait || l.speaker;
-    if (character && !NO_PORTRAIT.has(character)) {
-      const p = portraitInfo(character, l.portrait_face || l.face);
-      if (p && !out.includes(p.src)) out.push(p.src);
-    }
+    if (!l.type) return linePortraits(l);
+    // 分岐・別場面・演出を越えた行を、今の場面の開始条件にしない。
+    if (["choice", "condition", "jump", "bg", "show_cg", "hide_cg", "motion", "reflection", "game_over"].includes(l.type)) break;
   }
-  return out;
+  return [];
 }
 
 /** 会話の背景（昼夜の差分・夜の色調補正つき） */
@@ -533,11 +540,8 @@ async function showLine(line) {
   if (!r) return;
   r.ready = false;
   clearTimeout(autoTimer);
-  const images = [
-    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
-    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
-  ].filter(Boolean);
-  // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
+  const images = linePortraits(line);
+  // 先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
   await waitSceneAssets(Promise.all(images.map((url) => imageReady(url, 15000))), r);
   if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);

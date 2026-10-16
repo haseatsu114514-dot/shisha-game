@@ -56,6 +56,7 @@ export function initLayers() {
 
 let bgNow = "";
 let bgTask = Promise.resolve();
+let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
@@ -118,18 +119,24 @@ export function uiArtReady(ms = 2000) {
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
- * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
+ * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
 export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
-  if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
+  if (key === bgNow) {
+    refreshWeather();
+    const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
+    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+  }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
-  bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
+  bgAssetsReady = Promise.all([...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000)));
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img");
     renderSceneArt(next, url);
@@ -155,7 +162,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
   });
-  return bgTask;
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
