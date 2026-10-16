@@ -10,6 +10,29 @@ const browser=await chromium.launch({headless:true});const results=[];
 const ctl=(p,id)=>p.locator(`[data-test="${id}"]`);
 async function lines(p){for(let n=0;n<60&&await ctl(p,'trpg-next').isVisible();n++)await ctl(p,'trpg-next').click();}
 async function fit(p,label){
+ // Full rectangles must survive every clipping ancestor, not merely fit their own box.
+ const visible=async (locator,frame=false)=>locator.evaluate((el,frame)=>{
+   const r=el.getBoundingClientRect(), scale=document.getElementById('stage').getBoundingClientRect().width/1280;
+   const pad=frame?14*scale:0;
+   const box={left:r.left-pad,top:r.top-pad,right:r.right+pad,bottom:r.bottom+pad};
+   const clips=[{name:'viewport',left:0,top:0,right:innerWidth,bottom:innerHeight}];
+   for(let a=el.parentElement;a;a=a.parentElement){const st=getComputedStyle(a),b=a.getBoundingClientRect();
+     if(/hidden|clip|auto|scroll/.test(st.overflowX+' '+st.overflowY))clips.push({name:a.id||a.className,left:b.left,top:b.top,right:b.right,bottom:b.bottom});
+   }
+   const failures=clips.filter(c=>box.left<c.left-.1||box.top<c.top-.1||box.right>c.right+.1||box.bottom>c.bottom+.1);
+   const hits=frame||el.tagName==='H2'?[]:[[6,6],[r.width-6,6],[6,r.height-6],[r.width-6,r.height-6],[r.width/2,r.height/2]].map(([x,y])=>{const h=document.elementFromPoint(r.left+x,r.top+y);return !!h&&(el===h||el.contains(h));});
+   return {box,clips,failures,hits};
+ },frame);
+ const visibility=[];
+ for(const [locator,frame] of [[p.locator('.trpg-roll-stage'),true],[p.locator('.trpg-roll-stage > h2'),false],...await p.locator('.trpg-modal-actions button').all().then(xs=>xs.map(x=>[x,false]))]){
+   const v=await visible(locator,frame);assert.deepEqual(v.failures,[],label+' clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' action corner obscured '+JSON.stringify(v));visibility.push(v);
+ }
+ // Scrollable body controls must become completely visible and operable.
+ for(const control of await p.locator('.trpg-modal-body button:not(:disabled), .trpg-modal-body summary, label.trpg-aid').all()){
+   if(!await control.isVisible())continue;
+   await control.scrollIntoViewIfNeeded();const v=await visible(control);assert.deepEqual(v.failures,[],label+' body control clipped '+JSON.stringify(v));assert(v.hits.every(Boolean),label+' body control obscured '+await control.getAttribute('class')+' '+JSON.stringify(v));
+ }
+ await p.locator('.trpg-modal-body').evaluate(n=>n.scrollTop=0);
  await p.screenshot({path:path.join(out,label+".png")});
  const metrics=await p.locator('.trpg-roll-stage').evaluate(n=>{
   const controls=[...n.querySelectorAll('button:not(:disabled),summary,label.trpg-aid')].filter(x=>x.checkVisibility());
@@ -23,7 +46,7 @@ async function fit(p,label){
    assert(textSize>=11.9,label+' helper explanation must remain readable');
  }
 
- results.push({label,...metrics});await p.screenshot({path:path.join(out,label+'.png')});
+ results.push({label,visibility,...metrics});await p.screenshot({path:path.join(out,label+'.png')});
 }
 try{
  for(const scenario of ['ordinary-cup','shark-last-order']){
@@ -57,6 +80,7 @@ try{
   assert.match(await p.locator('.trpg-aid-art img').getAttribute('src'),new RegExp(helper));
   for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
     await p.setViewportSize({width,height});await fit(p,`${scenario}-aid-${width}x${height}`);
+    await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);await ctl(p,'trpg-details-toggle').press('Space');
     await ctl(p,'trpg-support-'+helper).press('Space');assert(await ctl(p,'trpg-support-'+helper).isChecked());
     assert.match(await ctl(p,'trpg-bonus').textContent(),/3/);await ctl(p,'trpg-support-'+helper).press('Space');
   }
@@ -68,6 +92,15 @@ try{
   await ctl(p,'trpg-serve-open').click();assert.equal(await p.locator('.trpg-aid input').count(),0,'No teamwork means helper unavailable');
   await fit(p,scenario+'-help-unavailable');
   await context.close();
+ }
+ for(const scenario of ['ordinary-cup','shark-last-order'])for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
+   const c=await browser.newContext({viewport:{width:1280,height:720},hasTouch:true});const p=await c.newPage();
+   await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);
+   await p.setViewportSize({width,height});await ctl(p,'trpg-details-toggle').press('Enter');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
+   await fit(p,`${scenario}-${width}x${height}-actual-result`);
+   assert(await ctl(p,'trpg-reroll-0').count());await ctl(p,'trpg-reroll-0').click();await ctl(p,'trpg-settle').waitFor();
+   await fit(p,`${scenario}-${width}x${height}-rerolled-result`);
+   await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
  }
  // Discover deterministic seeds with the unchanged real model, then roll in DOM.
  const scenarioData=JSON.parse(fs.readFileSync(new URL('../../../data/dialogue/trpg_ordinary.json',import.meta.url)));

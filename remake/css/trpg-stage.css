@@ -455,8 +455,9 @@
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions .trpg-button {
   min-height: max(46px, calc(44 * var(--roll-unit))); flex-shrink: 0;
 }
+/* The viewport-sized judgement can cross the letterboxed scene at any ratio. */
+#stage:has(.trpg-roll-stage), .trpg-root.trpg-cinematic:has(.trpg-roll-stage) { overflow: visible; }
 @media (orientation: portrait) and (max-width: 600px) {
-  #stage:has(.trpg-roll-stage), .trpg-root.trpg-cinematic:has(.trpg-roll-stage) { overflow: visible; }
   .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-actions .trpg-button { flex: 0 0 auto; }
 }
 @media (max-width: 1000px), (max-height: 600px) {

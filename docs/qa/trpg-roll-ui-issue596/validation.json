@@ -66,5 +66,16 @@
     "rolling-success.png": "cd4eb52369255aee7173b9ba6da90edba242c2856a3d34feb992daa1e5348958",
     "shark-last-order-result.png": "d1a7c67b4a179c2d7d8f2ae0afc3b2aa2ac34b8d3dcbd6068b3d286c101e20ed",
     "ordinary-cup-result.png": "93fb34142ee457eb0c74755330a27a0d003c6b79c5b407bbc7f939661729046b"
+  },
+  "initial_evidence_notice": "Initial own-box test missed ancestor clipping at 800x600. Superseded by review-fix evidence for visual visibility; initial model checks remain applicable because runtime JS/data unchanged.",
+  "review_fix": {
+    "status_run": 38838254872,
+    "claim_run": 38835056628,
+    "test": "node remake/test/browser/trpg_tabletop.mjs",
+    "result": "PASS: 58 captures; full frame/title/actions against viewport and clipping ancestors; corner insets and center hit tests; scrollable body controls; details with helper and actual roll/reroll/continue both scenarios all four sizes",
+    "evidence": "review-fix/measurements.json",
+    "runtime_change": "Only remove stage/root overflow while .trpg-roll-stage exists at all orientations. JS/data/assets unchanged.",
+    "static_export": "Pending committed fixed source verification; see review-fix report",
+    "capture_count": 58
   }
 }
