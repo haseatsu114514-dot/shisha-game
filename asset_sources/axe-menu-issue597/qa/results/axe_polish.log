@@ -1,0 +1,6 @@
+[axe-polish] PASS: pc-board-input-results-and-total
+[axe-polish] PASS: touch-portrait-board-input-results-and-total
+[axe-polish] PASS: touch-landscape-board-input-results-and-total
+[axe-polish] PASS: keyboard-focus-is-once-and-reaim-keeps-use
+[axe-polish] PASS: impact-pauses-in-rules-and-opponent-rejects-shortcuts
+[axe-polish] PASS: reduced-motion-keeps-result-without-impact-animation

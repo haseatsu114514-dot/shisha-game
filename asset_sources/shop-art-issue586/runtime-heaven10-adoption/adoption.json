@@ -1,0 +1,67 @@
+{
+  "user_adopted_at": "2026-10-16T04:23:41Z",
+  "evidence": "フレーバーはこれで行こう / libfile_321f31ee40f88191bb7993e4b2b3c809",
+  "scope": "Heaven10 only; pending8 retain main botanical sheet; HMD3 text; no merge authorization",
+  "items": [
+    {
+      "id": "mint",
+      "source": "wing-only-heaven10-v6/outputs/mint-wings-composite.png",
+      "sha256": "d65bf690203e60c140cc85b9b9789e5573938b7b672e90502574c28e76b79d71",
+      "delivery": "remake/img/shop/heaven10/mint.webp"
+    },
+    {
+      "id": "double_apple",
+      "source": "wing-only-heaven10-v6/outputs/double_apple-wings-composite.png",
+      "sha256": "5f663c8d24ffdf00d462aa710270564e1c9afb5f7730f22e528ce9d9eae9e674",
+      "delivery": "remake/img/shop/heaven10/double_apple.webp"
+    },
+    {
+      "id": "blueberry",
+      "source": "wing-only-heaven10-v6/outputs/blueberry-wings-composite.png",
+      "sha256": "c8547279c95bae2732a1e235a409d815c975dda3b98d584d3633e97a13cd8ec8",
+      "delivery": "remake/img/shop/heaven10/blueberry.webp"
+    },
+    {
+      "id": "strawberry",
+      "source": "wing-only-heaven10-v6/outputs/strawberry-wings-composite.png",
+      "sha256": "bcf290ed6e47530d21b4db66011bcaeafe4b529a0f15a3a7381358368f230a6b",
+      "delivery": "remake/img/shop/heaven10/strawberry.webp"
+    },
+    {
+      "id": "pineapple",
+      "source": "wing-only-heaven10-v6/outputs/pineapple-wings-composite.png",
+      "sha256": "042f052fc7cf848165232b73948ea994bfad21b0839a25c81599e4274bf5ee24",
+      "delivery": "remake/img/shop/heaven10/pineapple.webp"
+    },
+    {
+      "id": "lemon",
+      "source": "wing-only-heaven10-v6/outputs/lemon-wings-composite.png",
+      "sha256": "eecaa5f0397cf57225e41aee9b2bb68f318fb7371cc6034d0e49d13590662695",
+      "delivery": "remake/img/shop/heaven10/lemon.webp"
+    },
+    {
+      "id": "orange",
+      "source": "wing-only-heaven10-v6/outputs/orange-wings-composite.png",
+      "sha256": "5124270384576d5051f5ef255011b8a796585b80afca408f332d5500b6ed3d00",
+      "delivery": "remake/img/shop/heaven10/orange.webp"
+    },
+    {
+      "id": "grape",
+      "source": "wing-only-heaven10-v6/outputs/grape-wings-composite.png",
+      "sha256": "33a1e94de92a0ba4070865bab1f296aa484706c8b532d63eae78dcc8b998e4e8",
+      "delivery": "remake/img/shop/heaven10/grape.webp"
+    },
+    {
+      "id": "watermelon",
+      "source": "wing-only-heaven10-v6/outputs/watermelon-wings-composite.png",
+      "sha256": "92cd6aec45700cf542ea634b5dfcad6b1f0d82abeb8aade06ed1e3abb3b0584c",
+      "delivery": "remake/img/shop/heaven10/watermelon.webp"
+    },
+    {
+      "id": "cinnamon",
+      "source": "wing-only-heaven10-v6/outputs/cinnamon-wings-composite.png",
+      "sha256": "d29390a0f759234ba4de2d542a12e81203f9abdac2366faa9229de5fc382f66b",
+      "delivery": "remake/img/shop/heaven10/cinnamon.webp"
+    }
+  ]
+}

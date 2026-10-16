@@ -47,12 +47,20 @@ export async function loadChapterTwoDialogues() {
 }
 
 export async function loadPreparationDialogues() {
-  const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+  const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   const files = { ch2_preparation: required };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
+    if (file === "ch2_preparation") {
+      for (const id of ids.filter(id => id.endsWith("_followup"))) {
+        if (!dialogues[id].lines.every(line => line && !line.type && typeof line.text === "string"
+          && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
+          throw new Error(`${file}: 続編台本の形式を確認してください ${id}`);
+        }
+      }
+    }
     return Object.fromEntries(ids.map(id => [id, dialogues[id]]));
   }));
   Object.assign(DB.dialogues, ...groups);

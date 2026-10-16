@@ -4,7 +4,7 @@ import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
@@ -42,6 +42,7 @@ import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
 import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
+import { playCh1Title } from "./ch1-title-motion.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -102,7 +103,7 @@ export async function startNewGame() {
   setupHooks();
   state.flags._ch1_opening = {};
   save();
-  await openingPart();
+  if (await openingPart() === false) return;
   await dailyPart();
 }
 
@@ -113,6 +114,7 @@ function openingProgress() {
 }
 
 async function openingPart() {
+  const owner = state;
   const progress = openingProgress();
   clearScreen();
   if (!progress.introDone) {
@@ -126,7 +128,8 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
-    await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
+    const titleResult = await playCh1Title();
+    if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
     await playTonariOpening();
     progress.introDone = true;
@@ -171,7 +174,7 @@ export async function resumeGame() {
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
-  if (state.phase === "opening") await openingPart();
+  if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
 }
 

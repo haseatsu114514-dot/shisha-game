@@ -15,6 +15,7 @@ on:
       - 'remake/test/browser/axe_versus.mjs'
       - 'remake/test/browser/axe_polish.mjs'
       - 'remake/test/browser/axe_lesson.mjs'
+      - 'remake/test/browser/axe_menu_decor.mjs'
       - 'data/dialogue/axe_versus.json'
       - 'data/dialogue/axe_tutorial.json'
       - 'assets/ui/axe_throw/**'
@@ -67,6 +68,7 @@ jobs:
           COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs
           COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs
           COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs
+          node remake/test/browser/axe_menu_decor.mjs
           node remake/test/browser/save_load.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
       - uses: actions/upload-artifact@v7.0.2

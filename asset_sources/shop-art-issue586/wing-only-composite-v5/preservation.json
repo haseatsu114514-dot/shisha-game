@@ -1,0 +1,14 @@
+{
+  "preedit_head": "0ec190c5368a10bae7124ca37415c549c274edb7",
+  "old_shop_art_files_exact_git_blob_bytes": 113,
+  "old_source_change_paths": [],
+  "data_assets_remake_change_paths": [],
+  "native_sha256_matches_manifest": true,
+  "result_all_alpha_exact": true,
+  "result_off_mask_rgba_changed_pixels": [
+    0,
+    0,
+    0
+  ],
+  "notes": "Existing v2/v3/v4/native outputs and old21 delivery are untouched; no runtime/HMD/data edits. Preedit baseline is explicit main merge0ec190c5. This is not runtime adoption or shop QA."
+}

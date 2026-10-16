@@ -177,11 +177,13 @@ await suite('chapter-titles', async check => {
   await check('real-new-game-chapter-one-entry', async page => {
     await page.evaluate(() => { __remake.vnTest.turbo = true; });
     await page.locator('[data-test="title-new"]').click();
-    await page.locator('.chapter-card.show').waitFor({ timeout: 60000 });
-    await drawn(page, (await entries(page))[0]);
+    await page.locator('.ch1-title-motion[data-art="ready"]').waitFor({ timeout: 60000 });
+    await page.waitForFunction(() => Number(document.querySelector('.ch1-title-motion')?.dataset.elapsed) >= 3150);
     assert.equal(await page.evaluate(() => __remake.state.chapter), 1);
+    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 1);
+    assert.equal(await page.locator('.chapter-card').count(), 0);
     await page.screenshot({ path: path.join(out, 'new-game-chapter-1.png') });
-    await page.locator('.chapter-card').waitFor({ state: 'detached' });
+    await page.locator('.ch1-title-motion').waitFor({ state: 'detached' });
     await page.waitForFunction(() => __remake.state.flags._ch1_opening?.introDone, null, { timeout: 60000 });
   });
 

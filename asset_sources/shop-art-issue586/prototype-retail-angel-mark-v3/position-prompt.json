@@ -1,0 +1,14 @@
+{
+  "tool": "image_gen.imagegen (built-in)",
+  "reason": "Third-pass widths .460/.464/.446; apple center (.522,.160) differs from mint/grape. Position-only correction requested; all prior outputs kept.",
+  "call": {
+    "id": "double_apple_position_only",
+    "item_id": "double_apple",
+    "referenced_image_paths": [
+      "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-aligned.png"
+    ],
+    "transparent_background": true,
+    "output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-positioned.png",
+    "prompt": "Use case: precise-object-edit. Image 1 is the edit target, a black shallow double-apple carton with a white abstract wings-and-halo emblem. Make ONE tiny print-position adjustment ONLY. Translate the ENTIRE existing white emblem (both wings AND halo together as one rigid unit) exactly 14 pixels LEFT and 24 pixels DOWN on this existing 1254x1254 canvas. Keep the exact current emblem silhouette, halo-to-wing spacing, feather curves, width, height, proportions, orientation, flat white ink and all details unchanged. Restore the small vacated area with the same plain dark carton stock. Do not redesign, redraw, resize, rotate, add or remove any part of the emblem. This translation aligns its center to front-panel u=.50,v=.185, while preserving its current roughly46% front-width footprint. DO NOT move or change the carton, camera, canvas, framing/scale, folds, highlights, red/green brush, red and green apples or their positions/material. The whole carton must remain at exactly the same coordinates with the same transparent margins. No text, letters, AF, crown, new symbols, new objects, grass, decorative leaves or glow. Preserve true RGBA transparency. Only move that existing white printed emblem a little left/down."
+  }
+}
