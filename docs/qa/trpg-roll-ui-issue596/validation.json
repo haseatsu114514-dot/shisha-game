@@ -75,7 +75,19 @@
     "result": "PASS: 58 captures; full frame/title/actions against viewport and clipping ancestors; corner insets and center hit tests; scrollable body controls; details with helper and actual roll/reroll/continue both scenarios all four sizes",
     "evidence": "review-fix/measurements.json",
     "runtime_change": "Only remove stage/root overflow while .trpg-roll-stage exists at all orientations. JS/data/assets unchanged.",
-    "static_export": "Pending committed fixed source verification; see review-fix report",
-    "capture_count": 58
+    "static_export": {
+      "commit": "2b73b090b4cf145d455e3f0ff293d18f897a98eb",
+      "files": 51,
+      "bytes": 11094701,
+      "port": 8597,
+      "result": "PASS full 58-state tabletop suite and 3 decoration decode checks; SOURCE hashes checked for every exported file"
+    },
+    "capture_count": 58,
+    "runtime_source_commit": "2b73b090b4cf145d455e3f0ff293d18f897a98eb",
+    "regressions": {
+      "trpg.mjs": "PASS all 16 cases",
+      "trpg_experience.mjs": "PASS all 4 cases including touch reduced motion",
+      "trpg_main.mjs": "PASS all 13 cases"
+    }
   }
 }
