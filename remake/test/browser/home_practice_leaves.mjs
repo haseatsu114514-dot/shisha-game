@@ -51,7 +51,52 @@ async function completes(page, tap) {
   assert.deepEqual((await page.evaluate(() => window.__practice.value)), { used: true, exerted: true });
 }
 
+// 日常の実経路: タイトルからLOAD→地図→家→「家で練習する」→「一台を通して」→配合画面
+async function realPathToMix(page, tap) {
+  const act = async (id) => { const t = page.locator(`[data-test="${id}"]`); await t.scrollIntoViewIfNeeded(); if (tap) await t.tap(); else await t.click(); };
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), s = core.newState();
+    Object.assign(s, { phase: "daily", day: 6, slot: 0, money: 45678, stamina: 90, weatherSeed: 4 });
+    Object.assign(s.flags, { _morning_6: true, _lime_tut: 1, _lime_opened: true });
+    s.flavorStock = { double_apple: 20, mint: 10 };
+    localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); localStorage.setItem("suien_remake_slot1", JSON.stringify(s));
+  });
+  await page.reload(); await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
+  await page.evaluate(() => { window.__remake.vnTest.turbo = true; });
+  await act("title-load"); await act("slot-1");
+  const deadline = Date.now() + 90000;
+  while (!(await page.evaluate(() => document.body.dataset.screen === "map" && !document.body.classList.contains("vn-open")))) {
+    assert(Date.now() < deadline, "地図に着かない");
+    const choice = page.locator(".vn-choices.show button:not(:disabled)");
+    if (await choice.count()) await choice.first().click({ timeout: 500 }).catch(() => {});
+    else if (await page.evaluate(() => document.body.classList.contains("in-vn"))) await page.keyboard.press("Enter");
+    await page.waitForTimeout(100);
+  }
+  await act("pin-rest"); await act("map-home-practice"); await act("home-practice-full");
+  await page.locator('[data-test="mix-ok"]').waitFor();
+}
+
 await suite("home-practice-leaves", async (check) => {
+  for (const [label, opts, tap] of [["pc", {}, false], ["touch", touch, true]]) {
+    await check(`${label}-title-mid-practice-keeps-pre-action-save`, async (page) => {
+      await realPathToMix(page, tap);
+      // 体力は作り始めに引かれている（まだ保存はされていない）
+      assert.equal(await page.evaluate(() => window.__remake.state.stamina), 78);
+      // 会話中など見えないMENUからでも「タイトルへ戻る」に届いた場合を、MENUの処理を直接呼んで再現する
+      await page.locator('[data-test="hud-menu"]').dispatchEvent("click");
+      await page.locator('[data-test="menu-title"]').waitFor();
+      await Promise.all([page.waitForEvent("load"), page.locator('[data-test="menu-title"]').dispatchEvent("click")]);
+      await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
+      const saved = await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        const s = JSON.parse(localStorage.getItem(core.SAVE_KEY));
+        return { stock: s.flavorStock, stamina: s.stamina, slot: s.slot, runs: (s.flags._craft_practice_runs || []).length };
+      });
+      assert.deepEqual(saved, { stock: { double_apple: 20, mint: 10 }, stamina: 90, slot: 0, runs: 0 },
+        "途中でタイトルへ戻っても、葉・体力・行動・記録は行動前のまま");
+    }, opts);
+  }
+
   await check("pc-full-run-consumes-once", page => completes(page, false));
   await check("touch-full-run-consumes-once", page => completes(page, true), touch);
 
