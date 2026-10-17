@@ -205,10 +205,13 @@ await suite("mix-temperature", async check => {
       const base = { equip: {}, mix: { mint: 12 }, pull: { score: 80, temp: .76, pulls: 2, over: true } };
       const mintRisk = score.computeShisha(base).burnRisk;
       const mintCenterRisk = score.computeShisha({ ...base, pull: { ...base.pull, temp: .648, over: false } }).burnRisk;
+      const afBase = { ...base, mix: { cotton_candy: 12 }, pull: { ...base.pull, temp: .54, over: false } };
+      const afRisk = score.computeShisha(afBase).burnRisk;
+      const afCenterRisk = score.computeShisha({ ...afBase, pull: { ...afBase.pull, temp: .432 } }).burnRisk;
       const vanillaBase = { ...base, mix: { vanilla: 12 }, pull: { ...base.pull, temp: .54, over: false } };
       const vanillaRisk = score.computeShisha(vanillaBase).burnRisk;
       const vanillaCenterRisk = score.computeShisha({ ...vanillaBase, pull: { ...vanillaBase.pull, temp: .432 } }).burnRisk;
-      return { rows, isolated, mintRisk, mintCenterRisk, vanillaRisk, vanillaCenterRisk };
+      return { rows, isolated, mintRisk, mintCenterRisk, afRisk, afCenterRisk, vanillaRisk, vanillaCenterRisk };
     });
     for (const row of results.rows) {
       assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal, JSON.stringify(row));
@@ -216,7 +219,9 @@ await suite("mix-temperature", async check => {
       assert.equal(row.ready, row.ideal); assert.equal(row.rainbow, row.optimal);
     }
     assert(results.rows.length >= 768); assert(results.isolated);
-    assert.equal(results.mintRisk, results.mintCenterRisk); assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 12);
+    assert.equal(results.mintRisk, results.mintCenterRisk);
+    assert.equal(results.afRisk - results.afCenterRisk, 12);
+    assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 6);
   });
 
   await check("legacy-save-care-start-and-auto-targets", async page => {
