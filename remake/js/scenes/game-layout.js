@@ -37,7 +37,7 @@ export function initGameLayout() {
     const mode = readTitleLayout(), screen = body.dataset.screen;
     body.dataset.gameLayout = mode;
     const vn = body.classList.contains("vn-open");
-    const view = vn ? "vn" : ["map", "tonari", "bench"].includes(screen) ? screen : null;
+    const view = vn ? "vn" : ["map", "tonari", "home", "bench"].includes(screen) ? screen : null; // home: 家で練習（#638）
     const inGame = vn || screen !== "boot" && screen !== "title";
     const ready = getComputedStyle(document.documentElement).getPropertyValue("--game-layout-ready").trim() === "1";
     tried ||= inGame && mode === "ds";
