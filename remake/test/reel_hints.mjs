@@ -50,14 +50,14 @@ eq(reel.core.SETTINGS, {
   5: { weight: 8, reg: 1.25, big: 1.1, bell: 32 }, 6: { weight: 5, reg: 1.45, big: 1.18, bell: 36 },
 });
 
-// 説明: 場所を明かさない・固定曜日と書かない・確定ではないことを伝える
-const help = [...reel.GUIDE.flat(), ...reel.INTRO_GUIDE].join("\n");
-assert(!/観音|お参り|曜日|毎週|週替わり/.test(help), "場所・固定曜日を書かない");
-for (const must of ["1〜6", "必ず当たるわけではない", "7日", "章が変わる", "同じ設定", "低い設定", "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！"]) {
+// 説明（遊び方カード・#639）: 場所を明かさない・固定曜日と書かない・確定ではないことを伝える・文字は短く
+const help = reel.GUIDE.map((g) => `${g.head} ${g.body}`).join("\n");
+assert(!/観音|お参り|曜日|毎週|週替わり|金|虹/.test(help), "場所・固定曜日・金/虹の予告を書かない");
+for (const must of ["1〜6", "必ず当たるわけではない", "7日", "章が変わる", "同じ設定", "低い設定", "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！", "確定ではない", "次のゲーム"]) {
   assert(help.includes(must), must);
 }
-assert(/偶数・奇数や高い・低い(のヒント)?は確定(ではない|じゃない)/.test(reel.INTRO_GUIDE.join("")), "初回説明でも確定ではないと伝える");
-assert.equal(reel.INTRO_GUIDE.length, 3, "初回の説明は短く");
+for (const g of reel.GUIDE) assert([...g.body].length <= 40, `ラミネートのように短く: ${g.body}`);
+eq(reel.core.CUE_ORDER, ["blue", "green", "red"]);
 
 // 示唆の履歴: 設定変更ごとに分け、同じ日の変更でも前の示唆を今の設定の証拠にしない
 const s = core.newGame();

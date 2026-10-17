@@ -90,14 +90,14 @@ function redrawSetting(reel, kind) {
   const note = reel.note || (reel.note = {});
   note.settingChanges = (note.settingChanges || 0) + 1;
 }
-// 文字色予告（#621）。スロットの序列: 青 < 緑 < 赤 < 金 < 虹（虹は当たり確定）。
-// 色は「次ゲーム」の予告。次の回転が当たりかどうかで色の出方を変え、次ゲームの当選率の目安を
-// 青15%・緑40%・赤70%・金90%・虹100% にする。出るのは約10回転に1回（うるさくしない）。
+// 文字色予告（#621・#639）。次ゲームの当選を予告する。色は 青 < 緑 < 赤 の3色まで（オーナー指定）。
+// 次ゲームの当選率の目安は、実機の公開データ（青10〜32%・緑26〜90%・赤95〜100%）の中央付近から
+// 青15%・緑45%・赤95%。出るのは約11回転に1回（うるさくしない）。
 // 抽選本体とは別のストリームで決めるので、役や出目は変わらない。
-const CUE_ORDER = ["blue", "green", "red", "gold", "rainbow"];
+const CUE_ORDER = ["blue", "green", "red"];
 const CUE_RATES = {
-  peka: { blue: 0.084, green: 0.105, red: 0.0975, gold: 0.075, rainbow: 0.05 },
-  other: { blue: 0.056, green: 0.019, red: 0.005, gold: 0.001, rainbow: 0 },
+  peka: { blue: 0.092, green: 0.152, red: 0.146 },
+  other: { blue: 0.062, green: 0.022, red: 0.0009 },
 };
 function cueFor(seed, count, peka) {
   const rng = mulberry32((seed ^ Math.imul(count + 1, 0x85EBCA6B) ^ 0xC0E) >>> 0);
@@ -659,10 +659,8 @@ const CUE_LINES = {
   blue: ["ん？ 次……？", "おや？", "ぷ？", "なにか来る？"],
   green: ["次、きてるかも……！", "む、この感じ……", "ちょっと期待して！", "ぷぷ……次……？"],
   red: ["次、アツいかも！", "ドキドキしてきた……！", "チャンスかもっ！", "これは……！"],
-  gold: ["次、キタかも！！", "光る予感……！！", "これはもらった！？", "ぷぷぷっ！？"],
-  rainbow: ["ぷぷぷぷぷっ！！", "次、光っちゃうかも〜！！", "ボク、もうガマンできない！！"],
 };
-const CUE_SE = { red: () => SE.puka(), gold: () => SE.puka(), rainbow: () => SE.pugo() };
+const CUE_SE = { red: () => SE.puka() };
 // 緑以上の予告が外れたとき
 const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今のはナシで！", "おかしいな〜", "期待させちゃった？", "ぐぬぬ、次こそ！"];
 
@@ -701,7 +699,7 @@ async function afterStop(r, fast) {
       if (alive()) widget.classList.toggle("warm", r.ceilingRemain > 0 && r.ceilingRemain <= 3);
       if (!fast) {
         if (r.nextCue) { /* このあと次ゲームの予告を出す */ }
-        else if (["green", "red", "gold"].includes(r.cued)) bubble(pick(CUE_MISS), 1500);
+        else if (["green", "red"].includes(r.cued)) bubble(pick(CUE_MISS), 1500);
         else if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
           const pool = r.ceilingRemain <= 1 ? CEILING_HINTS.soon : r.ceilingRemain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far;
           bubble(pick(pool), 1500, r.ceilingRemain <= 1 ? "hot" : null);
@@ -983,17 +981,35 @@ export function noteSummary(reel) {
   };
 }
 
-// 遊び方（システムの説明。数字の確率は出さない）。設定が変わる特定のスポットは明かさない（見つける楽しみ・#634）
+// 遊び方カード（#639 オーナー「店にあるスロットのラミネートくらい文字を減らして」）。
+// 短い見出し＋ひとこと＋絵。確率の数字は出さず、設定が変わる特定のスポットの名前も出さない（#634）。
+// art: "lamp"=光ったパッキー／図柄の配列=リールの図柄／"cue"=青緑赤の色見本
 export const GUIDE = [
-  ["大当たり", "パッキーの顔が光ったら大当たり。BIG（赤7・赤7・赤7）とREG（赤7・赤7・BAR）があって、直前の行動で伸びた能力がさらに伸びるよ。"],
-  ["外れても", "外れても能力は少し伸びるよ。当たりのない回転が続いても、天井で必ず当たるよ。"],
-  ["文字色予告", "外れたあと、パッキーが色付きの文字でつぶやくことがあるよ。それは次の回転の期待度。青＜緑＜赤＜金＜虹の順に熱くて、虹なら次は大当たり確定！ 次の回転では、枠がその色に光るよ。"],
-  ["設定", "設定とは、当たりやすさを決める1〜6の段階。数字が大きいほどボーナスやベルが出やすいけど、必ず当たるわけではないよ。"],
-  ["設定が変わるとき", "前回の抽選から7日たつか、章が変わると、次にスロットが回る行動のときに選び直されるよ。同じ設定や、低い設定になることもあるよ。"],
-  ["ひみつ", "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！"],
-  ["設定変更の合図", "設定が変わると筐体が白く光るよ。変わった直後とゲームを始めた直後の1回転は、リールがガクッと揺れる（ガックン）。"],
-  ["設定のヒント", "パッキーの水色の吹き出しは設定のヒントで、文字色予告とは別だよ。偶数・奇数や高い・低いのヒントは確定ではないよ。ノートには、今の設定のヒントと前の設定のヒントを分けて残すよ。"],
+  { head: "光ったら当たり", body: "パッキーが光ればボーナス！", art: "lamp" },
+  { head: "BIG", body: "7・7・7", art: ["seven", "seven", "seven"] },
+  { head: "REG", body: "7・7・BAR", art: ["seven", "seven", "bar"] },
+  { head: "次ゲーム予告", body: "色文字が出たら、次のゲームの当たりに期待！", art: "cue" },
+  { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" },
+  { head: "設定1〜6", body: "大きいほど当たりやすい（必ず当たるわけではない）" },
+  { head: "設定が変わる", body: "前回の抽選から7日／章が変わると選び直し。同じ設定や低い設定もある" },
+  { head: "ガックン", body: "リールがガクッ＝設定が変わった合図" },
+  { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
+  { head: "ひみつ", body: "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！" },
 ];
+const CUE_JA = { blue: "青", green: "緑", red: "赤" };
+
+/** ラミネートの遊技説明のようなカード（ノートの遊び方と、初回の説明で使う） */
+function guideCard() {
+  const art = (g) => {
+    if (g.art === "lamp") return el("span.rn-art.lamp", [pakkiFace()]);
+    if (g.art === "cue") return el("span.rn-art.cue", CUE_ORDER.map((c) => el(`i.cue-chip.cue-${c}`, { text: CUE_JA[c] })));
+    if (Array.isArray(g.art)) return el("span.rn-art.syms", g.art.map((id) => el("span.rn-sym", { html: SYM[id]() })));
+    return null;
+  };
+  return el("div.rn-card", { dataset: { test: "reel-guide-card" } }, GUIDE.map((g) => el(`div.rn-tile${g.art ? ".has-art" : ""}`, [
+    el("b.rn-tile-head", { text: g.head }), art(g), el("span.rn-tile-body", { text: g.body }),
+  ])));
+}
 
 export function openNote() {
   if (!state?.reel?.installed) return Promise.resolve();
@@ -1037,7 +1053,7 @@ export function openNote() {
     // 2ページ目: 遊び方（キャラではなくシステムの説明）
     const guide = el("div.rn-panel.rn-guide", [
       el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの遊び方" })]),
-      el("ul.rn-guide-list", GUIDE.map(([head, body]) => el("li", [el("b", { text: head }), el("span", { text: body })]))),
+      guideCard(),
       el("span.ri-next", { text: "▼ タップで閉じる" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
@@ -1061,12 +1077,7 @@ const INTRO_LINES = [
   "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
   "外れても大丈夫。回したぶんだけ、がんばりがちゃーんと積もるよ。ボクの顔をタップすると記録ノートも見られるからね！",
 ];
-// 初回のみ: パッキーの説明のあとに、設定のシステム説明（短く3ページ）。ノートの遊び方で読み返せる
-export const INTRO_GUIDE = [
-  "設定とは、当たりやすさを決める1〜6の段階。数字が大きいほどボーナスやベルが出やすいけど、必ず当たるわけではないよ。",
-  "設定は、前回の抽選から7日たつか、章が変わると、次にスロットが回る行動で選び直されるよ。同じ設定や低い設定になることもあるよ。",
-  "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！ 水色の吹き出しは設定のヒント（偶数・奇数や高い・低いは確定じゃないよ）。",
-];
+// 初回のみ: パッキーの説明のあとに、遊び方カードを1枚（システムの説明）。ノートの遊び方で読み返せる
 /** 会場で参加登録した時にアプリを導入する。既存の回転・報酬は保持する。 */
 export async function installReel() {
   state.reel.installed = true;
@@ -1076,7 +1087,7 @@ export async function installReel() {
 }
 
 function showIntro() {
-  const pages = [...INTRO_LINES.map((text) => ({ text })), ...INTRO_GUIDE.map((text) => ({ text, sys: true }))];
+  const pages = [...INTRO_LINES.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
     let i = 0;
     const text = el("p.ri-text");
@@ -1091,10 +1102,11 @@ function showIntro() {
     // 設定の説明はパッキーの台詞ではなくシステムの説明として見せる
     const render = () => {
       const page = pages[i];
-      text.textContent = page.text;
-      panel.classList.toggle("sys", !!page.sys);
-      face.style.display = page.sys ? "none" : ""; // .rw-face の display:block が hidden に勝つため
-      app.textContent = page.sys ? `パッキースロットの遊び方（${i - INTRO_LINES.length + 1}/${INTRO_GUIDE.length}）` : "MOKUMOKUパッキー";
+      if (page.card) text.replaceChildren(guideCard());
+      else text.textContent = page.text;
+      panel.classList.toggle("sys", !!page.card);
+      face.style.display = page.card ? "none" : ""; // .rw-face の display:block が hidden に勝つため
+      app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
     };
     render();
     layers.modal.replaceChildren(box);
