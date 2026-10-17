@@ -507,8 +507,8 @@
 /* The scene stays open; progress and resources sit along the top edge. */
 .trpg-root.trpg-cinematic .trpg-table-status { position: absolute; z-index: 22; top: 73px; left: 34px; max-width: 850px; padding: 6px 12px; border-left: 2px solid #d5c18b; color: #ece2c8; background: #0a2024b8; font-size: 13px; line-height: 1.5; letter-spacing: .035em; pointer-events: none; }
 .trpg-root.trpg-cinematic:has(.trpg-overlay) .trpg-table-status { visibility: hidden; }
-.trpg-root.trpg-cinematic .trpg-stage-cue { left: 36px; top: 117px; transform: none; text-align: left; width: 640px; }
-.trpg-root.trpg-cinematic .trpg-stage-cue h2 { font-size: 26px; }
+.trpg-root.trpg-cinematic .trpg-stage-cue { left: 50%; top: 105px; transform: translateX(-50%); text-align: center; width: 600px; max-width: 600px; }
+.trpg-root.trpg-cinematic .trpg-stage-cue h2 { font-size: 22px; }
 .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage { padding-top: 28px; padding-bottom: 28px; }
 .trpg-root.trpg-cinematic .trpg-roll-context { margin: 0 0 12px; padding-bottom: 9px; border-bottom: 1px solid #d8c3993b; color: #d1c6a9; font-size: 12px; line-height: 1.5; text-align: left; flex-shrink: 0; }
 .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { text-align: left; font-size: 22px; }

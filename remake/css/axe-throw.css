@@ -432,6 +432,10 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 }
 @container (max-height: 500px) {
   .axe-scores { margin-bottom: 0; }
+  .axe-game:not([data-phase="result"]):not([data-phase="summary"]) .axe-companion { display: none; }
+  .axe-panel .axe-companion { min-height: 0; padding: 4px 6px; }
+  .axe-panel .axe-companion .axe-portrait-frame { display: none; }
+  .axe-panel .axe-comment { font-size: 10px; }
   .axe-timing { padding: 1px 0; }
   .axe-timing .axe-power-label { font-size: 9px; }
   .axe-power-readout { font-size: 11px; margin-bottom: 7px; }
