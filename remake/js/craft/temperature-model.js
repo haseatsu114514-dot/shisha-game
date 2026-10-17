@@ -1,4 +1,4 @@
-// #401: ゲーム内の温度帯。実測温度ではなく、既存 heat_tolerance だけを使う。
+// 全工程で共有するゲーム内の実効温度帯。位置と許容幅を独立に計算する。
 import { DB } from "../core/data.js";
 
 // 基準帯は互換用の読み取り専用定数。一台の配合で上書きしない。
@@ -8,35 +8,60 @@ export const DANGER_TEMP = 0.90;
 export const BURST_TEMP = 1;
 export const COLD_OUT = 0.06;
 
-/** 正の有限なgだけを重みにする。未知の葉・未定義/不正な耐熱性はその葉の倍率1。 */
-export function temperatureBands(cs, flavorById = DB.flavorById) {
+/** 正の有限なgを正規化。極端なgでも総量・積をオーバーフローさせない。 */
+function weightedMix(cs) {
   const entries = Object.entries(cs?.mix ?? {}).filter(([, g]) => Number.isFinite(g) && g > 0);
-  // 重みを正規化して、旧/不正データの極端なgでも合計や積をオーバーフローさせない。
   const largest = entries.reduce((max, [, g]) => Math.max(max, g), 0);
   const weight = entries.reduce((sum, [, g]) => sum + g / largest, 0);
-  let t = entries.reduce((sum, [id, g]) => {
+  return entries.map(([id, g]) => [id, g / largest / weight]);
+}
+
+/** 未知の葉・不正な耐熱性は倍率1。空配合は互換用の標準帯と未選択フラグを返す。 */
+export function temperatureBands(cs, flavorById = DB.flavorById) {
+  const entries = weightedMix(cs);
+  let t = entries.reduce((sum, [id, w]) => {
     const value = flavorById?.[id]?.heat_tolerance;
     const tolerance = Number.isFinite(value) && value > 0 ? value : 1;
-    return sum + tolerance * (g / largest / weight);
+    return sum + tolerance * w;
   }, 0);
   const validBand = (base) => Number.isFinite(base[1] * t) && base[0] * t > 0 && base[1] * t > base[0] * t;
   if (!Number.isFinite(t) || t <= 0 || !validBand(IDEAL) || !validBand(OPTIMAL)) t = 1;
+  const makerWidth = entries.length
+    ? entries.reduce((sum, [id, w]) => sum + w * MAKER_SPECS[makerOfFlavor(id, flavorById)].widthFactor, 0) : 1;
+  const equipWidth = (EQUIP_WIDTH_FACTORS.bowl[cs?.equip?.bowl] || 1)
+    * (EQUIP_WIDTH_FACTORS.hms[cs?.equip?.hms] || 1)
+    * (EQUIP_WIDTH_FACTORS.charcoal[cs?.equip?.charcoal] || 1.04);
+  const totalWidthScale = makerWidth * equipWidth;
+  const center = .54 * t;
+  const halfIdeal = .12 * totalWidthScale, halfOptimal = .05 * totalWidthScale;
   return Object.freeze({
-    t,
-    ideal: Object.freeze(IDEAL.map(value => value * t)),
-    optimal: Object.freeze(OPTIMAL.map(value => value * t)),
-    center: ((OPTIMAL[0] + OPTIMAL[1]) / 2) * t,
+    t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale,
+    ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),
+    optimal: Object.freeze([center - halfOptimal, center + halfOptimal]),
   });
 }
 
 export const isIdealTemperature = (temp, bands = temperatureBands()) => temp >= bands.ideal[0] && temp <= bands.ideal[1];
 export const isOptimalTemperature = (temp, bands = temperatureBands()) => temp >= bands.optimal[0] && temp <= bands.optimal[1];
 
-/** 基準の演出位置を一台の帯へ移す。緑より上は危険.90までの相対位置、危険以降は絶対値。 */
+/** 帯の全境界と中心を共有帯へ写す。危険.90以降は絶対値のまま。 */
 export function visualTemperature(at, bands = temperatureBands()) {
-  if (at <= IDEAL[1]) return at * bands.t;
   if (at >= DANGER_TEMP) return at;
-  return bands.ideal[1] + (DANGER_TEMP - bands.ideal[1]) * ((at - IDEAL[1]) / (DANGER_TEMP - IDEAL[1]));
+  const from = [0, IDEAL[0], OPTIMAL[0], .54, OPTIMAL[1], IDEAL[1], DANGER_TEMP];
+  const to = [0, bands.ideal[0], bands.optimal[0], bands.center, bands.optimal[1], bands.ideal[1], DANGER_TEMP];
+  const i = Math.max(1, from.findIndex(value => value >= at));
+  return to[i - 1] + (to[i] - to[i - 1]) * ((at - from[i - 1]) / (from[i] - from[i - 1]));
+}
+
+/** 温度だけの適合度。葉ダメージ・整数丸め・最終品質点とは別の連続値。 */
+export function temperatureFitness(temp, bands = temperatureBands()) {
+  const distance = Math.abs(temp - bands.center);
+  const narrow = (bands.optimal[1] - bands.optimal[0]) / 2;
+  const safe = (bands.ideal[1] - bands.ideal[0]) / 2;
+  const value = distance <= narrow ? 100 - 10 * distance / narrow
+    : distance <= safe ? 90 - 25 * (distance - narrow) / (safe - narrow)
+      : 65 - (distance - safe) * 360;
+  return Math.max(0, Math.min(100, value));
 }
 
 // ---------------------------------------------------------------- メーカー5社プロファイル・混合帯幅モデル
@@ -78,11 +103,10 @@ export const EQUIP_WIDTH_FACTORS = Object.freeze({
   }),
 });
 
-const MAKER_WIDTH_PENALTY = [1.00, 1.00, 0.95, 0.88, 0.80];
 const MAKER_SYNERGY_SCALE = [1.00, 1.00, 0.90, 0.78, 0.65];
 
 /**
- * グラム重み付きのメーカー混合プロファイル（適温帯幅倍率・複数社ペナルティ・ステータス天井加算）。
+ * 共有温度帯とグラム重み付きメーカー加算。社数減衰は得点側だけに適用する。
  * 単一メーカー時は主要4社で craftQuality 寄与が +2.50、初心者安定枠のドバジで +0.80 になるよう設計されている。
  */
 export function makerOfFlavor(id, flavorById = DB.flavorById) {
@@ -97,30 +121,20 @@ export function makerOfFlavor(id, flavorById = DB.flavorById) {
 }
 
 export function makerMixProfile(cs, flavorById = DB.flavorById) {
-  const entries = Object.entries(cs?.mix ?? {}).filter(([, g]) => Number.isFinite(g) && g > 0);
-  const totalGrams = entries.reduce((sum, [, g]) => sum + g, 0);
+  const entries = weightedMix(cs);
   const baseBands = temperatureBands(cs, flavorById);
   const makerWeights = {};
-  if (totalGrams > 0) {
-    for (const [id, g] of entries) {
+  if (entries.length) {
+    for (const [id, w] of entries) {
       const key = makerOfFlavor(id, flavorById);
-      makerWeights[key] = (makerWeights[key] || 0) + g / totalGrams;
+      makerWeights[key] = (makerWeights[key] || 0) + w;
     }
   } else {
     makerWeights.af = 1;
   }
   const makers = Object.keys(makerWeights);
   const makerCount = makers.length || 1;
-  const makerWidth = makers.reduce((sum, m) => sum + makerWeights[m] * MAKER_SPECS[m].widthFactor, 0);
-  const widthPenalty = MAKER_WIDTH_PENALTY[Math.min(4, makerCount)];
   const synergyScale = MAKER_SYNERGY_SCALE[Math.min(4, makerCount)];
-  const bowlFactor = EQUIP_WIDTH_FACTORS.bowl[cs?.equip?.bowl] || 1.00;
-  const hmsFactor = EQUIP_WIDTH_FACTORS.hms[cs?.equip?.hms] || 1.00;
-  const coalFactor = EQUIP_WIDTH_FACTORS.charcoal[cs?.equip?.charcoal] || 1.04;
-  const equipWidth = bowlFactor * hmsFactor * coalFactor;
-  const totalWidthScale = makerWidth * widthPenalty * equipWidth;
-  const halfIdeal = 0.12 * baseBands.t * totalWidthScale;
-  const halfOptimal = 0.05 * baseBands.t * totalWidthScale;
   const bonuses = { aroma: 0, heatStability: 0, taste: 0, smoke: 0, duration: 0, draw: 0 };
   for (const m of makers) {
     const w = makerWeights[m] * synergyScale;
@@ -132,18 +146,12 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
     + bonuses.smoke * 0.10 + bonuses.duration * 0.05 + bonuses.draw * 0.05;
   const safePullsBonus = Math.round(makers.reduce((sum, m) => sum + (makerWeights[m] || 0) * (MAKER_SPECS[m].safePullsBonus || 0), 0));
   return Object.freeze({
-    t: baseBands.t,
-    center: baseBands.center,
+    ...baseBands,
     makerCount,
     makerWeights: Object.freeze(makerWeights),
-    makerWidth,
-    widthPenalty,
+    widthPenalty: 1, // 旧呼び出しとの互換。社数減衰は得点側だけに適用する。
     synergyScale,
-    equipWidth,
-    totalWidthScale,
     safePullsBonus,
-    ideal: Object.freeze([baseBands.center - halfIdeal, baseBands.center + halfIdeal]),
-    optimal: Object.freeze([baseBands.center - halfOptimal, baseBands.center + halfOptimal]),
     bonuses: Object.freeze(bonuses),
     qualityCeilingDelta: Math.round(qualityCeilingDelta * 1000) / 1000,
   });

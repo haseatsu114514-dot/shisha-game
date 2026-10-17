@@ -111,25 +111,25 @@ for (const [maker, [fid, expectedDelta]] of Object.entries(sampleByMaker)) {
   assert.equal(prof.qualityCeilingDelta, expectedDelta, `Maker ${maker} ceiling delta != ${expectedDelta}`);
 }
 
-// 複数メーカー混合時のグラム重み・帯幅ペナルティ・シナジー減衰
-// ケースA: AF 6g (+2.50) + ドバジ 6g (+0.80) -> 2社（synergyScale: 0.90, widthPenalty: 0.95）
+// 複数メーカー混合時も幅は加重平均。シナジー減衰は得点側だけに残す。
+// ケースA: AF 6g (+2.50) + ドバジ 6g (+0.80) -> 2社（synergyScale: 0.90）
 // qualityCeilingDelta = (0.5 * 2.50 + 0.5 * 0.80) * 0.90 = 1.485
 const afDobaj = makerMixProfile({
   mix: { double_apple: 6, dobaj_double_apple: 6 },
   equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
 });
 assert.equal(afDobaj.makerCount, 2);
-assert.equal(afDobaj.widthPenalty, 0.95);
+assert.equal(afDobaj.widthPenalty, 1);
 assert.equal(afDobaj.synergyScale, 0.90);
 assert.equal(afDobaj.qualityCeilingDelta, 1.485);
 
-// ケースB: AF 6g + Forcefect 4g + Nightside 2g -> 3社（synergyScale: 0.78, widthPenalty: 0.88）
+// ケースB: AF 6g + Forcefect 4g + Nightside 2g -> 3社（synergyScale: 0.78）
 const multi = makerMixProfile({
   mix: { double_apple: 6, forcefect_mikan: 4, nightside_earlgrey: 2 },
   equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
 });
 assert.equal(multi.makerCount, 3);
-assert.equal(multi.widthPenalty, 0.88);
+assert.equal(multi.widthPenalty, 1);
 assert.equal(multi.synergyScale, 0.78);
 assert.equal(multi.qualityCeilingDelta, 1.95); // 2.5 * 0.78 = 1.95
 
@@ -185,6 +185,34 @@ assert.match(dobajGuide.traitLabel, /高耐久（吸引許容4回・焦げリス
 const afBeginner = computeShisha({ ...baseCraftState, mix: { double_apple: 12 }, pull: { score: 50, pulls: 4, over: true } });
 const dobajBeginner = computeShisha({ ...baseCraftState, mix: { dobaj_double_apple: 12 }, pull: { score: 50, pulls: 4, over: true } });
 assert.equal(afBeginner.burnRisk - dobajBeginner.burnRisk, 11, `AF beginner burnRisk (${afBeginner.burnRisk}) - Dobaj (${dobajBeginner.burnRisk}) != 11`);
+
+// 49/50/51% keeps the existing rounded pull allowance and proportionate overheating reduction.
+const { temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
+const { pullResult } = await import("../js/craft/conditions.js");
+for (const ratio of [.49, .5, .51]) {
+  const cs = { ...baseCraftState, mix: { double_apple: 12 * (1 - ratio), vanilla: 12 * ratio } };
+  const bands = temperatureBands(cs), profile = makerMixProfile(cs), safe = ratio < .5 ? 3 : 4;
+  assert.equal(profile.safePullsBonus, safe - 3);
+  assert.equal(pullResult(bands.center, 4, 0, bands, safe).score, ratio < .5 ? 92 : 100);
+  const risk = (temp, pulls) => computeShisha({ ...cs, pull: { temp, pulls, score: 80, over: false } }).burnRisk;
+  const low = risk(bands.center, 3);
+  assert.equal(risk(bands.center, 4) - low, ratio < .5 ? 5 : 0);
+  assert.equal(risk(bands.ideal[1], 3), low);
+  assert.equal(risk(bands.ideal[1] + 1e-9, 3) - low, Math.round(12 * (1 - .5 * ratio)));
+  assert.equal(profile.qualityCeilingDelta, Math.round(((1 - ratio) * 2.5 + ratio * .8) * .9 * 1000) / 1000);
+}
+// Saturated attributes and final integer rounding retain their original semantics; no Dobaj 85 cap.
+const strong = { ...baseCraftState, mix: { vanilla: 12 }, mixInfo: { score: 100, intensity: 10, total: 30 },
+  holes: { total: 24, outerEven: 1, innerExcess: 0, inner: 0, minimumComplete: true },
+  heat: { heatPower: 100, heatStability: 100, burnRisk: 0, aromaRetention: 100 },
+  steam: { seconds: 540, hits: 0, score: 100 }, care: { score: 100 }, pack: "firm",
+  pull: { temp: .432, pulls: 2, score: 100 } };
+const saturated = computeShisha(strong);
+assert.equal(saturated.duration, 100); assert.equal(saturated.taste, 100);
+assert(saturated.craftQuality > 85);
+assert.equal(saturated.craftQuality, Math.round(saturated.craftQualityRaw));
+assert.equal(temperatureFitness(temperatureBands(strong).center, temperatureBands(strong)), 100);
+assert.notEqual(saturated.craftQualityRaw, 100, "Temperature fitness is not final quality");
 
 // 3. フラット炭 vs キューブ炭の差別化
 const flat = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle" });
