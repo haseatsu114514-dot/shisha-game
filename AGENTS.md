@@ -23,6 +23,14 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - 過去の `docs/*handoff*.md` は日時付き履歴。必要時だけ読み、現在のPR・ブランチ・実装で再確認する。
 - 終了時はPRに変更点・テスト・未完・引き継ぎを記す。確定した永続ルールだけ正本を更新し、日付付きMDをむやみに増やさない。
 
+## リポジトリ取得と通信量（必須）
+
+- このリポジトリはフルクローンしない。他のAIへのフルクローン依頼も禁止する。
+- 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけを取得する。
+- 広範囲のfetch/pull、全履歴・全ブランチ・素材・LFSの一括取得を自動実行しない。
+- 大容量通信が見込まれる取得・更新・テスト・アップロードは、実行前に目的・推定通信量（不明なら不明）・節約案を提示し、承認を得る。
+- shallow/filtered fetchでも少量通信は保証されない。想定外に転送量が増えたら中断し、取得量（計測できなければ不明）と状況を報告する。
+
 ## Git Safety
 
 If this machine uses a canonical checkout path, store it in local Git
@@ -51,8 +59,9 @@ At task start, after changing checkout/worktree, and before commit/push
 - if `git config --local --get shisha.canonicalRoot` is set, confirm
   that it matches the repo root or the canonical checkout owning this worktree
 
-WARN alone does not require user confirmation. Fetching missing refs and
-enabling the documented hooks may be done autonomously after verifying origin.
+WARN alone does not require user confirmation. After verifying origin, enabling
+the documented hooks and fetching only necessary missing refs may be done
+autonomously, subject to the repository acquisition and transfer rules above.
 If ERROR remains, stop edits in that checkout and report the specific cause.
 Do not overwrite unrelated changes or try to merge unrelated histories.
 
@@ -77,7 +86,7 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 
 - 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
   チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
-- 作業を始めるときは `git fetch origin` する。新規作業は**最新の `origin/main` から新しいブランチ**を切る。
+- 作業を始めるときは、GitHub API等で最新のmain refと必要な差分を必ず確認する。既存checkout/cacheを再利用し、ローカルrefの不足時だけ、上の取得・通信量ルールに従い対象refを限定取得する。新規作業は**最新の `origin/main` から新しいブランチ**を切る。
   保存済みPRの再開は、現在のIssue予約とリモートのPR/headを確認し、必要な移管後に既存ブランチで継続する。古いローカルコピーだけを根拠に再開せず、別workerの未コミット変更を上書きしない。
 - 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
   push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
