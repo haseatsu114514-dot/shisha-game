@@ -6,13 +6,14 @@ import { shotFeedback, sessionStats, impactFeedback } from "../js/minigames/axe-
 const shot = (x = 0, y = 0, power = .62, called = null) => resolveThrow({ x, y, power, called });
 
 test("misses never celebrate a valid-power axe stuck outside the scoring circle or called blue", () => {
-  for (const failed of [shot(1.08, 1.08), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
+  for (const failed of [shot(.9, .9), shot(1.08, 1.08), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
     assert.equal(failed.score, 0);
     assert.equal(impactFeedback(failed).hit, false);
     assert.equal(impactFeedback(failed).strength, 0);
     assert.equal(impactFeedback(failed).duration, 0);
   }
-  assert(shot(1.08, 1.08).stuck, "Wood contact is separate from earning a point");
+  assert(shot(.9, .9).stuck, "Wood contact is separate from earning a point");
+  assert(!shot(1.08, 1.08).stuck, "Transparent artwork margins are not wood");
   const bull = impactFeedback(shot()), normal = impactFeedback(shot(.7, 0));
   assert(bull.hit && normal.hit); assert(bull.strength > normal.strength);
 });

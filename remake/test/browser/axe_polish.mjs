@@ -197,13 +197,14 @@ await suite("axe-polish", async check => {
     await capture(page, "pc-green-power");
     await page.locator(".axe-target").click();
     const predicted = await root(page).evaluate(n => ({ x: Number(n.dataset.landingX), y: Number(n.dataset.landingY) }));
-    await page.clock.runFor(980); await phase(page, "result");
+    await page.clock.runFor(1320); await phase(page, "result");
     assert.equal(await page.locator(".axe-total strong").textContent(), "0");
     assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
     assert.deepEqual(await page.evaluate(() => window.axeSounds), { hit: 0, perfect: 0, miss: 1 });
     await capture(page, "pc-zero-point-wood");
     const result = await cancel(page, before), shot = result.throws[0];
-    assert(shot.stuck && shot.score === 0 && shot.outcome === "miss");
+    assert(!shot.stuck && shot.score === 0 && shot.outcome === "miss" && shot.dropReason === "off-board");
+    assert.equal(await page.locator(".axe-impacts > g").count(), 0);
     assert.deepEqual(shot.landing, predicted, "A zero score uses exactly the displayed landing too");
   });
 });
