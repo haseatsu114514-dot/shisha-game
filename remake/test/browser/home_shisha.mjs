@@ -81,4 +81,64 @@ await suite("home-shisha", async check => {
         stats: { ...before.stats, sense: 13 }, statXp: { sense: 0 } });
     }, options);
   }
+
+  // 実ページの再読み込み→CONTINUEを通し、一服の前・会話中・会話後を検査する。
+  // 卓上台と大会台の両方で整数Pへの繰越しを含め、保存済み消費と報酬を照合する。
+  for (const [label, rig, growth, options] of [
+    ["pc", "home_rig_set", .5, {}],
+    ["touch", "home_rig_pro", .75, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) for (const timing of ["before", "during", "after"]) {
+    await check(`${label}-${timing}-dialogue-reload`, async page => {
+      const hit = async id => label === "touch" ? page.locator(t(id)).tap() : page.locator(t(id)).click();
+      await page.evaluate(async rig => {
+        const core = await import("./js/core/state.js"), s = core.newGame();
+        Object.assign(s, { phase: "daily", day: 8, slot: 2, stamina: 80 });
+        s.stats = { technique: 20, sense: 12, guts: 30, charm: 14, insight: 25 };
+        s.statXp = { sense: .75 }; s.flavorStock = { lemon: 20, mint: 20 };
+        s.owned.push("home_rig_set", ...(rig === "home_rig_pro" ? [rig] : []));
+        s.recipes.ice_lemonade = { day: 3 };
+        Object.assign(s.flags, { _ev_salaryman: true, _ev_first_practice: true, _ev_day5: true,
+          _ev_midcheck: true, _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
+          _hiyori_meeting_done: true, _hiyori_message_delivered: true, _lime_tut: true,
+          _lime_opened: true, _morning_8: true, _home_tonight: true });
+        Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+        core.saveConfig(); core.save();
+      }, rig);
+      const before = await snapshot(page);
+      await offer(page); await hit("home-shisha-recipe");
+      await page.locator(t("home-recipe-ice_lemonade")).waitFor();
+      if (timing !== "before") {
+        if (timing === "after") await page.evaluate(() => { __remake.vnTest.turbo = true; });
+        await hit("home-recipe-ice_lemonade");
+        if (timing === "during") {
+          await page.locator("#vn.active .vn-box").waitFor();
+          assert.equal(await page.evaluate(() => homeDone), null, "Reload while the home dialogue is still unfinished");
+        } else await page.waitForFunction(() => homeDone === true);
+      }
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+      const expected = timing === "before" ? before : { ...before, stamina: 74,
+        flavorStock: { lemon: 12, mint: 16 }, stats: { ...before.stats, sense: 13 }, statXp: { sense: .75 + growth - 1 } };
+      const savedResources = Object.fromEntries(Object.keys(before).map(key => [key, saved[key]]));
+      const continueSave = async () => {
+        await page.reload();
+        await page.locator(t("title-load")).waitFor({ timeout: 30000 });
+        await page.locator("#boot").waitFor({ state: "detached" });
+        await page.evaluate(() => { __remake.vnTest.turbo = true; });
+        await hit("title-load"); await hit("slot-0");
+        await page.waitForFunction(() => __remake.state.day === 9 && __remake.state.slot === 0
+          && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
+      };
+      await continueSave();
+      // 一日の終わりを再開した最初のCONTINUEだけ、通常の就寝回復14を受ける。
+      const resumed = { ...expected, slot: 0, stamina: expected.stamina + 14 };
+      assert.deepEqual(await snapshot(page), resumed, `${timing}: CONTINUE must preserve consumption and its full growth`);
+      assert.deepEqual(savedResources, expected, `${timing}: consumption, completion and growth must share a save`);
+      assert.equal(saved.flags._home_shisha_day, timing === "before" ? undefined : "1:8");
+      assert.equal(await page.evaluate(() => __remake.state.flags._home_shisha_day), saved.flags._home_shisha_day);
+      const persisted = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+      await continueSave();
+      assert.deepEqual(await snapshot(page), resumed, "A second CONTINUE must not grant growth or consume leaves again");
+      assert.equal(await page.evaluate(() => __remake.state.flags._home_shisha_day), persisted.flags._home_shisha_day);
+    }, options);
+  }
 });

@@ -67,7 +67,7 @@ export function homeShishaOffer(s = state, { eve = false } = {}) {
   return rig;
 }
 
-/** 一服の結果を反映する（葉を減らす・体力・レシピ帳）。伸ばす能力を決めるが、伸びは場面のあとに growHomeStat で */
+/** 一服の結果を反映する（葉を減らす・体力・レシピ帳）。呼び出し側は同じ同期処理で成長も付与してから保存する */
 export function applyHomeShisha(mix, rig, s = state) {
   for (const [id, g] of Object.entries(mix)) addFlavorStock(id, -g);
   addStamina(HOME_STAMINA);
@@ -177,12 +177,13 @@ export async function runHomeShisha({ eve = false } = {}) {
     mix = how === "recipe" ? await chooseRecipe() : await chooseMix();
   }
   const result = applyHomeShisha(mix, rig);
+  // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。
+  const got = growHomeStat(result.stat, rig);
+  save();
   if (result.found) toast(`📖 レシピ帳に書き加えた「${result.found.name}」`, { kind: "good" });
   if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good" });
-  save();
   await play(homeShishaDialogue(result, rig));
   if (state !== owner) return true;
-  const got = growHomeStat(result.stat, rig);
   if (result.stat && !got) emit("notice", { text: `寝る前に一服した。苦手な【${STAT_JA[result.stat]}】に、手がかりが見えた` });
   save();
   return true;
