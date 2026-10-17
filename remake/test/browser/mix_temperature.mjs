@@ -1,6 +1,7 @@
 // #401: real gram buttons and production steam/pull/care routes; rendering and judgments must agree.
 import assert from "node:assert/strict";
 import path from "node:path";
+import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 
 const near = (actual, expected, label = "") => assert(Math.abs(actual - expected) < .002, `${label}: ${actual} != ${expected}`);
@@ -182,9 +183,29 @@ await suite("mix-temperature", async check => {
         rows.push({ id, ...bands });
         await page.screenshot({ path: path.join(shots, `thermal-${id}-${name}.png`) });
         await page.locator('[data-test="mix-ok"]').click(); await page.evaluate(() => QA.run);
+        // Same initial heat, weather, equipment, packing and two keep inputs; only the recipe changes.
+        await page.evaluate(() => {
+          Object.assign(QA.cs, { steamSeconds: 300, steam: { temp: .64, score: 100, seconds: 300 }, pack: "normal", place: "triangle",
+            environment: { rainy: false, ambientC: 23, humidityPercent: 52 },
+            heat: { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 },
+            holes: { total: 24, minimumComplete: true, outerEven: 1, evenness: 1, innerExcess: 0, inner: 2, score: 80 } });
+          QA.session.craftTest.auto = null; QA.run = QA.pull.runPull(QA.cs);
+        });
+        await keep(page); await keep(page); await page.locator('[data-test="pull-serve"]').click();
+        await page.locator('[data-test="step-next"]:enabled').waitFor();
+        const measured = await page.evaluate(() => ({ pull: QA.cs.pull, quality: QA.score.computeShisha(QA.cs),
+          expected: QA.conditions.pullResult(QA.cs.pull.temp, QA.cs.pull.pulls, QA.cs.pull.justs, QA.conditions.temperatureBands(QA.cs)) }));
+        assert.equal(measured.pull.score, measured.expected.score);
+        assert.equal(measured.pull.inZone, measured.expected.inZone);
+        assert.equal(measured.pull.optimal, measured.expected.optimal);
+        Object.assign(rows.at(-1), measured);
+        await finishResult(page);
       }
       assert(rows[2].ideal[1] - rows[2].ideal[0] > rows[1].ideal[1] - rows[1].ideal[0]);
       assert(rows[2].center < rows[1].center);
+      fs.writeFileSync(path.join(shots, `thermal-comparison-${name}.json`), JSON.stringify({
+        initialTemperature: .64, totalGrams: 12, steamSeconds: 300, pulls: 2, rows,
+      }, null, 2) + "\n");
       // Reuse live meters. Same-t maker and equipment edits must move the endpoints without moving center.
       const changed = await page.evaluate(() => {
         QA.cs.mix = { double_apple: 12 };
