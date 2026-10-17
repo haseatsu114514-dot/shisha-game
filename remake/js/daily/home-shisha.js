@@ -31,6 +31,7 @@ export function lowestStat(stats = state.stats, cap = statCap()) {
 
 /** 味の手応え。レシピどおりならたいてい美味しい、組み合わせが散ると普通、噛み合わないとイマイチ */
 export function tasteOf(info) {
+  if (info?.count === 1 && info.score >= 80) return "great";
   if (info?.recipe && info.score >= 95) return "great";
   if ((info?.score || 0) >= 80) return "fine";
   return "meh";
@@ -92,7 +93,7 @@ const INTROS = {
   home_rig_pro: ["本番と同じ台に炭をのせる。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で、寝る前の一服を組む。"],
 };
 const TASTE_LINES = {
-  great: "（……これは美味しい。自分で組んで、ちゃんと当たった）",
+  great: "（……美味しい。香りがきれいに出ている）",
   fine: "（普通に吸える。悪くはないけど、もう一歩だな）",
   meh: "（……イマイチだ。どこで噛み合わなかったんだろう）",
 };

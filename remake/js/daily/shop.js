@@ -13,6 +13,7 @@ import { RIN_AWAY_DAY } from "../core/rules.js";
 import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
+import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
@@ -88,7 +89,7 @@ function productArt(item, flavor, size = 66) {
   ]);
   const botanical = () => windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt);
-  const generated = flavor && SHOP_ART[item.id];
+  const generated = flavor && (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]);
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", botanical);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];

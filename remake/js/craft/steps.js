@@ -135,7 +135,8 @@ export function evaluateMix(cs) {
   const ids = Object.keys(mix);
   const total = ids.reduce((s, id) => s + mix[id], 0);
   const notes = [];
-  let score = [0, 68, 84, 80, 70][Math.min(4, ids.length)] - (ids.length > 4 ? 8 : 0);
+  // 単体でも香りの完成した一台になる。種類数だけで二種より低くしない。
+  let score = [0, 84, 84, 80, 70][Math.min(4, ids.length)] - (ids.length > 4 ? 8 : 0);
   const key = [...new Set(ids.map(familyKeyOf))].sort().join("+");
   const recipe = DB.recipes.find((r) => r.flavors.slice().sort().join("+") === key) || null;
   if (recipe) { score += 14; notes.push(`レシピ「${recipe.name}」の組み合わせ`); }
@@ -153,7 +154,7 @@ export function evaluateMix(cs) {
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
   const regOk = !reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min;
-  if (reg && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
+  if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
   const prof = {};
   for (const id of ids) {
