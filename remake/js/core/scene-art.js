@@ -1,5 +1,15 @@
 // 店内と台を同じ1280×720の座標で合成する。配置はWorkの採用済みアートに合わせた値。
 import { DB, img } from "./data.js";
+import { state } from "./state.js";
+import { on } from "./bus.js";
+
+// 承認済みv3原画をそのまま使う。cropは透明な余白だけを表示から外す座標。
+// x/yは接地点、hは台本体の高さ。机の手前左と、その右側の床へ置く。
+const HOME_SCENE_PROPS = [
+  { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
+  { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
+];
+const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
 const TONARI_SCENE_PROPS = [
   { file: "shisha_tonari.png", x: 659, y: 360, h: 133, ratio: 469 / 768 },
@@ -53,7 +63,8 @@ export const SCENE_PROPS = {
 const sceneFile = (url) => String(url || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png");
 function propsFor(url) {
   const available = new Set(DB.manifest.sceneProps || []);
-  return (SCENE_PROPS[sceneFile(url)] || []).filter((p) => available.has(p.file));
+  const props = isHome(url) ? HOME_SCENE_PROPS.filter((p) => state?.owned?.includes(p.owned)) : SCENE_PROPS[sceneFile(url)] || [];
+  return props.filter((p) => available.has(p.file));
 }
 export function sceneArtUrls(url) {
   if (!url) return [];
@@ -64,6 +75,12 @@ export function sceneArtUrls(url) {
 export function renderSceneArt(host, url) {
   host.querySelector(":scope > .scene-art")?.remove();
   delete host.dataset.sceneBg;
+  delete host.dataset.homeScene;
+  delete host.dataset.homeRigs;
+  if (isHome(url)) {
+    host.dataset.homeScene = url;
+    host.dataset.homeRigs = propsFor(url).map((p) => p.owned).join(",");
+  }
   host.style.backgroundImage = url ? `url("${url}")` : "none";
   const props = propsFor(url);
   if (!props.length) return;
@@ -86,12 +103,40 @@ export function renderSceneArt(host, url) {
   for (const p of props) {
     const width = p.h * p.ratio;
     const shadow = document.createElementNS(ns, "ellipse");
-    for (const [k, v] of Object.entries({ cx: p.x, cy: p.y - 2, rx: width * 0.29, ry: p.h * 0.012, fill: "rgba(0,0,0,0.24)" })) shadow.setAttribute(k, String(v));
+    for (const [k, v] of Object.entries({ cx: p.x, cy: p.y + (p.owned ? 1 : -2), rx: width * (p.owned ? 0.44 : 0.29), ry: p.h * (p.owned ? 0.018 : 0.012), fill: "rgba(0,0,0,0.24)" })) shadow.setAttribute(k, String(v));
     svg.append(shadow);
-    const node = picture(img(`ui/scene_props/${p.file}`), p.x - width / 2, p.y - p.h, width, p.h);
+    let node;
+    if (p.crop) {
+      node = document.createElementNS(ns, "svg");
+      for (const [k, v] of Object.entries({ x: p.x - width / 2, y: p.y - p.h, width, height: p.h, viewBox: p.crop.join(" ") })) node.setAttribute(k, String(v));
+      const art = picture(img(`ui/scene_props/${p.file}`), 0, 0, ...p.size);
+      node.append(art);
+      node.dataset.homeRig = p.owned;
+      svg.append(node);
+    } else node = picture(img(`ui/scene_props/${p.file}`), p.x - width / 2, p.y - p.h, width, p.h);
     node.classList.add("scene-prop");
     if (/_night\.png$/.test(file)) node.style.filter = "brightness(0.74)";
   }
   host.prepend(svg);
 }
+
+// LOAD/NEW GAMEはhud、卓上台の受取はnotice、くじは支払いのhudを発行する。
+// 同期処理中の所持品更新が終わってから、接続中の家背景だけを再評価する。
+// stateや所持品のスナップショットを保持せず、別セーブへ表示を持ち越さない。
+let refreshQueued = false;
+function refreshHomeArt() {
+  if (!globalThis.document?.querySelectorAll) return;
+  if (refreshQueued) return;
+  refreshQueued = true;
+  queueMicrotask(() => {
+    refreshQueued = false;
+    document.querySelectorAll("[data-home-scene]").forEach((host) => {
+      const url = host.dataset.homeScene;
+      const rigs = propsFor(url).map((p) => p.owned).join(",");
+      if (rigs !== host.dataset.homeRigs) renderSceneArt(host, url);
+    });
+  });
+}
+on("hud", refreshHomeArt);
+on("notice", refreshHomeArt);
 

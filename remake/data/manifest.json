@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-14 18:24 UTC",
+ "generated": "2026-10-17 07:24 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -405,7 +405,10 @@
   "ui_refresh_button.png",
   "ui_temperature_frame.png"
  ],
- "sceneProps": [],
+ "sceneProps": [
+  "shisha_home_pro.png",
+  "shisha_home_tabletop.png"
+ ],
  "continueUI": [
   "approval_stamp.png",
   "backdrop.png",
@@ -1935,6 +1938,8 @@
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
+  "ui/scene_props/shisha_home_pro.png",
+  "ui/scene_props/shisha_home_tabletop.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
   "ui/title_arts/title_art_ageha_02_grocery_smile.png",
   "ui/title_arts/title_art_ageha_03_model_moment.png",

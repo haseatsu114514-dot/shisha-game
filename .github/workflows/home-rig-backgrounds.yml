@@ -1,0 +1,80 @@
+name: Home rig ownership backgrounds
+
+on:
+  pull_request:
+    paths:
+      - 'remake/js/core/**'
+      - 'remake/js/daily/**'
+      - 'remake/data/manifest.json'
+      - 'remake/test/browser/home_rig_backgrounds.mjs'
+      - 'assets/ui/scene_props/**'
+      - 'remake/img/ui/scene_props/**'
+      - '.github/workflows/home-rig-backgrounds.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/core/**'
+      - 'remake/js/daily/**'
+      - 'remake/data/manifest.json'
+      - 'remake/test/browser/home_rig_backgrounds.mjs'
+      - 'assets/ui/scene_props/**'
+      - 'remake/img/ui/scene_props/**'
+      - '.github/workflows/home-rig-backgrounds.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: home-rig-backgrounds-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ownership:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TEST_REF: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start production preview
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/home-rigs.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/home-rigs.log"
+          exit 1
+      - name: Ownership, acquisition, saves, scenes and previews on PC and touch
+        run: node remake/test/browser/home_rig_backgrounds.mjs
+      - name: Preserve QA evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: home-rig-background-results
+          path: |
+            .codex/artifacts/remake-browser/home-rig-backgrounds*
+            .codex/artifacts/remake-browser/*.jpg
+            ${{ runner.temp }}/home-rigs.log
+          retention-days: 7
