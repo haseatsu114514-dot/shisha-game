@@ -472,7 +472,7 @@
 /* Spare equipment stays outside the live 2d6 and disappears before space is tight. */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-spare-kit {
   position: absolute; z-index: -1; pointer-events: none;
-  width: 210px; height: 140px; right: -70px; top: 90px;
+  width: 210px; height: 140px; right: -70px; top: 145px;
   background: url('../img/ui/trpg/spare-polyhedral-kit.webp') center / contain no-repeat;
   filter: drop-shadow(2px 9px 7px #0007);
 }
@@ -519,9 +519,11 @@
 .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade="mixed"] { --roll-color: #a8d2c8; }
 .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade="trouble"] { --roll-color: #e2ac8b; }
 .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total > strong { color: var(--roll-color); }
-.trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die { animation: trpg-die-land .48s cubic-bezier(.15,.7,.25,1) both; }
-.trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die:nth-child(2) { animation-delay: .055s; }
-.trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total { animation: trpg-result-land .5s ease-out both; }
+@media (prefers-reduced-motion: no-preference) {
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die { animation: trpg-die-land .48s cubic-bezier(.15,.7,.25,1) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-die:nth-child(2) { animation-delay: .055s; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total { animation: trpg-result-land .5s ease-out both; }
+}
 .trpg-root.trpg-cinematic .trpg-roll-fx { position: absolute; z-index: 5; top: 40%; left: 50%; width: 1px; height: 1px; pointer-events: none; color: var(--roll-color); }
 .trpg-root.trpg-cinematic .trpg-roll-fx i { position: absolute; width: 3px; height: 9px; border-radius: 2px; background: currentColor; box-shadow: 0 0 8px currentColor; opacity: 0; animation: trpg-roll-spark .85s ease-out var(--delay) both; }
 .trpg-root.trpg-cinematic[data-paused="true"] :is(.trpg-die,.trpg-dice-total,.trpg-roll-fx i) { animation-play-state: paused !important; }

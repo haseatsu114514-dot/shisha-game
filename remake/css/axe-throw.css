@@ -386,6 +386,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 
 /* Scoreboard at the edge, an open throwing lane, and one clear timing cue. */
 .axe-game { background: linear-gradient(90deg,#0a0d0ec9 40%,#0b0d0ef2 80%),var(--axe-bg) center/cover; }
+.axe-header { z-index: 2; }
 .axe-total { border: 1px solid #d4ac6855; border-left: 3px solid #e8b86e; border-radius: 4px; background: #101817e6; box-shadow: 0 0 calc(var(--score-glow,0) * 30px) #edbd7355; }
 .axe-total strong { color: #fff1ce; }
 .axe-board-pane { border-color: transparent; background: radial-gradient(ellipse at 50% 42%,#ca9a4820,transparent 65%); box-shadow: none; }
@@ -394,6 +395,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-companion { border-top-color: #d0ad6333; background: #0a100ecc; border-radius: 6px; padding: 8px; gap: 8px; }
 .axe-panel .axe-comment { font-size: 11px; }
 .axe-panel .axe-portrait-frame { width: 40px; height: 42px; }
+.axe-game:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"],[data-phase="flight"]) .axe-companion { display: none; }
 .axe-live-reason { display: none; }
 .axe-live-score strong { grid-row: 1; }
 .axe-live-score { background: transparent; border: 0; border-bottom: 1px solid #e6c38a2b; border-radius: 0; padding-inline: 0; }
