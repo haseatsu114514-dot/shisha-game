@@ -203,7 +203,12 @@ test("alternate dialogue, small-table intro and cast have canonical actors and f
 });
 
 test("club copy fits dialogue limits and the catalog explicitly marks interest", () => {
-  const lines = [...club.lines, ...club.branches.invite].map(l => l.text);
+  const lines = [...club.lines, ...club.branches.invite, ...club.branches.founded].map(l => l.text);
+  // 設立は「断ろうとしたのに、気づけば部長」のコメディ（#641）。サイは悪意なく笑顔のまま
+  assert(club.lines.some(l => l.speaker === "hajime"), "はじめが断ろうとする");
+  assert(club.branches.founded.some(l => l.speaker === "sai" && l.text.includes("部長")), "気づけば部長");
+  assert(club.branches.founded.some(l => l.text.includes("部員集め")), "人集めまで任される");
+  assert(club.branches.invite[0].text.includes("部長"));
   for (const p of catalog.participants) {
     assert.equal(typeof p.interested, "boolean"); assert(Number.isInteger(p.maxAffinity));
     if (p.interested) { assert(club.branches[p.id].length >= 2); assert(club.branches[p.id].every(l => l.speaker === p.id)); lines.push(...club.branches[p.id].map(l => l.text)); }
