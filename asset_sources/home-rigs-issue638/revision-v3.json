@@ -1,7 +1,8 @@
 {
   "date": "2026-10-17",
   "owner_request": "一枚目はハガルなし、ボトル形状を変更。二枚目も少しアレンジ。家置きはホースなし。",
-  "status": "owner-review-pending",
+  "status": "owner-approved-design",
+  "owner_approval": "デザインはOK（2026-10-17 チャット）",
   "runtime_integrated": false,
   "edits": [
     {
