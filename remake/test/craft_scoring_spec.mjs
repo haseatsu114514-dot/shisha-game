@@ -133,6 +133,44 @@ assert.equal(multi.widthPenalty, 0.88);
 assert.equal(multi.synergyScale, 0.78);
 assert.equal(multi.qualityCeilingDelta, 1.95); // 2.5 * 0.78 = 1.95
 
+// 2-B. 実際の採点処理 computeShisha による加算天井・波及排除・丸めの回帰テスト
+// 波及（安定性→持続力、吸いやすさ→煙量）の二重加算を排除したことで、
+// 実際の得点式でも主要4社 = +2.500、ドバジ = +0.800 が正確に成立し、
+// 丸め後の craftQuality も主要4社で同点、ドバジで適正な差分となることを検証する。
+const baseCraftState = {
+  equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
+  holes: { total: 22, evenness: 0.6, outerEven: 0.6, innerExcess: 0, score: 60, minimumComplete: true },
+  heat: { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 },
+  mixInfo: { score: 60, intensity: 5, total: 12 },
+  pull: { score: 60, temp: 0.432, pulls: 3 },
+  steam: { min: 5, hits: 2, score: 70 },
+  care: { score: 60 },
+  pack: "normal",
+};
+const shishaResults = {};
+for (const [maker, [fid]] of Object.entries(sampleByMaker)) {
+  const cs = { ...baseCraftState, mix: { [fid]: 12 } };
+  shishaResults[maker] = computeShisha(cs);
+}
+// 主要4社（af, afsahr, forcefect, nightside）は craftQualityRaw が完全に一致し、丸め後の craftQuality も同点
+const majorMakers = ["af", "afsahr", "forcefect", "nightside"];
+for (const m of majorMakers) {
+  assert.equal(shishaResults[m].craftQualityRaw, shishaResults.nightside.craftQualityRaw,
+    `Maker ${m} craftQualityRaw (${shishaResults[m].craftQualityRaw}) != nightside (${shishaResults.nightside.craftQualityRaw})`);
+  assert.equal(shishaResults[m].craftQuality, shishaResults.nightside.craftQuality,
+    `Maker ${m} rounded craftQuality (${shishaResults[m].craftQuality}) != nightside (${shishaResults.nightside.craftQuality})`);
+}
+// ドバジと主要4社の craftQualityRaw の差は仕様どおり +2.50 - +0.80 = 1.70
+const rawDiff = shishaResults.af.craftQualityRaw - shishaResults.dobaj.craftQualityRaw;
+assert(Math.abs(rawDiff - 1.70) < 0.005, `Raw craftQuality difference between AF and Dobaj (${rawDiff}) != 1.70`);
+assert.equal(Math.round(rawDiff * 10) / 10, 1.7);
+
+// 混合時（AF 6g + ドバジ 6g）の computeShisha 実測値検証
+// 加重平均天井 delta = 1.485 なので、主要4社単独(+2.500)との差は 2.500 - 1.485 = 1.015
+const shishaAfDobaj = computeShisha({ ...baseCraftState, mix: { double_apple: 6, dobaj_double_apple: 6 } });
+const mixDiff = Math.round((shishaResults.af.craftQualityRaw - shishaAfDobaj.craftQualityRaw) * 1000) / 1000;
+assert.equal(mixDiff, 1.015, `Mix diff between AF and AF+Dobaj (${mixDiff}) != 1.015`);
+
 // 3. フラット炭 vs キューブ炭の差別化
 const flat = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle" });
 const cube = coalWarmth({ equip: { charcoal: "cube_charcoal" }, place: "triangle" });
