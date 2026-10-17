@@ -84,7 +84,7 @@ try {
     }
     // #638: 自主練は無料のシフト後メニューから家へ移った。旧ボタンを待たず、
     // 家の実メニュー・工程・終了を通し、体力を使っても能力報酬がないことを保つ。
-    // 葉の在庫は現行挙動を検証する。消費仕様の最終決定をここで追加しない。
+    // 工程ドリルは配合しないので葉は減らない（一台を通したときの消費は home_shisha.mjs で検証・#638）。
     reset(); core.state.stamina = 80;
     const homeBefore = { stats: { ...core.state.stats }, statXp: { ...core.state.statXp }, money: core.state.money,
       flavorStock: { ...core.state.flavorStock }, slot: core.state.slot };

@@ -65,6 +65,36 @@ const { benchBgRef, benchPlaceTag } = await import("../js/craft/worker.js");
 assert.deepEqual([benchBgRef({ mode: "rehearsal", venue: "home" }), benchPlaceTag({ mode: "drill", venue: "home" })], ["bg_home", "HOME"]);
 assert.deepEqual([benchBgRef({ mode: "rehearsal" }), benchPlaceTag({ mode: "rehearsal" })], ["bg_tonari_inside", "TONARI"]);
 
+// 家の練習は自分の葉を使う（#638 オーナー決定）。減らすのは一台を作り終えたときの1回だけ
+{
+  const practice = await import("../js/daily/home-practice.js");
+  const { fitMixToStock } = await import("../js/craft/steps.js");
+  assert.equal(practice.HOME_PRACTICE_GRAMS, 12);
+  const s = newGame();
+  s.flavorStock = { double_apple: 9, mint: 2 };
+  assert.equal(practice.homeLeavesEnough(), false, "葉が12gないと一台を通せない");
+  s.flavorStock = { double_apple: 10, mint: 2 };
+  assert.equal(practice.homeLeavesEnough(), true, "ちょうど12gなら通せる");
+  practice.consumeHomePracticeLeaves({ double_apple: 10, mint: 2 });
+  assert.deepEqual(s.flavorStock, { double_apple: 0, mint: 0 }, "使った分だけ減る");
+  practice.consumeHomePracticeLeaves({ double_apple: 3 });
+  assert.equal(s.flavorStock.double_apple, 0, "0g未満にはならない");
+  practice.consumeHomePracticeLeaves(undefined);
+  // 配合を手持ちに収める: 並んでいない葉は外し、残量まで・器の量まで。minTotal で足りない分を足す
+  const stock = { double_apple: 7, mint: 3, lemon: 20 };
+  const lim = (id) => stock[id] ?? 0;
+  const ids = ["double_apple", "mint", "lemon"];
+  assert.deepEqual(fitMixToStock({ double_apple: 10, mint: 2, rose: 4 }, ids, lim, 25), { double_apple: 7, mint: 2 });
+  assert.deepEqual(fitMixToStock({ double_apple: 9, mint: 3 }, ids, lim, 12, 12), { double_apple: 7, mint: 3, lemon: 2 });
+  assert.deepEqual(fitMixToStock({ lemon: 20 }, ids, lim, 15), { lemon: 15 }, "器の量を超えない");
+  assert.deepEqual(fitMixToStock({}, ["mint"], (id) => (id === "mint" ? 3 : 0), 12, 12), { mint: 3 }, "足りなければ足せる分だけ");
+  // 途中で抜けた一台では減らさない: 減算は runFullPractice が正常に戻った後にだけ置く
+  const full = practiceSrc.slice(practiceSrc.indexOf('if (pick === "full")'));
+  assert(full.indexOf("await runFullPractice") < full.indexOf("consumeHomePracticeLeaves(cs.ownLeavesUsed)"), "作り終えた後に減らす");
+  assert(stepsSource.includes("cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)))"), "課題の支給分は減らさない");
+  assert(!stepsSource.includes('cs.mode === "tournament" || cs.venue'), "配合の決定時には大会だけ減らす（家は上限だけ）");
+}
+
 // 旧セーブ: 中間準備を終えていれば読み込み時に卓上台を渡す。終えていなければ渡さない（スミさんの会話の数では決めない）
 const loadWith = (patch) => { const s = newGame(); Object.assign(s, patch); saveGame(); return loadGame(); };
 assert(loadWith({ flags: { _ev_midcheck: true } }).owned.includes(rig.SUMI_RIG), "中間準備を終えた旧セーブ");

@@ -512,6 +512,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .big-choice b { font-size: 21px; letter-spacing: 0.05em; }
 .big-choice small { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
 .big-choice:hover { border-color: var(--gold); transform: translateX(6px); }
+.big-choice:disabled { opacity: .5; cursor: not-allowed; }
+.big-choice:disabled:hover { border-color: inherit; transform: none; }
 .sub-back { margin-top: 18px; }
 
 /* ---------------------------------------------------------------- ショップ */
