@@ -5,6 +5,8 @@ on:
     paths:
       - 'remake/js/core/**'
       - 'remake/js/daily/**'
+      - 'remake/css/daily.css'
+      - 'remake/js/craft/worker.js'
       - 'remake/data/manifest.json'
       - 'remake/test/browser/home_rig_backgrounds.mjs'
       - 'assets/ui/scene_props/**'
@@ -15,6 +17,8 @@ on:
     paths:
       - 'remake/js/core/**'
       - 'remake/js/daily/**'
+      - 'remake/css/daily.css'
+      - 'remake/js/craft/worker.js'
       - 'remake/data/manifest.json'
       - 'remake/test/browser/home_rig_backgrounds.mjs'
       - 'assets/ui/scene_props/**'

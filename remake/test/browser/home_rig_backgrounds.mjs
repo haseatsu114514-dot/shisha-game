@@ -12,6 +12,37 @@ const rigs = (page, host = "#bg > :last-child") => page.locator(`${host} [data-h
 const expectedRigs = owned => baseline ? [] : owned;
 const hit = (page, label, selector) => label === "touch" ? page.locator(selector).tap() : page.locator(selector).click();
 
+// DOMの背景枚数だけでは縮小stageの鏡像反復を検出できない。
+// タッチの実モーダルを、同じ場面のぼかしなし参照と画素で照合する。
+async function assertTouchModalBackground(page) {
+  const actual = await page.screenshot({ path: `${out}/home-rig-backgrounds-touch-bedtime.png`, animations: "disabled" });
+  const control = await page.addStyleTag({ content: ".modal-backdrop { backdrop-filter: none !important; }" });
+  let reference;
+  try {
+    reference = await page.screenshot({ path: `${out}/home-rig-backgrounds-touch-bedtime-reference.png`, animations: "disabled" });
+  } finally { await control.evaluate(node => node.remove()); }
+  const difference = await page.evaluate(async ([actual, reference]) => {
+    const decode = async base64 => {
+      const image = new Image(); image.src = `data:image/png;base64,${base64}`; await image.decode();
+      const canvas = document.createElement("canvas"); canvas.width = image.width; canvas.height = image.height;
+      const ctx = canvas.getContext("2d"); ctx.drawImage(image, 0, 0); return ctx.getImageData(0, 0, image.width, image.height);
+    };
+    const a = await decode(actual), b = await decode(reference);
+    const box = document.querySelector(".home-shisha-dialog").getBoundingClientRect();
+    const scale = a.width / innerWidth;
+    let changed = 0, pixels = 0;
+    for (let y = 0; y < a.height; y++) for (let x = 0; x < a.width; x++) {
+      if (x / scale >= box.left - 4 && x / scale <= box.right + 4 && y / scale >= box.top - 4 && y / scale <= box.bottom + 4) continue;
+      const i = (y * a.width + x) * 4;
+      if ([0, 1, 2].some(c => Math.abs(a.data[i + c] - b.data[i + c]) > 2)) changed++;
+      pixels++;
+    }
+    return { changed, pixels };
+  }, [actual.toString("base64"), reference.toString("base64")]);
+  assert(difference.pixels > 10000, "Modal reference must include visible room pixels");
+  assert(difference.changed / difference.pixels < .001, `Touch modal changed the room image: ${JSON.stringify(difference)}`);
+}
+
 async function setup(page) {
   if (baseline) {
     for (const file of ["scene-art.js", "ui.js"]) {
@@ -157,7 +188,8 @@ await suite("home-rig-backgrounds", async check => {
       await page.locator('[data-test="home-shisha-skip"]').waitFor();
       assert.deepEqual(await rigs(page), variants[3]);
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
-      await page.screenshot({ path: `${out}/${label}-bedtime.jpg`, type: "jpeg", quality: 82 });
+      await page.screenshot({ path: `${out}/${label}-bedtime.jpg`, type: "jpeg", quality: 82, animations: "disabled" });
+      if (label === "touch") await assertTouchModalBackground(page);
       await hit(page, label, '[data-test="home-shisha-skip"]');
       await page.evaluate(async () => {
         const home = await import("./js/daily/home-shisha.js");
