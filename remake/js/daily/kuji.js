@@ -18,15 +18,24 @@ const grades = () => Object.entries(DB.kuji?.grades || {})
 function newBox(g) {
   const order = [];
   g.prizes.forEach((p, i) => { for (let k = 0; k < p.count; k++) order.push(i); });
-  return { order: shuffle(order), drawn: 0, emptyDay: null };
+  return { order: shuffle(order), drawn: 0, emptyDay: null,
+    version: DB.kuji.meta.version, prizes: structuredClone(g.prizes), lastOne: structuredClone(g.lastOne) };
 }
 
 /** 箱の状態。引き切ってから refillDays 経ったら新しい箱に入れ替わる */
 function boxOf(g) {
   let b = state.kuji[g.id];
   const refill = DB.kuji.meta?.refillDays || 3;
-  if (b && b.drawn >= g.boxSize && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
+  // 既存セーブの20/12枚箱は順番も景品もそのまま。引き切った次の補充から50枚へ。
+  if (b && b.drawn >= b.order.length && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
   if (!b) { b = state.kuji[g.id] = newBox(g); save(); }
+  if (!b.prizes) {
+    const original = DB.kuji.legacyGrades?.[g.id] || g;
+    b.prizes = structuredClone(original.prizes);
+    b.lastOne = structuredClone(original.lastOne);
+    b.version = 1;
+    save();
+  }
   return b;
 }
 
@@ -38,7 +47,11 @@ function grant(prize) {
     return;
   }
   if (prize.type === "flavor" && prize.flavorId) {
-    addFlavorStock(prize.flavorId, FLAVOR_BOX_GRAMS); // 1箱（50g）ぶん在庫に入る
+    addFlavorStock(prize.flavorId, prize.grams ?? FLAVOR_BOX_GRAMS);
+    return;
+  }
+  if (prize.type === "flavor" && prize.flavors) {
+    for (const leaf of prize.flavors) addFlavorStock(leaf.id, leaf.grams);
     return;
   }
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });
@@ -59,16 +72,18 @@ export function kujiRows(rerender) {
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {
     const box = boxOf(g);
-    const left = g.boxSize - box.drawn;
+    const size = box.order.length;
+    const left = size - box.drawn;
     const empty = left <= 0;
-    const top = g.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
+    const top = box.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
     rows.push(el("div.shop-row.kuji-row", [
       el("span.shop-cat.kuji-cat", { text: "くじ" }),
       el("div.shop-main", [
         el("b", { text: g.label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${g.boxSize} 枚 ・ S賞: ${top}${left === 1 ? " ・ 次がラスト1枚！ラストワン賞つき" : ""}` }),
+          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? "（旧箱・次回は50枚）" : ""}` }),
+        el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
       ]),
       el("button.btn.small", {
         text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
@@ -83,14 +98,14 @@ export function kujiRows(rerender) {
 
 async function draw(g) {
   const box = boxOf(g);
-  if (box.drawn >= g.boxSize || state.money < g.price) return;
+  if (box.drawn >= box.order.length || state.money < g.price) return;
   addMoney(-g.price);
-  const prize = g.prizes[box.order[box.drawn]];
+  const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;
-  const last = box.drawn >= g.boxSize;
+  const last = box.drawn >= box.order.length;
   if (last) box.emptyDay = state.day;
   grant(prize);
-  const extras = last && g.lastOne ? [g.lastOne] : [];
+  const extras = last && box.lastOne ? [box.lastOne] : [];
   extras.forEach(grant);
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
   await reveal(prize, extras);

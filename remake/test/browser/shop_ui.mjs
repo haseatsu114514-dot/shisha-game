@@ -21,8 +21,9 @@ async function open(page, opts = {}) {
   if (!opts.errand) await page.locator('[data-test="shop-enter"]').click();
   await page.locator('.shop-tabs').waitFor();
 }
-const ADOPTED = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
-const PENDING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
+const HEAVEN = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
+const REMAINING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
+const ADOPTED = [...HEAVEN, ...REMAINING];
 const HMD = ['lotos_hagal', 'tanukish_lid', 'amaburst_hms'];
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 fs.mkdirSync(artifacts, { recursive: true });
@@ -50,7 +51,8 @@ await suite("shop-ui", async check => {
       });
       const before = await page.evaluate(() => JSON.stringify(S.core.state));
       await open(page);
-      const mapping = await page.evaluate(async () => Object.keys((await import('./js/daily/shop-art.js')).SHOP_ART));
+      const mapping = await page.evaluate(async () => Object.keys({ ...(await import('./js/daily/shop-art.js')).SHOP_ART,
+        ...(await import('./js/daily/shop-art-remaining.js')).REMAINING_SHOP_ART }));
       assert.deepEqual(mapping.sort(), [...ADOPTED].sort());
       const decodeRows = async expected => {
         assert.equal(await page.locator('.shop-row.product').count(), expected);
@@ -71,17 +73,17 @@ await suite("shop-ui", async check => {
       };
       const flavors = await decodeRows(18);
       assert.deepEqual(flavors.filter(row => row.kind === 'generated').map(row => row.id).sort(), [...ADOPTED].sort());
-      assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id).sort(), [...PENDING].sort());
-      assert.equal(new Set(flavors.map(row => row.url)).size, 11, 'Ten adopted cartons + original shared sheet');
+      assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id), []);
+      assert.equal(new Set(flavors.map(row => row.url)).size, 18, 'Every flavor has its own carton');
       for (const row of flavors) {
-        assert(row.url.includes(row.kind === 'generated' ? `/heaven10/${row.id}.webp` : '/shop/flavors.webp'));
+        assert(row.url.includes(`/${REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
       }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
         const button = page.locator(`[data-test="detail-${id}"]`);
         const expectedName = await page.evaluate(id => S.data.DB.flavorById[id].short_name || S.data.DB.flavorById[id].name, id);
         assert.equal(await button.locator('b').innerText(), `${expectedName} 1箱（50g）`);
         await button.scrollIntoViewIfNeeded();
-        // Every adopted item plus pending8's original sheet is recorded in its real list context.
+        // Every carton is recorded in its real list and detail context.
         await capture(page, `${platform}-list-${id}`);
         await button.click();
         const detail = page.locator(`.shop-detail [data-product-art="${id}"]`);

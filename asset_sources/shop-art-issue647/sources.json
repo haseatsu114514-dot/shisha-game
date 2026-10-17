@@ -1,0 +1,72 @@
+{
+  "issue": 647,
+  "source_pr": 628,
+  "source_commit": "bb2492e1763d68edc45fa2e1edf772ad8848e612",
+  "notes": "Owner reported prior thread lost and requested rebuilding. Recover immutable saved native outputs, rebuild delivery and active integration; no old branch/source/claim mutated. No new image generation or code image editing.",
+  "items": [
+    {
+      "id": "lychee",
+      "source": "asset_sources/shop-art-issue647/outputs/afsaal-lychee.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/afsaal-lychee.png",
+      "git_blob": "40833a5922768c9aa43b6648c2d9c7d71ae7801a",
+      "bytes": 1086144,
+      "sha256": "fda03ff34583cd2e6ccd819bc5e63e1abb0b5fff5ba0462f5f2ea14a33f0082b"
+    },
+    {
+      "id": "rose",
+      "source": "asset_sources/shop-art-issue647/outputs/afsaal-rose.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/afsaal-rose.png",
+      "git_blob": "b96a18d216b9b878fd019cdcb37410a19f5f2022",
+      "bytes": 1021933,
+      "sha256": "ed0bbcc310ae3972cffa29a48baca637d221a382a3e40fd6405bfe76abab403a"
+    },
+    {
+      "id": "banana",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-banana.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-banana.png",
+      "git_blob": "8c22cbb867e7ee1980d4f2463e72faab759a1b66",
+      "bytes": 974295,
+      "sha256": "2145bb41c67c468cdd430c902179cd0632e1f56df9fd074d433e0194613bed7a"
+    },
+    {
+      "id": "coconut",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-coconut.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-coconut.png",
+      "git_blob": "b39956e7f544b0196f5ec12835310410de6ff258",
+      "bytes": 1204555,
+      "sha256": "65e0c0e2ec9e410cfd95f5954662f80f5b4d37ba16e84ac3337bc9c09d21f5f2"
+    },
+    {
+      "id": "mango",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-mango.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-mango.png",
+      "git_blob": "3daf751e7f482f8f902bb390839726cafdab0949",
+      "bytes": 983119,
+      "sha256": "811f9ce1615c25c6adbfca682ebf7277083be6082c459b690da12722eefcc829"
+    },
+    {
+      "id": "melon",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-melon.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-melon.png",
+      "git_blob": "00a70470b4e3d402ddfec3c95524f1ceb6a9dc26",
+      "bytes": 1037072,
+      "sha256": "0125f1051b90c2c47f984ec4816dad9da85a9b3854ac3bb2f62773818daecba6"
+    },
+    {
+      "id": "peach",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-peach.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-peach.png",
+      "git_blob": "1e2c99e6696be0c9667f9c61e07f787febee5118",
+      "bytes": 1188613,
+      "sha256": "b0266e6be64f074c01f4aa55d65e36c9f3b985c46324090f8841f8c6aa8c42f4"
+    },
+    {
+      "id": "vanilla",
+      "source": "asset_sources/shop-art-issue647/outputs/dobaj-vanilla.png",
+      "origin": "asset_sources/shop-art-issue586/text-free-v5/outputs/dobaj-vanilla.png",
+      "git_blob": "9720b793aecdd4bc9ba305b55925f39ed331a4ab",
+      "bytes": 1016110,
+      "sha256": "743c682bf5d0ea939134aef20a12ae5a0c6180fb6ba227fe56811a0bda082c9a"
+    }
+  ]
+}

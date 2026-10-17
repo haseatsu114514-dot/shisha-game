@@ -2409,17 +2409,24 @@
     {
       "dialogue_id": "remake_delivery_minto_handoff",
       "metadata": {
-        "private_scene": true,
         "bg": "res://assets/backgrounds/bg_street_day.png"
       },
       "lines": [
         {
           "speaker": "",
-          "text": "繁華街のPEPPERMINTに到着した。店の看板を確かめ、入口のドアをそっとノックする。"
+          "text": "繁華街のPEPPERMINTに到着した。店の看板を確かめ、入口のドアをそっと開ける。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/peppermint.png"
         },
         {
           "speaker": "",
-          "text": "扉が開き、ミント色のリボンをつけた店員が顔を出した。"
+          "text": "店内に入ると、ミント色のリボンをつけた店員がカウンターから顔を上げた。"
         },
         {
           "speaker": "minto",
@@ -2446,7 +2453,7 @@
         },
         {
           "speaker": "",
-          "text": "３袋を入口脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
+          "text": "３袋をカウンター脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
         },
         {
           "speaker": "hajime",
@@ -2470,7 +2477,7 @@
         },
         {
           "speaker": "",
-          "text": "配達はこれで完了だ。店に入って一服するかどうかは、自分で決めよう。"
+          "text": "配達を終え、店を出た。今度はお客さんとして、一服しに来てみよう。"
         }
       ]
     },

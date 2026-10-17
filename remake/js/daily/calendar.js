@@ -275,7 +275,7 @@ async function deliver({ charId, scene, text }) {
   addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
   if (charId === "minto") {
-    // 配達は店先まで。勝手に客席へ進まず、店内の初来店は後の自由行動に任せる。
+    // 到着から入店し、カウンターで引き渡す。客としての初回接客は自由行動に残す。
     await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/bg_street_day.png" });
     f.known_name_minto = true;
     f._met_minto = true;
