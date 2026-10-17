@@ -108,6 +108,12 @@ async function roll(page, { trap = false } = {}) {
   const announcement = page.locator('.trpg-dice-total[role="status"]');
   assert.equal(await announcement.count(), 1, "The settled total and grade are announced");
   assert.match(await announcement.textContent(), /合計/);
+  const pending = (await state(page)).pending;
+  assert.equal(await page.locator(".trpg-roll-equation").textContent(), `${pending.dice[0]} ＋ ${pending.dice[1]} ＋ 補正${pending.bonus} ＝`);
+  assert.equal(await announcement.locator("strong").textContent(), "合計 " + (pending.dice[0] + pending.dice[1] + pending.bonus));
+  assert.match(await page.locator(".trpg-roll-context").textContent(), new RegExp("連携札 " + (await state(page)).teamwork + "/2"));
+  const reduced = await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
+  assert.equal(await page.locator(".trpg-roll-fx").count(), reduced ? 0 : 1);
   await fits(page);
 }
 async function settle(page) {
