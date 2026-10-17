@@ -1,9 +1,9 @@
 import { DB } from "../core/data.js";
-import { state, save } from "../core/state.js";
+import { state, save, markMet } from "../core/state.js";
 import { imageReady, setBg } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { MAP } from "./ch2-city-data.js";
-import { CH2_NIGHTS } from "./ch2-story-data.js";
+import { MAP, ROOMS } from "./ch2-city-data.js";
+import { CH2_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
 
 // 会話途中では完了にしない。連続する場面は一つずつ保存し、LOAD時に読了分を飛ばす。
 async function readStep(step) {
@@ -15,11 +15,27 @@ async function readStep(step) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
     await setBg(MAP.night, { instant: true });
   }
+  if (step.room) {
+    if (!await imageReady(ROOMS[step.room], 15000)) throw new Error(`店内を読み込めませんでした: ${step.room}`);
+    await setBg(ROOMS[step.room], { instant: true });
+  }
+  syncAgehaVibes(owner.flags);
   const result = await play(step.id);
   if (state !== owner || !result || result.cancelled) throw new Error(`未読の場面: ${step.id}`);
   owner.flags[flag] = true;
   if (step.flag) owner.flags[step.flag] = true;
+  if (step.contact) addContact(owner, step.contact);
+  syncAgehaVibes(owner.flags);
   save();
+}
+
+// 店で連絡先を交換していなくても、その夜に会ったらLIMEが届くようにする
+function addContact(owner, id) {
+  markMet(id);
+  owner.flags[`_ch2_${id}_contact`] = true;
+  owner.flags[`_lime_contact_${id}`] = true;
+  owner.contacts ||= [];
+  if (!owner.contacts.includes(id)) owner.contacts.push(id);
 }
 
 export function chapterTwoNights(startDay) {
