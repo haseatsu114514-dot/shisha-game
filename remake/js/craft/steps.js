@@ -99,6 +99,35 @@ function capacity(cs) {
 
 const familyKeyOf = (id) => DB.flavorById?.[id]?.family || id;
 
+// 黄金比（#627）: レシピの golden（系統ID→整数の比）と実際の割合の差（パーセントポイント・境界を含む）。
+// 小数の誤差で境界がずれないよう整数で比べる。配合点には足さない（加点の置き場所は未決定）。
+export const GOLDEN_TOLERANCE = 5;
+export const GOLDEN_NEAR = 12;
+
+/** 黄金比の判定。{ level: "hit"|"near"|null, short: 一番足りない系統ID（惜しいときだけ） }。golden の無いレシピは null */
+export function goldenRatioOf(recipe, mix, flavorById = DB.flavorById) {
+  const golden = recipe?.golden;
+  if (!golden) return null;
+  const keys = Object.keys(golden);
+  const grams = keys.map((k) => Math.round(flavorFamilyGrams(mix, k, flavorById) * 10)); // 0.1g単位の整数
+  const total = grams.reduce((a, b) => a + b, 0);
+  const weight = keys.reduce((s, k) => s + golden[k], 0);
+  if (!total || !weight) return null;
+  let worst = 0, short = null, shortGap = 0;
+  keys.forEach((k, i) => {
+    const diff = grams[i] * weight - golden[k] * total; // 負＝その葉が足りない
+    worst = Math.max(worst, Math.abs(diff));
+    if (diff < shortGap) { shortGap = diff; short = k; }
+  });
+  const within = (tol) => 100 * worst <= tol * weight * total;
+  const level = within(GOLDEN_TOLERANCE) ? "hit" : within(GOLDEN_NEAR) ? "near" : null;
+  return { level, short: level === "near" ? short : null };
+}
+
+const leafName = (id) => String(DB.flavorById?.[id]?.short_name || DB.flavorById?.[id]?.name || id).split(" ").pop();
+/** 「レモン7：ミント3」 */
+export const goldenLabel = (recipe) => Object.entries(recipe?.golden || {}).map(([id, w]) => `${leafName(id)}${w}`).join("：");
+
 /** ミックスの評価（相性・レシピ・NG・レギュレーション） */
 export function evaluateMix(cs) {
   const mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
@@ -131,7 +160,11 @@ export function evaluateMix(cs) {
     for (const [k, v] of Object.entries(st)) prof[k] = (prof[k] || 0) + (v * mix[id]) / total;
   }
   const maker = makerMixProfile(cs);
+  // 黄金比は減点・課題フレーバーとは別の判定（黄金比でも減点は残る）。点は動かさない
+  const golden = recipe && cs.mode !== "tutorial" ? goldenRatioOf(recipe, mix) : null;
+  if (golden?.level === "hit") notes.push(`黄金比（${goldenLabel(recipe)}）`);
   return {
+    golden: golden?.level || null, goldenShort: golden?.short || null,
     score: clamp(Math.round(score), 25, 100), total, recipe, notes, regOk, profile: prof,
     count: ids.length, intensity: prof.assertiveness || 5, cooling: prof.cooling || 0, maker,
   };
@@ -260,6 +293,12 @@ export async function stepMix(cs) {
     state.recipes[r.id] = { day: state.day };
     toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
     if (cs.mode !== "tournament") earnStat("sense", 1);
+  }
+  // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
+  if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
+  else if (cs.mixInfo.golden === "near") {
+    const short = star("insight") >= 3 && cs.mixInfo.goldenShort;
+    toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し");
   }
   await sleep(200);
 }
