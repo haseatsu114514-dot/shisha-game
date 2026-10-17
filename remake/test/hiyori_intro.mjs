@@ -19,7 +19,7 @@ await suite("hiyori-intro", async (check) => {
         const vn = await import("./js/vn/engine.js"), daily = await import("./js/daily/hiyori.js");
         const spots = await import("./js/daily/spots.js");
         const s = core.newGame();
-        Object.assign(s, { phase: "daily", day: 4, money: 90000 });
+        Object.assign(s, { phase: "daily", day: 4, money: 90000, seed: 131 });
         core.config.textSpeed = 4;
         window.I = { core, DB, vn, daily, spots, displayName, seen: [] };
         new MutationObserver(rs => rs.forEach(r => r.addedNodes.forEach(n => {
