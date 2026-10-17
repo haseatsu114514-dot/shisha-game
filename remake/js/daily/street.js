@@ -1,10 +1,9 @@
-// 既存ハリボテ試作を行き先選択として使う。同一オリジンのframe APIでIDだけを受け取る。
+// 本編の商店街を行き先選択として使う。同一オリジンのframe APIでIDだけを受け取る。
 import { el, yen } from "../core/util.js";
 import { state, timeOfDay } from "../core/state.js";
 import { layers, showScreen, retire } from "../core/ui.js";
 import { spotById, hasNewEvent } from "./spots.js";
 import { spotAvailability, freeGuide } from "./spot-access.js";
-import { mountReel } from "./reel.js";
 import { cueTransition } from "../core/transitions.js";
 
 export const STREET_DOORS = Object.freeze({ cafe: "cafe", peppermint: "minto", kemurikusa: "naru" });
@@ -36,8 +35,8 @@ export function openStreet(opts, setInterrupt) {
         guided: opts.guide?.pin === s.id };
     };
     const frame = el("iframe.street-frame", {
-      title: "繁華街の通りを歩く", dataset: { test: "street-frame" },
-      src: `../experiments/proto/street/index.html?stage=set&area=hankagai&embed=1${timeOfDay() === "night" ? "&night=1" : ""}`,
+      title: "商店街の奥へ歩く", dataset: { test: "street-frame" },
+      src: `street/index.html?embed=1${timeOfDay() === "night" ? "&night=1" : ""}`,
       onload: () => {
         const scene = frame.contentWindow?.streetScene;
         if (!scene || finished) return;
@@ -65,18 +64,17 @@ export function openStreet(opts, setInterrupt) {
         });
       },
     });
-    const reelHost = el("div.street-reel");
     const root = el("div.street-selection", { dataset: { destinationSelection: "true" } }, [
-      frame, reelHost,
-      el("div.street-heading", [el("b", { text: "繁華街を歩く（仮導入）" }),
-        el("span", { text: "歩行絵は仮素材です。主人公ははじめのままです。" }),
+      frame,
+      el("div.street-heading", [el("b", { text: "商店街を歩く" }),
+        el("span", { text: "歩道や入口をタップして進めます。" }),
         opts.guide ? el("p", { text: opts.guide.text }) : null,
         opts.notice ? el("p", { text: opts.notice }) : null]),
       el("button.street-back", { text: "ピンマップへ戻る", dataset: { test: "street-back" }, onclick: () => finish(BACK_TO_MAP) }),
     ]);
     showScreen("street", root);
     setInterrupt(finish);
-    mountReel(reelHost); // 抽選と報酬は従来どおり行動時。未提示結果を同じ筐体で見せる。
+    // 街歩きでは筐体を起動しない。保留結果はピンマップへ戻ってから従来どおり提示する。
     opts.onShown?.();
   });
 }

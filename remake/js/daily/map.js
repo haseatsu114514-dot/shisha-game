@@ -269,7 +269,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           void setMapBackground(); updateHud(); renderPins(); idleInfo();
         },
       }))) : null,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "繁華街を歩く（仮導入）", dataset: { test: "map-walk" }, onclick: () => {
+      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
         SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
