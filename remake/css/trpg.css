@@ -303,6 +303,11 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-club-proposal h2 { font-size: 30px; margin: 10px 0 22px; }
 .trpg-club-proposal p { font-size: 19px; line-height: 1.7; }
 .trpg-club-proposal button { margin-top: 14px; }
+.trpg-club-proposal p.trpg-club-line { font-size: 17px; line-height: 1.55; margin: 4px 0; }
+.trpg-club-line small { display: inline-block; min-width: 5.5em; margin-right: 8px; color: #cbbd9d; font-size: 13px; letter-spacing: .06em; }
+.trpg-club-line[data-speaker="hajime"] { color: #d8e3dc; }
+.trpg-club-proposal p.trpg-club-narration { color: #b9c4bb; font-style: italic; padding-left: calc(5.5em * 13 / 17 + 8px); }
+.trpg-club-founded { margin-bottom: 14px; padding: 18px 40px; }
 .trpg-club-demo-visits { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .trpg-club-demo-visits small { color: #cbbd9d; }
 .trpg-club-demo-visits .trpg-button { padding: 7px 14px; font-size: 14px; }
