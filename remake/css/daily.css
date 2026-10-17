@@ -1013,3 +1013,8 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .home-shisha-dialog .fr-btn { display: grid; place-items: center; padding: 0; line-height: 1; }
 .home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }
 .home-shisha-dialog .modal-actions .btn:disabled { opacity: .45; cursor: not-allowed; }
+/* 縮小したstageのbackdrop-filterはタッチChromiumで部屋を鏡像状に反復する。
+   この窓では暗幕だけで背景を落とし、台と部屋を一枚のまま見せる。 */
+@media (pointer: coarse) {
+  #modal:has(.home-shisha-dialog) .modal-backdrop { backdrop-filter: none; }
+}
