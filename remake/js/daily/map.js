@@ -183,6 +183,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
           : el("div.mi-no", { text: av.why }),
+        // 家ではシーシャ作りの練習もできる（#638・tonari から移した）。休むのは「家に帰る」のまま
+        av.ok && s.kind === "rest"
+          ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
+          : null,
       );
     };
 
@@ -194,7 +198,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     };
 
     let moving = false;
-    const go = async (s) => {
+    const go = async (s, mode = null) => {
       if (moving || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
       moving = true;
@@ -208,7 +212,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         retire(root);
         info.classList.add("leaving");
         interrupt = null;
-        resolve(s.id);
+        resolve(mode ? `${s.id}:${mode}` : s.id); // 家で練習は "rest:practice"
       } finally {
         moving = false;
       }

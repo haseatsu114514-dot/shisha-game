@@ -119,6 +119,7 @@ jobs:
           node remake/test/browser/title_layout.mjs
           node remake/test/browser/sumi_contact.mjs
           node remake/test/browser/lover_hidden_growth.mjs
+          node remake/test/browser/home_shisha.mjs
       - name: Saved-lover date UI routes and legacy invitation boundaries
         run: |
           node remake/test/lover_dates.mjs
