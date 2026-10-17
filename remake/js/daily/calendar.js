@@ -12,6 +12,7 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { runHomeShisha } from "./home-shisha.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
@@ -613,6 +614,8 @@ async function endDay() {
     await play(`remake_homecoming_${state.day % 3}`);
   }
   await bannersIdle();
+  // 寝る前の一服（家シーシャ・#638）: 行動の枠は使わないちょい足し。大会前夜は聞かない
+  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   await advanceDay();
 }
 

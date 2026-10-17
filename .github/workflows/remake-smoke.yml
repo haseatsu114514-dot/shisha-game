@@ -14,6 +14,9 @@ on:
       - 'remake/test/lover_dates.mjs'
       - 'remake/js/craft/steps.js'
       - 'remake/test/golden_ratio.mjs'
+      - 'remake/js/daily/home-shisha.js'
+      - 'remake/js/daily/home-rig.js'
+      - 'remake/test/home_shisha.mjs'
       - 'data/**'
       - '.github/workflows/remake-smoke.yml'
   push:
@@ -25,6 +28,9 @@ on:
       - 'remake/test/lover_dates.mjs'
       - 'remake/js/craft/steps.js'
       - 'remake/test/golden_ratio.mjs'
+      - 'remake/js/daily/home-shisha.js'
+      - 'remake/js/daily/home-rig.js'
+      - 'remake/test/home_shisha.mjs'
       - 'data/**'
       - '.github/workflows/remake-smoke.yml'
   workflow_dispatch:
@@ -58,6 +64,8 @@ jobs:
         run: node --experimental-vm-modules remake/test/daily_consistency.mjs
       - name: Validate recipe golden ratios (#627)
         run: node remake/test/golden_ratio.mjs
+      - name: Validate home shisha bedtime puff (#638)
+        run: node remake/test/home_shisha.mjs
       - name: Validate romance date data when test is present
         shell: bash
         run: |

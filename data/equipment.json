@@ -312,13 +312,30 @@
     {
       "id": "home_rig_set",
       "type": "homeware",
-      "name": "家シーシャ一式",
-      "chapter_min": 2,
-      "buy_price": 24800,
-      "sell_price": 9800,
-      "price": 24800,
+      "name": "ミャア 卓上台",
+      "chapter_min": 1,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
       "value": "home_rig_set",
-      "description": "自宅用の台・ホース・トング・マットのフルセット。寝る前の一服が、明日の煙を変える。"
+      "home_growth": 0.5,
+      "description": "スミさんにもらった、ミャアの小さな卓上台。店のお下がり。寝る前の一服で、その日の粗が見えてくる（#638）。"
+    },
+    {
+      "id": "home_rig_pro",
+      "type": "homeware",
+      "name": "大会公式モデルの台",
+      "chapter_min": 1,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "value": "home_rig_pro",
+      "home_growth": 0.75,
+      "description": "大会の本番で使われるのと同じ台。家で吸っても手の感覚がそのまま残り、寝る前の一服の伸びがいい（くじの景品・#638）。"
     },
     {
       "id": "suyaki_hiyori",

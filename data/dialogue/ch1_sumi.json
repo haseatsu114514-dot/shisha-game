@@ -801,6 +801,42 @@
           "text": "……【根性】と【技術】が上がった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_home_rig",
+      "_comment": "#638 家シーシャ: ch1_sumi_training の直後に一度だけ。ミャアの卓上台を譲られる（台の受け取りは home-rig.js）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片付けを終えると、スミさんが奥から古い箱を持ってきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店のお下がりだ。ミャアの卓上台。まだ使える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……いいんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "家でも吸え。自分の煙を、自分で吸って知れ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "一日の終わりに一服すると、その日の粗が見える。葉は自分で用意しろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（寝る前の一服か。……自分の葉で、いろいろ試してみよう）"
+        }
+      ]
     }
   ]
 }

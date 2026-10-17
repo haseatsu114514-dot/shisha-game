@@ -1002,3 +1002,11 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .street-reel { position: absolute; left: 18px; top: 224px; width: 136px; transform: scale(.6); transform-origin: top left; }
 .street-reel .reel-widget { left: 0; top: 0; bottom: auto; }
 .mi-preview.loading { display: grid; place-items: center; font-size: 20px; color: #cdb8e6; background: #171225; }
+
+/* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
+.home-shisha-dialog .home-mix { display: grid; gap: 8px; max-height: 56vh; overflow-y: auto; padding-right: 4px; }
+.home-shisha-dialog .home-mix-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px 3.2em 44px; align-items: center; gap: 8px; }
+.home-shisha-dialog .home-mix-name { min-width: 0; overflow-wrap: anywhere; }
+.home-shisha-dialog .home-mix-g { text-align: center; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }
+.home-shisha-dialog .modal-actions .btn:disabled { opacity: .45; cursor: not-allowed; }
