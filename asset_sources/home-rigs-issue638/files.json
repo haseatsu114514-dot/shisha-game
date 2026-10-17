@@ -42,6 +42,20 @@
     "sha256": "2734b2f8c7b4e41469cf8a7aeb68b9f52e9feaca615a3e101cce918e7c44a3a6"
   },
   {
+    "path": "tabletop-v3-no-bowl.png",
+    "bytes": 804614,
+    "size": [
+      1222,
+      1287
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "37bbd6c878b80548951b993953ec86ddb103ba5e0066445f5da4b60c9ab7ff02"
+  },
+  {
     "path": "tournament-no-hose.png",
     "bytes": 1528132,
     "size": [
@@ -54,5 +68,19 @@
       254
     ],
     "sha256": "9407e5bb279dd8b96dda9d4029cf87f55652f11fee8e6a14775040085c2ae2d4"
+  },
+  {
+    "path": "tournament-v3.png",
+    "bytes": 1476966,
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "sha256": "e57162949debaac089b29abb9331f673d3524f2bb76a0ccca9c5925afcda87b3"
   }
 ]
