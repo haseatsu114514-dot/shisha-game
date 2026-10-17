@@ -52,6 +52,19 @@ assert.deepEqual(mixPercents({ a: 0, b: 5 }), { a: 0, b: 100 });
 const stepsSource = fs.readFileSync(new URL("../js/craft/steps.js", import.meta.url), "utf8");
 assert(stepsSource.includes("mixPercents(cs.mix)") && stepsSource.includes("fr-ratio"), "大会・練習の配合画面にも比率を出す");
 
+// 練習は家へ（tonari ではやらない）。地図の家に「家で練習する」、メニューは「特に練習したいところ」
+const src = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
+const tonariSrc = src("../js/daily/tonari.js");
+for (const id of ["tonari-practice", "after-full", "after-drill"]) assert(!tonariSrc.includes(id), `tonari から練習を外す: ${id}`);
+assert(src("../js/daily/map.js").includes("map-home-practice"), "地図の家に「家で練習する」");
+const practiceSrc = src("../js/daily/home-practice.js");
+assert(practiceSrc.includes("特に練習したいところ") && practiceSrc.includes('venue: "home"'), "家の練習メニューと家の作業台");
+const { HOME_PRACTICE_STAMINA } = await import("../js/daily/home-practice.js");
+assert.deepEqual(HOME_PRACTICE_STAMINA, { full: -12, drill: -10 });
+const { benchBgRef, benchPlaceTag } = await import("../js/craft/worker.js");
+assert.deepEqual([benchBgRef({ mode: "rehearsal", venue: "home" }), benchPlaceTag({ mode: "drill", venue: "home" })], ["bg_home", "HOME"]);
+assert.deepEqual([benchBgRef({ mode: "rehearsal" }), benchPlaceTag({ mode: "rehearsal" })], ["bg_tonari_inside", "TONARI"]);
+
 // 旧セーブ: 中間準備を終えていれば読み込み時に卓上台を渡す。終えていなければ渡さない（スミさんの会話の数では決めない）
 const loadWith = (patch) => { const s = newGame(); Object.assign(s, patch); saveGame(); return loadGame(); };
 assert(loadWith({ flags: { _ev_midcheck: true } }).owned.includes(rig.SUMI_RIG), "中間準備を終えた旧セーブ");

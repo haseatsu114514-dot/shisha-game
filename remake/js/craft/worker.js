@@ -7,6 +7,11 @@ import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-s
 import { buildWorkerHoles } from "./worker-holes.js";
 import { imageReady } from "../core/ui.js";
 
+/** 作業台の背景（大会＝会場、家で練習＝自宅・#638、それ以外＝tonari の店内） */
+export const benchBgRef = (cs) => cs?.mode === "tournament" ? "bg_tournament_stage" : cs?.venue === "home" ? "bg_home" : "bg_tonari_inside";
+/** 作業風景の左上の場所の札 */
+export const benchPlaceTag = (cs) => cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : cs?.venue === "home" ? "HOME" : "TONARI";
+
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
   pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
@@ -44,7 +49,7 @@ export function buildWorkerScene(cs) {
   equipment.append(water);
   const stage = el("div.bench-worker-stage", {
     role: "img", "aria-label": "はじめとシーシャの作業台を描いた静止イメージ",
-    style: { backgroundImage: `url("${bgUrl(cs?.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay())}")` },
+    style: { backgroundImage: `url("${bgUrl(benchBgRef(cs), timeOfDay())}")` },
   }, [
     actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
@@ -54,7 +59,7 @@ export function buildWorkerScene(cs) {
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
     el("i.worker-breath", { "aria-hidden": "true" }),
-    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : "TONARI" }),
+    el("span.worker-scene-tag", { text: benchPlaceTag(cs) }),
   ]);
   // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);

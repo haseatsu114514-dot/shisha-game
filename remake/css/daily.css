@@ -455,6 +455,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 }
 .mi-go:hover { filter: brightness(1.08); }
 .mi-go:active { transform: scale(0.98); }
+.mi-go.mi-go-alt { margin-top: 6px; color: var(--text); background: rgba(20, 14, 26, 0.85); border-color: #f4d27a99; }
 .mi-no { padding: 8px; text-align: center; font-size: 13px; color: #f0b9b9; background: rgba(40, 18, 24, 0.6); border: 1px dashed rgba(240, 185, 185, 0.35); border-radius: 4px; }
 .map-notice {
   top: 92px;
