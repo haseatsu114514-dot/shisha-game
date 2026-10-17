@@ -48,7 +48,7 @@ export const MAKER_SPECS = Object.freeze({
   }),
   dobaj: Object.freeze({
     id: "dobaj", label: "ドバジ", widthFactor: 1.15,
-    bonuses: Object.freeze({ aroma: 4, heatStability: 4, taste: 2, smoke: 5, duration: 2, draw: 2 }),
+    bonuses: Object.freeze({ aroma: 2, heatStability: 1, taste: 1, smoke: 0, duration: 1, draw: 0 }),
   }),
   afsahr: Object.freeze({
     id: "afsahr", label: "アフサール", widthFactor: 0.92,
@@ -82,8 +82,8 @@ const MAKER_WIDTH_PENALTY = [1.00, 1.00, 0.95, 0.88, 0.80];
 const MAKER_SYNERGY_SCALE = [1.00, 1.00, 0.90, 0.78, 0.65];
 
 /**
- * グラム重み付きのメーカー混合プロファイル（適温帯幅倍率・複数社ペナルティ・ステータス天井統一加算）。
- * 単一メーカー時どの社でも craftQuality 寄与がちょうど +2.50 になるよう設計されている。
+ * グラム重み付きのメーカー混合プロファイル（適温帯幅倍率・複数社ペナルティ・ステータス天井加算）。
+ * 単一メーカー時は主要4社で craftQuality 寄与が +2.50、初心者安定枠のドバジで +0.80 になるよう設計されている。
  */
 export function makerOfFlavor(id, flavorById = DB.flavorById) {
   const explicit = flavorById?.[id]?.maker;

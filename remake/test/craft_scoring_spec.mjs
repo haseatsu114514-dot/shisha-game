@@ -48,23 +48,35 @@ for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].not_for_sale, true);
 }
 
-// 2. メーカー5社・天井統一（単社時はどの社でも craftQuality 加算天井がちょうど +2.50）
+// 2. メーカー5社・加算天井（単社時は主要4社が +2.50、初心者安定枠のドバジが +0.80）
 const sampleByMaker = {
-  af: "double_apple",
-  dobaj: "dobaj_double_apple",
-  afsahr: "absal_double_apple",
-  forcefect: "forcefect_mikan",
-  nightside: "nightside_earlgrey",
+  af: ["double_apple", 2.5],
+  dobaj: ["dobaj_double_apple", 0.8],
+  afsahr: ["absal_double_apple", 2.5],
+  forcefect: ["forcefect_mikan", 2.5],
+  nightside: ["nightside_earlgrey", 2.5],
 };
-for (const [maker, fid] of Object.entries(sampleByMaker)) {
+for (const [maker, [fid, expectedDelta]] of Object.entries(sampleByMaker)) {
   const prof = makerMixProfile({ mix: { [fid]: 12 }, equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" } });
   assert.equal(prof.makerCount, 1);
   assert.equal(prof.widthPenalty, 1.0);
   assert.equal(prof.synergyScale, 1.0);
-  assert.equal(prof.qualityCeilingDelta, 2.5, `Maker ${maker} ceiling delta != 2.5`);
+  assert.equal(prof.qualityCeilingDelta, expectedDelta, `Maker ${maker} ceiling delta != ${expectedDelta}`);
 }
 
-// 複数メーカー混合時のグラム重み・帯幅ペナルティ・シナジー減衰（AF 6g + Forcefect 4g + Nightside 2g）
+// 複数メーカー混合時のグラム重み・帯幅ペナルティ・シナジー減衰
+// ケースA: AF 6g (+2.50) + ドバジ 6g (+0.80) -> 2社（synergyScale: 0.90, widthPenalty: 0.95）
+// qualityCeilingDelta = (0.5 * 2.50 + 0.5 * 0.80) * 0.90 = 1.485
+const afDobaj = makerMixProfile({
+  mix: { double_apple: 6, dobaj_double_apple: 6 },
+  equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
+});
+assert.equal(afDobaj.makerCount, 2);
+assert.equal(afDobaj.widthPenalty, 0.95);
+assert.equal(afDobaj.synergyScale, 0.90);
+assert.equal(afDobaj.qualityCeilingDelta, 1.485);
+
+// ケースB: AF 6g + Forcefect 4g + Nightside 2g -> 3社（synergyScale: 0.78, widthPenalty: 0.88）
 const multi = makerMixProfile({
   mix: { double_apple: 6, forcefect_mikan: 4, nightside_earlgrey: 2 },
   equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
