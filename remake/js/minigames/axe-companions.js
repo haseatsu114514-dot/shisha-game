@@ -9,7 +9,7 @@ export const COMPANIONS = {
     "killshot-miss": "……惜しい。宣言した投は青い的だけが得点なんだね。",
     miss: "……もう少しだったね。次の一投、いこう。",
     drop: "……力の加減かな。強すぎると、回転も合わないね。",
-    summary: "……楽しかった。また一緒に投げようね。" },
+    summary: "……楽しかった。見てるだけで、私のほうが消えかけたけど" },
   // Read the registered owner of this adopted SHISHARK art, across ID renames.
   shark: { name: "サメちゃん", titleSuffix: "_01_shishark_test_run.png", faces: ["normal", "smile", "excited"],
     before: ["お主の番じゃ。わしはここで見ておるぞ。", "青い的は先に宣言するのじゃな。忘れるでないぞ。", "どこを狙うのじゃ？ お主の好きなところでよいぞ。"],
