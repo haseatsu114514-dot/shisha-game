@@ -186,39 +186,18 @@
 .rw-bubble.show { opacity: 1; transform: scale(1); }
 .rw-bubble.hot { color: #fff; background: #ff3d3d; box-shadow: 0 0 12px rgba(255, 90, 90, 0.85); }
 .rw-bubble.hot::after { border-top-color: #ff3d3d; }
-/* 文字色予告（#621）: 黒地に色文字。スロットの序列 青＜緑＜赤＜金＜虹（虹は確定） */
+/* 文字色予告（#621・#639）: 黒地に色文字。青＜緑＜赤の3色 */
 .rw-bubble.cue { background: #120e18; border: 1px solid rgba(255, 255, 255, 0.28); font-size: 15px; font-weight: 800; letter-spacing: 0.04em; }
 .rw-bubble.cue::after { border-top-color: #120e18; }
 .rw-bubble.cue-blue { color: #5cb2ff; text-shadow: 0 0 6px rgba(70, 150, 255, 0.7); }
 .rw-bubble.cue-green { color: #4fe07a; text-shadow: 0 0 6px rgba(60, 220, 110, 0.7); }
 .rw-bubble.cue-red { color: #ff4040; text-shadow: 0 0 8px rgba(255, 50, 50, 0.85); animation: rw-cue-pulse 0.5s ease-in-out infinite alternate; }
-.rw-bubble.cue-gold {
-  color: #ffd75e;
-  background: #120e18 linear-gradient(180deg, rgba(255, 215, 94, 0.14), transparent);
-  text-shadow: 0 0 10px rgba(255, 190, 60, 0.95);
-  border-color: rgba(255, 215, 94, 0.8);
-  animation: rw-cue-pulse 0.4s ease-in-out infinite alternate;
-}
-.rw-bubble.cue-rainbow {
-  color: #ff5a5a;
-  border-color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
-  animation: rw-cue-rainbow 0.9s linear infinite, rw-cue-pulse 0.4s ease-in-out infinite alternate;
-}
 @keyframes rw-cue-pulse { to { transform: scale(1.06); } }
-@keyframes rw-cue-rainbow {
-  0%, 100% { color: #ff5a5a; } 16% { color: #ffb84d; } 33% { color: #fff15a; } 50% { color: #5cff86; } 66% { color: #5cc8ff; } 83% { color: #c07bff; }
-}
 /* 予告の次ゲーム: 枠がその色でうっすら光る（保留の色のような余韻） */
 .reel-widget.cued .rw-machine { transition: border-color 0.2s, box-shadow 0.2s; }
 .reel-widget.cued-blue .rw-machine { border-color: #5cb2ff; box-shadow: 0 0 10px 2px rgba(92, 178, 255, 0.6); }
 .reel-widget.cued-green .rw-machine { border-color: #4fe07a; box-shadow: 0 0 10px 2px rgba(79, 224, 122, 0.6); }
 .reel-widget.cued-red .rw-machine { border-color: #ff4040; box-shadow: 0 0 12px 3px rgba(255, 64, 64, 0.7); }
-.reel-widget.cued-gold .rw-machine { border-color: #ffd75e; box-shadow: 0 0 14px 4px rgba(255, 200, 80, 0.8); }
-.reel-widget.cued-rainbow .rw-machine { box-shadow: 0 0 14px 4px rgba(255, 255, 255, 0.7); animation: rw-cued-rainbow 0.9s linear infinite; }
-@keyframes rw-cued-rainbow {
-  0%, 100% { border-color: #ff5a5a; } 16% { border-color: #ffb84d; } 33% { border-color: #fff15a; } 50% { border-color: #5cff86; } 66% { border-color: #5cc8ff; } 83% { border-color: #c07bff; }
-}
 /* 設定変更（観音堂のあと）: 白く光って一筋の光が走る。虹は当たり専用なので使わない */
 .rw-bubble.setting { color: #1b2a3a; background: #e9f7ff; box-shadow: 0 0 12px rgba(160, 225, 255, 0.9); }
 .rw-bubble.setting::after { border-top-color: #e9f7ff; }
@@ -236,7 +215,7 @@
 @keyframes rw-setting-glow { to { box-shadow: 0 0 24px 8px rgba(200, 240, 255, 1); } }
 @keyframes rw-setting-sweep { to { background-position: 250% 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .rw-bubble.cue-red, .rw-bubble.cue-gold, .rw-bubble.cue-rainbow,
+  .rw-bubble.cue-red,
   .reel-widget.setting-change .rw-machine, .reel-widget.setting-change .rw-machine::before { animation: none; }
 }
 
@@ -374,8 +353,58 @@
 .rn-guide-list { margin: 6px 0 10px; padding: 0; list-style: none; display: grid; gap: 10px; }
 .rn-guide-list li { display: grid; grid-template-columns: 130px 1fr; gap: 12px; font-size: 16px; line-height: 1.6; color: #f2ecdf; }
 .rn-guide-list b { color: var(--gold); letter-spacing: 0.06em; }
+.ri-panel.sys { border-color: rgba(191, 230, 255, 0.6); }
+.ri-panel.sys .ri-app { color: #bfe6ff; }
+.rn-hint-head { margin: 8px 0 2px; font-size: 13px; font-weight: 700; color: #bfe6ff; letter-spacing: 0.06em; }
+.rn-hint-head.past, .rn-hints.past { color: #8f86a0; }
 .rn-hints { margin: 4px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.6; color: #bfe6ff; }
 @media (max-width: 640px) {
   .rn-cols { grid-template-columns: 1fr; gap: 4px; }
   .reel-note .rn-panel { padding: 16px 16px 12px; }
 }
+
+/* ---- 遊び方カード（店に置いてあるラミネートの遊技説明のイメージ・#639） ---- */
+.rn-card {
+  --slot-scale: 1.25;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 10px;
+  border-radius: 12px;
+  color: #2a2030;
+  background: linear-gradient(180deg, #fffaf0, #f2e8d2);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.85), 0 3px 10px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+.rn-card::after { /* ラミネートの光沢 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.18) 46%, transparent 52%);
+}
+.rn-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "head head" "body body";
+  align-items: center;
+  gap: 2px 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(120, 90, 50, 0.25);
+}
+.rn-tile.has-art { grid-template-areas: "head head" "art body"; }
+.rn-tile-head { grid-area: head; font-size: 15px; font-weight: 900; letter-spacing: 0.04em; color: #b8202a; }
+.rn-tile-body { grid-area: body; font-size: 14px; font-weight: 700; line-height: 1.35; color: #2a2030; }
+.rn-art { grid-area: art; display: flex; align-items: center; gap: 2px; }
+.rn-art.lamp .rw-face { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff3c0, #e8a93e 75%); box-shadow: 0 0 10px 3px rgba(255, 200, 80, 0.8); }
+.rn-art.syms { padding: 2px 4px; border-radius: 6px; background: #fbf8f2; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15); }
+.rn-sym { display: grid; place-items: center; width: calc(26px * var(--slot-scale)); height: calc(26px * var(--slot-scale)); }
+.cue-chip { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; font-style: normal; font-size: 14px; font-weight: 900; background: #120e18; }
+.cue-chip.cue-blue { color: #5cb2ff; }
+.cue-chip.cue-green { color: #4fe07a; }
+.cue-chip.cue-red { color: #ff4040; }
+.ri-panel.sys .ri-text { min-height: 0; }
