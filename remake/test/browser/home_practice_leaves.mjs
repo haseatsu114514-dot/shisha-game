@@ -67,6 +67,44 @@ await suite("home-practice-leaves", async (check) => {
     assert.deepEqual((await snapshot(page)).stock, { double_apple: 9, mint: 2 }, "戻ったら何も減らない");
   });
 
+  await check("stamina-warning-cancel-changes-nothing", async (page) => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.newGame(); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
+      core.state.flavorStock = { double_apple: 20, mint: 10 };
+      window.__before = JSON.stringify(core.state);
+      window.__practice = { done: false };
+      // 体力警告で「やめる」を選んだのと同じ: staminaGuard が false
+      import("./js/daily/home-practice.js").then(h => h.runHomePractice({ staminaGuard: async () => false }))
+        .then(value => { window.__practice = { done: true, value }; });
+    });
+    await page.locator('[data-test="home-practice-full"]').click();
+    await page.waitForFunction(() => window.__practice.done);
+    assert.deepEqual(await page.evaluate(() => window.__practice.value), { used: false, exerted: false });
+    assert.equal(await page.evaluate(async () => JSON.stringify((await import("./js/core/state.js")).state) === window.__before), true,
+      "葉・体力・行動・記録は何も変わらない");
+  });
+
+  await check("hidden-menu-not-clickable-on-bench", async (page) => {
+    await startPractice(page, { double_apple: 20, mint: 10 }, { auto: null });
+    // 日常の画面と同じ実HUDを組む（MENUを押した回数だけ数える）
+    await page.evaluate(async () => {
+      window.__menuOpened = 0;
+      (await import("./js/daily/hud.js")).initHud({ phone() {}, status() {}, menu() { window.__menuOpened++; } });
+    });
+    await page.locator('[data-test="home-practice-full"]').click();
+    await page.locator('[data-test="mix-ok"]').waitFor();
+    // 作業台では見えないHUDのMENUを押せない（タイトルへ戻る＝途中保存をさせない）
+    const hit = await page.evaluate(() => {
+      const m = document.querySelector('[data-test="hud-menu"]');
+      if (!m) throw new Error("HUD MENU was not built");
+      const r = m.getBoundingClientRect();
+      const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return top === m || m.contains(top);
+    });
+    assert.equal(hit, false, "作業台の上に見えないMENUが残っている");
+  }, touch);
+
   await check("mix-capped-by-own-leaves", async (page) => {
     await startPractice(page, { double_apple: 8, mint: 6 }, { auto: null });
     await page.locator('[data-test="home-practice-full"]').click();

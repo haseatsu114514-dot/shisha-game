@@ -121,7 +121,9 @@
   padding: 12px 16px;
 }
 body.in-vn .hud, body.vn-open .hud { opacity: 0; }
-body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; }
+/* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
+body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; pointer-events: none; }
+body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
 .hud-card, .hud-level, .hud-menu, .hud-stamina {
