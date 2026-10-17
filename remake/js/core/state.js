@@ -76,6 +76,7 @@ export function newState() {
       settingNotice: false,    // 次に筐体が出たとき「設定変更完了〜」を見せる（"kannon"／"weekly"）
       resetNext: false,        // 設定変更直後の1回転でガックン
       lock: null,              // 文字色予告を出した次ゲームの抽選結果
+      settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]

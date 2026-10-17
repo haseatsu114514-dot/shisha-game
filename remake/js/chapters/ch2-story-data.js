@@ -1,12 +1,11 @@
 // 章内日で記す。保存日時・夜の予定表へ渡すときだけ通算日に変換する。
-// あげは（#626）: 2日目の偵察返し・9日目の試飲会・10日目のスランプ来店を強制の夜にする。
+// あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試飲会・10日目のスランプ来店を強制の夜にする。
+// 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
 // room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。contact はその夜に連絡先も交換する。
 export const CH2_NIGHTS = [
-  { day: 2, pin: "tonari", label: "あげはの偵察", steps: [
-    { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", contact: "ageha" },
-  ] },
   { day: 3, pin: "naru", label: "なるの祝福", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
+    { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", contact: "ageha" },
   ] },
   { day: 4, pin: "tonari", label: "焦げたソファ", steps: [
     { id: "ch2_sofa_burn", file: "ch2_main" },
