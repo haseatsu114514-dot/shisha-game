@@ -13,7 +13,7 @@ const context = vm.createContext({ Math: math, Map, Set, console, setTimeout: ()
 const noop = () => {};
 const mocks = {
   "core/util.js": { clamp: (v,a,b) => Math.max(a,Math.min(b,v)), el: noop, sleep: noop },
-  "core/ui.js": { layers: {}, gainCard: noop },
+  "core/ui.js": { layers: {}, gainCard: noop, toast: noop },
   "core/data.js": { DB: {}, faceIconUrl: noop },
   "core/audio.js": { SE: {} },
 };

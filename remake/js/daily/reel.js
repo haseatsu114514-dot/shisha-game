@@ -8,7 +8,7 @@
 // ・ハズレでも対象ステ+1（サイレント）。天井（ゾーン/本天井・持ち越し）で最終的に全員救済
 // ・結果と報酬は行動した瞬間に確定・適用し、演出は次にマップを開いたときに後追いで見せる
 import { el, sleep } from "../core/util.js";
-import { layers, gainCard } from "../core/ui.js";
+import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { gainStat, star } from "../core/stats.js";
@@ -398,11 +398,12 @@ function recordNote(reel, r) {
 
 // 設定示唆（パッキーの一言）。実機のように「示唆の種類」ごとに台詞を分ける。
 // 偶奇・高低は出やすさが違うだけ（ガセあり）。確定系は条件を満たす設定でしか出ない（嘘をつかない）。
-// 出るのは設定変更のときと、ボーナスのあとにときどき。ノートに直近3つが残る。
-const SETTING_HINTS = [
+// 出るのは設定変更のときと、ボーナスのあとにときどき。ノートには設定ごと（period）に分けて残す。
+// 偶奇の台詞は 2026-10-17 オーナー承認の文言（分類ごとの出やすさは変えない・#634）。
+export const SETTING_HINTS = [
   { id: "neutral", w: () => 40, lines: ["今日もぷかぷかいこう♪", "ほどほどにがんばる〜", "ふつうがいちばん！", "いい煙の予感……？"] },
-  { id: "odd", w: (s) => (s % 2 ? 16 : 6), lines: ["今日は、ひとりでぷかぷか〜", "ボク、ひとり占めしちゃお♪", "ひとつ、ふたつ……みっつ？"] },
-  { id: "even", w: (s) => (s % 2 ? 6 : 16), lines: ["ふたりで吸うと、おいしいよね♪", "おそろいって、いいよね", "ペアでいこうっ！"] },
+  { id: "odd", w: (s) => (s % 2 ? 16 : 6), lines: ["いち、さん、ご！ 今日はこのリズムが好き♪", "今日は奇数が気になるな〜"] },
+  { id: "even", w: (s) => (s % 2 ? 6 : 16), lines: ["に、よん、ろく！ 今日はこのリズムが好き♪", "今日は偶数が気になるな〜"] },
   { id: "low", w: (s) => (s <= 2 ? 14 : s <= 4 ? 7 : 3), lines: ["今日はのんびりいこ〜", "ふぁ〜、ねむねむ……", "ゆっくりでいいよね〜"] },
   { id: "high", w: (s) => (s >= 5 ? 14 : s >= 3 ? 7 : 3), lines: ["ぷぷっ、なんだか調子いい！", "体が軽いぞっ", "キミ、ツイてるかもね♪"] },
   { id: "ge2", w: (s) => (s >= 2 ? 4 : 0), lines: ["ボク、今日はねぼすけじゃないよ！"] },        // 設定2以上確定
@@ -414,11 +415,25 @@ function settingHint(setting) {
   const kind = SETTING_HINTS.find((h) => h.id === pickWeighted(Math.random, kinds));
   return kind.lines[Math.floor(Math.random() * kind.lines.length)];
 }
-function rememberHint(hint) {
-  const note = state.reel.note || (state.reel.note = {});
+const HINT_KEEP = 8;
+/** 示唆を記録する。period＝今の設定が何回目の抽選か（settingDraws）。設定が変わると前の示唆は「前の設定」になる */
+export function rememberHint(hint) {
+  const reel = state.reel;
+  ensureSetting(reel);
+  const note = reel.note || (reel.note = {});
   note.lastHint = hint;
-  (note.hints ||= []).unshift({ text: hint, chapter: state.chapter, day: state.day });
-  note.hints.length = Math.min(note.hints.length, 3);
+  (note.hints ||= []).unshift({ text: hint, chapter: state.chapter, day: state.day, period: reel.settingDraws });
+  note.hints.length = Math.min(note.hints.length, HINT_KEEP);
+}
+
+/** 示唆を今の設定と前の設定に分ける。period の無い旧セーブの記録は、今の設定の証拠として扱わない */
+export function splitHints(reel) {
+  const n = reel?.note || {};
+  const period = Number.isInteger(reel?.settingDraws) ? reel.settingDraws : 0;
+  const all = (n.hints || []).slice();
+  if (!all.length && n.lastHint) all.push({ text: n.lastHint, chapter: "?", day: "?" });
+  const isCurrent = (h) => Number.isInteger(h.period) && h.period === period;
+  return { current: all.filter(isCurrent), past: all.filter((h) => !isCurrent(h)).slice(0, 3) };
 }
 
 /** 観音堂に行ったあと: 設定を引き直す。演出は次に筐体が出たとき（光って「設定変更完了〜」） */
@@ -521,6 +536,12 @@ export function mountReel(host, { delay = 500 } = {}) {
   widget = buildWidget();
   host.append(widget);
   setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
+  // 初回説明を読み終えた旧セーブには、設定の説明が増えたことを一度だけ知らせる（画面は止めない）
+  if (state.reel.introDone && !state.reel.settingGuideDone) {
+    state.reel.settingGuideDone = true;
+    save();
+    toast("パッキースロットに『設定』の説明が増えたよ。パッキーをタップして、ノートの遊び方で読めるよ");
+  }
   const queue = state.reel.pending;
   const notice = !!state.reel.settingNotice;
   if (!queue.length && !notice) return Promise.resolve();
@@ -957,18 +978,21 @@ export function noteSummary(reel) {
     freezeLog: n.freezeLog || [],
     settingChanges: n.settingChanges || 0,
     lastHint: n.lastHint || "",
-    hints: n.hints || (n.lastHint ? [{ text: n.lastHint, chapter: "?", day: "?" }] : []),
+    ...(() => { const h = splitHints(reel); return { currentHints: h.current, pastHints: h.past }; })(),
+    settingSince: reel?.settingSince || null,
   };
 }
 
-// 遊び方（システムの説明。数字の確率は出さない）
-const GUIDE = [
-  ["大当たり", "パッキーの顔が光ったら大当たり。BIG（赤7・赤7・赤7）とREG（赤7・赤7・BAR）があり、直前の行動で伸びた能力がさらに伸びる。"],
-  ["外れても", "外れても能力は少し伸びる。当たりのない回転が続いても、天井で必ず当たる。"],
-  ["文字色予告", "パッキーの色付きの文字は、次の回転の期待度。青＜緑＜赤＜金＜虹の順に熱く、虹は大当たり確定。"],
-  ["設定", "スロットには設定1〜6があり、高いほど当たりやすい。設定は1週間ごとに変わる。観音堂にお参りしても変わる。"],
-  ["設定変更の合図", "設定が変わると筐体が白く光る。変わった直後とゲームを始めた直後の1回転は、リールがガクッと揺れる（ガックン）。"],
-  ["設定の手がかり", "パッキーの水色の吹き出しは、設定の手がかり。ノートの最近の一言から、今の設定を推理できる。"],
+// 遊び方（システムの説明。数字の確率は出さない）。設定が変わる特定のスポットは明かさない（見つける楽しみ・#634）
+export const GUIDE = [
+  ["大当たり", "パッキーの顔が光ったら大当たり。BIG（赤7・赤7・赤7）とREG（赤7・赤7・BAR）があって、直前の行動で伸びた能力がさらに伸びるよ。"],
+  ["外れても", "外れても能力は少し伸びるよ。当たりのない回転が続いても、天井で必ず当たるよ。"],
+  ["文字色予告", "パッキーの色付きの文字は、次の回転の期待度。青＜緑＜赤＜金＜虹の順に熱くて、虹は大当たり確定だよ。"],
+  ["設定", "設定とは、当たりやすさを決める1〜6の段階。数字が大きいほどボーナスやベルが出やすいけど、必ず当たるわけではないよ。"],
+  ["設定が変わるとき", "前回の抽選から7日たつか、章が変わると、次にスロットが回る行動のときに選び直されるよ。同じ設定や、低い設定になることもあるよ。"],
+  ["ひみつ", "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！"],
+  ["設定変更の合図", "設定が変わると筐体が白く光るよ。変わった直後とゲームを始めた直後の1回転は、リールがガクッと揺れる（ガックン）。"],
+  ["設定のヒント", "パッキーの水色の吹き出しは設定のヒント。偶数・奇数や高い・低いのヒントは確定ではないよ。ノートには、今の設定のヒントと前の設定のヒントを分けて残すよ。"],
 ];
 
 export function openNote() {
@@ -998,10 +1022,14 @@ export function openNote() {
           el("h3", { text: "当たり履歴（新しい順）" }), history,
           el("h3", { text: "フリーズ殿堂入り" }), hall,
           el("h3", { text: "設定" }),
-          el("p.rn-setting", { text: s.settingChanges
-            ? `設定変更 ${s.settingChanges}回。設定は1週間ごとに変わるらしい`
-            : "設定は？？？。1週間ごとに変わるらしい" }),
-          s.hints.length ? el("ul.rn-hints", s.hints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+          el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
+          el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
+          s.currentHints.length
+            ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
+            : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
+          s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
+          s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+          el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
         ]),
       ]),
       el("span.ri-next", { text: "▼ タップで遊び方" }),
@@ -1033,6 +1061,12 @@ const INTRO_LINES = [
   "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
   "外れても大丈夫。回したぶんだけ、がんばりがちゃーんと積もるよ。ボクの顔をタップすると記録ノートも見られるからね！",
 ];
+// 初回のみ: パッキーの説明のあとに、設定のシステム説明（短く3ページ）。ノートの遊び方で読み返せる
+export const INTRO_GUIDE = [
+  "設定とは、当たりやすさを決める1〜6の段階。数字が大きいほどボーナスやベルが出やすいけど、必ず当たるわけではないよ。",
+  "設定は、前回の抽選から7日たつか、章が変わると、次にスロットが回る行動で選び直されるよ。同じ設定や低い設定になることもあるよ。",
+  "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！ 水色の吹き出しは設定のヒント（偶数・奇数や高い・低いは確定じゃないよ）。",
+];
 /** 会場で参加登録した時にアプリを導入する。既存の回転・報酬は保持する。 */
 export async function installReel() {
   state.reel.installed = true;
@@ -1042,16 +1076,26 @@ export async function installReel() {
 }
 
 function showIntro() {
+  const pages = [...INTRO_LINES.map((text) => ({ text })), ...INTRO_GUIDE.map((text) => ({ text, sys: true }))];
   return new Promise((resolve) => {
     let i = 0;
     const text = el("p.ri-text");
+    const face = pakkiFace(".big");
+    const app = el("span.ri-app", { text: "MOKUMOKUパッキー" });
     const panel = el("div.ri-panel", [
-      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "MOKUMOKUパッキー" })]),
+      el("div.ri-head", [face, app]),
       text,
       el("span.ri-next", { text: "▼ タップ" }),
     ]);
     const box = el("div.reel-intro", { role: "dialog", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" } }, [panel]);
-    const render = () => { text.textContent = INTRO_LINES[i]; };
+    // 設定の説明はパッキーの台詞ではなくシステムの説明として見せる
+    const render = () => {
+      const page = pages[i];
+      text.textContent = page.text;
+      panel.classList.toggle("sys", !!page.sys);
+      face.hidden = !!page.sys;
+      app.textContent = page.sys ? `パッキースロットの遊び方（${i - INTRO_LINES.length + 1}/${INTRO_GUIDE.length}）` : "MOKUMOKUパッキー";
+    };
     render();
     layers.modal.replaceChildren(box);
     layers.modal.classList.add("show");
@@ -1059,10 +1103,11 @@ function showIntro() {
     box.onclick = () => {
       i += 1;
       if (i === 2) SE.puka();
-      if (i < INTRO_LINES.length) { render(); SE.click(); return; }
+      if (i < pages.length) { render(); SE.click(); return; }
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       state.reel.introDone = true;
+      state.reel.settingGuideDone = true;
       save();
       resolve();
     };

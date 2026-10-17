@@ -50,7 +50,16 @@ await suite("issue439", async (check) => {
           font: parseFloat(getComputedStyle(document.querySelector(".ri-text")).fontSize) };
       });
       assert(layout.centered && layout.inside && layout.font >= 26, JSON.stringify(layout));
-      for (let i = 0; i < 5; i++) await page.locator(".reel-intro").click();
+      // パッキーの説明5ページのあとに、設定のシステム説明（#634）。どのページも画面内に収まる
+      for (let i = 0; i < 12 && await page.locator(".reel-intro").count(); i++) {
+        const fits = await page.evaluate(() => {
+          const s = document.querySelector("#stage").getBoundingClientRect(), b = document.querySelector(".ri-panel").getBoundingClientRect();
+          return b.top >= s.top && b.bottom <= s.bottom;
+        });
+        assert(fits, `intro page ${i + 1} overflows`);
+        await page.locator(".reel-intro").click();
+      }
+      assert.equal(await page.locator(".reel-intro").count(), 0);
       await page.evaluate(() => I.install);
     }, options);
 

@@ -374,6 +374,10 @@
 .rn-guide-list { margin: 6px 0 10px; padding: 0; list-style: none; display: grid; gap: 10px; }
 .rn-guide-list li { display: grid; grid-template-columns: 130px 1fr; gap: 12px; font-size: 16px; line-height: 1.6; color: #f2ecdf; }
 .rn-guide-list b { color: var(--gold); letter-spacing: 0.06em; }
+.ri-panel.sys { border-color: rgba(191, 230, 255, 0.6); }
+.ri-panel.sys .ri-app { color: #bfe6ff; }
+.rn-hint-head { margin: 8px 0 2px; font-size: 13px; font-weight: 700; color: #bfe6ff; letter-spacing: 0.06em; }
+.rn-hint-head.past, .rn-hints.past { color: #8f86a0; }
 .rn-hints { margin: 4px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.6; color: #bfe6ff; }
 @media (max-width: 640px) {
   .rn-cols { grid-template-columns: 1fr; gap: 4px; }
