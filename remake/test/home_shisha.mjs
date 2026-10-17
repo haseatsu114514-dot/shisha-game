@@ -9,7 +9,7 @@ const store = new Map();
 globalThis.localStorage ||= { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 
 const { DB } = await import("../js/core/data.js");
-const { newGame, STAT_KEYS, save: saveGame, load: loadGame } = await import("../js/core/state.js");
+const { newGame, STAT_KEYS, SCHEMA, SAVE_KEY, save: saveGame, load: loadGame, loadFromSlot } = await import("../js/core/state.js");
 const { mixPercents } = await import("../js/craft/mix-ratio.js");
 let state;
 const home = await import("../js/daily/home-shisha.js");
@@ -70,6 +70,42 @@ const loadWith = (patch) => { const s = newGame(); Object.assign(s, patch); save
 assert(loadWith({ flags: { _ev_midcheck: true } }).owned.includes(rig.SUMI_RIG), "中間準備を終えた旧セーブ");
 assert(loadWith({ chapter: 2, flags: {} }).owned.includes(rig.SUMI_RIG), "第2章の旧セーブ");
 assert(!loadWith({ story: { sumi: 6 }, flags: {} }).owned.includes(rig.SUMI_RIG), "中間準備の前は渡さない");
+
+// オート／手動の実LOADを通す。差分は承認済みの卓上台1個とschema更新だけ。
+// 所持品・能力・端数・在庫・所持金・装備・進行・関係を丸ごと比べ、再読込で二重付与しない。
+for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
+  ["before training", { day: 7, flags: { _ch1_mid: { practiceDone: true } } }, false],
+  ["story count alone", { day: 14, story: { sumi: 6 } }, false],
+  ["completed training", { day: 7, flags: { _ev_midcheck: true } }, true],
+  ["feedback read", { day: 7, flags: { _ch1_mid: { feedbackRead: true } } }, true],
+  ["chapter two", { chapter: 2, day: 16 }, true],
+  ["later chapter", { chapter: 3, day: 30 }, true],
+  ["tabletop already owned", { chapter: 2, day: 16, extra: [rig.SUMI_RIG] }, true],
+  ["pro already owned", { chapter: 2, day: 16, extra: [rig.PRO_RIG] }, true],
+]) for (const key of [SAVE_KEY, "suien_remake_slot1"]) {
+  const s = newGame();
+  const { extra = [], ...fields } = patch;
+  Object.assign(s, { schema, money: 45678, stamina: 67, ...fields });
+  s.owned.push("glass_bowl", ...extra);
+  s.stats = { technique: 36, sense: 27, guts: 25, charm: 28, insight: 32 };
+  s.statXp = { technique: .25, sense: .6, guts: .75 };
+  s.flavorStock = { double_apple: 12.5, mint: 22 };
+  s.affinity = { tsumugi: 31 }; s.affinityCarry = { tsumugi: .25 };
+  const original = JSON.stringify(s);
+  store.set(key, original);
+  const expected = JSON.parse(original);
+  expected.schema = SCHEMA;
+  if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
+  const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);
+  // 手動LOADのみ自動保存日時を更新する。元の手動枠は変更しない。
+  const resources = v => { const copy = JSON.parse(JSON.stringify(v)); delete copy.savedAt; return copy; };
+  assert.deepEqual(resources(loaded), resources(expected), `${label}: ${schema}/${key}`);
+  if (key !== SAVE_KEY) assert.equal(store.get(key), original, "Manual source slot is preserved byte for byte");
+  saveGame();
+  assert.deepEqual(resources(loadGame()), resources(expected), `${label}: saved migrated state reload`);
+  assert.deepEqual(resources(loadGame()), resources(expected), `${label}: repeated reload`);
+  assert.equal(loaded.owned.filter(id => id === rig.SUMI_RIG).length, grant ? 1 : 0);
+}
 
 // 台: 持っていなければ null、両方あれば伸びのいい大会公式モデル
 state = newGame();

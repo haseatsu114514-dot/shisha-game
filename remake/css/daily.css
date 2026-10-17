@@ -1010,5 +1010,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .home-shisha-dialog .home-mix-ratio { color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
 .home-shisha-dialog .home-mix-name { min-width: 0; overflow-wrap: anywhere; }
 .home-shisha-dialog .home-mix-g { text-align: center; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .fr-btn { display: grid; place-items: center; padding: 0; line-height: 1; }
 .home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }
 .home-shisha-dialog .modal-actions .btn:disabled { opacity: .45; cursor: not-allowed; }
