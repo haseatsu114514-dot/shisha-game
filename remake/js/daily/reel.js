@@ -1093,7 +1093,7 @@ function showIntro() {
       const page = pages[i];
       text.textContent = page.text;
       panel.classList.toggle("sys", !!page.sys);
-      face.hidden = !!page.sys;
+      face.style.display = page.sys ? "none" : ""; // .rw-face の display:block が hidden に勝つため
       app.textContent = page.sys ? `パッキースロットの遊び方（${i - INTRO_LINES.length + 1}/${INTRO_GUIDE.length}）` : "MOKUMOKUパッキー";
     };
     render();
