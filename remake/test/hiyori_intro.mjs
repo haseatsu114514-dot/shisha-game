@@ -19,6 +19,7 @@ await suite("hiyori-intro", async (check) => {
         const vn = await import("./js/vn/engine.js"), daily = await import("./js/daily/hiyori.js");
         const spots = await import("./js/daily/spots.js");
         const s = core.newGame();
+        s.flags._axe_bar_legacy_access = true; // #577: 従来の初対面・紹介回帰は旧保存の導線
         Object.assign(s, { phase: "daily", day: 4, money: 90000, seed: 131 });
         core.config.textSpeed = 4;
         window.I = { core, DB, vn, daily, spots, displayName, seen: [] };

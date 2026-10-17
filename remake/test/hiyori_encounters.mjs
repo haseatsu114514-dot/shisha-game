@@ -18,6 +18,7 @@ async function setup(page) {
     H.ch1.setupHooks();
     H.fresh = () => {
       const s = H.core.newGame();
+      s.flags._axe_bar_legacy_access = true; // #577: 新規の噂・目撃は専用回帰で検査
       // Fixed seed; meetings follow the same displayed schedule as the map.
       Object.assign(s, { phase: "daily", day: 4, slot: 0, money: 90000, seed: 131 });
       Object.assign(s.flags, { _errand_scout_done: true, _delivery_adam_done: true,

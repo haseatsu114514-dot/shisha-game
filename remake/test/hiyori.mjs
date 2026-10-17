@@ -56,6 +56,7 @@ try {
     QA.ch1.setupHooks();
     QA.fresh = () => {
       const state = QA.core.newGame();
+      state.flags._axe_bar_legacy_access = true; // #577: 既存ルート回帰は旧保存として保つ
       Object.assign(state, { phase: "daily", day: 5, slot: 1 });
       QA.core.config.textSpeed = 4;
       QA.vn.vnTest.turbo = false;

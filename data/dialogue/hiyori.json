@@ -408,6 +408,13 @@
           "text": "白いブラウスの女性が、そっとバッグを隣へ寄せる。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_axe_bar_sighting_done",
+          "next_true": "axe_seen",
+          "next_false": ""
+        },
+        {
           "speaker": "hiyori",
           "text": "……ここ、どうぞ。私ひとりだと、煙に紛れて見えなくなっちゃうから",
           "face": "normal"
@@ -516,7 +523,15 @@
           "speaker": "",
           "text": "彼女は小さく笑い、窓の方へ目を戻した。"
         }
-      ]
+      ],
+      "branches": {
+        "axe_seen": [
+          {
+            "speaker": "hajime",
+            "text": "（どこかで見たような……。気のせいかな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "hiyori_sumi_message",

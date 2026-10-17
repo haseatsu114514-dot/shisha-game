@@ -65,9 +65,9 @@ try {
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
         window.__remake.craftTest.auto = 'good';
         vn.hooks.onLine = (id, line) => {
-          vn.vnTest.turbo = !id.startsWith('hiyori_');
+          vn.vnTest.turbo = !id.startsWith('hiyori_') && !id.startsWith('axe_bar_');
           Q.current = { id, speaker: line.speaker, face: line.face, text: line.text, inner: line.inner };
-          if (id.startsWith('hiyori_') && !Q.events.some(e => e.id === id)) {
+          if ((id.startsWith('hiyori_') || id.startsWith('axe_bar_')) && !Q.events.some(e => e.id === id)) {
             const s = core.state;
             Q.events.push({ id, day: s.day, slot: s.slot, money: s.money, affinity: s.affinity.hiyori || 0,
               held: s.flags._hiyori_affinity_waiting_pts || 0, flags: structuredClone(s.flags) });
@@ -140,7 +140,7 @@ try {
           continue;
         }
         if (snap.vn) {
-          if (snap.current?.id?.startsWith('hiyori_')) {
+          if (snap.current?.id?.startsWith('hiyori_') || snap.current?.id?.startsWith('axe_bar_')) {
             const shot = `${snap.current.id}-${snap.current.speaker || 'narration'}-${snap.current.face || 'default'}`;
             if (!seen.has(shot) && await page.locator('.vn-next.show').isVisible()) {
               await page.waitForTimeout(350);
@@ -157,6 +157,9 @@ try {
         if (snap.screen === 'shop-entry') {
           // The scheduled guest may be at the showroom, not the free shopping counter.
           if (!await click('[data-test="shop-upstairs"]:not([disabled])')) await click('[data-test="shop-enter"]');
+        } else if (snap.screen === 'axe-bar') {
+          // #577: 匿名目撃は無料で完読し、有料ソロを始めず地図へ戻る。
+          await click('[data-test="axe-bar-back"]');
         } else if (snap.screen === 'shop') {
           await click('.shop-row.errand [data-test^="buy-"]');
           await click('[data-test="shop-checkout"]');
@@ -190,6 +193,9 @@ try {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
             const tonari = sp.spotById('tonari');
             if (s.stamina < 35) return 'rest';
+            // 新規の噂→実来店で目撃→翌日以降の初対面を、既存の実UIだけで通る。
+            if (!f._axe_bar_rumor_done && !sp.isClosed(tonari)) return 'tonari';
+            if (!f._axe_bar_sighting_done) return s.slot === 1 ? 'axe_bar' : 'rest';
             // Once the paid axe outing is finished, wait for the free night talks.
             // A daytime detour would change the fee invariant for work/gift.
             if (f._hiyori_real_self_known && workGoal) return s.slot === 1 ? 'tonari' : 'rest';
@@ -212,11 +218,13 @@ try {
       const final = await page.evaluate(() => ({ state: structuredClone(Q.core.state), events: Q.events }));
       row.actions = actions; row.events = final.events; row.final = final.state;
       assert(Date.now() < deadline, `Natural walkthrough exceeded its existing deadline: ${JSON.stringify({ day: final.state.day, slot: final.state.slot, money: final.state.money, events: final.events.map(e => e.id), requiredFlags: Object.fromEntries(Object.entries(final.state.flags).filter(([key]) => key.startsWith("_hiyori_"))) })}`);
-      const required = ['hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
+      const required = ['axe_bar_rumor','axe_bar_sighting','hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
       if(workGoal) required.push('hiyori_work_talk','hiyori_bond_question');
       if(giftGoal) required.push('hiyori_bond_finale');
       let previous = -1;
       for (const id of required) { const at = final.events.findIndex(e => e.id === id); assert(at > previous, `Missing/out-of-order ${id}`); previous = at; }
+      assert(final.events.find(e => e.id === 'hiyori_meeting').day > final.events.find(e => e.id === 'axe_bar_sighting').day,
+        '正式初対面は実目撃の翌日以降');
       assert(final.state.flags._hiyori_tonari_afterwork_done);
       assert(final.state.flags._hiyori_real_self_known);
       assert.equal(!!final.state.flags._hiyori_work_talk_done,workGoal);

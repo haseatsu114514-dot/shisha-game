@@ -13,6 +13,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { runHomeShisha } from "./home-shisha.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
@@ -387,6 +388,8 @@ async function performSpotAction(spot) {
   const scheduledGuestSpot = hiyoriShopLocation();
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
+    // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
+    if (!axeBarDiscovered(state)) return { used: false, exerted: false };
     const { visitAxeBar } = await import("./axe-bar.js");
     const completed = await visitAxeBar({ staminaGuard });
     return { used: completed, exerted: completed };

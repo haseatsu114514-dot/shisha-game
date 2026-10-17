@@ -1,0 +1,57 @@
+{
+  "_comment": "#577: 店の噂・匿名目撃だけ。面識、連絡先、好感度、正式ルート、報酬は付けない。完読と目撃日は呼出元が保存する。",
+  "dialogues": [
+    {
+      "dialogue_id": "axe_bar_rumor",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "text": "裏通りに斧投げBarがあるの、知ってるか？"
+        },
+        {
+          "speaker": "hajime",
+          "text": "斧を投げる店……ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "text": "そう。投げてすっきりして帰る店だ"
+        },
+        {
+          "speaker": "sumi",
+          "text": "のぞくだけなら金はかからん。仕事帰りに寄ってみな"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ちょっと気になります。場所、教えてください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_bar_sighting",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_axe_lounge_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レーンの奥で、ひとりの女性が斧を振りかぶっていた。"
+        },
+        {
+          "speaker": "",
+          "text": "凄い形相だ。何かを振り払うように投げた斧が、的の中心に刺さる。"
+        },
+        {
+          "speaker": "",
+          "text": "息を吐き、すぐ次の斧を手に取る。その動きには、少しも迷いがない。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（……すごい腕前だ。今は、声をかけずにおこう）"
+        }
+      ]
+    }
+  ]
+}
