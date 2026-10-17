@@ -1,51 +1,83 @@
 name: Issue claim coordinator
-run-name: "${{ inputs.operation }} #${{ inputs.issue }} / ${{ inputs.owner }} / ${{ inputs.request_id }}"
+run-name: "${{ inputs.operation || github.event_name }} #${{ inputs.issue || github.event.issue.number }} / ${{ inputs.owner || github.actor }} / ${{ inputs.request_id || github.event.comment.id }}"
 on:
   workflow_dispatch:
     inputs:
       operation:
-        description: Claim, release, select next issue, or inspect/validate a current claim
+        description: Reservation operation, or maintain completed claims and outdated instructions
         required: true
         type: choice
-        options: [next, claim, release, status, transfer]
+        options: [next, claim, release, status, transfer, park, resume, maintain]
       issue:
-        description: Issue number (required except next)
+        description: Issue number (except next or maintain)
         required: false
         type: string
       owner:
-        description: Unique worker session ID (e.g. codex-a-20261011)
-        required: true
+        description: Unique worker session ID
+        required: false
         type: string
       request_id:
-        description: Unique dispatch ID for identifying this exact run
+        description: Unique request ID
         required: false
         type: string
       claim_run:
-        description: Successful original claim run (required for transfer; optional for status)
+        description: Current successful reservation run (transfer, park, resume or status)
         required: false
         type: string
       handoff_comment:
-        description: Stopped/pushed handoff record comment ID on the Issue (required for transfer)
+        description: Stopped/pushed handoff record for transfer
         required: false
         type: string
       agent:
         description: Worker type
-        required: true
+        required: false
+        default: any
         type: choice
         options: [codex, claude, any]
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, edited, reopened, closed]
+  pull_request:
+    types: [closed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/issue-claim.yml'
+      - 'tools/issue_claim_coordinator.cjs'
+      - 'docs/issue_claim_protocol.md'
+  schedule:
+    - cron: '23 3 * * *'
 permissions:
   issues: write
   contents: read
   pull-requests: read
   actions: read
-concurrency:
-  group: issue-claim-coordinator
-  cancel-in-progress: false
 jobs:
   coordinate:
+    if: >-
+      (github.event_name != 'issue_comment' ||
+      (github.event.comment.user.type != 'Bot' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      startsWith(github.event.comment.body, '/issue-claim '))) &&
+      (github.event_name != 'issues' || github.event.action == 'closed' ||
+      contains(github.event.issue.body, 'claim/status') || contains(github.event.issue.body, 'status成功') ||
+      contains(github.event.issue.body, '1worker1') || contains(github.event.issue.body, 'issue-claim-policy:v2')) &&
+      (github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: issue-claim-coordinator
+      cancel-in-progress: false
     steps:
-      - name: Select and reserve issue
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: tools/issue_claim_coordinator.cjs
+          sparse-checkout-cone-mode: false
+      - name: Coordinate reservations and maintenance
         uses: actions/github-script@v7
         env:
           OPERATION: ${{ inputs.operation }}
@@ -58,213 +90,5 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const {owner: repoOwner, repo} = context.repo;
-            const op = process.env.OPERATION;
-            const worker = process.env.OWNER;
-            const agent = process.env.AGENT;
-            const request = process.env.REQUEST_ID || '';
-            const expectedRun = process.env.CLAIM_RUN || '';
-            const handoffComment = process.env.HANDOFF_COMMENT || '';
-            if (!['next', 'claim', 'release', 'status', 'transfer'].includes(op)) throw Error('Invalid operation');
-            if (!['codex', 'claude', 'any'].includes(agent)) throw Error('Invalid agent');
-            if (request && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(request)) throw Error('Invalid request ID');
-            if (expectedRun && (!['status', 'transfer'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
-            if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
-            if (op === 'transfer' && (!expectedRun || !/^[1-9][0-9]*$/.test(handoffComment))) throw Error('Transfer requires claim run and approval comment');
-            if (op !== 'transfer' && handoffComment) throw Error('Approval comment is only for transfer');
-            const rawIssue = (process.env.ISSUE || '').trim();
-            if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
-            const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
-            async function status(number) {
-              const comments = await github.paginate(github.rest.issues.listComments, {owner:repoOwner,repo,issue_number:number,per_page:100});
-              const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && marker.test(c.body || ''));
-              const match = ledger.at(-1)?.body.match(marker);
-              const entry = ledger.at(-1);
-              const source = entry?.body.match(/^<!-- issue-claim-run:v1 id=([1-9][0-9]*) request=([a-zA-Z0-9._-]*) -->$/m);
-              return match ? {state:match[1], owner:match[2], run_id:source?.[1] || null, comment_id:entry.id} : {state:'released',owner:null,run_id:null,comment_id:null};
-            }
-            async function comment(number,state,detail = '') {
-              const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
-                '<!-- issue-claim-run:v1 id=' + context.runId + ' request=' + request + ' -->\n' +
-                (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.') + detail;
-              await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
-            }
-            async function issue(number) {
-              const {data} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
-              if (data.labels.some(l => ['blocked','status:blocked'].includes(typeof l === 'string' ? l : l.name))) throw Error('Blocked issue: #' + number);
-              if (data.pull_request || data.state !== 'open') throw Error('Not an open issue: #' + number);
-              return data;
-            }
-            async function referencingPRs(number) {
-              const prs = await github.paginate(github.rest.pulls.list,{owner:repoOwner,repo,state:'open',per_page:100});
-              const references = new RegExp('(?:^|[^0-9])#' + number + '(?![0-9])');
-              const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              const url = new RegExp(escape(context.serverUrl || 'https://github.com') + '/' + escape(repoOwner + '/' + repo) + '/issues/' + number + '(?![0-9])');
-              const qualified = new RegExp('(?:^|[^a-zA-Z0-9_.-])' + escape(repoOwner + '/' + repo) + '#' + number + '(?![0-9])');
-              return prs.filter(p => [p.body || '',p.title || ''].some(text => references.test(text) || url.test(text) || qualified.test(text)));
-            }
-            async function ensureNoOpenPR(number) {
-              if ((await referencingPRs(number)).length) {
-                throw Error('Open PR already references issue #' + number);
-              }
-            }
-            if (op === 'transfer') {
-              const number = Number(rawIssue);
-              const existing = await issue(number);
-              async function requireWriter(username) {
-                const {data} = await github.rest.repos.getCollaboratorPermissionLevel({owner:repoOwner,repo,username});
-                if (!['write', 'maintain', 'admin'].includes(data.permission)) throw Error('Transfer requires repository write permission');
-                return data.permission;
-              }
-              const actorPermission = await requireWriter(context.actor);
-              const {data: approval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
-              if (approval.issue_url !== existing.url) throw Error('Approval must belong to the target Issue');
-              const authorPermission = await requireWriter(approval.user?.login);
-              const adminRecovery = actorPermission === 'admin' && authorPermission === 'admin';
-              const record = approval.body?.match(/^<!-- issue-handoff:v1 (.+) -->$/m);
-              if (!record) throw Error('Missing structured stopped/pushed handoff record');
-              const handoff = JSON.parse(record[1]);
-              if (handoff.issue !== number || handoff.to !== worker || handoff.claim_run !== expectedRun ||
-                  typeof handoff.from !== 'string' || handoff.from === worker ||
-                  handoff.stopped !== true || handoff.pushed !== true || !Array.isArray(handoff.prs) || !handoff.prs.length) {
-                throw Error('Approval does not match stopped/pushed owner, Issue, worker and claim run');
-              }
-              const recovery = handoff.recovery;
-              if ('recovery' in handoff && !adminRecovery) throw Error('Legacy recovery requires repository admin approval and dispatch');
-              if ('recovery' in handoff && (!recovery || !Number.isSafeInteger(recovery.claim_comment) ||
-                  !Number.isSafeInteger(recovery.released_comment) || recovery.claim_comment < 1 ||
-                  recovery.released_comment < 1 || recovery.claim_comment === recovery.released_comment)) {
-                throw Error('Legacy recovery requires exact original claim and released comment IDs');
-              }
-              async function validateTransfer() {
-                await issue(number);
-                const claim = await status(number);
-                let originalLegacyClaim;
-                if (recovery) {
-                  const comments = await github.paginate(github.rest.issues.listComments, {owner:repoOwner,repo,issue_number:number,per_page:100});
-                  const ledger = comments.filter(c => c.user?.login === 'github-actions[bot]' && marker.test(c.body || ''));
-                  originalLegacyClaim = ledger.at(-2);
-                  const original = originalLegacyClaim?.body.match(marker);
-                  if (claim.state !== 'released' || claim.owner !== handoff.from || claim.run_id !== null ||
-                      claim.comment_id !== recovery.released_comment || ledger.at(-1)?.id !== recovery.released_comment ||
-                      ledger.at(-1)?.body.includes('<!-- issue-claim-run:') ||
-                      originalLegacyClaim?.id !== recovery.claim_comment || original?.[1] !== 'claimed' ||
-                      original?.[2] !== handoff.from || originalLegacyClaim.body.includes('<!-- issue-claim-run:')) {
-                    throw Error('Legacy recovery does not match the last bot claim/release pair');
-                  }
-                } else if (claim.state !== 'claimed' || claim.owner !== handoff.from || claim.run_id !== expectedRun) {
-                  throw Error('Current reservation does not match approved original owner/run');
-                }
-                const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
-                if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Original claim run did not succeed');
-                if (!adminRecovery && (!sourceRun.actor?.login || sourceRun.actor.login !== approval.user?.login)) {
-                  throw Error('Handoff record must be written by the original claim actor; otherwise use admin recovery');
-                }
-                if (recovery) {
-                  // Legacy comments have no run ID: bind the exact bot claim to a first-attempt
-                  // coordinator run on the default branch by its creation time. Admin review is
-                  // still required; a timestamp does not establish stopped session status.
-                  const created = Date.parse(originalLegacyClaim.created_at);
-                  const started = Date.parse(sourceRun.run_started_at);
-                  const finished = Date.parse(sourceRun.updated_at);
-                  if (sourceRun.id !== Number(expectedRun) || sourceRun.path !== '.github/workflows/issue-claim.yml' ||
-                      sourceRun.event !== 'workflow_dispatch' || sourceRun.run_attempt !== 1 ||
-                      !context.payload?.repository?.default_branch || sourceRun.head_branch !== context.payload.repository.default_branch ||
-                      ![created, started, finished].every(Number.isFinite) || created < started || created > finished) {
-                    throw Error('Original legacy claim is not bound to the approved coordinator run');
-                  }
-                }
-                const prs = await referencingPRs(number);
-                if (prs.length !== handoff.prs.length || new Set(handoff.prs.map(p => p.number)).size !== handoff.prs.length ||
-                    handoff.prs.some(saved => !Number.isSafeInteger(saved.number) || !/^[a-f0-9]{40}$/.test(saved.head) ||
-                      !prs.some(pr => pr.number === saved.number && pr.head.sha === saved.head &&
-                        pr.head.repo?.full_name === repoOwner + '/' + repo))) {
-                  throw Error('Referencing Open PR set/head changed or approval is incomplete');
-                }
-                const {data: currentApproval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
-                if (currentApproval.body !== approval.body || currentApproval.user?.login !== approval.user?.login ||
-                    currentApproval.issue_url !== existing.url) throw Error('Handoff record changed during transfer');
-              }
-              await validateTransfer();
-              const all = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
-              for (const item of all) {
-                if (item.pull_request || item.number === number) continue;
-                const active = await status(item.number);
-                if (active.state === 'claimed' && active.owner === worker) throw Error('Worker already owns #' + item.number);
-              }
-              await validateTransfer();
-              // One bot ledger write replaces ownership without an unreserved release/claim gap.
-              await comment(number,'claimed','\nTransferred from ' + handoff.from + ' using verified handoff: ' + approval.html_url +
-                (recovery ? '\nRecovered legacy claim/release comments ' + recovery.claim_comment + '/' + recovery.released_comment + '.' : ''));
-              core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
-              core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + handoff.from + ' APPROVAL=' + handoffComment);
-              await core.summary.addRaw('Transferred #' + number + ' to ' + worker + '; after this run succeeds, verify the current bot ledger owner/run before editing. A separate status dispatch is optional.').write();
-            } else if (op === 'status') {
-              const number = Number(rawIssue);
-              const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
-              if (existing.pull_request) throw Error('Not an issue');
-              const claim = await status(number);
-              core.notice('CLAIM_STATUS=' + JSON.stringify({number,...claim}));
-              if (expectedRun) {
-                await issue(number);
-                if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run; do not start work');
-                const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
-                if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Claim run did not succeed; release or inspect before retrying');
-                core.notice('CLAIM_VALIDATED_ISSUE=' + number + ' OWNER=' + worker + ' RUN=' + expectedRun);
-              }
-              await core.summary.addRaw('Current claim: ' + JSON.stringify({number,...claim})).write();
-            } else if (op === 'release') {
-              const number = Number(rawIssue);
-              const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
-              if (existing.pull_request) throw Error('Not an issue');
-              const claim = await status(number);
-              if (claim.state !== 'claimed' || claim.owner !== worker) throw Error('Only the current owner can release #' + number);
-              await comment(number,'released');
-              await core.summary.addRaw('Released #' + number).write();
-            } else {
-              let candidates = [];
-              if (op === 'claim') candidates = [Number(rawIssue)];
-              else {
-                const all = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'open',per_page:100});
-                const ranks = {S:0,A:1,B:2,C:3,D:4};
-                candidates = all.filter(i => !i.pull_request).map(i => {
-                  const labels = i.labels.map(l => typeof l === 'string' ? l : l.name);
-                  const d = labels.find(l => /^difficulty:[SABCD]$/.test(l));
-                  const priority = /^\[P([0-2])\]/.exec(i.title)?.[1];
-                  return {number:i.number, difficulty:d ? ranks[d.split(':')[1]] : 99, priority:priority===undefined?3:Number(priority), title:i.title, labels};
-                }).filter(i => i.difficulty !== 99)
-                  .filter(i => !i.labels.some(l => l === 'blocked' || l === 'status:blocked'))
-                  .sort((a,b) => a.difficulty-b.difficulty || a.priority-b.priority || a.number-b.number)
-                  .map(i => i.number);
-              }
-              let selected = null;
-              for (const number of candidates) {
-                try {
-                  await issue(number);
-                  const claim = await status(number);
-                  if (claim.state === 'claimed') {
-                    throw Error('Already claimed by ' + claim.owner);
-                  }
-                  await ensureNoOpenPR(number);
-                  selected = number;
-                  break;
-                } catch(e) { if(op === 'claim') throw e; core.info('Skip #' + number + ': ' + e.message); }
-              }
-              if (!selected) throw Error('No available issue; inspect reservations or add eligible work.');
-              // Enforce one active claim per worker ID, including closed issues.
-              const allOpen = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
-              for (const item of allOpen) {
-                if (item.pull_request || item.number === selected) continue;
-                const active = await status(item.number);
-                if (active.state === 'claimed' && active.owner === worker) throw Error('Worker already owns #' + item.number + '; release it before claiming another.');
-              }
-              // Recheck immediately before writing the reservation. All successful workflow runs
-              // share a concurrency group; a canceled pending run must be retried by its caller.
-              await issue(selected);
-              await ensureNoOpenPR(selected);
-              const latest = await status(selected);
-              if (latest.state === 'claimed') throw Error('Issue claimed during selection; retry with a new run.');
-              await comment(selected,'claimed');
-              core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
-              await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
-            }
+            const {runEvent} = require('./tools/issue_claim_coordinator.cjs');
+            await runEvent(github, context, core, process.env);
