@@ -256,6 +256,9 @@ function migrate(s) {
     s.equip.pipe = "harry_the_moon";
   }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
+  const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
+  if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
   s.schema = SCHEMA;

@@ -44,6 +44,9 @@ const values = {
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
+  // 家シーシャ（#638）: 寝る前の一服と家の練習はこのテストの対象外（home_shisha.mjs で確かめる）
+  "home-shisha.js": { runHomeShisha: async () => false },
+  "home-practice.js": { runHomePractice: async () => ({ used: false, exerted: false }) },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,

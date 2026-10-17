@@ -285,6 +285,8 @@ await suite('chapter-titles', async check => {
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'); core.newGame();
         Object.assign(core.state, { phase: 'cleared', day: 14, slot: 2, money: 45678 });
+        // 現行の第1章クリア済み保存はDAY7の卓上台を持っている。
+        core.state.owned.push('home_rig_set');
         core.state.flags._ch1_preview_seen = true;
         __remake.vnTest.turbo = true;
         const ch1 = await import('./js/chapters/ch1.js'); ch1.setupHooks(); await ch1.showClear();
@@ -296,6 +298,8 @@ await suite('chapter-titles', async check => {
       assert.equal(interrupted.flags._ch2_day1.titleSeen, false);
       // schema14の手動枠を残し、実LOADで現行へ移行する。元の手動枠は上書きしない。
       const legacy = { ...interrupted, schema: 14, flags: { ...interrupted.flags, _qa_preserved: true } };
+      // 台がなかった旧保存を実LOAD。ほかの所持品・能力の厳密な比較は保持する。
+      legacy.owned = legacy.owned.filter(id => id !== 'home_rig_set');
       delete legacy.trpg.club;
       const originalSlot = JSON.stringify(legacy);
       await page.evaluate(value => localStorage.setItem('suien_remake_slot1', value), originalSlot);
@@ -314,6 +318,7 @@ await suite('chapter-titles', async check => {
       await assertFade(page, `${label}-load`);
       const loaded = await page.evaluate(() => __remake.state);
       assert.deepEqual(resources(loaded), resources(interrupted));
+      assert.equal(loaded.owned.filter(id => id === 'home_rig_set').length, 1);
       assert.equal(loaded.chapter, 2); assert.equal(loaded.day, 15);
       assert.equal(loaded.flags._qa_preserved, true); assert.equal(loaded.flags._ch2_day1.titleSeen, true);
       assert.equal(loaded.flags._ch2_day1.stage, 'map');

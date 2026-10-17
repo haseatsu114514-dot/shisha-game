@@ -384,9 +384,10 @@ for (;;) {
     if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
-      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : a ? '[data-test="after-drill"]' : '[data-test="after-none"]');
+      // シフト後の自主練は家へ移した（#638）。計画の "baito:holes" などはシフトだけを行い、そのまま上がる。
+      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : '[data-test="after-none"]');
       // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
-      if (selected) { pendingDrill = a && a !== "sumi" ? a : null; pendingAfter = null; }
+      if (selected) { pendingDrill = null; pendingAfter = null; }
       continue;
     }
     if (snap.sub === "自主練" && pendingDrill) {

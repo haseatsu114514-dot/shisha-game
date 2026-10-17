@@ -15,6 +15,7 @@ import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
 import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
+import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
@@ -222,13 +223,16 @@ export async function stepMix(cs) {
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
     okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
-    rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; });
+    // 比率（#638）: グラムだけでなく、今の割合も見せる（表示のみ・判定には使わない）
+    const pct = mixPercents(cs.mix);
+    rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; r.ratio.textContent = cs.mix[r.id] ? `比率 ${pct[r.id]}%` : ""; });
     refreshBench();
   };
 
   const rows = ids.map((id) => {
     const f = DB.flavorById[id];
     const g = el("span.fr-g", { text: "0g" });
+    const ratio = el("small.fr-ratio", { dataset: { test: `mix-ratio-${id}` } });
     const change = (d) => {
       const cur = cs.mix[id] || 0;
       const next = clamp(cur + d, 0, cap);
@@ -246,12 +250,13 @@ export async function stepMix(cs) {
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
           : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
           : el("small", { text: f?.description?.slice(0, 22) || "" }),
+        ratio,
       ]),
       el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
       g,
       el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }),
     ]);
-    return { id, g, row };
+    return { id, g, ratio, row };
   });
 
   // 洞察★: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す

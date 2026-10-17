@@ -12,12 +12,14 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { runHomeShisha } from "./home-shisha.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
-import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
+import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
+import { runHomePractice } from "./home-practice.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
@@ -355,15 +357,19 @@ async function takeAction() {
     }),
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
-  const spot = chapterDef.spotById?.(spotId) || spotById(spotId);
+  // 家で練習（#638）は地図から "rest:practice" で来る
+  const [baseId, spotMode] = String(spotId).split(":");
+  const homePractice = spotMode === "practice";
+  const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const facility = ["kannon", "choizap"].includes(spot.id);
-  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
+  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => (homePractice && spot.kind === "rest"
+    ? runHomePractice({ staminaGuard }) : performSpotAction(spot)), {
     ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
     consumed: (result) => result.used && spot.kind === "spot",
   });
   if (!used) return;
-  state.visitedDay[spot.id] = state.day;
+  state.visitedDay[homePractice ? "home_practice" : spot.id] = state.day;
   // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
   // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
   // 場所は明かさない（遊び方は「特定のスポット」とだけ書く・#634）
@@ -409,11 +415,10 @@ async function performSpotAction(spot) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : sub === "practice" ? -12 : -10))) return { used: false, exerted };
+    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
-    else if (sub === "practice") await tonariPractice();
     else await tonariCustomer();
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -614,6 +619,8 @@ async function endDay() {
     await play(`remake_homecoming_${state.day % 3}`);
   }
   await bannersIdle();
+  // 寝る前の一服（家シーシャ・#638）: 行動の枠は使わないちょい足し。大会前夜は聞かない
+  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   await advanceDay();
 }
 
