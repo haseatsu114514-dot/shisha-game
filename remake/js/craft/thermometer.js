@@ -54,7 +54,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   if (bandPreview) { pointer.hidden = mark.hidden = dim.hidden = true; }
   const updateBands = () => {
     const next = temperatureBands(cs);
-    if (bands?.t === next.t) return bands;
+    if (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale) return bands;
     bands = next;
     zone.style.bottom = pct(bands.ideal[0]); zone.style.height = pct(bands.ideal[1] - bands.ideal[0]);
     optimal.style.bottom = pct(bands.optimal[0]); optimal.style.height = pct(bands.optimal[1] - bands.optimal[0]);
@@ -104,3 +104,30 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
 }
 
 export const formatTemperatureRange = (band) => `${(band[0] * 100).toFixed(1)}〜${(band[1] * 100).toFixed(1)}%`;
+
+/** 配合中は現在温度を持たない横ゲージ。判定と同じ帯を色・境界線・文字で示す。 */
+export function buildMixTemperatureGauge(cs) {
+  const ideal = el("i.mix-thermal-ideal", { title: "適温" });
+  const optimal = el("i.mix-thermal-optimal", { title: "最適温" });
+  const center = el("i.mix-thermal-center", { title: "適温中心" });
+  const scale = el("div.mix-thermal-scale", { "aria-hidden": "true" }, [ideal, optimal, center]);
+  const root = el("div.mix-temperature", { role: "img", dataset: { test: "mix-temperature" } }, [scale]);
+  return { root, updateBands() {
+    const bands = temperatureBands(cs);
+    root.dataset.selected = String(bands.selected);
+    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1],
+      optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], center: bands.center });
+    for (const [node, range] of [[ideal, bands.ideal], [optimal, bands.optimal]]) {
+      node.hidden = !bands.selected;
+      node.style.left = pct(range[0]); node.style.width = pct(range[1] - range[0]);
+    }
+    center.hidden = !bands.selected;
+    center.style.left = pct(bands.center);
+    scale.style.background = bands.selected
+      ? `linear-gradient(90deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})` : "";
+    root.setAttribute("aria-label", bands.selected
+      ? `合成温度帯：適温 ${formatTemperatureRange(bands.ideal)}、最適温 ${formatTemperatureRange(bands.optimal)}。線は中心`
+      : "フレーバー未選択。葉を加えると合成温度帯を表示");
+    return bands;
+  } };
+}

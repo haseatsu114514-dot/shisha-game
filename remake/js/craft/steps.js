@@ -13,7 +13,7 @@ import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
-import { buildThermometer, formatTemperatureRange } from "./thermometer.js";
+import { buildMixTemperatureGauge, formatTemperatureRange } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
@@ -191,12 +191,13 @@ export async function stepMix(cs) {
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
-  const thermometer = buildThermometer({ cs, bandPreview: true, height: 200, width: 36 });
+  const thermometer = buildMixTemperatureGauge(cs);
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
-  const temperaturePreview = el("details.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
-    el("summary", { text: "温度の目安を見る" }),
+  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
+    el("b", { text: "合成温度帯" }),
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
+    el("small", { text: "低温 → 高温 ｜ 線：中心" }),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
@@ -214,8 +215,8 @@ export async function stepMix(cs) {
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
-    idealLine.textContent = `緑 · 適温 ${formatTemperatureRange(bands.ideal)}`;
-    optimalLine.textContent = `虹 · 最適温 ${formatTemperatureRange(bands.optimal)}`;
+    idealLine.textContent = bands.selected ? `適温 ${formatTemperatureRange(bands.ideal)}` : "フレーバー未選択";
+    optimalLine.textContent = bands.selected ? `最適温 ${formatTemperatureRange(bands.optimal)}` : "葉を加えると温度帯を表示";
     const m = info.maker;
     const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
     temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
