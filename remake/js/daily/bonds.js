@@ -1,5 +1,4 @@
 // 交友の締めくくり（好感度MAXイベント）・途中の恋愛／友情の質問・専用ハガルの贈呈（HF04〜HF06）。
-import { RIG_STORY, giveSumiRig } from "./home-rig.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 // 文面の正本: data/dialogue/ch1_bonds.json（質問・締めくくり）、贈り物の性能: data/equipment.json（gift）、
 // 私的な約束の誘い: data/lime_messages.json（delivery: "bond_finale"・ここで日付つきに複製して届ける）。
@@ -109,8 +108,6 @@ export function bondCondition(line) {
 
 /** 固有会話（host）を読んだ直後に呼ぶ。対応する質問が残っていれば続けて出す */
 export async function afterStory(dialogueId, { bg = null, signal = null, deferSave = false } = {}) {
-  // 家シーシャ（#638）: スミさんの稽古のあと、ミャアの卓上台を譲られる（一度だけ）
-  if (dialogueId === RIG_STORY) await giveSumiRig({ bg, deferSave });
   if (hiyoriRoute().question?.host && dialogueId === hiyoriRoute().question.host) return playHiyoriQuestion({ bg, signal, deferSave });
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
     if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;

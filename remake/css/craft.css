@@ -200,6 +200,8 @@
 .fr-name small { font-size: 12px; line-height: 1.5; color: var(--text-dim); }
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
+.fr-name .fr-ratio { color: var(--accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fr-name .fr-ratio:empty { display: none; }
 .fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }

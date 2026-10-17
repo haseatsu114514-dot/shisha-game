@@ -804,7 +804,7 @@
     },
     {
       "dialogue_id": "ch1_sumi_home_rig",
-      "_comment": "#638 家シーシャ: ch1_sumi_training の直後に一度だけ。ミャアの卓上台を譲られる（台の受け取りは home-rig.js）",
+      "_comment": "#638 家シーシャ: 第1章 DAY7 の中間準備（中盤の修行）の最後に一度だけ。ミャアの卓上台を譲られる（台の受け取りは home-rig.js）",
       "lines": [
         {
           "speaker": "",
@@ -814,12 +814,17 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "店のお下がりだ。ミャアの卓上台。まだ使える"
+          "text": "これやる"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え……いいんですか"
+          "text": "……卓上台、ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店のお下がりだ。ミャアの卓上台。まだ使える"
         },
         {
           "speaker": "sumi",

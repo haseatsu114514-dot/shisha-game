@@ -1005,7 +1005,8 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
 .home-shisha-dialog .home-mix { display: grid; gap: 8px; max-height: 56vh; overflow-y: auto; padding-right: 4px; }
-.home-shisha-dialog .home-mix-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px 3.2em 44px; align-items: center; gap: 8px; }
+.home-shisha-dialog .home-mix-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px 3.2em 44px 3.2em; align-items: center; gap: 8px; }
+.home-shisha-dialog .home-mix-ratio { color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
 .home-shisha-dialog .home-mix-name { min-width: 0; overflow-wrap: anywhere; }
 .home-shisha-dialog .home-mix-g { text-align: center; font-variant-numeric: tabular-nums; }
 .home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }

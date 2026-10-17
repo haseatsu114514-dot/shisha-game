@@ -5,9 +5,12 @@ import fs from "node:fs";
 
 globalThis.document ||= { addEventListener() {}, querySelector() { return null; } };
 globalThis.window ||= {};
+const store = new Map();
+globalThis.localStorage ||= { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 
 const { DB } = await import("../js/core/data.js");
-const { newGame, STAT_KEYS } = await import("../js/core/state.js");
+const { newGame, STAT_KEYS, save: saveGame, load: loadGame } = await import("../js/core/state.js");
+const { mixPercents } = await import("../js/craft/mix-ratio.js");
 let state;
 const home = await import("../js/daily/home-shisha.js");
 const rig = await import("../js/daily/home-rig.js");
@@ -35,6 +38,25 @@ assert.equal(kuji.chapterMin, 1, "台が当たるくじは第1章から");
 assert.equal(kuji.prizes.find((p) => p.rank === "S").equipId, rig.PRO_RIG);
 const sumiScene = read("../../data/dialogue/ch1_sumi.json").dialogues.find((d) => d.dialogue_id === rig.RIG_SCENE);
 assert(sumiScene?.lines.some((l) => l.text?.includes("ミャア")), "スミさんがミャアの卓上台を譲る場面");
+assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これやる", "スミさんの最初の一言は「これやる」");
+// 中盤の修行（DAY7 の中間準備）の最後に渡す
+const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
+const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
+assert(midPrep.includes("giveSumiRig("), "中間準備の最後にスミさんが台を渡す");
+
+// 比率の表示: 整数%で合計がちょうど100（表示用）
+assert.deepEqual(mixPercents({ lemon: 9, mint: 3 }), { lemon: 75, mint: 25 });
+assert.deepEqual(mixPercents({ a: 4, b: 4, c: 4 }), { a: 34, b: 33, c: 33 });
+assert.deepEqual(mixPercents({ a: 7, b: 5 }), { a: 58, b: 42 });
+assert.deepEqual(mixPercents({ a: 0, b: 5 }), { a: 0, b: 100 });
+const stepsSource = fs.readFileSync(new URL("../js/craft/steps.js", import.meta.url), "utf8");
+assert(stepsSource.includes("mixPercents(cs.mix)") && stepsSource.includes("fr-ratio"), "大会・練習の配合画面にも比率を出す");
+
+// 旧セーブ: 中間準備を終えていれば読み込み時に卓上台を渡す。終えていなければ渡さない（スミさんの会話の数では決めない）
+const loadWith = (patch) => { const s = newGame(); Object.assign(s, patch); saveGame(); return loadGame(); };
+assert(loadWith({ flags: { _ev_midcheck: true } }).owned.includes(rig.SUMI_RIG), "中間準備を終えた旧セーブ");
+assert(loadWith({ chapter: 2, flags: {} }).owned.includes(rig.SUMI_RIG), "第2章の旧セーブ");
+assert(!loadWith({ story: { sumi: 6 }, flags: {} }).owned.includes(rig.SUMI_RIG), "中間準備の前は渡さない");
 
 // 台: 持っていなければ null、両方あれば伸びのいい大会公式モデル
 state = newGame();

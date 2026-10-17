@@ -12,6 +12,7 @@ import { emit } from "../core/bus.js";
 import { play, vnTest } from "../vn/engine.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "./shop.js";
 import { evaluateMix, goldenLabel } from "../craft/steps.js";
+import { mixPercents } from "../craft/mix-ratio.js";
 import { homeRig } from "./home-rig.js";
 
 export const HOME_GRAMS = 12;
@@ -113,6 +114,7 @@ async function chooseMix() {
   const totalLine = el("p.home-mix-total", { dataset: { test: "home-mix-total" } });
   const rows = ids.map((id) => {
     const g = el("b.home-mix-g", { text: "0g" });
+    const ratio = el("span.home-mix-ratio", { dataset: { test: `home-ratio-${id}` } });
     const change = (d) => {
       const next = (mix[id] || 0) + d;
       if (next < 0 || next > flavorStock(id) || (d > 0 && total() >= HOME_GRAMS)) return;
@@ -124,11 +126,13 @@ async function chooseMix() {
       el("button.fr-btn", { text: "−", "aria-label": `${leafName(id)}を1g減らす`, dataset: { test: `home-minus-${id}` }, onclick: () => change(-1) }),
       g,
       el("button.fr-btn", { text: "＋", "aria-label": `${leafName(id)}を1g足す`, dataset: { test: `home-plus-${id}` }, onclick: () => change(1) }),
+      ratio,
     ]);
-    return { id, g, row };
+    return { id, g, ratio, row };
   });
   const redraw = () => {
-    for (const r of rows) r.g.textContent = `${mix[r.id] || 0}g`;
+    const pct = mixPercents(mix); // 比率（#638）: グラムだけでなく今の割合も見せる
+    for (const r of rows) { r.g.textContent = `${mix[r.id] || 0}g`; r.ratio.textContent = mix[r.id] ? `${pct[r.id]}%` : ""; }
     totalLine.textContent = `合計 ${total()}g ／ ${HOME_GRAMS}g`;
     const ok = document.querySelector('[data-test="home-mix-ok"]');
     if (ok) ok.disabled = total() !== HOME_GRAMS;
