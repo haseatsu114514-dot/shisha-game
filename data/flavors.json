@@ -140,7 +140,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "pineapple",
@@ -196,7 +196,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "mango",
@@ -223,7 +223,7 @@
         "floral": 3,
         "nicotine": 3
       },
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "nightside_earlgrey",
@@ -347,7 +347,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "afsahr"
     },
     {
       "id": "peach",
@@ -375,7 +375,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "orange",
@@ -577,7 +577,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "banana",
@@ -605,7 +605,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "lychee",
@@ -636,7 +636,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "afsahr"
     },
     {
       "id": "cool_mint",
@@ -726,7 +726,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "dobaj"
     },
     {
       "id": "ice_grape",
@@ -962,7 +962,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "afsahr"
+      "maker": "af"
     },
     {
       "id": "clove",
@@ -990,7 +990,7 @@
         "nicotine": 6
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "afsahr"
     },
     {
       "id": "basil",
@@ -1021,7 +1021,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "afsahr"
     },
     {
       "id": "anise",
