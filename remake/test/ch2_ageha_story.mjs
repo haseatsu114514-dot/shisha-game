@@ -6,10 +6,12 @@ import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, agehaStoryScene, syncAgehaVibes
 const read = (path) => JSON.parse(fs.readFileSync(new URL(`../../${path}`, import.meta.url), "utf8"));
 const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dialogues.map((d) => [d.dialogue_id, d]));
 
-// 強制の夜: 2日目の偵察返し・9日目の試飲会・10日目のスランプ来店。8日目（サメのTRPG）は空けたまま
+// 強制の夜: 3日目（なるの祝福のあと）の偵察返し・9日目の試飲会・10日目のスランプ来店。
+// 2日目と8日目（サメのTRPG）は自由に使える夜として空けたまま（#639）
 const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
-assert.deepEqual(night(2).steps.map((s) => s.id), ["remake_ch2_ageha_scout"]);
-assert.equal(night(2).steps[0].contact, "ageha", "会っていなくても連絡先を交換する");
+assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
+assert.equal(night(3).steps[1].contact, "ageha", "会っていなくても連絡先を交換する");
+assert(!night(2), "2日目は自由な夜");
 assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
 assert.equal(night(9).steps[0].room, "ageha");
 assert.deepEqual(night(10).steps.map((s) => s.id), ["ch2_sumi_silence", "remake_ch2_ageha_slump"]);
