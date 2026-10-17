@@ -188,8 +188,8 @@ await suite("axe-polish", async check => {
       for (const kind of Object.keys(window.axeSounds)) SE[kind] = () => window.axeSounds[kind]++;
     });
     await action(page); await phase(page, "horizontal");
-    await boardStop(page, .98, 3200, "vertical", false);
-    await boardStop(page, .98, 3600, "power", false);
+    await boardStop(page, .995, 3200, "vertical", false);
+    await boardStop(page, .995, 3600, "power", false);
     await gauge(page, .62, 2400);
     assert.equal(await page.locator(".axe-timing").getAttribute("data-quality"), "sweet");
     assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /いま投げる/);

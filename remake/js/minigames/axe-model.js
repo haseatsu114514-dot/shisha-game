@@ -12,9 +12,10 @@ export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
   row: y < 0 ? "upper" : "lower", x: x * .56, y: y * .70, outer: .09, inner: .045,
 })));
 export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82 };
-// Opaque wood bounds of the existing board artwork, relative to the scoring circle.
-// The transparent margin of the 390-unit image is not a collision surface.
-export const BOARD = { left: -1.05, right: 1.01, top: -1.05, bottom: 1.01 };
+// Opaque edges at x=76..1181 / y=75..1176 in the existing 1254px artwork,
+// drawn at (135,50), size 390, relative to circle (330,245), radius 164.
+// The transparent image margin is not a collision surface.
+export const BOARD = { left: -1.0449, right: 1.0506, top: -1.0468, bottom: 1.0411 };
 export const SWAY = { min: .06, max: .18, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18 };
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");
