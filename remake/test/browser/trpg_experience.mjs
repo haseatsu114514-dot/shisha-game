@@ -108,6 +108,12 @@ async function roll(page, { trap = false } = {}) {
   const announcement = page.locator('.trpg-dice-total[role="status"]');
   assert.equal(await announcement.count(), 1, "The settled total and grade are announced");
   assert.match(await announcement.textContent(), /合計/);
+  const pending = (await state(page)).pending;
+  assert.equal(await page.locator(".trpg-roll-equation").textContent(), `${pending.dice[0]} ＋ ${pending.dice[1]} ＋ 補正${pending.bonus} ＝`);
+  assert.equal(await announcement.locator("strong").textContent(), "合計 " + (pending.dice[0] + pending.dice[1] + pending.bonus));
+  assert.match(await page.locator(".trpg-roll-context").textContent(), new RegExp("連携札 " + (await state(page)).teamwork + "/2"));
+  const reduced = await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
+  assert.equal(await page.locator(".trpg-roll-fx").count(), reduced ? 0 : 1);
   await fits(page);
 }
 async function settle(page) {
@@ -433,6 +439,34 @@ try {
   }, page => ordinary(page, false));
   await run("shark-insight-correct", { scenario: "shark-last-order", seed: "9", traveler: "scent" }, {}, page => shark(page, true));
   await run("shark-insight-hidden", { scenario: "shark-last-order", seed: "9", traveler: "vibration" }, {}, page => shark(page, false));
+  for (const [label, scenario] of [["ordinary", "ordinary-cup"], ["shark", "shark-last-order"]])
+    await run(label + "-portrait-roll-resources-and-paused-effects", { scenario, seed: "9" }, { hasTouch: true }, async page => {
+      await hit(page, "trpg-start"); await dialogue(page);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.waitForFunction(() => Math.abs(Number(document.getElementById("stage").style.getPropertyValue("--k")) - 390 / 1280) < 1e-9);
+      await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor();
+      const model = await state(page);
+      assert.match(await page.locator(".trpg-roll-context").textContent(), /判定 0\/3 · 連携札 2\/2/);
+      assert.equal(await page.locator(".trpg-dice-total > strong").textContent(), "合計 " + (model.pending.dice[0] + model.pending.dice[1] + model.pending.bonus));
+      await page.evaluate(() => {
+        Object.defineProperty(document, "hidden", { configurable: true, value: true });
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      const times = await page.locator(".trpg-roll-fx").evaluate(n => n.getAnimations({ subtree: true }).map(a => a.currentTime));
+      await page.waitForTimeout(100);
+      assert.deepEqual(await page.locator(".trpg-roll-fx").evaluate(n => n.getAnimations({ subtree: true }).map(a => a.currentTime)), times);
+      assert.deepEqual(await state(page), model, "Pausing presentation cannot change the roll or resources");
+      await page.evaluate(() => { delete document.hidden; document.dispatchEvent(new Event("visibilitychange")); });
+      for (const test of ["trpg-reroll-0", "trpg-reroll-1", "trpg-settle"]) {
+        const node = control(page, test); if (!await node.count()) continue;
+        await node.scrollIntoViewIfNeeded();
+        const visible = await node.evaluate(n => { const r = n.getBoundingClientRect(), h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return r.x >= 0 && r.right <= innerWidth + 1 && r.y >= 0 && r.bottom <= innerHeight + 1 && !!h && n.contains(h); });
+        assert(visible, "Portrait roll control must remain visible and clickable: " + test);
+      }
+      await hit(page, "trpg-reroll-0");
+      assert.match(await page.locator(".trpg-roll-context").textContent(), /連携札 1\/2/);
+      assert.equal(await control(page, "trpg-reroll-0").count(), 0);
+    });
 } finally {
   await browser.close();
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify(results, null, 2) + "\n");
