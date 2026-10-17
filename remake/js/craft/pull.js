@@ -21,6 +21,7 @@ import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
+import { makerMixProfile } from "./temperature-model.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -106,6 +107,8 @@ async function pullGame(cs, mode) {
   await waitBenchReady(cs, mode.store);
   const tutorial = cs.mode === "tutorial";
   const bands = temperatureBands(cs), ideal = bands.ideal, center = bands.center;
+  const maker = makerMixProfile(cs);
+  const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
   const panel = stepPanel(mode.store, mode.title, mode.hint);
@@ -307,7 +310,7 @@ async function pullGame(cs, mode) {
         return;
       }
       if (isJust) justs++;
-      const overdone = pulls > mode.safe;
+      const overdone = pulls > safeLimit;
       reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good");
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
       if (overdone || T >= harshTemp) strain();
@@ -462,7 +465,7 @@ async function pullGame(cs, mode) {
     return true;
   }
 
-  const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, mode.safe);
+  const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, safeLimit);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {

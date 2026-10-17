@@ -57,22 +57,27 @@ export function computeShisha(cs) {
 
   // 最低1周を満たせば、少ない穴数を煙量や総合点の直接の減点にしない。
   const holeDraw = h.minimumComplete ? 36 : (h.total - 14) * 3 + (h.inner >= 3 ? 6 : 0);
-  const draw = clamp(42 + holeDraw + packDraw + maker.bonuses.draw, 0, 100);
-  const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
-  const heatStability = clamp(h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability + maker.bonuses.heatStability, 0, 100);
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + (overheated ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5 + coal.burnRisk, 0, 100);
+  const baseDraw = 42 + holeDraw + packDraw;
+  const draw = clamp(baseDraw + maker.bonuses.draw, 0, 100);
+  const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
+  const baseHeatStability = h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability;
+  const heatStability = clamp(baseHeatStability + maker.bonuses.heatStability, 0, 100);
+  const safePulls = 3 + (maker.safePullsBonus || 0);
+  const extraPulls = Math.max(0, (p.pulls || 3) - safePulls);
+  const overheatedRisk = overheated ? Math.round(12 * (1 - 0.5 * (maker.makerWeights?.dobaj || 0))) : 0;
+  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (cs.pack === "fluffy" ? 5 : 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
   const gift = giftBowlEffect(cs);
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma, 0, 100);
   const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste, 0, 100);
-  const duration = clamp(heatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
-  const craftQuality = Math.round(clamp(
-    aroma * 0.25 + heatStability * 0.15 + (100 - burnRisk) * 0.15 + taste * 0.10 + smoke * 0.10
-    + duration * 0.05 + draw * 0.05 + m.score * 0.08 + p.score * 0.07,
-    0, 100,
-  ));
+  const duration = clamp(baseHeatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
+  const rawQuality = aroma * 0.25 + heatStability * 0.15 + (100 - burnRisk) * 0.15 + taste * 0.10 + smoke * 0.10
+    + duration * 0.05 + draw * 0.05 + m.score * 0.08 + p.score * 0.07;
+  const craftQuality = Math.round(clamp(rawQuality, 0, 100));
   return {
     draw: Math.round(draw), smoke: Math.round(smoke), heatStability: Math.round(heatStability), burnRisk: Math.round(burnRisk),
-    aroma: Math.round(aroma), taste: Math.round(taste), duration: Math.round(duration), craftQuality,
+    aroma: Math.round(aroma), taste: Math.round(taste), duration: Math.round(duration),
+    craftQuality,
+    craftQualityRaw: Math.round(clamp(rawQuality, 0, 100) * 1000) / 1000,
   };
 }
 
