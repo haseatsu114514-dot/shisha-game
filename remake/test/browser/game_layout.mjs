@@ -130,9 +130,10 @@ try {
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
-        await activate(p,"pin-tonari",touch);await activate(p,"map-go",touch);
-        await button(p,"tonari-practice").waitFor();if(mode==="ds")await dsGeometry(p);
-        await activate(p,"tonari-practice",touch);await button(p,"mix-ok").waitFor();
+        // 練習は家で（#638）: 地図の家 →「家で練習する」→「一台を通して」
+        await activate(p,"pin-rest",touch);await activate(p,"map-home-practice",touch);
+        await button(p,"home-practice-full").waitFor();if(mode==="ds")await dsGeometry(p);
+        await activate(p,"home-practice-full",touch);await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
         for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);

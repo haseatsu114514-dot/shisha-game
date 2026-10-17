@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-17",
+  "status": "owner-review-pending",
+  "runtime_integrated": false,
+  "owner_reference": "Chat attachments: short blue/gold tabletop and tall silver traditional model. Original attachment files are not preserved locally.",
+  "requirements": [
+    "Slight original variation, not a direct product copy",
+    "No hose when placed at home",
+    "No real brand lettering"
+  ],
+  "tabletop": {
+    "memo": {
+      "person": "なし",
+      "scene": "未使用の単体デザイン確認用、非喫煙、炭なし",
+      "type": "オーナー写真指定の青ガラス・金の小型伝統卓上台",
+      "HMD": "未使用のためなし、陶器ボウル装着",
+      "charcoal": "0",
+      "hose": "側面ポートから蛇腹ホース1本、木製ハンドル根元まで連続。手前に自然な小さい巻き",
+      "mouthpiece": "木製ハンドルの先端。首掛けなし",
+      "composition": "透明背景、単体の3/4、全体、将来の家背景合成用、低い斜俯瞰、人物なし"
+    },
+    "prompt": "Create one polished game asset: a single small tabletop hookah based closely on the owner's attached reference photo. Preserve its compact traditional silhouette: squat cobalt-blue vertically ribbed glass water base, short warm gold/brass stem with two rounded bulges and wider lower collar, shallow wide round gold ash tray, navy-blue ceramic bowl with a visibly narrow neck above the tray, one dark blue corrugated hose with subtle gold winding and honey-colored turned wooden rigid handle. Match the owner's specific model and its proportions; do not redesign it as a tall modern pipe. Render it as painterly pixel-art-inspired Japanese narrative game background object, clean controlled pixels and soft painted highlights, legible silhouette, understated slight patina from being a well-kept hand-me-down, not photorealistic, no text, no logos, no labels, no UI. Transparent background, object isolated with generous transparent margin, entire base, tray, bowl and hose visible, three-quarter view with gentle downward angle, warm neutral light. This is an idle unlit object, NOT in use: ceramic bowl installed but no coals, no smoke, no HMD, no flame. Correct assembly from bottom to top: blue glass base -> short gold stem -> gold tray -> narrow-necked blue ceramic bowl. Water only in the bottom part of the glass base, do not turn the stem into a water tank. Exactly ONE flexible hose connected visibly to ONE side hose port just above the base. Distinct small purge valve on the opposite side, hose never connects to the purge valve. Hose curves naturally down and coils once compactly around the base with no branching, no break, no third end, then connects to the base of the wooden rigid handle resting diagonally in front. Do not reproduce the confusing double handle appearance of the source photo; show only one handle at the free end and one secure metal hose connector at the body. Trace the one continuous hose route correctly. No person or stand or floor or props. Focus on an attractive small blue and gold tabletop model readable in a small in-game room."
+  },
+  "tournament": {
+    "memo": {
+      "person": "なし",
+      "scene": "未使用・ボウル未装着の単体デザイン確認",
+      "type": "オーナー写真の銀色伝統床置き台、節のある長いステム、金黒透明ベース",
+      "HMD": "なし（ボウル未装着）",
+      "charcoal": 0,
+      "hose": "写真同様に取り外し、側面ホースポートとパージ弁を区別",
+      "mouthpiece": "なし",
+      "composition": "透明背景、全身、卓上生成と同じピクセルペインター調、弱い斜俯瞰"
+    },
+    "prompt": "Create ONE polished game object asset, a tall traditional SILVER hookah used as the tournament official model. Use the owner's latest attached REAL PHOTO of the tall silver hookah as the shape reference. The other recent image, a short blue/gold hookah, is ONLY a visual style reference; do not mix its shapes into this model. Preserve the photo's tall slender segmented polished silver stem with several characteristic rounded bulb joints and narrow waists, a broad shallow circular silver ash tray near the top, a small tapered bare metal bowl connector above the tray, a side hose port angled upward just above the glass neck on the right, and a separate SMALL purge valve on the left. Use a tall flared clear glass base with a stable round foot, narrow black neck bands and thin gold rings, a gold connected oval decorative band around the upper body with small simplified ancient Egyptian inspired medallions. Remove ALL real brand labels, all lettering and logos, including the neck label. Keep the photo's recognisable proportions and silver/gold/black/clear palette. This is a stored idle clean unlit model exactly as in the reference: NO tobacco bowl, NO HMD, NO coals, NO hose attached, NO smoke, NO flames. The bare connector above the tray must remain small and slender, not a bowl or mushroom or wide cap. Do not add a hose since the reference is a disassembled display state. Render in the same painterly pixel-art-inspired Japanese narrative game style as the recent generated small blue/gold hookah: crisp controlled pixels, painterly reflective metal highlights, attractive game sprite with clear silhouette, not a photo or 3D render. Transparent background, entire object from top connector to foot visible with ample transparent margin. Straight standing vertical object in subtle three-quarter view with gentle downward camera angle, warm neutral light. No floor, pedestal, scenery, people, captions, UI, watermark or extra objects. Glass is empty and transparent with visible downstem; no water inside metal stem. Single physically plausible central axis: base -> silver stem -> tray -> small bare connector. Do not invent extra pipe branches."
+  },
+  "edits": [
+    {
+      "key": "tabletop_edit",
+      "path": "/workspace/generated_images/exec-342ef0fa-9ad0-4427-bc5f-c481239f3997.png",
+      "prompt": "Edit this game hookah sprite for the owner's final idle-at-home design. Keep the compact short traditional blue-glass and gold-brass tabletop model, pixel-painter style, proportions and colors. REMOVE THE ENTIRE HOSE AND ALL WOODEN PARTS completely: no coiled tube, no handle, no connector accessory, no dangling or detached hose anywhere. Show only the bare metal hose socket on the LEFT side of the gold stem, small and angled upward, empty and visibly separate from the small purge valve on the RIGHT. Preserve central stem, blue ribbed glass base, gold tray and blue ceramic bowl. The object is idle, no coals, no HMD, no smoke. Make a SMALL amount of original design variation so it is not a direct copy of a real product: give the gold tray a gently scalloped/beveled rim (subtle six-lobed outline, still a normal shallow ash tray), change the upper gold rounded joint to a very slightly faceted hexagonal bulge, add a fine understated original crescent-and-dot engraving on the gold lower collar (no text, no actual logo), and one narrow turquoise tinted decorative glass band at the shoulder of the blue base. Keep the overall blue/gold appearance very close; these are small details only, not a redesign. No brand lettering or labels. Transparent background with no glow, haze or floor. Center the now hose-free hookah in the canvas with generous margin, show the entire object including top of bowl and bottom of glass. Keep the same viewing angle and lighting. It must read as a small tabletop hookah stored at home without a hose."
+    },
+    {
+      "key": "tournament_edit",
+      "path": "/workspace/generated_images/exec-0d7202c9-d5e8-4cb0-8193-619e5be0aacc.png",
+      "prompt": "Edit this tall silver tournament hookah game sprite with just a LITTLE original design variation, preserving overall silhouette, height, silver segmented bulb-joint stem, broad ash tray and clear flared black/gold glass base. Owner wants it recognizably inspired by the reference but not a direct product copy. Replace ALL Egyptian people / pharaoh medallions and linked oval frames on the glass with an ORIGINAL restrained gold interlaced CURLING SMOKE line pattern, two flowing curls and small geometric diamonds, no faces, no human figures, no logos, no lettering. Make the middle silver bulb-joint very slightly fluted with six shallow vertical facets, retaining the same size. Give the broad silver tray a subtly rolled/beveled edge with just three tiny symmetrical notches. Keep all other proportions and appearance. This is idle AT HOME with NO HOSE attached: retain only the open side hose socket on the right and separate smaller purge valve on the left, no handle, no tube or hose anywhere. As in the input it has NO tobacco bowl, NO HMD, NO coals, NO smoke, just the small narrow bare connector above the tray. Remove the soft luminous background haze entirely: actual transparent background, clean isolated object without glow, gradient, drop shadow, floor, scenery, captions, UI or extra objects. Keep the same pixel-painter game-art style and gentle downward viewing angle, and show the entire object with ample transparent margin."
+    }
+  ]
+}

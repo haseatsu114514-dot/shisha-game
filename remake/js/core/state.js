@@ -69,7 +69,14 @@ export function newState() {
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
       lastChapter: 0,
-      note: {},                // スロノート（役ごとの回数）
+      note: {},                // パッキースロットノート（役ごとの回数・ハマり・当たり履歴・フリーズ殿堂入り）
+      setting: 0,              // 設定1〜6（0=未決定。シードから決める）。観音堂で引き直す（#621）
+      settingDraws: 0,         // 設定の引き直し回数
+      settingSince: null,      // 今の設定になった日 {chapter, day}。7日で自動で変わる
+      settingNotice: false,    // 次に筐体が出たとき「設定変更完了〜」を見せる（"kannon"／"weekly"）
+      resetNext: false,        // 設定変更直後の1回転でガックン
+      lock: null,              // 文字色予告を出した次ゲームの抽選結果
+      settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
@@ -230,6 +237,7 @@ function migrate(s) {
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
@@ -248,6 +256,9 @@ function migrate(s) {
     s.equip.pipe = "harry_the_moon";
   }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
+  const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
+  if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
   s.schema = SCHEMA;

@@ -1,0 +1,935 @@
+{
+  "schema_version": 1,
+  "issue": 586,
+  "status": "manufacturer text removal complete; source-art only",
+  "request": "メーカー名は箱にどれもかかなくていいや",
+  "authorization": "追加40MBまで許可し、修正・マージまで進める",
+  "source_commit": "3526421fb71b4fe84d4e733854d0ef2dc2785ee0",
+  "branch_base_commit": "f04f08b71e41a73949fd3323551fe192f532360a",
+  "changes": {
+    "imagegen_edits": 8,
+    "exact_byte_reuse": 10,
+    "remove": [
+      "DOBAJ front and right-side manufacturer text",
+      "AFSAAL front and right-side manufacturer text"
+    ],
+    "retain": [
+      "pictorial maker logos",
+      "flavor words on front and right",
+      "ingredient graphics",
+      "body colors",
+      "approved narrower box and camera"
+    ],
+    "code_image_edit": false
+  },
+  "visual_qa": {
+    "all18_no_visible_manufacturer_text": true,
+    "edited8_front_and_right_inspected": true,
+    "flavor_words_retained": true,
+    "pictorial_logos_retained": true,
+    "geometry_and_paperboard_style_retained": true,
+    "added_common_grass_or_HMD_or_protrusion": false,
+    "details": "Native outputs and before/after8 and complete18 browser captures inspected. Imagegen is not pixel-identical outside letter strokes; minor texture/edge differences remain.",
+    "ocr_supplement_only": true
+  },
+  "native_validation": {
+    "scope": "source-art inspection, not runtime QA",
+    "edited": 8,
+    "exact_reuse": 10,
+    "min_silhouette_iou128": 0.9913111540262173,
+    "max_abs_aspect_change_percent": 0.55257055823692,
+    "ocr_maker_words_found": false,
+    "note": "OCR is supplemental; absence of a hit does not prove deletion without visual review."
+  },
+  "browser_validation": {
+    "scope": "local source image rendering; not game/runtime QA",
+    "cases": [
+      {
+        "size": 180,
+        "loaded": 18,
+        "min_height": 158.390625,
+        "max_height": 158.390625
+      },
+      {
+        "size": 112,
+        "loaded": 18,
+        "min_height": 98.546875,
+        "max_height": 98.546875
+      },
+      {
+        "size": 66,
+        "loaded": 18,
+        "min_height": 58.078125,
+        "max_height": 58.078125
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "size": 112,
+        "horizontal_overflow": false
+      },
+      {
+        "before_after_images_loaded": 16
+      }
+    ],
+    "page_errors": [],
+    "screenshots": [
+      {
+        "file": "before-after-8.png",
+        "bytes": 471116,
+        "sha256": "f01fbec442274f0f07dab4bcd93d53ebe40800decf52d5f6b69124dbccdd6198"
+      },
+      {
+        "file": "comparison-18.png",
+        "bytes": 550714,
+        "sha256": "5b786d10c8adc1fcd6da58b8af491c57af386539fbce15759a4d13042ad095a1"
+      }
+    ]
+  },
+  "network": {
+    "approved_additional_MB": 40,
+    "cached_reference_PNG_MB": 9.603679,
+    "generated_PNG_MB": 8.95869,
+    "github_image_base64_MB": 11.944936,
+    "comparison_base64_upload_MB": 1.362444,
+    "sum_known_payload_MB": 31.869749,
+    "note": "Payload arithmetic, not measured total traffic. Local cached sources reused; transport/cache overhead not exposed. No new external source downloads or browser downloads."
+  },
+  "scope": {
+    "source_art_folder": "asset_sources/shop-art-issue586/maker-name-free-v4/",
+    "runtime_code_changed": false,
+    "active_mapping_changed": false,
+    "delivery_webp_changed": false,
+    "product_or_maker_data_changed": false,
+    "old_source_art_unchanged": true
+  },
+  "claim": {
+    "old_owner": "codex-c-shop-art-20261016-8e7fb2cb0e",
+    "old_run": "38786636524",
+    "untouched": true,
+    "formal_transfer_verified": false,
+    "note": "Explicit user authorization in this thread for independent source-art work; no claim takeover, reuse of old worker ID, stop-evidence assertion, release or Issue closure."
+  },
+  "products": [
+    {
+      "id": "mint",
+      "maker": "heaven",
+      "name": "ミント",
+      "filename": "outputs/heaven-mint.png",
+      "path": "/workspace/generated_images/exec-fdc63317-d3fe-4e28-ae49-a5512b72d426.png",
+      "before_path": "/workspace/generated_images/exec-fdc63317-d3fe-4e28-ae49-a5512b72d426.png",
+      "prompt": null,
+      "bytes": 1251303,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        119,
+        988,
+        1165
+      ],
+      "window": [
+        266,
+        116,
+        724,
+        1052
+      ],
+      "aspect128": 0.6873804971319312,
+      "sha256": "849089fb2a9039d09ea929011d47edb14390a47b8bbc7e38496ec4c9bf407be8",
+      "git_blob_sha": "72b69727b354039e23b1448114e74c35b0535885",
+      "before_sha256": "849089fb2a9039d09ea929011d47edb14390a47b8bbc7e38496ec4c9bf407be8",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-mint.png"
+    },
+    {
+      "id": "double_apple",
+      "maker": "heaven",
+      "name": "ダブルアップル",
+      "filename": "outputs/heaven-double_apple.png",
+      "path": "/workspace/generated_images/exec-fb821f10-f21f-49be-99b4-221901409a41.png",
+      "before_path": "/workspace/generated_images/exec-fb821f10-f21f-49be-99b4-221901409a41.png",
+      "prompt": null,
+      "bytes": 1198937,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        265,
+        121,
+        991,
+        1193
+      ],
+      "window": [
+        263,
+        118,
+        731,
+        1077
+      ],
+      "aspect128": 0.6772388059701493,
+      "sha256": "a5ccbb11ac20c404c55bcaca3ad0c3c50060736940737a8e0df460f937003c24",
+      "git_blob_sha": "8079c493ea576d02c089c6cb7db9fac1ddb52857",
+      "before_sha256": "a5ccbb11ac20c404c55bcaca3ad0c3c50060736940737a8e0df460f937003c24",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-double_apple.png"
+    },
+    {
+      "id": "blueberry",
+      "maker": "heaven",
+      "name": "ブルーベリー",
+      "filename": "outputs/heaven-blueberry.png",
+      "path": "/workspace/generated_images/exec-2c0bbd2a-ce59-4082-83ac-110989f704df.png",
+      "before_path": "/workspace/generated_images/exec-2c0bbd2a-ce59-4082-83ac-110989f704df.png",
+      "prompt": null,
+      "bytes": 1228458,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        110,
+        988,
+        1162
+      ],
+      "window": [
+        267,
+        107,
+        724,
+        1058
+      ],
+      "aspect128": 0.6825095057034221,
+      "sha256": "fb151cd955ee58167093f245209a8ce5360c5380a3f3d96e9f98d9a07a421b28",
+      "git_blob_sha": "37ead34aabcb00f83cf00674942f285a6dd3ccdf",
+      "before_sha256": "fb151cd955ee58167093f245209a8ce5360c5380a3f3d96e9f98d9a07a421b28",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-blueberry.png"
+    },
+    {
+      "id": "strawberry",
+      "maker": "heaven",
+      "name": "ストロベリー",
+      "filename": "outputs/heaven-strawberry.png",
+      "path": "/workspace/generated_images/exec-111d8b46-952c-4efc-84a9-e67344f98291.png",
+      "before_path": "/workspace/generated_images/exec-111d8b46-952c-4efc-84a9-e67344f98291.png",
+      "prompt": null,
+      "bytes": 1262414,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        272,
+        110,
+        1021,
+        1178
+      ],
+      "window": [
+        269,
+        107,
+        754,
+        1074
+      ],
+      "aspect128": 0.701310861423221,
+      "sha256": "eb00132afe5060113a5338ec8bf18be777d6e48fa8f895c0676c945ee0ab5926",
+      "git_blob_sha": "4f4d5e6b737b971df4e0909acf1116b41a84442d",
+      "before_sha256": "eb00132afe5060113a5338ec8bf18be777d6e48fa8f895c0676c945ee0ab5926",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-strawberry.png"
+    },
+    {
+      "id": "vanilla",
+      "maker": "dobaj",
+      "name": "バニラ",
+      "filename": "outputs/dobaj-vanilla.png",
+      "path": "/workspace/generated_images/exec-0a1ff6ac-9e63-46ab-a26d-61f44b1631c1.png",
+      "before_path": "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word VANILLA in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1049475,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        112,
+        987,
+        1158
+      ],
+      "window": [
+        267,
+        110,
+        723,
+        1050
+      ],
+      "aspect128": 0.6854684512428298,
+      "sha256": "1334b4ae01d7105e8e5b94bd3f13a7c9bc2107e394be791b787edbd9618ed78d",
+      "git_blob_sha": "a500f54b4610801a317fed8d4dbcb3cabab16770",
+      "before_sha256": "03d3c926c8598d32a7ce1c5376bc9029556037f2f2f82c85fcc7d13eea9b0f10",
+      "bbox128_delta": [
+        -1,
+        -2,
+        2,
+        3
+      ],
+      "silhouette_iou128": 0.9931187644307055,
+      "aspect_change_percent": -0.05985185661262493,
+      "edited": true,
+      "ocr_text": "ae\n\ndt\n\np)\n\nVANILLA",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-vanilla.png"
+    },
+    {
+      "id": "pineapple",
+      "maker": "heaven",
+      "name": "パイナップル",
+      "filename": "outputs/heaven-pineapple.png",
+      "path": "/workspace/generated_images/exec-f5a382c6-20ba-4dd9-9a2d-a9e633873cd2.png",
+      "before_path": "/workspace/generated_images/exec-f5a382c6-20ba-4dd9-9a2d-a9e633873cd2.png",
+      "prompt": null,
+      "bytes": 1372261,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        93,
+        1017,
+        1199
+      ],
+      "window": [
+        259,
+        91,
+        760,
+        1110
+      ],
+      "aspect128": 0.6835443037974683,
+      "sha256": "e80dd494ac03ae3260d829409defcdd65d08153fac568ac1dc5d1db765574578",
+      "git_blob_sha": "0c9acae36e5304fa4d76b80f399b9e3189ac47c9",
+      "before_sha256": "e80dd494ac03ae3260d829409defcdd65d08153fac568ac1dc5d1db765574578",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-pineapple.png"
+    },
+    {
+      "id": "coconut",
+      "maker": "dobaj",
+      "name": "ココナッツ",
+      "filename": "outputs/dobaj-coconut.png",
+      "path": "/workspace/generated_images/exec-f855a754-682e-4aae-860d-68a937cda6b5.png",
+      "before_path": "/workspace/generated_images/exec-c67b5a14-cc29-43dd-8d11-dc3d99086072.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word COCONUT in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1272132,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        249,
+        73,
+        1049,
+        1237
+      ],
+      "window": [
+        247,
+        71,
+        805,
+        1169
+      ],
+      "aspect128": 0.6872852233676976,
+      "sha256": "5c3c0c7ee7e4aafc4d14fff03d99257284789cd179f3062ddec710ff6591f49e",
+      "git_blob_sha": "498c28d998e4f8311c1657bfa727f33dbb7b830c",
+      "before_sha256": "62824596318ec600f51fc6fe81d06ad0c3ea24df2420ffa2914a9265d9f43098",
+      "bbox128_delta": [
+        0,
+        -1,
+        0,
+        0
+      ],
+      "silhouette_iou128": 0.9966020825563705,
+      "aspect_change_percent": -0.0859106529209619,
+      "edited": true,
+      "ocr_text": "————————\n\nCOCconur\n\n69\n\noy",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-coconut.png"
+    },
+    {
+      "id": "mango",
+      "maker": "dobaj",
+      "name": "マンゴー",
+      "filename": "outputs/dobaj-mango.png",
+      "path": "/workspace/generated_images/exec-e01a6654-accc-4a1a-ab90-7e310c7c32d4.png",
+      "before_path": "/workspace/generated_images/exec-bc3f2591-62ae-40ca-843a-636bb06f46de.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word MANGO in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1028446,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        111,
+        986,
+        1159
+      ],
+      "window": [
+        267,
+        108,
+        722,
+        1053
+      ],
+      "aspect128": 0.683206106870229,
+      "sha256": "ad149f09c777065691abc94274c6f8455ea3b0cdc393d26591a7e206132423e4",
+      "git_blob_sha": "26d527e63c47c977bbd3b7e3c10db02e6f624b35",
+      "before_sha256": "b8868820ba19dcc66a2069568d623d66c67b0488677a969ee9e771ec4aca9b57",
+      "bbox128_delta": [
+        -1,
+        -2,
+        0,
+        2
+      ],
+      "silhouette_iou128": 0.995486227130706,
+      "aspect_change_percent": -0.24235306678055402,
+      "edited": true,
+      "ocr_text": "i) |\n\nMANGO\n\nay\n\n=",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-mango.png"
+    },
+    {
+      "id": "lemon",
+      "maker": "heaven",
+      "name": "レモン",
+      "filename": "outputs/heaven-lemon.png",
+      "path": "/workspace/generated_images/exec-7926380c-1f96-49d2-9a2b-f5f7a4d82a60.png",
+      "before_path": "/workspace/generated_images/exec-7926380c-1f96-49d2-9a2b-f5f7a4d82a60.png",
+      "prompt": null,
+      "bytes": 1188783,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        267,
+        108,
+        994,
+        1160
+      ],
+      "window": [
+        265,
+        105,
+        732,
+        1058
+      ],
+      "aspect128": 0.69106463878327,
+      "sha256": "6f44abab071256b398da074a42750fd0333f88f92c71c02e0c7b71915f6cfb47",
+      "git_blob_sha": "61a7b8ef4d8ba51235eddcbf8d41735b20317d82",
+      "before_sha256": "6f44abab071256b398da074a42750fd0333f88f92c71c02e0c7b71915f6cfb47",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-lemon.png"
+    },
+    {
+      "id": "peach",
+      "maker": "dobaj",
+      "name": "ピーチ",
+      "filename": "outputs/dobaj-peach.png",
+      "path": "/workspace/generated_images/exec-f3a3e8b3-dd65-485b-93c0-2ca405f66df5.png",
+      "before_path": "/workspace/generated_images/exec-63d3fa3e-cd32-43ac-b04a-ee4cb40ba8a4.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word PEACH in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1276936,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        239,
+        67,
+        1043,
+        1232
+      ],
+      "window": [
+        236,
+        64,
+        810,
+        1171
+      ],
+      "aspect128": 0.6901287553648069,
+      "sha256": "565f85df1f53cb79ae0d55d8ab35900ebd199445fcd1f9fee9bb8f197f0466b1",
+      "git_blob_sha": "9f8043d965053354301c143c400a80ffd9015a8d",
+      "before_sha256": "9d683fbaae1ea973a253dd0126fda071a3e73e6eb6f69235f4448bd699780a4a",
+      "bbox128_delta": [
+        0,
+        -2,
+        1,
+        1
+      ],
+      "silhouette_iou128": 0.9964642584442973,
+      "aspect_change_percent": -0.13329841420851585,
+      "edited": true,
+      "ocr_text": "_—\n\nQ",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-peach.png"
+    },
+    {
+      "id": "orange",
+      "maker": "heaven",
+      "name": "オレンジ",
+      "filename": "outputs/heaven-orange.png",
+      "path": "/workspace/generated_images/exec-85faf588-52a9-4213-b41d-48941904312f.png",
+      "before_path": "/workspace/generated_images/exec-85faf588-52a9-4213-b41d-48941904312f.png",
+      "prompt": null,
+      "bytes": 1208889,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        272,
+        113,
+        997,
+        1184
+      ],
+      "window": [
+        270,
+        110,
+        730,
+        1077
+      ],
+      "aspect128": 0.676937441643324,
+      "sha256": "a169a583c306e1535aa56ad87450b3fd0bf506a5c9addaa2a0df96246c8e911e",
+      "git_blob_sha": "293a42da8d06ac77fcf8a5ca195c482ff2f7ea24",
+      "before_sha256": "a169a583c306e1535aa56ad87450b3fd0bf506a5c9addaa2a0df96246c8e911e",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-orange.png"
+    },
+    {
+      "id": "grape",
+      "maker": "heaven",
+      "name": "グレープ",
+      "filename": "outputs/heaven-grape.png",
+      "path": "/workspace/generated_images/exec-9d33073f-f14a-4994-91e5-a447a38398de.png",
+      "before_path": "/workspace/generated_images/exec-9d33073f-f14a-4994-91e5-a447a38398de.png",
+      "prompt": null,
+      "bytes": 1282661,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        114,
+        988,
+        1160
+      ],
+      "window": [
+        267,
+        111,
+        724,
+        1052
+      ],
+      "aspect128": 0.6864244741873805,
+      "sha256": "b224445ec338ae997736ee94712e329a1ed662bbc3a6948217fa7f7fba386d54",
+      "git_blob_sha": "11c33da678c637eb339ba53c0d6c951bd28aaa7e",
+      "before_sha256": "b224445ec338ae997736ee94712e329a1ed662bbc3a6948217fa7f7fba386d54",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-grape.png"
+    },
+    {
+      "id": "melon",
+      "maker": "dobaj",
+      "name": "メロン",
+      "filename": "outputs/dobaj-melon.png",
+      "path": "/workspace/generated_images/exec-22a9f274-fcca-40ac-86bf-a5f5c7b6dc90.png",
+      "before_path": "/workspace/generated_images/exec-76dd82a2-c273-406b-b8f9-c4c0c8ab7513.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word MELON in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1074739,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        112,
+        989,
+        1158
+      ],
+      "window": [
+        267,
+        109,
+        725,
+        1052
+      ],
+      "aspect128": 0.6873804971319312,
+      "sha256": "df061bb464acfb15d1f4a7266f9b4e525302bc257e7b8cc497dc3a3dd2233143",
+      "git_blob_sha": "cebf97cd307ad0c02b87db7e0caddd7ade3b64c7",
+      "before_sha256": "65283b95df777ca976b0d1c82d6267375caa115639cac02c37d0bb387e4b8a88",
+      "bbox128_delta": [
+        -1,
+        -2,
+        2,
+        1
+      ],
+      "silhouette_iou128": 0.9930479700276652,
+      "aspect_change_percent": 0.13098582522403923,
+      "edited": true,
+      "ocr_text": "——\n\n()\n\nMELON\n\nAe\n\n0\n\nYr\n\nVL\n\ncx\n\nx4\n\nAG\n\nLe\n\nPSP:\n\n10,0\n\nLL\n\n$6\n\nAX?\n\nx)\n\nBh\n\n47)\n\n34>\n\n‘ae\n\narae\n\nS)\n\n<0:\n\n<e,\n\ner\n\nREY\n\nYr\n\nBs\n\nees\n\nara\"",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-melon.png"
+    },
+    {
+      "id": "watermelon",
+      "maker": "heaven",
+      "name": "スイカ",
+      "filename": "outputs/heaven-watermelon.png",
+      "path": "/workspace/generated_images/exec-38197482-dc5f-4c97-8371-9d50a052f0d4.png",
+      "before_path": "/workspace/generated_images/exec-38197482-dc5f-4c97-8371-9d50a052f0d4.png",
+      "prompt": null,
+      "bytes": 1226227,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        273,
+        114,
+        988,
+        1160
+      ],
+      "window": [
+        271,
+        111,
+        720,
+        1051
+      ],
+      "aspect128": 0.6835564053537285,
+      "sha256": "a9a2ccc93c3db87884ed64059988b5c074b1a4813609a5df8b87283401a9c28a",
+      "git_blob_sha": "d29799ae9d01b73038e815122b97e969d08fcdf3",
+      "before_sha256": "a9a2ccc93c3db87884ed64059988b5c074b1a4813609a5df8b87283401a9c28a",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-watermelon.png"
+    },
+    {
+      "id": "banana",
+      "maker": "dobaj",
+      "name": "バナナ",
+      "filename": "outputs/dobaj-banana.png",
+      "path": "/workspace/generated_images/exec-8caf02c0-e84c-447e-b6ce-bdd5ee698361.png",
+      "before_path": "/workspace/generated_images/exec-0e60ca57-ad4b-4868-8f6b-532b459832cb.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word BANANA in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1023931,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        111,
+        988,
+        1158
+      ],
+      "window": [
+        267,
+        108,
+        724,
+        1052
+      ],
+      "aspect128": 0.6867239732569246,
+      "sha256": "ef94aaf8de37345dbd3ad5c1a4e8d406e7f2b970b6824beb87e93607abf9adc2",
+      "git_blob_sha": "f6fb61ebd846a95ee070c548d5968b9124edc462",
+      "before_sha256": "17ff4724ac8acaad554650cb7d8898a2d7ec209e5d80c5479986095b1757f847",
+      "bbox128_delta": [
+        -3,
+        -2,
+        3,
+        1
+      ],
+      "silhouette_iou128": 0.9913111540262173,
+      "aspect_change_percent": 0.55257055823692,
+      "edited": true,
+      "ocr_text": ")\n\nBANANA\n\nNA\n\n—",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/dobaj-banana.png"
+    },
+    {
+      "id": "cinnamon",
+      "maker": "heaven",
+      "name": "シナモン",
+      "filename": "outputs/heaven-cinnamon.png",
+      "path": "/workspace/generated_images/exec-70d9981f-6417-4a73-be94-3b81a177062f.png",
+      "before_path": "/workspace/generated_images/exec-70d9981f-6417-4a73-be94-3b81a177062f.png",
+      "prompt": null,
+      "bytes": 1287574,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        266,
+        117,
+        1000,
+        1168
+      ],
+      "window": [
+        263,
+        114,
+        740,
+        1056
+      ],
+      "aspect128": 0.698382492863939,
+      "sha256": "9bbfd2f8b2c95a9d7b82a24b3b90c9088cdc4611c91456985c7a8ce026e41ae5",
+      "git_blob_sha": "870692163417ea80df7bb5000c05e20b0327792d",
+      "before_sha256": "9bbfd2f8b2c95a9d7b82a24b3b90c9088cdc4611c91456985c7a8ce026e41ae5",
+      "bbox128_delta": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "silhouette_iou128": 1,
+      "aspect_change_percent": 0,
+      "edited": false,
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/heaven-cinnamon.png"
+    },
+    {
+      "id": "rose",
+      "maker": "afsaal",
+      "name": "ローズ",
+      "filename": "outputs/afsaal-rose.png",
+      "path": "/workspace/generated_images/exec-fbd39154-4490-46aa-89d9-4875fdd617a7.png",
+      "before_path": "/workspace/generated_images/exec-77968241-d56d-40a6-adab-03799b78bf4f.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word AFSAAL from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word ROSE in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1054255,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        112,
+        989,
+        1158
+      ],
+      "window": [
+        266,
+        109,
+        726,
+        1052
+      ],
+      "aspect128": 0.6883365200764818,
+      "sha256": "aa26527736e9aeb09e5e5c85c66eb085be8e6aef51783574d46bb49b99ca81c3",
+      "git_blob_sha": "5f5df822866a42c52356e232f18c12ac497e876a",
+      "before_sha256": "f90facbd37f0e197a10306b94738037ddc6d107d476e31f2558df2e8c119bca9",
+      "bbox128_delta": [
+        -2,
+        -2,
+        1,
+        1
+      ],
+      "silhouette_iou128": 0.9920904631372647,
+      "aspect_change_percent": 0.13040312967509404,
+      "edited": true,
+      "ocr_text": "i _\n\nae\n\npa\n\nea\n\np0\n\n€\n\n=",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/afsaal-rose.png"
+    },
+    {
+      "id": "lychee",
+      "maker": "afsaal",
+      "name": "ライチ",
+      "filename": "outputs/afsaal-lychee.png",
+      "path": "/workspace/generated_images/exec-8734c512-b977-4cb8-8da2-79ad6aa0c4ee.png",
+      "before_path": "/workspace/generated_images/exec-d734bd64-168f-430d-b981-9e3cc417f0de.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word AFSAAL from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word LYCHEE in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background.",
+      "bytes": 1178776,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        83,
+        1017,
+        1201
+      ],
+      "window": [
+        266,
+        80,
+        753,
+        1124
+      ],
+      "aspect128": 0.669051878354204,
+      "sha256": "acec7725065357607004aa1744d2774a719ff4cd2716917977e74335d39b0ec6",
+      "git_blob_sha": "f54bd666c1aad8319c0d4a8cd0ff82c583758e27",
+      "before_sha256": "57fa8e00ccd07babe67bac6b2643cd200f6331bacf294ef505edca4540c50afd",
+      "bbox128_delta": [
+        0,
+        -1,
+        3,
+        2
+      ],
+      "silhouette_iou128": 0.9953190476819966,
+      "aspect_change_percent": 0.1332676999916016,
+      "edited": true,
+      "ocr_text": "~~\n\ni)\n\nod",
+      "source_repository_path": "asset_sources/shop-art-issue586/angle-unified-v3/outputs/afsaal-lychee.png"
+    }
+  ]
+}

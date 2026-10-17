@@ -43,6 +43,7 @@ import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } f
 import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
+import { giveSumiRig } from "../daily/home-rig.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -356,11 +357,14 @@ async function midPreparation() {
     progress.practiceDone = true;
     save();
   }
-  if (progress.feedbackRead) return;
-  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-  await play("remake_midcheck", { bg: TONARI_N });
-  progress.feedbackRead = true;
-  save();
+  if (!progress.feedbackRead) {
+    if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+    await play("remake_midcheck", { bg: TONARI_N });
+    progress.feedbackRead = true;
+    save();
+  }
+  // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
+  await giveSumiRig({ bg: TONARI_N });
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
