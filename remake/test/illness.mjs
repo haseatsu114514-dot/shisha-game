@@ -27,7 +27,7 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {} };
 const values = {
-  "hiyori.js": { visitHiyoriAtShop: async () => false, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
+  "hiyori.js": { visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
