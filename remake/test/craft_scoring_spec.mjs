@@ -171,6 +171,21 @@ const shishaAfDobaj = computeShisha({ ...baseCraftState, mix: { double_apple: 6,
 const mixDiff = Math.round((shishaResults.af.craftQualityRaw - shishaAfDobaj.craftQualityRaw) * 1000) / 1000;
 assert.equal(mixDiff, 1.015, `Mix diff between AF and AF+Dobaj (${mixDiff}) != 1.015`);
 
+// 2-C. ドバジ特有の強み（初心者安心設計・高耐久・適温帯1.25倍）の検証
+// ① MAKER_SPECS と ガイド表示（幅1.25倍、safePullsBonus: 1）
+assert.equal(MAKER_SPECS.dobaj.widthFactor, 1.25);
+assert.equal(MAKER_SPECS.dobaj.safePullsBonus, 1);
+const dobajGuide = flavorThermalGuide(DB.flavorById.dobaj_double_apple);
+assert.match(dobajGuide.widthLabel, /非常に広め/);
+assert.match(dobajGuide.traitLabel, /高耐久（吸引許容4回・焦げリスク半減）/);
+
+// ② 初心者プレイ（4回吸引 + 過熱発生時）の焦げ耐性・吸いすぎ耐性の比較
+// 主要4社（AF等）: safePulls=3 なので4回目で +5、過熱で +12 の計 +17 burnRisk加算
+// ドバジ: safePulls=4 なので4回目でも +0、過熱加算も半減(12 * 0.5 = 6)の計 +6 burnRisk加算（差分 11pt）
+const afBeginner = computeShisha({ ...baseCraftState, mix: { double_apple: 12 }, pull: { score: 50, pulls: 4, over: true } });
+const dobajBeginner = computeShisha({ ...baseCraftState, mix: { dobaj_double_apple: 12 }, pull: { score: 50, pulls: 4, over: true } });
+assert.equal(afBeginner.burnRisk - dobajBeginner.burnRisk, 11, `AF beginner burnRisk (${afBeginner.burnRisk}) - Dobaj (${dobajBeginner.burnRisk}) != 11`);
+
 // 3. フラット炭 vs キューブ炭の差別化
 const flat = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle" });
 const cube = coalWarmth({ equip: { charcoal: "cube_charcoal" }, place: "triangle" });

@@ -47,7 +47,7 @@ export const MAKER_SPECS = Object.freeze({
     bonuses: Object.freeze({ aroma: 4, heatStability: 4, taste: 4, smoke: 3, duration: 2, draw: 2 }),
   }),
   dobaj: Object.freeze({
-    id: "dobaj", label: "ドバジ", widthFactor: 1.15,
+    id: "dobaj", label: "ドバジ", widthFactor: 1.25, safePullsBonus: 1,
     bonuses: Object.freeze({ aroma: 2, heatStability: 1, taste: 1, smoke: 0, duration: 1, draw: 0 }),
   }),
   afsahr: Object.freeze({
@@ -130,6 +130,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
   const qualityCeilingDelta =
     bonuses.aroma * 0.25 + bonuses.heatStability * 0.15 + bonuses.taste * 0.10
     + bonuses.smoke * 0.10 + bonuses.duration * 0.05 + bonuses.draw * 0.05;
+  const safePullsBonus = Math.round(makers.reduce((sum, m) => sum + (makerWeights[m] || 0) * (MAKER_SPECS[m].safePullsBonus || 0), 0));
   return Object.freeze({
     t: baseBands.t,
     center: baseBands.center,
@@ -140,6 +141,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
     synergyScale,
     equipWidth,
     totalWidthScale,
+    safePullsBonus,
     ideal: Object.freeze([baseBands.center - halfIdeal, baseBands.center + halfIdeal]),
     optimal: Object.freeze([baseBands.center - halfOptimal, baseBands.center + halfOptimal]),
     bonuses: Object.freeze(bonuses),
@@ -306,15 +308,21 @@ export function flavorThermalGuide(flavor) {
     : t <= 0.88
       ? `低温・繊細（耐熱 ${t.toFixed(2)}）：熱が入りすぎると焦げやすいため、フラット炭や優しい火力が向く`
       : `標準温度帯（耐熱 ${t.toFixed(2)}）：クセが少なく、他の葉とも温度帯を合わせやすい`;
-  const widthLabel = maker.widthFactor >= 1.10
-    ? `広め（×${maker.widthFactor.toFixed(2)}・初心者でも適温に収めやすい）`
-    : maker.widthFactor <= 0.80
-      ? `狭め（×${maker.widthFactor.toFixed(2)}・ピンポイントの温度合わせで香りが跳ねる上級者向け）`
-      : `標準（×${maker.widthFactor.toFixed(2)}）`;
+  const widthLabel = maker.widthFactor >= 1.20
+    ? `非常に広め（×${maker.widthFactor.toFixed(2)}・初心者向け・適温に収めやすい）`
+    : maker.widthFactor >= 1.10
+      ? `広め（×${maker.widthFactor.toFixed(2)}・初心者でも適温に収めやすい）`
+      : maker.widthFactor <= 0.80
+        ? `狭め（×${maker.widthFactor.toFixed(2)}・ピンポイントの温度合わせで香りが跳ねる上級者向け）`
+        : `標準（×${maker.widthFactor.toFixed(2)}）`;
+  const traitLabel = maker.safePullsBonus > 0
+    ? "高耐久（吸引許容4回・焦げリスク半減）：多少の過熱や吸いすぎでも失敗しづらい安心設計"
+    : null;
   return {
     makerLabel: maker.label,
     tempBandLabel,
     widthLabel,
+    traitLabel,
   };
 }
 

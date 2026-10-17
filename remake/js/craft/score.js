@@ -62,7 +62,10 @@ export function computeShisha(cs) {
   const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
   const baseHeatStability = h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability;
   const heatStability = clamp(baseHeatStability + maker.bonuses.heatStability, 0, 100);
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + (overheated ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5 + coal.burnRisk, 0, 100);
+  const safePulls = 3 + (maker.safePullsBonus || 0);
+  const extraPulls = Math.max(0, (p.pulls || 3) - safePulls);
+  const overheatedRisk = overheated ? Math.round(12 * (1 - 0.5 * (maker.makerWeights?.dobaj || 0))) : 0;
+  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (cs.pack === "fluffy" ? 5 : 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
   const gift = giftBowlEffect(cs);
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma, 0, 100);
   const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste, 0, 100);
