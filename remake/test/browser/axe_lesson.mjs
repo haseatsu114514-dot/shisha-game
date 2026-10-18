@@ -170,6 +170,9 @@ await suite("axe-lesson", async check => {
         window.lessonCore = await import("./js/core/state.js");
         const state = lessonCore.newGame();
         Object.assign(state, { chapter: 1, day: 5, slot: 1, phase: "daily", money: restriction === "poor" ? 0 : 12000, stamina: restriction === "exhausted" ? 0 : 80 });
+        // 発見・無料目撃は済ませ、保存を伴う初回目撃とレッスンの不変検証を分ける。
+        Object.assign(state.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true,
+          _axe_bar_sighting_day: state.day - 1, _axe_bar_sighting_chapter: state.chapter });
         if (restriction === "played") state.visitedDay.axe_bar = state.day;
         window.lessonGuardCalls = 0; window.lessonVisitSettled = false;
         window.visitPromise = (await import("./js/daily/axe-bar.js")).visitAxeBar({
