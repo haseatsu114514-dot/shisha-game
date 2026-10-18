@@ -12,7 +12,7 @@ export const FACILITY_ICONS = Object.freeze({
   fortune: Object.freeze({ label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
   trpg_bar: Object.freeze({ label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
 });
-export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 128]);
+export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
@@ -31,7 +31,7 @@ function ensureStickerOutline(document) {
 }
 
 export function createMapFacilityIcon(spotId) {
-  return hasFacilityIcon(spotId) ? createFacilityIcon(SPOT_ICONS[spotId], { size: 80, decorative: true, sticker: true }) : null;
+  return hasFacilityIcon(spotId) ? createFacilityIcon(SPOT_ICONS[spotId], { size: 96, decorative: true, sticker: true }) : null;
 }
 
 export function facilityIconLayout(id, size = 48) {

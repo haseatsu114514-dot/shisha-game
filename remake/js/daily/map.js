@@ -261,6 +261,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
+      if (facility) {
+        const crop = facility.querySelector('.facility-icon-crop');
+        btn.style.setProperty('--facility-art-width', crop.style.width);
+        btn.style.setProperty('--facility-art-height', crop.style.height);
+      }
       const revealIndex = reveals.indexOf(s.id);
       if (revealIndex >= 0) {
         btn.classList.add("newly-revealed");

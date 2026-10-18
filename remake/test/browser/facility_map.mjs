@@ -63,6 +63,10 @@ try {
           facility: icon?.dataset.facility || null, logo: pin.querySelector('[data-store-logo]')?.dataset.storeLogo || null,
           label: pin.getAttribute('aria-label'), caption: pin.querySelector('.sub-label').textContent,
           image: img ? { src: new URL(img.currentSrc).pathname, width: img.naturalWidth, height: img.naturalHeight } : null,
+          eventCornerDelta: crop && pin.querySelector('.evt-badge') ? (() => {
+            const c = crop.getBoundingClientRect(), b = pin.querySelector('.evt-badge').getBoundingClientRect();
+            return [b.x + b.width/2 - c.right, b.y + b.height/2 - c.top];
+          })() : null,
           filter: crop ? getComputedStyle(crop).filter : null,
           shieldBackground: getComputedStyle(pin.querySelector('.shield')).backgroundColor,
           target: { x: r.x, y: r.y, width: r.width, height: r.height },
@@ -86,6 +90,7 @@ try {
         const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
+          if (pin.eventCornerDelta) assert(pin.eventCornerDelta.every(n => Math.abs(n) < 6), `${id} event mark does not follow the artwork corner`);
           if (layout === 'normal') assert(pin.anchorDelta.every(n => Math.abs(n) < 5), `${id} artwork does not point to its map coordinate`);
           assert(pin.image.width > 0 && pin.image.height > 0);
           assert(pin.image.src.startsWith('/assets/ui/map-facilities-'));

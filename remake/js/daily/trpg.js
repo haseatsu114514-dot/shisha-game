@@ -1,7 +1,7 @@
 import { state } from "../core/state.js";
 
 export const trpgSpot = () => state?.chapter >= 2 ? {
-  id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 49, y: 15,
+  id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 48, y: 15,
   theme: "cafe", glyph: "卓", preview: "bg_cafe", minChapter: 2,
   desc: "糸目で微笑む六角サイのボドゲカフェ。昼は店長と無料試遊、夜は仲間とTRPG。入店・部活設立・試遊・本の購入は時間消費なし。TRPGは夜の1枠。",
 } : null;

@@ -84,7 +84,7 @@ export const SPOTS = [
     desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
   // 会うまでは正体の分からない「？」の出店
-  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 67, theme: "park", glyph: "占", unknownGlyph: "？",
+  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占", unknownGlyph: "？",
     desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）。",
     unknownDesc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,

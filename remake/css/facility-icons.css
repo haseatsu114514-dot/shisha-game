@@ -3,19 +3,29 @@
 .facility-icon-crop > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
 .facility-icon.sticker .facility-icon-crop { filter: url(#facility-sticker-outline) drop-shadow(0 3px 6px rgb(0 0 0 / 45%)); }
 
-/* The 92px shield centers its artwork on the background landmark, independently of labels/status. */
-.map .spot-pin.facility-location { transform: translate(-50%, -46px); }
+/* The 108px shield centers its artwork on the background landmark, independently of labels/status. */
+.map .spot-pin.facility-location { transform: translate(-50%, -54px); }
 body.game-ds .map .spot-pin.facility-location { transform: none; }
 
 /* Only revealed facilities use the alpha-contour sticker; existing logos/locked pins keep their skin. */
-.map .spot-pin.facility-location .shield { width: 104px; min-width: 104px; min-height: 92px; padding: 6px 12px; }
+.map .spot-pin.facility-location .shield { width: 120px; min-width: 120px; min-height: 108px; padding: 6px 12px; }
 .map .spot-pin.facility-pin .shield { background: none; border: 0; border-image: none; box-shadow: none; }
 .map .spot-pin.facility-pin .shield::before, .map .spot-pin.facility-pin .shield::after { content: none; }
-.map .spot-pin.facility-location .ico { width: 80px; height: 80px; }
+.map .spot-pin.facility-location .ico { width: 96px; height: 96px; }
 .map .spot-pin.facility-pin.sel .facility-icon { filter: drop-shadow(0 0 5px #ffe9a8); }
-body.game-ds .map .spot-pin.facility-location .shield { width: 56px; min-width: 56px; min-height: 56px; padding: 4px; }
-body.game-ds .map .spot-pin.facility-location .ico { width: 48px; height: 48px; }
-body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .6; }
+body.game-ds .map .spot-pin.facility-location .shield { width: 64px; min-width: 64px; min-height: 64px; padding: 4px; }
+body.game-ds .map .spot-pin.facility-location .ico { width: 56px; height: 56px; }
+body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .5833333333; }
+
+/* Event marks follow the artwork's visible upper-right, including wide/short art. */
+.map .spot-pin.facility-pin .evt-badge {
+  top: calc(6px + (96px - var(--facility-art-height)) / 2 - 7px);
+  right: calc(12px + (96px - var(--facility-art-width)) / 2 - 7px);
+}
+body.game-ds .map .spot-pin.facility-pin .evt-badge {
+  top: calc(4px + (56px - var(--facility-art-height) * .5833333333) / 2 - 7px);
+  right: calc(4px + (56px - var(--facility-art-width) * .5833333333) / 2 - 7px);
+}
 
 /* Standalone comparison using the same artwork as the map. */
 .facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 system-ui, sans-serif; }
