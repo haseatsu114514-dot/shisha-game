@@ -17,4 +17,10 @@
 - 炭焼き・体調、穴あけ、日常整合、配合別温度、蒸らし温度、家シーシャ、配合の味・実績、craft_focusを確認。台詞lintはERROR 0／WARN 0。旧用語検査の既存WARNは変更範囲外。
 - タイトル・ヘルプ・配合・補助の確認画面を撮影し視認。実機Safari、未経験者による第一章の通し試遊は未実施。
 
+### CIの仮想時計の追補
+
+HEAD `07659ab` の総合ブラウザCI（run `39151697032`、job `117746496071`）で、`steam_attack_growth.mjs:139` のアタック再使用可能判定が失敗した。ローカルでも同じ失敗を再現した。描画フレームだけを20msずつ進めるテストに対し、共通の説明停止時計は `performance.now()` を読んでいたため、65フレーム進めても検査上の1.3秒がゲーム側へ渡っていなかった。
+
+検査の制御区間でRAFと単調時計を同じ仮想時刻へ揃え、終了時に両方を復帰する。再使用時間・65フレーム・ボタンの有効判定など既存assertは維持した。修正後の全実行でPC・タッチ／reduced motionの両方がPASS（実際の弾、2段階の強化、空振り／連打、リフレッシュ後の保持、被弾リセット、集計、終了処理、初回練習リセットまで）。ゲーム本体の待ち時間・採点・操作処理は変更していない。新しいHEADのCI結果はPRで確認する。
+
 再実行は `python3 remake/tools/serve_preview.py --port 8123` と、`CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/first_brew.mjs`。`ARTIFACT_DIR` は結果の保存先、`SHOTS` は追加画面の保存先。通常のチェックは `.github/workflows/ch1-presentation.yml` に接続した。

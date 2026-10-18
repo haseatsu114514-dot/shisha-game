@@ -130,5 +130,20 @@
         "status": "passed"
       }
     ]
+  },
+  "steam_attack_growth_clock_followup": {
+    "previous_ci": {
+      "run": 39151697032,
+      "job": 117746496071,
+      "head": "07659ab032a86b3d488f21ba8e99db18da9f950c",
+      "status": "FAIL",
+      "assertion": "steam_attack_growth.mjs:139 attack recharge enabled"
+    },
+    "local_before": "same failure reproduced",
+    "local_after": {
+      "PC": "PASS",
+      "touch_reduced_motion": "PASS"
+    },
+    "change": "Synchronize controlled RAF and performance.now; preserve every recharge assertion and frame count."
   }
 }
