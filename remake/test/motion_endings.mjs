@@ -32,7 +32,7 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
     await ui.setBg(data.bgUrl("bg_tonari_inside", "night"), { instant: true });
 
     // Animationを早送りしない。実際に幕を外す瞬間の、まだ見える光を記録する。
-    window.audit = { cutLights: [], penJumps: [], dotLoops: [], mid: [], keys: 0, handoff: null };
+    window.audit = { cutLights: [], penJumps: [], dotLoops: [], mid: [], keys: 0, handoff: null, stalls: 0, penFrameGap: 0 };
     const originalAnimate = Element.prototype.animate;
     Element.prototype.animate = function (...args) {
       const a = originalAnimate.apply(this, args);
@@ -54,6 +54,20 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
       }
       return cancel.call(this);
     };
+    // コールバックの実行間隔は描画フレームの間隔ではない。重いフレームの後には
+    // 別フレームの更新が3ms未満で届くため、rAFのtimestampで同一フレームを判定する。
+    let frame = null, penUpdated = false;
+    const raf = window.requestAnimationFrame;
+    const frameCallback = callback => timestamp => {
+      frame = timestamp; penUpdated = false;
+      callback(timestamp);
+      if (audit.stallPenFrames && penUpdated && audit.stalls < 4) {
+        audit.stalls++;
+        const until = performance.now() + 80;
+        while (performance.now() < until) {} // 実際に描画を落とす。演出の時計は早送りしない。
+      }
+    };
+    window.requestAnimationFrame = callback => raf.call(window, frameCallback(callback));
     // ペンの移動終了と書き出しが同じフレームで高さを変えていないか。
     const previous = new WeakMap();
     const setAttribute = Element.prototype.setAttribute;
@@ -61,23 +75,47 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
       if (name === "transform" && this.firstElementChild?.getAttribute("d") === "M -8 -48 L -4 -7 Q 0 0 4 -7 L 8 -48 Z") {
         const match = String(value).match(/^translate\([^ ]+ ([^)]+)\)/);
         if (match) {
-          const now = performance.now(), y = Number(match[1]), prev = previous.get(this);
-          if (prev && now - prev.time < 3 && Math.abs(y - prev.y) > 8 && getComputedStyle(this.parentElement).opacity !== "0") {
+          const y = Number(match[1]), prev = previous.get(this);
+          if (prev && frame !== null && frame === prev.frame && Math.abs(y - prev.y) > 8 && getComputedStyle(this.parentElement).opacity !== "0") {
             audit.penJumps.push(Math.abs(y - prev.y));
           }
-          previous.set(this, { y, time: now });
+          if (prev && frame !== null && prev.frame !== null) audit.penFrameGap = Math.max(audit.penFrameGap, frame - prev.frame);
+          previous.set(this, { y, frame }); penUpdated = true;
         }
       }
       return setAttribute.call(this, name, value);
+    };
+    // 同じ監視を合成フレームでも検査。壁時計を固定し、旧3ms判定の誤検出を再現する。
+    window.checkPenAudit = () => {
+      const ns = "http://www.w3.org/2000/svg", root = document.createElementNS(ns, "svg");
+      const pen = document.createElementNS(ns, "g"), tip = document.createElementNS(ns, "path");
+      tip.setAttribute("d", "M -8 -48 L -4 -7 Q 0 0 4 -7 L 8 -48 Z");
+      pen.append(tip); root.append(pen); document.body.append(root);
+      const now = Object.getOwnPropertyDescriptor(performance, "now");
+      Object.defineProperty(performance, "now", { configurable: true, value: () => 1000 });
+      const place = (timestamp, y) => frameCallback(() => pen.setAttribute("transform", `translate(0 ${y})`))(timestamp);
+      try {
+        place(100, -30); place(116.667, -18.182);
+        const separateFrames = audit.penJumps.splice(0);
+        place(133.333, -30); audit.penJumps.length = 0;
+        place(133.333, 0);
+        const sameFrame = audit.penJumps.splice(0);
+        root.style.opacity = "0"; place(133.333, -30);
+        return { separateFrames, sameFrame, hidden: audit.penJumps.splice(0) };
+      } finally {
+        if (now) Object.defineProperty(performance, "now", now); else delete performance.now;
+        root.remove(); frame = null; audit.penFrameGap = 0;
+      }
     };
     document.addEventListener("keydown", (e) => { if (e.key === "Enter") audit.keys++; });
   });
   return { context, page };
 }
 
-async function checkScene(name, viewport, label, variant = null) {
+async function checkScene(name, viewport, label, variant = null, stallPenFrames = false) {
   const { context, page } = await open(viewport, `${label}-${name}`, "no-preference", variant);
   try {
+    await page.evaluate(stall => { audit.stallPenFrames = stall; }, stallPenFrames);
     await page.evaluate((name) => {
       window.motionDone = false;
       window.motionRun = (async () => {
@@ -142,6 +180,10 @@ async function checkScene(name, viewport, label, variant = null) {
     }));
     assert.deepEqual(result.cutLights, [], `${name}: visible twinkles were cut off`);
     assert.deepEqual(result.penJumps, [], `${name}: marker snapped to the paper`);
+    if (stallPenFrames) {
+      assert.equal(result.stalls, 4, "exercise marker updates with dropped frames");
+      assert.ok(result.penFrameGap >= 64, `no dropped marker frame: ${result.penFrameGap}ms`);
+    }
     assert.equal(result.leftovers, 0); assert.equal(result.covering, false);
     if (["shark", "sketch"].includes(name) || name.startsWith("dawn-")) assert.deepEqual(result.mid, [true]);
     if (name === "cheki") {
@@ -161,6 +203,11 @@ async function checkScene(name, viewport, label, variant = null) {
 
 try {
   const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
+  const { page: auditPage, context: auditContext } = await open(desktop, "pen-audit");
+  try {
+    assert.deepEqual(await auditPage.evaluate(() => checkPenAudit()), { separateFrames: [], sameFrame: [30], hidden: [] });
+    console.log("PASS marker audit: separate frames, same-frame snap, hidden pen");
+  } finally { await auditContext.close(); }
   const alternatesOnly = process.argv.includes("--alternates-only");
   if (!alternatesOnly) {
     for (const name of ["door", "cheki", "tarot", "gift", "shift", "shark", "sketch", "dawn-sun", "dawn-cloud", "dawn-rain", "dawn-sick"]) await checkScene(name, desktop, "desktop");
@@ -169,6 +216,7 @@ try {
   // 共通のペン・finish()を使う別案も確認（採用の変更はしない）。
   await checkScene("cheki", desktop, "alternate-a", "a");
   await checkScene("gift", desktop, "alternate-b", "b");
+  await checkScene("cheki", desktop, "dropped-frames", null, true);
   for (const reduced of [false, true]) {
     const { page, context } = await open(desktop, reduced ? "reduced" : "skip", reduced ? "reduce" : "no-preference");
     try {
@@ -201,5 +249,5 @@ try {
     console.log("PASS exception cleanup");
   } finally { await context.close(); }
   assert.deepEqual(errors, []);
-  console.log(`PASS motion endings: ${alternatesOnly ? 2 : 21} normal-speed scenes, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
+  console.log(`PASS motion endings: ${alternatesOnly ? 3 : 22} normal-speed scenes (including dropped frames), marker audit, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
 } finally { await browser.close(); }
