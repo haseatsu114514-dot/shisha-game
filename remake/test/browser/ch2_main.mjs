@@ -189,10 +189,13 @@ await suite('ch2-main', async check => {
     assert(text.includes('街を見てるのか'));
   });
 
-  await check('unknown-doctor-introduces-himself-and-is-saved', async page => {
+  await check('missing-doctor-met-flag-still-remembers-chapter-one-judge', async page => {
     const before = await setup(page, { knownDoctor: false }); await begin(page);
     const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
-    assert(text.includes('私はチャコール博士'));
+    assert(text.includes('地元大会以来だね'));
+    assert(text.includes('審査のあとも'));
+    assert(!text.includes('私はチャコール博士'));
+    assert(!text.includes('どうして俺の名前を'));
     assert.equal(await page.evaluate(() => window.__remake.state.met.dr_kemuri), true);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).met.dr_kemuri), true);
     await preserved(page, before);
