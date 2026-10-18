@@ -149,8 +149,8 @@ export function setPhoneBadge(unread) {
   const name = count ? `LIME（未読${count}件）` : "LIME";
   dom.phone.classList.toggle("has", count > 0);
   const badge = dom.phone.querySelector(".badge");
-  if (count > 9) badge.replaceChildren("9", el("small.badge-plus", { text: "+" }));
-  else badge.textContent = String(count || "");
+  badge.replaceChildren(el("b.badge-number", { text: count > 99 ? "99" : String(count || "") }));
+  if (count > 99) badge.append(el("small.badge-plus", { text: "+" }));
   dom.phone.title = name;
   dom.phone.setAttribute("aria-label", name);
 }

@@ -40,7 +40,7 @@ try {
     await page.evaluate(() => document.fonts.ready);
     const saved = await page.evaluate(() => JSON.stringify(badgeQA.core.state));
     const states = [];
-    for (const count of [0, 1, 9, 10, 0]) {
+    for (const count of [0, 1, 9, 10, 99, 100, 999, 9, 0]) {
       await page.evaluate(n => badgeQA.hud.setPhoneBadge(n), count);
       const geometry = await page.locator('.hud-lime').evaluate((icon, count) => {
         const b = icon.querySelector('.badge'), css = getComputedStyle(b);
@@ -48,19 +48,26 @@ try {
         const text = document.createRange(); text.selectNodeContents(b);
         return { count, text: b.textContent, display: css.display, radius: css.borderRadius,
           badge: rect(b), icon: rect(icon), textRect: rect(text), label: icon.getAttribute('aria-label'),
+          numberRect: b.querySelector('.badge-number') ? rect(b.querySelector('.badge-number')) : null,
+          plusRect: b.querySelector('.badge-plus') ? rect(b.querySelector('.badge-plus')) : null,
           fontSize: parseFloat(css.fontSize), plusSize: b.querySelector('.badge-plus') ? parseFloat(getComputedStyle(b.querySelector('.badge-plus')).fontSize) : null,
           adjacent: [...document.querySelectorAll('.hud-level,.hud-menu')].map(rect) };
       }, count);
       assert.equal(geometry.display, count ? (baseline ? 'grid' : 'flex') : 'none');
-      assert.equal(geometry.text, count > 9 ? '9+' : count ? String(count) : '');
+      assert.equal(geometry.text, count > (baseline ? 9 : 99) ? (baseline ? '9+' : '99+') : count ? String(count) : '');
       assert.equal(geometry.label, count ? `LIME（未読${count}件）` : 'LIME');
       if (count && !baseline) {
         const { badge: b, icon: i, textRect: t } = geometry;
         assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
-        assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 9+');
+        assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 99+');
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');
-        if (count > 9) assert(geometry.plusSize <= geometry.fontSize / 2, 'plus is smaller than the digit');
+        const n = geometry.numberRect;
+        assert(Math.abs(n.x + n.width / 2 - b.x - b.width / 2) < .1 && Math.abs(n.y + n.height / 2 - b.y - b.height / 2) < .1, 'number stays exactly centered independently of plus');
+        if (count > 99) {
+          assert(geometry.plusSize <= geometry.fontSize / 2, 'plus is smaller than the digit');
+          assert(geometry.plusRect.y < n.y && geometry.plusRect.x > n.x + n.width / 2, 'plus is at upper right of number');
+        } else assert.equal(geometry.plusRect, null);
         assert(t.x >= b.x && t.y >= b.y && t.x + t.width <= b.x + b.width && t.y + t.height <= b.y + b.height, 'text fits circle');
         assert(b.x >= 0 && b.y >= 0 && b.x + b.width <= viewport.width && b.y + b.height <= viewport.height, 'badge fits viewport');
         assert(geometry.adjacent.every(a => b.x + b.width <= a.x + .1 || a.x + a.width <= b.x + .1 || b.y + b.height <= a.y + .1 || a.y + a.height <= b.y + .1), 'badge overlaps adjacent control');
@@ -69,6 +76,11 @@ try {
       if (count === 1 && !baseline && device === 'pc' && layout === 'normal') {
         const r = await page.locator('.hud-right').boundingBox();
         await page.screenshot({ path: path.join(dir, 'after-pc-normal-one-hud.png'),
+          clip: { x: r.x - 12, y: r.y - 12, width: r.width + 24, height: r.height + 24 } });
+      }
+      if ([9, 99, 100].includes(count) && !baseline && device === 'pc' && layout === 'normal') {
+        const r = await page.locator('.hud-right').boundingBox();
+        await page.screenshot({ path: path.join(dir, `after-pc-normal-count-${count}-hud.png`),
           clip: { x: r.x - 12, y: r.y - 12, width: r.width + 24, height: r.height + 24 } });
       }
       if (count === 10) {
