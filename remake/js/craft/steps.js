@@ -276,7 +276,7 @@ export async function stepMix(cs) {
         el("b", { text: f?.short_name || f?.name || id }),
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
           : ownLeaves ? el("small.fr-stock", { text: `${consumes ? "持ち込み" : "手持ち"} 残り${flavorStock(id)}g` })
-          : el("small", { text: f?.description?.slice(0, 22) || "" }),
+          : el("small", { text: f?.description || "" }),
         ratio,
       ]),
       el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
@@ -346,7 +346,7 @@ export async function stepPack(cs) {
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "葉の間に空気を残す", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
     { value: "normal", label: "ノーマル", surface: "均等にならす", desc: "熱が素直に入り、崩れにくい基本の詰め方" },
-    { value: "firm", label: "かため", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
+    { value: "firm", label: "デンスパック", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
   ];
   let selected = options.find(o => o.value === cs.pack) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
