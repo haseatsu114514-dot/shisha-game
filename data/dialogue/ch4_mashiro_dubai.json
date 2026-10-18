@@ -1,160 +1,63 @@
 {
+  "comment": "mukaiの視察として渡航し到着した後。交際状態で片方のみ。友人は修羅場へ数えない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_mashiro_dubai_friend",
-      "metadata": {
-        "condition": "ch3_cleared",
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "大会前夜。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ホテルのロビーで明日の段取りを頭の中で整理していたとき、見覚えのある後ろ姿が目に入った。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "「……ましろちゃん？」"
+          "text": "ましろちゃんから到着の連絡が来た。"
         },
         {
           "speaker": "mashiro",
-          "face": "surprise",
-          "text": "あっ、はじめくん……！ えへへ、バレちゃったぁ"
+          "face": "normal",
+          "text": "ムカイさんから、お店を見ておいでって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "報告書の写真、食べ物ばっかりになりそう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「なんで……ドバイに？」"
+          "text": "店も撮ろうよ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ムカイさんに、行ってこいって言われてねぇ……。シーシャの本場を一回は見ておけって"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "それで来たんだけどぉ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……あと、東京でのはじめくんを見てたら、最後どうなるか見届けたくなっちゃったんだよねぇ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "なんとなく"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "「なんとなく、でドバイまで来るんですか」"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "えへへ……なんとなく、かなぁ。……明日、頑張ってねぇ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ましろちゃんがここにいる。それだけで、なぜか少しだけ、楽になった気がした）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が上がった。"
+          "text": "ん、明日のはじめくんも、見届けるねぇ"
         }
       ]
     },
     {
       "dialogue_id": "ch4_mashiro_dubai_girlfriend",
-      "metadata": {
-        "condition": "mashiro_is_girlfriend",
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "大会前夜。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ホテルのロビーで明日の段取りを頭の中で整理していたとき、見覚えのある後ろ姿が目に入った。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "「……ましろちゃん？」"
+          "text": "到着の連絡をもらって、ましろちゃんを迎えた。"
         },
         {
           "speaker": "mashiro",
-          "face": "surprise",
-          "text": "あっ、はじめくん……！ えへへ、バレちゃったぁ"
+          "face": "normal",
+          "text": "視察のお仕事。……それと、会いたくて来た"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「なんで……ドバイに？」"
+          "text": "お疲れさま。先に休む？"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ムカイさんに、行ってこいって言われてねぇ……。シーシャの本場を一回は見ておけって"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "それで来たんだけどぉ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……あと、東京でのはじめくんを見てたら、最後どうなるか見届けたくなっちゃったんだよねぇ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "……それだけじゃなくて。はじめくんが、大事だから、……それだけかなぁ"
+          "text": "少しだけ。起きたら、一緒にご飯にしよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「……ましろちゃん」"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "ふふ……変なこと言っちゃったぁ。でも本当のことだから、いっかなって"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……明日、はじめくんの煙、ちゃんと感じてるよぉ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ましろちゃんがここにいる。それだけで、なぜか少しだけ、楽になった気がした"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "──いや、それだけじゃない。彼女の「あったかい」を、もう一度聞きたいと思った）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が上がった。"
+          "text": "うん。俺も今日はちゃんと食べたい"
         }
       ]
     }

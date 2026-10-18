@@ -193,7 +193,10 @@ async function drive(owner) {
     const p = progress();
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "morning") {
-      if (!await message(owner, "morning", ["ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい", "だが一つだけ言わせろ。──お前は今、誰のために作ってる？"])) { if (live(owner)) renderEntry(owner); return; }
+      if (!await message(owner, "morning", [
+        state.flags._ch2_no_audience ? "今日は来ないでくれ、って話は聞いた。店で見てる" : "応援は届いてる。返事は終わってからでいい",
+        "手順を確かめろ。無理なら止めていい。帰ったら飯にするぞ",
+      ])) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
       if (!await read(owner, "lobby")) return;

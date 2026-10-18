@@ -1,0 +1,237 @@
+{
+  "version": 2,
+  "status": "script_only",
+  "comment": "第3章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。第1〜2章の実行順はremake/js/chaptersが正。",
+  "heroine_ids": [
+    "tsumugi",
+    "minto",
+    "rin",
+    "ageha",
+    "mashiro",
+    "samechan",
+    "hiyori"
+  ],
+  "romance": {
+    "tsumugi": {
+      "date": "tournament_date_tsumugi",
+      "conflict": "shuraba_tsumugi",
+      "epilogue": "epilogue_tsumugi",
+      "date_min_chapter": 3,
+      "arrival": "ch4_tsumugi_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_tsumugi"
+    },
+    "minto": {
+      "date": "tournament_date_minto",
+      "conflict": "shuraba_minto",
+      "epilogue": "epilogue_minto",
+      "date_min_chapter": 3,
+      "arrival": "ch4_minto_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_minto"
+    },
+    "rin": {
+      "date": "tournament_date_rin",
+      "conflict": "shuraba_rin",
+      "epilogue": "epilogue_rin",
+      "date_min_chapter": 3,
+      "arrival": "ch4_rin_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_rin"
+    },
+    "ageha": {
+      "date": "tournament_date_ageha",
+      "conflict": "shuraba_ageha",
+      "epilogue": "epilogue_ageha",
+      "date_min_chapter": 4,
+      "arrival": "ch4_ageha_dubai_girlfriend"
+    },
+    "mashiro": {
+      "date": "tournament_date_mashiro",
+      "conflict": "shuraba_mashiro",
+      "epilogue": "epilogue_mashiro",
+      "date_min_chapter": 3,
+      "arrival": "ch4_mashiro_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_mashiro"
+    },
+    "samechan": {
+      "date": "tournament_date_samechan",
+      "conflict": "shuraba_samechan",
+      "epilogue": "epilogue_samechan",
+      "date_min_chapter": 3,
+      "arrival": "ch4_samechan_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_samechan"
+    },
+    "hiyori": {
+      "date": "tournament_date_hiyori",
+      "conflict": "shuraba_hiyori",
+      "epilogue": "epilogue_hiyori",
+      "date_min_chapter": 3,
+      "arrival": "ch4_hiyori_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_hiyori"
+    }
+  },
+  "conflict": {
+    "open": "shuraba_open",
+    "close": "shuraba_accountability",
+    "pending_ending": "ending_relationship_pending",
+    "minimum_present_lovers": 2,
+    "stage": "post_ending"
+  },
+  "chapters": {
+    "3": {
+      "before_eve": [
+        "ch3_opening",
+        "ch3_mukai_arrival",
+        "ch3_mukai_intro",
+        "ch3_individuality_doubt",
+        "ch3_tokyo_shop_gap",
+        "ch3_double_apple_incident",
+        "ch3_rest_before_recovery",
+        "ch3_daily_cup_1",
+        "ch3_taste_return",
+        "ch3_abyss_recovery",
+        "ch3_naru_contact_before_tournament",
+        "ch3_naru_work",
+        "ch3_nandi_breath",
+        "ch3_steve_low_heat",
+        "ch3_volk_first",
+        "ch3_strategy",
+        "ch3_tournament_eve"
+      ],
+      "optional": [
+        "ch3_minto_small_lies",
+        "ch3_cigarman_rumor",
+        "ch3_cigarman_trace",
+        "ch3_emil_workshop",
+        "ch3_mashiro_play_1",
+        "ch3_mashiro_play_2",
+        "ch3_mashiro_play_3",
+        "ch3_mashiro_practice"
+      ],
+      "after_eve": [
+        "ch3_tournament_day",
+        "ch3_national_craft",
+        "ch3_national_adjustment"
+      ],
+      "on_win": [
+        "ch3_national_result",
+        "ch3_abyss_hotel",
+        "ch3_mashiro_recovery",
+        "ch3_naru_reconcile",
+        "ch3_home_customer",
+        "ch3_ageha_reunion"
+      ],
+      "on_loss": [
+        "ch3_national_defeat"
+      ]
+    },
+    "4": {
+      "before_eve": [
+        "ch4_sumi_training",
+        "ch4_strategy",
+        "ch4_opening",
+        "ch4_festa",
+        "ch4_stranger_first",
+        "ch4_stranger_second",
+        "ch4_wang_reception",
+        "ch4_stranger_third"
+      ],
+      "after_eve": [
+        "ch4_tournament_start",
+        "ch4_final"
+      ],
+      "on_win": [
+        "ch4_result",
+        "ch4_ending",
+        "ch4_nagumo_old_rival",
+        "ch4_sumi_return",
+        "ch4_two_tables"
+      ],
+      "on_loss": [
+        "ch4_defeat"
+      ],
+      "optional": [
+        "ch4_mashiro_dubai_friend"
+      ]
+    },
+    "5": {
+      "before_match": [
+        "ch5_opening",
+        "ch5_unrecorded_day"
+      ],
+      "postpone": [
+        "ch5_timeout"
+      ],
+      "first_cup": [
+        "ch5_copy_first_cup"
+      ],
+      "second_cup": [
+        "ch5_relationship_before_second_cup"
+      ],
+      "on_win": [
+        "ch5_second_cup_result"
+      ],
+      "on_loss_or_tie": [
+        "ch5_second_cup_defeat"
+      ],
+      "after_match": [
+        "ch5_doctor_after_match",
+        "ch5_return_to_tonari"
+      ]
+    }
+  },
+  "ending": {
+    "start": "ending_start",
+    "normal": "ending_normal",
+    "daily": "ending_daily_smoke"
+  },
+  "location_contract": {
+    "present": "その時点で同じ会場へ実際に到着している人物ID。渡航予定・好感度・同伴選択だけで加えない。",
+    "date_accepted": "LIMEで誘いが受諾され、時刻と所在が合う人物ID。前夜は1人を選ぶ。",
+    "unresolved": "エンディング後の本格的な修羅場で傷ついた恋人全員のID。個別の話し合いが完了するまで解除しない。第3章の茶化しはdeferredとして別に記録する。"
+  },
+  "progression_contract": {
+    "ch3_romance": "既存の交友締めくくり・告白で実際に交際した人だけ。あげはの着地は帰郷後。友人・未読イベントをMAX好感度から捏造しない。",
+    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflictはending_daily_smokeとスタッフロール後にだけ選ぶ。",
+    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
+    "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く。大会結果を恋愛人数で書き換えない。"
+  },
+  "optional_requirements": {
+    "ch3_minto_small_lies": {
+      "contacts": [
+        "minto"
+      ],
+      "seen": [
+        "ch3_double_apple_incident",
+        "confession_minto"
+      ],
+      "comment": "年齢の告白を聞いた友人/恋人。告白未読なら嘘の詳細を知っている会話を出さない。"
+    },
+    "ch3_cigarman_trace": {
+      "seen": [
+        "ch3_cigarman_rumor",
+        "ch3_national_result"
+      ]
+    },
+    "ch3_mashiro_play_1": {
+      "seen": [
+        "ch3_mukai_arrival"
+      ]
+    },
+    "ch3_mashiro_play_2": {
+      "seen": [
+        "ch3_mashiro_play_1"
+      ]
+    },
+    "ch3_mashiro_play_3": {
+      "seen": [
+        "ch3_mashiro_play_2"
+      ]
+    }
+  },
+  "near_conflict": {
+    "chapter": 3,
+    "interrupter": "steve",
+    "open": "ch3_shuraba_open",
+    "close": "ch3_shuraba_steve",
+    "overlap": "tournament_evening_overlap"
+  }
+}

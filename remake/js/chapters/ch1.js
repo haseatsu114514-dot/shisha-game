@@ -549,7 +549,7 @@ async function entrance() {
     { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
     { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
     { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。お前の煙を見せてやれ" },
+    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
   ];
   const host = el("div.entrance");
   layers.fx.append(host);
@@ -579,17 +579,14 @@ async function victory(cs) {
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   await play("ch1_tournament_after", { bg: STAGE });
-  // 優勝の夜: 師匠の採点表 → 未知の送信者
+  // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
         "おう。優勝、見事だった",
         ...(recognition?.comment ? [recognition.comment] : []),
-        "……で、だ。開示された採点表、もう見たか",
-        "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
-        "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
-        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが、これで覚えることがなくなったとは思うな",
-        "あの一票が何だったのか。次の舞台までに、自分で答えを出せ",
+        "最後の調整まで、よく作りきったな",
+        "今日は喜べ。帰ったら、一緒に一服しよう",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },
     {
