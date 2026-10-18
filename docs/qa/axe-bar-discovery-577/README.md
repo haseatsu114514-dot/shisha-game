@@ -71,3 +71,9 @@ node remake/test/browser/play_spots.mjs
 ONLY_DEVICE=pc node remake/test/browser/hiyori_axe_natural.mjs
 ONLY_DEVICE=mobile node remake/test/browser/hiyori_axe_natural.mjs
 ```
+
+## PR657 営業時間CIの前提補正
+
+旧HEAD `9b6544069ce7f71ac17dfa016cac0859989218cd`の[venues失敗run39080567032](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39080567032/job/117536545558)は、営業時間テストが新規状態のBARを解禁済みとみなしていたため、昼の理由が「夜」ではなく`locked`になり、夜も店頭UIへ進めない4ケースで失敗した。ソロ等20ケースは同じCIでPASS。
+
+修正は営業時間専用fixtureへ噂・実目撃の完読記録/実日付を設定するだけ。runtime・営業時間/料金/保存assert・新規の発見条件回帰は変更していない。修正SHA `df11d0e3`で実ブラウザPC/タッチ計10/10 PASS: [元結果JSON](venue-hours-ci-fix.json)。`node remake/test/venue_hours.mjs`の20assertもPASS。既存Chromiumと素材キャッシュのみ使用。
