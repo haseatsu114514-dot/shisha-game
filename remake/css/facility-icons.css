@@ -1,8 +1,18 @@
 .facility-icon { display: inline-grid; place-items: center; flex: none; vertical-align: middle; }
 .facility-icon-crop { display: block; position: relative; overflow: hidden; }
 .facility-icon-crop > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
+.facility-icon.sticker .facility-icon-crop { filter: url(#facility-sticker-outline) drop-shadow(0 2px 2px #0008); }
 
-/* Dedicated preview only. No rules target the game map. */
+/* Only revealed facilities use the alpha-contour sticker; existing logos/locked pins keep their skin. */
+.map .spot-pin.facility-pin .shield { width: 100px; min-width: 100px; min-height: 76px; padding: 6px 18px; background: none; border: 0; border-image: none; box-shadow: none; }
+.map .spot-pin.facility-pin .shield::before, .map .spot-pin.facility-pin .shield::after { content: none; }
+.map .spot-pin.facility-pin .ico { width: 64px; height: 64px; }
+.map .spot-pin.facility-pin.sel .facility-icon { filter: drop-shadow(0 0 5px #ffe9a8); }
+body.game-ds .map .spot-pin.facility-pin .shield { width: 48px; min-width: 48px; min-height: 48px; padding: 4px; }
+body.game-ds .map .spot-pin.facility-pin .ico { width: 40px; height: 40px; }
+body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .5; }
+
+/* Standalone comparison using the same artwork as the map. */
 .facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 system-ui, sans-serif; }
 .facility-preview main { max-width: 1000px; margin: auto; }
 .facility-preview h1 { font-size: 24px; }

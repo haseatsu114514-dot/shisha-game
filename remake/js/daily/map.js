@@ -18,6 +18,7 @@ import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
+import { createMapFacilityIcon } from "./facility-icons.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
 function peopleRow(people) {
@@ -231,14 +232,15 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
+      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
@@ -246,7 +248,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [logo || (locked || !known && s.unknownLabel
+          el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
             ? el("span", { text: "？" }) : pinSymbol(s))]),
         ]),
         peopleRow(people),

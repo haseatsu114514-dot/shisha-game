@@ -33,6 +33,7 @@ try {
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
     await page.setViewportSize(size);
     await page.waitForSelector('.spot-pin.branded');
+    await page.locator('.facility-icon img').evaluateAll(images => Promise.all(images.map(i => i.decode())));
     await page.waitForTimeout(200);
     const info = await page.evaluate(() => {
       const pins = [...document.querySelectorAll('.spot-pin')];
@@ -48,7 +49,8 @@ try {
         labels:[...document.querySelectorAll('.sub-label')].map(n=>n.textContent),
         overflow:document.documentElement.scrollWidth>innerWidth };
     });
-    assert.deepEqual(info.logos.map(n=>n.id).sort(), [...stores].sort());
+    assert.deepEqual(info.logos.map(n=>n.id).sort(), stores.filter(id => id !== 'choizap').sort());
+    assert.equal(await page.locator('[data-test="pin-choizap"] .facility-icon[data-facility="choizap"]').count(), 1);
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
     assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
     assert(info.owners.every(n=>n.loaded && n.width===30 && n.clear));

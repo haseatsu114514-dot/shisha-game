@@ -46,20 +46,20 @@ try {
         faces: [...document.querySelectorAll(".pin-face")].map(f => ({ width: f.offsetWidth, owner: f.classList.contains("pin-owner-face"), loaded: f.complete && f.naturalWidth > 0 })),
         icons: ["shop","cafe","kannon","choizap","c_station","rest"].map(k => {
           const p = document.querySelector(`[data-test="pin-${k}"]`), symbol = p.querySelector(".pin-symbol"), name = p.querySelector(".sub-label");
-          const logo = p.querySelector(".store-logo");
-          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, below: rect(name).y > rect(symbol || logo).y, oldGlyph: !!p.querySelector(".label") };
+          const logo = p.querySelector(".store-logo"), facility = p.querySelector(".facility-icon");
+          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, facility: !!facility, below: rect(name).y > rect(symbol || logo || facility).y, oldGlyph: !!p.querySelector(".label") };
         }),
         badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
-        gym: document.querySelector('[data-test="pin-choizap"] .store-logo img').src,
+        gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
     assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
-    assert(map.icons.every(i => (i.vector || i.logo) && i.below && !i.oldGlyph));
+    assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
     assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));
-    assert.match(map.gym, /store_logos\/choizap\.png/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
+    assert.match(map.gym, /ui\/map-facilities-extra-579\.webp/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
