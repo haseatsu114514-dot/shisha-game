@@ -1,7 +1,7 @@
 .facility-icon { display: inline-grid; place-items: center; flex: none; vertical-align: middle; }
 .facility-icon-crop { display: block; position: relative; overflow: hidden; }
 .facility-icon-crop > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
-.facility-icon.sticker .facility-icon-crop { filter: url(#facility-sticker-outline) drop-shadow(0 2px 2px #0008); }
+.facility-icon.sticker .facility-icon-crop { filter: url(#facility-sticker-outline) drop-shadow(0 3px 6px rgb(0 0 0 / 45%)); }
 
 /* The 92px shield centers its artwork on the background landmark, independently of labels/status. */
 .map .spot-pin.facility-location { transform: translate(-50%, -46px); }

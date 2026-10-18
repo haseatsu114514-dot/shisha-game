@@ -24,8 +24,8 @@ function ensureStickerOutline(document) {
   svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
   svg.style.position = 'absolute'; svg.style.pointerEvents = 'none';
   svg.innerHTML = '<defs><filter id="facility-sticker-outline" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
-    '<feMorphology in="SourceAlpha" operator="dilate" radius="5" result="edge"/>' +
-    '<feFlood flood-color="white" result="white"/><feComposite in="white" in2="edge" operator="in" result="border"/>' +
+    '<feMorphology in="SourceAlpha" operator="dilate" radius="2" result="edge"/>' +
+    '<feFlood flood-color="#fff3df" result="white"/><feComposite in="white" in2="edge" operator="in" result="border"/>' +
     '<feMerge><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
   document.body.append(svg);
 }

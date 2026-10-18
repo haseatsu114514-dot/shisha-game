@@ -250,12 +250,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
-        el("div.shield", [
-          badge,
-          el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s))]),
+        el("div.pin-visual", [
+          el("div.shield", [
+            badge,
+            el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
+              ? el("span", { text: "？" }) : pinSymbol(s))]),
+          ]),
+          peopleRow(people),
         ]),
-        peopleRow(people),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
