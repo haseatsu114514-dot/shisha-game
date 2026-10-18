@@ -13,7 +13,7 @@ import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt } from ".
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
-import { buildMixTemperatureGauge, formatTemperatureRange } from "./thermometer.js";
+import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
@@ -241,8 +241,8 @@ export async function stepMix(cs) {
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
-    idealLine.textContent = bands.selected ? `適温 ${formatTemperatureRange(bands.ideal)}` : "フレーバー未選択";
-    optimalLine.textContent = bands.selected ? `最適温 ${formatTemperatureRange(bands.optimal)}` : "葉を加えると温度帯を表示";
+    idealLine.textContent = bands.selected ? "適温" : "フレーバー未選択";
+    optimalLine.textContent = bands.selected ? "最適温" : "葉を加えると温度帯を表示";
     const m = info.maker;
     const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
     temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;

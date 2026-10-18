@@ -61,7 +61,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     heat.style.bottom = pct(bands.ideal[1]);
     root.style.setProperty("--thermo-gradient", `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})`);
     Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1] });
-    if (bandPreview) root.setAttribute("aria-label", `配合の温度帯：緑の適温 ${formatTemperatureRange(bands.ideal)}、虹の最適温 ${formatTemperatureRange(bands.optimal)}`);
+    if (bandPreview) root.setAttribute("aria-label", "配合の温度帯：緑が適温、虹色が最適温");
     return bands;
   };
   updateBands();
@@ -126,7 +126,7 @@ export function buildMixTemperatureGauge(cs) {
     scale.style.background = bands.selected
       ? `linear-gradient(90deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})` : "";
     root.setAttribute("aria-label", bands.selected
-      ? `合成温度帯：適温 ${formatTemperatureRange(bands.ideal)}、最適温 ${formatTemperatureRange(bands.optimal)}。線は中心`
+      ? "合成温度帯：緑が適温、虹色が最適温。線は中心"
       : "フレーバー未選択。葉を加えると合成温度帯を表示");
     return bands;
   } };
