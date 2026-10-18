@@ -5,8 +5,23 @@ const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const browser = await chromium.launch({
   headless: true,
+  chromiumSandbox: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
 });
+
+async function waitForSpin(task, label) {
+  let timer;
+  try {
+    await Promise.race([
+      task,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} did not finish within 20 seconds`)), 20000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -42,7 +57,7 @@ try {
   assert(remount.sameWidget, "回転中の筐体が、前回の停止出目の筐体に置き換わった");
   assert(remount.spinning > 0, "マップを戻したら回転済みの出目が表示された");
   assert(remount.sameTask, "再表示で回転の待機処理が分かれた");
-  await page.evaluate(() => window.daySpin);
+  await waitForSpin(page.evaluate(() => window.daySpin), "day spin");
   const final = await page.evaluate(() => {
     const { core, reel } = window.reelProbe;
     return [...document.querySelectorAll('.rw-strip')].map((node, i) => ({
@@ -71,7 +86,7 @@ try {
   });
   await page.waitForSelector('.reel-night.show .rw-strip.spinning');
   assert.equal(await page.evaluate(() => window.nightFirstFrame), 3, "夜の表示開始時に前回の停止出目が見えた");
-  await page.evaluate(() => window.nightSpin);
+  await waitForSpin(page.evaluate(() => window.nightSpin), "night spin");
   const night = await page.evaluate(() => {
     const { core } = window.reelProbe;
     return {
@@ -100,8 +115,11 @@ try {
   });
   assert(await page.evaluate(() => window.introBox === document.querySelector('.reel-intro')), "再表示で初回説明が作り直された");
   assert(await page.evaluate(() => window.introSpin === window.introRemount), "初回説明中に回転処理が重複した");
-  for (let i = 0; i < 4; i++) await page.click('[data-test="reel-intro"]');
-  await page.evaluate(() => window.introSpin);
+  // Read all five dialogue pages, then the guide card added to the introduction.
+  for (let i = 0; i < 5; i++) await page.click('[data-test="reel-intro"]');
+  await page.locator('[data-test="reel-guide-card"]').waitFor({ timeout: 10000 });
+  await page.click('[data-test="reel-intro"]');
+  await waitForSpin(page.evaluate(() => window.introSpin), "intro spin");
   assert.equal(await page.locator('.reel-intro').count(), 0);
   assert.deepEqual(errors, []);
   console.log('[reel lifecycle] remount while spinning, correct stops, night spin once, no repeated rewards, intro remount: PASS');
