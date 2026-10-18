@@ -230,6 +230,7 @@ def main():
     scope.add_argument("--title-only", action="store_true", help="採用済みタイトル絵の目録・WebPだけ更新")
     scope.add_argument("--backgrounds-only", nargs="+", metavar="PNG", help="指定した背景の目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
+    scope.add_argument("--scene-props-only", nargs="+", metavar="PNG", help="指定した背景の重ね素材の目録・WebPだけ更新")
     scope.add_argument("--portraits-only", nargs="+", metavar="ID", help="指定した人物の立ち絵計測・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -294,6 +295,26 @@ def main():
         manifest["webp"] = sorted(webp)
         OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(f"wrote {len(manifest['titleArts'])} title arts and WebP files (other images unchanged)")
+        return
+    if args.scene_props_only:
+        import build_images
+        names = sorted(set(args.scene_props_only))
+        for name in names:
+            if Path(name).name != name or not name.endswith(".png") or not (ASSETS / "ui/scene_props" / name).is_file():
+                parser.error(f"背景の重ね素材PNGがありません: {name}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["sceneProps"] = sorted(set(manifest.get("sceneProps", [])) | set(names))
+        webp = set(manifest.get("webp", []))
+        for name in names:
+            rel = f"ui/scene_props/{name}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(names)} scene props and WebP files (other images unchanged)")
         return
     if args.making_only:
         import build_images

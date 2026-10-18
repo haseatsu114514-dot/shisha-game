@@ -16,6 +16,7 @@ import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -153,6 +154,7 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   return !spot.requiresMet || !!state.met[spot.requiresMet];
 }
 
@@ -182,6 +184,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
 export async function visitChar(charId, { welcome = null } = {}) {
   const owner = state;
   if (charId === "sumi") await meetHiyoriAtTonari();
+  if (state !== owner) return;
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];

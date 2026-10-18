@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 15; // 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 16; // 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -132,7 +132,10 @@ function migrate(s) {
       return [key, Math.max(0, Math.min(1 - Number.EPSILON, xp / cost))];
     }));
   }
-  s.flags ||= {};
+  if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
+  // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
+  if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
   // スキーマ12。古いセーブの延期は空から始め、読了を推測しない。
   const nightIds = new Set();
   s.deferredNightEvents = (Array.isArray(s.deferredNightEvents) ? s.deferredNightEvents : []).filter((entry) => {

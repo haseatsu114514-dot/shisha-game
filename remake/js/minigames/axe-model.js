@@ -12,6 +12,10 @@ export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
   row: y < 0 ? "upper" : "lower", x: x * .56, y: y * .70, outer: .09, inner: .045,
 })));
 export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82 };
+// Opaque edges at x=76..1181 / y=75..1176 in the existing 1254px artwork,
+// drawn at (135,50), size 390, relative to circle (330,245), radius 164.
+// The transparent image margin is not a collision surface.
+export const BOARD = { left: -1.0449, right: 1.0506, top: -1.0468, bottom: 1.0411 };
 export const SWAY = { min: .06, max: .18, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18 };
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");
@@ -69,9 +73,11 @@ export function resolveThrow({ x, y, power, called = null }, history = []) {
     throw new RangeError("Gauge value out of range");
   if (called !== null && !canCall(called, history)) throw new RangeError("Unavailable Killshot call");
   const landing = { x, y: y + (POWER.ideal - power) * .28 };
-  const stuck = power >= POWER.stickMin && power <= POWER.stickMax;
+  const onBoard = landing.x >= BOARD.left && landing.x <= BOARD.right && landing.y >= BOARD.top && landing.y <= BOARD.bottom;
+  const validPower = power >= POWER.stickMin && power <= POWER.stickMax;
+  const stuck = validPower && onBoard;
   const rotation = 360 + (power - POWER.ideal) * 150;
-  let score = 0, outcome = "drop";
+  let score = 0, outcome = onBoard ? "drop" : called ? "killshot-miss" : "miss";
   if (stuck) {
     if (called) {
       const target = KILLS.find(k => k.id === called), distance = Math.hypot(x - target.x, landing.y - target.y);
@@ -80,7 +86,7 @@ export function resolveThrow({ x, y, power, called = null }, history = []) {
     } else { score = scoreAt(x, landing.y); outcome = score === 6 ? "bull" : score ? "hit" : "miss"; }
   }
   return { aim: { x, y }, power, called, landing, rotation, stuck, score, outcome,
-    dropReason: stuck ? null : power < POWER.stickMin ? "weak" : "rotation" };
+    dropReason: !onBoard ? "off-board" : stuck ? null : power < POWER.stickMin ? "weak" : "rotation" };
 }
 export const totalOf = throws => throws.reduce((sum, shot) => sum + shot.score, 0);
 export const gradeOf = (total, max) => total >= max * .7 ? "great" : total >= max * .35 ? "good" : "again";

@@ -13,6 +13,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { runHomeShisha } from "./home-shisha.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
@@ -31,7 +32,7 @@ import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout
 import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./samechan.js";
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
-import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
+import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 
@@ -277,7 +278,7 @@ async function deliver({ charId, scene, text }) {
   addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
   if (charId === "minto") {
-    // 配達は店先まで。勝手に客席へ進まず、店内の初来店は後の自由行動に任せる。
+    // 到着から入店し、カウンターで引き渡す。客としての初回接客は自由行動に残す。
     await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/bg_street_day.png" });
     f.known_name_minto = true;
     f._met_minto = true;
@@ -386,8 +387,11 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  const scheduledGuestSpot = hiyoriShopLocation();
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
+    // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
+    if (!axeBarDiscovered(state)) return { used: false, exerted: false };
     const { visitAxeBar } = await import("./axe-bar.js");
     const completed = await visitAxeBar({ staminaGuard });
     return { used: completed, exerted: completed };
@@ -470,7 +474,7 @@ async function performSpotAction(spot) {
     save();
     return { used: false, exerted };
   }
-  if (used) await visitHiyoriAtShop(spot, { bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
+  if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
   return { used, exerted, slotsUsed };
 }
 

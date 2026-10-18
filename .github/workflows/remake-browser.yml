@@ -131,7 +131,10 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hiyori
         run: |
           node --experimental-vm-modules remake/test/hiyori_frequency.mjs
+          node remake/test/axe_bar_discovery.mjs
+          node remake/test/browser/axe_bar_discovery.mjs
           node remake/test/hiyori.mjs
+          node remake/test/browser/map_guests.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
           node remake/test/samechan_portrait.mjs

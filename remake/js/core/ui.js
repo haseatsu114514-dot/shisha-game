@@ -122,7 +122,7 @@ export function uiArtReady(ms = 2000) {
  */
 export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
-  const key = `${url}|${tint || ""}`;
+  const key = `${url}|${tint || ""}|${sceneArtUrls(url).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();

@@ -125,6 +125,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
   if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
   const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);
   // 手動LOADのみ自動保存日時を更新する。元の手動枠は変更しない。
@@ -168,7 +169,21 @@ assert.deepEqual(home.recipeMix(DB.recipes.find((r) => r.id === "apple_pie")), {
 state.flavorStock = { lemon: 3, mint: 20 };
 assert.equal(home.recipeMix(lemonade), null, "在庫が足りなければ作れない");
 
-// 味の手応え: レシピどおりは美味しい、ただの組み合わせは普通、1種や噛み合わない配合はイマイチ
+// 味の手応え: 単体も完成した一台。知らないレシピや種類数だけでは失敗にしない。
+const { evaluateMix } = await import("../js/craft/steps.js");
+for (const flavor of flavors) for (const mode of ["home", "drill", "rehearsal", "tournament"]) {
+  const info = evaluateMix({ mode, mix: { [flavor.id]: 12 }, equip: { bowl: "silicone_bowl" } });
+  assert(info.score >= 80, `${mode}/${flavor.id}: 単体を種類数だけで減点しない`);
+  assert.equal(home.tasteOf(info), "great", `${flavor.id}: 単体の完成した香り`);
+  assert(!info.notes.some(note => note.includes("他の香りが隠れている")));
+  if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "mint", "課題フレーバー条件は維持");
+}
+state = newGame(); state.owned.push(rig.SUMI_RIG); state.flavorStock = { mint: 50 }; state.stamina = 80;
+const single = home.applyHomeShisha({ mint: 12 }, rig.homeRig());
+assert.equal(single.taste, "great");
+assert.equal(state.flavorStock.mint, 38);
+assert.equal(single.found, null, "単体を架空レシピとして登録しない");
+assert(!home.homeShishaDialogue(single, rig.homeRig()).lines.some(l => /イマイチ|もう一歩/.test(l.text)));
 assert.equal(home.tasteOf({ recipe: lemonade, score: 100 }), "great");
 assert.equal(home.tasteOf({ recipe: null, score: 88 }), "fine");
 assert.equal(home.tasteOf({ recipe: null, score: 68 }), "meh");

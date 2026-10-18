@@ -7,72 +7,72 @@
       {
         "id": "before",
         "speaker": "hiyori",
-        "text": "……次は私の番。よく狙って……。"
+        "text": "……次は私の番。斧の重さで、飛ばされないようにしなきゃ"
       },
       {
         "id": "call",
         "speaker": "hiyori",
-        "text": "……キルショット。青い的を狙うね。"
+        "text": "……キルショット。儚く、青い的を狙うね"
       },
       {
         "id": "hit",
         "speaker": "hiyori",
-        "text": "……うん、刺さった。次もこの調子で。"
+        "text": "……うん、刺さった。風が運んでくれたのかも"
       },
       {
         "id": "bull",
         "speaker": "hiyori",
-        "text": "……真ん中。今のは、いい感じ。"
+        "text": "……真ん中。今のは、木のほうから寄ってきたの"
       },
       {
         "id": "killshot",
         "speaker": "hiyori",
-        "text": "よっしゃ！ ……こほん、当たったね。"
+        "text": "よっしゃあ！ ……こほん。今のは、命のささやき"
       },
       {
         "id": "killshot-miss",
         "speaker": "hiyori",
-        "text": "……外れちゃった。小さいね、あの青。"
+        "text": "……外れちゃった。小さいね、あの青"
       },
       {
         "id": "miss",
         "speaker": "hiyori",
-        "text": "……あ、的の外。次は落ち着いて。"
+        "text": "……あ、的の外。次は落ち着いて"
       },
       {
         "id": "drop",
         "speaker": "hiyori",
-        "text": "……力の加減、難しいね。"
+        "text": "……斧、重たすぎて……。私の細腕だと、こうなるの"
       },
       {
         "id": "ahead",
         "speaker": "hiyori",
-        "text": "……まだ私が前だね。最後まで、丁寧に。"
+        "text": "……まだ私が前だね。消える前に、勝ち切りたいな"
       },
       {
         "id": "behind",
         "speaker": "hiyori",
-        "text": "……追いつけるかな。次の一投、集中。"
+        "text": "……追いつけるかな。次の一投、集中"
       },
       {
         "id": "level",
         "speaker": "hiyori",
-        "text": "……同じ点だね。次、どう狙おうかな。"
+        "text": "……同じ点だね。次、どう狙おうかな"
       },
       {
         "id": "player",
         "speaker": "hiyori",
-        "text": "……負けちゃった。いい勝負だったね。"
+        "text": "……負けちゃった。儚いから、仕方ないね。……次は勝つ"
       },
       {
         "id": "opponent",
         "speaker": "hiyori",
-        "text": "……私の勝ち。また一緒に投げようね。"
+        "text": "……私の勝ち。儚いのに、勝っちゃった"
       },
       {
         "id": "draw",
         "speaker": "hiyori",
-        "text": "……引き分けだね。楽しかった。"
+        "text": "……引き分けだね。楽しかった"
       }
     ]
   }
