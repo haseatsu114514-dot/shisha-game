@@ -1,0 +1,381 @@
+{
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。未接続。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_shuraba_open",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜のロビー。俺を呼ぶ声が重なった。彼女たちが、互いの顔を見た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、えっと……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさん。……こちらの方も、お知り合いですか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_minto",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ずいぶん、親しそうに呼ぶんだね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_rin",
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "はじめくん。紹介してくれる？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_mashiro",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくん、顔が赤いね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_samechan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "む。お主、目が泳いでおるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……私、入るタイミング、間違えたかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_steve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事をする前に、ピザの箱が横から差し出された。スティーブだ。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "お、はじめ！　ガール達にモテモテだな！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ちょ、スティーブさん……！"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "こっちはピザ一枚、持て余してるってのに"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ちょうどいい。切り分けるの、手伝って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱が開くと、誰かが小さく笑った。言いかけていた言葉は、皿を配る声に紛れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は説明しそびれたまま、紙皿を配った。さっきの視線だけが、まだ少し気になった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch3_shuraba_deferred"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_evening_overlap",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜の予定を尋ねる声が重なった。誰と過ごすか、すぐには答えられなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ごめん。今夜は、一人で戻るよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を待っていた顔から目をそらし、ケースを持ち直した。"
+        }
+      ],
+      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。"
+    },
+    {
+      "dialogue_id": "shuraba_open",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後日のtonari。閉店後、俺を呼ぶ声に、先に来ていた彼女が振り向いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "関係を尋ねる声に、俺は頷いた。誰にも伝えていなかったことが、ここで伝わった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑い話にしてくれる声はなかった。俺も、今度は目をそらせなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_accountability",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "付き合っている人がいるのに、黙ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "隠したまま付き合って、ごめんなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "謝っても、誰も笑わなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、返事は求めません。話せる時に、一人ずつ話したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰も、いつもの距離には戻らなかった。話を聞いてもらえるかも、俺が決めることではなかった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_story_shuraba_unresolved"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_minto",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "私たち、付き合ってるよね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "それを、この人には言ってなかったんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "店で笑うのも、ここで怒るのも私だよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "笑って済ませてあげると思わないで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……私、知らなかったです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "今も、一緒に描きたいものを探してました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "でも、スケッチブックを開く気になれません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "少し、離れます。今は描きたくないです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_rin",
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "違う店の香りがしたから、気にはなってた"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "でも香りだけじゃ決めない。今、本人から聞いた"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "私たちに黙っていたことを、説明して"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "試す相手を取り替えるようには、扱わないで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_ageha",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "さっきから変だと思ってた。でも、当てっこはもういい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "付き合ってるって、今、目の前で聞いた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちには、ちゃんと言葉で言ってよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今、いつもみたいに笑うのは無理"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_mashiro",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……僕だけじゃ、なかったんだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "作れない日も座ってていいよ。それは、変わらない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも、僕の隣に座る約束は別"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……今日は、ひとりで帰るね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_samechan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者よ、ほかにも誓いを立てておったのか",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはコロちゃんを鞄にしまった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "今は、わしが話すのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主の言葉を、信じて待っておった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "冗談にして終わらせることは、できぬ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "私にも、付き合おうって言ってくれたよね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……大丈夫って、先に言いそうになった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "大丈夫じゃないよ、今は",
+          "inner": "怒っていい。笑って片付けなくていい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "私が納得したことに、しないでね"
+        }
+      ]
+    }
+  ]
+}
