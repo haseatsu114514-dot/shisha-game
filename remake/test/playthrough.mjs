@@ -65,6 +65,7 @@ let pendingShopBuy = null;
 let lemonPurchased = false;
 let lastPlanTrace = "";
 let kujiDrawn = false;
+let firstKujiBlocked = false;
 let tournamentAttempt = 0;
 let lastProgress = Date.now();
 let lastKey = "";
@@ -349,6 +350,8 @@ for (;;) {
     continue;
   }
   if (snap.screen === "shop") {
+    const firstErrandVisit = await page.evaluate(() => !window.__remake.state.flags._errand_shop_done
+      && !!document.querySelector(".shop-errand"));
     // スミさんの頼み（ミント）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
@@ -364,18 +367,24 @@ for (;;) {
         consume: () => { lemonPurchased = true; pendingShopBuy = null; },
       });
     }
-    // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
+    // 初回買い出しでは拒否され、後日の通常営業で1回引ける。
     if (!kujiDrawn) {
       await shoppingRequired('.shop-tab[data-tab="kuji"]');
       const before = await shoppingSnapshot();
       await shoppingRequired('[data-test="kuji-g500"]');
       const after = await shoppingSnapshot();
       log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
-      if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
-        throw new Error("Kuji input did not produce expected draw/payment");
-      kujiDrawn = true;
-      await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
-      await click('[data-test="kuji-reveal"]');
+      if (firstErrandVisit) {
+        if (JSON.stringify(after) !== JSON.stringify(before) || await page.$('.kuji-card.reveal'))
+          throw new Error("First mint errand allowed a kuji purchase");
+        firstKujiBlocked = true;
+      } else {
+        if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+          throw new Error("Kuji input did not produce expected draw/payment");
+        kujiDrawn = true;
+        await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
+        await click('[data-test="kuji-reveal"]');
+      }
     }
     await shoppingRequired('[data-test="shop-leave"]');
     continue;
@@ -476,6 +485,7 @@ if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("supplied 
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
+if (!firstKujiBlocked) throw new Error("First mint errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);
