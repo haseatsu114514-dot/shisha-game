@@ -1,0 +1,12 @@
+{
+  "name": "ch1-tournament",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "coals-two-care-and-comments",
+      "status": "passed"
+    }
+  ]
+}

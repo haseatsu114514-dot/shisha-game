@@ -1,0 +1,86 @@
+{
+  "name": "craft-guidance",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": "d069102e6dac96368665972bf417744f3b60239f",
+  "results": [
+    {
+      "label": "pc-mix",
+      "status": "passed"
+    },
+    {
+      "label": "pc-pack",
+      "status": "passed"
+    },
+    {
+      "label": "pc-holes",
+      "status": "passed"
+    },
+    {
+      "label": "pc-place",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.opts').first() to be visible\u001b[22m\n\n    at /Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:53:46\n    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "pc-heat",
+      "status": "passed"
+    },
+    {
+      "label": "pc-timer",
+      "status": "passed"
+    },
+    {
+      "label": "pc-steam",
+      "status": "passed"
+    },
+    {
+      "label": "pc-pull",
+      "status": "passed"
+    },
+    {
+      "label": "pc-care",
+      "status": "passed"
+    },
+    {
+      "label": "touch-mix",
+      "status": "passed"
+    },
+    {
+      "label": "touch-pack",
+      "status": "passed"
+    },
+    {
+      "label": "touch-holes",
+      "status": "passed"
+    },
+    {
+      "label": "touch-place",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.opts').first() to be visible\u001b[22m\n\n    at /Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:53:46\n    at async check (/Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-heat",
+      "status": "passed"
+    },
+    {
+      "label": "touch-timer",
+      "status": "passed"
+    },
+    {
+      "label": "touch-steam",
+      "status": "passed"
+    },
+    {
+      "label": "touch-pull",
+      "status": "passed"
+    },
+    {
+      "label": "touch-care",
+      "status": "passed"
+    }
+  ]
+}

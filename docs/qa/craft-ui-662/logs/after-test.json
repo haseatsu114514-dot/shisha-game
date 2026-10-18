@@ -1,0 +1,119 @@
+{
+  "name": "craft-guidance",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-mix",
+      "status": "passed"
+    },
+    {
+      "label": "pc-pack",
+      "status": "passed"
+    },
+    {
+      "label": "pc-holes",
+      "status": "passed"
+    },
+    {
+      "label": "pc-place",
+      "status": "passed"
+    },
+    {
+      "label": "pc-heat",
+      "status": "passed"
+    },
+    {
+      "label": "pc-timer",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Help/instructions overlap play area\n    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:65:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "pc-steam",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Help/instructions overlap play area\n    at file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:65:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "pc-pull",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"吸い出し今やること針を止めて吸い、虹色の最適温を狙う\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "pc-care",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"熱管理今やること消耗した炭を交換して、吸って整える\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-mix",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"フレーバーのミックス今やること合計12g以上で配合を決める\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-pack",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"パッキング今やることボウルを見比べ、詰め方を選んで決める\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-holes",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"アルミ穴あけ今やること穴の配置を選んでから、穴あけを始める\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-place",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"炭の配置今やること炭を置いて、熱を均等に届ける\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-heat",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"炭焼き今やること芯が光った炭をタップして取る\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-timer",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"蒸らし時間今やること分・秒で時間を決め、スタートを押す\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-steam",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"蒸らし今やること雑念をよける。困ったらリフレッシュ\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-pull",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"吸い出し今やること針を止めて吸い、虹色の最適温を狙う\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "touch-care",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Clipped control: {\"text\":\"熱管理今やること消耗した炭を交換して、吸って整える\",\"visible\":true,\"contained\":true,\"textFits\":false}\n    at assertFits (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:92:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:58:11\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:46:7\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-18/task-2/work/shisha-game/remake/test/browser/craft_guidance.mjs:42:1",
+      "errors": [],
+      "failedResources": []
+    }
+  ]
+}

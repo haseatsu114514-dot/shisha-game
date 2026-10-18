@@ -1,0 +1,12 @@
+{
+  "name": "craft-guidance",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": "d069102e6dac96368665972bf417744f3b60239f",
+  "results": [
+    {
+      "label": "touch-place",
+      "status": "passed"
+    }
+  ]
+}

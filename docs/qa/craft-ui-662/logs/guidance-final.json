@@ -1,0 +1,80 @@
+{
+  "name": "craft-guidance",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-mix",
+      "status": "passed"
+    },
+    {
+      "label": "pc-pack",
+      "status": "passed"
+    },
+    {
+      "label": "pc-holes",
+      "status": "passed"
+    },
+    {
+      "label": "pc-place",
+      "status": "passed"
+    },
+    {
+      "label": "pc-heat",
+      "status": "passed"
+    },
+    {
+      "label": "pc-timer",
+      "status": "passed"
+    },
+    {
+      "label": "pc-steam",
+      "status": "passed"
+    },
+    {
+      "label": "pc-pull",
+      "status": "passed"
+    },
+    {
+      "label": "pc-care",
+      "status": "passed"
+    },
+    {
+      "label": "touch-mix",
+      "status": "passed"
+    },
+    {
+      "label": "touch-pack",
+      "status": "passed"
+    },
+    {
+      "label": "touch-holes",
+      "status": "passed"
+    },
+    {
+      "label": "touch-place",
+      "status": "passed"
+    },
+    {
+      "label": "touch-heat",
+      "status": "passed"
+    },
+    {
+      "label": "touch-timer",
+      "status": "passed"
+    },
+    {
+      "label": "touch-steam",
+      "status": "passed"
+    },
+    {
+      "label": "touch-pull",
+      "status": "passed"
+    },
+    {
+      "label": "touch-care",
+      "status": "passed"
+    }
+  ]
+}
