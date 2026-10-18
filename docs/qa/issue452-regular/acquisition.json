@@ -6,6 +6,7 @@
   "response_header_bytes": 168703,
   "tls_and_request_overhead": "not measured",
   "additional_packs": 0,
+  "ci_followup_job_log_utf8_bytes": 54725,
   "recovery_network_bytes": 0,
   "restored_commit_objects": 239,
   "sha_checks": "all 240 commit IDs and all downloaded blob IDs match",

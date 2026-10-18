@@ -164,14 +164,24 @@ await suite("issue508-theme", async checkAll => {
     }, options);
     await check(`${label}-four-portrait-scenes-and-skip`, async page => {
       await prepare(page);
-      await page.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.fresh();
+      await page.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_regular").then(() => { window.finished = true; }); });
       await advanceTo(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
       await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-regular.png` });
       const skip = page.getByRole("button", { name: "SKIP", exact: true });
       if (touch) await skip.tap(); else await skip.click();
+      const service = page.locator(".vn-choices button");
+      await service.first().waitFor();
+      await page.waitForTimeout(200);
+      assert.deepEqual(await service.allTextContents(), ["注文を先に聞く", "水を出して少し待つ"]);
+      assert.equal(await page.evaluate(() => window.finished), false, "SKIP passed an unanswered service choice");
+      assert.deepEqual(await page.evaluate(() => [T.core.state.flags._salaryman_service_order ?? null,
+        T.core.state.flags._salaryman_service_water ?? null]), [null, null]);
+      if (touch) await service.nth(1).tap(); else await service.first().click();
       await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
+      assert.deepEqual(await page.evaluate(() => [T.core.state.flags._salaryman_service_order,
+        T.core.state.flags._salaryman_service_water]), [!touch, touch]);
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
       await page.evaluate(() => { T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_change").then(() => { window.finished = true; }); });
@@ -213,7 +223,7 @@ await suite("issue508-theme", async checkAll => {
     await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", false);
     const saved = await page.evaluate(() => { T.core.saveToSlot("suien_remake_slot1"); return structuredClone(T.core.state); });
     assert.equal(!!saved.flags._ev_salaryman_change, false);
-    await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await prepare(page);
+    await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
     const result = await page.evaluate(async () => {
       T.core.loadFromSlot("suien_remake_slot1"); T.vn.vnTest.turbo = true;
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);

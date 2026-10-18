@@ -71,6 +71,18 @@ async function finish(page, { touch, answer = 0, shot = null } = {}) {
   }
   throw Error("Scene did not finish");
 }
+async function advanceUntil(page, target, touch) {
+  for (let i = 0; i < 80; i++) {
+    if (await page.evaluate(t => T.lines().at(-1) === t, target)) return;
+    await page.locator(".vn-next.show").waitFor();
+    const before = await page.evaluate(() => ({ n: T.vn.backlog().length, text: document.querySelector(".vn-text").textContent }));
+    await input(page.locator(".vn-box"), touch);
+    await page.waitForFunction(before => T.vn.backlog().length > before.n
+      || document.querySelector(".vn-text").textContent !== before.text || window.finished, before);
+    assert.equal(await page.evaluate(() => window.finished), false, `Ended before ${target}`);
+  }
+  throw Error(`Did not reach ${target}`);
+}
 
 await suite("regular-service-response", async check => {
   await check("both-answers-read-unread-legacy-and-full-state", async page => {
@@ -129,6 +141,36 @@ await suite("regular-service-response", async check => {
 
   for (const [label, options, touch] of [["pc", {}, false],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true]]) {
+    await check(`${label}-auto-stops-at-service-and-reads-later-response`, async page => {
+      await prepare(page); await page.evaluate(() => { T.fresh(); });
+      await start(page, REG, true);
+      await advanceUntil(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
+      await input(page.locator('[data-test="vn-auto"]'), touch);
+      const choices = page.locator('.vn-choices button');
+      await choices.first().waitFor({ timeout: 20000 }); await page.waitForTimeout(500);
+      assert.equal(await page.evaluate(() => window.finished), false);
+      assert.deepEqual(await choices.allTextContents(), ["注文を先に聞く", "水を出して少し待つ"]);
+      assert.deepEqual(await page.evaluate(keys => keys.map(k => T.core.state.flags[k] ?? null), KEYS), [null, null]);
+      const answer = touch ? 0 : 1;
+      await input(choices.nth(answer), touch);
+      const reply = answer === 0 ? "ダブルアップルにミント少し、ですね"
+        : "先に水を置くと、サラリーマンは一口飲んでから、小さく頷いた。";
+      await page.waitForFunction(text => T.lines().includes(text), reply);
+      await input(page.locator('[data-test="vn-auto"]'), touch);
+      await input(page.locator('[data-test="vn-skip"]'), touch);
+      await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
+      assert.deepEqual(await page.evaluate(keys => keys.map(k => T.core.state.flags[k]), KEYS), [answer === 0, answer === 1]);
+      await page.evaluate(() => { T.core.state.day = 10; });
+      await start(page, LATER);
+      await advanceUntil(page, "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。", touch);
+      await input(page.locator('[data-test="vn-auto"]'), touch);
+      await page.waitForFunction(text => T.lines().includes(text), RESPONSES[answer], { timeout: 20000 });
+      await assertFits(page, ".vn-box, .vn-text");
+      await input(page.locator('[data-test="vn-auto"]'), touch);
+      await input(page.locator('[data-test="vn-skip"]'), touch);
+      await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
+      response(await page.evaluate(() => T.lines()), answer);
+    }, options);
     for (const answer of [null, 0, 1]) await check(`${label}-${answer ?? "legacy"}-clicks-save-load-skip`, async page => {
       await prepare(page); const counts = {};
       for (const version of ["baseline", "current"]) {

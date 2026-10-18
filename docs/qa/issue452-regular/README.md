@@ -14,10 +14,11 @@ DAY10 `ch1_salaryman_change` はDAY2読了と実回答が両方ある場合だ�
 
 Chromium、PC 1280×720／横タッチ844×390のエミュレーション。実JSON・実VNエンジン・実state・夜イベント／延期・保存APIと枠選択UI・本番CSS／書体を使った場面fixtureから検証した。
 
-- 専用ブラウザ **8ケースPASS**。両回答／未回答 × DAY2読了／未読 × 現行／schema13の12経路で、DAY10の全ゲーム状態が基準と一致。DAY2の両回答も、回答flagsと保存時刻だけを除いて全状態一致。報酬・記憶・乱数・日付などの変化を比較している。
+- 専用ブラウザ **10ケースPASS**。両回答／未回答 × DAY2読了／未読 × 現行／schema13の12経路で、DAY10の全ゲーム状態が基準と一致。DAY2の両回答も、回答flagsと保存時刻だけを除いて全状態一致。報酬・記憶・乱数・日付などの変化を比較している。
 - 休養でDAY2を延期→実読了→保存／LOAD→DAY10の反応を確認。未読中は回答・読了を作らず、同夜の再実行は発話・状態変化ともゼロ。
 - PC／タッチの全6経路で実クリック／タップ、SAVE枠→文書再読込→LOAD、SKIPを確認。SKIPは接客二択で停止し、自動で回答しない。選択直後のオートセーブは実回答だけを残し、DAY2を読了扱いにしない。
-- 既存 `issue508_theme.mjs` の6場面比較は **19経路PASS**。追加した常連の両回答について、意図した2flagsと保存時刻だけを別検証し、他の全ゲーム状態の比較を維持した。つむぎ等の既存assertは保持。
+- AUTOのPC／タッチ2ケースを追加。DAY2の二択で未回答のまま停止し、実クリック／タップ後に回答へ進むこと、DAY10の実回答に対応する台詞までAUTOで送れることを検証した。
+- 既存 `issue508_theme.mjs` は **省略なし全6ブラウザケースPASS**。19経路の状態比較、冒頭、4場面の立ち絵とSKIP（PC／タッチ）、中断保存と再読込を含む。追加した常連の両回答について、意図した2flagsと保存時刻だけを別検証し、他の全ゲーム状態の比較を維持した。つむぎ等の既存assertは保持。
 - 新しいfixture入口を使う既定コマンドの状態比較もPASS。
 - 対象会話lint ERROR 0 / 既存WARN 6、tidy dry-run変更0、JSON解析・JS構文・Git Safety・agent docs・diff check PASS。
 
@@ -40,13 +41,23 @@ Chromium、PC 1280×720／横タッチ844×390のエミュレーション。実J
 
 最初の通常起動ではsparse環境に未取得だったテキスト `remake/data/lover.json` があり、必要テキスト取得で解消した。その後の通常起動を使う比較は、対象外の顔アイコン `face_hiyori.png`／`face_pakki.png` がキャッシュになく、先読み404でスイートが失敗した。[失敗ログ](full-boot-cache-failure.txt)。画像追加取得は禁止のため取得せず、失敗を成功扱いにしていない。
 
-場面専用 [fixture](../../../remake/test/browser/fixtures/regular_service.html) は、本番のデータ／モジュール／CSSを読み、タイトル・マップ全体の先読みを起動しない。代替画像やゲームモジュールのmockは使わず、必要な既存素材は固定mainのGit blob SHAを照合したローカルキャッシュから表示した。専用8ケースのブラウザエラー・リソース失敗はゼロで、6枚の反応画面を目視した。
+場面専用 [fixture](../../../remake/test/browser/fixtures/regular_service.html) は、本番のデータ／モジュール／CSSを読み、タイトル・マップ全体の先読みを起動しない。代替画像やゲームモジュールのmockは使わず、必要な既存素材は固定mainのGit blob SHAを照合したローカルキャッシュから表示した。専用10ケース・既存全6ケースのブラウザエラー・リソース失敗はゼロで、6枚の反応画面を目視した。
 
 従って今回の成功は場面単位の検証であり、通常起動全体・タイトルからのゲーム再開・全14日通し・実機Safari・公開版QAの合格ではない。既存SAVE/LOAD全体スイートとbonds.mjsは今回実行していない。
+
+### PR87c1e8acのCI失敗と修正
+
+旧head `87c1e8ac` のapproved-scenes job117726956637は、PC／タッチの `four-portrait-scenes-and-skip` が完了待ちタイムアウトで失敗した。[実ログ抜粋](ci-skip-failure.txt)。新設した二択でSKIPが正しく止まったのに、テストが回答せず完了を待っていた。今回の変更に起因する検証の取りこぼしで、前回の局所19経路比較は当該ケースを実行していなかった。
+
+[同じ実モジュールによるmain／PR比較](skip-main-comparison.json)では、main7d63fbdcは選択なしで完了、PR87c1e8acは未回答の二択を表示して未完了となることを確認した。修正はテスト側だけで、停止・未回答をassertし、PCクリック／タップで実際に回答してから完了・保存回答をassertする。本番の会話・SKIP動作は87c1e8acから変更していない。assertの削除、SKIPの自動回答化、タイムアウト引き延ばしは行っていない。
+
+修正後はCASE_FILTERなしの既存全6ケースと、AUTOを含む専用全10ケースをそれぞれ省略なしで再実行PASS。中断保存の再読込も同じfixture readinessを待つようにし、通常起動での既定selectorは維持した。CI全完了前はDraftを維持する。
 
 ## 取得量とGit履歴の復旧
 
 [取得記録](acquisition.json)。承認後のテキスト本文は **4,068,267 bytes／182ファイル**、レスポンスヘッダは168,703 bytes。8.44MB上限内で、固定commitのHTTPテキストだけを取得し、すべてのblob SHAを検証した。TLS・要求側ヘッダなどの通信量は未測定。画像・音声・追加Git packの取得はゼロ。
+
+CI追跡では上記jobのテキストログだけを追加取得（54725 UTF-8 bytes）。新しい画像・pack取得はない。
 
 前の限定fetchで発生した約2.75GiBの想定外pack増加は、原因・実通信量が未確定の既知の事故として保持する。今回の取得量に混ぜて隠さない。そのGit取得経路は再利用していない。
 
@@ -56,7 +67,7 @@ Chromium、PC 1280×720／横タッチ844×390のエミュレーション。実J
 
 ## 記録と再実行
 
-[8ケース結果](browser-results.json)／[操作計測](browser.txt)／[既存回帰とfixture入口の結果](related-regression.txt)。
+[10ケース結果](browser-results.json)／[操作計測とAUTO](browser.txt)／[既存全6ケース結果](full-theme-results.json)・[完走ログ](full-theme.txt)／[当初の局所検査](related-regression.txt)。
 
 | 回答 | PC | タッチ |
 | --- | --- | --- |
@@ -68,7 +79,7 @@ Chromium、PC 1280×720／横タッチ844×390のエミュレーション。実J
 
 ```sh
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/regular_service_response.mjs
-BASE_URL=http://127.0.0.1:8123/remake/test/browser/fixtures/regular_service.html READY_SELECTOR='[data-test="vn-fixture-ready"]' CASE_FILTER=six-scenes-branches-old-save-and-state-effects CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/issue508_theme.mjs
+BASE_URL=http://127.0.0.1:8123/remake/test/browser/fixtures/regular_service.html READY_SELECTOR='[data-test="vn-fixture-ready"]' CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/issue508_theme.mjs
 python3 tools/lint_dialogue.py ch1_main
 python3 tools/tidy_dialogue_text.py --dry-run
 python3 tools/check_agent_docs.py
