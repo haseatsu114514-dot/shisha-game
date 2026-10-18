@@ -1,7 +1,8 @@
+import { actionSnapshot, recordAction } from "./action-history.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather } from "../core/ui.js";
-import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
+import { state, save, saveStatusText, saveHealth, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -23,7 +24,7 @@ import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { runHomePractice } from "./home-practice.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
-import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, replySummary, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -56,9 +57,9 @@ export async function runDaily(def) {
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
-  initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
+  initHud({ phone: phoneButton, menu: () => openMenu() });
   showHud(true);
-  setPhoneBadge(unreadCount()); // つづきから再開したときも未読の赤丸を出す
+  setPhoneBadge(replySummary({ fixedNight })); // つづきから再開したときも未読の赤丸を出す
   if (def.startNextDay && chapterDay(state) === 1) { await advanceDay(); save(); }
   while (state.day < (def.untilDay ?? TOURNAMENT_DAY)) {
     syncNightQueue(chapterDef.nightEvents);
@@ -95,7 +96,7 @@ async function morning() {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
-  setPhoneBadge(unreadCount());
+  setPhoneBadge(replySummary({ fixedNight }));
 }
 
 /** HUD の LIME。行き先を選んでいるときだけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
@@ -116,7 +117,7 @@ async function readLime(sender) {
   const before = state.pendingInvite;
   await openLime({ tutorial: first, sender, fixedNight });
   syncSamechanKnowledge();
-  setPhoneBadge(unreadCount());
+  setPhoneBadge(replySummary({ fixedNight }));
   save();
   // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
   if (state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
@@ -157,13 +158,15 @@ async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed
   return true;
 }
 
-async function openMenu() {
+export async function openMenu({ schedule = nightPlan(chapterDef?.nightEvents || {}).map(ev => ({ label: ev.label, pin: ev.pin })) } = {}) {
   SE.select();
   const v = await modal({
     title: "MENU",
     className: "menu-modal",
-    body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
+    body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　${saveStatusText()}`,
     options: [
+      { label: "手帳", value: "notebook", test: "menu-notebook" },
+      { label: "設定", value: "settings", test: "menu-settings" },
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
       { label: "用語集", value: "glossary" },
@@ -171,6 +174,8 @@ async function openMenu() {
       { label: "閉じる", value: null, primary: true },
     ],
   });
+  if (v === "notebook") await openStatus({ schedule, onPhone: sender => readLime(sender) });
+  if (v === "settings") await (await import("../scenes/settings.js")).openConfig();
   if (v === "save") {
     // 手動セーブは行き先を選んでいるときだけ。会話や作業の途中の状態は残さない
     if (!isChoosingDestination()) { toast("セーブは行き先を選んでいるときにできる"); return; }
@@ -183,7 +188,13 @@ async function openMenu() {
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
   // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
-  if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
+  if (v === "title") {
+    if (isChoosingDestination()) save();
+    if (saveHealth.failed && !(await modal({ title: "保存できていません", body: "タイトルへ戻ると、保存できなかった進行が失われます。", options: [
+      { label: "戻って再試行する", value: false }, { label: "保存せずタイトルへ", value: true },
+    ] }))) return;
+    location.reload();
+  }
 }
 
 // ---------------------------------------------------------------- 1日目の案内
@@ -326,10 +337,15 @@ async function takeAction() {
       return;
     }
     if (inv.event === "date_samechan") {
+      const before = actionSnapshot();
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
-      if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
+      if (result.done) {
+        completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent });
+        recordAction(before, `${displayName(inv.sender, state)}との約束`); save();
+      }
       return;
     }
+    const before = actionSnapshot();
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
@@ -343,6 +359,8 @@ async function takeAction() {
     }
     state.slot++;
     await afterAction({ exerted: true, spent });
+    recordAction(before, `${displayName(inv.sender, state)}との約束`);
+    save();
     return;
   }
   const ev = nightPlan(chapterDef.nightEvents)[0];
@@ -350,6 +368,7 @@ async function takeAction() {
   const spotId = await chooseSpot({
     ...chapterDef.mapOptions?.(),
     eventPin: ev && !ev.done?.() ? ev.pin : null,
+    schedule: nightPlan(chapterDef.nightEvents).map(ev => ({ label: ev.label, pin: ev.pin })),
     notice: inv && (inv.day ?? state.day) > state.day ? `DAY ${inv.day}に約束がある` : inv && inv.slot > state.slot ? "今夜は約束がある" : "",
     onShown: () => {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
@@ -359,19 +378,20 @@ async function takeAction() {
       spendsAction: !["shop", "fortune"].includes(destination.kind),
     }),
   });
-  if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
+  if (["__lime__", "__locate__"].includes(spotId)) return; // LIME で誘いに乗った → 次の takeAction で約束へ
   // 家で練習（#638）は地図から "rest:practice" で来る
   const [baseId, spotMode] = String(spotId).split(":");
   const homePractice = spotMode === "practice";
   const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
+  const before = actionSnapshot();
   const facility = ["kannon", "choizap"].includes(spot.id);
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => (homePractice && spot.kind === "rest"
     ? runHomePractice({ staminaGuard }) : performSpotAction(spot)), {
     ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
     consumed: (result) => result.used && spot.kind === "spot",
   });
-  if (!used) return;
+  if (!used) { recordAction(before, spot.label, false); save(); return; }
   state.visitedDay[homePractice ? "home_practice" : spot.id] = state.day;
   // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
   // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
@@ -384,6 +404,8 @@ async function takeAction() {
   }
   state.slot = Math.min(2, state.slot + slotsUsed);
   await afterAction({ exerted, spent });
+  recordAction(before, homePractice ? "家で練習" : spot.label);
+  save();
 }
 
 async function performSpotAction(spot) {
@@ -591,6 +613,8 @@ async function endDay() {
   if (appointment && (appointment.day ?? state.day) === state.day
     && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1)
     && !postponeUnaffordableInvitation(appointment)) {
+    const before = actionSnapshot();
+    before.slot = appointment.slot;
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。" : "休養のあと、LIMEで約束した場所へ——");
@@ -611,6 +635,9 @@ async function endDay() {
         metTonight = true;
         companion = appointment.sender;
       }
+    }
+    if (metTonight && companion === appointment.sender) {
+      recordAction(before, `${displayName(appointment.sender, state)}との約束`); save();
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）

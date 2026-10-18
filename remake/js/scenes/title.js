@@ -1,9 +1,10 @@
+import { openConfig } from "./settings.js";
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
 import { bgUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
-import { playBgm, SE, applyVolumes } from "../core/audio.js";
+import { peekSave, newGame, wipeSave, anySlotSaved, loadFromSlot } from "../core/state.js";
+import { playBgm, SE } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
@@ -78,32 +79,4 @@ export function showTitle(preparedArt = null) {
   };
   if (art.ready) place(art);
   else prepareTitleArt(art).then(place);
-}
-
-function openConfig() {
-  const row = (label, input) => el("label.cfg-row", [el("span", { text: label }), input]);
-  const range = (key, min, max, step) =>
-    el("input", {
-      type: "range", min, max, step, value: config[key],
-      oninput: (e) => { config[key] = Number(e.target.value); applyVolumes(); saveConfig(); },
-    });
-  const speed = el("select", {
-    onchange: (e) => { config.textSpeed = Number(e.target.value); saveConfig(); },
-  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間表示"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (Number(v) === config.textSpeed) o.selected = true;
-    return o;
-  }));
-  const blip = el("input", { type: "checkbox", onchange: (e) => { config.voiceBlip = e.target.checked; saveConfig(); } });
-  blip.checked = config.voiceBlip;
-  modal({
-    title: "設定",
-    body: el("div.cfg", [
-      row("BGM 音量", range("bgmVolume", 0, 1, 0.05)),
-      row("効果音 音量", range("seVolume", 0, 1, 0.05)),
-      row("文字の速さ", speed),
-      row("文字送りの声", blip),
-    ]),
-    options: [{ label: "閉じる", value: true, primary: true }],
-  });
 }

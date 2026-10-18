@@ -7,7 +7,10 @@ import { cueTransition } from "../core/transitions.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
-import { STAMINA_LOW } from "../core/stats.js";
+import { actionPreview, previewCard } from "./action-preview.js";
+import { todayPlan } from "./day-plan.js";
+import { createFacilityIcon } from "./map-stickers.js";
+import { storeInvitationSpot } from "./invitations.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
@@ -53,6 +56,16 @@ function pinCaption(s, locked) {
 }
 
 let interrupt = null;
+let requestedSpot = null;
+let lastView = null;
+const FACILITIES = { kannon: "kannondo", rest: "home", cafe: "kohaku", choizap: "choizap" };
+/** 手帳から場所を選択するだけ。行動は確定しない。 */
+export function locateMapSpot(id) {
+  const pin = document.querySelector(`#screen .map:not(.done) [data-spot="${id}"]`);
+  if (pin) { pin.hidden = false; pin.click(); pin.scrollIntoView({ block: "nearest" }); return true; }
+  requestedSpot = id;
+  return interruptMap("__locate__");
+}
 /** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
 export const isChoosingDestination = () => !!document.querySelector("#screen [data-destination-selection]:not(.done)");
 /** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
@@ -111,11 +124,20 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, regions = null, regionId = null, onRegionChange = null, schedule = [] }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
     let region = regionOf({ regions, regionId });
+    if (requestedSpot && regions) {
+      const destination = regions.find(r => (typeof r.spots === "function" ? r.spots() : r.spots).some(s => s.id === requestedSpot));
+      if (destination) { region = destination; onRegionChange?.(region.id); }
+    }
+    let view = lastView || (window.matchMedia("(max-width: 1000px), (max-height: 600px)").matches ? "list" : "map");
+    const invite = state.pendingInvite;
+    const bookedPin = invite && (invite.day ?? state.day) === state.day
+      ? invite.visitSpot || storeInvitationSpot({ accept_event: invite.event })
+        || (["__sumi_baito__", "hiyori_tonari_return"].includes(invite.event) ? "tonari" : null) : null;
     const mapSpots = () => region ? typeof region.spots === "function" ? region.spots() : region.spots : allSpots();
     const setMapBackground = () => setBg(backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`), { fast: true });
     void setMapBackground();
@@ -127,8 +149,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide });
 
-    const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
+    const movesLeft = () => `${state.slot >= 1 ? "夜" : "昼"} ── 自由に選べる行動はあと${todayPlan(schedule).free}回`;
     const idleInfo = () => {
+      info.dataset.empty = "true";
       if (guide) {
         info.replaceChildren(
           el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
@@ -145,10 +168,16 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     };
 
     const renderInfo = (s) => {
+      info.dataset.empty = "false";
       const av = availability(s);
+      const closeInfo = () => {
+        selected = null; root.dataset.selected = "false";
+        pins.querySelectorAll(".spot-pin").forEach(p => { p.classList.remove("sel"); p.setAttribute("aria-pressed", "false"); });
+        idleInfo();
+      };
       if (av.why === "locked") {
         info.replaceChildren(
-          el("div.mi-banner", { text: "？？？" }),
+          el("div.mi-heading", [el("div.mi-banner", { text: "？？？" }), el("button.mi-close", { text: "×", "aria-label": "場所の詳細を閉じる", onclick: closeInfo })]),
           el("p.mi-desc", { text: "まだ知らない場所。誰かと知り合えば、教えてもらえるかもしれない。" }),
           el("div.mi-foot", { text: movesLeft() }),
         );
@@ -156,8 +185,6 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       const known = knowsOwner(s);
       const charName = s.charId && known ? displayName(s.charId, state) : null;
-      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
-      const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const previewId = s.preview || SPOT_PREVIEW[s.id];
       const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
@@ -174,30 +201,40 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           renderSceneArt(preview, pv.url);
         });
       }
+      const forecasts = s.kind === "tonari" ? [actionPreview(s, { mode: "customer" }), actionPreview(s, { mode: "baito" })]
+        : s.kind === "shop" ? [actionPreview(s), actionPreview(s, { mode: "rin" })]
+        : [actionPreview(s, { free: freeGuide(s) })];
       info.replaceChildren(
-        el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
-        preview,
-        el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
-        el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
-        el("div.mi-tags", [
-          spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
-          s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
-          staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
-          known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
+        el("div.mi-heading", [el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
+          el("button.mi-close", { text: "×", "aria-label": "場所の詳細を閉じる", onclick: closeInfo })]),
+        el("div.mi-content", [
+          ...forecasts.map(previewCard),
+          preview,
+          el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
+          el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
+          el("div.mi-tags", [
+            spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
+            known && hasNewEvent(s) ? el("span.tag.new", { text: "NEW：未読の交流" }) : null,
+            eventPin === s.id ? el("span.tag", { text: "夜の行動後に自動で始まる予定" }) : null,
+            bookedPin === s.id ? el("span.tag", { text: "LIMEの約束あり" }) : null,
+          ]),
+          ["tonari", "shop"].includes(s.kind) ? el("p.action-preview-note", { text: "入店だけなら0行動。店内で内容を選んで確定します。" }) : null,
+          s.kind === "rest" ? previewCard(actionPreview(s, { mode: "practice" })) : null,
         ]),
-        av.ok
-          ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
-          : el("div.mi-no", { text: av.why }),
-        // 家ではシーシャ作りの練習もできる（#638・tonari から移した）。休むのは「家に帰る」のまま
-        av.ok && s.kind === "rest"
-          ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
-          : null,
+        el("div.mi-actions", [
+          av.ok ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) },
+            [el("span", { text: s.kind === "rest" ? "家で休む（1行動）" : ["tonari", "shop", "trpg"].includes(s.kind) ? "入店して選ぶ（0行動）" : "ここへ行く" })])
+            : el("div.mi-no", { text: av.why }),
+          av.ok && s.kind === "rest" ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") },
+            [el("span", { text: "家で練習内容を選ぶ" })]) : null,
+        ]),
       );
     };
 
     const select = (s, btn) => {
       selected = s;
-      pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
+      root.dataset.selected = "true";
+      pins.querySelectorAll(".spot-pin").forEach(p => { p.classList.toggle("sel", p === btn); p.setAttribute("aria-pressed", String(p === btn)); });
       SE.click();
       renderInfo(s);
     };
@@ -231,22 +268,24 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
-      const badge = locked ? null
-        : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
-        : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
-        : null;
+      const logo = !FACILITIES[s.id] && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
+      const badgeKind = locked ? null : guide?.pin === s.id ? "guide" : bookedPin === s.id ? "booked"
+        : eventPin === s.id ? "automatic" : known && av.ok && hasNewEvent(s) ? "story" : null;
+      const badgeText = { guide: "案内", booked: "約束", automatic: "自動", story: "NEW" };
+      const badge = badgeKind ? el(`i.evt-badge.${badgeKind}`, { text: badgeText[badgeKind], "aria-label": badgeText[badgeKind] }) : null;
+      const facility = !locked && FACILITIES[s.id] ? createFacilityIcon(FACILITIES[s.id], { size: 128, decorative: true }) : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
-        onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
+        "aria-pressed": "false",
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? `・${badgeText[badgeKind]}` : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        onclick: () => select(s, btn),
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [logo || (locked || !known && s.unknownLabel
+          el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
             ? el("span", { text: "？" }) : pinSymbol(s))]),
         ]),
         peopleRow(people),
@@ -259,15 +298,22 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     idleInfo();
     const rainy = isRainy();
-    const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
+    const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true", view, selected: "false" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
-      pins,
+      el("nav.map-toolbar", { "aria-label": "行き先の探し方" }, [
+        el("div.map-view-toggle", ["map", "list"].map(mode => el("button", {
+          text: mode === "map" ? "地図" : "一覧", "aria-pressed": String(view === mode), dataset: { test: `map-view-${mode}` },
+          onclick: () => { view = lastView = mode; root.dataset.view = mode;
+            root.querySelectorAll(".map-view-toggle button").forEach(n => n.setAttribute("aria-pressed", String(n.dataset.test === `map-view-${mode}`))); },
+        }))),
+      ]),
+      el("div.map-surface", [pins]),
       regions ? el("nav.map-regions", { "aria-label": "街を選ぶ" }, regions.map(item => el("button", {
         type: "button", text: item.label, "aria-pressed": String(item === region),
         dataset: { test: `map-region-${item.id}`, region: item.id },
         onclick: () => {
           if (moving || root.classList.contains("done") || region === item) return;
-          region = item; selected = null;
+          region = item; selected = null; root.dataset.selected = "false";
           onRegionChange?.(item.id);
           root.dataset.region = item.id;
           root.querySelectorAll(".map-regions button").forEach(node => node.setAttribute("aria-pressed", String(node.dataset.region === item.id)));
@@ -284,6 +330,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
+    if (requestedSpot) {
+      const id = requestedSpot; requestedSpot = null;
+      const button = [...pins.querySelectorAll("[data-spot]")].find(n => n.dataset.spot === id);
+      if (button) { button.hidden = false; button.click(); }
+    }
+    root.addEventListener("keydown", e => {
+      if (e.key === "Escape" && selected) { e.preventDefault(); info.querySelector(".mi-close")?.click(); }
+    });
     interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
     mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
     onShown?.();

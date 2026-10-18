@@ -2,7 +2,8 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
-import { state, STAT_KEYS } from "./state.js";
+import { state, STAT_KEYS, retrySave } from "./state.js";
+import { watchDialogs } from "./dialog.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
@@ -22,6 +23,19 @@ export function initLayers() {
   for (const id of ["bg", "screen", "vn", "hud", "fx", "toasts", "banners", "wipe", "modal"]) {
     layers[id] = $(`#${id}`);
   }
+  watchDialogs(layers.modal);
+  on("save-status", ({ failed }) => {
+    let warning = document.getElementById("save-warning");
+    if (!failed) { warning?.remove(); return; }
+    if (warning) return;
+    warning = el("div#save-warning", { role: "alert" }, [
+      el("span", { text: "保存できませんでした。画面を閉じる前に再試行してください。" }),
+      el("button", { text: "再試行", dataset: { test: "save-retry" }, onclick: () => {
+        if (!retrySave()) toast("まだ保存できません。ブラウザの空き容量・保存設定を確認してください。", { kind: "warn" });
+      } }),
+    ]);
+    document.body.append(warning);
+  });
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
   on("stat-gain", ({ key, total, name, starUp, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
@@ -404,7 +418,7 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
       el("div.modal-actions", options.map((o) =>
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
-          dataset: { test: o.test || "" },
+          dataset: { test: o.test || "", dialogClose: String(o.cancel === true || o.value === null || o.value === false || /閉じる|戻る|やめて|やめる|キャンセル/.test(o.label)) },
           onclick: () => { SE.select(); close(); resolve(o.value); },
         })
       )),

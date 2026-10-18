@@ -464,6 +464,22 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   return expiring ? { item: expiring, kind: "deadline" } : null;
 }
 
+/** 未読と、期限内でまだ返していない返信を別々に数える。読むだけで返信待ちは消さない。 */
+export function needsReply(item, opts = {}) {
+  if (!item?.msg || item.done || item.result || item.replyState === "expired") return false;
+  if (item.msg.type === "invitation") return inviteState(item, opts) === "open";
+  return !!item.msg.replies?.length;
+}
+const deadlineSlot = m => storeInvitationSpot(m) ? 1 : replySlot(m);
+export function replyDeadline(item) {
+  return item.msg.type === "invitation" ? `${deadlineSlot(item.msg) === 1 ? "夜" : "昼"}の行動前まで` : "返信待ち";
+}
+export function replySummary(opts = {}) {
+  const waiting = (state.inbox || []).filter(item => needsReply(item, opts));
+  return { unread: unreadCount(), waiting: waiting.length,
+    urgent: waiting.filter(item => item.msg.type === "invitation" && deadlineSlot(item.msg) === state.slot).length };
+}
+
 // 旧テスト/呼び出しとの互換性を維持する。
 export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
 
@@ -531,7 +547,7 @@ function phoneShell({ time, title }) {
         onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
       }));
     actions.replaceChildren(...[hint ? el("div.lime-hint", { text: hint }) : null, ...buttons].filter(Boolean));
-    buttons.forEach((b) => fitOneLine(b, 11)); // 返信も1行（GUI22）
+    // 日常UIでは字を縮めず折り返す。端末サイズにかかわらず返信を読めるようにする。
   });
   ui.close = async () => {
     ui.open = false;
@@ -714,6 +730,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
+  const closeButton = () => el("button.lime-close", { text: "閉じる", "aria-label": "スマホを閉じる",
+    dataset: { test: "lime-close", dialogClose: "true" }, onclick: () => { SE.cancel(); resolveClose(); } });
 
   const showList = () => {
     ui.gen++;
@@ -722,7 +740,11 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
     ui.lastSide = null;
     const senders = [];
     for (const it of [...state.inbox].reverse()) if (!senders.includes(accountOf(it))) senders.push(accountOf(it));
-    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "トーク" }));
+    const waitingFor = sender => thread(sender).filter(item => needsReply(item, ui.inviteOptions));
+    const priority = sender => waitingFor(sender).length ? Math.min(...waitingFor(sender).map(i => i.msg.type === "invitation" ? deadlineSlot(i.msg) : 2)) : 3;
+    senders.sort((a, b) => priority(a) - priority(b));
+    const counts = replySummary(ui.inviteOptions);
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: `未読 ${counts.unread}・返信待ち ${counts.waiting}` }), closeButton());
     ui.chat.replaceChildren();
     ui.chat.classList.add("list");
     if (tutorial) {
@@ -737,7 +759,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       const items = thread(sender);
       const last = items.at(-1);
       const unread = items.some((i) => !i.read);
-      const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i, ui.inviteOptions) !== "expired");
+      const waiting = waitingFor(sender);
+      const openInv = waiting.find(i => i.msg.type === "invitation");
       const lastText = last.read
         ? (last.log.filter((l) => l.text).at(-1)?.text || [].concat(last.msg.messages || []).at(-1))
         : [].concat(last.msg.messages || [])[0];
@@ -753,7 +776,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last.day) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : null,
+          waiting.length ? el("span.lcr-tag", { text: openInv ? `返信待ち・${replyDeadline(openInv)}` : "返信待ち" }) : last.replyState === "expired" ? el("span.lcr-expired", { text: "期限切れ" }) : null,
         ]),
       ]));
     }
@@ -775,6 +798,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       el("button.lime-back", { text: "‹", dataset: { test: "lime-back" }, onclick: () => { SE.cancel(); showList(); } }),
       avatar(sender),
       el("span.lime-name", { text: limeName(sender) }),
+      closeButton(),
     );
     const items = thread(sender);
     // 既読ぶんは履歴としてすぐ出し、未読・返事待ちを順に流す

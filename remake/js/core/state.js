@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 16; // 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 17; // 17: 日常の行動履歴 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -54,6 +54,7 @@ export function newState() {
     pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
     notes: {},                 // 常連ノート（接客した客 -> 回数）
+    actionHistory: [],         // 実際に終えた行動の結果。直近40件だけを保存
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
     trpg: { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } },
     recipes: {},               // 発見したレシピ
@@ -236,6 +237,11 @@ function migrate(s) {
   };
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
+  s.actionHistory = (Array.isArray(s.actionHistory) ? s.actionHistory : []).filter(entry => entry
+    && Number.isInteger(entry.day) && Number.isInteger(entry.chapter) && [0, 1, 2].includes(entry.slot)
+    && typeof entry.label === "string" && Array.isArray(entry.changes))
+    .slice(-40).map(entry => ({ ...entry, label: entry.label.slice(0, 120),
+      changes: entry.changes.filter(v => typeof v === "string").slice(0, 12).map(v => v.slice(0, 200)) }));
   // 旧/現行セーブで欠落した上司の連絡先だけを補い、交流やひよりの読了は推測しない。
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
@@ -270,6 +276,10 @@ function migrate(s) {
 
 export function setState(s) {
   state = s;
+  pendingSave = null;
+  saveHealth.failed = false;
+  saveHealth.at = s?.savedAt || null;
+  emit("save-status", saveHealth);
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
   return state;
 }
@@ -278,14 +288,37 @@ export function newGame() {
   return setState(newState());
 }
 
-export function save() {
-  if (!state) return;
-  state.savedAt = Date.now();
+export const saveHealth = { failed: false, at: null };
+let pendingSave = null;
+function writeCheckpoint(checkpoint, owner) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    localStorage.setItem(SAVE_KEY, JSON.stringify(checkpoint));
+    if (state === owner) state.savedAt = checkpoint.savedAt;
+    pendingSave = null;
+    saveHealth.failed = false;
+    saveHealth.at = checkpoint.savedAt;
+    emit("save-status", saveHealth);
+    return true;
   } catch {
-    /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    pendingSave = { checkpoint, owner };
+    saveHealth.failed = true;
+    emit("save-status", saveHealth);
+    return false;
   }
+}
+
+export function save() {
+  if (!state) return false;
+  // 再試行はこの安全な区切りを保存する。会話/制作の途中のstateを保存しない。
+  return writeCheckpoint(JSON.parse(JSON.stringify({ ...state, savedAt: Date.now() })), state);
+}
+export function retrySave() {
+  return pendingSave ? writeCheckpoint({ ...pendingSave.checkpoint, savedAt: Date.now() }, pendingSave.owner) : false;
+}
+export function saveStatusText() {
+  if (saveHealth.failed) return "自動保存に失敗しています。再試行してください。";
+  const at = saveHealth.at || state?.savedAt;
+  return at ? `最終保存 ${new Date(at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}` : "まだ保存していません。";
 }
 
 export function peekSave() {
@@ -369,6 +402,7 @@ export const config = {
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
+  textSize: "normal",
 };
 
 export function loadConfig() {
@@ -379,7 +413,7 @@ export function loadConfig() {
 }
 
 export function saveConfig() {
-  try { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); } catch { /* noop */ }
+  try { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); return true; } catch { return false; }
 }
 
 // ---------------------------------------------------------------- 小さな共通操作

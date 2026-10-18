@@ -86,17 +86,15 @@ export function initHud(h) {
     stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
-    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
     menu: el("button.hud-menu", { dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
   };
-  dom.status.append(dom.radar);
   const moneyRow = el("div.dc-row.money", [el("span", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
       el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left])]),
     ]),
-    el("div.hud-right", [dom.stamina, dom.status, dom.phone, dom.menu]),
+    el("div.hud-right", [dom.stamina, dom.phone, dom.menu]),
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
@@ -145,8 +143,14 @@ let recoveryObserver = null;
 /** 未読件数を表示。従来の真偽値呼び出しにも互換対応する。 */
 export function setPhoneBadge(unread) {
   if (!dom) return;
-  const count = typeof unread === "number" ? unread : unread ? 1 : 0;
-  const name = count ? `LIME（未読${count}件）` : "LIME";
+  const count = typeof unread === "object" ? unread.unread : typeof unread === "number" ? unread : unread ? 1 : 0;
+  const waiting = typeof unread === "object" ? unread.waiting : 0;
+  const name = `LIME（未読${count}件・返信待ち${waiting}件）`;
+  dom.phone.dataset.waiting = String(waiting);
+  let reply = dom.phone.querySelector(".reply-badge");
+  if (!reply) { reply = el("small.reply-badge"); dom.phone.append(reply); }
+  reply.textContent = waiting ? `返信 ${waiting}` : "";
+  reply.hidden = !waiting;
   dom.phone.classList.toggle("has", count > 0);
   dom.phone.querySelector(".badge").textContent = count > 9 ? "9+" : String(count || "");
   dom.phone.title = name;
