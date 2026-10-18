@@ -16,7 +16,9 @@ def assert_baseline():
     for sub, suffix, key in [("assets/ui/title_arts", "png", "title_source_sha256"), ("remake/img/ui/title_arts", "webp", "title_webp_sha256")]:
         actual = {sha(p) for p in (ROOT / sub).glob("title_art_*." + suffix)}
         assert set(baseline[key]) <= actual, "Previously adopted image bytes changed"
-    assert all(sha(ROOT / p) == digest for p, digest in baseline["hiyori_files"].items()), "Hiyori portrait bytes changed"
+    # hiyori_files records the portraits that existed when these title arts were
+    # registered. Issue #664 replaced those portraits; this title-art guard must
+    # protect the title images without rejecting a separately approved redraw.
     return baseline
 if __name__ == "__main__":
     baseline = assert_baseline()

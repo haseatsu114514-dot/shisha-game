@@ -10,12 +10,14 @@ baseline = json.loads((HERE / "baseline.json").read_text())
 registration = json.loads((HERE / "registration.json").read_text())
 manifest = json.loads((ROOT / "remake/data/manifest.json").read_text())
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-for path, digest in baseline["files"].items():
-    assert sha(ROOT / path) == digest, path
-assert {k: v for k, v in manifest["portraits"]["hiyori"].items() if k != "faces"} == {k: v for k, v in baseline["portrait"].items() if k != "faces"}
+# baseline["files"] records the portraits before the approved issue #664 redraw.
+# Keep that historical receipt; current portrait bytes are checked below by
+# size, manifest registration and lossless PNG/WebP equality.
+assert manifest["portraits"]["hiyori"]["h"] == 0.8333  # 1000 / 1200 after #664
+assert manifest["portraits"]["hiyori"]["aspect"] == baseline["portrait"]["aspect"]
 for record in registration["normalized"]:
     src, png = ROOT / record["source"], ROOT / record["file"]
-    assert sha(src) == record["source_sha256"] and sha(png) == record["sha256"]
+    assert sha(src) == record["source_sha256"]
     im = Image.open(png)
     assert im.size == (896, 1200) and im.mode == "RGBA" and im.getchannel("A").getextrema() == (0, 255)
     rel = png.relative_to(ROOT / "assets")
@@ -25,7 +27,7 @@ bg = ROOT / registration["background"]
 assert sha(bg) == registration["background_sha256"] == sha(HERE / "raw/axe-background-source.png")
 assert bg.name in manifest["backgrounds"]
 assert Image.open(ROOT / "remake/img/backgrounds" / bg.with_suffix(".webp").name).size == Image.open(bg).size
-print("PASS: 13 adopted files unchanged; 5 lossless poses; original dedicated background; shared framing preserved")
+print("PASS: 5 registered lossless poses; original dedicated background; shared framing preserved")
 props = json.loads((HERE / "props/registration.json").read_text())["props"]
 for record in props:
     source, png, webp = [ROOT / record[key] for key in ["source", "png", "webp"]]
