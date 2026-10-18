@@ -1,4 +1,4 @@
-/* 工程名は上の帯へまとめ、右パネルは遊ぶための面積にする。 */
+/* 大工程の下に、現在の実工程と短い操作案内を置く。盤面とは重ねない。 */
 .bench-top { height: 64px; gap: 18px; }
 .bench-top .bench-mode { width: 220px; letter-spacing: .14em; }
 .bench-progress-count { display: none; }
@@ -17,8 +17,40 @@
 .bench[data-art-skin] .bench-progress-track > .bench-phase.now { color: #f4deb3; border-color: #d4a46a9c; background: linear-gradient(135deg, #6a3a2029, #28152699); box-shadow: inset 0 0 12px #cf89381c, 0 0 8px #e6a25324; }
 .bench-phase.now .bench-phase-icon { filter: drop-shadow(0 0 5px #edb66d88); }
 .bench-phase.now[data-step="steam"] svg { fill: currentColor; stroke-width: .7; }
-.bench-left, .bench-right { top: 70px; }
+.bench-left, .bench-right { top: 122px; }
 .bench[data-step] .bench-right { padding-top: 12px; }
-.bench[data-step] .bench-head { position: absolute; right: 12px; top: 8px; z-index: 8; display: block; min-height: 0; margin: 0; padding: 0; border: 0; }
-.bench[data-step] .bench-heading, .bench[data-step] .bench-head::after { display: none; }
+.bench[data-step] > .bench-head { position: absolute; left: 22px; right: 22px; top: 70px; height: 44px; min-height: 0; z-index: 8; display: flex; align-items: center; gap: 16px; margin: 0; padding: 0 10px 0 14px; border: 1px solid #dac29738; border-radius: 8px; background: #100b18ed; }
+.bench[data-step] .bench-heading { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0; padding: 0; }
+.bench[data-step] .bench-title { flex: none; font-family: var(--font); font-size: 17px; line-height: 32px; letter-spacing: .03em; }
+.bench-instruction { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.bench-instruction-label { flex: none; font-size: 12px; color: #c1b193; }
+.bench[data-step] .bench-hint { margin: 0; min-height: 0; font-size: 16px; line-height: 32px; color: #f4eee4; }
+.bench[data-step] .bench-title::after, .bench[data-step] .bench-head::after { display: none; }
+.bench[data-step] .bench-guide { align-self: center; margin: 0; }
+.bench[data-step] .bench-guide-tip { left: auto; right: 0; width: 440px; }
 .bench[data-step] :is(.pull, .steam, .steam-timer) > .thermo { top: 31px; }
+
+/* 素材スキンより強い選択表示。プレビューと同じaria-pressedだけを見る。 */
+.bench[data-art-skin] .btn.ht-option { position: relative; padding-right: 90px; text-align: left; }
+.bench[data-art-skin] .btn.ht-option[aria-pressed="true"] { background-image: none; background-color: #3b3020; border: 2px solid #f1d4a1; box-shadow: inset 4px 0 #f1d4a1; }
+.bench .ht-option[aria-pressed="true"]::after { content: "✓ 選択中"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: #ffe8b7; }
+
+/* 蒸らしの784×414論理盤面はそのまま。操作欄の余白と小物だけを詰める。 */
+.bench[data-step="steam"] .dodge-controls { height: 128px; gap: 16px; }
+.bench[data-step="steam"][data-art-skin] :is(.btn.dodge-action, .slash-control, .dodge-pad) { width: 128px; height: 128px; min-height: 128px; }
+.bench[data-step="steam"] .refresh-emblem { width: 102px; height: 102px; }
+.bench[data-step="steam"] .refresh-emblem img { left: -8px; top: -8px; width: 118px; height: 118px; }
+.bench[data-step="steam"] .refresh-copy { font-size: 17px; }
+.bench[data-step="steam"][data-art-skin] .dodge-knob { width: 64px; height: 64px; left: calc(50% - 32px); top: calc(50% - 32px - var(--stick-lift)); }
+.bench[data-step="steam"] .slash-growth { bottom: 4px; font-size: 13px; }
+@media (max-width: 900px) and (orientation: landscape) {
+  .bench[data-step] .bench-title { font-size: 20px; }
+  .bench[data-step] .bench-hint { font-size: 20px; }
+  .bench-instruction-label { font-size: 16px; }
+}
+
+/* 案内行の分を詰め方の装飾余白で吸収し、本文・確定ボタンは縮ませない。 */
+.bench[data-step="pack"] .packing { gap: 8px; }
+.bench[data-step="pack"] .pack-vessel { min-height: 280px; }
+.bench[data-step="pack"] .pack-caption { min-height: 64px; flex: none; }
+.bench[data-step="pack"] :is(.pack-choices, .pack-footer) { flex: none; }

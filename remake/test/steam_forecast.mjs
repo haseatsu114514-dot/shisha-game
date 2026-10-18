@@ -157,7 +157,7 @@ try {
     assert.equal(await guide.getAttribute('open'), null);
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
-    assert(await page.locator('.bench-title').isHidden());
+    assert(await page.locator('.bench-title').isVisible());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
@@ -166,12 +166,12 @@ try {
       const r = e => e.getBoundingClientRect(), root = r(n), [refresh, slash, precision, pad] = [...n.children].map(r);
       const scale = root.width / n.offsetWidth;
       return { gap: (slash.left - refresh.right) / scale, secondGap: (precision.left - slash.right) / scale, thirdGap: (pad.left - precision.right) / scale,
-        padSize: pad.width / scale, buttonHeight: refresh.height / scale,
+        padSize: pad.width / scale, buttonHeight: refresh.height / scale, physicalTapSize: Math.min(pad.width, refresh.height),
         inRow: pad.right <= root.right + 1 && slash.left >= root.left - 1 && Math.abs(refresh.top - precision.top) < 1 && Math.abs(slash.top - refresh.top) < 1,
         clear: pad.top > r(document.querySelector('.dodge')).bottom && pad.bottom < r(document.querySelector('.bench')).bottom - 2 };
     });
-    assert(Math.abs(controls.gap - 12) < 1 && Math.abs(controls.secondGap - 12) < 1 && Math.abs(controls.thirdGap - 12) < 1, JSON.stringify(controls));
-    assert(controls.padSize >= 170 && controls.buttonHeight >= 175 && controls.inRow && controls.clear, JSON.stringify(controls));
+    assert(Math.abs(controls.gap - 16) < 1 && Math.abs(controls.secondGap - 16) < 1 && Math.abs(controls.thirdGap - 16) < 1, JSON.stringify(controls));
+    assert(controls.padSize >= 128 && controls.buttonHeight >= 128 && controls.physicalTapSize >= 44 && controls.inRow && controls.clear, JSON.stringify(controls));
     await page.locator('[data-test="steam-world-art"]').evaluate(async n => {
       const url = getComputedStyle(n).backgroundImage.match(/url\(["']?([^"')]+)/)?.[1];
       if (!url?.includes('steam_mind_world')) throw new Error('Cosmic artwork is not connected');

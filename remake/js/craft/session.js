@@ -111,7 +111,7 @@ export function openBench(cs, { steps = [] } = {}) {
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
-  const hint = el("div.bench-hint");
+  const hint = el("div.bench-hint", { dataset: { test: "craft-instruction" } });
   const phaseProgress = buildCraftProgress(steps);
   const progress = phaseProgress.root, progressCount = phaseProgress.count;
   const guide = buildGuide();
@@ -123,11 +123,14 @@ export function openBench(cs, { steps = [] } = {}) {
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
     el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-head", [el("div.bench-heading", { "aria-live": "polite" }, [title,
+      el("div.bench-instruction", [el("span.bench-instruction-label", { text: "今やること" }), hint]),
+    ]), guide.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
     ]),
-    el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
+    el("div.bench-right", [panel]),
   ]);
   root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
@@ -177,8 +180,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
     : hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
-  // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
-  // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
+  // 常時表示の案内とは別に、従来のスミさんの指導・実況も保つ。
+  // 蒸らし弾幕中のスミさんは従来どおり無言。
   const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;
   b.audience?.setStep(coaching, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。

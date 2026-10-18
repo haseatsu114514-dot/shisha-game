@@ -2,6 +2,7 @@
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { stepPanel } from "./session.js";
+import { STEP_BRIEFS } from "./bench-ui.js";
 import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
@@ -9,7 +10,7 @@ import { MAX_STEAM_SECONDS, normalizeSteamSeconds } from "./steam-time.js";
 import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 
 export function runSteamTimer(cs) {
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "", lessonStep: "timer" });
+  const panel = stepPanel("steam", "蒸らし時間", "分は1分、秒は10秒ずつ増える。リセットで00:00に戻す。時間を決めてスタートを押す", { brief: STEP_BRIEFS.timer, lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
   const thermometer = buildSteamTemperature(cs);
