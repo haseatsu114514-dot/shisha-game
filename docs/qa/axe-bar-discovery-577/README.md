@@ -77,3 +77,11 @@ ONLY_DEVICE=mobile node remake/test/browser/hiyori_axe_natural.mjs
 旧HEAD `9b6544069ce7f71ac17dfa016cac0859989218cd`の[venues失敗run39080567032](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39080567032/job/117536545558)は、営業時間テストが新規状態のBARを解禁済みとみなしていたため、昼の理由が「夜」ではなく`locked`になり、夜も店頭UIへ進めない4ケースで失敗した。ソロ等20ケースは同じCIでPASS。
 
 修正は営業時間専用fixtureへ噂・実目撃の完読記録/実日付を設定するだけ。runtime・営業時間/料金/保存assert・新規の発見条件回帰は変更していない。修正SHA `df11d0e3`で実ブラウザPC/タッチ計10/10 PASS: [元結果JSON](venue-hours-ci-fix.json)。`node remake/test/venue_hours.mjs`の20assertもPASS。既存Chromiumと素材キャッシュのみ使用。
+
+## 再CIで検出したTRPG表示停止テストの同期
+
+[preview job117544980599](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39083442763/job/117544980599)で、CSS一時停止直後の時刻比較が1フレーム（約16.7ms）ずれる失敗を検出。対象previewのruntime/testはmainと同じ内容で、#577の施設解放判定はこのstandalone表示に関与しない。既存Chromiumと素材キャッシュのshark 3ケースに絞った未修正実行でも、同じ停止時刻の差を再現した。
+
+CSSによる停止の反映前に時刻を記録していたため、Web Animationsの`Animation.ready`を待ってから基準時刻を取るようテストだけを補正。固定sleep追加・timeout延長・許容誤差への変更はなく、100ms後の時刻完全一致、判定/資源不変、保存隔離、操作/表示assertは維持。TRPG本体/CSS/データは変更していない。
+
+修正後はordinary 3/3・shark 3/3 PASS（PC操作・横持ちタッチ・縦持ち・reduced-motionを含む）。[修正前の失敗と修正後の元結果、検証SHA](trpg-paused-effects-ci-fix.json)。本件はPR657のCIテスト補正で、#556のrunner・claim・Issueは変更していない。
