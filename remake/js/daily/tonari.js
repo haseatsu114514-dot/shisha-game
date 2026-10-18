@@ -1,4 +1,3 @@
-import { actionPreview, previewCard, shiftPay } from "./action-preview.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習（通しの一台・工程の自主練）は家へ移した（#638・home-practice.js）。工程を選ぶ画面 chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
@@ -25,10 +24,8 @@ export function tonariMenu() {
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
     const pickIt = (value) => { retire(root); resolve(value); };
     const opt = (title, desc, value, test) =>
-      el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" ? !hiyoriAxeAffordable() : state.visitedDay[`tonari_${value}`] === state.day, onclick: () => { SE.select(); pickIt(value); } }, [
+      el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
         el("b", { text: title }), el("small", { text: desc }),
-        ["customer", "baito"].includes(value) ? previewCard(actionPreview({ kind: "tonari" }, { mode: value })) : null,
-        state.visitedDay[`tonari_${value}`] === state.day ? el("strong", { text: "今日は利用済み" }) : null,
       ]);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
@@ -54,6 +51,8 @@ export async function tonariCustomer() {
 
 // ---------------------------------------------------------------- バイト
 
+const CHARM_BONUS = [0, 500, 1200, 2000, 3000]; // 魅力★で指名・リピートが増える
+const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
 export async function doBaito({ called = false } = {}) {
@@ -89,7 +88,10 @@ async function baitoShift({ called }) {
   } else {
     await customerEvent(condition);
   }
-  const { bonus, extra, rainPay, pay } = shiftPay({ called, condition });
+  const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
+  const extra = called ? CALLED_BONUS : 0;
+  const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
+  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
   await shiftClose();
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });

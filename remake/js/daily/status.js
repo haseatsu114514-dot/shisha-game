@@ -9,8 +9,6 @@ import { relationshipStatus } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 
-import { planPanel } from "./day-plan.js";
-
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
   const n = document.createElementNS(SVG, tag);
@@ -51,28 +49,18 @@ export function radar(stats, baseline, size = 340) {
   return svg;
 }
 
-export async function openStatus({ onPhone = null, schedule = [] } = {}) {
-  let destination = null;
-  const navigate = action => {
-    destination = action;
-    layers.modal.querySelector('[data-test="status-close"]')?.click();
-  };
+export function openStatus() {
   const tabs = el("div.st-tabs");
   const body = el("div.st-body");
   const show = (id) => {
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
-    body.replaceChildren(id === "plan" ? planPanel(schedule) : id === "me" ? meTab() : id === "people" ? peopleTab(navigate) : id === "notes" ? notesTab() : id === "history" ? historyTab() : itemsTab());
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : id === "notes" ? notesTab() : itemsTab());
   };
-  for (const [id, label] of [["plan", "今日の予定"], ["me", "自分"], ["people", "人間関係"], ["history", "行動履歴"], ["notes", "常連ノート"], ["items", "持ち物"]]) {
+  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["notes", "常連ノート"], ["items", "持ち物"]]) {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
-  show("plan");
-  await modal({ title: "手帳", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
-  if (destination?.spot) (await import("./map.js")).locateMapSpot(destination.spot);
-  if (destination?.sender) {
-    if (onPhone) await onPhone(destination.sender);
-    else await (await import("./phone.js")).openLime({ sender: destination.sender });
-  }
+  show("me");
+  return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
 
@@ -116,11 +104,7 @@ function meTab() {
 }
 
 const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"];
-function peopleTab(navigate) {
-  const canNavigate = !!document.querySelector('#screen .map:not(.done)') && !document.body.classList.contains("vn-open");
-  const places = { sumi: "tonari", tsumugi: "tonari", naru: "naru", adam: "adam", minto: "minto", rin: "shop", samechan: state.chapter >= 2 ? "samechan" : null, ageha: "ch2_ageha" };
-  const hiyori = [...document.querySelectorAll('.map .pin-person[alt]')].find(n => n.alt === displayName("hiyori", state));
-  if (hiyori) places.hiyori = hiyori.closest("[data-spot]")?.dataset.spot;
+function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
     const face = faceIconUrl(id);
@@ -138,30 +122,12 @@ function peopleTab(navigate) {
           state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
         ]),
         !lover && relation.label !== "友達" ? el("p.pp-next", { text: relation.hint }) : null,
-        el("div.pp-actions", [
-          places[id] ? el("button", { text: "場所を地図で見る", disabled: !canNavigate, dataset: { test: `person-map-${id}` },
-            onclick: () => navigate({ spot: places[id] }) }) : null,
-          state.contacts.includes(id) ? el("button", { text: "LIMEを開く", disabled: !canNavigate, dataset: { test: `person-lime-${id}` },
-            onclick: () => navigate({ sender: id }) }) : null,
-        ]),
       ]),
     ]);
   });
   return el("div.st-people", [
     el("p.pp-guide", { text: "♥は親しさ。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友情でも♥5の特別なイベントと贈り物があり、友達・恋人になった後もLIMEで交流は続く。" }),
     ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
-  ]);
-}
-
-function historyTab() {
-  const history = state.actionHistory || [];
-  return el("div.st-history", [
-    el("p.st-note", { text: "直近40件の行動と結果を振り返れます。" }),
-    ...[...history].reverse().map(entry => el("article.history-entry", [
-      el("small", { text: `第${entry.chapter}章・通算DAY ${entry.day}・${entry.slot === 0 ? "昼" : entry.slot === 1 ? "夜" : "帰宅後"}` }),
-      el("b", { text: entry.label }), el("ul", entry.changes.map(text => el("li", { text }))),
-    ])),
-    history.length ? null : el("p", { text: "次の行動から、ここに結果が残ります。" }),
   ]);
 }
 

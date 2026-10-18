@@ -13,9 +13,7 @@ import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { prepareTitleArt } from "./scenes/title-art.js";
 import { isNormalTitleForced } from "./scenes/title-layout.js";
-import { initDailyLayout } from "./scenes/daily-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
-import { applyTextSize } from "./scenes/settings.js";
 import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
@@ -32,9 +30,7 @@ export async function boot() {
   window.visualViewport?.addEventListener("resize", fitStage);
   initLayers();
   initGameLayout();
-  initDailyLayout();
   loadConfig();
-  applyTextSize();
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);

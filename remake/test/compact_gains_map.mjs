@@ -36,7 +36,6 @@ try {
   const sizes = [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }];
   for (const size of sizes) {
     await page.setViewportSize(size); await page.waitForSelector('[data-test="pin-naru"]');
-    await page.locator(`[data-test="map-view-${size.width <= 1000 ? 'list' : 'map'}"]`).click();
     await page.waitForTimeout(300);
     const map = await page.evaluate(() => {
       const keys = ["tonari", "naru", "adam", "minto", "shop", "cafe", "kannon", "choizap", "c_station", "rest"];
@@ -47,19 +46,20 @@ try {
         faces: [...document.querySelectorAll(".pin-face")].map(f => ({ width: f.offsetWidth, owner: f.classList.contains("pin-owner-face"), loaded: f.complete && f.naturalWidth > 0 })),
         icons: ["shop","cafe","kannon","choizap","c_station","rest"].map(k => {
           const p = document.querySelector(`[data-test="pin-${k}"]`), symbol = p.querySelector(".pin-symbol"), name = p.querySelector(".sub-label");
-          const logo = p.querySelector(".store-logo"), sticker = p.querySelector(".facility-icon");
-          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, sticker: !!sticker, legible: name.scrollWidth <= name.clientWidth + 1, oldGlyph: !!p.querySelector(".label") };
+          const logo = p.querySelector(".store-logo");
+          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, below: rect(name).y > rect(symbol || logo).y, oldGlyph: !!p.querySelector(".label") };
         }),
         badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
-        gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
+        gym: document.querySelector('[data-test="pin-choizap"] .store-logo img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
     assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
-    assert(map.icons.every(i => (i.vector || i.logo || i.sticker) && i.legible && !i.oldGlyph));
-    assert(map.badges.length >= 5 && map.badges.every(b => b.text === "NEW" && b.width >= 32 && b.height >= 23));
-    assert.match(map.gym, /map-facility-stickers-661\.png/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
+    assert(map.icons.every(i => (i.vector || i.logo) && i.below && !i.oldGlyph));
+    assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
+    assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));
+    assert.match(map.gym, /store_logos\/choizap\.png/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
@@ -108,7 +108,7 @@ try {
     T.core.state.spotVisits={cafe:1,kannon:1,choizap:1,c_station:1}; await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');
-  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "NEW");
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "!");
   // 質問・締めくくりも読了している場合は印を残さない。
   await page.evaluate(async () => {
     T.core.state.finales=Object.fromEntries(Object.keys(T.spots.VISIT_SEQ).map(id => [id,{day:3,chapter:1,route:"friend"}]));
@@ -144,5 +144,5 @@ try {
   assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARKへ行く");
   assert.doesNotMatch(await page.locator('[data-test="pin-shishark"]').textContent(),/2章|準備中/);
   assert.deepEqual(errors,[]);
-  console.log("[compact map] PASS: three sizes, true 1P, STATUS UP and smoke-free metal frame, store logos and owner badges, facility stickers, distinct new-event marks, read events, closures, navigation, hidden chapter-2 shop");
+  console.log("[compact map] PASS: three sizes, true 1P, STATUS UP and smoke-free metal frame, store logos and owner badges, facility symbols, round new-event marks, read events, closures, navigation, hidden chapter-2 shop");
 } finally { await browser.close(); }

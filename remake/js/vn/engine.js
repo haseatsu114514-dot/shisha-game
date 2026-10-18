@@ -66,9 +66,7 @@ function buildDom() {
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
-  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", async () => {
-    setSkip(false); setAuto(false); await (await import("../scenes/settings.js")).openConfig();
-  }, "vn-config"));
+  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -80,7 +78,6 @@ function buildDom() {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
     if (dom.log.classList.contains("show")) return;
-    if (e.target.closest("button, input, select, a")) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
     if (e.key === "Control") setSkip(true);
   });
@@ -101,7 +98,7 @@ let autoTimer = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
   if (!running || !running.ready) return;
-  if (dom.log.classList.contains("show") || layers.modal.classList.contains("show")) return;
+  if (dom.log.classList.contains("show")) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
   if (running.waitingChoice) {
@@ -110,7 +107,7 @@ function kickAuto() {
   }
   const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
   autoTimer = setTimeout(() => {
-    if (!running || layers.modal.classList.contains("show")) return;
+    if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
     advance();
   }, delay);

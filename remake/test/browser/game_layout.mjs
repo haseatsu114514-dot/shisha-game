@@ -67,9 +67,7 @@ async function dsGeometry(p) {
 }
 async function normalGeometry(p) {
   assert.equal(await p.locator("body.game-ds").count(),0);
-  const responsive = await p.locator('body.daily-responsive').count();
-  const size = responsive ? await p.evaluate(() => [innerWidth, innerHeight]) : [1280,720];
-  assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.offsetWidth,n.offsetHeight]), size);
+  assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.offsetWidth,n.offsetHeight]),[1280,720]);
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {

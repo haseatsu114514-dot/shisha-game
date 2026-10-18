@@ -1,4 +1,3 @@
-import { actionPreview, previewText } from "./action-preview.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { el, yen } from "../core/util.js";
@@ -134,8 +133,8 @@ function chooseShopFloor() {
       shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
-        card("1F", "買い物", previewText(actionPreview({ kind: "shop" })), "bg_shop", "shop"),
-        card("2F", "夜のショールーム", unavailable || previewText(actionPreview({ kind: "shop" }, { mode: "rin" })), "bg_fookah_showroom", "rin", !!unavailable),
+        card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
+        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
     ]));
