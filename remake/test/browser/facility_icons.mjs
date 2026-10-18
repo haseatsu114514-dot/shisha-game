@@ -58,7 +58,7 @@ try {
     await page.addInitScript(() => localStorage.setItem('suien_remake_save', '{"facilityPreviewSentinel":579}'));
     await page.goto(previewURL);
     await page.locator('.facility-icon img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
-    assert.equal(await page.locator('button').count(), 56);
+    assert.equal(await page.locator('button').count(), 70);
     const geometry = await page.locator('.facility-icon').evaluateAll(icons => icons.map(icon => {
       const crop = icon.firstElementChild, image = crop.firstElementChild;
       const c = crop.getBoundingClientRect(), i = image.getBoundingClientRect(), b = icon.parentElement.getBoundingClientRect();
@@ -96,7 +96,7 @@ try {
     await page.waitForTimeout(400);
     await page.screenshot({ path: new URL(`${label}.jpg`, out).pathname, fullPage: true, type: 'jpeg', quality: 80 });
     results.push({ label, passed: true, geometry, errors, failed, saveUnchanged: true });
-    console.log(`PASS: ${label} — delivery stage without asset_sources, assets URL, 56 selections, crop geometry, save unchanged, no resource/page errors`);
+    console.log(`PASS: ${label} — delivery stage without asset_sources, assets URL, 70 selections, crop geometry, save unchanged, no resource/page errors`);
     await context.close();
   }
   assert.deepEqual([...new Set(requests)].sort(), [...files.keys()].map(file => mount + file).sort());

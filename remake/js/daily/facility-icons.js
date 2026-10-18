@@ -12,7 +12,7 @@ export const FACILITY_ICONS = Object.freeze({
   fortune: Object.freeze({ label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
   trpg_bar: Object.freeze({ label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
 });
-export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 128]);
+export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
@@ -24,14 +24,14 @@ function ensureStickerOutline(document) {
   svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
   svg.style.position = 'absolute'; svg.style.pointerEvents = 'none';
   svg.innerHTML = '<defs><filter id="facility-sticker-outline" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
-    '<feMorphology in="SourceAlpha" operator="dilate" radius="3" result="edge"/>' +
+    '<feMorphology in="SourceAlpha" operator="dilate" radius="5" result="edge"/>' +
     '<feFlood flood-color="white" result="white"/><feComposite in="white" in2="edge" operator="in" result="border"/>' +
     '<feMerge><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
   document.body.append(svg);
 }
 
 export function createMapFacilityIcon(spotId) {
-  return hasFacilityIcon(spotId) ? createFacilityIcon(SPOT_ICONS[spotId], { size: 64, decorative: true, sticker: true }) : null;
+  return hasFacilityIcon(spotId) ? createFacilityIcon(SPOT_ICONS[spotId], { size: 80, decorative: true, sticker: true }) : null;
 }
 
 export function facilityIconLayout(id, size = 48) {

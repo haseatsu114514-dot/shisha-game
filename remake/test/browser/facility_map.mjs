@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
-const baseline = process.env.BASELINE === '1', phase = baseline ? 'before' : 'after';
+const baseline = process.env.BASELINE === '1', phase = process.env.PHASE || (baseline ? 'before' : 'after');
 const out = process.env.ARTIFACT_DIR || 'docs/qa/map-facilities-579';
 fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true,
@@ -56,7 +56,9 @@ try {
       assert.equal(state, saved, 'map rendering changed save state');
       const pins = await page.locator('.map-pins .spot-pin').evaluateAll(nodes => nodes.map(pin => {
         const icon = pin.querySelector('.facility-icon'), crop = icon?.querySelector('.facility-icon-crop'), img = crop?.querySelector('img');
-        const r = pin.getBoundingClientRect();
+        const r = pin.getBoundingClientRect(), ico = pin.querySelector('.ico').getBoundingClientRect(), map = pin.parentElement.getBoundingClientRect();
+        const anchorDelta = [ico.x + ico.width/2 - map.x - map.width * parseFloat(pin.style.left)/100,
+          ico.y + ico.height/2 - map.y - map.height * parseFloat(pin.style.top)/100];
         return { id: pin.dataset.spot, locked: pin.classList.contains('pin-locked'),
           facility: icon?.dataset.facility || null, logo: pin.querySelector('[data-store-logo]')?.dataset.storeLogo || null,
           label: pin.getAttribute('aria-label'), caption: pin.querySelector('.sub-label').textContent,
@@ -64,7 +66,7 @@ try {
           filter: crop ? getComputedStyle(crop).filter : null,
           shieldBackground: getComputedStyle(pin.querySelector('.shield')).backgroundColor,
           target: { x: r.x, y: r.y, width: r.width, height: r.height },
-          logicalTarget: [pin.offsetWidth, pin.offsetHeight], people: [...pin.querySelectorAll('.pin-person')].map(p => p.getAttribute('alt') || p.getAttribute('aria-label')) };
+          anchorDelta, logicalTarget: [pin.offsetWidth, pin.offsetHeight], people: [...pin.querySelectorAll('.pin-person')].map(p => p.getAttribute('alt') || p.getAttribute('aria-label')) };
       }));
       for (const id of protectedLogos) {
         const pin = pins.find(p => p.id === id);
@@ -74,7 +76,7 @@ try {
         for (const pin of pins.filter(p => p.facility)) {
           const a = pin.target;
           assert(pins.filter(p => p.id !== pin.id).every(({ target: b }) =>
-            a.x+a.width <= b.x+1 || b.x+b.width <= a.x+1 || a.y+a.height <= b.y+1 || b.y+b.height <= a.y+1), `${pin.id} overlaps another destination`);
+            a.x+a.width <= b.x+1 || b.x+b.width <= a.x+1 || a.y+a.height <= b.y+1 || b.y+b.height <= a.y+1), `${pin.id} overlaps another destination: ${JSON.stringify(pins.map(p => [p.id,p.target]))}`);
         }
       }
       const wanted = { ...expected, ...(scenario === 'chapter2' ? { trpg_bar: 'trpg_bar' } : {}) };
@@ -84,6 +86,7 @@ try {
         const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
+          if (layout === 'normal') assert(pin.anchorDelta.every(n => Math.abs(n) < 5), `${id} artwork does not point to its map coordinate`);
           assert(pin.image.width > 0 && pin.image.height > 0);
           assert(pin.image.src.startsWith('/assets/ui/map-facilities-'));
           assert(pin.filter.includes('facility-sticker-outline'), 'white silhouette contour missing');
