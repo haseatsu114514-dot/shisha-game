@@ -1,6 +1,6 @@
 # 施設絵の地図接続（#579）
 
-観音堂・家・喫茶・斧投げBar・チョイザップ・路上占い・ボドゲカフェを、場所を表す施設絵にしました。絵の透過輪郭に2pxのアイボリー（#fff3df）のふちと、下方向3px・ぼかし6px・不透明度45%の柔らかい影を付け、施設の背後にあった四角い看板を外しています。通常は96px、DSは56px。前回の80px/48pxからもう一回り拡大し、2pxの細いふちと柔らかい影を維持しています。選択した施設だけ淡い金色に光ります。
+観音堂・家・喫茶・斧投げBar・チョイザップ・路上占い・ボドゲカフェを、場所を表す施設絵にしました。絵の透過輪郭に3pxのアイボリー（#fff3df）のふちと、下方向3px・ぼかし6px・不透明度45%の柔らかい影を付け、施設の背後にあった四角い看板を外しています。通常は96px、DSは56px。大きさは前回のまま、ふちを2→3pxへ少し太くしました。柔らかい影も維持しています。選択した施設だけ淡い金色に光ります。
 
 既存の`assets/ui/map-facilities-579.png`は原画とバイト一致のまま再利用。追加絵は採用背景を参照して作成し、原画・生成指示・参照順・ハッシュを`asset_sources/map-facilities-579/`へ保存しました。配信用WebPは465,736 bytes、透過のアルファ値は生成原画と完全一致です。
 
@@ -36,7 +36,7 @@
 
 施設の解禁条件、営業時間、料金、体力、移動先、報酬、保存形式、#661/#667の一括UIは変更していません。
 
-今回の追加調整では「！」を透明な枠の角ではなく、施設絵の実際の右上へ寄せました。横長のお堂でも上に離れず、DSでも同じ位置関係です。丸の中の「！」もArial・余分なpaddingなしで中央に揃えました。占いとボドゲカフェは拡大後の営業表示・第2章店舗との間隔だけ微調整しています。
+今回の追加調整では7施設それぞれに、不透明な絵の右側の輪郭上へ通知の基準点を指定しました。矩形の右上には置かず、「！」の丸がふちに少し重なる位置へ隣接させています。横長のお堂や、透明な余白の多いコーヒーでも離れません。DSでも通知サイズを保ち、絵と接する位置を再計算します。丸の中の「！」もArial・余分なpaddingなしで中央に揃えました。占いとボドゲカフェは拡大後の営業表示・第2章店舗との間隔だけ微調整しています。
 
 LIMEの白い吹き出し内の文字は上paddingを2px足し、字面を約1px下げて中央に補正。赤い未読バッジのサイズ・位置・件数処理は変更しません。
 
@@ -46,25 +46,43 @@ LIMEの白い吹き出し内の文字は上paddingを2px足し、字面を約1px
 
 ## 同条件の変更前後
 
-今回の変更前はPR #675の80px・細ふち版（ソース`a9c83e1b`、QA追加後head `44b0020a`）、変更後の実装は`501c3876`。各組は同じviewport・表示方式・DAY3・seed131・所持金90000・昼/夜・面識/解禁状態で撮影しています。通常のタッチ縦表示は既存の回転案内をそのまま撮影しています。
+今回の変更前はPR #675の96px・ふち2px版（ソース`501c3876`、QA追加後head `b6fdec00`）、変更後の実装は`cd6be0ce`。各組は同じviewport・表示方式・DAY3・seed131・所持金90000・昼/夜・面識/解禁状態で撮影しています。通常のタッチ縦表示は既存の回転案内をそのまま撮影しています。
 
 | 条件 | 変更前 | 変更後 |
 | --- | --- | --- |
-| PC 1280×900 昼 | ![前](outline/after-pc-normal-day.jpg) | ![後](larger/after-pc-normal-day.jpg) |
-| PC 1280×900 夜 | ![前](outline/after-pc-normal-night.jpg) | ![後](larger/after-pc-normal-night.jpg) |
-| PC DS | ![前](outline/after-pc-ds-day.jpg) | ![後](larger/after-pc-ds-day.jpg) |
-| タッチ横844×390 | ![前](outline/after-landscape-normal-day.jpg) | ![後](larger/after-landscape-normal-day.jpg) |
-| タッチ横DS | ![前](outline/after-landscape-ds-day.jpg) | ![後](larger/after-landscape-ds-day.jpg) |
-| タッチ縦390×844 DS | ![前](outline/after-portrait-ds-day.jpg) | ![後](larger/after-portrait-ds-day.jpg) |
-| 第2章の施設表示fixture | ![前](outline/after-pc-normal-chapter2.jpg) | ![後](larger/after-pc-normal-chapter2.jpg) |
-| 未解禁・未対面 | ![前](outline/after-pc-normal-locked.jpg) | ![後](larger/after-pc-normal-locked.jpg) |
+| PC 1280×900 昼 | ![前](larger/after-pc-normal-day.jpg) | ![後](contact/after-pc-normal-day.jpg) |
+| PC 1280×900 夜 | ![前](larger/after-pc-normal-night.jpg) | ![後](contact/after-pc-normal-night.jpg) |
+| PC DS | ![前](larger/after-pc-ds-day.jpg) | ![後](contact/after-pc-ds-day.jpg) |
+| タッチ横844×390 | ![前](larger/after-landscape-normal-day.jpg) | ![後](contact/after-landscape-normal-day.jpg) |
+| タッチ横DS | ![前](larger/after-landscape-ds-day.jpg) | ![後](contact/after-landscape-ds-day.jpg) |
+| タッチ縦390×844 DS | ![前](larger/after-portrait-ds-day.jpg) | ![後](contact/after-portrait-ds-day.jpg) |
+| 第2章の施設表示fixture | ![前](larger/after-pc-normal-chapter2.jpg) | ![後](contact/after-pc-normal-chapter2.jpg) |
+| 未解禁・未対面 | ![前](larger/after-pc-normal-locked.jpg) | ![後](contact/after-pc-normal-locked.jpg) |
 
-[通常縦の変更前](outline/after-portrait-normal-day.jpg) / [変更後](larger/after-portrait-normal-day.jpg)。通常縦は背面DOMと回転案内の維持だけを検証し、実タップ成功には含めていません。DS縦では実タップを検証しました。
+[通常縦の変更前](larger/after-portrait-normal-day.jpg) / [変更後](contact/after-portrait-normal-day.jpg)。通常縦は背面DOMと回転案内の維持だけを検証し、実タップ成功には含めていません。DS縦では実タップを検証しました。
+
+
+<details>
+<summary>7施設それぞれの「！」の接し方</summary>
+
+各スポットへeventPinを指定した検査画像です。常時すべてに通知を出す変更ではありません。
+
+| 施設 | 検査画像 |
+| --- | --- |
+| 観音堂 | ![観音堂](contact/after-contact-kannon.png) |
+| 家 | ![家](contact/after-contact-rest.png) |
+| 喫茶 | ![喫茶](contact/after-contact-cafe.png) |
+| 斧投げBar | ![斧投げBar](contact/after-contact-axe_bar.png) |
+| チョイザップ | ![チョイザップ](contact/after-contact-choizap.png) |
+| 路上占い | ![路上占い](contact/after-contact-fortune.png) |
+| ボドゲカフェ | ![ボドゲカフェ](contact/after-contact-trpg_bar.png) |
+
+</details>
 
 ## 検証
 
 - `facility_icons.mjs`: 既存PNGの完全一致・元ハッシュ・アルファ領域・隣の絵の混入なし・追加WebPの透過一致・配信容量・施設対応と縦横比 PASS。
-- `browser/facility_icons.mjs`: asset_sourcesなし、`/shisha-game/`配下に実行用5ファイルだけを置く公開相当検査。PC/タッチ横/縦×7施設×明暗×6サイズ＝各84選択、計252選択PASS。保存sentinel不変、ページ/通信エラー0。[測定](larger/preview/browser-results.json)。
+- `browser/facility_icons.mjs`: asset_sourcesなし、`/shisha-game/`配下に実行用5ファイルだけを置く公開相当検査。PC/タッチ横/縦×7施設×明暗×6サイズ＝各84選択、計252選択PASS。保存sentinel不変、ページ/通信エラー0。[測定](contact/preview/browser-results.json)。
 - `browser/facility_map.mjs`: PC/タッチ横/縦×通常/DSの6条件それぞれ昼・夜・第2章・未解禁・旧アクセスフラグ相当の5状態＝30状態PASS。前後で同じfixtureを使用。絵の表示・秘密の非表示・店舗ロゴ維持・論理タッチ領域・通常縦以外の画面上44px以上・施設ピン同士の重なりなし・表示/選択でstate不変を確認。
 - 通常縦以外の5条件で、施設6か所の実クリック/タップ選択と、夜の旧アクセスフラグを持つ斧投げBarの行き先確定PASS。旧アクセスフラグfixtureであり、全世代のセーブ移行や自然進行の通しプレイではありません。
 - `browser/map_guests.mjs`: 在店/未知人物・ゲストとイベントバッジ・保存・移動の6ケースPASS。
@@ -74,12 +92,12 @@ LIMEの白い吹き出し内の文字は上paddingを2px足し、字面を約1px
 - `browser/map_reveals.mjs`: PC・横タッチ・縦DS・動きを減らすDSの4条件PASS。面識による施設解禁、占い師の正体判明、第2章の追加、斧投げBarの解禁を確認。初回/再表示/定期再出店/別ゲームでの誤再生なし、演出中の選択成功、state不変。[測定](larger/unlocks.json)。
 - 今回の30状態・顔表示6ケース・来店ロゴ18ケース・解放演出4条件・独立配信252選択を再実行PASS。顔表示では長い店名でも看板左上へ揃うことを追加検証。通知3サイズは前回の検証です。施設絵の中心と地図座標の一致、未解禁表示、各操作領域の重なりも確認しました。演出と地図30状態の検査はCIにも追加。
 - `browser/lime_badge.mjs`: PC/横タッチ/縦タッチ×通常/DSで0・1・9・10・99・100・999件と再表示を確認PASS。未読0非表示、99+の位置、隣接操作、既読後の非表示、state不変を維持。[測定](larger/lime/after.json)。
-- 「！」の中心が施設絵の右上付近にあることを30状態の地図検査へ追加しPASS。顔の左上配置・3人時の重なり・解放演出も再検証しました。
+- 今回は昼夜等30状態と、7施設×6表示の通知強制表示42条件を検証PASS。元画像のalphaを調べ、全7基準点が不透明な絵の右端にあることを確認。画面上でも「！」の中心がその輪郭に隣接することと、保存不変を確認しました。通知の出る条件は変更していません。
 - `git diff --check` / Git Safety PASS。
 
 Chromiumエミュレーションで、実機Safariは未実施。AUTOを使った全シナリオ通し再生は未実施です。素材・地図表示の変更で、VN・会話送り・乱数・解禁判定は変更していません。
 
-[変更前測定](outline/after.json) / [変更後測定](larger/after.json) / [独立配信検査](larger/preview/browser-results.json)。実装検証コミットは`larger/after.json`の`ref`を参照してください。初回接続時のmainとの比較は[元の変更前](before-pc-normal-day.jpg) / [初回接続後](after-pc-normal-day.jpg)に保全しています。
+[変更前測定](larger/after.json) / [変更後測定](contact/after.json) / [独立配信検査](contact/preview/browser-results.json)。実装検証コミットは`contact/after.json`の`ref`を参照してください。初回接続時のmainとの比較は[元の変更前](before-pc-normal-day.jpg) / [初回接続後](after-pc-normal-day.jpg)に保全しています。
 
 ## 担当切替の記録
 
@@ -93,8 +111,8 @@ bot予約は旧worker/run38764988212のままで、正式移管済みではあ�
 
 ```sh
 node remake/test/facility_icons.mjs
-ARTIFACT_DIR=docs/qa/map-facilities-579/larger/preview CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/facility_icons.mjs
-TEST_REF=$(git rev-parse HEAD) CHROME_EXECUTABLE_PATH=/usr/bin/chromium ARTIFACT_DIR=docs/qa/map-facilities-579/larger node remake/test/browser/facility_map.mjs
+ARTIFACT_DIR=docs/qa/map-facilities-579/contact/preview CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/facility_icons.mjs
+TEST_REF=$(git rev-parse HEAD) CHROME_EXECUTABLE_PATH=/usr/bin/chromium ARTIFACT_DIR=docs/qa/map-facilities-579/contact node remake/test/browser/facility_map.mjs
 ```
 
 変更前はbase用worktreeで`BASELINE=1`と別の`ARTIFACT_DIR`を指定してください。現在のコードで変更前画像を上書きしないでください。

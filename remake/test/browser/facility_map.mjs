@@ -18,6 +18,7 @@ try {
     ['landscape', { width: 844, height: 390 }, true],
     ['portrait', { width: 390, height: 844 }, true],
   ]) for (const layout of ['normal', 'ds']) {
+    if (process.env.QA_DEVICE && process.env.QA_DEVICE !== device) continue;
     const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
     const page = await context.newPage(), errors = [], resources = [];
     page.setDefaultTimeout(15000);
@@ -153,7 +154,11 @@ try {
       });
       assert(Math.abs(delta[0]-8)<1 && Math.abs(delta[1]+3)<1, `${device}/${layout}/${id}: badge detached from illustration`);
       assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved);
-      if (device === 'pc' && layout === 'normal') await pin.screenshot({ path: path.join(out, `${phase}-contact-${id}.png`) });
+      if (device === 'pc' && layout === 'normal') {
+        const r = await pin.boundingBox();
+        await page.screenshot({ path: path.join(out, `${phase}-contact-${id}.png`),
+          clip: { x: r.x-16, y: r.y-16, width: r.width+32, height: r.height+32 } });
+      }
       contacts.push({ id, delta, stateUnchanged: true });
     }
     assert.equal(await page.evaluate(() => localStorage.getItem('qa-facility-sentinel')), '579');
