@@ -56,6 +56,7 @@ try {
       assert.equal(geometry.label, count ? `LIME（未読${count}件）` : 'LIME');
       if (count && !baseline) {
         const { badge: b, icon: i, textRect: t } = geometry;
+        assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
         assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 9+');
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');

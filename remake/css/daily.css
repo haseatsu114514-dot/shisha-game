@@ -186,38 +186,57 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-radar { width: 44px; height: 44px; display: block; }
 .hr-grid { fill: none; stroke: rgba(244, 210, 122, 0.3); stroke-width: 0.8; }
 .hr-fill { fill: rgba(255, 158, 109, 0.45); stroke: #ffd35e; stroke-width: 1.2; stroke-linejoin: round; transition: all 0.4s; }
-/* LIME はアプリのアイコン風（緑の角丸＋白抜き文字） */
+/* LIME は正方形のアプリアイコン（緑の角丸＋白い吹き出し）。 */
 .hud-lime {
   position: relative;
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
+  flex: 0 0 48px;
+  aspect-ratio: 1;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 13px;
-  background: linear-gradient(180deg, #2cc75c, #169a3e);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border: 0;
+  border-radius: 11px;
+  background: #00c300;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: transform 0.12s;
 }
 .hud-lime span {
-  padding: 1px 4px;
-  font-family: var(--font);
-  font-size: 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  margin: 0 0 3px;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.1em;
-  color: #169a3e;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #00a900;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 50%;
+}
+.hud-lime span::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  bottom: -4px;
+  width: 9px;
+  height: 8px;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .hud-lime:hover { transform: translateY(-2px); }
 /* 未読件数は右上の赤い円へ。9+でも横に伸びない固定サイズにする。 */
 .hud-lime .badge {
   position: absolute;
   left: auto;
-  right: -6px;
-  top: -6px;
+  right: -4px;
+  top: -4px;
   box-sizing: border-box;
   width: 22px;
   min-width: 22px;
