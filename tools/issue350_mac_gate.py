@@ -87,11 +87,13 @@ def verify(run_id):
     return 0 if gate else 3
 
 
-def observe(out):
+def observe(out, sol_model):
     if sys.platform != 'darwin':
         raise RuntimeError('Mac only. Do not reroute the cloud CONNECT403.')
     if sys.version_info < (3, 9):
         raise RuntimeError('Existing Python 3.9+ required; do not install a replacement.')
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._/-]{1,79}', sol_model):
+        raise RuntimeError('Use the existing official Mac CLI identifier for Sol, never guess/fallback.')
     if out == ROOT or ROOT in out.parents or out.parent == Path.home():
         raise RuntimeError('Output must be in the existing task work area, outside the repo/home root.')
     if out.is_relative_to(Path.home()) and out.relative_to(Path.home()).parts[0].startswith('.'):
@@ -183,7 +185,7 @@ latest bot released/owner/run match, then close only fixture {ISSUE}.
 Report claim/release runs and ledger IDs. Preserve on uncertainty; no automatic retries.
 '''
     argv = ['codex', '-a', 'never', 'exec', '--json', '--skip-git-repo-check',
-            '-C', str(fixture), '-m', 'gpt-6.1-sol', '-c', 'model_reasoning_effort="medium"', prompt]
+            '-C', str(fixture), '-m', sol_model, '-c', 'model_reasoning_effort="medium"', prompt]
     # Inherit the already configured B context unchanged; never assign CODEX_HOME/tokens.
     proc = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             text=True, start_new_session=True)
@@ -254,7 +256,8 @@ Report claim/release runs and ledger IDs. Preserve on uncertainty; no automatic 
                and bool(events) and files_ok and release_ok and parent_ok and repo_clean
                and api(f'repos/{REPO}/issues/{ISSUE}')['state'] == 'closed')
     result = dict(result='PASS_OBSERVED_ONE_CASE' if success else 'NOT_VERIFIED',
-                  branch_head=remote, cli=version, state=state, events=events,
+                  branch_head=remote, cli=version, sol_model=sol_model,
+                  reasoning_effort='medium', state=state, events=events,
                   client_exit=returncode, cleanup=cleanup, release_ok=release_ok,
                   files_ok=files_ok, repo_clean=repo_clean,
                   parent=parent_after, parent_unchanged=parent_ok,
@@ -268,10 +271,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='op', required=True)
     sub.add_parser('verify').add_argument('run', type=int)
-    sub.add_parser('observe').add_argument('--out', type=Path, required=True)
+    observer = sub.add_parser('observe')
+    observer.add_argument('--out', type=Path, required=True)
+    observer.add_argument('--sol-model', required=True,
+                          help='Existing Sol model ID verified in official Mac CLI selection metadata')
     args = parser.parse_args()
     try:
-        sys.exit(verify(args.run) if args.op == 'verify' else observe(args.out.resolve()))
+        sys.exit(verify(args.run) if args.op == 'verify' else observe(args.out.resolve(), args.sol_model))
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
         # Do not print authentication material or auto-login/retry on an API refusal.
         http = re.findall(r'HTTP[ /]([1-5][0-9]{2})', getattr(error, 'stderr', '') or '')

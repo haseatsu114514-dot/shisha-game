@@ -18,7 +18,7 @@
 |claim request|`350-mac-case-20261018-e82b7c1f`|
 |release request|`350-mac-release-20261018-e82b7c1f`|
 |concurrency group|`issue350-mac-e82b7c1f`（本番groupと分離）|
-|設定|Sol (`gpt-6.1-sol`)・medium、既存ChatGPT認証|
+|設定|Sol・medium、既存ChatGPT認証（正式CLI model IDはMacの既存公式選択情報で確認）|
 
 旧PR420の`codex/issue-350-worker-coordinator`は統合済みの証拠として保持し、
 上書き・作り直しをしない。#605のpark/resume案は未統合のまま採用しない。
@@ -62,6 +62,9 @@
    認証ファイル内容を読まない・コピーしない。HOME/CODEX_HOMEやtokenを再代入しない。
    `command -v codex`、`codex --version`、`codex login status`を再確認する。
    `codex exec --help`で使用する既存オプションを確認。未対応なら更新/別modelへ逃げず停止。
+   Solの正式CLI model IDはMacの既存公式モデル選択情報で確認し、`probe_sol_model`に指定する。
+   クラウド側の呼称からCLI識別子を推測しない。対応を確認できなければ起動前に停止し、
+   疎通確認用の別モデル呼出しも行わない。
 6. `python3 tools/agent_quota_guard.py check codex`を実行。
    不明/古い値は不明のまま。手動の推測値設定、非公式quota API、追加課金をしない。
    公式利用制限/接続拒否なら同じcase/セッションを保全して停止する。
@@ -76,7 +79,7 @@ dotが選ぶ。ホーム直下/認証ディレクトリは使用しない。repo
 以下は準備branchのworktree rootから実行する（Bの既存文脈を維持）。
 
 ```bash
-python3 tools/issue350_mac_gate.py observe --out "$probe_out"
+python3 tools/issue350_mac_gate.py observe --sol-model "$probe_sol_model" --out "$probe_out"
 ```
 
 補助はMac以外を拒否する。既存CLI0.162.1/ChatGPT login、clean worktree、
