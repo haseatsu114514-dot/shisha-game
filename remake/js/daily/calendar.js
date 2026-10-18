@@ -181,7 +181,9 @@ async function openMenu() {
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-  if (v === "title") { save(); location.reload(); }
+  // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
+  // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
+  if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
 }
 
 // ---------------------------------------------------------------- 1日目の案内

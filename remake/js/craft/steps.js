@@ -172,6 +172,28 @@ export function evaluateMix(cs) {
   };
 }
 
+/**
+ * 配合を手持ちの葉に収める（家で練習・#638）。並んでいない葉は外し、各葉は残量まで・合計は器の量まで。
+ * minTotal を渡すと、足りない分を残量の多い葉から1gずつ足す（自動操作で決定できる配合にする）。
+ */
+export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
+  const out = {};
+  let total = 0;
+  for (const [id, g] of Object.entries(mix || {})) {
+    if (!ids.includes(id)) continue;
+    const take = Math.max(0, Math.min(g, limit(id), cap - total));
+    if (take > 0) { out[id] = take; total += take; }
+  }
+  const room = (id) => limit(id) - (out[id] || 0);
+  while (total < Math.min(minTotal, cap)) {
+    const id = ids.filter((x) => room(x) > 0).sort((a, b) => room(b) - room(a))[0];
+    if (!id) break;
+    out[id] = (out[id] || 0) + 1;
+    total++;
+  }
+  return out;
+}
+
 export async function stepMix(cs) {
   await waitBenchReady(cs, "mix");
   const reg = regulationFor(cs);
@@ -180,13 +202,16 @@ export async function stepMix(cs) {
   // 使えるフレーバー: 在庫のあるもの＋課題フレーバー（主催者支給）。チュートリアルは店の基本形。
   // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
   const consumes = cs.mode === "tournament";
+  // 家で練習（#638）は自分の葉を使う。詰めるのは手持ちの範囲まで。減らすのは一台を作り終えたとき（home-practice.js）
+  const ownLeaves = consumes || cs.venue === "home";
   const supplied = (id) => !!reg && id === reg.flavor;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
-  const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
+  const limit = (id) => (ownLeaves && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
+  if (cs.venue === "home") cs.mix = fitMixToStock(cs.mix, ids, limit, capacity(cs));
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
@@ -239,7 +264,7 @@ export async function stepMix(cs) {
       const cur = cs.mix[id] || 0;
       const next = clamp(cur + d, 0, cap);
       if (d > 0 && totalOf() + d > cap) { SE.error(); return; }
-      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の持ち込みは残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
+      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の${consumes ? "持ち込み" : "手持ち"}は残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
       cs.mix[id] = next;
       // シロップを含む葉を取る操作はほぼ無音。数字を減らすUIだけ短いクリック。
       if (d < 0) SE.click();
@@ -250,7 +275,7 @@ export async function stepMix(cs) {
       el("div.fr-name", [
         el("b", { text: f?.short_name || f?.name || id }),
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
-          : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
+          : ownLeaves ? el("small.fr-stock", { text: `${consumes ? "持ち込み" : "手持ち"} 残り${flavorStock(id)}g` })
           : el("small", { text: f?.description?.slice(0, 22) || "" }),
         ratio,
       ]),
@@ -285,12 +310,15 @@ export async function stepMix(cs) {
         const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
         cs.mix = { strawberry: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
+      if (cs.venue === "home") cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       redraw();
       setTimeout(() => okBtn.click(), 60);
     }
   });
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
+  // 家で練習: 自分の葉として使った分（課題の支給分は除く）。減らすのは作り終えたとき（home-practice.js）
+  if (cs.venue === "home") cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)));
   cs.mixInfo = evaluateMix(cs);
   scoreStep(cs, "mix", cs.mixInfo.score, "配合");
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
