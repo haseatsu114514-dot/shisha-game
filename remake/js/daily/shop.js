@@ -160,7 +160,11 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
     const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
+    let refusedAt = -Infinity;
     const refuseOtherPurchase = () => {
+      const now = performance.now();
+      if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
+      refusedAt = now;
       SE.error();
       toast("スミ「今日は頼んだミントだけだ。ほかの買い物は、買い出しが終わってからにしろ」", { kind: "warn" });
     };

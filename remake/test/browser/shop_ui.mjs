@@ -250,6 +250,9 @@ await suite("shop-ui", async check => {
     assert.equal(await page.locator('[data-test="quantity-blueberry"]').innerText(), '0');
     assert.equal(await allState(), before, '他フレーバーの購入拒否で状態を変えない');
     assert.match(await page.locator('.toast.warn').last().innerText(), /ミントだけ/);
+    await page.evaluate(() => { const b = document.querySelector('[data-test="buy-blueberry"]'); b.click(); b.click(); });
+    assert.equal(await page.locator('.toast.warn').count(), 1, '連打で同じ注意が積み重ならない');
+    assert.equal(await allState(), before);
 
     await press('[data-tab="equip"]');
     assert.equal(await page.locator('[data-test="detail-hagal_80beat"]').count(), 1, '機材は表示したまま');
