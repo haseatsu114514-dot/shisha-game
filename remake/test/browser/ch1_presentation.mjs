@@ -46,10 +46,11 @@ await suite("ch1-presentation", async check => {
       });
       await page.locator('[data-test="mix-plus-double_apple"]').waitFor();
       assert.equal(await page.locator(".bowl-layers").count(), 0);
-      assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
+      assert(await page.locator('[data-test="mix-temperature-preview"]').isHidden());
       assert.match(await page.locator('.mix-temperature-legend').textContent(), /未選択/);
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /どんな一服/);
       for (const [id, times] of [["double_apple", 10], ["mint", 2]]) for (let i = 0; i < times; i++) await select(page, `[data-test="mix-plus-${id}"]`, touch);
+      assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
       await assertFits(page, ".mix-vessel, .mix-taste, .mix-footer, .fr-btn");
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /アニス.*ミント/);
       await page.screenshot({ path: `${shots}/${device}-mix-basic.png` });
