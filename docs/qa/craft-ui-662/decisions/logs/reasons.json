@@ -1,0 +1,16 @@
+{
+  "name": "craft-decisions",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-mix-reasons",
+      "status": "passed"
+    },
+    {
+      "label": "touch-mix-reasons",
+      "status": "passed"
+    }
+  ]
+}

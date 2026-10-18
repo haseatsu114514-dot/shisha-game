@@ -1,0 +1,24 @@
+{
+  "name": "craft-progress",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "desktop-serve-and-two-care",
+      "status": "passed"
+    },
+    {
+      "label": "mobile-landscape-serve-and-two-care",
+      "status": "passed"
+    },
+    {
+      "label": "failed-pull-stays-on-pull",
+      "status": "passed"
+    },
+    {
+      "label": "single-steps-and-care-aliases",
+      "status": "passed"
+    }
+  ]
+}
