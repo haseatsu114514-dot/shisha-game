@@ -1,143 +1,110 @@
-# #350: dot正規Macタスク用、実Codex開始gateの1ケース
+# #350 隔離Macケース（実試験停止中）
 
-これは**未実行の試験パケット**。構文チェック、mock、login成功を実地PASSにしない。
-クラウドのCONNECT403を迂回せず、既存Mac Bの正規CLIだけで実施する。
-本branchは分離したlive fixtureであり、**mainへマージしない**。
+このbranchは未実行の試験パケット。**旧observeの実行手順は無効**。
+現版は非推論preflightと読取verifyのみで、実CLIの`exec`、fixture dispatch、編集、
+release、Issue closeを実行する経路を持たない。mock成功を実地PASSとしない。
+本branchのfixture workflowはmainへマージしない。
 
-## 固定した対象・担当
+## 保持する対象
 
-|項目|値|
+|対象|値|
 |---|---|
-|親Issue|#350（未完を維持）|
-|親worker|`codex-577-limited-20261018-3a8c921e`|
-|親claim|`39093250740` completed/success、bot `6245141404` owner/run一致|
+|親Issue/worker|#350 / `codex-577-limited-20261018-3a8c921e`|
+|親claim|`39093250740` completed/success、bot `6245141404` owner/run一致（開始時再確認）|
+|隔離branch|`codex/350-mac-start-gate-20261018`|
 |準備base|`d069102e6dac96368665972bf417744f3b60239f`|
-|試験branch|`codex/350-mac-start-gate-20261018`|
-|使い捨てfixture Issue|#665、無分類、next対象にしない|
-|実CLI専用worker|`codex-350-mac-probe-20261018-e82b7c1f`|
-|claim request|`350-mac-case-20261018-e82b7c1f`|
-|release request|`350-mac-release-20261018-e82b7c1f`|
-|concurrency group|`issue350-mac-e82b7c1f`（本番groupと分離）|
-|設定|Sol・medium、既存ChatGPT認証（正式CLI model IDはMacの既存公式選択情報で確認）|
+|保持するfixture|#665（close・claim・releaseしない）|
+|将来の実CLI専用worker|`codex-350-mac-probe-20261018-e82b7c1f`|
+|将来のclaim request|`350-mac-case-20261018-e82b7c1f`|
+|将来のrelease request|`350-mac-release-20261018-e82b7c1f`|
+|fixture concurrency|`issue350-mac-e82b7c1f`|
 
-旧PR420の`codex/issue-350-worker-coordinator`は統合済みの証拠として保持し、
-上書き・作り直しをしない。#605のpark/resume案は未統合のまま採用しない。
-#660ストーリー、#661日常/地図、#662制作UI、#556/#355はこのcaseの対象外。
+旧成果・旧予約・B/Cプロセスは保持し、停止済み・差分なしと推測しない。
+#605実装、#660/#661/#662、#556/#355は対象外。#350全体は未完のまま。
 
-## 使うファイルと変更範囲
+## Bの正規起動と起動前停止条件
 
-- 現行正本: `AGENTS.md`、`docs/issue_claim_protocol.md`、
-  `.github/workflows/issue-claim.yml`、`docs/agent_quota_guard.md`。
-- Mac既存補助: `tools/agent_quota_guard.py check codex`。
-- 試験補助: `tools/issue350_mac_gate.py`（既存Python3.9+の標準ライブラリ、既存gh/codexのみ）。
-- workflowはこのbranchだけでfixture番号・worker・claim/status/releaseを制限し、
-  groupを分離、claimのbot書込み後・run完了前に20秒holdする。
-  coordinatorの本体JSとpermissionsはbaseから変更しない。
-  本体JSのSHA256は`base-script.sha256`。holdや制限を本番へ持ち込まない。
-- 実CLIが編集するのは、観測補助が作る隔離ディレクトリ内の
-  `fixture/gate-probe.txt`だけ。初期値`BEFORE_GATE\n`を`AFTER_GATE\n`にする。
-  初期fixture作成は試験controllerの準備であり、実CLIの編集と区別する。
-- Macのdotはbranchを読み取り、準備済み補助を実行する。予約中のrepoソースを
-  別セッションで編集しない。ソース修正が必要なら親に返し、先に正式担当手続きを行う。
+`subprocess`はshell alias/functionを解決しない。bare `codex`や、
+`command -v`の結果だけをBの証拠にしない。
 
-## dotが最初に確認すること
+使用可能な形は、**既存Bの正規Macタスクが既にB環境を継承している状態**から、
+既存の正規CLI実体の絶対パスを明示する方法だけ。新wrapperを作らず、shell設定を
+sourceせず、HOME/CODEX_HOMEを再代入しない。B選択がalias/function内の代入にしか
+存在しない、実体が未確認、継承環境がunset/A/defaultなら、Codex呼出し前に停止する。
+既存Bタスクの実際の起動方法はクラウドから未検証であり、推測で補わない。
 
-ユーザー確認済みなのはMacのcodex **0.162.1**、Bの既存`~/.codex-plus-b`、
-公式`login status`の`Logged in using ChatGPT`/exit0まで。
-**Mac実推論とActions必要権限は未検証**。以下で実際に切り分ける。
+preflightはOSユーザーのホームから期待する`.codex-plus-b`を求め、継承された
+CODEX_HOMEと一致し、Bディレクトリがsymlinkでないことを確認する。
+次に同じ絶対パスの公式非推論`--version`、`login status`、`doctor --json`だけを使う。
+0.162.1、ChatGPT login、公式診断のBのCODEX_HOME・provider/MCP・認証方式の
+非機密メタデータが確認できなければ停止。認証/設定ファイルの内容は読まない。
+診断形式が未対応でも失敗として止まり、別コマンドや別認証へfallbackしない。
+生の診断出力は公開しない。
 
-1. B/Cの停止中タスク・作業ツリー・未コミット/未push差分・進行中プロセスを確認する。
-   他タスクを停止済み・差分なしと推測せず、reset/clean/force push/旧予約解除をしない。
-2. 既存Mac canonical checkout/cacheを使う。GitHub上の準備branch SHAを読み、
-   必要なref/blobだけ限定取得して別worktreeで同じSHAを使用する。
-   sparse checkoutはtools、workflow、規約とGit Safetyに必要な既存領域だけでよい。
-   full clone、一括全履歴/素材取得はしない。今日の通信量了承は認証・権限拡大の許可ではない。
-3. 最新mainのAGENTS/予約規約、#350最新bot台帳、fixture #665の状態、他担当境界を再照合。
-   branchとmainの規約/JSが変わった、別ownerが付いた、参照PRが新設された場合は停止して親へ返す。
-   #350の親IDをMacの新セッションへ流用しない。親350をrelease/再claimしない。
-4. worktreeで`./tools/check_git_safety.sh`を実行。ERRORなら停止。
-   古いローカルrefを根拠に新branchを作らず、dirtyな既存B/Cツリーを切り替えない。
-5. **Bの既存ランチャー/既存ターミナル文脈をそのまま使用**し、実際に既存
-   `~/.codex-plus-b`を使うことをメタ情報で確認する。
-   認証ファイル内容を読まない・コピーしない。HOME/CODEX_HOMEやtokenを再代入しない。
-   `command -v codex`、`codex --version`、`codex login status`を再確認する。
-   `codex exec --help`で使用する既存オプションを確認。未対応なら更新/別modelへ逃げず停止。
-   Solの正式CLI model IDはMacの既存公式モデル選択情報で確認し、`probe_sol_model`に指定する。
-   クラウド側の呼称からCLI識別子を推測しない。対応を確認できなければ起動前に停止し、
-   疎通確認用の別モデル呼出しも行わない。
-6. `python3 tools/agent_quota_guard.py check codex`を実行。
-   不明/古い値は不明のまま。手動の推測値設定、非公式quota API、追加課金をしない。
-   公式利用制限/接続拒否なら同じcase/セッションを保全して停止する。
-7. 新login、API keyへのfallback、endpoint/proxyの付替え、sandbox/network許可拡大、
-   hook trustの迂回、常駐server/自動起動設定は行わない。
-   本補助は既存設定を継承し、`-a never`で追加承認を要求せず停止する。
+**これらが一致しても実推論を許可しない。** 現在のパケットには、実効hooks・
+プロジェクト/全体設定の起動時処理・MCP/providerの副作用と追加課金なしを証明する、
+検証済みの公式非機密情報契約がない。login成功、MCP数0、利用者のyes/no、
+任意JSONだけでは代用しない。有効化フラグもない。
+新login・認証情報読取/移送・設定/権限変更・課金・常駐化では解消しない。
+実試験の再開には既存正規環境についての公式情報を確認し、起動安全条件を別途レビューする。
+Sol・mediumも実CLIでの正式モデル対応未確認のまま。別モデルで疎通しない。
 
-## 実行は1回だけ
+## dot正規Macタスクの最小手順（まだ実行しない）
 
-`probe_out`はdotの既存タスク用`work/`の下、**repo外**で、まだ存在しない絶対パスを
-dotが選ぶ。ホーム直下/認証ディレクトリは使用しない。repo内に出力しない。
-以下は準備branchのworktree rootから実行する（Bの既存文脈を維持）。
+1. 既存checkout/cacheとBタスクの状態・差分・プロセスを確認する。
+   最新mainのAGENTS/予約規約、#350最新台帳、#665/他担当境界を読取再照合する。
+   親350予約を引き継ぎ先で流用して編集しない。full clone/大容量取得なし。
+2. 同branchの報告済み**完全40桁HEAD**だけを既存cacheから隔離worktreeへ準備する。
+   dirtyなB/Cツリーの切替、reset/clean/force pushはしない。
+   `./tools/check_git_safety.sh`、Macの既存quota helperを確認。不明値を推測しない。
+3. 正規B環境の継承とCLI実体の絶対パスを、既存起動情報から確認できなければ停止。
+   確認できた場合も、下記は**非推論preflightだけ**（ユーザーが実行を再開した時に限る）。
 
-```bash
-python3 tools/issue350_mac_gate.py observe --sol-model "$probe_sol_model" --out "$probe_out"
+```text
+python3 -B tools/issue350_mac_gate.py preflight --codex-bin /確認済みの既存CLI実体/codex --expected-head 完全40桁HEAD
 ```
 
-補助はMac以外を拒否する。既存CLI0.162.1/ChatGPT login、clean worktree、
-local/remote branch一致、親owner/run、fixture未予約、同requestの既存runなしを確認してから、
-実CLIを**1プロセス**起動する。これが実推論の試行であり、別の疎通用モデル試行は起動しない。
-CLIが起動できない/モデル未対応/正規権限不足ならBLOCKED。別profile/モデル/認証で再試行しない。
+上の日本語部分は既存情報で置換する引数の説明であり、環境変数代入ではない。
+helperはclean worktree・固定HEAD・作業ファイルとGit blob一致も確認する。
+期待結果はexit2の`BLOCKED_UNKNOWN_NO_RETRY`。B確認不能ならCodex呼出し前、
+メタ情報取得不能ならその場、一致しても実効副作用/追加課金の未証明で停止する。
+PASS_OBSERVEDは出さない。未知結果は同じcaseで保全し、再実行/別モデル試行しない。
+現在の依頼ではこのpreflight自体もMacでまだ実行しない。
 
-実CLIへの指示は補助に固定してある。claim dispatchは専用ref/Issue/worker/requestで1回。
-同runを特定して、編集前に次の**read-only**コマンドを別tool commandで実行する。
+MacのGitHub副作用は**0件**：fixture claim/release/status dispatch、Issue作成/close、
+予約変更、Actions取消は行わない。親350予約とfixture665を保持する。
+準備側の副作用は同branchへのcommit/pushと#350への訂正記録のみ。
+
+## verifyの規約と厳密な関連づけ
+
+読取専用verifyにはrun・固定HEAD・32桁nonceが必須。対象はfixture665のみ。
+成功runのbranch/SHA/event/path/attempt/request・CLAIMED notice・最新bot owner/runを
+検査する。最新mainのcoordinator本体JSを固定SHA256と照合し、変われば再レビューで停止。
+最終gate直前に台帳とIssueを再読取し、open/非PRに加え最新規約の
+`blocked`/`status:blocked`拒否を適用する。初回と最終の台帳変更も拒否する。
+API読取と編集の間の原子的ロックを保証するものではなく、実observerへの接続は無効。
+
+旧observerのfilename/verify部分文字列・クライアントstdout受理を削除した。
+将来用`VerifierAuthority`は完全argvとstarted/completed IDの対応を要求し、
+クライアントの出力JSONを一切権威として使わない。controllerが固定Git blobを独立Python
+プロセスで実行し、私有pipeの結果をfresh nonce・SHA/digest・run/owner/request・厳密な型と
+照合する。私有receiptは1回限り。偽出力・別コマンド・再利用では開かない。
+この検査核のmock成功は実クライアント観測の完了ではない。
+
+## 時間制限・ローカル回帰
+
+旧600秒timerと実CLI起動を削除。将来の起動経路は現版にはない。
+現存するgh/Git/公式メタデータおよび私有verifyは各20秒上限。
+helperが起動した新しいsession/process groupだけを対象にTERM→1秒待機→KILL→
+1秒以内の回収/残存確認を行う。無関係なB/Cプロセスを名前でkillしない。
+終了未確認・timeout・予期しない残存子プロセスは結果不明で再実行禁止。
+OSが終了を確認できない場合も成功扱いせず、pid/pgidとUNKNOWNを返す。
 
 ```bash
-python3 /準備worktree/tools/issue350_mac_gate.py verify CLAIM_RUN_ID
+python3 -B tools/test_issue350_mac_gate.py
 ```
 
-`verify`は本物のrun、最新のbot台帳、branch/head/request、run_attempt=1、
-CLAIMED_ISSUE noticeを読むだけでファイル編集を行わない。
-exit3/`gate:false`は未許可。再dispatchせずread-onlyで待つ。
-`matched_pending:true`（owner/runは一致するがrunは未完了）の20秒windowを少なくとも1回観測する。
-completed/success・最新owner/run一致・notice確認を満たすexit0/`gate:true`の後に、
-**別のtool command**で初めてtargetを書き換える。
-
-補助はMacの非特権kqueueでtargetとfixtureディレクトリを観測し、
-実クライアントのJSONイベントへ受信時刻を付ける。ファイルは初めから書込み可能で、
-permission hookで編集を強制的に防ぐ試験ではない。対象inode/ディレクトリの変更を記録し、
-成功gate受領前にpendingな書込みイベントがあれば失敗とする。
-実クライアントの申告や最終ハッシュだけをPASS根拠にしない。
-
-## 期待結果・証拠
-
-- `result.json`: `PASS_OBSERVED_ONE_CASE`。
-- `state.closed_window=true`、`state.gate=true`、`early_write=false`、
-  `directory_change=false`。targetの書込みイベントがgate確認後にある。
-- `client-events.jsonl`: 実CLIのdispatch、実API確認、verify成功、**その後の別commandの編集**、
-  正式release/確認が読める。dotはコマンド順と対象も確認する。
-- target最終値`AFTER_GATE\n`、AGENTS不変、他fixtureファイルなし。
-- repoは実行前後ともclean。CLI内部の通常session記録を、対象の実装編集と混同しない。
-- 元実CLI workerのrelease runもcompleted/success、最新botのreleased/owner/run一致、
-  fixture #665 closed。親350のowner/runは変更なし。
-- `NOT_VERIFIED`/`BLOCKED`、window未捕捉、JSON形式未認識、権限拒否、時計/観測不明、
-  10分上限はPASSにしない。補助の10分上限は自分が起動したcaseのprocess groupだけを停止し、
-  Actions取消/予約解除はしない。その他B/Cのプロセスには触れない。
-
-開始/終了時にquota helperを確認し、branch SHA・CLI version・認証方式（値は貼らない）・
-claim/release run/ledger・変更順・結果を#350へ返す。
-生ログが不足/秘匿値を含む場合はそのまま公開せず、必要な検証箇所を安全な形で保全する。
-実session IDも残し、利用制限時は同じcaseを保全する。無条件の再送や別workerへの付替えは禁止。
-
-## GitHubの副作用（これ以外は行わない）
-
-準備側: 親350の通常claim 1回（成功済み）、専用Issue #665作成、試験branch push。
-Mac側: API読取り、専用branch上のclaim 1run、同workerのrelease 1run、fixture665 close。
-別status dispatchは不要。#350へ実測結果の記録を返すが、親Issueはcloseしない。
-本番groupのpending置換試験、`next`、`transfer`、#605 park/resume、他Issue予約、
-本番workflow編集、mainへのpush/merge、追加のclient/常駐化は含めない。
-
-## 完了の範囲
-
-PASSでも「この実Mac Codexプロセスが、この1ケースで成功run/最新owner-run確認前に
-編集しなかった」という観測だけ。旧clientへの強制機構、Claude、複数AI、cancel/pending置換、
-隔離next、安全merge queueを検証したことにはしない。#350全体は未完を維持する。
-今はMac未実行。親予約は保持し、コード変更が必要なら親へ返す。
+標準ライブラリのローカル模擬試験。実Codex、gh、ネットワーク、認証、dispatchなし。
+blocked途中追加時の編集0、policy/owner/run変更、偽PASS/別SHA/nonce/再利用、
+B誤環境の起動0、メタ情報一致でも実推論0、TERM無視・pipe保持子プロセスの上限、
+無関係プロセスの存続を検査する。これは実地PASSの代替ではない。
