@@ -1,0 +1,15 @@
+{
+  "base": "7d63fbdc5ce75e57c3cca438476452b7238bd12e",
+  "approved_limit_bytes": 8440000,
+  "text_files": 182,
+  "body_bytes": 4068267,
+  "response_header_bytes": 168703,
+  "tls_and_request_overhead": "not measured",
+  "additional_packs": 0,
+  "recovery_network_bytes": 0,
+  "restored_commit_objects": 239,
+  "sha_checks": "all 240 commit IDs and all downloaded blob IDs match",
+  "recovery_original_origin_main": "507809c3685a76d0853a3ca3da8c4150fb4e9f8b",
+  "recovery_original_shallow": "7d63fbdc5ce75e57c3cca438476452b7238bd12e",
+  "recovery_backup": "/tmp/issue452-git-state-1792339539782426984"
+}

@@ -37,7 +37,7 @@ const scenarios = [
   ...[false, true].map(practice => ({ id: "ch1_tournament_arrival", practice, legacy: true })),
   ...[0, 1, 2].flatMap(choice => [false, true].map(met => ({ id: "ch1_tournament_after", choice, met }))),
   ...[false, true].map(art => ({ id: "ch1_tsumugi_sketch", art })),
-  { id: "ch1_salaryman_regular" }, { id: "ch1_salaryman_change" },
+  ...[0, 1].map(choice => ({ id: "ch1_salaryman_regular", choice })), { id: "ch1_salaryman_change" },
 ];
 async function advanceTo(page, text, touch) {
   await page.waitForFunction(() => document.querySelector("#vn.active") && T.vn.backlog().length > 0,
@@ -91,7 +91,17 @@ await suite("issue508-theme", async checkAll => {
         const current = structuredClone(T.core.state), lines = T.lines();
         return { before, current, lines };
       }, { opts, previous: baseline.scenes[opts.id] });
-      if (opts.id === "ch1_tsumugi_work_in_progress") {
+      if (opts.id === "ch1_salaryman_regular") {
+        // #452 adds only the actual service answer and its immediate save.
+        const { savedAt: beforeAt, ...beforeGame } = result.before;
+        const { savedAt: currentAt, ...currentGame } = result.current;
+        assert(Number.isFinite(currentAt));
+        assert.equal(currentGame.flags._salaryman_service_order, opts.choice === 0);
+        assert.equal(currentGame.flags._salaryman_service_water, opts.choice === 1);
+        delete currentGame.flags._salaryman_service_order;
+        delete currentGame.flags._salaryman_service_water;
+        assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
+      } else if (opts.id === "ch1_tsumugi_work_in_progress") {
         // #452 saves the actual answer immediately. Compare every game field,
         // and check the refreshed save timestamp separately.
         const { savedAt: beforeAt, ...beforeGame } = result.before;
