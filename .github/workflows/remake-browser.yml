@@ -117,12 +117,11 @@ jobs:
         timeout-minutes: 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
-          # Ubuntu's AppArmor restricts user namespaces for downloaded Chromium.
-          # Use the runner's installed Chrome sandbox helper, keeping sandboxing on.
-          CHROME_DEVEL_SANDBOX: /opt/google/chrome/chrome-sandbox
+          # Ubuntu's AppArmor permits namespaces for the installed Chrome binary.
+          # Keep Chromium sandboxing enabled and use that vendor browser in CI.
+          CHROME_EXECUTABLE_PATH: /opt/google/chrome/chrome
         run: |
-          test -u "$CHROME_DEVEL_SANDBOX"
-          test "$(stat -c '%u' "$CHROME_DEVEL_SANDBOX")" = 0
+          test -x "$CHROME_EXECUTABLE_PATH"
           node remake/test/reel_lifecycle.mjs
       - name: Save/load, legacy migration and PC/mobile controls
         run: |
