@@ -66,6 +66,20 @@ for (const [index, entry] of Object.values(FACILITY_ICONS).filter(e => e.extra).
   for (const [other,b] of extraBounds.entries()) if (other !== index) assert(x+w <= b[0] || x >= b[2] || y+h <= b[1] || y >= b[3], 'Supplement neighbor leaks');
 }
 assert(fs.statSync(new URL('../../assets/ui/map-facilities-extra-579.webp', import.meta.url)).size < 512000);
+// A transparent rectangular corner is not a valid event attachment point.
+const anchors = spawnSync('python3', ['-c', `
+from PIL import Image
+import json,sys
+sheets=[Image.open(p).getchannel('A') for p in sys.argv[1:3]]
+for entry in json.loads(sys.argv[3]).values():
+ a=sheets[bool(entry.get('extra'))]; x,y=entry['badge']; left,top,w,h=entry['rect']
+ assert left<=x<left+w and top<=y<top+h
+ assert a.getpixel((x,y))>=128, 'event anchor is transparent'
+ assert all(a.getpixel((xx,y))<128 for xx in range(x+1,left+w)), 'anchor is inside the artwork rather than at its right contour'
+`, new URL('../../assets/ui/map-facilities-579.png', import.meta.url).pathname,
+new URL('../../assets/ui/map-facilities-extra-579.webp', import.meta.url).pathname,
+JSON.stringify(FACILITY_ICONS)], { encoding: 'utf8' });
+assert.equal(anchors.status, 0, anchors.stderr);
 for (const id of Object.keys(FACILITY_ICONS)) for (const size of FACILITY_ICON_SIZES) {
   const entry = FACILITY_ICONS[id], l = facilityIconLayout(id, size), [x, y, w, h] = entry.rect;
   const [sw,sh] = entry.extra ? [1536,1024] : [2172,724];

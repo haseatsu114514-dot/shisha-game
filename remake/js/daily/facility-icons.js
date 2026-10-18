@@ -2,15 +2,15 @@
 export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.png', import.meta.url).href;
 export const FACILITY_SHEET_SIZE = Object.freeze([2172, 724]);
 export const FACILITY_EXTRA_SHEET = new URL('../../../assets/ui/map-facilities-extra-579.webp', import.meta.url).href;
-// Half-open source coordinates; two source pixels of breathing room around alpha > 2.
+// Half-open crops with two source pixels of breathing room. Badge anchors touch an opaque right-side contour.
 export const FACILITY_ICONS = Object.freeze({
-  kannondo: Object.freeze({ label: '観音堂', rect: Object.freeze([21, 87, 815, 561]) }),
-  home: Object.freeze({ label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
-  kohaku: Object.freeze({ label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
-  axe_bar: Object.freeze({ label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
-  choizap: Object.freeze({ label: 'チョイザップ', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
-  fortune: Object.freeze({ label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
-  trpg_bar: Object.freeze({ label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
+  kannondo: Object.freeze({ badge: Object.freeze([743, 244]), label: '観音堂', rect: Object.freeze([21, 87, 815, 561]) }),
+  home: Object.freeze({ badge: Object.freeze([1453, 281]), label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
+  kohaku: Object.freeze({ badge: Object.freeze([1994, 293]), label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
+  axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
+  choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'チョイザップ', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
+  fortune: Object.freeze({ badge: Object.freeze([659, 652]), label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
+  trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
 });
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
@@ -24,7 +24,7 @@ function ensureStickerOutline(document) {
   svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
   svg.style.position = 'absolute'; svg.style.pointerEvents = 'none';
   svg.innerHTML = '<defs><filter id="facility-sticker-outline" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
-    '<feMorphology in="SourceAlpha" operator="dilate" radius="2" result="edge"/>' +
+    '<feMorphology in="SourceAlpha" operator="dilate" radius="3" result="edge"/>' +
     '<feFlood flood-color="#fff3df" result="white"/><feComposite in="white" in2="edge" operator="in" result="border"/>' +
     '<feMerge><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
   document.body.append(svg);
@@ -43,6 +43,7 @@ export function facilityIconLayout(id, size = 48) {
   const scale = size / Math.max(width, height);
   return { width: width * scale, height: height * scale,
     sheetWidth: sheetWidth * scale, sheetHeight: sheetHeight * scale,
+    badgeX: (entry.badge[0] - x) * scale, badgeY: (entry.badge[1] - y) * scale,
     left: -x * scale, top: -y * scale, src: entry.extra ? FACILITY_EXTRA_SHEET : FACILITY_SHEET };
 }
 
@@ -53,6 +54,8 @@ export function createFacilityIcon(id, { size = 48, decorative = false, sticker 
   icon.className = `facility-icon${sticker ? ' sticker' : ''}`;
   icon.dataset.facility = id;
   icon.style.width = icon.style.height = `${size}px`;
+  icon.style.setProperty('--facility-badge-x', `${layout.badgeX}px`);
+  icon.style.setProperty('--facility-badge-y', `${layout.badgeY}px`);
   if (decorative) icon.setAttribute('aria-hidden', 'true');
   else { icon.setAttribute('role', 'img'); icon.setAttribute('aria-label', FACILITY_ICONS[id].label); }
   const crop = document.createElement('span');

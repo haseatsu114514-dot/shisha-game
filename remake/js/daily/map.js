@@ -265,6 +265,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         const crop = facility.querySelector('.facility-icon-crop');
         btn.style.setProperty('--facility-art-width', crop.style.width);
         btn.style.setProperty('--facility-art-height', crop.style.height);
+        for (const axis of ['x', 'y']) btn.style.setProperty(`--facility-badge-${axis}`, facility.style.getPropertyValue(`--facility-badge-${axis}`));
       }
       const revealIndex = reveals.indexOf(s.id);
       if (revealIndex >= 0) {

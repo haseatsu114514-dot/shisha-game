@@ -17,14 +17,15 @@ body.game-ds .map .spot-pin.facility-location .shield { width: 64px; min-width: 
 body.game-ds .map .spot-pin.facility-location .ico { width: 56px; height: 56px; }
 body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .5833333333; }
 
-/* Event marks follow the artwork's visible upper-right, including wide/short art. */
+/* Per-art alpha-contour anchors keep marks touching the illustration, not transparent corners. */
 .map .spot-pin.facility-pin .evt-badge {
-  top: calc(6px + (96px - var(--facility-art-height)) / 2 - 7px);
-  right: calc(12px + (96px - var(--facility-art-width)) / 2 - 7px);
+  top: calc(6px + (96px - var(--facility-art-height)) / 2 + var(--facility-badge-y) - 13.5px);
+  left: calc(12px + (96px - var(--facility-art-width)) / 2 + var(--facility-badge-x) - 2.5px);
+  right: auto;
 }
 body.game-ds .map .spot-pin.facility-pin .evt-badge {
-  top: calc(4px + (56px - var(--facility-art-height) * .5833333333) / 2 - 7px);
-  right: calc(4px + (56px - var(--facility-art-width) * .5833333333) / 2 - 7px);
+  top: calc(4px + (56px - var(--facility-art-height) * .5833333333) / 2 + var(--facility-badge-y) * .5833333333 - 13.5px);
+  left: calc(4px + (56px - var(--facility-art-width) * .5833333333) / 2 + var(--facility-badge-x) * .5833333333 - 2.5px);
 }
 
 /* Standalone comparison using the same artwork as the map. */

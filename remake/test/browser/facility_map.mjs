@@ -63,9 +63,12 @@ try {
           facility: icon?.dataset.facility || null, logo: pin.querySelector('[data-store-logo]')?.dataset.storeLogo || null,
           label: pin.getAttribute('aria-label'), caption: pin.querySelector('.sub-label').textContent,
           image: img ? { src: new URL(img.currentSrc).pathname, width: img.naturalWidth, height: img.naturalHeight } : null,
-          eventCornerDelta: crop && pin.querySelector('.evt-badge') ? (() => {
+          eventContactDelta: crop && pin.querySelector('.evt-badge') ? (() => {
             const c = crop.getBoundingClientRect(), b = pin.querySelector('.evt-badge').getBoundingClientRect();
-            return [b.x + b.width/2 - c.right, b.y + b.height/2 - c.top];
+            const scale = c.width / parseFloat(crop.style.width), unit = b.width / 21;
+            const x = c.left + parseFloat(pin.style.getPropertyValue('--facility-badge-x')) * scale;
+            const y = c.top + parseFloat(pin.style.getPropertyValue('--facility-badge-y')) * scale;
+            return [(b.x + b.width/2 - x)/unit, (b.y + b.height/2 - y)/unit];
           })() : null,
           filter: crop ? getComputedStyle(crop).filter : null,
           shieldBackground: getComputedStyle(pin.querySelector('.shield')).backgroundColor,
@@ -90,7 +93,7 @@ try {
         const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
-          if (pin.eventCornerDelta) assert(pin.eventCornerDelta.every(n => Math.abs(n) < 6), `${id} event mark does not follow the artwork corner`);
+          if (pin.eventContactDelta) assert(Math.abs(pin.eventContactDelta[0] - 8) < 1 && Math.abs(pin.eventContactDelta[1] + 3) < 1, `${id} event mark must touch its opaque contour anchor`);
           if (layout === 'normal') assert(pin.anchorDelta.every(n => Math.abs(n) < 5), `${id} artwork does not point to its map coordinate`);
           assert(pin.image.width > 0 && pin.image.height > 0);
           assert(pin.image.src.startsWith('/assets/ui/map-facilities-'));
@@ -129,9 +132,33 @@ try {
       if (touch) await go.tap(); else await go.click();
       assert.equal(await page.evaluate(() => window.mapFlow), 'axe_bar', 'legacy axe destination changed');
     }
+    const contacts = [];
+    if (!baseline) for (const id of [...Object.keys(expected), 'trpg_bar']) {
+      const saved = await page.evaluate(async id => {
+        if (window.mapFlow) { F.map.interruptMap(null); await window.mapFlow; }
+        Object.assign(F.core.state, { chapter: id === 'trpg_bar' ? 2 : 1, day: 3, slot: id === 'axe_bar' ? 1 : 0 });
+        const before = JSON.stringify(F.core.state);
+        window.mapFlow = F.map.chooseSpot({ eventPin: id });
+        return before;
+      }, id);
+      const pin = page.locator(`[data-test="pin-${id}"]`);
+      await page.locator('.map:not(.done)').waitFor();
+      await pin.locator('.facility-icon img').evaluate(i => i.decode());
+      const delta = await pin.evaluate(pin => {
+        const crop = pin.querySelector('.facility-icon-crop'), c = crop.getBoundingClientRect();
+        const b = pin.querySelector('.evt-badge').getBoundingClientRect(), scale = c.width / parseFloat(crop.style.width), unit = b.width / 21;
+        const x = c.left + parseFloat(pin.style.getPropertyValue('--facility-badge-x')) * scale;
+        const y = c.top + parseFloat(pin.style.getPropertyValue('--facility-badge-y')) * scale;
+        return [(b.x+b.width/2-x)/unit, (b.y+b.height/2-y)/unit];
+      });
+      assert(Math.abs(delta[0]-8)<1 && Math.abs(delta[1]+3)<1, `${device}/${layout}/${id}: badge detached from illustration`);
+      assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved);
+      if (device === 'pc' && layout === 'normal') await pin.screenshot({ path: path.join(out, `${phase}-contact-${id}.png`) });
+      contacts.push({ id, delta, stateUnchanged: true });
+    }
     assert.equal(await page.evaluate(() => localStorage.getItem('qa-facility-sentinel')), '579');
     assert.deepEqual(errors, []); assert.deepEqual(resources, []);
-    results.push({ device, viewport, layout, cases, errors, resources });
+    results.push({ device, viewport, layout, cases, contacts, errors, resources });
     console.log(`PASS ${phase}: ${device}/${layout} day/night/ch2/locked/legacy`);
     await context.close();
   }
