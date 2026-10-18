@@ -25,7 +25,12 @@ MOB_SPEAKERS = {"", "???", "customer", "everyone", "old_man", "shop_clerk",
 def load_characters() -> dict:
     data = json.loads(CHARS_FILE.read_text(encoding="utf-8"))
     chars = data if isinstance(data, list) else data.get("characters", [])
-    return {c["id"]: c.get("name", c["id"]) for c in chars if isinstance(c, dict) and "id" in c}
+    result = {c["id"]: c.get("name", c["id"]) for c in chars if isinstance(c, dict) and "id" in c}
+    # 現行ローダと同じ独立プロフィール。名簿へ二重登録して解決しない。
+    overlay = json.loads((DLG_DIR / "samechan.json").read_text(encoding="utf-8")).get("profile", {})
+    if overlay.get("id"):
+        result[overlay["id"]] = overlay.get("name", overlay["id"])
+    return result
 
 
 def collect_speakers(filt: str | None) -> dict[str, Counter]:

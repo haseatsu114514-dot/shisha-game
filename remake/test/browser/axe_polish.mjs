@@ -151,7 +151,7 @@ await suite("axe-polish", async check => {
     assert.equal(await effect.evaluate(n => n.outerHTML), frozen, "Rules pause the complete impact effect");
     await page.locator('[data-test="axe-rules-close"]').click();
     await capture(page, "pc-impact");
-    await page.clock.runFor(800); assert.equal(Number(await effect.getAttribute("opacity")), 0);
+    await page.clock.runFor(1250); assert.equal(Number(await effect.getAttribute("opacity")), 0);
     await action(page); await phase(page, "opponent-ready");
     const actorBefore = await root(page).evaluate(n => ({ actor: n.dataset.actor, held: n.dataset.held,
       player: n.dataset.playerThrows, opponent: n.dataset.opponentThrows, focus: n.dataset.focusRemaining }));
@@ -179,6 +179,34 @@ await suite("axe-polish", async check => {
     assert.equal(await page.locator(".axe-result-card").evaluate(n => getComputedStyle(n).animationName), "none");
     const result = await cancel(page, before); assert.equal(result.throws[0].score, 6);
   }, { reducedMotion: "reduce" });
+
+  await check("green-power-cue-and-zero-point-wood-contact-never-celebrate", async page => {
+    const before = await start(page, { opponent: null });
+    await page.evaluate(async () => {
+      const { SE } = await import("./js/core/audio.js");
+      window.axeSounds = { hit: 0, perfect: 0, miss: 0 };
+      for (const kind of Object.keys(window.axeSounds)) SE[kind] = () => window.axeSounds[kind]++;
+    });
+    await action(page); await phase(page, "horizontal");
+    await boardStop(page, .995, 3200, "vertical", false);
+    await boardStop(page, .995, 3600, "power", false);
+    await gauge(page, .62, 2400);
+    assert.equal(await page.locator(".axe-timing").getAttribute("data-quality"), "sweet");
+    assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /いま投げる/);
+    assert.equal(await root(page).getAttribute("data-preview-score"), "0");
+    await capture(page, "pc-green-power");
+    await page.locator(".axe-target").click();
+    const predicted = await root(page).evaluate(n => ({ x: Number(n.dataset.landingX), y: Number(n.dataset.landingY) }));
+    await page.clock.runFor(1320); await phase(page, "result");
+    assert.equal(await page.locator(".axe-total strong").textContent(), "0");
+    assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
+    assert.deepEqual(await page.evaluate(() => window.axeSounds), { hit: 0, perfect: 0, miss: 1 });
+    await capture(page, "pc-zero-point-wood");
+    const result = await cancel(page, before), shot = result.throws[0];
+    assert(!shot.stuck && shot.score === 0 && shot.outcome === "miss" && shot.dropReason === "off-board");
+    assert.equal(await page.locator(".axe-impacts > g").count(), 0);
+    assert.deepEqual(shot.landing, predicted, "A zero score uses exactly the displayed landing too");
+  });
 });
 
 if (output && sizes.length) await fs.writeFile(`${output}/polish-target-sizes.json`, JSON.stringify(sizes, null, 2) + "\n");

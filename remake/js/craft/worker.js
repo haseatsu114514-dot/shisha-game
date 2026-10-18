@@ -6,6 +6,12 @@ import { artImg, artHeight } from "./art.js";
 import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-scenes.js";
 import { buildWorkerHoles } from "./worker-holes.js";
 import { imageReady } from "../core/ui.js";
+import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
+
+/** 作業台の背景（大会＝会場、家で練習＝自宅・#638、それ以外＝tonari の店内） */
+export const benchBgRef = (cs) => cs?.mode === "tournament" ? "bg_tournament_stage" : cs?.venue === "home" ? "bg_home" : "bg_tonari_inside";
+/** 作業風景の左上の場所の札 */
+export const benchPlaceTag = (cs) => cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : cs?.venue === "home" ? "HOME" : "TONARI";
 
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
@@ -44,7 +50,7 @@ export function buildWorkerScene(cs) {
   equipment.append(water);
   const stage = el("div.bench-worker-stage", {
     role: "img", "aria-label": "はじめとシーシャの作業台を描いた静止イメージ",
-    style: { backgroundImage: `url("${bgUrl(cs?.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay())}")` },
+    style: { backgroundImage: `url("${bgUrl(benchBgRef(cs), timeOfDay())}")` },
   }, [
     actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
@@ -54,8 +60,15 @@ export function buildWorkerScene(cs) {
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
     el("i.worker-breath", { "aria-hidden": "true" }),
-    el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : "TONARI" }),
+    el("span.worker-scene-tag", { text: benchPlaceTag(cs) }),
   ]);
+  // 家の練習窓も、本編・マップと同じ所持品の背景を使う。作業中の台は従来どおり。
+  const homeBg = benchBgRef(cs) === "bg_home" ? bgUrl("bg_home", timeOfDay()) : null;
+  if (homeBg) {
+    const backdrop = el("div", { style: { position: "absolute", inset: "0", zIndex: "-1", pointerEvents: "none", backgroundSize: "cover", backgroundPosition: "35% center" } });
+    renderSceneArt(backdrop, homeBg);
+    stage.prepend(backdrop);
+  }
   // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);
   const root = el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
@@ -94,7 +107,7 @@ export function buildWorkerScene(cs) {
       stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
-  const ready = Promise.all([actions.ready, holes.ready, warmFaces]).then(async () => {
+  const ready = Promise.all([actions.ready, holes.ready, warmFaces, ...sceneArtUrls(homeBg).map(url => imageReady(url, 15000))]).then(async () => {
     facesChecked = true;
     applyFace();
     if (actor && !actor.hidden && !await readyWorkerImage(actor, actor.getAttribute("src"))) {

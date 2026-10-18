@@ -86,6 +86,16 @@
           "text": "話してくれてありがとう。栞さんが好きです。……俺と、付き合ってください"
         },
         {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "歳を偽っていたのは、謝りたい。そこは、ちゃんと"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "みんとも、栞も、私。嘘だったのは歳だけなの"
+        },
+        {
           "type": "show_cg",
           "cg_id": "cg_minto_confession"
         },
@@ -482,7 +492,7 @@
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "……ははっ、マジ！？ やっっっば！！ アタシ、今あげみが宇宙超えてるんだけど！！"
+          "text": "……ははっ、マジ！？ やっっっば！！ うち、今あげみが宇宙超えてるんだけど！！"
         },
         {
           "speaker": "ageha",
@@ -562,7 +572,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ねえ……この後、どうする？ アタシの部屋、ワンチャン来ちゃう……？♡"
+          "text": "ねえ……この後、どうする？ うちの部屋、ワンチャン来ちゃう……？♡"
         },
         {
           "speaker": "",
@@ -635,7 +645,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ましろちゃんのこと、お姉さんとしか見ていなかったわけじゃ……）"
+          "text": "（ましろちゃんのこと、友達としか見ていなかったわけじゃ……）"
         },
         {
           "type": "choice",
@@ -645,7 +655,7 @@
               "next_id": "confession_mashiro_accept"
             },
             {
-              "text": "「大切なお姉さんです」と答える",
+              "text": "「大切な友達です」と答える",
               "next_id": "confession_mashiro_reject"
             }
           ]
@@ -1221,12 +1231,12 @@
         },
         {
           "speaker": "hiyori",
-          "text": "あ、でも。いつも静かにしてるわけじゃないからね",
+          "text": "あ、でも。明日からも、儚い女はやめないからね",
           "face": "smile"
         },
         {
           "speaker": "hajime",
-          "text": "それも、知ってます"
+          "text": "はい。消えそうな時は、ちゃんと見つけに行きます"
         },
         {
           "speaker": "hiyori",

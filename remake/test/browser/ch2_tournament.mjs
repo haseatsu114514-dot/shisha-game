@@ -88,7 +88,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.getByRole('button',{name:/第三章|第3章/}).count(),0);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
-    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味だけが遠い/);
+    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味の輪郭は戻らない/);
+    assert.match(afterText,/おめでとうの文字が届いていた/);
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     await assertFits(page,'.ch2-contest .btn');
@@ -96,7 +97,7 @@ await suite('ch2-tournament',async check=>{
   });
   await check('touch-known-loss-retry-and-preserved-consumption',async page=>{
     await seed(page,{known:true,auto:'bad'});await page.locator(t('start')).tap();await phone(page,true);await page.locator(t('ready')).waitFor();
-    const text=await page.evaluate(()=>window.__texts.join('\n'));assert.match(text,/神崎さんだ/);assert.match(text,/また会ったわね/);assert(!text.includes('名前を聞くのは初めて'));
+    const text=await page.evaluate(()=>window.__texts.join('\n'));assert.match(text,/神崎さんだ/);assert.match(text,/また会ったな/);assert(!text.includes('名前を聞くのは初めて'));
     const before=await get(page);const loss=await playAttempt(page,true);assert(loss.flags._ch2_tournament.result.rank>1);
     await page.locator(t('continue')).tap();await page.locator(t('defeat')).waitFor();
     await page.locator(t('retry')).tap();await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});

@@ -10,10 +10,13 @@ import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { samechanSpot } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
+import { toast } from "../core/ui.js";
+import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -151,6 +154,7 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   return !spot.requiresMet || !!state.met[spot.requiresMet];
 }
 
@@ -180,6 +184,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
 export async function visitChar(charId, { welcome = null } = {}) {
   const owner = state;
   if (charId === "sumi") await meetHiyoriAtTonari();
+  if (state !== owner) return;
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];
@@ -269,7 +274,20 @@ export async function visitSpot(spot) {
     state.flags._c_station_registered = true;
     await installReel();
   }
+  // キャラとの会話があった来店には重ねない（くつろいだ静かな来店だけ）
+  if (spot.id === "cafe" && !encounter) await maybeCafeIdea(spot, n);
   earnStat(spot.stat, 4);
+}
+
+/** 喫茶こはくのおまけ: くつろいでいると、たまに配合を思いつく（ライバルの話の想起／自分のひらめき） */
+async function maybeCafeIdea(spot, visit) {
+  const pick = pickCafeIdea(state, DB.recipes || [], { rainy: isRainy() });
+  if (!pick || !cafeIdeaDue(state, visit)) return;
+  const owner = state;
+  await play(ideaDialogue(pick), { bg: bgRef(spot.bg) });
+  if (state !== owner) return;
+  const combo = markCafeIdea(state, pick, DB.flavors || []);
+  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });
 }
 
 export async function restAtHome(spot, { fullDay = false } = {}) {

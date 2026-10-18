@@ -1,0 +1,178 @@
+[
+ {
+  "id": "title-logo",
+  "kind": "title",
+  "x": 537,
+  "y": 24,
+  "w": 206,
+  "h": 16
+ },
+ {
+  "id": "title-rule",
+  "kind": "title",
+  "x": 566,
+  "y": 52,
+  "w": 149,
+  "h": 1
+ },
+ {
+  "id": "title-chapter",
+  "kind": "title",
+  "x": 568,
+  "y": 86,
+  "w": 142,
+  "h": 13
+ },
+ {
+  "id": "title-subtitle",
+  "kind": "title",
+  "x": 561,
+  "y": 230,
+  "w": 159,
+  "h": 14
+ },
+ {
+  "id": "title-name0",
+  "kind": "glyph",
+  "x": 403,
+  "y": 129,
+  "w": 83,
+  "h": 80
+ },
+ {
+  "id": "title-name1",
+  "kind": "glyph",
+  "x": 500,
+  "y": 142,
+  "w": 60,
+  "h": 53
+ },
+ {
+  "id": "title-name2",
+  "kind": "glyph",
+  "x": 565,
+  "y": 159,
+  "w": 63,
+  "h": 45
+ },
+ {
+  "id": "title-name3",
+  "kind": "glyph",
+  "x": 650,
+  "y": 140,
+  "w": 55,
+  "h": 61
+ },
+ {
+  "id": "title-name4",
+  "kind": "glyph",
+  "x": 730,
+  "y": 151,
+  "w": 50,
+  "h": 65
+ },
+ {
+  "id": "title-name5",
+  "kind": "glyph",
+  "x": 794,
+  "y": 128,
+  "w": 84,
+  "h": 82
+ },
+ {
+  "id": "minto",
+  "kind": "body",
+  "x": 43,
+  "y": 319,
+  "w": 151,
+  "h": 324
+ },
+ {
+  "id": "minto-shadow",
+  "kind": "shadow",
+  "x": 43,
+  "y": 618,
+  "w": 154,
+  "h": 27
+ },
+ {
+  "id": "naru",
+  "kind": "body",
+  "x": 216,
+  "y": 279,
+  "w": 211,
+  "h": 364
+ },
+ {
+  "id": "naru-shadow",
+  "kind": "shadow",
+  "x": 221,
+  "y": 618,
+  "w": 209,
+  "h": 27
+ },
+ {
+  "id": "adam",
+  "kind": "body",
+  "x": 440,
+  "y": 285,
+  "w": 208,
+  "h": 358
+ },
+ {
+  "id": "adam-shadow",
+  "kind": "shadow",
+  "x": 446,
+  "y": 618,
+  "w": 203,
+  "h": 26
+ },
+ {
+  "id": "tsumugi",
+  "kind": "body",
+  "x": 663,
+  "y": 330,
+  "w": 165,
+  "h": 313
+ },
+ {
+  "id": "tsumugi-shadow",
+  "kind": "shadow",
+  "x": 666,
+  "y": 618,
+  "w": 163,
+  "h": 27
+ },
+ {
+  "id": "sumi",
+  "kind": "body",
+  "x": 845,
+  "y": 262,
+  "w": 203,
+  "h": 381
+ },
+ {
+  "id": "sumi-shadow",
+  "kind": "shadow",
+  "x": 850,
+  "y": 618,
+  "w": 201,
+  "h": 26
+ },
+ {
+  "id": "hajime",
+  "kind": "body",
+  "x": 1061,
+  "y": 287,
+  "w": 188,
+  "h": 356
+ },
+ {
+  "id": "hajime-shadow",
+  "kind": "shadow",
+  "x": 1067,
+  "y": 618,
+  "w": 183,
+  "h": 26
+ }
+]

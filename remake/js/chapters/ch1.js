@@ -4,7 +4,7 @@ import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
@@ -42,6 +42,8 @@ import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
 import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
+import { playCh1Title } from "./ch1-title-motion.js";
+import { giveSumiRig } from "../daily/home-rig.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -78,7 +80,7 @@ export function setupHooks() {
       else delete state.flags._tutorial_requested;
       save();
     }
-    // チョイザップ入会（月額4,000円）
+    // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
     if (dialogueId === "ch1_choizap_first" && branch === "register") {
       addMoney(-4000);
       setFlag("_gym_member");
@@ -102,7 +104,7 @@ export async function startNewGame() {
   setupHooks();
   state.flags._ch1_opening = {};
   save();
-  await openingPart();
+  if (await openingPart() === false) return;
   await dailyPart();
 }
 
@@ -113,6 +115,7 @@ function openingProgress() {
 }
 
 async function openingPart() {
+  const owner = state;
   const progress = openingProgress();
   clearScreen();
   if (!progress.introDone) {
@@ -126,7 +129,8 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
-    await chapterTitle({ no: "第一章", name: "煙がつなぐ街", read: "スモーク・アンド・タイズ ── Smoke & Ties", sub: "SMOKE CROWN CUP 編" });
+    const titleResult = await playCh1Title();
+    if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
     await playTonariOpening();
     progress.introDone = true;
@@ -171,7 +175,7 @@ export async function resumeGame() {
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
-  if (state.phase === "opening") await openingPart();
+  if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
 }
 
@@ -353,11 +357,14 @@ async function midPreparation() {
     progress.practiceDone = true;
     save();
   }
-  if (progress.feedbackRead) return;
-  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-  await play("remake_midcheck", { bg: TONARI_N });
-  progress.feedbackRead = true;
-  save();
+  if (!progress.feedbackRead) {
+    if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+    await play("remake_midcheck", { bg: TONARI_N });
+    progress.feedbackRead = true;
+    save();
+  }
+  // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
+  await giveSumiRig({ bg: TONARI_N });
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
@@ -542,7 +549,7 @@ async function entrance() {
     { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
     { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
     { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。お前の煙を見せてやれ" },
+    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
   ];
   const host = el("div.entrance");
   layers.fx.append(host);
@@ -572,17 +579,14 @@ async function victory(cs) {
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   await play("ch1_tournament_after", { bg: STAGE });
-  // 優勝の夜: 師匠の採点表 → 未知の送信者
+  // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
         "おう。優勝、見事だった",
         ...(recognition?.comment ? [recognition.comment] : []),
-        "……で、だ。開示された採点表、もう見たか",
-        "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
-        "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
-        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが、これで覚えることがなくなったとは思うな",
-        "あの一票が何だったのか。次の舞台までに、自分で答えを出せ",
+        "最後の調整まで、よく作りきったな",
+        "今日は喜べ。帰ったら、一緒に一服しよう",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },
     {

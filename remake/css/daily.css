@@ -121,7 +121,9 @@
   padding: 12px 16px;
 }
 body.in-vn .hud, body.vn-open .hud { opacity: 0; }
-body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; }
+/* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
+body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; pointer-events: none; }
+body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
 .hud-card, .hud-level, .hud-menu, .hud-stamina {
@@ -455,6 +457,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 }
 .mi-go:hover { filter: brightness(1.08); }
 .mi-go:active { transform: scale(0.98); }
+.mi-go.mi-go-alt { margin-top: 6px; color: var(--text); background: rgba(20, 14, 26, 0.85); border-color: #f4d27a99; }
 .mi-no { padding: 8px; text-align: center; font-size: 13px; color: #f0b9b9; background: rgba(40, 18, 24, 0.6); border: 1px dashed rgba(240, 185, 185, 0.35); border-radius: 4px; }
 .map-notice {
   top: 92px;
@@ -511,6 +514,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .big-choice b { font-size: 21px; letter-spacing: 0.05em; }
 .big-choice small { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
 .big-choice:hover { border-color: var(--gold); transform: translateX(6px); }
+.big-choice:disabled { opacity: .5; cursor: not-allowed; }
+.big-choice:disabled:hover { border-color: inherit; transform: none; }
 .sub-back { margin-top: 18px; }
 
 /* ---------------------------------------------------------------- ショップ */
@@ -1002,3 +1007,18 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .street-reel { position: absolute; left: 18px; top: 224px; width: 136px; transform: scale(.6); transform-origin: top left; }
 .street-reel .reel-widget { left: 0; top: 0; bottom: auto; }
 .mi-preview.loading { display: grid; place-items: center; font-size: 20px; color: #cdb8e6; background: #171225; }
+
+/* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
+.home-shisha-dialog .home-mix { display: grid; gap: 8px; max-height: 56vh; overflow-y: auto; padding-right: 4px; }
+.home-shisha-dialog .home-mix-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px 3.2em 44px 3.2em; align-items: center; gap: 8px; }
+.home-shisha-dialog .home-mix-ratio { color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .home-mix-name { min-width: 0; overflow-wrap: anywhere; }
+.home-shisha-dialog .home-mix-g { text-align: center; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .fr-btn { display: grid; place-items: center; padding: 0; line-height: 1; }
+.home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }
+.home-shisha-dialog .modal-actions .btn:disabled { opacity: .45; cursor: not-allowed; }
+/* 縮小したstageのbackdrop-filterはタッチChromiumで部屋を鏡像状に反復する。
+   この窓では暗幕だけで背景を落とし、台と部屋を一枚のまま見せる。 */
+@media (pointer: coarse) {
+  #modal:has(.home-shisha-dialog) .modal-backdrop { backdrop-filter: none; }
+}

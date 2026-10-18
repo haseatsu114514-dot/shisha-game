@@ -9,13 +9,15 @@ import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { showHud } from "./hud.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { runAxeThrow } from "../minigames/axe.js";
+import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
+import { playAxeBarSighting } from "./axe-bar-discovery.js";
 
 const modes = { practice: "3投練習", league: "10投スコアアタック" };
 let active = false;
 
 /** 入店・記録閲覧・中断は無料。完走時だけ消費し、行動と保存はcalendarが確定する。 */
 export async function visitAxeBar({ staminaGuard = async () => true, signal } = {}) {
-  if (active || !state || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
+  if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
   active = true;
   const owner = state, day = state.day, slot = state.slot, chapter = state.chapter;
   const abort = new AbortController();
@@ -33,6 +35,10 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   try {
     await setBg(bgUrl(AXE_BAR.preview), { fast: true });
     if (!current()) return false;
+    // 実来店の無料目撃。プレイ／レッスンの完走や精算とは独立して完読だけを保存する。
+    if (axeBarSightingDue(owner)) {
+      if (!await playAxeBarSighting({ signal: abort.signal }) || !current()) return false;
+    }
     const mode = await new Promise(resolve => {
       let lessonOpen = false, picked = false;
       const pick = value => { if (!lessonOpen && !picked) { picked = true; resolve(value); } };

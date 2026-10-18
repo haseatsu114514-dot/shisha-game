@@ -7,6 +7,7 @@ import { star, starText, rankLabel, affinityLevel, currentCondition } from "../c
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
+import { triedLater, comboName } from "./cafe-ideas.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -181,5 +182,11 @@ function itemsTab() {
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),
+    // 喫茶こはくで思いついた・ライバルから聞いた、まだ作っていない配合
+    ...(() => {
+      const later = triedLater(state, DB.recipes);
+      return later.length ? [el("h4", { text: "試したい配合" }),
+        el("div.chips", later.map((r) => el("span.chip", { text: comboName(r, DB.flavors) })))] : [];
+    })(),
   ]);
 }

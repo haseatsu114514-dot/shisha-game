@@ -14,6 +14,8 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
   page.setDefaultTimeout(20000);
   await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
+    s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
+    Object.assign(s.flags, { _axe_bar_sighting_done: true, _axe_bar_sighting_day: day - 1, _axe_bar_sighting_chapter: chapter }); // 目撃後の既存店舗回帰
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _lime_tut: true, _lime_opened: true,
@@ -212,6 +214,17 @@ await suite("play-spots", async runCheck => {
     await capture(page, label + "-ordinary-entry");
     await hit(page, "trpg-buy-ordinary-cup");
     assert.equal((await value(page)).money, before.money - 500); assert.equal((await value(page)).slot, 1);
+    assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled(), "DAY2 is a free night after #639, not an Ageha fixed night");
+    // 購入済みオートセーブを実際に読み直し、二重購入・夜の消費なしで再入店できる。
+    await page.reload(); await hit(page, "title-load"); await hit(page, "slot-0"); await page.locator(map).waitFor();
+    await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); __remake.vnTest.turbo = true; });
+    const restored = await value(page);
+    assert.equal(restored.money, before.money - 500); assert.equal(restored.day, 16); assert.equal(restored.slot, 1);
+    assert.deepEqual(restored.trpg.owned, ["ordinary-cup"]);
+    for (const key of ["stats", "stamina", "affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(restored[key], before[key]);
+    await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+    assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
+    assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
     await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
@@ -227,6 +240,10 @@ await suite("play-spots", async runCheck => {
     await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
     const after = await value(page); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
     assert(after.trpg.cleared["ordinary-cup"]);
+    await manualSave(page);
+    await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
+    await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); __remake.vnTest.turbo = true; });
+    assert.deepEqual(await value(page), after, "Completed table and one-night cost survive SAVE/LOAD");
     await capture(page, label + "-ordinary-return");
   }, options);
 

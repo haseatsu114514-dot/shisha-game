@@ -24,12 +24,18 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……なんでもない。あたしの一台、ちゃんと見てて"
+          "text": "……なんでもない。うちの一台、ちゃんと見てて"
         },
         {
           "speaker": "",
           "face": "",
           "text": "笑っているのに、鞄を握る指はほどけなかった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
         }
       ],
       "branches": {
@@ -37,19 +43,31 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "はじめくん。来たね。今日は、同じ舞台だ"
+            "text": "ハジメっち。来たね。今日は、同じ舞台だ"
           }
         ],
         "first": [
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "MELTY PUFFのあげは。……はじめくん、だよね"
+            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。蒸野はじめです。よろしくお願いします"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（朝、指を確かめる話を思い出す。……今日は、ダメな日なのかもしれない）"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……見なかったことにして。お願い"
           }
         ]
       }
@@ -121,14 +139,14 @@
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "また会ったわね。今日は、煙で話しましょう"
+            "text": "また会ったな。今日は、煙で話そう"
           }
         ],
         "rei_first": [
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "零-ZERO-のREIよ。あなたの煙、楽しみにしているわ"
+            "text": "零-ZERO-のREI。今日の煙、楽しみにしてる"
           }
         ]
       }
@@ -209,34 +227,68 @@
         {
           "speaker": "",
           "face": "",
-          "text": "片づけの済んだ台で、自分の一台を吸う。煙は出る。味だけが遠い。"
+          "text": "片づけの済んだ台で、自分の一台を確かめた。煙は出る。味の輪郭は戻らない。"
         },
         {
           "speaker": "hajime",
-          "face": "sad",
-          "text": "（勝った。……それなのに、分からないままだ）"
+          "face": "normal",
+          "text": "（勝った。嬉しいはずなのに、体が追いつかない）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_no_audience",
+          "next_true": "alone",
+          "next_false": "other"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スマホを開く。今日のおめでとうは、まだ届いていなかった。"
+          "text": "スマホには、おめでとうの文字が届いていた。勝ったことを喜んでくれる人がいる。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "前のやりとりは残っている。約束も、笑った日の言葉も。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "（消えたわけじゃない。俺が、ここからどうするかだ）"
+          "text": "ありがとう、と打つ。送信するまで、ずいぶん時間がかかった。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "スミさんから、新しいメッセージが届いた。"
         }
-      ]
+      ],
+      "branches": {
+        "alone": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "空いた応援席を見た。来ないでほしいと送ったのは、自分だった。"
+          }
+        ],
+        "other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_audience_welcome",
+            "next_true": "welcome",
+            "next_false": "old_save"
+          }
+        ],
+        "welcome": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "出口でつむぎが手を振っていた。礼を言おうとして、声が詰まった。"
+          }
+        ],
+        "old_save": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "片づけが終わると、ようやくスマホを見る余裕ができた。"
+          }
+        ]
+      }
     }
   ]
 }

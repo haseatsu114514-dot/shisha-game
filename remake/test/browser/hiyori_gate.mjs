@@ -12,6 +12,7 @@ async function setup(page) {
     H.ch1.setupHooks(); H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
     H.fresh = () => {
       const s = H.core.newGame();
+      s.flags._axe_bar_legacy_access = true; // #577: 既存の好感度・正式ルート条件を維持
       Object.assign(s, { phase: 'daily', day: 9, slot: 1, seed: 131, money: 30000, stamina: 100, lastBaitoDay: 9 });
       Object.assign(s.flags, { _morning_9: true, _morning_10: true, _delivery_minto_done: true,
         _delivery_adam_done: true, _errand_scout_done: true, _lime_tut: 1, _hiyori_meeting_done: true,

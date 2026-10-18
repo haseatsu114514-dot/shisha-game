@@ -1,4 +1,4 @@
-// #324: the current-temperature arrow must use the same value as the fixed optimal band.
+// #324 / #637: the current-temperature arrow and shared effective band must agree.
 import assert from "node:assert/strict";
 import { suite, storageSnapshot } from "./support.mjs";
 
@@ -45,7 +45,7 @@ await suite("thermometer-alignment", async check => {
                 mark: (tube.bottom - mark.y - mark.height / 2) / tube.height,
                 low: (tube.bottom - band.bottom) / tube.height, high: (tube.bottom - band.top) / tube.height,
                 optimal: meter.root.classList.contains("optimal"), expected: conditions.isOptimalTemperature(temp),
-                bounds: conditions.OPTIMAL });
+                bounds: conditions.temperatureBands().optimal });
             }
           }
           return results;

@@ -1,0 +1,581 @@
+{
+  "method": "native alpha>16 bounds plus2px padding;88% display scale",
+  "rows": [
+    {
+      "id": "mint",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/mint-wings-composite.png",
+      "name": "ミント",
+      "bytes": 751954,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        309,
+        214,
+        944,
+        1053
+      ],
+      "window": [
+        306,
+        211,
+        641,
+        845
+      ],
+      "aspect": 0.7585798816568048,
+      "width_at_112": 74.76563313609468,
+      "sha256": "d65bf690203e60c140cc85b9b9789e5573938b7b672e90502574c28e76b79d71",
+      "git_blob_sha": "acf59c3fe8fbcecc4bbfe2ac9f4b51b77c44e107"
+    },
+    {
+      "id": "double_apple",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/double_apple-wings-composite.png",
+      "name": "ダブルアップル",
+      "bytes": 985990,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        263,
+        136,
+        995,
+        1116
+      ],
+      "window": [
+        260,
+        133,
+        738,
+        986
+      ],
+      "aspect": 0.7484787018255578,
+      "width_at_112": 73.77006085192697,
+      "sha256": "5f663c8d24ffdf00d462aa710270564e1c9afb5f7730f22e528ce9d9eae9e674",
+      "git_blob_sha": "9c750ae6bec3e711d3dee35afd3e66521a34bd55"
+    },
+    {
+      "id": "blueberry",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/blueberry-wings-composite.png",
+      "name": "ブルーベリー",
+      "bytes": 1101496,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        132,
+        997,
+        1117
+      ],
+      "window": [
+        258,
+        129,
+        741,
+        990
+      ],
+      "aspect": 0.7484848484848485,
+      "width_at_112": 73.77066666666668,
+      "sha256": "c8547279c95bae2732a1e235a409d815c975dda3b98d584d3633e97a13cd8ec8",
+      "git_blob_sha": "ad3dd9b2837ace47345bf7edd2c167960f39406a"
+    },
+    {
+      "id": "strawberry",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/strawberry-wings-composite.png",
+      "name": "ストロベリー",
+      "bytes": 1138513,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        132,
+        996,
+        1116
+      ],
+      "window": [
+        258,
+        130,
+        741,
+        989
+      ],
+      "aspect": 0.7492416582406471,
+      "width_at_112": 73.84525783619819,
+      "sha256": "bcf290ed6e47530d21b4db66011bcaeafe4b529a0f15a3a7381358368f230a6b",
+      "git_blob_sha": "50fd88aac29e2198cea7c629fe77795a42167157"
+    },
+    {
+      "id": "vanilla",
+      "maker": "ドバジ",
+      "src": "dobaj-vanilla.png",
+      "name": "バニラ",
+      "bytes": 1333446,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        113,
+        1019,
+        1153
+      ],
+      "window": [
+        243,
+        110,
+        779,
+        1046
+      ],
+      "aspect": 0.7447418738049714,
+      "width_at_112": 73.40175908221798,
+      "sha256": "ccf397874a03adb0a02bc69e68f122de341221269c542cabbd8b48d483241db0",
+      "git_blob_sha": "c87e7b9c849fecfbb41d1a7c79c7026797c9e918"
+    },
+    {
+      "id": "pineapple",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/pineapple-wings-composite.png",
+      "name": "パイナップル",
+      "bytes": 1126225,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        131,
+        999,
+        1118
+      ],
+      "window": [
+        258,
+        129,
+        743,
+        992
+      ],
+      "aspect": 0.748991935483871,
+      "width_at_112": 73.82064516129033,
+      "sha256": "042f052fc7cf848165232b73948ea994bfad21b0839a25c81599e4274bf5ee24",
+      "git_blob_sha": "4eea30d18c12d12db95427aaa4461341190753e3"
+    },
+    {
+      "id": "coconut",
+      "maker": "ドバジ",
+      "src": "dobaj-coconut.png",
+      "name": "ココナッツ",
+      "bytes": 1268178,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        111,
+        1021,
+        1156
+      ],
+      "window": [
+        244,
+        108,
+        780,
+        1050
+      ],
+      "aspect": 0.7428571428571429,
+      "width_at_112": 73.21600000000001,
+      "sha256": "93db640816d137b0a7cba7d35654deec9c89b39a3656c1e2395dcd334791f793",
+      "git_blob_sha": "eaa1e8e4b1fa4848f4bca39cfcf3fa8e8b527843"
+    },
+    {
+      "id": "mango",
+      "maker": "ドバジ",
+      "src": "dobaj-mango.png",
+      "name": "マンゴー",
+      "bytes": 1272764,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        111,
+        1021,
+        1155
+      ],
+      "window": [
+        242,
+        108,
+        782,
+        1050
+      ],
+      "aspect": 0.7447619047619047,
+      "width_at_112": 73.40373333333334,
+      "sha256": "925f4ac7a0879308a8e0bae3dc941911dce14264715f4747477694d6487f9e54",
+      "git_blob_sha": "5ec7469bc8ad4bfe137fb97f551a9d7393e00bd7"
+    },
+    {
+      "id": "lemon",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/lemon-wings-composite.png",
+      "name": "レモン",
+      "bytes": 1056029,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        262,
+        132,
+        997,
+        1117
+      ],
+      "window": [
+        259,
+        129,
+        741,
+        991
+      ],
+      "aspect": 0.7477295660948536,
+      "width_at_112": 73.69622603430878,
+      "sha256": "eecaa5f0397cf57225e41aee9b2bb68f318fb7371cc6034d0e49d13590662695",
+      "git_blob_sha": "ef28b4783ec7de4d0e394008504c141f2ca7d117"
+    },
+    {
+      "id": "peach",
+      "maker": "ドバジ",
+      "src": "dobaj-peach.png",
+      "name": "ピーチ",
+      "bytes": 1250344,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        245,
+        112,
+        1021,
+        1154
+      ],
+      "window": [
+        243,
+        109,
+        780,
+        1048
+      ],
+      "aspect": 0.7442748091603053,
+      "width_at_112": 73.35572519083969,
+      "sha256": "a3c13cd97f0354e876f9ad9ccc40a43e8b5de7b81d2e70540509135e7ec8bd2d",
+      "git_blob_sha": "b304bdcf2ab787883654916c97695cb4667ad905"
+    },
+    {
+      "id": "orange",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/orange-wings-composite.png",
+      "name": "オレンジ",
+      "bytes": 1095557,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        132,
+        998,
+        1118
+      ],
+      "window": [
+        258,
+        129,
+        742,
+        992
+      ],
+      "aspect": 0.7479838709677419,
+      "width_at_112": 73.72129032258064,
+      "sha256": "5124270384576d5051f5ef255011b8a796585b80afca408f332d5500b6ed3d00",
+      "git_blob_sha": "14c04e333cc6570a0cd5c641c025cd0ceb32005a"
+    },
+    {
+      "id": "grape",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/grape-wings-composite.png",
+      "name": "グレープ",
+      "bytes": 985251,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        275,
+        147,
+        986,
+        1122
+      ],
+      "window": [
+        272,
+        144,
+        716,
+        981
+      ],
+      "aspect": 0.7298674821610601,
+      "width_at_112": 71.9357390417941,
+      "sha256": "33a1e94de92a0ba4070865bab1f296aa484706c8b532d63eae78dcc8b998e4e8",
+      "git_blob_sha": "1a9ff6e0fdb8bebcb81bbc23f30d4305b83e8eb2"
+    },
+    {
+      "id": "melon",
+      "maker": "ドバジ",
+      "src": "dobaj-melon.png",
+      "name": "メロン",
+      "bytes": 1253633,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        112,
+        1020,
+        1154
+      ],
+      "window": [
+        244,
+        109,
+        778,
+        1048
+      ],
+      "aspect": 0.7423664122137404,
+      "width_at_112": 73.16763358778627,
+      "sha256": "75c039b9ccf6fab1fd40473694bc041a2c2015970d358dc2246d76cef5ddf1eb",
+      "git_blob_sha": "73fa5ac873154a55ffa359409f3d8761575ebaa1"
+    },
+    {
+      "id": "watermelon",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/watermelon-wings-composite.png",
+      "name": "スイカ",
+      "bytes": 1129184,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        262,
+        132,
+        996,
+        1118
+      ],
+      "window": [
+        259,
+        129,
+        740,
+        992
+      ],
+      "aspect": 0.7459677419354839,
+      "width_at_112": 73.52258064516128,
+      "sha256": "92cd6aec45700cf542ea634b5dfcad6b1f0d82abeb8aade06ed1e3abb3b0584c",
+      "git_blob_sha": "023c72359c884d7a55e1f07ab3e7c479225a6492"
+    },
+    {
+      "id": "banana",
+      "maker": "ドバジ",
+      "src": "dobaj-banana.png",
+      "name": "バナナ",
+      "bytes": 1231658,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        112,
+        1021,
+        1154
+      ],
+      "window": [
+        243,
+        109,
+        780,
+        1048
+      ],
+      "aspect": 0.7442748091603053,
+      "width_at_112": 73.35572519083969,
+      "sha256": "273f346cb07328a67fa84f5eee816f54e220256f5134923d86866cb78cc8f9e8",
+      "git_blob_sha": "735eefc9c749500c9832e26e8d1d7985d10ba015"
+    },
+    {
+      "id": "cinnamon",
+      "maker": "アルファーヘブン",
+      "src": "../wing-only-heaven10-v6/outputs/cinnamon-wings-composite.png",
+      "name": "シナモン",
+      "bytes": 1144575,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        257,
+        131,
+        999,
+        1119
+      ],
+      "window": [
+        254,
+        129,
+        747,
+        993
+      ],
+      "aspect": 0.7522658610271903,
+      "width_at_112": 74.14332326283987,
+      "sha256": "d29390a0f759234ba4de2d542a12e81203f9abdac2366faa9229de5fc382f66b",
+      "git_blob_sha": "065ab6c955d3bb3d6c781dcf0eba8c368f5103a4"
+    },
+    {
+      "id": "rose",
+      "maker": "アフサール",
+      "src": "afsaal-rose.png",
+      "name": "ローズ",
+      "bytes": 1398562,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        248,
+        115,
+        1017,
+        1154
+      ],
+      "window": [
+        245,
+        112,
+        775,
+        1045
+      ],
+      "aspect": 0.7416267942583732,
+      "width_at_112": 73.09473684210526,
+      "sha256": "f9c1c0ebb337d1e26bfe697a955ddbaee8c5d96f85f9f3bf25c97aa8323e5676",
+      "git_blob_sha": "c97674712423f875a5c88d98a5707b075690967e"
+    },
+    {
+      "id": "lychee",
+      "maker": "アフサール",
+      "src": "afsaal-lychee.png",
+      "name": "ライチ",
+      "bytes": 1224953,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        246,
+        113,
+        1020,
+        1156
+      ],
+      "window": [
+        243,
+        110,
+        780,
+        1049
+      ],
+      "aspect": 0.7435653002859867,
+      "width_at_112": 73.28579599618685,
+      "sha256": "b9c52c8ef1680fa516ee1b6fc282a3ae4596e3d56576ab3085093a4ba9134f16",
+      "git_blob_sha": "cb2d39cee1d0fa8ee8343a10936190432e249d5f"
+    }
+  ]
+}

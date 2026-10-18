@@ -128,15 +128,22 @@ function resumeChoice(scene, key, answer) {
   return { ...scene, lines: rows(scene.lines), branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([k,v]) => [k,rows(v)])) };
 }
 
-/** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
-export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
+/** 質問を実際に再生できるか。地図の在店表示も同じ条件を読む。 */
+export function hiyoriQuestionReady() {
   const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
     || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
-    || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori || signal?.aborted) return false;
+    || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori) return false;
   const answer = state.romanceChoices[q.choice];
-  if (answer && (answer.char !== "hiyori" || !Number.isFinite(answer.value) || answer.value < 0)) return false;
+  return !answer || answer.char === "hiyori" && Number.isFinite(answer.value) && answer.value >= 0;
+}
+
+/** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
+export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
+  if (!hiyoriQuestionReady() || signal?.aborted) return false;
+  const q = hiyoriRoute().question, scene = DB.dialogues[q.dialogue];
+  const answer = state.romanceChoices[q.choice];
   const owner = state;
   const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
   if (state !== owner || signal?.aborted || result?.cancelled || state.romanceChoices[q.choice]?.char !== "hiyori") return false;

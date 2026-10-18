@@ -1,0 +1,916 @@
+{
+  "_comment": "第2章のあげは（#626・2026-10-16 オーナー「全部採用・強制イベントも入れて物語に深くかかわらせたい」）。remake の口調（はじめは敬語、あげはは『うち』『ハジメっち』）。旧稿は _legacy/ch2_ageha.json に隔離。",
+  "dialogues": [
+    {
+      "dialogue_id": "remake_ch2_ageha_scout",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜、tonariに戻ると、ドアベルが鳴って、甘い匂いが先に入ってきた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "ageha",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "偵察、ですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ、偵察返し！ ……って、正直に言っちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげははカウンターの端に座り、店の中をゆっくり見回した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、スーツの女性がメニューを閉じた。「おまかせで、お願いします」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あの人、今日はさっぱり系だね。うちのバイブスが言ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうして、そう思うんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "え、そこ聞く？ ……なんか、だよ。いつも「なんか」なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺が当ててみます。あげはさんの「なんか」の中身"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_vibes_scout",
+          "choices": [
+            {
+              "text": "上着を着たまま、水を一気に飲んだから",
+              "next": "hit"
+            },
+            {
+              "text": "甘いものが好きそうな服だから",
+              "next": "miss"
+            },
+            {
+              "text": "疲れて見えたから、甘いもので元気に",
+              "next": "miss"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ミントにレモンを合わせた軽い一台を出すと、女性は肩の力を抜いて笑った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ね。ハジメっちの言葉、うちの「なんか」に名前つけてくれる感じ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（顔を見ただけで分かる人がいる。……少しだけ、ずるいと思った）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今度、うちの店でも答え合わせしよ。また来てよね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "来ちゃった。県大会の相手の店、見ときたくて"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "あれ？ この匂い……ううん、この顔！ 前に荷物落としてた人じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あ……あの時の！ グミベアの匂い、香水じゃなかったんだ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "フレーバーだよ〜。MELTY PUFFのあげは。隣町で店やってんの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの蒸野はじめです。県大会に出ます"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "知ってる！ じゃ、ハジメっちだ。よろしく、対戦相手さん"
+          }
+        ],
+        "hit": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……あ。それかも。脱ぐのも面倒なくらい、暑くて疲れてる"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "言われたら分かる！ うちが見てたの、たぶんそこ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_vibes_hit_scout"
+          }
+        ],
+        "miss": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "んー、ちょっと違うかも。……あ、でも水。一気に飲んでた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "上着も脱いでない。……暑くて、疲れてるのか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "それそれ！ ハジメっちが言うと、なんか正解っぽくなる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_gyaru",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファ席で、あげはのギャル友が二人、試作の一台を囲んでいた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あげは〜、このピーチのやつ、ガチかわいい味なんだけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ！ ハジメっち来た、ちょうどいい。感想聞かせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一人が、もう一人の顔をのぞき込む。「でもさ、この子は今日、別のがいいって」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うん、分かる。この子には、ピーチよりバニラ寄りかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……理由、当ててみてもいいですか"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_vibes_gyaru",
+          "choices": [
+            {
+              "text": "スマホの通知を気にしてて、落ち着きたそう",
+              "next": "hit"
+            },
+            {
+              "text": "ピーチの色が服に合わないから",
+              "next": "miss"
+            },
+            {
+              "text": "バニラの方が写真映えするから",
+              "next": "miss"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "バニラ寄りの一台を吸った友達は、スマホを伏せて笑った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あげはが連れてきた男子、なんかちゃんとしてるね〜"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ。うちの答え合わせ係だし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（係にされた。……でも、悪い気はしなかった）"
+        }
+      ],
+      "branches": {
+        "hit": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……それ。返事待ちの顔してた。甘くて、ゆっくりの煙がいいなって"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "ハジメっち、ガチでうちの頭の中のぞいてない？"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_vibes_hit_gyaru"
+          }
+        ],
+        "miss": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "んー、そこじゃないかも。この子、さっきからスマホ見てばっかでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……返事を待ってる。落ち着ける煙のほうがいい、ってことか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "それ！ うちはそこまで考えてないけど、たぶんそう"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_newcomer",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに、若い男の人が一人。メニューを両手で握ったまま固まっている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "雑誌、見て来たんですけど……シーシャ、初めてで"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ありがと〜！ 緊張しなくていいよ。まず吸い方からね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "説明しながら、あげはが小声で言った。「この人、今日は軽めで、香りやさしいやつ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "理由、当ててみます"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_vibes_newcomer",
+          "choices": [
+            {
+              "text": "手に力が入ってて、むせるのが怖そう",
+              "next": "hit"
+            },
+            {
+              "text": "雑誌を見て来たから、映える色がいい",
+              "next": "miss"
+            },
+            {
+              "text": "初めての人は、みんな軽いのが好き",
+              "next": "miss"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男の人は小さく煙を吐いて、驚いたように笑った。「……あ、おいしい」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見た目で決めない。誰が来ても、同じ顔で迎える。だから人が集まるんだ）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、今の顔。なんか、うちのこと見直したっしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……最初から、すごいと思ってますよ"
+        }
+      ],
+      "branches": {
+        "hit": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……そ！ むせたら、もう来てくれないかもじゃん"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "最初の一回、怖くないのが一番大事なんだよね"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_vibes_hit_newcomer"
+          }
+        ],
+        "miss": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "映えも大事だけど、今日は違うかな。手、見て。ぎゅってしてる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "むせるのが怖いんだ。……だから軽くて、やさしい香り"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "うん。最初の一回、怖くないのが一番大事"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_magazine",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、あげはがメモ帳を片手に、ソファで唸っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "ハジメっち、助けて。今度、雑誌の取材あんの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "取材ですか。すごいじゃないですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "シーシャの店としての取材ね。……モデルの方の話じゃなくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "「どうやって一台を決めてますか？」って聞かれるの。うち、答えらんない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、練習しましょう。俺が記者をやります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "咳払いをして、メモ帳を受け取る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさん。お客さんの一台は、どうやって決めていますか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "え、えっと……なんか、顔見て、ぱっと……いや、これダメだよね"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_vibes_magazine",
+          "choices": [
+            {
+              "text": "顔を見て、調子と気分を読んでる",
+              "next": "hit"
+            },
+            {
+              "text": "理論で決めていることにする",
+              "next": "theory"
+            },
+            {
+              "text": "モデルの話で盛り上げる",
+              "next": "model"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口で、雑誌を抱えた客があげはを見つけて、目を丸くした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あの、読モのあげはちゃんですよね？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あー、よく言われるんですけど、人違いで〜。シーシャ、何にします？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（職人として見てほしい。……その気持ちは、少し分かる気がした）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ハジメっち。取材、ちょっと楽しみになったかも"
+        }
+      ],
+      "branches": {
+        "hit": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……顔を見て、調子と気分を読んでる、……あ、それ、うちだ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "「なんか」じゃなくて、ちゃんと見てたんだね、うち"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_vibes_hit_magazine"
+          }
+        ],
+        "theory": [
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "……理論ってことにするのは、なんか嘘っぽくてやだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "すみません。……顔を見て、調子と気分を読んでる、ですかね"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "あ、それ、うちだ。言われたら分かる"
+          }
+        ],
+        "model": [
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……モデルの話は、店ではしないって決めてるの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "職人として見てほしいから。雑誌に載ったのも、ノリだったし"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。……顔を見て、調子と気分を読んでる、とか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "あ、それ、うちだ。言われたら分かる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_badday",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "MELTY PUFFは開いていた。けれど、いつもの明るい声がしない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはがカウンターの奥で、炭の箱を前に、自分の指をじっと見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あげはさん？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "あ……ハジメっち。ごめ、ちょっとぼーっとしてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウルに葉を詰める指先が、小さく震えている。あげはは、その手を膝の下に隠した。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……見た？ 今日、ダメな日なんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "うち、もともと体強くなくて。手が震えたり、感覚が鈍ったりする日があんの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "朝起きたら、まず指動かして確かめるの。「今日、感覚あるかな」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……毎朝、ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "毎朝。……誰にも言ってない。ギャル友にも、お客さんにも"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_ageha_badday",
+          "choices": [
+            {
+              "text": "今日は、俺が詰めます",
+              "next": "help"
+            },
+            {
+              "text": "無理しないで、今日は閉めませんか",
+              "next": "rest"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは棚の袋から、白いクマのグミをひとつ口に入れた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "病院の帰りにね、ママがよく買ってくれたの。この匂いで、ちょっと安心すんの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ハジメっちだけだからね。知ってんの"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_ageha_secret"
+        }
+      ],
+      "branches": {
+        "help": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "詰めるのだけ、手伝わせてください。味は、あげはさんが決めて"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……ハジメっち、ずる。そういうの、断れないじゃん"
+          }
+        ],
+        "rest": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "無理しないで、今日は早めに閉めませんか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……ううん、開ける。来てくれる子がいるから、……でも、ありがと"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_tasting",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のMELTY PUFF。あげはに呼ばれて、店長同士の試飲会に来た。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "来た来た！ 今日はうちとハジメっちで、新しいミックス作る日ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファには、ギャル友や常連が並んでいる。誰かが拍手をした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "テーマは「夏」！ うちはマンゴーとピーチ。ここまでは決まってんの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あとひとつ、何を足すか、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉の香りを確かめる。……遠い。匂いは分かるのに、味の想像がうまく結べない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（数日前から、ずっとこうだ、……でも、言えない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち？ ……今日の煙、ちょっと迷ってる顔"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫です。……ミントを、少しだけ。甘さに出口を作ります"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "それ！ うちもなんか、最後にすっとしたいって思ってた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台目を出す。はじめは客席に向かって、配合の理由を順に話した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マンゴーで厚み、ピーチで香り、ミントで後味を軽く。客たちが、なるほどとうなずく。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "……ずる。うちが「なんか」でしか言えないこと、全部言葉にしちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ずるいのは、あなたの方だ。……顔を見ただけで、正解にたどり着く）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_vibes_understood",
+          "next_true": "understood",
+          "next_false": "plain"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二台目を一口吸って、あげはが笑った。「これ。うちらの夏」"
+        },
+        {
+          "type": "note",
+          "note_id": "idea_melty_summer",
+          "label": "マンゴー＋ピーチ＋ミント（あげはと作った配合）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "名前、メルティ・サマーね！ 今度、ハジメっちの店でも出してよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（おいしい、と言われた。……俺には、まだ味が遠いままなのに）"
+        }
+      ],
+      "branches": {
+        "understood": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "でもさ、ハジメっち、うちの「なんか」、けっこう当ててくるじゃん"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……言葉になると、ちょっと怖いの。魔法が消えちゃう気がして"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "消えませんよ。言葉にしても、見つけたのはあげはさんです"
+          }
+        ],
+        "plain": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "うちの「なんか」も、いつか言葉になるのかな"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "テーブルの下で、あげはが指を握りこんだ。今日は、ダメな日に近いのかもしれない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "二台目、詰めるのは俺がやります。あげはさんは、味を見てください"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……うん。お願い"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_slump",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のtonari。ドアが開いて、甘い匂いが入ってきた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "よっ、ハジメっち。……最近、元気ないね。煙に出てるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……分かるんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "バイブスだから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは自分の一台を頼まず、はじめが作った煙を吸った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "──うん。ちゃんとおいしいじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（俺には、その「おいしい」が分からない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "あのさ。うちも言うけど、理論がないから、いつか当たらなくなるのが怖いの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "調子いい時って、全部正解に感じるじゃん。でも崩れたら、直し方が分かんない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……あげはさんでも、そうなんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "当たり前じゃん。でもさ──"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは煙を吐いて、はじめをまっすぐ見た。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちの煙吸ってると、なんか安心すんの。理由は知らんけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "だから休みな。戻ったら、またおいしい煙作りなよ。うちが吸いに来るから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "天才だと思っていた人も、怖がっていた。比べる気持ちが、少しだけ薄れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──けれど、舌の奥の遠さは、消えなかった。"
+        }
+      ],
+      "branches": {
+        "secret": [
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "うちが朝、指を確かめるみたいにさ。ハジメっちも、何か確かめてるでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……どうして"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "同じ顔してるもん。鏡で見る、うちの顔"
+          }
+        ]
+      }
+    }
+  ]
+}

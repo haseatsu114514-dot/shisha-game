@@ -5,6 +5,7 @@ import { coalCount, coalTypes } from "./coals.js";
 import { coalSpriteFiles } from "./heat_view.js";
 import { bowlArtFiles } from "./art.js";
 import { WORKER_SCENES } from "./worker-scenes.js";
+import { benchBgRef } from "./worker.js";
 import { audienceAssetUrls } from "./audience.js";
 
 const BASE = ["bench_base.png", "ui_craft_panel.png", "ui_craft_button.png",
@@ -33,7 +34,7 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   const people = cs?.audienceIds || (mode === "tournament" ? ["pakki", "nagumo", "maezono", "dr_kemuri"] : ["hajime", "sumi"]);
   return [...new Set([
     ...files.map(makingUrl),
-    bgUrl(mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"),
+    bgUrl(cs ? benchBgRef(cs) : mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"), // 家の練習は自宅（#638）
     portraitInfo("hajime", "serious")?.src,
     ...people.map(faceIconUrl),
     ...audienceAssetUrls(cs || { mode, audienceIds: people }),

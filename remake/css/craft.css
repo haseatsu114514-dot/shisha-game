@@ -200,6 +200,8 @@
 .fr-name small { font-size: 12px; line-height: 1.5; color: var(--text-dim); }
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
+.fr-name .fr-ratio { color: var(--accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fr-name .fr-ratio:empty { display: none; }
 .fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }
@@ -209,7 +211,7 @@
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-name b { font-size: 20px; }
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-btn { width: 54px; height: 54px; }
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-g { width: 100%; font-size: 28px; }
-.mix-footer { grid-column: 1 / -1; display: grid; grid-template-columns: 210px 150px minmax(0, 1fr); align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid #d1b48633; }
+.mix-footer { grid-column: 1 / -1; display: grid; grid-template-columns: 180px minmax(260px, 1fr) minmax(240px, 1fr); align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid #d1b48633; }
 .mix-footer > .btn { min-height: 64px; }
 .lcd { padding: 2px 0; text-align: left; font-family: var(--font); font-size: 23px; font-variant-numeric: tabular-nums; color: #bbd4b8; }
 .lcd:not(.ok) { color: #d2bea0; }
@@ -217,16 +219,16 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
 .mix-hint { font-size: 12px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 1px solid #afc7d244; }
-.mix-temperature-preview { position: relative; font-size: 13px; color: var(--text-dim); }
-.mix-temperature-preview summary { cursor: pointer; padding: 12px 0; }
-.mix-temperature-preview[open] { z-index: 8; }
-.mix-temperature-preview[open] > .thermo, .mix-temperature-preview[open] > .mix-temperature-legend { position: absolute; bottom: 58px; box-shadow: 0 8px 30px #0009; background: #171020; border: 1px solid #c1a37555; }
-.mix-temperature-preview[open] > .thermo { left: -16px; width: 72px; height: 224px; padding: 12px 18px; border-radius: 10px 0 0 10px; }
-.mix-temperature-preview[open] > .mix-temperature-legend { left: 56px; width: 235px; height: 224px; padding: 70px 14px 20px; border-radius: 0 10px 10px 0; }
-.mix-temperature-legend { display: flex; flex-direction: column; gap: 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-temperature-preview { min-width: 0; display: grid; gap: 5px; font-size: 13px; color: var(--text-dim); }
+.mix-temperature-legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-thermal-scale { position: relative; height: 22px; overflow: hidden; background: #55515d; border: 1px solid #eadbc2; border-radius: 4px; }
+.mix-thermal-ideal, .mix-thermal-optimal, .mix-thermal-center { position: absolute; top: 0; height: 100%; }
+.mix-thermal-ideal { border-inline: 2px solid #111; background: repeating-linear-gradient(135deg, #fff0 0 4px, #162b2540 4px 6px); }
+.mix-thermal-optimal { border: 1px solid #fff; background: linear-gradient(90deg, #f6a4c0, #fae0a5, #b6edd2, #bad3fa, #e7bbf5); }
+.mix-thermal-center { width: 2px; background: #171020; box-shadow: 0 0 0 1px #fff; }
+.mix-temperature [hidden] { display: none; }
 .mix-ideal { color: #74e0b0; }
 .mix-optimal { color: #ffe5ff; }
-.mix-temperature [hidden] { display: none; }
 .packing { height: 100%; display: flex; flex-direction: column; gap: 10px; }
 .pack-aroma { margin: 0; padding: 7px 14px; border-left: 2px solid #c3a576; background: #d4aa6310; color: #e0c69f; font-size: 15px; line-height: 1.6; }
 .pack-vessel { flex: 1; min-height: 300px; display: grid; place-items: center; position: relative; background: radial-gradient(ellipse at 50% 70%, #ab794821, transparent 63%); }

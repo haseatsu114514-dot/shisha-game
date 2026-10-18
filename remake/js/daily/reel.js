@@ -8,7 +8,7 @@
 // ・ハズレでも対象ステ+1（サイレント）。天井（ゾーン/本天井・持ち越し）で最終的に全員救済
 // ・結果と報酬は行動した瞬間に確定・適用し、演出は次にマップを開いたときに後追いで見せる
 import { el, sleep } from "../core/util.js";
-import { layers, gainCard } from "../core/ui.js";
+import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { gainStat, star } from "../core/stats.js";
@@ -44,8 +44,72 @@ const ROLES = [
 ];
 const PEKA = ["reg", "big", "freeze", "rare"];
 const CHERRY_OVERLAP = { chance: 0.0625, bigShare: 0.45 };
-const FREEZE_CONTROL = { warmupSpins: 20, baseWeight: 4, pityAt: 110, pityWeight: 12, maxPerSave: 1 };
-const RESCUE = { minSpins: 30, ratio: 0.55, mult: 1.7, expectedRate: 0.075 };
+// フリーズは第1章（約25〜30回転）でも出会えるかもしれない程度（2026-10-16 オーナー回答・#621）。
+// 総回転12からベース1/250、22回転を過ぎて未取得なら1/40。1セーブ1回まで。
+const FREEZE_CONTROL = { warmupSpins: 12, baseWeight: 4, pityAt: 22, pityWeight: 25, maxPerSave: 1 };
+// 設定1〜6（#621）。観音堂に行くと引き直す（副産物）。訪問回数とシードで決まる＝ロードしても変わらない。
+// weight=引き直しの出やすさ（低設定が多めのホール配分）。reg/big=ボーナスの出やすさの倍率、bell=ベルのweight。
+// 配分の平均で今までの出方とほぼ同じになるようにしてある（裏確変・天井はそのまま効く）。
+const SETTINGS = {
+  1: { weight: 30, reg: 0.85, big: 0.92, bell: 24 },
+  2: { weight: 25, reg: 0.92, big: 0.96, bell: 26 },
+  3: { weight: 20, reg: 1.0, big: 1.0, bell: 28 },
+  4: { weight: 12, reg: 1.12, big: 1.05, bell: 30 },
+  5: { weight: 8, reg: 1.25, big: 1.1, bell: 32 },
+  6: { weight: 5, reg: 1.45, big: 1.18, bell: 36 },
+};
+function settingDraw(seed, n) {
+  const rng = mulberry32((seed ^ Math.imul(n + 1, 0x9E3779B1) ^ 0x5E771) >>> 0);
+  return Number(pickWeighted(rng, Object.entries(SETTINGS).map(([id, s]) => ({ id, weight: s.weight }))));
+}
+function ensureSetting(reel) {
+  if (!SETTINGS[reel.setting]) reel.setting = settingDraw(reel.seed, reel.settingDraws || 0);
+  reel.settingDraws ||= 0;
+  return reel.setting;
+}
+// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつと自動で変わる。
+// 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
+const SETTING_DAYS = 7;
+const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
+function settingExpired(reel) {
+  const since = reel.settingSince;
+  if (!since) return false;
+  const now = today();
+  return now.chapter !== since.chapter || now.day - since.day >= SETTING_DAYS;
+}
+/** 設定を引き直す。kind: "kannon"=観音堂／"weekly"=1週間たった自動の変更 */
+function redrawSetting(reel, kind) {
+  ensureSetting(reel);
+  reel.settingDraws += 1;
+  reel.setting = settingDraw(reel.seed, reel.settingDraws);
+  // 引きが弱すぎる人は、変わった設定も4以上にする（出来レース）
+  if (rescueActive({ count: reel.count || 0, bonusCount: reel.bonusCount || 0 })) reel.setting = Math.max(reel.setting, 4);
+  reel.settingSince = today();
+  reel.settingNotice = kind;
+  reel.resetNext = true;
+  const note = reel.note || (reel.note = {});
+  note.settingChanges = (note.settingChanges || 0) + 1;
+}
+// 文字色予告（#621・#639）。次ゲームの当選を予告する。色は 青 < 緑 < 赤 の3色まで（オーナー指定）。
+// 次ゲームの当選率の目安は、実機の公開データ（青10〜32%・緑26〜90%・赤95〜100%）の中央付近から
+// 青15%・緑45%・赤95%。出るのは約11回転に1回（うるさくしない）。
+// 抽選本体とは別のストリームで決めるので、役や出目は変わらない。
+const CUE_ORDER = ["blue", "green", "red"];
+const CUE_RATES = {
+  peka: { blue: 0.092, green: 0.152, red: 0.146 },
+  other: { blue: 0.062, green: 0.022, red: 0.0009 },
+};
+function cueFor(seed, count, peka) {
+  const rng = mulberry32((seed ^ Math.imul(count + 1, 0x85EBCA6B) ^ 0xC0E) >>> 0);
+  const rates = CUE_RATES[peka ? "peka" : "other"];
+  let v = rng();
+  for (const c of CUE_ORDER) { v -= rates[c]; if (v < 0) return c; }
+  return "";
+}
+// 裏確変（引き弱救済）。実際の当たりの割合（約1/9.4）に合わせ、10回転目から期待値の7割を割ったら×2.5（#621。
+// オーナー「あまりにも収束しない人には出来レースでもいい」）。1章30回転で当たり1回以下の人は約12%→約2%
+const RESCUE = { minSpins: 8, ratio: 0.7, mult: 2.5, expectedRate: 0.106 };
+const rescueActive = (st) => st.count >= RESCUE.minSpins && (st.bonusCount || 0) < st.count * RESCUE.expectedRate * RESCUE.ratio;
 const CEILING = { zoneRun: 8, mainRun: 15 };
 const JUG_REN = { games: 5, mult: 1.5 };
 const REPLAY_CHAIN_MAX = 4;
@@ -71,13 +135,22 @@ function pickWeighted(rng, entries) {
 function effectiveTable(st) {
   const t = ROLES.map((r) => ({ ...r }));
   const get = (id) => t.find((r) => r.id === id);
+  // 設定: ベル・REG・BIGの出やすさを変え、増減はハズレで受ける
+  const cfg = SETTINGS[st.setting] || SETTINGS[3];
+  const shifted = ["bell", "reg", "big"].reduce((s, id) => s - get(id).weight, 0);
+  get("bell").weight = cfg.bell;
+  get("reg").weight = Math.round(get("reg").weight * cfg.reg);
+  get("big").weight = Math.round(get("big").weight * cfg.big);
+  get("miss").weight -= shifted + ["bell", "reg", "big"].reduce((s, id) => s + get(id).weight, 0);
   let fz = FREEZE_CONTROL.baseWeight;
   if ((st.freezeCount || 0) >= FREEZE_CONTROL.maxPerSave) fz = 0;
   else if (st.count < FREEZE_CONTROL.warmupSpins) fz = 0;
   else if (st.count >= FREEZE_CONTROL.pityAt) fz = FREEZE_CONTROL.pityWeight;
-  get("big").weight += FREEZE_CONTROL.baseWeight - fz;
+  // ベース分まではBIGに折り込み（外から見た合算は一定）、昇格の上乗せぶんだけハズレから移す
+  get("big").weight += FREEZE_CONTROL.baseWeight - Math.min(fz, FREEZE_CONTROL.baseWeight);
+  get("miss").weight -= Math.max(0, fz - FREEZE_CONTROL.baseWeight);
   get("freeze").weight = fz;
-  if (st.count >= RESCUE.minSpins && (st.bonusCount || 0) < st.count * RESCUE.expectedRate * RESCUE.ratio) {
+  if (rescueActive(st)) {
     let added = 0;
     for (const id of ["reg", "big"]) {
       const inc = Math.round(get(id).weight * (RESCUE.mult - 1));
@@ -159,32 +232,52 @@ function stopsFor(role, rng) {
   }
 }
 
+/** その回転の役を引く（rng は出目・告知の決定に続けて使う） */
+function rollAt(reel) {
+  const rng = rngFor(reel.seed, reel.count);
+  const st = {
+    count: reel.count, missRun: reel.missRun, bonusGap: reel.bonusGap,
+    zoneLeft: reel.zoneLeft, bonusCount: reel.bonusCount || 0, freezeCount: reel.freezeCount || 0,
+    setting: ensureSetting(reel),
+  };
+  const role = rollRole(rng, st);
+  let overlap = null;
+  if (role === "cherry" && rng() < CHERRY_OVERLAP.chance) overlap = rng() < CHERRY_OVERLAP.bigShare ? "big" : "reg";
+  return { rng, st, role, overlap };
+}
+const isPekaRoll = (role, overlap) => PEKA.includes(role) || !!overlap;
+
 /** 1行動ぶんの抽選（リプレイ連鎖込み）。reel のカウンタを進め、結果配列を返す */
 function spinSeries(reel, ctx) {
   const results = [];
   let chain = 0;
   do {
-    const rng = rngFor(reel.seed, reel.count);
-    const st = {
-      count: reel.count, missRun: reel.missRun, bonusGap: reel.bonusGap,
-      zoneLeft: reel.zoneLeft, bonusCount: reel.bonusCount || 0, freezeCount: reel.freezeCount || 0,
-    };
-    const role = rollRole(rng, st);
-    let overlap = null;
-    if (role === "cherry" && rng() < CHERRY_OVERLAP.chance) overlap = rng() < CHERRY_OVERLAP.bigShare ? "big" : "reg";
+    const rolled = rollAt(reel);
+    const { rng, st } = rolled;
+    let { role, overlap } = rolled;
+    // 前の回転で文字色予告を出した回転は、予告したときの抽選のまま（観音堂で設定が変わっても予告を裏切らない）
+    const lock = reel.lock && reel.lock.count === reel.count ? reel.lock : null;
+    reel.lock = null;
+    if (lock) { role = lock.role; overlap = lock.overlap; }
     const eff = EFFECTS[role];
-    const isPeka = PEKA.includes(role) || !!overlap;
+    const isPeka = isPekaRoll(role, overlap);
     const premium = role === "rare" || role === "freeze";
+    let variant = isPeka && role !== "freeze" ? (premium ? "premium" : pickWeighted(rng, VARIANTS)) : "none";
+    // 予告の次ゲームはレバーオンで光らせない。リールを溜めてから後告知で知らせる
+    if (lock && variant === "before") variant = "after";
     const result = {
       n: reel.count, role, overlap, premium,
       stops: stopsFor(role, rng),
-      variant: isPeka && role !== "freeze" ? (premium ? "premium" : pickWeighted(rng, VARIANTS)) : "none",
+      variant,
       exp: (eff.exp || 0) + (overlap ? EFFECTS[overlap].exp : 0),
       quiet: !!eff.quiet && !overlap,
       zone: !!eff.zone || overlap === "big",
-      gakkun: !!ctx && !!ctx.chapterFirst && chain === 0,
+      // 章の最初の1回転と、設定変更（観音堂）の直後の1回転でリールがガクッと揺れる（リセット判別の小ネタ）
+      gakkun: !!ctx && (!!ctx.chapterFirst || !!ctx.reset) && chain === 0,
       ceiling: st.bonusGap >= CEILING.mainRun ? "main" : (role !== "miss" && st.missRun >= CEILING.zoneRun ? "zone" : ""),
       afterReplay: chain > 0,
+      cued: lock ? lock.cue : "", // 前の回転の文字色予告を受けた回転
+      games: st.bonusGap + 1, // 前回のボーナスからこの回転までの回転数（ノートの履歴用）
     };
     reel.count += 1;
     reel.missRun = role === "miss" ? reel.missRun + 1 : 0;
@@ -198,28 +291,42 @@ function spinSeries(reel, ctx) {
     if (role !== "replay") break;
     chain += 1;
   } while (chain < REPLAY_CHAIN_MAX);
+  // 文字色予告は「次ゲーム」の予告。この行動の最後が当たりでないときだけ、次の回転を先に引いて色を決める
+  const last = results[results.length - 1];
+  if (!isPekaRoll(last.role, last.overlap)) {
+    const next = rollAt(reel);
+    const cue = next.role === "freeze" ? "" : cueFor(reel.seed, reel.count, isPekaRoll(next.role, next.overlap));
+    if (cue) {
+      reel.lock = { count: reel.count, role: next.role, overlap: next.overlap, cue };
+      last.nextCue = cue;
+    }
+  }
   return results;
 }
 
 /** 分布の確認用（コンソール: __remake.reel.simulate(100000)） */
-export function simulate(n, seed = 1) {
-  const reel = { seed: seed >>> 0, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0 };
+export function simulate(n, seed = 1, setting = null) {
+  const reel = { seed: seed >>> 0, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0, setting };
   const dist = {};
+  const cues = {};
   let spins = 0, exp = 0, pekas = 0, maxGap = 0, gap = 0;
   while (spins < n) {
     for (const r of spinSeries(reel, {})) {
       dist[r.role] = (dist[r.role] || 0) + 1;
       exp += r.exp; spins++;
       const peka = PEKA.includes(r.role) || !!r.overlap;
+      if (r.cued) { const c = cues[r.cued] || (cues[r.cued] = { shown: 0, hit: 0 }); c.shown++; if (peka) c.hit++; }
       if (peka) { pekas++; gap = 0; } else { gap++; maxGap = Math.max(maxGap, gap); }
     }
   }
-  return { spins, exp, pekaRate: spins / pekas, maxGap, dist };
+  return { spins, exp, pekaRate: spins / pekas, maxGap, dist, cues, setting: reel.setting };
 }
 
-export const core = { mulberry32, rngFor, ROLES, EFFECTS, PEKA, CEILING, STRIPS, spinSeries, stopsFor, effectiveTable, simulate };
+export const core = { mulberry32, rngFor, ROLES, EFFECTS, PEKA, CEILING, STRIPS, SETTINGS, FREEZE_CONTROL, CUE_ORDER, spinSeries, stopsFor, effectiveTable, simulate, settingDraw, cueFor };
 
 // ================================================================ 行動時のコミット
+
+let sessionFirst = true; // ゲームを起動してからまだ1回も回していない
 
 // 直前の行動で伸びたステ（gainStat の「stat-raw」を拾う）。スロット自身の加算は数えない
 let statBuffer = {};
@@ -243,8 +350,15 @@ export function onAction({ spent = 0 } = {}) {
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
   reel.lastChapter = state.chapter;
+  ensureSetting(reel);
+  if (!reel.settingSince) reel.settingSince = today();
+  else if (settingExpired(reel)) redrawSetting(reel, "weekly");
+  // 設定変更の直後と、ゲームを起動（ロード）して最初の1回転はガックン
+  const reset = !!reel.resetNext || sessionFirst;
+  reel.resetNext = false;
+  sessionFirst = false;
   const target = pickTarget();
-  for (const r of spinSeries(reel, { chapterFirst })) {
+  for (const r of spinSeries(reel, { chapterFirst, reset })) {
     // 章の上限で調整した実増加を記録。通知は演出のときに出す（報酬はここで一度だけ）
     selfGain = true;
     const before = { ...state.stats };
@@ -255,11 +369,79 @@ export function onAction({ spent = 0 } = {}) {
     r.target = key;
     r.got = got;
     if (star(key) > Math.max(1, Math.ceil(before[key] / 20))) r.starTo = star(key);
-    const note = reel.note || (reel.note = {});
-    note[r.role] = (note[r.role] || 0) + 1;
-    if (r.overlap) note.cherryOverlap = (note.cherryOverlap || 0) + 1;
+    recordNote(reel, r);
     reel.pending.push(r);
   }
+}
+
+const bonusKind = (r) => r.role === "freeze" ? "FREEZE" : r.role === "rare" ? "PREMIUM"
+  : r.role === "big" || r.overlap === "big" ? "BIG" : r.role === "reg" || r.overlap === "reg" ? "REG" : "";
+const HISTORY_MAX = 10;
+
+/** パッキースロットノートの記録（役ごとの回数・ハマり・当たり履歴・フリーズ殿堂入り） */
+function recordNote(reel, r) {
+  const note = reel.note || (reel.note = {});
+  note[r.role] = (note[r.role] || 0) + 1;
+  if (r.overlap) {
+    note.cherryOverlap = (note.cherryOverlap || 0) + 1;
+    const k = r.overlap === "big" ? "overlapBig" : "overlapReg";
+    note[k] = (note[k] || 0) + 1;
+  }
+  note.maxGap = Math.max(note.maxGap || 0, r.games); // 最大ハマり（当たった回転も含めた回転数）
+  const kind = bonusKind(r);
+  if (kind) {
+    (note.history ||= []).unshift({ kind, games: r.games, chapter: state.chapter, day: state.day });
+    note.history.length = Math.min(note.history.length, HISTORY_MAX);
+  }
+  if (r.role === "freeze") (note.freezeLog ||= []).push({ chapter: state.chapter, day: state.day, spin: r.n + 1 });
+}
+
+// 設定示唆（パッキーの一言）。実機のように「示唆の種類」ごとに台詞を分ける。
+// 偶奇・高低は出やすさが違うだけ（ガセあり）。確定系は条件を満たす設定でしか出ない（嘘をつかない）。
+// 出るのは設定変更のときと、ボーナスのあとにときどき。ノートには設定ごと（period）に分けて残す。
+// 偶奇の台詞は 2026-10-17 オーナー承認の文言（分類ごとの出やすさは変えない・#634）。
+export const SETTING_HINTS = [
+  { id: "neutral", w: () => 40, lines: ["今日もぷかぷかいこう♪", "ほどほどにがんばる〜", "ふつうがいちばん！", "いい煙の予感……？"] },
+  { id: "odd", w: (s) => (s % 2 ? 16 : 6), lines: ["いち、さん、ご！ 今日はこのリズムが好き♪", "今日は奇数が気になるな〜"] },
+  { id: "even", w: (s) => (s % 2 ? 6 : 16), lines: ["に、よん、ろく！ 今日はこのリズムが好き♪", "今日は偶数が気になるな〜"] },
+  { id: "low", w: (s) => (s <= 2 ? 14 : s <= 4 ? 7 : 3), lines: ["今日はのんびりいこ〜", "ふぁ〜、ねむねむ……", "ゆっくりでいいよね〜"] },
+  { id: "high", w: (s) => (s >= 5 ? 14 : s >= 3 ? 7 : 3), lines: ["ぷぷっ、なんだか調子いい！", "体が軽いぞっ", "キミ、ツイてるかもね♪"] },
+  { id: "ge2", w: (s) => (s >= 2 ? 4 : 0), lines: ["ボク、今日はねぼすけじゃないよ！"] },        // 設定2以上確定
+  { id: "ge4", w: (s) => (s >= 4 ? 4 : 0), lines: ["今日のボク、ちょっと本気かも？"] },           // 設定4以上確定
+  { id: "six", w: (s) => (s === 6 ? 5 : 0), lines: ["……今日は、ボクにまかせて。"] },               // 設定6確定
+];
+function settingHint(setting) {
+  const kinds = SETTING_HINTS.map((h) => ({ id: h.id, weight: h.w(setting) }));
+  const kind = SETTING_HINTS.find((h) => h.id === pickWeighted(Math.random, kinds));
+  return kind.lines[Math.floor(Math.random() * kind.lines.length)];
+}
+const HINT_KEEP = 8;
+/** 示唆を記録する。period＝今の設定が何回目の抽選か（settingDraws）。設定が変わると前の示唆は「前の設定」になる */
+export function rememberHint(hint) {
+  const reel = state.reel;
+  ensureSetting(reel);
+  const note = reel.note || (reel.note = {});
+  note.lastHint = hint;
+  (note.hints ||= []).unshift({ text: hint, chapter: state.chapter, day: state.day, period: reel.settingDraws });
+  note.hints.length = Math.min(note.hints.length, HINT_KEEP);
+}
+
+/** 示唆を今の設定と前の設定に分ける。period の無い旧セーブの記録は、今の設定の証拠として扱わない */
+export function splitHints(reel) {
+  const n = reel?.note || {};
+  const period = Number.isInteger(reel?.settingDraws) ? reel.settingDraws : 0;
+  const all = (n.hints || []).slice();
+  if (!all.length && n.lastHint) all.push({ text: n.lastHint, chapter: "?", day: "?" });
+  const isCurrent = (h) => Number.isInteger(h.period) && h.period === period;
+  return { current: all.filter(isCurrent), past: all.filter((h) => !isCurrent(h)).slice(0, 3) };
+}
+
+/** 観音堂に行ったあと: 設定を引き直す。演出は次に筐体が出たとき（光って「設定変更完了〜」） */
+export function changeSetting() {
+  const reel = state?.reel;
+  if (!reel?.installed) return false;
+  redrawSetting(reel, "kannon");
+  return true;
 }
 
 // ================================================================ ミニ筐体（マップ左下）
@@ -289,7 +471,10 @@ function cabinetParts(lamp, machine) {
 }
 
 function buildWidget() {
-  const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー", dataset: { test: "reel-lamp" }, onclick: () => { if (bonusWait) settleBonus(bonusWait, false); } }, [pakkiFace()]);
+  const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー（タップでスロットノート）", dataset: { test: "reel-lamp" }, onclick: () => {
+    if (bonusWait) settleBonus(bonusWait, false);
+    else if (!busy) openNote();
+  } }, [pakkiFace()]);
   const machine = el("div.rw-machine");
   machine.innerHTML = STRIPS.map((strip) =>
     `<div class="rw-reel"><div class="rw-strip" style="--loop:${-CELL * strip.length}px">${strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM[s]()}</div>`).join("")}</div></div>`).join("");
@@ -310,8 +495,8 @@ function bubble(text, ms = 1800, cls = null) {
   if (!alive()) return;
   const b = widget.querySelector(".rw-bubble");
   b.textContent = text;
-  b.classList.remove("hot", "rare");
-  if (cls) b.classList.add(cls);
+  b.className = "rw-bubble";
+  if (cls) b.classList.add(...String(cls).split(" "));
   b.classList.toggle("show", !!text);
   clearTimeout(bubble.t);
   if (ms) bubble.t = setTimeout(() => b.classList.remove("show"), ms);
@@ -351,12 +536,20 @@ export function mountReel(host, { delay = 500 } = {}) {
   widget = buildWidget();
   host.append(widget);
   setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
+  // 初回説明を読み終えた旧セーブには、設定の説明が増えたことを一度だけ知らせる（画面は止めない）
+  if (state.reel.introDone && !state.reel.settingGuideDone) {
+    state.reel.settingGuideDone = true;
+    save();
+    toast("パッキースロットに『設定』の説明が増えたよ。パッキーをタップして、ノートの遊び方で読めるよ");
+  }
   const queue = state.reel.pending;
-  if (!queue.length) return Promise.resolve();
+  const notice = !!state.reel.settingNotice;
+  if (!queue.length && !notice) return Promise.resolve();
   busy = true; // 初回説明の待機中も、再マウントで別の演出を始めない。
   current = (async () => {
     try {
       if (!state.reel.introDone) await showIntro();
+      if (notice) await presentSettingChange();
       // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
       const items = queue.splice(0, queue.length);
       save();
@@ -392,6 +585,27 @@ export async function presentNow() {
   host.remove();
 }
 
+/** 観音堂のあと・1週間たったとき: 筐体が光り、パッキーが「設定変更完了〜」と示唆の一言（ガックンは次の1回転） */
+async function presentSettingChange() {
+  const reel = state.reel;
+  const weekly = reel.settingNotice === "weekly";
+  reel.settingNotice = false;
+  const hint = settingHint(ensureSetting(reel));
+  rememberHint(hint);
+  save();
+  if (!alive()) return;
+  widget.classList.add("setting-change");
+  SE.reelWin();
+  bubble(weekly ? "週替わり！ 設定変更完了〜♪" : "ぷぷっ、設定変更完了〜♪", 0, "setting");
+  await sleep(1500);
+  if (!alive()) return;
+  SE.puka();
+  bubble(hint, 2400, "setting");
+  await sleep(1600);
+  widget?.classList.remove("setting-change");
+  await sleep(500);
+}
+
 async function presentSpin(r, fast) {
   if (!alive()) { announce(r); return; }
   if (bonusWait) settleBonus(bonusWait, true);
@@ -405,10 +619,13 @@ async function presentSpin(r, fast) {
   // 先告知: レバーオンで光ったら、ハズレ目を見せずにこの回転で揃えにいく
   if (!fast && (r.role === "reg" || r.role === "big") && !r.overlap && r.variant === "before") return presentPreAnnounce(r);
 
-  const spinMs = fast ? 120 : r.role === "miss" ? 240 : 420;
-  const gap = fast ? 40 : 130;
+  // 前の回転で文字色予告が出た次ゲーム: 筐体の枠がその色でうっすら光り、リールを溜めてから止める
+  const cued = fast ? "" : r.cued || "";
+  if (cued) widget.classList.add("cued", `cued-${cued}`);
+  const spinMs = fast ? 120 : cued ? 700 : r.role === "miss" ? 240 : 420;
+  const gap = fast ? 40 : cued ? 260 : 130;
   const willPeka = PEKA.includes(r.role) || !!r.overlap;
-  const tension = willPeka && !fast;
+  const tension = !fast && (willPeka || !!cued);
   const tensionMs = tension ? 560 : 0;
   await sleep(spinMs);
   for (let i = 0; i < 3; i++) {
@@ -424,10 +641,28 @@ async function presentSpin(r, fast) {
     if (i === 2) widget.classList.remove("tension");
   }
   await sleep(fast ? 60 : 200);
-  if (alive()) widget.classList.remove("tension");
+  if (alive()) widget.classList.remove("tension", "cued", ...CUE_ORDER.map((c) => `cued-${c}`));
   state.reel.shown = r.stops;
   await afterStop(r, fast);
+  // 文字色予告（次ゲーム）: 止まったあとにパッキーが色付きの文字でつぶやく
+  if (r.nextCue && !fast && alive()) {
+    if (r.role !== "miss") await sleep(900);
+    if (!alive()) return;
+    bubble(pick(CUE_LINES[r.nextCue]), 2600, `cue cue-${r.nextCue}`);
+    CUE_SE[r.nextCue]?.();
+    await sleep(1200);
+  }
 }
+
+// 文字色予告の台詞。色で期待度が分かるよう、色ごとに口調の熱さをそろえる
+const CUE_LINES = {
+  blue: ["ん？ 次……？", "おや？", "ぷ？", "なにか来る？"],
+  green: ["次、きてるかも……！", "む、この感じ……", "ちょっと期待して！", "ぷぷ……次……？"],
+  red: ["次、アツいかも！", "ドキドキしてきた……！", "チャンスかもっ！", "これは……！"],
+};
+const CUE_SE = { red: () => SE.puka() };
+// 緑以上の予告が外れたとき
+const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今のはナシで！", "おかしいな〜", "期待させちゃった？", "ぐぬぬ、次こそ！"];
 
 // 役の恩恵をパッキー口調で（数値は出さず体感語で）
 function benefitLine(r) {
@@ -463,11 +698,13 @@ async function afterStop(r, fast) {
     case "miss":
       if (alive()) widget.classList.toggle("warm", r.ceilingRemain > 0 && r.ceilingRemain <= 3);
       if (!fast) {
-        if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
+        if (r.nextCue) { /* このあと次ゲームの予告を出す */ }
+        else if (["green", "red"].includes(r.cued)) bubble(pick(CUE_MISS), 1500);
+        else if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
           const pool = r.ceilingRemain <= 1 ? CEILING_HINTS.soon : r.ceilingRemain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far;
           bubble(pick(pool), 1500, r.ceilingRemain <= 1 ? "hot" : null);
           if (r.ceilingRemain <= 2) SE.puka();
-        } else if (Math.random() < 0.04) { bubble(pick(RARE_MISS), 2200, "rare"); SE.reelWin(); }
+        } else if (Math.random() < 0.04) bubble(pick(RARE_MISS), 2200);
         else bubble(pick(FUN_MISS), 1400);
       }
       return;
@@ -548,6 +785,12 @@ function settleBonus(b, fast, mode = "post") {
       const cls = isBig ? "hot" : null;
       bubble(`${bonusName(b)}ッ！`, 950, cls);
       setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
+      // ボーナスのあと、ときどき設定示唆（水色の吹き出し）
+      if (b.n >= 0 && Math.random() < 0.3) {
+        const hint = settingHint(ensureSetting(state.reel));
+        rememberHint(hint);
+        setTimeout(() => bubble(hint, 2600, "setting"), 3000);
+      }
     }
     if (b.done) { const d = b.done; b.done = null; d(); }
   };
@@ -692,7 +935,7 @@ async function presentFreeze(r) {
   await sleep(2400);
   cut.remove();
   lampOff();
-  bubble("殿堂入り！スロノートに刻まれた", 3000);
+  bubble("殿堂入り！スロットノートに刻まれた", 3000);
   announce(r);
 }
 
@@ -707,32 +950,164 @@ function announce(r) {
   });
 }
 
+// ================================================================ パッキースロットノート
+
+/** ノートの数字（表示用・純粋関数）。BIGはプレミアとチェリー重複BIGを含む */
+export function noteSummary(reel) {
+  const n = reel?.note || {};
+  const spins = reel?.count || 0;
+  const big = (n.big || 0) + (n.rare || 0) + (n.overlapBig || 0);
+  const reg = (n.reg || 0) + (n.overlapReg || 0);
+  const freeze = n.freeze || 0;
+  const rate = (k) => (k > 0 && spins > 0 ? `1/${(spins / k).toFixed(1)}` : "—");
+  return {
+    spins, big, reg, freeze,
+    rows: [
+      ["BIG", big, rate(big)],
+      ["REG", reg, rate(reg)],
+      ["ボーナス合算", big + reg + freeze, rate(big + reg + freeze)],
+      ["チェリー", n.cherry || 0, rate(n.cherry || 0)],
+      ["ベル", n.bell || 0, rate(n.bell || 0)],
+      ["リプレイ", n.replay || 0, rate(n.replay || 0)],
+    ],
+    current: reel?.bonusGap || 0,
+    maxGap: n.maxGap || 0,
+    history: n.history || [],
+    freezeLog: n.freezeLog || [],
+    settingChanges: n.settingChanges || 0,
+    lastHint: n.lastHint || "",
+    ...(() => { const h = splitHints(reel); return { currentHints: h.current, pastHints: h.past }; })(),
+    settingSince: reel?.settingSince || null,
+  };
+}
+
+// 遊び方カード（#639 オーナー「店にあるスロットのラミネートくらい文字を減らして」）。
+// 短い見出し＋ひとこと＋絵。確率の数字は出さず、設定が変わる特定のスポットの名前も出さない（#634）。
+// art: "lamp"=光ったパッキー／図柄の配列=リールの図柄／"cue"=青緑赤の色見本
+export const GUIDE = [
+  { head: "光ったら当たり", body: "パッキーが光ればボーナス！", art: "lamp" },
+  { head: "BIG", body: "7・7・7", art: ["seven", "seven", "seven"] },
+  { head: "REG", body: "7・7・BAR", art: ["seven", "seven", "bar"] },
+  { head: "次ゲーム予告", body: "色文字が出たら、次のゲームの当たりに期待！", art: "cue" },
+  { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" },
+  { head: "設定1〜6", body: "大きいほど当たりやすい（必ず当たるわけではない）" },
+  { head: "設定が変わる", body: "前回の抽選から7日／章が変わると選び直し。同じ設定や低い設定もある" },
+  { head: "ガックン", body: "リールがガクッ＝設定が変わった合図" },
+  { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
+  { head: "ひみつ", body: "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！" },
+];
+const CUE_JA = { blue: "青", green: "緑", red: "赤" };
+
+/** ラミネートの遊技説明のようなカード（ノートの遊び方と、初回の説明で使う） */
+function guideCard() {
+  const art = (g) => {
+    if (g.art === "lamp") return el("span.rn-art.lamp", [pakkiFace()]);
+    if (g.art === "cue") return el("span.rn-art.cue", CUE_ORDER.map((c) => el(`i.cue-chip.cue-${c}`, { text: CUE_JA[c] })));
+    if (Array.isArray(g.art)) return el("span.rn-art.syms", g.art.map((id) => el("span.rn-sym", { html: SYM[id]() })));
+    return null;
+  };
+  return el("div.rn-card", { dataset: { test: "reel-guide-card" } }, GUIDE.map((g) => el(`div.rn-tile${g.art ? ".has-art" : ""}`, [
+    el("b.rn-tile-head", { text: g.head }), art(g), el("span.rn-tile-body", { text: g.body }),
+  ])));
+}
+
+export function openNote() {
+  if (!state?.reel?.installed) return Promise.resolve();
+  const s = noteSummary(state.reel);
+  SE.click?.();
+  return new Promise((resolve) => {
+    const table = el("table.rn-table", [
+      el("tr", [el("th", { text: "総回転" }), el("td", { text: `${s.spins}G` }), el("td")]),
+      ...s.rows.map(([label, count, rate]) => el("tr", [el("th", { text: label }), el("td", { text: `${count}回` }), el("td", { text: rate })])),
+      el("tr", [el("th", { text: "現在のハマり" }), el("td", { text: `${s.current}G` }), el("td")]),
+      el("tr", [el("th", { text: "最大ハマり" }), el("td", { text: `${s.maxGap}G` }), el("td")]),
+    ]);
+    const history = s.history.length
+      ? el("ol.rn-history", s.history.map((h) => el(`li.k-${h.kind.toLowerCase()}`, [
+        el("b", { text: h.kind }), el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
+      ])))
+      : el("p.rn-empty", { text: "まだ当たりはないよ。光るのを待とう！" });
+    const hall = s.freezeLog.length
+      ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${f.day}・${f.spin}回転目` })))
+      : el("p.rn-empty.rn-secret", { text: "？？？　まだ見ぬ伝説" });
+    const panel = el("div.rn-panel", [
+      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットノート" })]),
+      el("div.rn-cols", [
+        el("section", [el("h3", { text: "データ" }), table]),
+        el("section", [
+          el("h3", { text: "当たり履歴（新しい順）" }), history,
+          el("h3", { text: "フリーズ殿堂入り" }), hall,
+          el("h3", { text: "設定" }),
+          el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
+          el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
+          s.currentHints.length
+            ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
+            : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
+          s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
+          s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+          el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
+        ]),
+      ]),
+      el("span.ri-next", { text: "▼ タップで遊び方" }),
+    ]);
+    // 2ページ目: 遊び方（キャラではなくシステムの説明）
+    const guide = el("div.rn-panel.rn-guide", [
+      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの遊び方" })]),
+      guideCard(),
+      el("span.ri-next", { text: "▼ タップで閉じる" }),
+    ]);
+    const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
+    layers.modal.replaceChildren(box);
+    layers.modal.classList.add("show");
+    let page = 0;
+    box.onclick = () => {
+      if (page++ === 0) { SE.click?.(); box.replaceChildren(guide); return; }
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      resolve();
+    };
+  });
+}
+
 // 初回のみ: パッキーのアプリ説明（4行・タップ送り）
 const INTRO_LINES = [
   "ボクはパッキー！ C.STATIONのシーシャ大会を盛り上げる、煙のマスコットだよ。よろしくね！",
   "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
   "キミが体力を使って自由行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
   "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
-  "外れても大丈夫。回したぶんだけ、その日がんばったことがちゃーんと積もるしくみ。それじゃ、今日もぷかぷかいこう！",
+  "外れても大丈夫。回したぶんだけ、がんばりがちゃーんと積もるよ。ボクの顔をタップすると記録ノートも見られるからね！",
 ];
+// 初回のみ: パッキーの説明のあとに、遊び方カードを1枚（システムの説明）。ノートの遊び方で読み返せる
 /** 会場で参加登録した時にアプリを導入する。既存の回転・報酬は保持する。 */
 export async function installReel() {
   state.reel.installed = true;
+  state.flags.pakki_app_installed = true; // 観音堂のアダムの会話（設定の匂わせ）の条件
   save();
   if (!state.reel.introDone) await showIntro();
 }
 
 function showIntro() {
+  const pages = [...INTRO_LINES.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
     let i = 0;
     const text = el("p.ri-text");
+    const face = pakkiFace(".big");
+    const app = el("span.ri-app", { text: "MOKUMOKUパッキー" });
     const panel = el("div.ri-panel", [
-      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "MOKUMOKUパッキー" })]),
+      el("div.ri-head", [face, app]),
       text,
       el("span.ri-next", { text: "▼ タップ" }),
     ]);
     const box = el("div.reel-intro", { role: "dialog", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" } }, [panel]);
-    const render = () => { text.textContent = INTRO_LINES[i]; };
+    // 設定の説明はパッキーの台詞ではなくシステムの説明として見せる
+    const render = () => {
+      const page = pages[i];
+      if (page.card) text.replaceChildren(guideCard());
+      else text.textContent = page.text;
+      panel.classList.toggle("sys", !!page.card);
+      face.style.display = page.card ? "none" : ""; // .rw-face の display:block が hidden に勝つため
+      app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
+    };
     render();
     layers.modal.replaceChildren(box);
     layers.modal.classList.add("show");
@@ -740,10 +1115,11 @@ function showIntro() {
     box.onclick = () => {
       i += 1;
       if (i === 2) SE.puka();
-      if (i < INTRO_LINES.length) { render(); SE.click(); return; }
+      if (i < pages.length) { render(); SE.click(); return; }
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       state.reel.introDone = true;
+      state.reel.settingGuideDone = true;
       save();
       resolve();
     };

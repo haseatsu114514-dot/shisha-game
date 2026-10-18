@@ -153,32 +153,27 @@
         "doctor_first": [
           {
             "speaker": "dr_kemuri",
-            "face": "smile",
-            "text": "tonariの、蒸野はじめくんだね。会場を探しているのかな？"
+            "face": "normal",
+            "text": "tonariのはじめくん。地元大会以来だね"
           },
           {
             "speaker": "hajime",
-            "face": "surprise",
-            "text": "はい。あの、どうして俺の名前を？"
-          },
-          {
-            "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "君の試合を見ていた。私はチャコール博士。今度の県大会で審査をする"
+            "text": "チャコール博士。審査のあとも、ずっと記録してましたよね"
           },
           {
             "type": "set_flag",
             "flag": "_met_dr_kemuri"
           },
           {
-            "speaker": "hajime",
+            "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "よろしくお願いします。会場って、どの建物でしょうか？"
+            "text": "片づける手順も気になってね。今回も審査をするよ"
           },
           {
             "speaker": "dr_kemuri",
-            "face": "smile",
-            "text": "交差点を渡って右。C.STATIONと同じビルのイベントホールだよ"
+            "face": "normal",
+            "text": "会場なら交差点を渡って右。C.STATIONと同じビルだ"
           }
         ]
       }
@@ -229,7 +224,7 @@
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "うん、雇われ店長。あたし、あげは。よろしくね！"
+            "text": "うん、雇われ店長。うち、あげは。よろしくね！"
           },
           {
             "type": "set_flag",
@@ -298,7 +293,7 @@
           {
             "speaker": "ageha",
             "face": "surprise",
-            "text": "え、出るの！？ あたしも！ ウケる、今度は台の向こうで会うじゃん"
+            "text": "え、出るの！？ うちも！ ウケる、今度は台の向こうで会うじゃん"
           },
           {
             "speaker": "ageha",
@@ -701,7 +696,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "【HAZE: GRAND SMOKE 世界王者 王 煙楼】。"
+          "text": "【アジア圏シーシャ協会 推薦選手　王 煙楼】。"
         },
         {
           "speaker": "",
@@ -711,7 +706,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（世界王者。まだ、ずっと遠い話だ）"
+          "text": "（世界の舞台に立つ人。まだ、ずっと遠い話だ）"
         },
         {
           "speaker": "",

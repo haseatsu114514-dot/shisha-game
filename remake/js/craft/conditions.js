@@ -4,7 +4,7 @@ import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 import { steamClimate } from "./steam-climate.js";
 import { coalWarmth } from "./coals.js";
-import { temperatureBands, isIdealTemperature, isOptimalTemperature } from "./temperature-model.js";
+import { temperatureBands, temperatureFitness, isIdealTemperature, isOptimalTemperature } from "./temperature-model.js";
 import { BURST_TEMP, COLD_OUT } from "./temperature-model.js";
 
 export { IDEAL, OPTIMAL, DANGER_TEMP, BURST_TEMP, COLD_OUT, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
@@ -78,13 +78,9 @@ export function heatDelta(cs, delta) {
 
 /** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
 export function pullResult(temp, pulls, _justs, bands = temperatureBands(), safePulls = 3) {
-  const { ideal, optimal: optimalBand, center } = bands;
   const inZone = isIdealTemperature(temp, bands);
   const optimal = isOptimalTemperature(temp, bands);
-  const distance = Math.abs(temp - center), narrow = (optimalBand[1] - optimalBand[0]) / 2;
-  const safe = (ideal[1] - ideal[0]) / 2;
   const leafPenalty = Math.max(0, pulls - safePulls) * 8;
-  const thermal = optimal ? 96 + 4 * (1 - distance / narrow)
-    : inZone ? 65 + 24 * (1 - (distance - narrow) / (safe - narrow)) : 65 - (distance - safe) * 360;
-  return { score: Math.round(clamp(thermal - leafPenalty, 0, 100)), inZone, optimal };
+  const thermal = temperatureFitness(temp, bands);
+  return { score: Math.round(clamp(thermal - leafPenalty, 0, 100)), thermal, inZone, optimal };
 }
