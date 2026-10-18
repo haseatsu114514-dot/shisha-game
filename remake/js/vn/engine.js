@@ -304,6 +304,8 @@ function advance() {
 function next() {
   const r = running;
   if (!r) return;
+  // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
+  dom.next.classList.remove("show");
   r.pages = null;
   // 制御行はまとめて処理し、表示する台詞行に着いたら止まる
   for (;;) {

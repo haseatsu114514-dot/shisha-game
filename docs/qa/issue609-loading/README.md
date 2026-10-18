@@ -77,3 +77,19 @@ PR #362 (#308)は同一背景での遅い初回立ち絵の案内と待機上限
 既存PlaywrightをNODE_PATH、既存ChromeをCHROME_EXECUTABLE_PATHへ設定。最終HEADのcheckoutで`python3 remake/tools/serve_load_audit.py --port 8609`を起動し、BASE_URL=http://127.0.0.1:8609/remake/で上表の既存suiteを実行する。外部遮断の実使用ハーネスはevidence.zipのrecorded-harness/に保存した（実行当時のMac/taskパスを含む）。
 
 新しい同条件比較には`remake/tools/serve_loading_baseline.py --ref 913520169855dbe90208fdfd8d7186bb88abf4e1 --port 8610`、`measure_ch1_loading.mjs`、`measure_loading_matrix.mjs`を使う。baselineサーバーは対象外のruntime差分がある場合に停止し、異なる版を同じ基準として配信しない。
+
+## CI追検証：回想解除後の「次へ」競合
+
+HEAD344e5b5のIssue439 CI（run39096750568/job117584700858）は9件PASS後、flashback-and-returnの無期限Promise待ちで15分上限に達した。現HEADをCIと同じserve_preview処理でローカル配信し、元と同じ操作で再現した。通常条件でも、回想解除直後のselectorが前の行の▼を一瞬拾い、次のEnterが新しい行の文字出し完了に使われた。必須画像を保留すると、同じEnterは画像待ち中の入力として無視された。画像の解決後にもう一度Enterすれば終了するため、会話エンジン全体のデッドロックではない。
+
+`renderPage()`まで古い▼を残す実装が、今回の画像待ち分離・後続表情の待ち削減により問題になった。mainのengineだけを差し替えた同手順の1回比較は終了したが、mainに他のタイミング競合がないことを示すものではない。
+
+最小修正は`next()`の開始時に読み終えた行の▼を消す2行（コメント含む）。新しい行の画像・入場・文字表示が済んだ後の既存処理で▼を戻す。画像の期限、入力ガード、演出、AUTO/SKIP、進行は変更しない。既存flashbackケースに表示本文の照合を加え、終了を既存の10秒上限付き条件で待つ。無期限awaitを失敗検出可能にしたもので、期限を延長していない。
+
+通常のserve_preview配信で、暖cache試験が起動後の逐次先読み（別背景・立ち絵・制作素材）を数えて1件失敗した。対象場面の再取得ではないため、画像以外の通信も含むnetworkidle待ちはこの環境で10秒期限に達したため、warmUiArtと起動で先読みする既存18素材のimageReadyを準備段階で明示的に待つ。これはwarm条件の試験fixtureのみで、製品の先読み範囲は変えていない。画像request全件が0であるassertionは残し、期限や対象URLの絞り込みで緩めていない。初回失敗もJSONに保持した。
+
+PC/タッチの画像保留・連打・次行表示・正常終了を2件追加。追加回帰は修正前に「前の▼が画像待ち中に残る」で失敗することを確認した。修正後は変更前のflashbackケース自体もPASS。loadingは16件に増え、既存Issue439 workflowへ接続した。対象4ファイルは他のOpen PRとの重複なし。ジョブの15分上限や既存ケースは維持する。
+
+追加検証：元flashback1件、loading16件、Issue439全12件、VN visual readiness4件、SAVE/LOAD6件がPASS。実行条件と各case、修正前DOM状態、ソースhashは[ci439.json](ci439.json)。このローカル検証はMac既存Chrome/Playwright1.57.0で、GitHubのUbuntu/pinned browserでの再実行結果とは区別する。
+
+独立レビューで指摘されたabort単独で準備表示が残る既存挙動は、この追加修正に混ぜていない。最新main全章・物理端末/Safari・修正版公開の未検証範囲は変わらない。
