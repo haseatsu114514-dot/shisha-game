@@ -31,7 +31,17 @@ try { await suite('ch1-loading',async check=>{
   for(const [device,options] of [['pc',{}],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}]]) {
     await check(`${device}-warm-scene`,async page=>{
       await prepare(page);
-      await page.evaluate(async()=>{await L.ui.imageReady(L.data.bgUrl('bg_home_day'),15000);});
+      await page.evaluate(async()=>{
+        // Match the title's bounded warm-up fixture before measuring zero image
+        // requests. Network-idle would also wait for unrelated streaming audio.
+        await L.ui.warmUiArt();
+        const bgs=['bg_osu_map_day','bg_osu_map_night','bg_tonari_inside_day','bg_tonari_inside_night',
+          'bg_home_day','bg_home_night','bg_shop','bg_tournament_stage'];
+        const faces=['sumi','tsumugi','naru','adam','minto','rin','pakki'];
+        const urls=[...bgs.map(id=>L.data.bgUrl(id)),...faces.map(id=>L.data.portraitInfo(id,'normal').src),
+          ...['bench_base.png','stove_coil.png','hookah_base.png'].map(id=>L.data.makingUrl(id))];
+        await Promise.all(urls.map(url=>L.ui.imageReady(url,15000)));
+      });
       const before=await storageSnapshot(page),requests=[];
       page.on('request',r=>{if(/\.(webp|png)(\?|$)/.test(r.url()))requests.push(r.url());});
       await page.evaluate(()=>{
@@ -65,6 +75,40 @@ try { await suite('ch1-loading',async check=>{
       await remember(page,`${device}-future-portrait-used`);
       assert.deepEqual(await storageSnapshot(page),before);
       await page.evaluate(async()=>{L.stop.abort();await L.play;});
+    },options);
+
+    await check(`${device}-flashback-next-while-loading`,async page=>{
+      await prepare(page);const before=await storageSnapshot(page);
+      const url=await page.evaluate(()=>new URL(L.data.portraitInfo('hiyori','normal').src,location.href).href);
+      let release;const held=new Promise(r=>{release=r;});
+      await page.route(url,async route=>{await held;await route.continue();});
+      const advance=()=>device==='touch'?page.locator('.vn-box').tap():page.keyboard.press('Enter');
+      try {
+        await page.evaluate(()=>{
+          L.core.markMet('hiyori');L.core.state.flags._intro_hiyori=true;L.start=performance.now();L.done=false;
+          L.play=L.vn.play({dialogue_id:'loading_flashback',lines:[
+            {type:'fx',id:'flashback'},{speaker:'hiyori',face:'student_smile',text:'学生の頃'},
+            {type:'fx',id:'flashback_off'},{speaker:'hiyori',face:'normal',text:'今の話'},
+          ]}).then(result=>{L.done=true;return result;});
+        });
+        await page.locator('#vn.flashback .vn-next.show').waitFor();
+        assert.equal(await page.locator('.vn-text').innerText(),'学生の頃');
+        await advance();
+        await page.locator('#vn:not(.flashback)').waitFor();
+        assert.equal(await page.locator('.vn-next.show').count(),0,'Previous line still advertises Next while the new portrait is pending');
+        await page.locator('[data-test="vn-loading"]').waitFor();
+        for(let i=0;i<3;i++)await advance();
+        assert.deepEqual(await page.evaluate(()=>L.lines.map(line=>line.text)),['学生の頃'],'Input skipped the pending line');
+        assert.equal(await page.evaluate(()=>L.done),false);
+      }finally{release();}
+      await page.locator('#vn:not(.flashback) .vn-next.show').waitFor();
+      assert.equal(await page.locator('.vn-text').innerText(),'今の話');
+      assert(await page.locator('.portrait[data-speaker="hiyori"]').evaluate(n=>n.complete&&n.naturalWidth>0));
+      assert.equal(await page.locator('[data-test="vn-loading"]').count(),0);
+      await advance();await page.waitForFunction(()=>L.done);
+      assert.deepEqual(await page.evaluate(()=>L.lines.map(line=>line.text)),['学生の頃','今の話']);
+      assert.deepEqual(await storageSnapshot(page),before);
+      await remember(page,`${device}-flashback-next-while-loading`);
     },options);
 
     await check(`${device}-initial-portrait-and-skip`,async page=>{
