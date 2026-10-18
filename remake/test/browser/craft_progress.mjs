@@ -36,6 +36,16 @@ await suite("craft-progress", async check => {
       assert.equal(await active(page), "pull");
       await fits(page);
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${name}-pull.png` });
+      assert.equal(await page.locator('[data-test="pull-serve-reason"]').textContent(), "あと2回で提供できる");
+      assert.equal(await page.locator('.pull > .thermo').count(), 1);
+      const nearby = await page.evaluate(() => {
+        const t = document.querySelector('.pull > .thermo').getBoundingClientRect();
+        const p = document.querySelector('.bench-panel').getBoundingClientRect();
+        const d = document.querySelector('.pull-dial-row').getBoundingClientRect();
+        return t.left >= p.left && t.right < d.left && d.left - t.right < 80;
+      });
+      assert(nearby, "The single temperature gauge must sit next to the dial");
+      await assertFits(page, '.pull-band-note, .pull-serve-reason');
       // 本番の吸う/提供ボタンを操作する。自動解決は提供確認まで使わない。
       for (let i = 0; i < 2; i++) {
         await page.waitForFunction(() => {
@@ -46,6 +56,7 @@ await suite("craft-progress", async check => {
         if (mobile) await stop.tap(); else await stop.click();
         await page.waitForFunction(() => !document.querySelector('[data-test="pull-stop"]').disabled);
       }
+      assert.equal(await page.locator('[data-test="pull-serve-reason"]').textContent(), "提供できます");
       assert.equal(await active(page), "pull", "Ready to serve is still inhalation");
       const serve = page.locator('[data-test="pull-serve"]');
       if (mobile) await serve.tap(); else await serve.click();

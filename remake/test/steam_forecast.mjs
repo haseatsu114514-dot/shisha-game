@@ -112,7 +112,7 @@ try {
     const page = await open(viewport, mobile);
     await page.evaluate(() => { window.timerRun = T.steps.stepSteamTime(cs); });
     await page.waitForSelector('[data-test="kitchen-timer"]'); await ready(page);
-    assert.deepEqual(await geometry(page), position, `${name}: thermometer was moved during timer setup`);
+    position = await geometry(page); // 吸い出し・調整はダイヤル脇へ。タイマーと弾幕は同じ位置を維持。
     assert(await page.locator('.thermo').isVisible());
     assert(await page.locator('[data-test="steam-forecast-range"]').isHidden());
     assert.match(await page.locator('[data-test="steam-weather"]').textContent(), /雨.*23℃.*80%/);
@@ -250,7 +250,7 @@ try {
       assert.equal(await skilled.evaluate(() => cs.steamPrediction.precision), 1);
       await screenshot(skilled, 'timer-insight-five'); await skilled.close();
     }
-    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, four controls and refresh recharge start`);
+    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, one thermometer, paired positions for timer/steam and pull/care, centered faint background clock, four controls and refresh recharge start`);
   }
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }

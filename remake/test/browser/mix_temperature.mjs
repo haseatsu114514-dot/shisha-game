@@ -75,12 +75,13 @@ await suite("mix-temperature", async check => {
     await check(`preview-through-care-${name}`, async page => {
       await prepare(page);
       await page.evaluate(() => { QA.run = QA.steps.stepMix(QA.cs); });
-      await page.locator('[data-test="mix-temperature-preview"]').waitFor();
+      await page.locator('[data-test="mix-temperature-preview"]').waitFor({ state: 'attached' });
+      assert(await page.locator('[data-test="mix-temperature-preview"]').isHidden());
       assert.equal(await page.locator('[data-test="mix-temperature"]').getAttribute("data-selected"), "false");
       assert.match(await page.locator(".mix-temperature-legend").textContent(), /未選択/);
       assert.equal(await page.locator('[data-test="thermo-pointer"]').isVisible(), false);
       assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /未選択/);
-      await assertFits(page, '.mix-temperature-preview, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
+      await assertFits(page, '.mix-decision-reason, [data-test="mix-ok"]');
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
       const small = await expectBands(page, .9);
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);

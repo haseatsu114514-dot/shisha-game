@@ -158,9 +158,11 @@ async function pullGame(cs, mode) {
   </svg>` });
   const labels = el("div.pull-dial-labels", ZONES.map(z => el(`div.pull-zone-label.l-${z.id}`, [
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
-    el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
+    el("span", { text: z.id === "keep" ? "中央で維持・左右で微調整" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
-  const dialRow = el("div.pull-dial-row", [dial, labels]);
+  const dialRow = el("div.pull-dial-row", [dial, labels,
+    el("p.pull-band-note", { text: "白い帯：左右は変化が大きい／中央はキープの目安", dataset: { test: "pull-band-note" } }),
+  ]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const placeJusts = () => ZONES.forEach((z, i) => {
@@ -183,6 +185,8 @@ async function pullGame(cs, mode) {
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
+  const serveReason = el("small.pull-serve-reason", { role: "status", dataset: { test: "pull-serve-reason" } });
+  serveBtn.append(serveReason);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
@@ -221,6 +225,10 @@ async function pullGame(cs, mode) {
     counter.dataset.pulls = String(pulls);
     counter.setAttribute("aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
     serveBtn.disabled = !running || drawing || finished || pulls < mode.min || !!failed;
+    const remaining = Math.max(0, mode.min - pulls);
+    serveReason.textContent = failed ? "この一台は終了" : remaining
+      ? `あと${remaining}回で${mode.drift ? "調整を終えられる" : "提供できる"}`
+      : drawing ? "吸い終わるまで待とう" : mode.drift ? "調整を終えられます" : "提供できます";
     pullBtn.disabled = !running || drawing || finished || !!failed || pulls >= MAX_PULLS;
   };
 
@@ -345,12 +353,12 @@ async function pullGame(cs, mode) {
     const buttons = el("div.care-coal-btns", options.map((n) => el("button.btn.care-coal", {
       dataset: { test: `care-coal-${n}` }, onclick: () => pick(n),
       title: n ? `消耗した炭を${n}個、焼いた炭に交換する。温度が${["", "少し", "そこそこ", "しっかり", "強く"][n]}戻る` : "消耗した炭のまま。温度は落ちていく",
-      onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, COAL_HEAT[n]), 0, 1) : null, "点線：交換するとここ"),
+      onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, COAL_HEAT[n]), 0, 1) : null, "点線：焼け具合で変わる目安"),
       onpointerleave: () => thermometer.preview(null),
     }, [
       el("span.btn-label", { text: n ? `${n}個` : "交換しない" }), el("small.btn-desc", { text: n ? "▲".repeat(n) : "↓" }),
     ])));
-    const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [lead, el("p.care-coals-ask", { text: "炭を交換しますか？" }), buttons]);
+    const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [lead, el("p.care-coals-ask", { text: "炭を交換しますか？" }), buttons, el("p.care-coal-forecast-note", { text: "▲は戻る熱の目安。実際の温度と持ちは、次の炭焼きの結果で変わる" })]);
     main.append(choice);
     render();
     let pick;

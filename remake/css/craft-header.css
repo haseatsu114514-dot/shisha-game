@@ -54,3 +54,22 @@
 .bench[data-step="pack"] .pack-vessel { min-height: 280px; }
 .bench[data-step="pack"] .pack-caption { min-height: 64px; flex: none; }
 .bench[data-step="pack"] :is(.pack-choices, .pack-footer) { flex: none; }
+
+/* 判断材料を操作と同じ場所へ。温度計は既存の1本を移動する。 */
+.bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .pull > .thermo { left: 12px; top: 31px; }
+.bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .pull-main { margin-left: 112px; }
+.pull-band-note { position: absolute; top: 66px; left: 0; right: 0; margin: 0; text-align: center; font-size: 13px; line-height: 20px; color: #eadcc6; }
+.bench[data-art-skin] .pull-btns [data-test="pull-serve"] { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: 1fr auto; gap: 2px 8px; padding: 8px; font-size: 22px; }
+.bench[data-art-skin] .pull-btns [data-test="pull-serve"]:disabled { opacity: .72; }
+.pull-btns .pull-serve-icon { width: 32px; height: 30px; }
+.pull-serve-reason { grid-column: 1 / -1; font-family: var(--font); font-size: 13px; line-height: 22px; letter-spacing: 0; color: #f0dfc6; }
+.care-coal-forecast-note { margin: 0; color: #c9bca8; font-size: 14px; line-height: 1.6; }
+.mix-decision { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.mix-decision > .btn { min-height: 64px; width: 100%; }
+.mix-decision-reason { margin: 0; font-size: 13px; line-height: 20px; color: #ffd0ad; }
+.mix-decision-reason[data-ready="true"] { color: #c9e5bf; }
+.mix-temperature-preview[hidden] { display: none; }
+.mix-footer:has(.mix-temperature-preview[hidden]) { grid-template-columns: 180px 1fr; }
+.pull-play { grid-template-columns: minmax(0, 1fr); }
+.bench .pull-summary { display: grid; grid-template-columns: 1fr 1fr; }
+.bench .pull-summary > .pull-life { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 4px 12px; }

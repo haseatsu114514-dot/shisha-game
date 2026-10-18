@@ -226,6 +226,8 @@ export async function stepMix(cs) {
     el("small", { text: "低温 → 高温 ｜ 線：中心" }),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
+  const decisionReason = el("p.mix-decision-reason", { role: "status", dataset: { test: "mix-decision-reason" } });
+  let selectionNotice = "";
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
 
   const redraw = () => {
@@ -250,6 +252,15 @@ export async function stepMix(cs) {
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
     okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
+    // 決定可否と同じ値・課題判定を表示する。採点や葉の消費は変更しない。
+    const reasons = [];
+    if (total < 12) reasons.push(`合計12gまであと${+(12 - total).toFixed(1)}g`);
+    if (!info.regOk) reasons.push(`${leafName(reg.flavor)}があと${+(reg.min - flavorFamilyGrams(cs.mix, reg.flavor)).toFixed(1)}g必要`);
+    if (total > cap) reasons.push(`容量${cap}gを超えているため葉を減らす`);
+    else if (total >= cap && !info.regOk) reasons.push(`容量${cap}gいっぱい。ほかの葉を減らして入れ替える`);
+    decisionReason.textContent = [selectionNotice, ...reasons].filter(Boolean).join(" ／ ") || `配合を決定できます（容量${cap}gまで）`;
+    decisionReason.dataset.ready = String(!okBtn.disabled);
+    temperaturePreview.hidden = total === 0;
     // 比率（#638）: グラムだけでなく、今の割合も見せる（表示のみ・判定には使わない）
     const pct = mixPercents(cs.mix);
     rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; r.ratio.textContent = cs.mix[r.id] ? `比率 ${pct[r.id]}%` : ""; });
@@ -263,8 +274,9 @@ export async function stepMix(cs) {
     const change = (d) => {
       const cur = cs.mix[id] || 0;
       const next = clamp(cur + d, 0, cap);
-      if (d > 0 && totalOf() + d > cap) { SE.error(); return; }
-      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の${consumes ? "持ち込み" : "手持ち"}は残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
+      if (d > 0 && totalOf() + d > cap) { SE.error(); selectionNotice = `容量${cap}gまで。先にほかの葉を減らす`; redraw(); return; }
+      if (d > 0 && cur + d > limit(id)) { SE.error(); selectionNotice = `${f?.short_name || f?.name || id}は手持ちの${flavorStock(id)}gまで`; redraw(); toast(`${f?.short_name || f?.name || id}の${consumes ? "持ち込み" : "手持ち"}は残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
+      selectionNotice = "";
       cs.mix[id] = next;
       // シロップを含む葉を取る操作はほぼ無音。数字を減らすUIだけ短いクリック。
       if (d < 0) SE.click();
@@ -297,7 +309,7 @@ export async function stepMix(cs) {
     el("div.mix-side", [vessel, taste, recipeLine,
       hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null]),
     el("div.mix-list", [el("p.mix-list-caption", { text: "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
-    el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, okBtn]),
+    el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, el("div.mix-decision", [okBtn, decisionReason])]),
   ]));
   redraw();
   await new Promise((resolve) => {
