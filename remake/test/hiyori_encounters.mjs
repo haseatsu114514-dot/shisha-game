@@ -18,6 +18,7 @@ async function setup(page) {
     H.ch1.setupHooks();
     H.fresh = () => {
       const s = H.core.newGame();
+      s.flags._axe_bar_legacy_access = true; // #577: 新規の噂・目撃は専用回帰で検査
       // Fixed seed; meetings follow the same displayed schedule as the map.
       Object.assign(s, { phase: "daily", day: 4, slot: 0, money: 90000, seed: 131 });
       Object.assign(s.flags, { _errand_scout_done: true, _delivery_adam_done: true,
@@ -122,7 +123,8 @@ await suite("hiyori-encounters", async (check) => {
         H.fresh(); await H.visit(H.daily.hiyoriShopLocation()); H.core.state.day++;
         H.contact = which === "work" ? H.tonari.doBaito() : H.tonari.tonariCustomer();
       }, path);
-      if (path === "work") await page.locator('[data-test="after-none"]').click();
+      // 接客・配達台詞とシフト演出の完了を待つ。メニュー表示前の全シフトを10秒に制限しない。
+      if (path === "work") await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
       await page.evaluate(() => H.contact);
       const result = await page.evaluate(() => ({ report: H.core.state.flags._hiyori_sumi_message_done,
         relay: H.core.state.flags._hiyori_message_delivered, known: H.core.state.flags._hiyori_real_self_known }));

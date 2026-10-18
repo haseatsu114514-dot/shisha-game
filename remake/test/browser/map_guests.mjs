@@ -11,6 +11,7 @@ await suite("map-guests", async check => {
           map: await import("./js/daily/map.js"), people: await import("./js/daily/spot-people.js"),
           spots: await import("./js/daily/spots.js"), hiyori: await import("./js/daily/hiyori.js") };
         const s = G.core.newGame(); Object.assign(s, { phase: "daily", day: 4, slot: 0, seed: 131, money: 90000 });
+        s.flags._axe_bar_legacy_access = true; // #577: 旧未対面保存の表示・予定一致を保つ
         s.met.naru = s.met.adam = s.met.minto = true;
         window.flow = G.map.chooseSpot();
       });

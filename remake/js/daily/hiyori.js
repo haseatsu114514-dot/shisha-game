@@ -12,6 +12,8 @@ import { addMoney, addStamina } from "../core/stats.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
 import { allSpots, isClosed, isUnlocked } from "./spots.js";
 import { rinUnavailable } from "./spot-hours.js";
+import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discovery.js";
+import { playAxeBarRumor } from "./axe-bar-discovery.js";
 
 let active = false;
 
@@ -149,6 +151,7 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
 
 /** 返信で予約した店で既存の短い交流を読む。予約なしの確定出現は増やさない。 */
 export async function playHiyoriHangout(options = {}) {
+  if (!hiyoriFirstMeetingReady(state)) return false;
   const stamp = `${state.chapter}:${state.day}`;
   if (active || isPlaying() || state.flags._hiyori_encounter_day === stamp) return false;
   const n = Number(state.flags._hiyori_repeat_count || 0);
@@ -171,6 +174,7 @@ export async function playHiyoriHangout(options = {}) {
 
 /** バイト・客席・スミさんとの会話、いずれも次の実際の対面で一度だけ進める。 */
 export async function meetHiyoriAtTonari() {
+  if (axeBarRumorDue(state)) return playAxeBarRumor();
   if (hiyoriEventStatus("sumi_message") === "ready") return playHiyoriEvent("sumi_message");
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
   if (hiyoriEventStatus("tonari_afterwork") === "ready") return playHiyoriEvent("tonari_afterwork");
