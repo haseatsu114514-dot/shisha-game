@@ -1,0 +1,55 @@
+{
+  "issue": 563,
+  "worker": "codex-563-20261015-01a13c35",
+  "claim_run": "38697952277",
+  "main": "7d63fbdc5ce75e57c3cca438476452b7238bd12e",
+  "tool": "official image_gen.imagegen",
+  "status": "regenerated preview candidates; not adopted; not integrated",
+  "previous_approved_sources_preserved": true,
+  "qa": {
+    "format": "RGBA PNG",
+    "size": [
+      1084,
+      1451
+    ],
+    "required_runtime_size": [
+      896,
+      1200
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "strict_face_only_pixel_preservation": false,
+    "body_redrawn": true,
+    "rei_canvas_edge_contact": true,
+    "game_display_qa": "not run",
+    "notes": "Generation did not preserve exact body pixels/coordinates. Preview only. No manifest/runtime/normal replacement."
+  },
+  "candidates": [
+    {
+      "id": "kumicho",
+      "face": "smile",
+      "file": "chr_kumicho_smile.generated-candidate.png",
+      "bytes": 778578,
+      "sha256": "fc7295ba62e732dc1a8406880d1af6a07e3f076650fa46a55528ea3fc8b50362",
+      "reference": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+      "reference_blob": "f6fa5c49e8e7bcae039c7880fae5e71ba29e3dad",
+      "reference_sha256": "c7e51cbf4fba461e6b39d8f4004223b43eb83e0b33fa21d822c8607a8ba71f34",
+      "reference_bytes": 509273,
+      "prompt": "Edit the supplied canonical full-body transparent game sprite of Kanzaki Ryuji (kumicho). This is a STRICT FACE-EXPRESSION VARIANT, not a redesign. Keep the canvas exactly 896 x 1200 pixels and maintain the complete alpha silhouette, framing, head/feet position, height, pose, all body pixels, hair, hairline, tattoos, ear, scar, facial anatomy, nose, jaw, dark suit, open collar, hand on lapel, hanging left hand, fingers, trousers, shoes, fine pixel-painterly rendering, lighting, palette and linework. Change ONLY the small interior facial expression region (eyebrows, eyelids, mouth) into a restrained, warm, closed-mouth welcoming smile: gently relaxed eyebrows, subtly softened eyes and a small natural upturn at the corners of the same closed lips. He is the same mature 39-year-old Japanese man with intimidating but kind presence; keep dignity, no broad grin, no teeth, no blush, no added facial marks, no new pose. Preserve transparent background exactly; no scenery, text, floor shadow, halo or baked checkerboard. Do not crop, recenter, rescale, retouch clothing or redraw hands. The output should be one single complete sprite in the source's original coordinate system, suitable for switching normal/smile without movement. This is a newly generated candidate, distinct from an earlier inaccessible approved original."
+    },
+    {
+      "id": "rei",
+      "face": "serious",
+      "file": "chr_rei_serious.generated-candidate.png",
+      "bytes": 771783,
+      "sha256": "7a4d441f73254ca48584db991ce2e039517f495b563641618950f5ce689751e2",
+      "reference": "assets/sprites/characters/rei/chr_rei_normal.png",
+      "reference_blob": "eb78c8cb3da598a48e4788b01e603e25b41c7fd4",
+      "reference_sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf",
+      "reference_bytes": 519328,
+      "prompt": "Edit the attached canonical transparent full-body game sprite of REI from shisha-game into exactly one serious expression variant. This is the same young adult man, NOT a redesign. Face-expression change ONLY: a quietly intent, thoughtful, concentrated look while listening to music or carefully checking his work; gently lower and draw the eyebrows, focus his eyes, keep his lips closed and calm. Do not make him angry, villainous, glaring, sad or smiling. Preserve exact identity and facial proportions, red and black asymmetric hair, piercings, neck and hand tattoos, embroidered black gothic coat with dark red lining, waistcoat, chains, overlapping hands, trousers and boots. Preserve the original head angle, anatomy, entire pose, hand shapes, silhouette, every clothing detail, pixel-painterly texture, palette and lighting. Change only eyebrows/eyelids/mouth in the small face area. Match the reference coordinate system with exact 896 x 1200 pixel canvas and head/feet position, no crop, no scaling or recentering. Whole person from hair tip to sole, transparent background, no shadows, no text or checkerboard. Single sprite only. This is a newly regenerated preview candidate, separate from inaccessible previously approved source; it is not a runtime replacement yet."
+    }
+  ]
+}
