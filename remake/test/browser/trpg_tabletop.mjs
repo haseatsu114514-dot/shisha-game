@@ -11,6 +11,15 @@ const browser=await chromium.launch({headless:true,
  ...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{})});const results=[];
 const ctl=(p,id)=>p.locator(`[data-test="${id}"]`);
 async function lines(p){for(let n=0;n<60&&await ctl(p,'trpg-next').isVisible();n++)await ctl(p,'trpg-next').click();}
+async function assertReducedDice(p){
+ // The 40ms result render replaces rolling dice. Query and read styles in one
+ // browser task so a selector handle cannot retain dice detached between awaits.
+ const dice=await p.evaluate(()=>[...document.querySelectorAll('.trpg-die')].map(n=>({
+   connected:n.isConnected,animationName:getComputedStyle(n).animationName,
+ })));
+ assert.deepEqual(dice.map(n=>n.connected),[true,true],'Both reduced-motion dice must be connected');
+ assert.deepEqual(dice.map(n=>n.animationName),['none','none'],'Reduced motion keeps both actual dice still');
+}
 async function fit(p,label){
  try {
  // Keep a previous click from hovering the edge of a newly positioned result control.
@@ -152,8 +161,8 @@ try{
    const c=await browser.newContext({viewport:{width:1280,height:720},reducedMotion:'reduce'});const p=await c.newPage();
    await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);
    await ctl(p,'trpg-roll').click();
-   assert.deepEqual(await p.locator('.trpg-die').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).animationName)),['none','none'],'Reduced motion keeps both actual dice still');
-   await ctl(p,'trpg-settle').waitFor();await fit(p,scenario+'-reduced-motion-result');await c.close();
+   await assertReducedDice(p);
+   await ctl(p,'trpg-settle').waitFor();await assertReducedDice(p);await fit(p,scenario+'-reduced-motion-result');await c.close();
  }
  // Discover deterministic seeds with the unchanged real model, then roll in DOM.
  const scenarioData=JSON.parse(fs.readFileSync(new URL('../../../data/dialogue/trpg_ordinary.json',import.meta.url)));
