@@ -39,12 +39,21 @@ permissions:
   pull-requests: read
   actions: read
 concurrency:
-  group: issue-claim-coordinator
+  group: issue350-mac-e82b7c1f
   cancel-in-progress: false
 jobs:
   coordinate:
     runs-on: ubuntu-latest
     steps:
+      - name: Restrict this branch to the disposable Mac probe
+        env:
+          PROBE_OPERATION: ${{ inputs.operation }}
+          PROBE_ISSUE: ${{ inputs.issue }}
+          PROBE_OWNER: ${{ inputs.owner }}
+        run: |
+          test "$PROBE_ISSUE" = "665"
+          test "$PROBE_OWNER" = "codex-350-mac-probe-20261018-e82b7c1f"
+          case "$PROBE_OPERATION" in claim|status|release) ;; *) exit 1 ;; esac
       - name: Select and reserve issue
         uses: actions/github-script@v7
         env:
@@ -268,3 +277,6 @@ jobs:
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
               await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
             }
+      - name: Observe the gate after ledger write but before successful completion
+        if: inputs.operation == 'claim'
+        run: sleep 20
