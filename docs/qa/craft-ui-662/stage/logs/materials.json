@@ -1,0 +1,36 @@
+{
+  "name": "craft-materials",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-packing",
+      "status": "passed"
+    },
+    {
+      "label": "pc-foil",
+      "status": "passed"
+    },
+    {
+      "label": "pc-preview-isolated",
+      "status": "passed"
+    },
+    {
+      "label": "touch-packing",
+      "status": "passed"
+    },
+    {
+      "label": "touch-foil",
+      "status": "passed"
+    },
+    {
+      "label": "touch-preview-isolated",
+      "status": "passed"
+    },
+    {
+      "label": "automatic-packing",
+      "status": "passed"
+    }
+  ]
+}

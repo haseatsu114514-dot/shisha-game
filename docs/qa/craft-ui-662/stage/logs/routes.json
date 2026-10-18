@@ -1,0 +1,24 @@
+{
+  "name": "craft-routes",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-normal-full-and-load",
+      "status": "passed"
+    },
+    {
+      "label": "pc-tutorial-full-and-load",
+      "status": "passed"
+    },
+    {
+      "label": "touch-normal-full-and-load",
+      "status": "passed"
+    },
+    {
+      "label": "touch-tutorial-full-and-load",
+      "status": "passed"
+    }
+  ]
+}

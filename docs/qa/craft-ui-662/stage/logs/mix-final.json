@@ -1,0 +1,12 @@
+{
+  "name": "craft-guidance",
+  "baseURL": "http://127.0.0.1:8127/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "touch-mix",
+      "status": "passed"
+    }
+  ]
+}
