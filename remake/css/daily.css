@@ -239,16 +239,16 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   right: -8px;
   top: -8px;
   box-sizing: border-box;
-  width: 24px;
-  min-width: 24px;
-  height: 24px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
   padding: 0;
   border-radius: 50%;
   background: #f00;
   border: 0;
   color: #fff;
   font-family: Arial, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   font-style: normal;
   line-height: 1;
@@ -260,10 +260,9 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   pointer-events: none;
 }
 .hud-lime .badge-number { font: inherit; }
-.hud-lime .badge.single { font-size: 16px; }
-.hud-lime .badge-plus { position: absolute; right: 1px; top: 3px; font-size: 7px; line-height: 1; }
-.hud-lime.has .badge { display: flex; animation: lime-badge 1.8s ease-in-out infinite; }
-@keyframes lime-badge { 50% { box-shadow: 0 0 0 5px rgba(255, 59, 78, 0.25); } }
+.hud-lime .badge.single { font-size: 14px; }
+.hud-lime .badge-plus { position: absolute; right: 1px; top: 2px; font-size: 6px; line-height: 1; }
+.hud-lime.has .badge { display: flex; }
 .hud-menu { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
 .hud-menu i { width: 13px; height: 9px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
 .hud-menu i::after { content: ""; position: absolute; left: 0; right: 0; top: 1.5px; border-top: 2px solid currentColor; }

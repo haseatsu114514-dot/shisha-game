@@ -60,6 +60,7 @@ try {
         const { badge: b, icon: i, textRect: t } = geometry;
         assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
         assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 99+');
+        assert(Math.abs(b.width / i.width - .4) < .025, 'badge diameter follows reference icon ratio');
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');
         const n = geometry.numberRect;
