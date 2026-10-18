@@ -117,19 +117,19 @@
     {
       "id": "ageha_today",
       "char_id": "ageha",
-      "dialogue_id": "ch2_ageha_first",
+      "dialogue_id": "remake_ch2_ageha_scout",
       "echo": "（アゲハの「今日の感じ」に、俺が来たことも入っていた）"
     },
     {
       "id": "ageha_words",
       "char_id": "ageha",
-      "dialogue_id": "ch2_ageha_second",
+      "dialogue_id": "remake_ch2_ageha_gyaru",
       "echo": "（アゲハと話していると、感じていたことに言葉が追いつく）"
     },
     {
       "id": "ageha_roles",
       "char_id": "ageha",
-      "dialogue_id": "ch2_ageha_fourth",
+      "dialogue_id": "remake_ch2_ageha_magazine",
       "echo": "（撮影のアゲハも、客の顔を見るアゲハも、同じ彼女だった）"
     },
     {
@@ -171,25 +171,25 @@
     {
       "id": "volk_measure",
       "char_id": "volk",
-      "dialogue_id": "ch2_volk_first",
+      "dialogue_id": "ch3_volk_first",
       "echo": "（ヴォルクさんに言われて、昨日のままの炭を疑うようになった）"
     },
     {
       "id": "volk_conditions",
       "char_id": "volk",
-      "dialogue_id": "ch2_volk_second",
+      "dialogue_id": "ch3_volk_second",
       "echo": "（ヴォルクさんは、昨日と今日の違いを確かめてから炭を置いた）"
     },
     {
       "id": "volk_update",
       "char_id": "volk",
-      "dialogue_id": "ch2_volk_fourth",
+      "dialogue_id": "ch3_volk_fourth",
       "echo": "（ヴォルクさんの式も、客が来るたびに確かめ直されていた）"
     },
     {
       "id": "mashiro_pace",
       "char_id": "mashiro",
-      "dialogue_id": "ch3_mashiro_encounter",
+      "dialogue_id": "ch3_mukai_arrival",
       "echo": "（ましろちゃんの隣では、答えを急がずに座っていられた）"
     },
     {

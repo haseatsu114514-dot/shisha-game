@@ -88,7 +88,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.getByRole('button',{name:/第三章|第3章/}).count(),0);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
-    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味だけが遠い/);
+    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味の輪郭は戻らない/);
+    assert.match(afterText,/おめでとうの文字が届いていた/);
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     await assertFits(page,'.ch2-contest .btn');

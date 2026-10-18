@@ -1,7 +1,8 @@
 {
+  "comment": "第3章・東京の鉄の煙。全国大会出場者。第2章には登場しない。",
   "dialogues": [
     {
-      "dialogue_id": "ch2_volk_first",
+      "dialogue_id": "ch3_volk_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -121,14 +122,29 @@
           "memory_id": "volk_measure"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "……【技術】が少し上がった。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "このメモ、温度の隣の線は？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "客が吸った時刻だ。数字だけでは、誰も吸わない台になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺のメモにも、書いていいですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "やってみろ。次の一台で違えば、また書き直す"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_volk_second",
+      "dialogue_id": "ch3_volk_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -235,7 +251,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_volk_third",
+      "dialogue_id": "ch3_volk_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -268,7 +284,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（シーシャ一杯のために、7年分のデータ……）"
+          "text": "（シーシャ一台のために、7年分のデータ……）"
         },
         {
           "speaker": "volk",
@@ -328,7 +344,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_volk_fourth",
+      "dialogue_id": "ch3_volk_fourth",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -445,7 +461,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_volk_after_ch2",
+      "dialogue_id": "ch3_volk_after_ch3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -522,12 +538,12 @@
         },
         {
           "type": "set_flag",
-          "flag": "ch2_volk_after_ch2_done"
+          "flag": "ch3_volk_after_ch3_done"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_volk_after_ch2_firstshop",
+      "dialogue_id": "ch3_volk_after_ch3_firstshop",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
@@ -609,7 +625,7 @@
         },
         {
           "type": "set_flag",
-          "flag": "ch2_volk_after_ch2_done"
+          "flag": "ch3_volk_after_ch3_done"
         }
       ]
     }
