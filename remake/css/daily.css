@@ -259,7 +259,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   justify-content: center;
   pointer-events: none;
 }
-.hud-lime .badge-number { font: inherit; }
+.hud-lime .badge-number { font: inherit; transform: translateX(0.5px); } /* 数字の見た目の中央を補正 */
 .hud-lime .badge.single { font-size: 14px; }
 .hud-lime .badge-plus { position: absolute; right: 1px; top: 2px; font-size: 6px; line-height: 1; }
 .hud-lime.has .badge { display: flex; }

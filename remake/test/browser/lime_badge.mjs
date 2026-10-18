@@ -64,7 +64,8 @@ try {
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');
         const n = geometry.numberRect;
-        assert(Math.abs(n.x + n.width / 2 - b.x - b.width / 2) < .1 && Math.abs(n.y + n.height / 2 - b.y - b.height / 2) < .1, 'number stays exactly centered independently of plus');
+        const opticalOffset = .5 * i.width / 48;
+        assert(Math.abs(n.x + n.width / 2 - b.x - b.width / 2 - opticalOffset) < .1 && Math.abs(n.y + n.height / 2 - b.y - b.height / 2) < .1, 'number keeps its optical center independently of plus');
         if (count > 99) {
           assert(geometry.plusSize <= geometry.fontSize / 2, 'plus is smaller than the digit');
           assert(geometry.plusRect.y < n.y && geometry.plusRect.x > n.x + n.width / 2, 'plus is at upper right of number');
