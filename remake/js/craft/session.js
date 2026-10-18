@@ -81,7 +81,8 @@ export function newSession(mode) {
 let bench = null;
 
 // 同時に待つベース/工程の準備を一つにまとめる。キャッシュ済みなら幕を出さない。
-function waitForBenchAssets(b, task) {
+function waitForBenchAssets(b, task, assets = task) {
+  b.pendingWork = (b.pendingWork || 0) + 1;
   b.pendingAssets = (b.pendingAssets || 0) + 1;
   b.root.inert = true;
   b.root.setAttribute("aria-busy", "true");
@@ -91,13 +92,17 @@ function waitForBenchAssets(b, task) {
     b.loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
     b.root.append(b.loading);
   }, 220);
-  return Promise.resolve(task).finally(() => {
+  const assetsReady = Promise.resolve(assets).finally(() => {
     if (--b.pendingAssets) return;
     clearTimeout(b.loadingTimer); b.loadingTimer = null;
     b.loading?.remove(); b.loading = null;
+  });
+  const complete = Promise.all([task, assetsReady]).finally(() => {
+    if (--b.pendingWork) return;
     b.root.inert = false;
     b.root.removeAttribute("aria-busy");
   });
+  return Object.assign(complete, { assetsReady });
 }
 
 /**
@@ -107,7 +112,12 @@ function waitForBenchAssets(b, task) {
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
-  if (bench && bench.cs === cs && bench.root.isConnected) { bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, bg()])); return bench; }
+  if (bench && bench.cs === cs && bench.root.isConnected) {
+    const background = bg();
+    bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, background]),
+      Promise.all([bench.ready.assetsReady, background.assetsReady]));
+    return bench;
+  }
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -135,7 +145,9 @@ export function openBench(cs, { steps = [] } = {}) {
   showScreen("bench", root);
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
-  bench.ready = waitForBenchAssets(bench, Promise.all([bg(), warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]));
+  const background = bg();
+  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]);
+  bench.ready = waitForBenchAssets(bench, Promise.all([background, assets]), assets);
   renderFatigue();
   return bench;
 }
@@ -144,11 +156,12 @@ export async function waitBenchReady(cs, step = null, options = {}) {
   const b = bench;
   if (b?.cs !== cs) return;
   if (!step) { await b.ready; return; }
-  await waitForBenchAssets(b, Promise.all([
-    b.ready,
+  const assets = Promise.all([
+    b.ready.assetsReady,
     warmCraftAssets(cs.mode, { cs, step, ...options }),
     b.worker.prepare(step),
-  ]));
+  ]);
+  await waitForBenchAssets(b, Promise.all([b.ready, assets]), assets);
   const current = b.sequence.indexOf(step === "timer" ? "steam" : step);
   const next = current >= 0 ? b.sequence[current + 1] : null;
   if (next && !b.prefetchSteps.has(next)) {

@@ -119,16 +119,18 @@ await suite("issue439", async (check) => {
     await setup(page, false);
     await page.evaluate(() => {
       I.core.markMet("hiyori"); I.core.state.flags._intro_hiyori = true;
+      I.talkDone = false;
       I.talk = I.vn.play({ dialogue_id: "__439_flashback", lines: [
         { type: "fx", id: "flashback" }, { speaker: "hiyori", face: "student_smile", text: "学生の頃" },
         { type: "fx", id: "flashback_off" }, { speaker: "hiyori", face: "normal", text: "今の話" },
-      ] });
+      ] }).then(result => { I.talkDone = true; return result; });
     });
     await page.locator("#vn.flashback .vn-next.show").waitFor();
     assert.match(await page.locator(".vn-portraits").evaluate(node => getComputedStyle(node).filter), /grayscale\(1\)/);
     await page.keyboard.press("Enter"); await page.waitForSelector("#vn:not(.flashback) .vn-next.show");
+    assert.equal(await page.locator(".vn-text").innerText(), "今の話", "Next must belong to the displayed line");
     assert.equal(await page.locator(".vn-portraits").evaluate(node => getComputedStyle(node).filter.includes("grayscale")), false);
-    await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);
+    await page.keyboard.press("Enter"); await page.waitForFunction(() => I.talkDone);
   });
 
   await check("cheki-earned-after-photo", async page => {
