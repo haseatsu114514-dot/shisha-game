@@ -44,6 +44,8 @@ import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig } from "../daily/home-rig.js";
+import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
+import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -143,6 +145,7 @@ async function openingPart() {
     progress.departureDone = true;
     save();
   }
+  if (await firstBrewOrder(progress) === false) return false;
   // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
   progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
     : flag("_tutorial_skipped") ? "skip" : null;
@@ -160,7 +163,7 @@ async function openingPart() {
     save();
   }
   if (!progress.oneesanDone) {
-    await play("ch1_tutorial_oneesan", { bg: TONARI });
+    if (await serveFirstBrew(progress) === false) return false;
     progress.oneesanDone = true;
     save();
   }
@@ -193,6 +196,7 @@ async function tutorial(progress = null) {
   if (!progress || !flag("_tutorial_done")) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
+    if (progress?.firstOrderDone) configureFirstBrew(cs);
     openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
     await stepMix(cs);
     await stepPack(cs);
@@ -204,12 +208,13 @@ async function tutorial(progress = null) {
     await runPull(cs);
     // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
     while (cs.failed) {
-      await play("remake_tutorial_burnt", { bg: TONARI });
+      await play(cs.failed === "burnt" ? "remake_tutorial_burnt" : "remake_tutorial_retry", { bg: TONARI });
       Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
       openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
       await runPull(cs);
     }
     recordPractice(cs, "tutorial");
+    if (progress?.firstOrderDone) rememberFirstBrew(progress, cs);
     state.flags._tutorial_done = true;
     delete state.flags._tutorial_skipped;
     save();
@@ -316,7 +321,7 @@ async function earlyPractice() {
   }
   if (!progress.practiceDone && progress.choice !== "review") {
     if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はtonariでいつでもできます。", recommended: recommendedDrill() });
+      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はマップの家から「家で練習する」を選べます。", recommended: recommendedDrill() });
       save();
     }
     beginEvePractice(progress);
@@ -452,6 +457,7 @@ async function tournamentDay() {
   // ROUND 1 ── 組み立て
   playBgm("bgm_tournament_craft");
   const cs = newSession("tournament");
+  cs.retryAssist = state.tournament.retryAssist === true;
   await roundCut("ROUND 1", "組み立て");
   await play("remake_round1_intro", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
@@ -575,6 +581,7 @@ async function entrance() {
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
+  state.tournament.retryAssist = false;
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
@@ -681,13 +688,22 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  recordTournamentLoss(state.tournament);
+  save();
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
-    onRetry: () => { retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
+    onRetry: async () => {
+      const owner = state;
+      await chooseRetryAssist(owner.tournament);
+      if (state !== owner || !root.isConnected) return;
+      save();
+      retire(root);
+      smokeWipe(() => { tournamentDay(); }, { color: "dark" });
+    },
     onTitle: () => location.reload(),
   });
   showScreen("end", root);

@@ -14,14 +14,14 @@ export const strainWindow = (cs) => 0.88 ** Math.min(3, cs?.strain || 0);
 
 /** 腕前（★）に、その一台を作り始めたときの体力コンディションと、途中で溜まった疲れを重ねる。 */
 export const skill = {
-  slow: (cs) => (1 + 0.18 * tier01("technique")) * craftCondition(cs).slow * strainSlow(cs),
-  window: (cs) => (1 + 0.45 * tier01("sense")) * craftCondition(cs).window * strainWindow(cs),
+  slow: (cs) => (1 + 0.18 * tier01("technique")) * craftCondition(cs).slow * strainSlow(cs) * (cs.retryAssist ? 1.35 : 1),
+  window: (cs) => (1 + 0.45 * tier01("sense")) * craftCondition(cs).window * strainWindow(cs) * (cs.retryAssist ? 1.5 : 1),
   clarity: (cs) => clamp(tier01("insight") + craftCondition(cs).focus - 1, 0, 1),
 };
 
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
-export function resultCard(panel, { title, lines = [], summary = [], button = "次へ" }) {
-  const { evaluation, hasAudience } = presentBenchResult(panel, title);
+export function resultCard(panel, { title, lines = [], summary = [], advice = "", button = "次へ" }) {
+  const { evaluation, hasAudience } = presentBenchResult(panel, title, advice);
   // 結果を読むとき、直前の判定文字を重ねない。
   panel.querySelectorAll(".stamp").forEach((stamp) => stamp.remove());
   return new Promise((resolve) => {
@@ -54,6 +54,7 @@ export function resultCard(panel, { title, lines = [], summary = [], button = "�
 /** キー入力（Space / Enter など）をミニゲームの間だけ拾う */
 export function keys(map) {
   const h = (e) => {
+    if (document.querySelector(".bench-guide[open]")) return;
     // 説明・体調を開く操作を、ミニゲームのSpace/Enterに流さない。
     if (e.target?.closest?.(".bench-guide, .bench-condition")) return;
     if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".timer-button, .dodge-action")) return;
