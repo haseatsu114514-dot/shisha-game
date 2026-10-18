@@ -93,3 +93,11 @@ PC/タッチの画像保留・連打・次行表示・正常終了を2件追加�
 追加検証：元flashback1件、loading16件、Issue439全12件、VN visual readiness4件、SAVE/LOAD6件がPASS。実行条件と各case、修正前DOM状態、ソースhashは[ci439.json](ci439.json)。このローカル検証はMac既存Chrome/Playwright1.57.0で、GitHubのUbuntu/pinned browserでの再実行結果とは区別する。
 
 独立レビューで指摘されたabort単独で準備表示が残る既存挙動は、この追加修正に混ぜていない。最新main全章・物理端末/Safari・修正版公開の未検証範囲は変わらない。
+
+## main #668 統合
+
+main `37ec866496e86c1fe05d787d363fa2eb6301572a` のひより立ち絵更新を、PRの既存修正 `f46e4d4` と統合した。両者の変更パスに重複はない。ひよりのnormal/student_smile、顔アイコン、characters.json・hiyori.jsonを計678529bytesだけ追加取得し、manifestと規約は取得済みレスポンス/キャッシュを再利用。すべてGit blob SHAを照合した。原画・他表情の一括取得、新clone、Git pack取得はしていない。リモート統合treeは最新mainを基礎にするため、未ダウンロードの他表情と原画もmainの内容をそのまま継承する。
+
+新しいnormal/student_smile（245248/237558bytes）とmanifestの組合せでloading16件・Issue439全12件がPASS。実際に配信した6つの更新素材/JSONのSHAも照合済み。未取得の更新ファイルを要求した場合は古い素材を配信せずエラーにする検証サーバーを使い、stale/missing/404なしを確認した。取得待ち・回想解除・連打・次行表示・終了までの回帰を、新画像のデコードで検証している。
+
+詳細は[main668.json](main668.json)。この28件はMacローカルの結果であり、最新HEADのGitHub CI結果はPRのChecksとIssue #609の引き継ぎに記録する。最新mainでの全章再計測や物理端末/Safari、修正版公開を確認したという意味ではない。取消済み #662/#666/#669/#671 の制作UIは統合しない。
