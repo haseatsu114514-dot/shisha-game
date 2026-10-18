@@ -90,6 +90,10 @@ try {
           clip: { x: Math.max(0, r.x - 12), y: Math.max(0, r.y - 12), width: r.width + 24, height: r.height + 24 } });
       }
     }
+    if (!baseline) {
+      const boxes = states.filter(s => s.count > 0).map(s => s.badge);
+      for (const box of boxes) assert.deepEqual(box, boxes[0], 'badge position and diameter must not change with digit count');
+    }
     assert.equal(await page.evaluate(() => JSON.stringify(badgeQA.core.state)), saved, 'badge rendering changes game state');
     // Read/unread derives from the existing inbox flags; restoring the snapshot needs no save migration.
     const counts = await page.evaluate(() => {

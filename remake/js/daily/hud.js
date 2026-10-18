@@ -149,6 +149,7 @@ export function setPhoneBadge(unread) {
   const name = count ? `LIME（未読${count}件）` : "LIME";
   dom.phone.classList.toggle("has", count > 0);
   const badge = dom.phone.querySelector(".badge");
+  badge.classList.toggle("single", count > 0 && count < 10);
   badge.replaceChildren(el("b.badge-number", { text: count > 99 ? "99" : String(count || "") }));
   if (count > 99) badge.append(el("small.badge-plus", { text: "+" }));
   dom.phone.title = name;
