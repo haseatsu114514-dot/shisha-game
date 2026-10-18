@@ -1,6 +1,6 @@
 # 施設絵の地図接続（#579）
 
-観音堂・家・喫茶・斧投げBar・チョイザップ・路上占い・ボドゲカフェを、場所を表す施設絵にしました。絵の透過輪郭に3pxの白ふちを付け、施設の背後にあった四角い看板を外しています。通常は64px、DSは半分の表示サイズです。
+観音堂・家・喫茶・斧投げBar・チョイザップ・路上占い・ボドゲカフェを、場所を表す施設絵にしました。絵の透過輪郭に5pxの白ふちを付け、施設の背後にあった四角い看板を外しています。通常は80px、DSは48px。前回の64px/32px・白ふち3pxから一回り大きくしました。
 
 既存の`assets/ui/map-facilities-579.png`は原画とバイト一致のまま再利用。追加絵は採用背景を参照して作成し、原画・生成指示・参照順・ハッシュを`asset_sources/map-facilities-579/`へ保存しました。配信用WebPは465,736 bytes、透過のアルファ値は生成原画と完全一致です。
 
@@ -18,40 +18,58 @@
 
 シーシャ店、Dr.fookah、C.STATIONの既存ロゴと来店演出は保持。チョイザップも来店時の採用ロゴは維持し、地図だけ施設絵に変更しました。人物・ゲスト・イベント通知は既存の行へ残しています。未解禁と未対面の「？」は絵や施設名に置き換えません。
 
-ボドゲカフェは既存のEDENと重なっていたため、そのピンの地図座標だけを`(48,46)`→`(52,20)`へ調整。施設の解禁、営業時間、料金、体力、移動先、報酬、保存形式、#661/#667の一括UIは変更していません。
+施設の座標は、文字や営業状況の高さに左右されず、絵の中心が背景の地点に合うようにしました。未解放の「？」も同じ地点です。店舗の座標・来店演出は保持し、マップのロゴ窓を92×52→82×46px、看板幅を100→90pxへ縮小。顔は左寄せにし、3人並んでもイベントマークと重なりません。
+
+| 施設 | 絵の中心座標（%） | 配置の目安 |
+| --- | --- | --- |
+| 観音堂 | 18, 57 | 背景左下の大きなお堂の屋根 |
+| 家 | 89, 44 | 右側の住宅ビル |
+| 喫茶こはく | 72, 45 | 中央右の商店街沿い |
+| チョイザップ | 20, 24 | 左上のビル街 |
+| 斧投げBar | 38, 74 | 下側の路地の店舗 |
+| 路上占い | 63, 67 | アーケード脇 |
+| ボドゲカフェ | 49, 15 | 上側の街区。第2章の店舗とも離して配置 |
+
+新スポットが判明して地図へ戻ると、ピンが約0.64秒弾み、白金の輪とNEWが現れます。複数なら90msずつずらし、1.6秒で装飾を片付けます。演出中も選択可能。動きを減らす設定では拡縮しません。[演出中の実画面](placement/unlock-pop.jpg)。
+
+再生履歴は読み込んだゲームのオブジェクトに紐付く表示専用メモリで管理します。既存セーブの最初の地図は静かに表示し、その後の解禁・正体判明・第2章追加だけを再生。地図の開き直しや占い師の定期再出店では繰り返しません。保存データへ演出フラグを追加せず、別ゲームには持ち越しません。
+
+施設の解禁条件、営業時間、料金、体力、移動先、報酬、保存形式、#661/#667の一括UIは変更していません。
 
 ## 同条件の変更前後
 
-base: `a34c074ef86616738b66312b359b3b6dcb31a15e`。各組は同じviewport・表示方式・DAY3・seed131・所持金90000・昼/夜・面識/解禁状態で撮影しています。通常のタッチ縦表示は既存の回転案内をそのまま撮影しています。
+今回の変更前はPR #675の前回画面（ソース`fba77e0e`、QA追加後head `44ae87a5`）、変更後の実装は`6db7717e`。各組は同じviewport・表示方式・DAY3・seed131・所持金90000・昼/夜・面識/解禁状態で撮影しています。通常のタッチ縦表示は既存の回転案内をそのまま撮影しています。
 
 | 条件 | 変更前 | 変更後 |
 | --- | --- | --- |
-| PC 1280×900 昼 | ![前](before-pc-normal-day.jpg) | ![後](after-pc-normal-day.jpg) |
-| PC 1280×900 夜 | ![前](before-pc-normal-night.jpg) | ![後](after-pc-normal-night.jpg) |
-| PC DS | ![前](before-pc-ds-day.jpg) | ![後](after-pc-ds-day.jpg) |
-| タッチ横844×390 | ![前](before-landscape-normal-day.jpg) | ![後](after-landscape-normal-day.jpg) |
-| タッチ横DS | ![前](before-landscape-ds-day.jpg) | ![後](after-landscape-ds-day.jpg) |
-| タッチ縦390×844 DS | ![前](before-portrait-ds-day.jpg) | ![後](after-portrait-ds-day.jpg) |
-| 第2章の施設表示fixture | ![前](before-pc-normal-chapter2.jpg) | ![後](after-pc-normal-chapter2.jpg) |
-| 未解禁・未対面 | ![前](before-pc-normal-locked.jpg) | ![後](after-pc-normal-locked.jpg) |
+| PC 1280×900 昼 | ![前](placement/before-pc-normal-day.jpg) | ![後](placement/after-pc-normal-day.jpg) |
+| PC 1280×900 夜 | ![前](placement/before-pc-normal-night.jpg) | ![後](placement/after-pc-normal-night.jpg) |
+| PC DS | ![前](placement/before-pc-ds-day.jpg) | ![後](placement/after-pc-ds-day.jpg) |
+| タッチ横844×390 | ![前](placement/before-landscape-normal-day.jpg) | ![後](placement/after-landscape-normal-day.jpg) |
+| タッチ横DS | ![前](placement/before-landscape-ds-day.jpg) | ![後](placement/after-landscape-ds-day.jpg) |
+| タッチ縦390×844 DS | ![前](placement/before-portrait-ds-day.jpg) | ![後](placement/after-portrait-ds-day.jpg) |
+| 第2章の施設表示fixture | ![前](placement/before-pc-normal-chapter2.jpg) | ![後](placement/after-pc-normal-chapter2.jpg) |
+| 未解禁・未対面 | ![前](placement/before-pc-normal-locked.jpg) | ![後](placement/after-pc-normal-locked.jpg) |
 
-[通常縦の変更前](before-portrait-normal-day.jpg) / [変更後](after-portrait-normal-day.jpg)。通常縦は背面DOMと回転案内の維持だけを検証し、実タップ成功には含めていません。DS縦では実タップを検証しました。
+[通常縦の変更前](placement/before-portrait-normal-day.jpg) / [変更後](placement/after-portrait-normal-day.jpg)。通常縦は背面DOMと回転案内の維持だけを検証し、実タップ成功には含めていません。DS縦では実タップを検証しました。
 
 ## 検証
 
 - `facility_icons.mjs`: 既存PNGの完全一致・元ハッシュ・アルファ領域・隣の絵の混入なし・追加WebPの透過一致・配信容量・施設対応と縦横比 PASS。
-- `browser/facility_icons.mjs`: asset_sourcesなし、`/shisha-game/`配下に実行用5ファイルだけを置く公開相当検査。PC/タッチ横/縦×7施設×明暗×4サイズ＝各56選択、計168選択PASS。保存sentinel不変、ページ/通信エラー0。[比較PC](preview/pc.jpg) / [タッチ](preview/touch.jpg) / [縦](preview/portrait-touch.jpg)。
+- `browser/facility_icons.mjs`: asset_sourcesなし、`/shisha-game/`配下に実行用5ファイルだけを置く公開相当検査。PC/タッチ横/縦×7施設×明暗×5サイズ＝各70選択、計210選択PASS。保存sentinel不変、ページ/通信エラー0。[比較PC](placement/preview/pc.jpg) / [タッチ](placement/preview/touch.jpg) / [縦](placement/preview/portrait-touch.jpg)。
 - `browser/facility_map.mjs`: PC/タッチ横/縦×通常/DSの6条件それぞれ昼・夜・第2章・未解禁・旧アクセスフラグ相当の5状態＝30状態PASS。前後で同じfixtureを使用。絵の表示・秘密の非表示・店舗ロゴ維持・論理タッチ領域・通常縦以外の画面上44px以上・施設ピン同士の重なりなし・表示/選択でstate不変を確認。
 - 通常縦以外の5条件で、施設6か所の実クリック/タップ選択と、夜の旧アクセスフラグを持つ斧投げBarの行き先確定PASS。旧アクセスフラグfixtureであり、全世代のセーブ移行や自然進行の通しプレイではありません。
 - `browser/map_guests.mjs`: 在店/未知人物・ゲストとイベントバッジ・保存・移動の6ケースPASS。
 - `store_logos.mjs`: 地図・全7ブランドの来店演出・SKIP/動きを減らす設定・読込失敗等18 UIケースPASS。地図のジム表示への期待値だけ更新し、来店ロゴの検査対象は減らしていません。
 - `navigation_transitions.mjs`: 通常速度の家/店/問屋・遅い画像・場面の置換・動きを減らす設定の7ケースPASS。
 - `compact_gains_map.mjs`: 3画面サイズの通知・報酬・施設・既読・休業・移動PASS。地図のジム絵への期待値を更新。
+- `browser/map_reveals.mjs`: PC・横タッチ・縦DS・動きを減らすDSの4条件PASS。面識による施設解禁、占い師の正体判明、第2章の追加、斧投げBarの解禁を確認。初回/再表示/定期再出店/別ゲームでの誤再生なし、演出中の選択成功、state不変。[測定](placement/unlocks.json)。
+- 今回の30状態・顔表示6ケース・来店ロゴ18ケース・通知3サイズを再実行PASS。施設絵の中心と地図座標の一致、未解禁表示、各操作領域の重なりも確認しました。演出と地図30状態の検査はCIにも追加。
 - `git diff --check` / Git Safety PASS。
 
 Chromiumエミュレーションで、実機Safariは未実施。AUTOを使った全シナリオ通し再生は未実施です。素材・地図表示の変更で、VN・会話送り・乱数・解禁判定は変更していません。
 
-[変更前測定](before.json) / [変更後測定](after.json) / [独立配信検査](preview/browser-results.json)。実装検証コミットは`after.json`の`ref`を参照してください。
+[変更前測定](placement/before.json) / [変更後測定](placement/after.json) / [独立配信検査](placement/preview/browser-results.json)。実装検証コミットは`placement/after.json`の`ref`を参照してください。初回接続時のmainとの比較は[元の変更前](before-pc-normal-day.jpg) / [初回接続後](after-pc-normal-day.jpg)に保全しています。
 
 ## 担当切替の記録
 
@@ -66,7 +84,9 @@ bot予約は旧worker/run38764988212のままで、正式移管済みではあ�
 ```sh
 node remake/test/facility_icons.mjs
 ARTIFACT_DIR=docs/qa/map-facilities-579/preview CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/facility_icons.mjs
-TEST_REF=$(git rev-parse HEAD) CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/facility_map.mjs
+TEST_REF=$(git rev-parse HEAD) CHROME_EXECUTABLE_PATH=/usr/bin/chromium ARTIFACT_DIR=docs/qa/map-facilities-579/placement node remake/test/browser/facility_map.mjs
 ```
 
 変更前はbase用worktreeで`BASELINE=1`と別の`ARTIFACT_DIR`を指定してください。現在のコードで変更前画像を上書きしないでください。
+
+解放演出の再実行: `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/map_reveals.mjs`。
