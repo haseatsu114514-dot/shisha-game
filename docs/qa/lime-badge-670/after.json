@@ -1,5 +1,5 @@
 {
-  "ref": "9b7be8d3ecb9881fbe0b93d6fb8a53f8705400e1",
+  "ref": "56bf4cd1c6f069797969c8810d01f362140d7f25",
   "results": [
     {
       "device": "pc",
@@ -21,7 +21,7 @@
             "height": 0
           },
           "icon": {
-            "x": 1120.5,
+            "x": 1116.5,
             "y": 104,
             "width": 48,
             "height": 48
@@ -33,11 +33,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 1060.5,
+              "x": 1056.5,
               "y": 102,
               "width": 52,
               "height": 52
@@ -56,29 +63,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 1150.5,
-            "y": 100,
-            "width": 22,
-            "height": 22
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 1120.5,
+            "x": 1116.5,
             "y": 104,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 1157.046875,
-            "y": 102,
-            "width": 8.90625,
-            "height": 17
+            "x": 1156.59375,
+            "y": 100,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 1156.59375,
+            "y": 101,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 1060.5,
+              "x": 1056.5,
               "y": 102,
               "width": 52,
               "height": 52
@@ -97,29 +111,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 1150.5,
-            "y": 100,
-            "width": 22,
-            "height": 22
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 1120.5,
+            "x": 1116.5,
             "y": 104,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 1157.046875,
-            "y": 102,
-            "width": 8.90625,
-            "height": 17
+            "x": 1156.59375,
+            "y": 100,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 1156.59375,
+            "y": 101,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 1060.5,
+              "x": 1056.5,
               "y": 102,
               "width": 52,
               "height": 52
@@ -134,33 +155,242 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 1150.5,
-            "y": 100,
-            "width": 22,
-            "height": 22
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 1120.5,
+            "x": 1116.5,
             "y": 104,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 1154.703125,
-            "y": 102,
-            "width": 13.578125,
-            "height": 17
+            "x": 1152.703125,
+            "y": 100,
+            "width": 15.578125,
+            "height": 16
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 1152.703125,
+            "y": 101,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 1060.5,
+              "x": 1056.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 1116.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1152.703125,
+            "y": 100,
+            "width": 15.578125,
+            "height": 16
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 1152.703125,
+            "y": 101,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 1056.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 1116.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1152.703125,
+            "y": 99,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 1152.703125,
+            "y": 101,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 1167.40625,
+            "y": 99,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 1056.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 1116.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1152.703125,
+            "y": 99,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 1152.703125,
+            "y": 101,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 1167.40625,
+            "y": 99,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 1056.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 1148.5,
+            "y": 96,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 1116.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1156.59375,
+            "y": 100,
+            "width": 7.796875,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 1156.59375,
+            "y": 101,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 1056.5,
               "y": 102,
               "width": 52,
               "height": 52
@@ -185,7 +415,7 @@
             "height": 0
           },
           "icon": {
-            "x": 1120.5,
+            "x": 1116.5,
             "y": 104,
             "width": 48,
             "height": 48
@@ -197,11 +427,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 1060.5,
+              "x": 1056.5,
               "y": 102,
               "width": 52,
               "height": 52
@@ -244,7 +481,7 @@
             "height": 0
           },
           "icon": {
-            "x": 487.5,
+            "x": 483.5,
             "y": 72,
             "width": 48,
             "height": 48
@@ -256,11 +493,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 439.5,
+              "x": 435.5,
               "y": 74,
               "width": 44,
               "height": 44
@@ -279,29 +523,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 517.5,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 487.5,
+            "x": 483.5,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 524.046875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 523.59375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 523.59375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 439.5,
+              "x": 435.5,
               "y": 74,
               "width": 44,
               "height": 44
@@ -320,29 +571,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 517.5,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 487.5,
+            "x": 483.5,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 524.046875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 523.59375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 523.59375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 439.5,
+              "x": 435.5,
               "y": 74,
               "width": 44,
               "height": 44
@@ -357,33 +615,242 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 517.5,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 487.5,
+            "x": 483.5,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 521.703125,
-            "y": 70,
-            "width": 13.578125,
-            "height": 17
+            "x": 519.703125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 519.703125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 439.5,
+              "x": 435.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 483.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 519.703125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 519.703125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 435.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 483.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 519.703125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 519.703125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 534.40625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 435.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 483.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 519.703125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 519.703125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 534.40625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 435.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 515.5,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 483.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 523.59375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 523.59375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 435.5,
               "y": 74,
               "width": 44,
               "height": 44
@@ -408,7 +875,7 @@
             "height": 0
           },
           "icon": {
-            "x": 487.5,
+            "x": 483.5,
             "y": 72,
             "width": 48,
             "height": 48
@@ -420,11 +887,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 439.5,
+              "x": 435.5,
               "y": 74,
               "width": 44,
               "height": 44
@@ -467,7 +941,7 @@
             "height": 0
           },
           "icon": {
-            "x": 682.2708129882812,
+            "x": 680.1041870117188,
             "y": 7.583333492279053,
             "width": 26,
             "height": 26.000001907348633
@@ -479,13 +953,20 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 649.7708129882812,
+              "x": 647.6041870117188,
               "y": 6.5,
-              "width": 28.16668701171875,
+              "width": 28.1666259765625,
               "height": 28.166667938232422
             },
             {
@@ -502,31 +983,38 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 698.5208129882812,
-            "y": 5.4166669845581055,
-            "width": 11.91668701171875,
-            "height": 11.916666984558105
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
           },
           "icon": {
-            "x": 682.2708129882812,
+            "x": 680.1041870117188,
             "y": 7.583333492279053,
             "width": 26,
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 702.0670776367188,
-            "y": 6.5,
-            "width": 4.82421875,
-            "height": 9.208333969116211
+            "x": 701.8215942382812,
+            "y": 5.4166669845581055,
+            "width": 4.22332763671875,
+            "height": 8.666666984558105
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 701.8215942382812,
+            "y": 5.958333492279053,
+            "width": 4.22332763671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 649.7708129882812,
+              "x": 647.6041870117188,
               "y": 6.5,
-              "width": 28.16668701171875,
+              "width": 28.1666259765625,
               "height": 28.166667938232422
             },
             {
@@ -543,31 +1031,38 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 698.5208129882812,
-            "y": 5.4166669845581055,
-            "width": 11.91668701171875,
-            "height": 11.916666984558105
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
           },
           "icon": {
-            "x": 682.2708129882812,
+            "x": 680.1041870117188,
             "y": 7.583333492279053,
             "width": 26,
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 702.0670776367188,
-            "y": 6.5,
-            "width": 4.82421875,
-            "height": 9.208333969116211
+            "x": 701.8215942382812,
+            "y": 5.4166669845581055,
+            "width": 4.22332763671875,
+            "height": 8.666666984558105
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 701.8215942382812,
+            "y": 5.958333492279053,
+            "width": 4.22332763671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 649.7708129882812,
+              "x": 647.6041870117188,
               "y": 6.5,
-              "width": 28.16668701171875,
+              "width": 28.1666259765625,
               "height": 28.166667938232422
             },
             {
@@ -580,35 +1075,244 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 698.5208129882812,
-            "y": 5.4166669845581055,
-            "width": 11.91668701171875,
-            "height": 11.916666984558105
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
           },
           "icon": {
-            "x": 682.2708129882812,
+            "x": 680.1041870117188,
             "y": 7.583333492279053,
             "width": 26,
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 700.7975463867188,
-            "y": 6.5,
-            "width": 7.35479736328125,
-            "height": 9.208333969116211
+            "x": 699.7141723632812,
+            "y": 5.4166669845581055,
+            "width": 8.43817138671875,
+            "height": 8.666666984558105
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 699.7141723632812,
+            "y": 5.958333492279053,
+            "width": 8.43817138671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 649.7708129882812,
+              "x": 647.6041870117188,
               "y": 6.5,
-              "width": 28.16668701171875,
+              "width": 28.1666259765625,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
+          },
+          "icon": {
+            "x": 680.1041870117188,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 699.7141723632812,
+            "y": 5.4166669845581055,
+            "width": 8.43817138671875,
+            "height": 8.666666984558105
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 699.7141723632812,
+            "y": 5.958333492279053,
+            "width": 8.43817138671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 647.6041870117188,
+              "y": 6.5,
+              "width": 28.1666259765625,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
+          },
+          "icon": {
+            "x": 680.1041870117188,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 699.7141723632812,
+            "y": 4.875,
+            "width": 10.181640625,
+            "height": 9.208333969116211
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 699.7141723632812,
+            "y": 5.958333492279053,
+            "width": 8.43817138671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": {
+            "x": 707.6784057617188,
+            "y": 4.875,
+            "width": 2.2174072265625,
+            "height": 3.7916669845581055
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 647.6041870117188,
+              "y": 6.5,
+              "width": 28.1666259765625,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
+          },
+          "icon": {
+            "x": 680.1041870117188,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 699.7141723632812,
+            "y": 4.875,
+            "width": 10.181640625,
+            "height": 9.208333969116211
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 699.7141723632812,
+            "y": 5.958333492279053,
+            "width": 8.43817138671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": {
+            "x": 707.6784057617188,
+            "y": 4.875,
+            "width": 2.2174072265625,
+            "height": 3.7916669845581055
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 647.6041870117188,
+              "y": 6.5,
+              "width": 28.1666259765625,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 697.4375,
+            "y": 3.25,
+            "width": 13,
+            "height": 13
+          },
+          "icon": {
+            "x": 680.1041870117188,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 701.8215942382812,
+            "y": 5.4166669845581055,
+            "width": 4.22332763671875,
+            "height": 8.666666984558105
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 701.8215942382812,
+            "y": 5.958333492279053,
+            "width": 4.22332763671875,
+            "height": 7.583333492279053
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 647.6041870117188,
+              "y": 6.5,
+              "width": 28.1666259765625,
               "height": 28.166667938232422
             },
             {
@@ -631,7 +1335,7 @@
             "height": 0
           },
           "icon": {
-            "x": 682.2708129882812,
+            "x": 680.1041870117188,
             "y": 7.583333492279053,
             "width": 26,
             "height": 26.000001907348633
@@ -643,13 +1347,20 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 649.7708129882812,
+              "x": 647.6041870117188,
               "y": 6.5,
-              "width": 28.16668701171875,
+              "width": 28.1666259765625,
               "height": 28.166667938232422
             },
             {
@@ -690,7 +1401,7 @@
             "height": 0
           },
           "icon": {
-            "x": 361,
+            "x": 357,
             "y": 72,
             "width": 48,
             "height": 48
@@ -702,11 +1413,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 313,
+              "x": 309,
               "y": 74,
               "width": 44,
               "height": 44
@@ -725,29 +1443,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 391,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 361,
+            "x": 357,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 397.546875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 397.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 397.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 313,
+              "x": 309,
               "y": 74,
               "width": 44,
               "height": 44
@@ -766,29 +1491,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 391,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 361,
+            "x": 357,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 397.546875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 397.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 397.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 313,
+              "x": 309,
               "y": 74,
               "width": 44,
               "height": 44
@@ -803,33 +1535,242 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 391,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 361,
+            "x": 357,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 395.203125,
-            "y": 70,
-            "width": 13.578125,
-            "height": 17
+            "x": 393.203125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 393.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 313,
+              "x": 309,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 357,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 393.203125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 393.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 309,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 357,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 393.203125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 393.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 407.90625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 309,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 357,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 393.203125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 393.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 407.90625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 309,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 389,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 357,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 397.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 397.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 309,
               "y": 74,
               "width": 44,
               "height": 44
@@ -854,7 +1795,7 @@
             "height": 0
           },
           "icon": {
-            "x": 361,
+            "x": 357,
             "y": 72,
             "width": 48,
             "height": 48
@@ -866,11 +1807,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 313,
+              "x": 309,
               "y": 74,
               "width": 44,
               "height": 44
@@ -913,7 +1861,7 @@
             "height": 0
           },
           "icon": {
-            "x": 341.40234375,
+            "x": 340.18359375,
             "y": 316.578125,
             "width": 14.625,
             "height": 14.625
@@ -925,11 +1873,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 323.12109375,
+              "x": 321.90234375,
               "y": 315.96875,
               "width": 15.84375,
               "height": 15.84375
@@ -948,29 +1903,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 350.54296875,
-            "y": 315.359375,
-            "width": 6.703125,
-            "height": 6.703125
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
           },
           "icon": {
-            "x": 341.40234375,
+            "x": 340.18359375,
             "y": 316.578125,
             "width": 14.625,
             "height": 14.625
           },
           "textRect": {
-            "x": 352.5377197265625,
-            "y": 315.96875,
-            "width": 2.713623046875,
-            "height": 5.1796875
+            "x": 352.399658203125,
+            "y": 315.359375,
+            "width": 2.3756103515625,
+            "height": 4.875
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 352.399658203125,
+            "y": 315.6640625,
+            "width": 2.3756103515625,
+            "height": 4.265625
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 323.12109375,
+              "x": 321.90234375,
               "y": 315.96875,
               "width": 15.84375,
               "height": 15.84375
@@ -989,29 +1951,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 350.54296875,
-            "y": 315.359375,
-            "width": 6.703125,
-            "height": 6.703125
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
           },
           "icon": {
-            "x": 341.40234375,
+            "x": 340.18359375,
             "y": 316.578125,
             "width": 14.625,
             "height": 14.625
           },
           "textRect": {
-            "x": 352.5377197265625,
-            "y": 315.96875,
-            "width": 2.713623046875,
-            "height": 5.1796875
+            "x": 352.399658203125,
+            "y": 315.359375,
+            "width": 2.3756103515625,
+            "height": 4.875
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 352.399658203125,
+            "y": 315.6640625,
+            "width": 2.3756103515625,
+            "height": 4.265625
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 323.12109375,
+              "x": 321.90234375,
               "y": 315.96875,
               "width": 15.84375,
               "height": 15.84375
@@ -1026,33 +1995,242 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 350.54296875,
-            "y": 315.359375,
-            "width": 6.703125,
-            "height": 6.703125
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
           },
           "icon": {
-            "x": 341.40234375,
+            "x": 340.18359375,
             "y": 316.578125,
             "width": 14.625,
             "height": 14.625
           },
           "textRect": {
-            "x": 351.8236083984375,
-            "y": 315.96875,
-            "width": 4.1370849609375,
-            "height": 5.1796875
+            "x": 351.2142333984375,
+            "y": 315.359375,
+            "width": 4.7464599609375,
+            "height": 4.875
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 351.2142333984375,
+            "y": 315.6640625,
+            "width": 4.7464599609375,
+            "height": 4.265625
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 323.12109375,
+              "x": 321.90234375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
+          },
+          "icon": {
+            "x": 340.18359375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 351.2142333984375,
+            "y": 315.359375,
+            "width": 4.7464599609375,
+            "height": 4.875
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 351.2142333984375,
+            "y": 315.6640625,
+            "width": 4.7464599609375,
+            "height": 4.265625
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 321.90234375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
+          },
+          "icon": {
+            "x": 340.18359375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 351.2142333984375,
+            "y": 315.0546875,
+            "width": 5.7271728515625,
+            "height": 5.1796875
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 351.2142333984375,
+            "y": 315.6640625,
+            "width": 4.7464599609375,
+            "height": 4.265625
+          },
+          "plusRect": {
+            "x": 355.694091796875,
+            "y": 315.0546875,
+            "width": 1.247314453125,
+            "height": 2.1328125
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 321.90234375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
+          },
+          "icon": {
+            "x": 340.18359375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 351.2142333984375,
+            "y": 315.0546875,
+            "width": 5.7271728515625,
+            "height": 5.1796875
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 351.2142333984375,
+            "y": 315.6640625,
+            "width": 4.7464599609375,
+            "height": 4.265625
+          },
+          "plusRect": {
+            "x": 355.694091796875,
+            "y": 315.0546875,
+            "width": 1.247314453125,
+            "height": 2.1328125
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 321.90234375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 349.93359375,
+            "y": 314.140625,
+            "width": 7.3125,
+            "height": 7.3125
+          },
+          "icon": {
+            "x": 340.18359375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 352.399658203125,
+            "y": 315.359375,
+            "width": 2.3756103515625,
+            "height": 4.875
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 352.399658203125,
+            "y": 315.6640625,
+            "width": 2.3756103515625,
+            "height": 4.265625
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 321.90234375,
               "y": 315.96875,
               "width": 15.84375,
               "height": 15.84375
@@ -1077,7 +2255,7 @@
             "height": 0
           },
           "icon": {
-            "x": 341.40234375,
+            "x": 340.18359375,
             "y": 316.578125,
             "width": 14.625,
             "height": 14.625
@@ -1089,11 +2267,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 323.12109375,
+              "x": 321.90234375,
               "y": 315.96875,
               "width": 15.84375,
               "height": 15.84375
@@ -1136,7 +2321,7 @@
             "height": 0
           },
           "icon": {
-            "x": 322,
+            "x": 318,
             "y": 72,
             "width": 48,
             "height": 48
@@ -1148,11 +2333,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 274,
+              "x": 270,
               "y": 74,
               "width": 44,
               "height": 44
@@ -1171,29 +2363,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 352,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 322,
+            "x": 318,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 358.546875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 358.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読1件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 358.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 274,
+              "x": 270,
               "y": 74,
               "width": 44,
               "height": 44
@@ -1212,29 +2411,36 @@
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 352,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 322,
+            "x": 318,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 358.546875,
-            "y": 70,
-            "width": 8.90625,
-            "height": 17
+            "x": 358.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
           },
           "label": "LIME（未読9件）",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 358.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 274,
+              "x": 270,
               "y": 74,
               "width": 44,
               "height": 44
@@ -1249,33 +2455,242 @@
         },
         {
           "count": 10,
-          "text": "9+",
+          "text": "10",
           "display": "flex",
           "radius": "50%",
           "badge": {
-            "x": 352,
-            "y": 68,
-            "width": 22,
-            "height": 22
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
           },
           "icon": {
-            "x": 322,
+            "x": 318,
             "y": 72,
             "width": 48,
             "height": 48
           },
           "textRect": {
-            "x": 356.203125,
-            "y": 70,
-            "width": 13.578125,
-            "height": 17
+            "x": 354.203125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
           },
           "label": "LIME（未読10件）",
-          "fontSize": 16,
-          "plusSize": 8,
+          "numberRect": {
+            "x": 354.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
           "adjacent": [
             {
-              "x": 274,
+              "x": 270,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 99,
+          "text": "99",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 318,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 354.203125,
+            "y": 68,
+            "width": 15.578125,
+            "height": 16
+          },
+          "label": "LIME（未読99件）",
+          "numberRect": {
+            "x": 354.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 270,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 100,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 318,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 354.203125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読100件）",
+          "numberRect": {
+            "x": 354.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 368.90625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 270,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 999,
+          "text": "99+",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 318,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 354.203125,
+            "y": 67,
+            "width": 18.796875,
+            "height": 17
+          },
+          "label": "LIME（未読999件）",
+          "numberRect": {
+            "x": 354.203125,
+            "y": 69,
+            "width": 15.578125,
+            "height": 14
+          },
+          "plusRect": {
+            "x": 368.90625,
+            "y": 67,
+            "width": 4.09375,
+            "height": 7
+          },
+          "fontSize": 14,
+          "plusSize": 7,
+          "adjacent": [
+            {
+              "x": 270,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "flex",
+          "radius": "50%",
+          "badge": {
+            "x": 350,
+            "y": 64,
+            "width": 24,
+            "height": 24
+          },
+          "icon": {
+            "x": 318,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 358.09375,
+            "y": 68,
+            "width": 7.796875,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "numberRect": {
+            "x": 358.09375,
+            "y": 69,
+            "width": 7.796875,
+            "height": 14
+          },
+          "plusRect": null,
+          "fontSize": 14,
+          "plusSize": null,
+          "adjacent": [
+            {
+              "x": 270,
               "y": 74,
               "width": 44,
               "height": 44
@@ -1300,7 +2715,7 @@
             "height": 0
           },
           "icon": {
-            "x": 322,
+            "x": 318,
             "y": 72,
             "width": 48,
             "height": 48
@@ -1312,11 +2727,18 @@
             "height": 0
           },
           "label": "LIME",
-          "fontSize": 16,
+          "numberRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "plusRect": null,
+          "fontSize": 14,
           "plusSize": null,
           "adjacent": [
             {
-              "x": 274,
+              "x": 270,
               "y": 74,
               "width": 44,
               "height": 44
