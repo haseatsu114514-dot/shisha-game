@@ -83,6 +83,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           sparse-checkout: |
+            asset_sources/fortune-teller-682
             remake
             data
             assets/audio
@@ -186,6 +187,8 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hud-fortune
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          python3 -m pip install Pillow==12.3.0
+          node --experimental-vm-modules remake/test/data_loading.mjs
           node remake/test/fortune_readings.mjs
           node remake/test/browser/hud_fortune.mjs
           node remake/test/browser/fortune_readings.mjs
