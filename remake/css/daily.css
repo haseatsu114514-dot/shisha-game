@@ -186,34 +186,83 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-radar { width: 44px; height: 44px; display: block; }
 .hr-grid { fill: none; stroke: rgba(244, 210, 122, 0.3); stroke-width: 0.8; }
 .hr-fill { fill: rgba(255, 158, 109, 0.45); stroke: #ffd35e; stroke-width: 1.2; stroke-linejoin: round; transition: all 0.4s; }
-/* LIME はアプリのアイコン風（緑の角丸＋白抜き文字） */
+/* LIME は正方形のアプリアイコン（緑の角丸＋白い吹き出し）。 */
 .hud-lime {
   position: relative;
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
+  flex: 0 0 48px;
+  aspect-ratio: 1;
+  margin-right: 4px; /* 右上へ出る赤丸と隣の操作の間隔を確保 */
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 13px;
-  background: linear-gradient(180deg, #2cc75c, #169a3e);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border: 0;
+  border-radius: 11px;
+  background: #00c300;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: transform 0.12s;
 }
 .hud-lime span {
-  padding: 1px 4px;
-  font-family: var(--font);
-  font-size: 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  margin: 0 0 3px;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.1em;
-  color: #169a3e;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #00a900;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 50%;
+}
+.hud-lime span::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  bottom: -4px;
+  width: 9px;
+  height: 8px;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .hud-lime:hover { transform: translateY(-2px); }
-.hud-lime .badge { position: absolute; right: -7px; top: -7px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--danger); border: 2px solid #fff; color: #fff; font-size: 13px; font-weight: 700; font-style: normal; display: none; place-items: center; }
-.hud-lime.has .badge { display: grid; }
+/* 数字を円の中央へ固定し、100件以上だけ小さい上付き+を添える。 */
+.hud-lime .badge {
+  position: absolute;
+  left: auto;
+  right: -8px;
+  top: -8px;
+  box-sizing: border-box;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  background: #f00;
+  border: 0;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.hud-lime .badge-number { font: inherit; transform: translateX(0.5px); } /* 数字の見た目の中央を補正 */
+.hud-lime .badge.single { font-size: 14px; }
+.hud-lime .badge-plus { position: absolute; right: 1px; top: 2px; font-size: 6px; line-height: 1; }
+.hud-lime.has .badge { display: flex; }
 .hud-menu { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
 .hud-menu i { width: 13px; height: 9px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
 .hud-menu i::after { content: ""; position: absolute; left: 0; right: 0; top: 1.5px; border-top: 2px solid currentColor; }
@@ -776,11 +825,6 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .lime-row.past { animation: none; }
 .lime-note.day { background: rgba(29, 36, 51, 0.32); }
 .lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
-
-/* HUD の LIME: 小さな通知バッジに未読件数を表示する */
-.hud-lime .badge { right: -6px; top: -6px; min-width: 20px; width: auto; height: 20px; padding: 0 3px; border-radius: 999px; font-size: 11px; line-height: 1; }
-.hud-lime.has .badge { animation: lime-badge 1.8s ease-in-out infinite; }
-@keyframes lime-badge { 50% { box-shadow: 0 0 0 5px rgba(255, 59, 78, 0.25); } }
 
 /* 朝のプッシュ通知（スマホの通知バナー風に上から降りてくる） */
 .lime-push {
