@@ -113,6 +113,11 @@ jobs:
           cat "$RUNNER_TEMP/remake-preview.log"
           exit 1
       # Keep browser suites sequential; they share the preview server and runner.
+      - name: Pakki reel lifecycle and introduction read-through
+        timeout-minutes: 3
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+        run: node remake/test/reel_lifecycle.mjs
       - name: Save/load, legacy migration and PC/mobile controls
         run: |
           node remake/test/browser/save_load.mjs
