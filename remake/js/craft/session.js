@@ -8,7 +8,7 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
-import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
+import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
@@ -111,7 +111,7 @@ function waitForBenchAssets(b, task, assets = task) {
  */
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
-  const bg = () => setBg(bgUrl(cs.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
+  const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
   if (bench && bench.cs === cs && bench.root.isConnected) {
     const background = bg();
     bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, background]),
@@ -406,16 +406,18 @@ export function tickerSay(text) {
 // ---------------------------------------------------------------- 自主練
 
 /** ドリルを1本。戻り値は出来の段階 0〜2 */
-export async function runDrill(kind) {
+/** 工程をひとつ反復する。venue: "home" なら家の作業台（#638） */
+export async function runDrill(kind, { venue = null } = {}) {
   try {
-    return await drill(kind);
+    return await drill(kind, { venue });
   } finally {
     retire(layers.screen.querySelector(":scope > .bench")); // 終わった作業台は次の会話で片付く
   }
 }
 
-async function drill(kind) {
+async function drill(kind, { venue = null } = {}) {
   const cs = newSession("drill");
+  if (venue) cs.venue = venue;
   const labels = { holes: "FOIL", heat: "HEAT", steam: "STEAM", pull: "PULL" };
   openBench(cs, { steps: [[kind, labels[kind]]] });
   await waitBenchReady(cs);

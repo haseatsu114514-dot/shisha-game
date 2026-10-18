@@ -124,7 +124,7 @@ export function uiArtReady(ms = 2000) {
  */
 export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
-  const key = `${url}|${tint || ""}`;
+  const key = `${url}|${tint || ""}|${sceneArtUrls(url).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   if (key === bgNow) {
     refreshWeather();
@@ -473,7 +473,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
   };
   const shield = el("div.chapter-title-shield", {
-    onpointerdown: swallow, onpointerup: swallow, onclick: swallow,
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow, dataset: { motion: "chapter" },
   });
   layers.fx.append(shield);
   window.addEventListener("keydown", blockAdvance, true);
@@ -489,13 +489,24 @@ export async function chapterTitle({ no, name, read, sub }) {
       sub ? el("div.cc-sub", { text: sub }) : null,
     ]);
     const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+    // 動き（motions/chapter-title.js）が読めなければ、従来の静止表示のまま進める。
+    const motion = await import("../motions/chapter-title.js").catch(() => null);
+    let play = null;
     // 画像が準備できるまでは本編の上に空白のカードを出さない。
     // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
     if (art && await imageReady(art, 15000)) {
       copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
       card.classList.add("illustrated");
       card.dataset.art = "ready";
-      card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+      const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
+      card.append(full);
+      // 分けたレイヤーが一枚でも欠けたら、採用画像の静止表示にする。
+      const extra = motion?.chapterArtUrls(no) || [];
+      if (extra.length && (await Promise.all(extra.map(url => imageReady(url, 15000)))).every(Boolean)) {
+        play = motion.mountChapterTitle(card, { no, full });
+      }
+    } else if (motion) {
+      play = motion.mountChapterTitle(card, { no });
     }
     shield.append(card);
     // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
@@ -504,7 +515,9 @@ export async function chapterTitle({ no, name, read, sub }) {
     SE.jingle();
     await nextFrame();
     card.classList.add("show");
-    await sleep(3200);
+    // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
+    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
+    else await sleep(3200);
     card.classList.add("out");
     // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
     await Promise.race([
