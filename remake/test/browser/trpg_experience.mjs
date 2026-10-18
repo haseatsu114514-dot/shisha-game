@@ -452,6 +452,9 @@ try {
         Object.defineProperty(document, "hidden", { configurable: true, value: true });
         document.dispatchEvent(new Event("visibilitychange"));
       });
+      // CSSの一時停止が反映される次フレームを待ってから停止時刻を比較する。
+      // Web Animationsのready待ちだけを追加し、100msの凍結・状態不変assertは維持。
+      await page.locator(".trpg-roll-fx").evaluate(n => Promise.all(n.getAnimations({ subtree: true }).map(a => a.ready)));
       const times = await page.locator(".trpg-roll-fx").evaluate(n => n.getAnimations({ subtree: true }).map(a => a.currentTime));
       await page.waitForTimeout(100);
       assert.deepEqual(await page.locator(".trpg-roll-fx").evaluate(n => n.getAnimations({ subtree: true }).map(a => a.currentTime)), times);
