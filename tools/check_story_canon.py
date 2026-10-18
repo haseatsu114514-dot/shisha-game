@@ -86,9 +86,14 @@ def check(root=ROOT):
         references.extend(required.get('seen', []))
     references.extend(route['ending'].values())
     references.extend(route['conflict'][field] for field in ('open', 'close', 'pending_ending'))
+    references.extend(route['near_conflict'][field] for field in ('open', 'close', 'overlap'))
+    if route['conflict']['stage'] != 'post_ending':
+        errors.append('serious relationship conflict belongs after the ending')
     for person, spec in route['romance'].items():
         for field in ('date', 'conflict', 'epilogue', 'arrival'):
             references.append(spec[field])
+        if spec['date_min_chapter'] <= route['near_conflict']['chapter']:
+            references.append(spec.get('near_conflict'))
         for field in ('date', 'epilogue', 'arrival'):
             for row in nodes(scenes.get(spec[field], {})):
                 if row.get('stats') or re.search(r'【.+】.*上がった', str(row.get('text', ''))):

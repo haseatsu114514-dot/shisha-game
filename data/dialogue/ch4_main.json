@@ -454,12 +454,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "四人が同時に動き出す。なるの甘い香りが、先に客席へ届いた。"
+          "text": "四人が同時に動き出す。なるの台から、バニラと焼き菓子を思わせる甘い香りが届いた。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "お前の癖、見てきたからな。今日は待たせないぞ"
+          "text": "バニラの甘さで、最後まで吸わせる。今日は譲らないぞ"
         },
         {
           "speaker": "",
@@ -524,7 +524,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シェイクも火を直す。なるは甘さの余韻を保ち、王煙楼は残った葉へ熱を戻す。"
+          "text": "シェイクも火を直す。なるはチョコとバニラの余韻を保ち、王煙楼は残った葉へ熱を戻す。"
         },
         {
           "speaker": "",
@@ -683,6 +683,36 @@
           "text": "似てた。けど、お前の不調の理由まで俺が決めることじゃない"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "南雲にも、勝ち負けの話はしてないって言われた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "負けたやつの説教だと思った。あいつの店の話を、聞かなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、なるの話を途中で止めました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今は、どうなんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰ったら作り合おうって。なるの新作も、吸いたいんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは伏せていた携帯を、自分の方へ引き寄せた。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "スミさんは携帯を出し、南雲の名前を探した。"
@@ -824,6 +854,193 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch4_nagumo_old_rival",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表彰が終わり、なると機材を片づけた。南雲が審査席から戻ってくる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "帰ったら、勝った方が作る。忘れんなよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "……懐かしい約束だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "南雲さんも、してたんですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "ああ。あいつに何度も作らせた。悔しくて、感想だけは長くなった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんに？"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "ある晩、店を増やす話をした。あいつは、次の大会の点を数えていた"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝ち負けの話はしてない。……そう言ったら、黙り込んだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめはなるを見る。なるは畳みかけたクロスを、静かにケースへしまった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのあと、話せたんですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "会えば今の店の話はする。だが、あの晩の話はしていない"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "次は向こうから言うだろうと、互いに待ちすぎた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……店を増やすのって、負けたからですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "あいつの店も、うちの店も続いている。まだ話すことはある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "南雲はスタッフに呼ばれて戻っていった。なるはもう一度、ケースの留め具を確かめた。"
+        }
+      ],
+      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。"
+    },
+    {
+      "dialogue_id": "ch4_two_tables",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌週の閉店後。南雲がネクタイを緩め、tonariのカウンターに座った。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "まだそのトングか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前も、まだそんな堅い襟してんのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが出したのは、カルダモンの一台だった。南雲が二口目を吸う。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝った方が作る約束、まだ有効か"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ずいぶん、溜まってるだろうな"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "俺の店の話も、今日は最後まで聞け"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。炭は俺が見る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "片づけ終わりました。俺、なるの店に行ってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は、どっちが作るんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二人ともです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアを閉める前に、南雲の笑い声が聞こえた。いつもの低い声が、少しだけ裏返っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケムリクサでは、なるがバニラの袋を開けて待っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "勝った方だけじゃ、俺の出番が来ないからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、先にもらう。俺のもあとで吸って"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "甘いぞ。クリーム、増やしたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "バニラ、好きだな"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "好きだから、まだ変えたいんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが作る間に、水を二つ用意した。俺のボウルは、その隣に置いた。"
+        }
+      ],
+      "comment": "四人の相似は約束・口調・二つの店の行動で見せる。なるは経営へ退く南雲の再演ではなく、菓子の甘さを追う現役の好敵手。"
     }
   ]
 }

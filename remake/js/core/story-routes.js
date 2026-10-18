@@ -12,12 +12,20 @@ export function canReadOptionalStory(routes, state, sceneId, context = {}) {
 export function selectStoryEvening(routes, state, context = {}) {
   const lovers = [...new Set(state.lovers || [])].filter(id => routes.heroine_ids.includes(id));
   const present = new Set(context.present || []);
-  const local = lovers.filter(id => present.has(id));
+  const local = lovers.filter(id => present.has(id)
+    && Number(state.chapter) >= routes.romance[id].date_min_chapter);
   if (local.length >= routes.conflict.minimum_present_lovers) {
+    const near = routes.near_conflict;
+    if (Number(state.chapter) === near.chapter && present.has(near.interrupter)) {
+      return {
+        kind: "near_conflict", participants: local,
+        scenes: [near.open, ...local.map(id => routes.romance[id].near_conflict), near.close],
+        deferred: local,
+      };
+    }
+    // 本格的な話し合いはエンディング後。別会場にスティーブを出現させない。
     return {
-      kind: "conflict", participants: local,
-      scenes: [routes.conflict.open, ...local.map(id => routes.romance[id].conflict), routes.conflict.close],
-      unresolved: [...new Set([...(context.unresolved || []), ...local])],
+      kind: "overlap", participants: local, scenes: [near.overlap],
     };
   }
   const id = context.selected;
@@ -37,7 +45,26 @@ export function selectStoryEnding(routes, state, context = {}) {
   const id = lovers[0];
   const reunion = lovers.length === 1 && (context.present || []).includes(id)
     && (context.accepted || []).includes(id);
-  const middle = pending ? routes.conflict.pending_ending
+  const middle = pending ? routes.ending.normal
     : reunion ? routes.romance[id].epilogue : routes.ending.normal;
   return [routes.ending.start, middle, routes.ending.daily];
+}
+
+// ending_daily_smoke とスタッフロールの後に呼ぶ。前夜の茶化しとは別の場面。
+export function selectPostEndingConflict(routes, state, context = {}) {
+  const lovers = [...new Set(state.lovers || [])].filter(id => routes.heroine_ids.includes(id));
+  const local = lovers.filter(id => (context.present || []).includes(id));
+  if (local.length >= routes.conflict.minimum_present_lovers) {
+    return {
+      kind: "conflict", participants: local,
+      scenes: [routes.conflict.open, ...local.map(id => routes.romance[id].conflict),
+        routes.conflict.close, routes.conflict.pending_ending],
+      unresolved: [...new Set([...(context.unresolved || []), ...local])],
+    };
+  }
+  const pending = lovers.length > 1 || (context.unresolved || []).length > 0
+    || !!state.flags?._story_shuraba_unresolved;
+  return pending
+    ? {kind: "pending", participants: [], scenes: [routes.conflict.pending_ending]}
+    : {kind: "none", participants: [], scenes: []};
 }

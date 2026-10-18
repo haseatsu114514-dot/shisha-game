@@ -1,18 +1,163 @@
 {
-  "comment": "実際の恋人が同じ場所に2人以上いる場合のみ。出席者の反応だけ順に読む。全員謝罪待ちとして保存し、勝利や別のデートでは解除しない。未接続。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。未接続。",
   "dialogues": [
+    {
+      "dialogue_id": "ch3_shuraba_open",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜のロビー。俺を呼ぶ声が重なった。彼女たちが、互いの顔を見た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、えっと……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさん。……こちらの方も、お知り合いですか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_minto",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ずいぶん、親しそうに呼ぶんだね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_rin",
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "はじめくん。紹介してくれる？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_mashiro",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくん、顔が赤いね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_samechan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "む。お主、目が泳いでおるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……私、入るタイミング、間違えたかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_shuraba_steve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事をする前に、ピザの箱が横から差し出された。スティーブだ。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "お、はじめ！　ガール達にモテモテだな！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ちょ、スティーブさん……！"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "こっちはピザ一枚、持て余してるってのに"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ちょうどいい。切り分けるの、手伝って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱が開くと、誰かが小さく笑った。言いかけていた言葉は、皿を配る声に紛れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は説明しそびれたまま、紙皿を配った。さっきの視線だけが、まだ少し気になった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch3_shuraba_deferred"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_evening_overlap",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜の予定を尋ねる声が重なった。誰と過ごすか、すぐには答えられなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ごめん。今夜は、一人で戻るよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を待っていた顔から目をそらし、ケースを持ち直した。"
+        }
+      ],
+      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。"
+    },
     {
       "dialogue_id": "shuraba_open",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "俺を呼ぶ声が重なった。返事をしかけると、彼女たちの視線がぶつかった。"
+          "text": "後日のtonari。閉店後、俺を呼ぶ声に、先に来ていた彼女が振り向いた。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "関係を尋ねる声に、俺は頷いた。誰にも伝えていなかったことが、ここで伝わった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑い話にしてくれる声はなかった。俺も、今度は目をそらせなかった。"
         }
       ]
     },
@@ -42,7 +187,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今夜のデートには進めなかった。話を聞いてもらえるかも、俺が決めることではなかった。"
+          "text": "誰も、いつもの距離には戻らなかった。話を聞いてもらえるかも、俺が決めることではなかった。"
         },
         {
           "type": "set_flag",
@@ -146,7 +291,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "今夜、笑って応援するのは無理"
+          "text": "今、いつもみたいに笑うのは無理"
         }
       ]
     },

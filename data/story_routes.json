@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "status": "script_only",
   "comment": "第3章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。第1〜2章の実行順はremake/js/chaptersが正。",
   "heroine_ids": [
@@ -17,21 +17,24 @@
       "conflict": "shuraba_tsumugi",
       "epilogue": "epilogue_tsumugi",
       "date_min_chapter": 3,
-      "arrival": "ch4_tsumugi_dubai_girlfriend"
+      "arrival": "ch4_tsumugi_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_tsumugi"
     },
     "minto": {
       "date": "tournament_date_minto",
       "conflict": "shuraba_minto",
       "epilogue": "epilogue_minto",
       "date_min_chapter": 3,
-      "arrival": "ch4_minto_dubai_girlfriend"
+      "arrival": "ch4_minto_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_minto"
     },
     "rin": {
       "date": "tournament_date_rin",
       "conflict": "shuraba_rin",
       "epilogue": "epilogue_rin",
       "date_min_chapter": 3,
-      "arrival": "ch4_rin_dubai_girlfriend"
+      "arrival": "ch4_rin_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_rin"
     },
     "ageha": {
       "date": "tournament_date_ageha",
@@ -45,28 +48,32 @@
       "conflict": "shuraba_mashiro",
       "epilogue": "epilogue_mashiro",
       "date_min_chapter": 3,
-      "arrival": "ch4_mashiro_dubai_girlfriend"
+      "arrival": "ch4_mashiro_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_mashiro"
     },
     "samechan": {
       "date": "tournament_date_samechan",
       "conflict": "shuraba_samechan",
       "epilogue": "epilogue_samechan",
       "date_min_chapter": 3,
-      "arrival": "ch4_samechan_dubai_girlfriend"
+      "arrival": "ch4_samechan_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_samechan"
     },
     "hiyori": {
       "date": "tournament_date_hiyori",
       "conflict": "shuraba_hiyori",
       "epilogue": "epilogue_hiyori",
       "date_min_chapter": 3,
-      "arrival": "ch4_hiyori_dubai_girlfriend"
+      "arrival": "ch4_hiyori_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_hiyori"
     }
   },
   "conflict": {
     "open": "shuraba_open",
     "close": "shuraba_accountability",
     "pending_ending": "ending_relationship_pending",
-    "minimum_present_lovers": 2
+    "minimum_present_lovers": 2,
+    "stage": "post_ending"
   },
   "chapters": {
     "3": {
@@ -134,7 +141,9 @@
       "on_win": [
         "ch4_result",
         "ch4_ending",
-        "ch4_sumi_return"
+        "ch4_nagumo_old_rival",
+        "ch4_sumi_return",
+        "ch4_two_tables"
       ],
       "on_loss": [
         "ch4_defeat"
@@ -177,12 +186,12 @@
   "location_contract": {
     "present": "その時点で同じ会場へ実際に到着している人物ID。渡航予定・好感度・同伴選択だけで加えない。",
     "date_accepted": "LIMEで誘いが受諾され、時刻と所在が合う人物ID。前夜は1人を選ぶ。",
-    "unresolved": "修羅場で傷ついた恋人全員のID。個別の話し合いが完了するまで解除しない。日数・勝利・贈り物では解除しない。"
+    "unresolved": "エンディング後の本格的な修羅場で傷ついた恋人全員のID。個別の話し合いが完了するまで解除しない。第3章の茶化しはdeferredとして別に記録する。"
   },
   "progression_contract": {
     "ch3_romance": "既存の交友締めくくり・告白で実際に交際した人だけ。あげはの着地は帰郷後。友人・未読イベントをMAX好感度から捏造しない。",
-    "shuraba": "同じ場所の恋人2人以上。open→出席者それぞれのconflict→close。今夜のデートは取り消し、参加者全員をunresolvedへ。大会数値は変えない。",
-    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。複数交際を未整理のまま1人の後日談に進めない。",
+    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflictはending_daily_smokeとスタッフロール後にだけ選ぶ。",
+    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
     "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く。大会結果を恋愛人数で書き換えない。"
   },
   "optional_requirements": {
@@ -217,5 +226,12 @@
         "ch3_mashiro_play_2"
       ]
     }
+  },
+  "near_conflict": {
+    "chapter": 3,
+    "interrupter": "steve",
+    "open": "ch3_shuraba_open",
+    "close": "ch3_shuraba_steve",
+    "overlap": "tournament_evening_overlap"
   }
 }
