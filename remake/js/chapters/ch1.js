@@ -145,7 +145,9 @@ async function openingPart() {
     progress.departureDone = true;
     save();
   }
-  if (await firstBrewOrder(progress) === false) return false;
+  // 旧版で一台を完成済み・新しい注文記録なしなら、接客だけ従来どおり続ける。
+  const legacyLesson = flag("_tutorial_done") && !progress.firstOrderDone && !progress.firstBrew;
+  if (!legacyLesson && await firstBrewOrder(progress) === false) return false;
   // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
   progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
     : flag("_tutorial_skipped") ? "skip" : null;
@@ -163,7 +165,8 @@ async function openingPart() {
     save();
   }
   if (!progress.oneesanDone) {
-    if (await serveFirstBrew(progress) === false) return false;
+    if (legacyLesson) await play("ch1_tutorial_oneesan", { bg: TONARI });
+    else if (await serveFirstBrew(progress) === false) return false;
     progress.oneesanDone = true;
     save();
   }
@@ -688,8 +691,10 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
-  recordTournamentLoss(state.tournament);
-  save();
+  if (state?.phase === "tournament") {
+    recordTournamentLoss(state.tournament);
+    save();
+  }
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
   showHud(false);
   stopBgm();
@@ -698,6 +703,7 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) 
     reason, rank, variant,
     onRetry: async () => {
       const owner = state;
+      if (!owner) { location.reload(); return; }
       await chooseRetryAssist(owner.tournament);
       if (state !== owner || !root.isConnected) return;
       save();

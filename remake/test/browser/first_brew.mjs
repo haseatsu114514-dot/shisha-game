@@ -1,6 +1,8 @@
 // 初回の実配合→感想、説明中の時計、敗北回数と今回だけの補助を実UIで確認。
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+if (process.env.SHOTS) fs.mkdirSync(process.env.SHOTS, { recursive: true });
 
 async function init(page) {
   await page.evaluate(async () => {
@@ -39,8 +41,19 @@ await suite("first-brew", async check => {
     await guide(page).click();
     await page.waitForFunction(() => window.cs.heat !== null, null, { timeout: 20000 });
     assert.equal(await page.evaluate(() => cs.heat.over), 3);
+    await page.locator('[data-test="step-next"]').waitFor();
     assert.match(await page.locator('[data-test="craft-feedback"]').innerText(), /焼きすぎ/);
     assert.doesNotMatch(await page.locator('[data-test="craft-feedback"]').innerText(), /焦らず待つ/);
+    if (!touch) {
+      await page.locator('[data-test="step-next"]').click();
+      await page.evaluate(async () => { await running; await T.open(); window.running = T.heat.runHeat(cs); });
+      await page.locator('[data-test="coal-0"]').waitFor();
+      await page.waitForTimeout(3300);
+      for (let i = 0; i < 3; i++) await page.locator(`[data-test="coal-${i}"]`).dispatchEvent("pointerdown");
+      await page.locator('[data-test="step-next"]').waitFor();
+      assert.equal(await page.evaluate(() => cs.heat.early), 3);
+      assert.match(await page.locator('[data-test="craft-feedback"]').innerText(), /早く/);
+    }
   }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
 
   await check("holes-and-steam-help", async page => {
@@ -48,10 +61,11 @@ await suite("first-brew", async check => {
     await page.evaluate(async () => { await T.open(); window.running = T.holes.runHoles(cs); });
     await page.locator('[data-test="hole-start"]').click();
     await page.waitForTimeout(3500); await guide(page).click(); await page.waitForTimeout(100);
-    const hole = await page.locator(".foil-cursor").getAttribute("style");
+    const hole = await page.locator(".foil > .foil-cursor").getAttribute("style");
+    await page.evaluate(() => document.activeElement.blur());
     await page.keyboard.press("Space"); await page.waitForTimeout(1500);
-    assert.equal(await page.locator(".foil-cursor").getAttribute("style"), hole);
-    assert.equal(await page.locator(".foil-hole").count(), 0);
+    assert.equal(await page.locator(".foil > .foil-cursor").getAttribute("style"), hole);
+    assert.equal(await page.locator(".foil-holes .foil-hole").count(), 0);
     // 別の実セッション。弾幕・残り時間・温度も一緒に停止する。
     await page.evaluate(async () => {
       await T.open(); cs.mix = { lemon: 9, mint: 3 }; cs.steamSeconds = 300;
@@ -144,5 +158,36 @@ await suite("first-brew", async check => {
       return { ordinary, easier: { slow: skill.slow(cs), window: skill.window(cs) }, stats: T.core.state.stats };
     });
     assert(windows.easier.slow > windows.ordinary.slow && windows.easier.window > windows.ordinary.window);
+  });
+
+  await check("third-loss-continue-real-entry", async page => {
+    await init(page);
+    // 外部BGMの通信はテストしない。小さな有効WAVを返し、実際のCONTINUEを動かす。
+    const wav = Buffer.alloc(16044);
+    wav.write("RIFF"); wav.writeUInt32LE(16036, 4); wav.write("WAVEfmt ", 8);
+    wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
+    wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28); wav.writeUInt16LE(2, 32);
+    wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(16000, 40);
+    await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/wav", body: wav }));
+    await page.evaluate(async () => {
+      const s = T.core.state;
+      Object.assign(s, { phase: "tournament", day: 14 });
+      Object.assign(s.tournament, { attempts: 3, losses: 2, lastLossAttempt: 2 });
+      const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
+      for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;
+      for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {
+        (await import("./js/vn/intro.js")).markIntroSeen(id);
+      }
+      await T.chapter.devGameOver("burnt", 0, 0);
+    });
+    await page.locator('[data-test="retry"]').click();
+    await page.locator('[data-test="retry-assist-yes"]').waitFor({ timeout: 15000 });
+    assert.equal(await page.evaluate(() => T.core.state.tournament.losses), 3);
+    await shot(page, "continue-assist-question");
+    await page.locator('[data-test="retry-assist-yes"]').click();
+    await page.locator('.bench[data-mode="tournament"]').waitFor({ timeout: 45000 });
+    assert.match(await page.locator(".bench-mode").innerText(), /今回のみ操作補助/);
+    assert.equal(await page.evaluate(() => T.core.state.tournament.retryAssist), true);
+    await shot(page, "assisted-tournament");
   });
 });

@@ -29,8 +29,7 @@ export async function runHeat(cs) {
   info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
-    advice: res.over ? "焼きすぎた炭がある。次は芯が光ったら、待たずに取り出そう"
-      : res.early ? "早く取り出した炭がある。次は芯が光るまで待とう" : "芯が光る瞬間を目印に、次も取り出そう",
+    advice: heatAdvice(res),
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
@@ -42,6 +41,15 @@ export async function runHeat(cs) {
       res.over ? "焼きすぎの炭がある。香りが飛びやすいかもしれない" : res.early ? "早取りの炭がある。立ち上がりが遅れそうだ" : "",
     ],
   });
+}
+
+function heatAdvice(res) {
+  const early = res.picks.some(p => ["raw", "early", "pre"].includes(p));
+  const late = res.picks.some(p => ["hot", "over"].includes(p));
+  if (early && late) return "早い炭と遅い炭がある。一つずつ芯の光を目印に取り出そう";
+  if (late) return res.over ? "焼きすぎた炭がある。次は芯が光ったら、待たずに取り出そう"
+    : "少し遅れた炭がある。次は芯が光る瞬間に取り出そう";
+  return early ? "早く取り出した炭がある。次は芯が光るまで待とう" : "";
 }
 
 // 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
