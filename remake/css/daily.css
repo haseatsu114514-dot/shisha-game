@@ -1068,7 +1068,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 }
 
 /* One frame for day/time, money, tournament countdown and stamina. */
-.hud-card .hud-stamina { width: 100%; min-width: 0; height: 18px; padding: 0 4px; gap: 8px; background: none; border: 0; border-image: none; box-shadow: none; }
+.hud-card .hud-stamina { box-sizing: border-box; width: 100%; min-width: 0; height: 18px; padding: 0 9px; gap: 8px; background: none; border: 0; border-image: none; box-shadow: none; }
 .hud-card .hud-stamina > span { font-size: 12px; }
 .hud-card .hud-stamina .hud-bar { flex: 1 1 auto; min-width: 24px; max-width: 100%; }
 
