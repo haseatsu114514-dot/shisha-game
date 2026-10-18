@@ -1,6 +1,7 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
+import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
@@ -787,9 +788,11 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
-  // 関係の方向は返答と相手の反応で伝える。実回答の記録はpickChoiceのフックへ渡す。
-  const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
+  // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
+  const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
+  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}`, {
     html: formatHtml(c.text || "……"),
+    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : null,
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },

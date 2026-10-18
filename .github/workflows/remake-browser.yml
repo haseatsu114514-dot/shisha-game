@@ -180,6 +180,15 @@ jobs:
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/store_logos.mjs
           node remake/test/browser/shop_ui.mjs
+      - name: Unified HUD and daylight fortune readings
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          ARTIFACT_DIR: .codex/artifacts/remake-browser/hud-fortune
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/fortune_readings.mjs
+          node remake/test/browser/hud_fortune.mjs
+          node remake/test/browser/fortune_readings.mjs
       - name: Continue captions, asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

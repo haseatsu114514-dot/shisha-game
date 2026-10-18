@@ -6,6 +6,7 @@ import { state, markMet, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
+import { grantFortuneReading, fortuneResultId } from "../core/fortune-effects.js";
 
 export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
@@ -14,6 +15,7 @@ export const fortuneToday = () => !!state && state.chapter === 1 && (state.day %
 
 /** 占い師の出店に寄る（時間は使わない）。戻り値=占ってもらったか */
 export async function doFortune() {
+  if (!fortuneToday() || state.slot !== 0 || state.fortuneDay === state.day) return false;
   const bg = bgRef(BG);
   const first = !state.flags._fortune_met;
   state.flags._fortune_met = true;
@@ -44,9 +46,9 @@ export async function doFortune() {
   for (const id of targets) delete state.flags[`_fortune_pick_${id}`];
   if (!picked) return false;
   addMoney(-FORTUNE_FEE);
-  state.fortune = { char: picked };
+  const trivia = grantFortuneReading(state, picked, DB.fortuneTrivia);
   state.fortuneDay = state.day;
   save();
-  await play("remake_fortune_result", { bg }); // {fortuneName} は interpolate で相手の名前になる
+  await play(trivia ? fortuneResultId(trivia) : "remake_fortune_result", { bg }); // {fortuneName} は interpolate で相手の名前になる
   return true;
 }

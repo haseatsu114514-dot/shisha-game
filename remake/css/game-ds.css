@@ -81,7 +81,8 @@ body.game-ds .dc-row { min-width: 0; padding: 2px 6px; gap: 3px; font-size: 12px
 body.game-ds .dc-row span { font-size: 10px; }
 body.game-ds .dc-row.money b { font-size: 14px; }
 body.game-ds .hud-level { width: 44px; height: 44px; }
-body.game-ds .hud-stamina { display: none; }
+body.game-ds .hud-card .hud-stamina { display: flex; height: 14px; gap: 4px; padding: 0 4px; }
+body.game-ds .hud-card .hud-stamina > span { font-size: 10px; }
 body.game-ds .hud-menu, body.game-ds .hud-lime, body.game-ds .hud-level { min-height: 44px; max-width: 100%; }
 body.game-ds .sub-menu { left: var(--ds-cx); top: var(--ds-cy); width: var(--ds-cw); height: var(--ds-ch); bottom: auto; transform: none; padding: 16px; overflow: auto; touch-action: pan-y; }
 body.game-ds .sub-title { font-size: 26px; }
