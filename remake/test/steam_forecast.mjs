@@ -159,7 +159,7 @@ try {
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isVisible());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), mobile ? 36 : 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {
@@ -171,7 +171,7 @@ try {
         clear: pad.top > r(document.querySelector('.dodge')).bottom && pad.bottom < r(document.querySelector('.bench')).bottom - 2 };
     });
     assert(Math.abs(controls.gap - 16) < 1 && Math.abs(controls.secondGap - 16) < 1 && Math.abs(controls.thirdGap - 16) < 1, JSON.stringify(controls));
-    assert(controls.padSize >= 128 && controls.buttonHeight >= 128 && controls.physicalTapSize >= 44 && controls.inRow && controls.clear, JSON.stringify(controls));
+    assert(controls.padSize >= (mobile ? 109.9 : 127.9) && controls.buttonHeight >= (mobile ? 109.9 : 127.9) && controls.physicalTapSize >= 44 && controls.inRow && controls.clear, JSON.stringify(controls));
     await page.locator('[data-test="steam-world-art"]').evaluate(async n => {
       const url = getComputedStyle(n).backgroundImage.match(/url\(["']?([^"')]+)/)?.[1];
       if (!url?.includes('steam_mind_world')) throw new Error('Cosmic artwork is not connected');

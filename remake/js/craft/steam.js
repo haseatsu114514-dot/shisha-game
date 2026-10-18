@@ -82,6 +82,7 @@ export async function runSteamDodge(cs) {
     el("div.steam-play", [box]),
     el("div.dodge-controls", [refreshBtn, slashControl, precisionBtn, pad]),
     thermometer.root,
+    el("small.steam-key-hint", { text: "移動：矢印 / WASD\n回復：Space / X\nアタック：Z" }),
   ]);
   panel.append(steamRoot);
 

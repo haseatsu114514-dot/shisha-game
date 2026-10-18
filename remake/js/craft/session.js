@@ -189,6 +189,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
+  b.root.dataset.layout = ["holes", "heat", "steam", "pull", "care"].includes(id) ? "stage" : "choose";
   b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
@@ -375,7 +376,9 @@ export function presentBenchResult(panel, title) {
   const score = bench?.panel === panel ? bench.cs[panel.dataset.step]?.score ?? 0 : 0;
   const evaluation = evaluationOf(score);
   if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, final: true });
-  return { evaluation, hasAudience: !!(bench?.panel === panel && bench.audience) };
+  const audience = bench?.panel === panel ? bench.audience : null;
+  const note = audience?.root.querySelector(".audience-note");
+  return { evaluation, hasAudience: !!audience, feedback: note?.dataset.raw || note?.textContent || "" };
 }
 
 /** その一台を見ている人だけが反応する。古い工程の非同期処理から次の画面へ漏らさない。 */

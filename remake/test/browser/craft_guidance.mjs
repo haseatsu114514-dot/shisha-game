@@ -63,6 +63,27 @@ await suite('craft-guidance', async check => {
             return a.bottom > b.top + 1;
           });
           assert(!overlaps, 'Help/instructions overlap play area');
+          await assertFits(page, '.audience-note');
+          if (device === 'touch') {
+            const targets = ['.bench-guide summary', ...(step === 'mix' ? ['.fr-btn'] : step === 'pack' ? ['.pack-choice'] : step === 'timer' ? ['.timer-button'] : step === 'holes' ? ['.ht-option'] : [])];
+            for (const target of targets) for (const box of await page.locator(target).evaluateAll(ns => ns.map(n => { const r = n.getBoundingClientRect(); return { w:r.width, h:r.height }; }))) {
+              assert(box.w >= 44 && box.h >= 44, `${target} too small for touch: ${JSON.stringify(box)}`);
+            }
+          }
+          if (device === 'touch' && step === 'mix') {
+            assert(await page.locator('.mix-list').evaluate(list => {
+              const r=list.getBoundingClientRect();
+              return [...list.querySelectorAll('.fr-btn')].every(b => {const t=b.getBoundingClientRect(); return t.top>=r.top-1&&t.bottom<=r.bottom+1;});
+            }), 'Basic two-flavor controls must be visible without scrolling');
+          }
+          if (step === 'steam') {
+            assert.deepEqual(await page.locator('.dodge').evaluate(n => [n.offsetWidth, n.offsetHeight]), [784,414]);
+            const clear = await page.evaluate(() => {
+              const box=document.querySelector('.dodge').getBoundingClientRect(), controls=document.querySelector('.dodge-controls').getBoundingClientRect();
+              return controls.top > box.bottom && controls.bottom <= innerHeight;
+            });
+            assert(clear, 'Controls overlap the logical playfield');
+          }
         }
         if (step === 'holes') {
           const chosen = page.locator('[data-test="hole-template-outer12-middle12"]');
