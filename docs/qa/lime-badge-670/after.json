@@ -1,0 +1,1283 @@
+{
+  "ref": "cae946bb0e046ca1a83b34c0ddb9175586c0f496",
+  "results": [
+    {
+      "device": "pc",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "layout": "normal",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 1120.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 1060.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 1116.5,
+            "y": 100,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 1120.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1125.25,
+            "y": 102.5,
+            "width": 4.5,
+            "height": 16
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 1060.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 1116.5,
+            "y": 100,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 1120.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1124.859375,
+            "y": 102.5,
+            "width": 5.28125,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 1060.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 1116.5,
+            "y": 100,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 1120.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 1120.171875,
+            "y": 102.5,
+            "width": 14.640625,
+            "height": 16
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 1060.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 1120.5,
+            "y": 104,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 1060.5,
+              "y": 102,
+              "width": 52,
+              "height": 52
+            },
+            {
+              "x": 1176.5,
+              "y": 108,
+              "width": 87.5,
+              "height": 40
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": false,
+      "errors": []
+    },
+    {
+      "device": "pc",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "layout": "ds",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 487.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 439.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 483.5,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 487.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 492.25,
+            "y": 70.5,
+            "width": 4.5,
+            "height": 16
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 439.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 483.5,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 487.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 491.859375,
+            "y": 70.5,
+            "width": 5.28125,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 439.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 483.5,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 487.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 487.171875,
+            "y": 70.5,
+            "width": 14.640625,
+            "height": 16
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 439.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 487.5,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 439.5,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 539.5,
+              "y": 74,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": false,
+      "errors": []
+    },
+    {
+      "device": "landscape",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "layout": "normal",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 682.2708129882812,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 649.7708129882812,
+              "y": 6.5,
+              "width": 28.16668701171875,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 680.1041870117188,
+            "y": 5.4166669845581055,
+            "width": 11.9166259765625,
+            "height": 11.916666984558105
+          },
+          "icon": {
+            "x": 682.2708129882812,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 684.84375,
+            "y": 6.770833492279053,
+            "width": 2.4375,
+            "height": 8.666667938232422
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 649.7708129882812,
+              "y": 6.5,
+              "width": 28.16668701171875,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 680.1041870117188,
+            "y": 5.4166669845581055,
+            "width": 11.9166259765625,
+            "height": 11.916666984558105
+          },
+          "icon": {
+            "x": 682.2708129882812,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 684.6321411132812,
+            "y": 6.770833492279053,
+            "width": 2.8607177734375,
+            "height": 8.666667938232422
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 649.7708129882812,
+              "y": 6.5,
+              "width": 28.16668701171875,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 680.1041870117188,
+            "y": 5.4166669845581055,
+            "width": 11.9166259765625,
+            "height": 11.916666984558105
+          },
+          "icon": {
+            "x": 682.2708129882812,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 682.0930786132812,
+            "y": 6.770833492279053,
+            "width": 7.93035888671875,
+            "height": 8.666667938232422
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 649.7708129882812,
+              "y": 6.5,
+              "width": 28.16668701171875,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 682.2708129882812,
+            "y": 7.583333492279053,
+            "width": 26,
+            "height": 26.000001907348633
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 649.7708129882812,
+              "y": 6.5,
+              "width": 28.16668701171875,
+              "height": 28.166667938232422
+            },
+            {
+              "x": 712.6041870117188,
+              "y": 9.75,
+              "width": 47.39581298828125,
+              "height": 21.666667938232422
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": false,
+      "errors": []
+    },
+    {
+      "device": "landscape",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "layout": "ds",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 361,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 313,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 357,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 361,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 365.75,
+            "y": 70.5,
+            "width": 4.5,
+            "height": 16
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 313,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 357,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 361,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 365.359375,
+            "y": 70.5,
+            "width": 5.28125,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 313,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 357,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 361,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 360.671875,
+            "y": 70.5,
+            "width": 14.640625,
+            "height": 16
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 313,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 361,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 313,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 321.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": false,
+      "errors": []
+    },
+    {
+      "device": "portrait",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": "normal",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 341.40234375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 323.12109375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 340.18359375,
+            "y": 315.359375,
+            "width": 6.703125,
+            "height": 6.703125
+          },
+          "icon": {
+            "x": 341.40234375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 342.849609375,
+            "y": 316.12109375,
+            "width": 1.37109375,
+            "height": 4.875
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 323.12109375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 340.18359375,
+            "y": 315.359375,
+            "width": 6.703125,
+            "height": 6.703125
+          },
+          "icon": {
+            "x": 341.40234375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 342.7305908203125,
+            "y": 316.12109375,
+            "width": 1.609130859375,
+            "height": 4.875
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 323.12109375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 340.18359375,
+            "y": 315.359375,
+            "width": 6.703125,
+            "height": 6.703125
+          },
+          "icon": {
+            "x": 341.40234375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 341.3023681640625,
+            "y": 316.12109375,
+            "width": 4.4608154296875,
+            "height": 4.875
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 323.12109375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 341.40234375,
+            "y": 316.578125,
+            "width": 14.625,
+            "height": 14.625
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 323.12109375,
+              "y": 315.96875,
+              "width": 15.84375,
+              "height": 15.84375
+            },
+            {
+              "x": 358.46484375,
+              "y": 317.796875,
+              "width": 26.66015625,
+              "height": 12.1875
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": true,
+      "errors": []
+    },
+    {
+      "device": "portrait",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": "ds",
+      "states": [
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 322,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 274,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 1,
+          "text": "1",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 318,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 322,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 326.75,
+            "y": 70.5,
+            "width": 4.5,
+            "height": 16
+          },
+          "label": "LIME（未読1件）",
+          "adjacent": [
+            {
+              "x": 274,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 9,
+          "text": "9",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 318,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 322,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 326.359375,
+            "y": 70.5,
+            "width": 5.28125,
+            "height": 16
+          },
+          "label": "LIME（未読9件）",
+          "adjacent": [
+            {
+              "x": 274,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 10,
+          "text": "9+",
+          "display": "grid",
+          "radius": "50%",
+          "badge": {
+            "x": 318,
+            "y": 68,
+            "width": 22,
+            "height": 22
+          },
+          "icon": {
+            "x": 322,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 321.671875,
+            "y": 70.5,
+            "width": 14.640625,
+            "height": 16
+          },
+          "label": "LIME（未読10件）",
+          "adjacent": [
+            {
+              "x": 274,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "count": 0,
+          "text": "",
+          "display": "none",
+          "radius": "50%",
+          "badge": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "icon": {
+            "x": 322,
+            "y": 72,
+            "width": 48,
+            "height": 48
+          },
+          "textRect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "label": "LIME",
+          "adjacent": [
+            {
+              "x": 274,
+              "y": 74,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "x": 282.5,
+              "y": 124,
+              "width": 87.5,
+              "height": 44
+            }
+          ]
+        }
+      ],
+      "counts": {
+        "unread": 1,
+        "read": 0,
+        "before": true,
+        "after": false
+      },
+      "rotateHint": false,
+      "errors": []
+    }
+  ]
+}
