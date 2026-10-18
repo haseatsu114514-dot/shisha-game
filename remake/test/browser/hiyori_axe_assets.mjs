@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, assertFits } from "./support.mjs";
-const faces = ["normal", "sad", "smile", "student_smile", "surprise", "tears", "axe_normal", "axe_laugh", "axe_shout", "serious", "love_blush"];
+const faces = ["normal", "sad", "smile", "student_smile", "surprise", "tears", "axe_normal", "axe_laugh", "axe_shout", "axe_throw", "office_mukii", "serious", "love_blush"];
 const shots = process.env.COMPARISON_DIR;
 if (shots) await fs.mkdir(shots, { recursive: true });
 await suite("hiyori-axe-assets", async check => {
@@ -15,6 +15,14 @@ await suite("hiyori-axe-assets", async check => {
         K.core.config.textSpeed = 4; K.ui.clearScreen();
       });
       const before = await page.evaluate(() => JSON.stringify(K.core.state));
+      const framing = await page.evaluate(async () => {
+        const { portraitInfo } = await import("./js/core/data.js");
+        const hiyori = portraitInfo("hiyori", "normal");
+        const rin = portraitInfo("rin", "normal");
+        return { sourceHeight: hiyori.h * 1200, visibleRatio: hiyori.scale / rin.scale };
+      });
+      assert(Math.abs(framing.sourceHeight - 1000) <= 1, "Hiyori's exported figure must be 1000px tall");
+      assert(Math.abs(framing.visibleRatio - 1) <= 0.05, "Hiyori and Rin must appear at similar height");
       for (const face of faces) {
         await page.evaluate(face => {
           K.flow = K.vn.play({ metadata: { bg: "res://assets/backgrounds/bg_axe_lounge_night.png" }, lines: [
