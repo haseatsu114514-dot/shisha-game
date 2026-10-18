@@ -110,6 +110,11 @@ body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right {
 body.game-ds .bench-head { position: sticky; left: 0; flex: none; gap: 8px; }
 body.game-ds .bench-title, body.game-ds .bench[data-step] .bench-title { font-size: 24px; }
 body.game-ds .bench-panel { flex: none; width: 760px; min-height: 520px; }
+/* 選択式のpackだけ下段に収める。座標式工程の760pxは維持する。 */
+body.game-ds .bench[data-step="pack"] .bench-panel { width: 100%; min-width: 0; }
+body.game-ds .bench[data-step="pack"] .packing { height: auto; overflow-wrap: anywhere; }
+body.game-ds .bench[data-step="pack"] .pack-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+body.game-ds .bench[data-step="pack"] .pack-footer { flex-wrap: wrap; }
 body.game-ds .bench .btn { min-height: 44px; }
 body.game-ds #modal .modal-box { min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 96px); padding: 18px; }
 body.game-ds #modal .cfg { min-width: 0; }
