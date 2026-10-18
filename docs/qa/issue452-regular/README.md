@@ -53,6 +53,10 @@ Chromium、PC 1280×720／横タッチ844×390のエミュレーション。実J
 
 修正後はCASE_FILTERなしの既存全6ケースと、AUTOを含む専用全10ケースをそれぞれ省略なしで再実行PASS。中断保存の再読込も同じfixture readinessを待つようにし、通常起動での既定selectorは維持した。CI全完了前はDraftを維持する。
 
+### f51ddcf8の別CI失敗（未解決）
+
+新headのcontextsはDAY4訪問後の翌朝待ちで失敗。他13ケースは成功。旧SKIP修正のapproved-scenesは成功したが、PR全体は未合格。[前後jobの実ログ比較と、main/PRで再現した設定示唆の例外](contexts-investigation.md)を記録した。公式artifact JSONとの照合待ちで、CI直接原因との同一性は未確定。本番reel.jsは変更せず、再実行だけで解決扱いにしない。
+
 ## 取得量とGit履歴の復旧
 
 [取得記録](acquisition.json)。承認後のテキスト本文は **4,068,267 bytes／182ファイル**、レスポンスヘッダは168,703 bytes。8.44MB上限内で、固定commitのHTTPテキストだけを取得し、すべてのblob SHAを検証した。TLS・要求側ヘッダなどの通信量は未測定。画像・音声・追加Git packの取得はゼロ。
@@ -85,4 +89,4 @@ python3 tools/tidy_dialogue_text.py --dry-run
 python3 tools/check_agent_docs.py
 ```
 
-NEXT: Draft PRで実headのCI・差分を確認する。A/Cは残件のまま。予約を保持し、マージ・公開・Issue終了はしない。
+NEXT: Draft PRでcontextsの公式artifact JSONを照合し、設定示唆の例外の担当範囲と修正・検証を決める。A/Cは残件のまま。予約を保持し、マージ・公開・Issue終了はしない。
