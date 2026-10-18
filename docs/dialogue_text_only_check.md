@@ -52,6 +52,7 @@ python3 tools/check_dialogue_text_only.py <before_json> <after_json> <allowlist_
 1. **JSON構文・重複キー・非有限数の禁止**
    - `before_json`、`after_json`、`allowlist_json` の全階層において、同一オブジェクト内の重複キーを拒否します。
    - `NaN`、`Infinity`、`-Infinity` などの非有限数定数、および不正な UTF-8 や UTF-8 BOM を拒否します。
+   - JSON解析後であっても、比較処理などでPythonの再帰上限に達した場合は、本文やtracebackを出さず入力エラー（終了コード `2`）として拒否します。処理可能な深度は実行環境に依存し、上限を超えた入力を成功扱いにはしません。
 2. **前後両方に存在する string leaf のみ許可**
    - 各Pointerは `before_json` と `after_json` の**両方**に存在し、かつ両方で JSON の文字列型（`string`）である末端（leaf）を指していなければなりません（ルート自身が文字列の場合の `""` も可）。
    - オブジェクトや配列（コンテナ）への包括許可、数値・真偽値・`null` の指定、片方にしか存在しない（追加・削除された）パス、存在しない余計なパス、allowlist内の重複Pointerはすべて拒否されます。

@@ -368,6 +368,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     except InputValidationError as exc:
         sys.stderr.write(f"INVALID_INPUT: {exc}\n")
         return EXIT_INVALID_INPUT
+    except RecursionError:
+        sys.stderr.write("INVALID_INPUT: JSON nesting depth exceeded processing limit\n")
+        return EXIT_INVALID_INPUT
 
     if diagnostics:
         for pointer, category, detail in diagnostics:

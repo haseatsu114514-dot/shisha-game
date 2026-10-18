@@ -448,6 +448,22 @@ class TestCheckDialogueTextOnlyCLI(unittest.TestCase):
             self.assertEqual(len(proc.stderr.splitlines()), 1)
             self.assertNotIn(separator, proc.stderr)
 
+    def test_deep_documents_fail_closed_without_traceback(self) -> None:
+        limit = sys.getrecursionlimit()
+        for opening, closing in (("[", "]"), ('{"a":', "}")):
+            for depth in (max(1, limit - 4), limit, limit + 5):
+                before = (opening * depth + '"DEEP_BEFORE_SECRET"' + closing * depth).encode()
+                changed = (opening * depth + '"DEEP_AFTER_SECRET"' + closing * depth).encode()
+                for after, accepted_codes in ((before, (0, 2)), (changed, (1, 2))):
+                    with self.subTest(shape=opening, depth=depth, changed=after != before):
+                        proc = self._run_cli_with_bytes(before, after, b"[]")
+                        self.assertIn(proc.returncode, accepted_codes)
+                        self.assertNotIn("Traceback", proc.stderr)
+                        self.assertNotIn("DEEP_BEFORE_SECRET", proc.stderr + proc.stdout)
+                        self.assertNotIn("DEEP_AFTER_SECRET", proc.stderr + proc.stdout)
+                        if proc.returncode == 2:
+                            self.assertIn("INVALID_INPUT:", proc.stderr)
+
     def test_cli_argument_count_and_missing_file_errors(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "does_not_exist.json"
