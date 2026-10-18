@@ -118,6 +118,7 @@ await suite("first-brew", async check => {
       for (let i = 0; i < 12 - mint; i++) await page.locator(`[data-test="mix-plus-${flavor}"]`).click();
       for (let i = 0; i < mint; i++) await page.locator('[data-test="mix-plus-mint"]').click();
       await assertFits(page, '[data-test="mix-ok"], .fr-btn');
+      assert.equal(await page.locator(".bench-mode small").evaluate(n => n.getClientRects().length), 1, "注文の表示を1行に収める");
       await shot(page, `first-mix-${flavor}`);
       const stock = await page.evaluate(() => JSON.stringify(T.core.state.flavorStock));
       await page.locator('[data-test="mix-ok"]').click();

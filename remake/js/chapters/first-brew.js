@@ -11,6 +11,8 @@ export const FIRST_BREW_FLAVORS = Object.freeze(["lemon", "orange", "mint"]);
 const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
 
 export function configureFirstBrew(cs) {
+  cs.eventTitle = "お姉さんへの一台";
+  cs.eventNote = "サッパリ系";
   cs.orderFlavorIds = [...FIRST_BREW_FLAVORS];
   cs.orderHint = "注文はサッパリ系。レモン・オレンジ・ミントから選ぶ。単体でも、組み合わせてもいい";
   cs.lessonHelp = { mix: { brief: "サッパリ系の葉を選び、合計12gにする", detail: `スミ「${cs.orderHint}」` } };
@@ -44,7 +46,7 @@ export async function firstBrewOrder(progress) {
 export async function serveFirstBrew(progress) {
   const owner = state;
   // 操作レッスンを省いた人も、好みに応える配合は自分で決める。
-  // 旧セーブで練習済み・配合記録なしの場合も、新しい一台を選んでもらう。
+  // 配合を保存してから、スミさんと仕上げる場面へ進む。
   if (!progress.firstBrew) {
     const cs = configureFirstBrew(newSession("tutorial"));
     openBench(cs, { steps: [["mix", "配合"]] });

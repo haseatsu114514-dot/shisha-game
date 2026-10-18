@@ -132,7 +132,7 @@ export function openBench(cs, { steps = [] } = {}) {
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
