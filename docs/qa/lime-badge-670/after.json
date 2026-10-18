@@ -1,5 +1,5 @@
 {
-  "ref": "56bf4cd1c6f069797969c8810d01f362140d7f25",
+  "ref": "91d304b0423a4666f7b4c9ce49946c0220db415f",
   "results": [
     {
       "device": "pc",
@@ -75,20 +75,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 1156.59375,
-            "y": 100,
-            "width": 7.796875,
-            "height": 16
+            "x": 1156.046875,
+            "y": 99,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 1156.59375,
-            "y": 101,
-            "width": 7.796875,
-            "height": 14
+            "x": 1156.046875,
+            "y": 100,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -123,20 +123,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 1156.59375,
-            "y": 100,
-            "width": 7.796875,
-            "height": 16
+            "x": 1156.046875,
+            "y": 99,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 1156.59375,
-            "y": 101,
-            "width": 7.796875,
-            "height": 14
+            "x": 1156.046875,
+            "y": 100,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -373,20 +373,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 1156.59375,
-            "y": 100,
-            "width": 7.796875,
-            "height": 16
+            "x": 1156.046875,
+            "y": 99,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 1156.59375,
-            "y": 101,
-            "width": 7.796875,
-            "height": 14
+            "x": 1156.046875,
+            "y": 100,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -535,20 +535,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 523.59375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 523.046875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 523.59375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 523.046875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -583,20 +583,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 523.59375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 523.046875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 523.59375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 523.046875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -833,20 +833,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 523.59375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 523.046875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 523.59375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 523.046875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -995,20 +995,20 @@
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 701.8215942382812,
-            "y": 5.4166669845581055,
-            "width": 4.22332763671875,
-            "height": 8.666666984558105
+            "x": 701.525390625,
+            "y": 4.875,
+            "width": 4.82421875,
+            "height": 9.208333969116211
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 701.8215942382812,
-            "y": 5.958333492279053,
-            "width": 4.22332763671875,
-            "height": 7.583333492279053
+            "x": 701.525390625,
+            "y": 5.4166669845581055,
+            "width": 4.82421875,
+            "height": 8.666666984558105
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1043,20 +1043,20 @@
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 701.8215942382812,
-            "y": 5.4166669845581055,
-            "width": 4.22332763671875,
-            "height": 8.666666984558105
+            "x": 701.525390625,
+            "y": 4.875,
+            "width": 4.82421875,
+            "height": 9.208333969116211
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 701.8215942382812,
-            "y": 5.958333492279053,
-            "width": 4.22332763671875,
-            "height": 7.583333492279053
+            "x": 701.525390625,
+            "y": 5.4166669845581055,
+            "width": 4.82421875,
+            "height": 8.666666984558105
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1293,20 +1293,20 @@
             "height": 26.000001907348633
           },
           "textRect": {
-            "x": 701.8215942382812,
-            "y": 5.4166669845581055,
-            "width": 4.22332763671875,
-            "height": 8.666666984558105
+            "x": 701.525390625,
+            "y": 4.875,
+            "width": 4.82421875,
+            "height": 9.208333969116211
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 701.8215942382812,
-            "y": 5.958333492279053,
-            "width": 4.22332763671875,
-            "height": 7.583333492279053
+            "x": 701.525390625,
+            "y": 5.4166669845581055,
+            "width": 4.82421875,
+            "height": 8.666666984558105
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1455,20 +1455,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 397.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 396.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 397.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 396.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1503,20 +1503,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 397.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 396.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 397.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 396.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1753,20 +1753,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 397.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 396.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 397.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 396.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1915,20 +1915,20 @@
             "height": 14.625
           },
           "textRect": {
-            "x": 352.399658203125,
-            "y": 315.359375,
-            "width": 2.3756103515625,
-            "height": 4.875
+            "x": 352.2330322265625,
+            "y": 315.0546875,
+            "width": 2.713623046875,
+            "height": 5.1796875
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 352.399658203125,
-            "y": 315.6640625,
-            "width": 2.3756103515625,
-            "height": 4.265625
+            "x": 352.2330322265625,
+            "y": 315.359375,
+            "width": 2.713623046875,
+            "height": 4.875
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -1963,20 +1963,20 @@
             "height": 14.625
           },
           "textRect": {
-            "x": 352.399658203125,
-            "y": 315.359375,
-            "width": 2.3756103515625,
-            "height": 4.875
+            "x": 352.2330322265625,
+            "y": 315.0546875,
+            "width": 2.713623046875,
+            "height": 5.1796875
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 352.399658203125,
-            "y": 315.6640625,
-            "width": 2.3756103515625,
-            "height": 4.265625
+            "x": 352.2330322265625,
+            "y": 315.359375,
+            "width": 2.713623046875,
+            "height": 4.875
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -2213,20 +2213,20 @@
             "height": 14.625
           },
           "textRect": {
-            "x": 352.399658203125,
-            "y": 315.359375,
-            "width": 2.3756103515625,
-            "height": 4.875
+            "x": 352.2330322265625,
+            "y": 315.0546875,
+            "width": 2.713623046875,
+            "height": 5.1796875
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 352.399658203125,
-            "y": 315.6640625,
-            "width": 2.3756103515625,
-            "height": 4.265625
+            "x": 352.2330322265625,
+            "y": 315.359375,
+            "width": 2.713623046875,
+            "height": 4.875
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -2375,20 +2375,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 358.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 357.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読1件）",
           "numberRect": {
-            "x": 358.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 357.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -2423,20 +2423,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 358.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 357.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 358.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 357.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
@@ -2673,20 +2673,20 @@
             "height": 48
           },
           "textRect": {
-            "x": 358.09375,
-            "y": 68,
-            "width": 7.796875,
-            "height": 16
+            "x": 357.546875,
+            "y": 67,
+            "width": 8.90625,
+            "height": 17
           },
           "label": "LIME（未読9件）",
           "numberRect": {
-            "x": 358.09375,
-            "y": 69,
-            "width": 7.796875,
-            "height": 14
+            "x": 357.546875,
+            "y": 68,
+            "width": 8.90625,
+            "height": 16
           },
           "plusRect": null,
-          "fontSize": 14,
+          "fontSize": 16,
           "plusSize": null,
           "adjacent": [
             {
