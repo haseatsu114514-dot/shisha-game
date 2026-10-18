@@ -1,0 +1,60 @@
+{
+  "comment": "休暇・店の休みと渡航予定を確定し、到着した実際の恋人のみ。未接続台本。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_samechan_dubai_girlfriend",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "休みの札も、留守の段取りも済ませてきたのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃん、お疲れさまです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。まず荷物を置こう。観光の話はそれからじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "案内の地図、一緒に見ましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_hiyori_dubai_girlfriend",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "休暇申請、引き継ぎ、搭乗。……無事にたどり着きました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "飛行機、眠れましたか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "少し。今日は儚くなる前にちゃんと寝る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "夕飯に起きられたら、連絡ください"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。楽しみにして寝るね"
+        }
+      ]
+    }
+  ]
+}

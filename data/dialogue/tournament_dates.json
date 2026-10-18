@@ -1,0 +1,588 @@
+{
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ未接続台本。能力・大会加点なし。",
+  "dialogues": [
+    {
+      "dialogue_id": "tournament_date_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で駅前のベンチに座る。つむぎは旅先の木を描いていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……明日は、手だけ描いても、いいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "顔じゃなくて？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "炭を待っている時の手、好きなので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ今は？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今は、貸してください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆をしまったつむぎの指が、俺の手を握った。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_tsumugi",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_minto",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店した店のメニューを、二人で外から眺める。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "このパフェ、仕込み大変そう。……休みなのに見ちゃうね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "栞さん、店の話をしてる時も楽しそうです"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "うん。みんとでいるのも、好きだから"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "でも今夜は、隣の彼氏にアイスをねだりたいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一個ずつ？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "半分こ、……違う味、頼もうよ"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_minto",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_rin",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "足、痛くない？　絆創膏。あと水"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "品質管理ですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "そういう口実も、今日は休み"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、少し手をつないで歩きませんか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……申請が遅い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出した手を取ってから、凛さんが笑った。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_rin",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "待ち合わせに来たあげはさんは、いつもより静かだった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ごめん。盛り上げ係、今日は休みでいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。何したいですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "何も。手だけ、つないでたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、俺もしたいです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……こういうの、当ててくれるより聞いてくれるのがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つないだ指先が少し震えていた。二人の歩く速さが揃った。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_ageha",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_mashiro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが、温かいお茶を二つ買ってきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕が買う番。……昨日、はじめくんだったでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "覚えてたんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ん、お世話係、ひとりにしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ次、俺が選ぶ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "次も会うの、今決まったねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は俺の肩に少し寄りかかり、お茶が冷めるまで黙っていた。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_mashiro",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_samechan",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは、小さな土産袋を抱えていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "店のみんなの分じゃ、……これは、お主の分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺にも？　同じ町に来てるのに"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "一緒に選んだ記念なら、それでよかろう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、店主の手が空いたぞ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……コロちゃん。そこまで頼んではおらぬ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺が手を差し出すと、サメちゃんは土産袋を持ち替えた。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_samechan",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_hiyori",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの旅程表には、何も書かれていない枠があった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "ここ。夜風にさらわれる予定"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "歩きすぎると、明日つらくないですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "よくぞ聞いてくれました。ベンチも調べてあります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "準備万端の儚さですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……捕まえてないと、消えちゃうよ",
+          "inner": "手、つなぎたい。言っちゃえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された手を握ると、ひよりさんの歩幅が小さくなった。"
+        },
+        {
+          "type": "choice",
+          "id": "tournament_date_choice_hiyori",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "private_scene": true
+      },
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、二人で宿への道を戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えて、うれしかったです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ]
+      }
+    }
+  ]
+}

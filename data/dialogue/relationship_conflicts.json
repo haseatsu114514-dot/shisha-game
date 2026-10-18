@@ -1,0 +1,236 @@
+{
+  "comment": "実際の恋人が同じ場所に2人以上いる場合のみ。出席者の反応だけ順に読む。全員謝罪待ちとして保存し、勝利や別のデートでは解除しない。未接続。",
+  "dialogues": [
+    {
+      "dialogue_id": "shuraba_open",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "待ち合わせ場所に、恋人が二人以上来ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "交わした約束を確かめる声が重なる。俺の説明だけが、止まった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_accountability",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "付き合っている人がいるのに、黙ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "知らないまま約束させて、ごめんなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "謝っても、誰も今夜の約束には戻らなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、返事は求めません。話せる時に、一人ずつ話したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜のデートはなくなった。言葉を聞いてもらえるかも、俺が決めることではなかった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_story_shuraba_unresolved"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_minto",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "昨日、私にだけ会いたいって言ったよね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "その言葉を、他の人にも渡してたの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "店で笑うのも、ここで怒るのも私だよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "笑って済ませてあげると思わないで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "さっき、手をつないでいるところを見ました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "煙の色で分かったわけじゃ、ありません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……絵を見せる約束、今日はやめます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "私が何を見たいかは、私が決めます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_rin",
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "違う店の香りがしたから、気にはなってた"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "でも香りだけじゃ決めない。今、本人から聞いた"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "私たちに黙っていたことを、説明して"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "試す相手を取り替えるようには、扱わないで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_ageha",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "さっきから変だと思ってた。でも、当てっこはもういい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "付き合ってるって、今、目の前で聞いた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちには、ちゃんと言葉で言ってよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今夜、笑って応援するのは無理"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_mashiro",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……僕だけじゃ、なかったんだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "作れない日も座ってていいよ。それは、変わらない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも、僕の隣に座る約束は別"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……今日は、ひとりで帰るね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_samechan",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者よ、二つの誓いを隠していたのか",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはコロちゃんを鞄にしまった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "今は、わしが話すのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主の言葉を、信じて待っておった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "冗談にして終わらせることは、できぬ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "同じ時間に、二人と約束したんだね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "予定の取り違えかと思った、……違った"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "儚いから見逃して、とは今日は言わない",
+          "inner": "怒っていい。笑って片付けなくていい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "私が納得したことに、しないでね"
+        }
+      ]
+    }
+  ]
+}
