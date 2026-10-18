@@ -1,7 +1,7 @@
 {
   "issue": 664,
   "generated_utc": "2026-10-18",
-  "notes": "Reference order matches each prompt's Image 1/2/3. Original image_gen PNG bytes are preserved under raw/. Superseded axe candidates remain in earlier branch commits; the current raw/axe files are the tracksuit revision.",
+  "notes": "Reference order matches image_gen input order. Original PNGs are preserved under raw/. Earlier axe outfit versions remain in Git history; the current four raw/axe files use the same lace blouse and black slacks as Hiyori's everyday outfit.",
   "records": [
     {
       "variant": "normal",
@@ -126,62 +126,66 @@
     {
       "variant": "axe_normal",
       "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
-      "sha256": "62e3c31064305e7356a3562df833abc98909f4dcd8cc83af275d82e6f00e818d",
+      "sha256": "079aa8419f91514f6cb2f48d17deae3ffd2672457a519aad8d0722b6ef6e21f3",
       "references": [
         "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
         "assets/sprites/characters/rin/chr_rin_normal.png"
       ],
-      "prompt": "Edit the first reference into an original full-body transparent-background Japanese visual novel character sprite of Hiyori. The first reference is Hiyori's exact adult identity and face; the second is the game's painterly high-quality linework and rendering style. Preserve Hiyori's reddish pink-brown high ponytail with side curls, long lashes, warm brown eyes, warm light skin, slender adult proportions and recognizable face. For her axe-throwing outing she has CHANGED completely out of office clothes into a comfortable modern TRACKSUIT: dusty slate-blue zip-front athletic jacket with subtle muted pink piping down sleeves, matching relaxed tapered track pants with a thin side stripe, simple white athletic sneakers. No blouse, black slacks, handbag, cap, logos or text. She stands in a compact plausible ready posture, feet hip-width and one foot half a step forward, holding ONE small safe recreational throwing hatchet low by its wooden handle in her right hand, blade pointed downward away from her body. Her reserved, tired, fragile-looking demeanor remains, with a tiny anticipatory smile. The comedic contrast comes from the situation, not a distorted anatomy. Match game character sprite aesthetic, polished finely shaded anime illustration, soft rich but natural colors, clean crisp silhouette, complete body with shoes visible, centered, generous transparent margins. No props except one axe, no background, no floor, no text.",
+      "prompt": "Create a NEW full-body transparent visual novel sprite of the SAME Hiyori from reference 1. Reference 1 is the canonical identity, outfit, face and art style. Reference 2 shows only the recent axe pose concept; its BLUE TRACKSUIT MUST BE COMPLETELY DISCARDED. Keep Hiyori's everyday outfit EXACTLY: elegant ivory French-sleeve floral lace blouse buttoned at the neck, high-waisted tailored BLACK slacks and black belt, black gold-detail loafers, small gold earrings, wristwatch, high reddish pink-brown ponytail, warm brown eyes. She has set her handbag off-frame at the throwing lane, so no bag is held. Casual low-key pre-throw stance: weight on one leg, other foot a modest half-step forward, ONE short wood-handled recreational throwing axe held down in her right hand with blade pointing safely downward, left fingers gently resting near her collarbone. Her face looks tired and delicate, tiny sly smile starting to break through, hinting she secretly enjoys this. Clean natural anatomy, polished painterly Japanese game sprite matching reference 3, sharp detailed lace and hair, full figure and whole axe in frame, transparent background. No tracksuit, blue jacket, cap, sneakers, handbag, text, scenery, aura, shadows or extra weapons.",
       "transparent_background": true,
       "tool": "OpenAI image_gen",
       "status": "candidate",
       "runtime_registered": false,
-      "iteration": 2
+      "iteration": 3
     },
     {
       "variant": "axe_laugh",
       "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_laugh-source.png",
-      "sha256": "4f778d5472d239c9c636376fe5afd494e7317dcead730d61607396602f3db91b",
+      "sha256": "a45bef8037233a4ef49bd579c118cd8f40544bbf8e553059de3cb92493cc2c1e",
       "references": [
         "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_laugh-source.png",
         "assets/sprites/characters/rin/chr_rin_normal.png"
       ],
-      "prompt": "Edit reference into the SAME adult Hiyori with exactly the SAME slate-blue tracksuit with muted pink sleeve and pant stripes, white sneakers, reddish pink-brown high ponytail and small recreational axe. Full-body transparent game character sprite. This is the moment right AFTER a satisfying axe throw: no axe in either hand. Her shoulders loosen, she leans very slightly forward in happy surprise, one hand lightly over her laughing mouth and the other arm bent in a small celebratory fist pump. She breaks from her fragile act into a big unguarded, infectiously cute laugh, eyes squeezed into joyful crescents, cheeks warm. Comedic stress relief but not exaggerated anatomy. Feet naturally planted, full shoes visible. Preserve exact mature adult face, outfit construction, anime visual novel game art finish, refined shading and clean silhouette. No cap, handbag, office clothes, axe, extra hands, background, floor, text or icons.",
+      "prompt": "Edit reference 1 into a new FULL-BODY transparent game character sprite of the SAME adult Hiyori in the EXACT SAME everyday clothes: ivory short French-sleeve blouse with intricate vertical floral lace and buttoned neck, black tailored slacks and belt, black gold-detail loafers, gold earrings, watch, high pink-brown ponytail. Reference 2 shows only the emotional beat of the axe-lane laugh; discard its tracksuit and sneakers entirely. Hiyori has just released the axe, so no axe or handbag is in frame. Show a markedly different pose from her usually fragile stillness: she bends a little forward at the waist, one hand cupping her mouth as an involuntary giggle turns into a genuine big laugh, eyes closed in joyful crescents, cheeks lightly pink, other hand resting playfully at her waist, shoulders relaxed, knees soft. This is cathartic amusement, not rage and not a fist-pump. Adult, graceful, cute, believable anatomy and fingers, same face and ponytail. High-quality finely shaded visual-novel portrait in the game's crisp detailed style from reference 3, full body shoes included, ample transparent margins. No blue garment, stripe, sneakers, hat, bag, axe, text, scenery or effects.",
       "transparent_background": true,
       "tool": "OpenAI image_gen",
       "status": "candidate",
       "runtime_registered": false,
-      "iteration": 2
+      "iteration": 3
     },
     {
       "variant": "axe_shout",
       "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_shout-source.png",
-      "sha256": "b7458942d55ef81c0e8f8e91fdf8d9b1ad49ae82a25d399bee5f9fb0630e5601",
+      "sha256": "cd2bec41b789f32b964573328e9ea76fc45140400292a6bfd1b9f3f1a2d81681",
       "references": [
         "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_shout-source.png",
         "assets/sprites/characters/rin/chr_rin_normal.png"
       ],
-      "prompt": "Edit reference into the SAME adult Hiyori with exactly the SAME slate-blue zip athletic tracksuit with muted pink sleeve and pant side stripes, white sneakers, reddish pink-brown high ponytail and brown eyes. Full-body transparent game character sprite. She has just thrown an axe, so NO axe is held. A very cute, comic stress-release cry bursts out: \"MUKII!\" mood, scrunched eyebrows, cheeks flushed and slightly puffed, mouth open in a dramatic but adorable shout, small clenched fists by her shoulders, ponytail bouncing with energy. She is a capable adult office worker whose delicate persona abruptly slips; show both stress and delight in release. Natural balanced standing pose, legs mildly apart, no impossible twisting or lunge. Match the supplied game's fine linework, high-quality painterly anime cel shading, full body shoes and generous transparent margins. No weapon, cap, handbag, office blouse, actual flames, burst symbols, words or background.",
+      "prompt": "Edit reference 1 into a new FULL-BODY transparent game character sprite of the SAME adult Hiyori in the EXACT SAME everyday clothes: ivory French-sleeve buttoned blouse with intricate vertical floral lace, black high-waisted tailored slacks and belt, black gold-detail loafers, gold earrings and watch, high pink-brown ponytail and brown eyes. Reference 2 shows only the energy of stress release; replace every bit of its BLUE TRACKSUIT and sneakers with the outfit from reference 1. She just hit the target off-frame: NO axe or handbag in frame. Depict a distinctly JOYFUL, adorably overexcited victory whoop, different from her angry office 'mukii' face and from the hand-over-mouth laughter: she straightens up and leans slightly forward, raises her right fist near shoulder height in a small triumphant pump, other fist at her waist, mouth wide open in a delighted \"yaa!\" grin, eyes bright and wide, eyebrows lifted with surprise, cheeks flushed, ponytail bouncing. Feet naturally staggered only a little, stable and anatomically plausible, not a wide dramatic lunge. Delicate-persona facade collapses into happy unguarded stress relief. Preserve her mature face, exact lace design and game character rendering from reference 3. Entire person and both loafers fit with transparent margins, no jacket, cap, athletic clothes, second person, weapon, effects, text or scenery.",
       "transparent_background": true,
       "tool": "OpenAI image_gen",
       "status": "candidate",
       "runtime_registered": false,
-      "iteration": 2
+      "iteration": 3
     },
     {
       "variant": "axe_throw",
       "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_throw-source.png",
-      "sha256": "b952563f4e70aa9c30c634113272ebee7966719c665aa080c24027366370093e",
+      "sha256": "924ffb9ea267a5272c0b4f6135f5b1a9dd90a349525753ba009882b428158608",
       "references": [
-        "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_throw-source.png",
         "assets/sprites/characters/rin/chr_rin_normal.png"
       ],
-      "prompt": "Edit reference into a polished full-body transparent Japanese visual novel character sprite of the SAME adult Hiyori, preserving face, reddish pink-brown ponytail and exact slate-blue zip-front tracksuit with muted pink sleeve and pant stripes and white sneakers. She is at an indoor recreational axe-throwing lane, but depict ONLY HER and her ONE small wood-handled hatchet; no lane background. Depict a believable controlled overhand axe throw at the release moment, dynamic yet comical stress relief: body facing toward an off-frame target to viewer's left at a slight three-quarter angle, lead left foot stepping a modest distance forward, back right heel just lifting, torso upright with small forward transfer of weight, her RIGHT arm swinging from behind her ear FORWARD AND UP into release with right elbow extending and wrist naturally aligned, ONE axe just leaving her fingertips ahead of her head in the direction of throw, blade leading away from her; LEFT arm relaxed and slightly bent for balance rather than splayed sideways. No huge spread legs, no impossible joint angles. Her expression is comically earnest, brows scrunched, cheeks flushed, mouth open with an adorable stress-relief shout. Preserve mature recognizable Hiyori identity and jacket outfit exactly. Full body, all limbs, both shoes and entire axe inside canvas, generous transparent margin, polished detailed anime game art matching other reference, no second axe, no cap, handbag, text, target, background or floor.",
+      "prompt": "Edit reference 1 into a NEW full-body transparent Japanese game character sprite. Preserve Hiyori's exact distinctive face, warm brown eyes, high reddish pink-brown ponytail and polished fine linework, and the realistic release posture and flying single axe from reference 2. CRITICAL outfit change: replace the ENTIRE blue tracksuit and white sneakers from reference 2 with the EXACT everyday clothes in reference 1: ivory French-sleeve lace blouse with buttoned neck and intricate central floral lace panels, tailored straight black slacks with black belt, black gold-detail loafers, gold earrings and wristwatch. No bag in her hands (placed safely off-frame). A plausible controlled one-handed overhand release: right arm reaches up and forward after the ONE short hatchet leaves her fingertips, blade leading toward target outside frame to viewer's left; modest forward step with left foot, rear heel lifted, torso leaning just a little, left arm gently balancing near her ribs, no huge lunge or odd arm splay. Expression: adorable earnest frustration turning into cathartic joy, blushing cheeks, brows knit, mouth open. She is not dressed for sports; this contrast between delicate office clothes and animated throw is the point. Complete full-body silhouette with both loafers and axe in canvas and transparent margins. Crisp painterly anime visual novel sprite style matching reference 3. No blue clothing, side stripes, tracksuit, sneakers, cap, handbag, text, target, flames, floor or background.",
       "transparent_background": true,
       "tool": "OpenAI image_gen",
       "status": "candidate",
       "runtime_registered": false,
-      "iteration": 2
+      "iteration": 3
     },
     {
       "variant": "office_mukii",
