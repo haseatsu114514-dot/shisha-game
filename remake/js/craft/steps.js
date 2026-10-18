@@ -7,9 +7,9 @@ import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
-import { flavorColor, mixBowlPreview, packingBowlPreview } from "./art.js";
+import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
-import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
+import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
@@ -271,7 +271,7 @@ export async function stepMix(cs) {
       redraw();
     };
     const row = el("div.flavor-row", { dataset: { flavor: id } }, [
-      el("i.fr-swatch", { style: { background: flavorColor(id) } }),
+      el("span.fr-package", [flavorPackageArt(id, 54)]),
       el("div.fr-name", [
         el("b", { text: f?.short_name || f?.name || id }),
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })

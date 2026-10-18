@@ -83,6 +83,15 @@ function windowArt(item, url, box, dimensions, size, kind, fallback) {
   image.src = url; // Attach the error listener before starting the request.
   return root;
 }
+/** 制作の葉選びも、ショップで採用済みの商品パッケージを使う。未収録・配信失敗は文字へ。 */
+export function flavorPackageArt(id, size = 54) {
+  const item = { id };
+  const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
+    el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
+  ]);
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id];
+  return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
+}
 function productArt(item, flavor, size = 66) {
   const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
     el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
