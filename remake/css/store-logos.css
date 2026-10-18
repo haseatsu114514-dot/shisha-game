@@ -3,10 +3,13 @@
 .store-logo > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
 .store-logo.missing { display: grid; place-items: center; color: #28251f; font-size: 15px; font-weight: 700; text-align: center; }
 
-.spot-pin.branded .shield { width: 100px; min-width: 100px; padding: 6px 6px 8px; background: #fffaf0; border-color: #d9c7a5; }
+.spot-pin.branded .shield { width: 100px; min-width: 100px; padding: 10px 6px 4px; background: #fffaf0; border-color: #d9c7a5; }
 .spot-pin.branded .shield::after { background: #fffaf0; border-color: #d9c7a5; }
 .spot-pin.branded .shield::before { background-color: #fffaf0; background-image: none; -webkit-mask: none; mask: none; border: 1px solid #d9c7a5; border-radius: 8px; }
-.spot-pin.branded .ico { height: 52px; }
+/* 92pxの横長ロゴでもGridの列を内幅88pxに保ち、看板の中心に置く。 */
+.spot-pin.branded .ico { height: 52px; grid-template-columns: minmax(0, 1fr); }
+/* 原画の形・透過は保ち、黒に近かった緑の文字を地図上で読み取りやすくする。 */
+.spot-pin.branded [data-store-logo="minto"] > img { filter: brightness(2) saturate(1.25); }
 .spot-pin.branded.sel .shield { border-color: #ffe9a8; }
 .spot-pin .pin-owner-face { position: absolute; top: -16px; left: -16px; right: auto; width: 32px; height: 32px; }
 
