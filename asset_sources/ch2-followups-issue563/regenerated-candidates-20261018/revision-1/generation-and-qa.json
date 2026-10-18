@@ -1,0 +1,170 @@
+{
+  "issue": 563,
+  "worker": "codex-563-20261015-01a13c35",
+  "claim_run": "38697952277",
+  "tool": "official image_gen.imagegen",
+  "attempt": "one local face-edit revision per character",
+  "status": "REJECTED: localized pixel preservation and runtime canvas requirements unmet",
+  "mask_capability": "Tool exposes reference images and text prompt only; no explicit pixel mask input. ROI was specified in prompt.",
+  "raw_generated_outputs_preserved": true,
+  "previous_candidates_preserved": true,
+  "creative_python_editing": false,
+  "measurement_only_resize": true,
+  "runtime_changes": false,
+  "qa": [
+    {
+      "id": "kumicho",
+      "file": "exec-ce82b6ad-182a-47ee-bf97-120088346b62.png",
+      "bytes": 760774,
+      "sha256": "415eddc9659fa05db01a179f08c2e96669692d040c92289ede87f4dac488d289",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "normal_geometry": {
+        "alpha_bbox": [
+          229,
+          3,
+          674,
+          1187
+        ],
+        "opaque_bbox": [
+          234,
+          13,
+          660,
+          1185
+        ],
+        "bottom20_centroid": [
+          433.238249887235,
+          1061.2869643662607
+        ]
+      },
+      "output_geometry": {
+        "alpha_bbox": [
+          106,
+          10,
+          1054,
+          1436
+        ],
+        "opaque_bbox": [
+          283,
+          14,
+          806,
+          1433
+        ],
+        "bottom20_centroid": [
+          526.8172555562176,
+          1283.1634391944228
+        ]
+      },
+      "comparison_method": "Generated image resized to normal 896x1200 for measurement only; not saved or adopted. No alignment optimization. Transparent RGB excluded; generous face rectangle excluded.",
+      "excluded_face_rect": [
+        410,
+        55,
+        530,
+        160
+      ],
+      "outside_face_visible_pixels": 272233,
+      "outside_face_rgb_changed_gt8_pct": 40.654,
+      "outside_face_rgb_changed_gt16_pct": 15.033,
+      "outside_face_alpha_changed_gt8_pixels": 14744,
+      "pass_exact_canvas": false,
+      "pass_pixel_preservation": false,
+      "normalized_geometry_for_measurement": {
+        "opaque_bbox": [
+          233.9188191881919,
+          11.578221915920055,
+          666.2140221402215,
+          1185.1137146795313
+        ],
+        "head_top_y_delta": -1.4217780840799445,
+        "feet_bottom_y_delta": 0.11371467953131287
+      }
+    },
+    {
+      "id": "rei",
+      "file": "exec-112c18c5-c97b-456b-8acd-c44332ad8126.png",
+      "bytes": 809396,
+      "sha256": "189c22ea1667a96251b92f17c4eced7cc1e8fc38ad249b61f2b714a5b149cb64",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "normal_geometry": {
+        "alpha_bbox": [
+          202,
+          2,
+          719,
+          1197
+        ],
+        "opaque_bbox": [
+          276,
+          7,
+          625,
+          1188
+        ],
+        "bottom20_centroid": [
+          433.21897860832786,
+          1068.6631765072982
+        ]
+      },
+      "output_geometry": {
+        "alpha_bbox": [
+          23,
+          0,
+          1029,
+          1438
+        ],
+        "opaque_bbox": [
+          335,
+          4,
+          758,
+          1435
+        ],
+        "bottom20_centroid": [
+          524.7853339731724,
+          1290.7531820570828
+        ]
+      },
+      "comparison_method": "Generated image resized to normal 896x1200 for measurement only; not saved or adopted. No alignment optimization. Transparent RGB excluded; generous face rectangle excluded.",
+      "excluded_face_rect": [
+        410,
+        55,
+        520,
+        165
+      ],
+      "outside_face_visible_pixels": 241091,
+      "outside_face_rgb_changed_gt8_pct": 61.492,
+      "outside_face_rgb_changed_gt16_pct": 28.316,
+      "outside_face_alpha_changed_gt8_pixels": 13939,
+      "pass_exact_canvas": false,
+      "pass_pixel_preservation": false,
+      "normalized_geometry_for_measurement": {
+        "opaque_bbox": [
+          276.90036900369006,
+          3.3080634045485873,
+          626.5387453874539,
+          1186.7677463818056
+        ],
+        "head_top_y_delta": -3.6919365954514127,
+        "feet_bottom_y_delta": -1.2322536181943633
+      }
+    }
+  ],
+  "prompts": {
+    "kumicho": "LOCAL FACE EDIT ONLY. The first attached image is the canonical original kumicho normal transparent PNG, 896x1200. The second attached image is a rejected smile candidate to indicate the desired restrained expression only. Edit the FIRST image. DO NOT use the second image body or redraw the whole person. Preserve the first image's exact 896x1200 canvas, original RGBA transparency, alpha silhouette, head and feet coordinates, hair, ears, face outline/nose/cheeks/jaw, body, hands, tattoos, clothing, all background pixels and every pixel outside the tiny eyebrows-eyelids-mouth area. Only retouch eyebrows, eyelids and lips inside original coordinates approximately x=435..510 and y=77..140. Relax the eyebrows and eyes very subtly and lift the same closed lip corners into a modest warm welcoming smile. No teeth, no blush, no grin. This MUST be a localized in-place edit of source normal, not a resynthesis of the sprite. Preserve original pixel-painterly linework and texture. No smoothing, change of resolution, recentering, cropping or normalization. Return ONE sprite, the complete unchanged first image except the minimal interior face edit, transparent background. Exact input coordinate system and 896x1200 dimensions are mandatory.",
+    "rei": "This is an in-place LOCAL FACE EDIT of the attached canonical REI normal transparent sprite, not a new illustration. Output exactly 896 x 1200 pixels. Preserve every original pixel outside the small face interior: roughly x=425..499 y=76..149 in this 896x1200 input. Change only eyebrow strokes, upper eyelids and the closed lip line to quietly serious/concentrated: a slight inward/lower brow, attentive eyes and a composed closed mouth, without anger, sadness, grinning or intimidation. Keep the exact eyes' size/color, nose, jaw and cheeks; no change to hair, red/black hair split, ears, piercings, head angle, tattoos, coat embroidery, hands, pose, trousers, boots, lighting, texture, colors or linework. Source body, alpha channel/silhouette and all transparent pixels must remain IDENTICAL. Do not regenerate or redraw the full body. Do not scale, crop, recenter or change dimensions. Keep original head and feet pixel coordinates. Make the tiny edits to the original image and return the full transparent PNG with everything else untouched. Single output only. The previous attempt was rejected for redrawing the whole sprite and changing dimensions; do not repeat that."
+  },
+  "reference_main": "7d63fbdc5ce75e57c3cca438476452b7238bd12e",
+  "reference_metadata": "generation.json in parent directory"
+}
