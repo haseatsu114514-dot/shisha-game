@@ -95,8 +95,9 @@ try {
     return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), button:box('[data-test="pull-stop"]'), buttonArt:getComputedStyle(document.querySelector('[data-test="pull-stop"]')).backgroundImage, summary:box('.pull-summary'), ring:box('.dial-ring'), optimal:box('.thermo-optimal'), ideal:box('.thermo-zone'), note:{bounds:box('.audience-note'), font:getComputedStyle(note).fontSize, white:getComputedStyle(note).whiteSpace}, white:white.backgroundColor, line:white.height, needle:body.height };
   });
   assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
-  assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
-  assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.left.right && layout.thermo.bottom <= layout.worker.bottom, 'temperature gauge must fit the left scene');
+  assert(layout.right.width > layout.left.width, 'The operation panel must remain the primary area');
+  assert(layout.thermo.left >= layout.right.left && layout.thermo.right <= layout.ring.left && layout.thermo.bottom <= layout.right.bottom, 'The single temperature gauge must be inside the operation panel beside the dial');
+  assert.equal(await page.locator('.bench .thermo').count(), 1, 'Do not duplicate the temperature gauge');
   assert.equal(layout.white, 'rgb(255, 255, 255)'); assert.equal(layout.line, '3px');
   assert.equal(layout.needle, 197, 'central wiper must reach the ring without extending beyond it');
   assert(Math.abs(layout.ring.width / (layout.ring.bottom-layout.ring.top) - 2) < .005, 'protractor arch must be a true circular semicircle');
@@ -111,9 +112,9 @@ try {
     if (!image.naturalWidth) throw new Error('button skin did not load');
   });
   assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
-  assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
+  assert(layout.button.top >= layout.right.top && layout.button.bottom <= layout.right.bottom, 'Pull control must stay inside its panel');
   assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
-  assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup information height');
+  assert(layout.summary.left >= layout.right.left && layout.summary.right <= layout.right.right && layout.summary.bottom < layout.button.top, 'Pull information must fit above the action button');
   assert.equal(await page.locator('.pull-pip').count(), 5, 'the information box counts up to five pulls');
   assert.equal(await page.locator('.flavor-leaf[data-stage="red"]').count(), 5, 'flavor must start with five red leaves');
   console.log(`Layout: ${JSON.stringify(layout)}`);
