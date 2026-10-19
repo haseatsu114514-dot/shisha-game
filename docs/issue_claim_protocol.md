@@ -2,6 +2,69 @@
 
 All Codex and Claude Code sessions are independent workers. GitHub Actions `.github/workflows/issue-claim.yml` is the central, serialized reservation coordinator.
 
+## Frequent AI changes: handoff, then pickup
+
+Keep switching between Codex and Claude when usage limits require it. Use this
+path for a planned change of AI; no successor ID or user-operated release/claim
+sequence is needed. The task stays on the same Issue and saved branch/PR.
+
+Before reaching a limit, the current AI must commit and push all relevant work,
+create a Draft PR if unfinished, and verify a clean checkout and matching remote
+head. Then post on the Issue (replace the worker and **current successful** run):
+
+```text
+/issue-claim {"operation":"handoff","owner":"codex-old-session","agent":"codex","claim_run":"123456","summary":"DONE: saved changes in the Draft PR\nTODO: finish the remaining scene\nTEST: focused checks passed; Safari not tested\nNEXT: continue on the saved branch"}
+```
+
+The command is the original requester's explicit declaration that work is pushed
+and editing on this Issue has stopped. The coordinator verifies that requester,
+the successful claim run and every referencing same-repository Open PR head,
+then records the exact heads and summary in a bot checkpoint. Summary text is
+required (1–1200 characters, without bot ledger markers). It should include
+DONE / TODO / TEST / NEXT. The workflow cannot inspect unpushed local files or
+prove that another process stopped; the issuing AI must establish that before
+posting. This operation records saved work; it does not commit or push for you.
+
+Wait for that exact handoff run to succeed and match the current bot owner/run.
+The Issue remains reserved; ordinary `claim` and queue `next` cannot take it.
+The old worker may work on an independent Issue while this checkpoint is valid.
+Stop editing the handed-off work, including after a quota reset.
+
+The next AI uses its **own new worker ID** and posts on the same Issue:
+
+```text
+/issue-claim {"operation":"pickup","owner":"claude-new-session","agent":"claude"}
+```
+
+The coordinator reads the current offer itself; copying PR SHAs or writing a
+separate named handoff approval is unnecessary. A `claim_run` may optionally pin
+the expected handoff run. It verifies the successful handoff run, original and
+new requesters' write permissions, unchanged saved heads, current Issue and
+checkpoint, and that the new worker has no other active task. One bot write
+replaces ownership without an unreserved gap. After pickup success, match the
+new owner/run and resume the **existing saved branch**, not a duplicate branch.
+The prior summary is retained in the pickup record.
+
+The original worker can cancel an unconsumed offer with `resume` and the handoff
+run as `claim_run`; successful resume removes the offer. Once pickup succeeds,
+the old worker cannot resume or release it. Changed/missing PRs, closed-unmerged
+heads, blocked/closed Issues, edited requests and failed/canceled runs do not
+authorize pickup. A saved PR merged at its exact head may still be used if the
+Issue remains open for more work. A plain `park` is review wait, **not** permission
+for another AI to pick up the task.
+
+Both operations also work through `workflow_dispatch` (`summary` only for
+`handoff`). They use the existing shared lock, permissions and rerun refusal.
+Do not rerun a reservation-changing job: inspect the ledger and send a fresh
+request. If a pickup wrote a reservation but its run failed, preserve that new
+owner record and use the existing release/recovery procedure; do not retry the
+old offer. Existing `transfer`, legacy recovery and `park`/`resume` remain valid.
+
+If a limit arrives before a valid handoff was saved, preserve the last pushed
+checkpoint and use the existing stopped-session recovery procedure below.
+Inactivity alone is never permission to take another worker's task. Neither
+automatic quota detection nor launching another AI is provided by this workflow.
+
 ## Comments are a supported entrypoint
 
 Post one JSON command on an Issue or a PR Conversation. The same coordinator
@@ -19,8 +82,8 @@ the current bot owner/run. Never write bot ledger markers yourself. On an Issue,
 works with integrations that can post PR Conversation comments but cannot
 dispatch Actions. No PR-head code or comment text is executed as code.
 
-Supported comment operations: `claim`, `park`, `resume`, `release`, `status`,
-`transfer`, and single-Issue `maintain`. Use the existing transfer record and
+Supported comment operations: `claim`, `park`, `resume`, `handoff`, `pickup`,
+`release`, `status`, `transfer`, and single-Issue `maintain`. Use the existing transfer record and
 `claim_run`/`handoff_comment` fields for transfer. The exact comment ID identifies
 its response; a duplicate event delivery does not reserve twice.
 Do not use GitHub's rerun button for reservation-changing comment jobs: inspect
@@ -28,7 +91,7 @@ the ledger and submit a fresh comment. Such reruns are refused so a failed or
 canceled run that already wrote a reservation cannot later authorize it merely
 by skipping an acknowledged request.
 
-Comment `park`/`resume`/`release` also bind the caller to the reservation's
+Comment `park`/`resume`/`handoff`/`release` also bind the caller to the reservation's
 verified request account (or original run actor). Knowing another worker's ID
 does not grant those operations. Unknown legacy identity uses the existing
 reviewed transfer/recovery route. Two chats under one account still need unique
@@ -68,7 +131,7 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 
 - If work pauses, push the branch and create a draft PR / issue handoff. **Keep the claim**.
 - For review wait, use `park` below to keep the claim without blocking independent work. Do not edit parked work until `resume` succeeds.
-- The same worker can resume after verifying its current claim. A different worker must transfer ownership after the original worker stops and pushes its work. Never silently steal an existing claim.
+- The same worker can resume after verifying its current claim. A different worker uses `pickup` for an explicit handoff-ready checkpoint, or the existing recorded `transfer` after the original worker stops and pushes its work. Never silently steal an existing claim.
 - After the PR is safely merged or work is explicitly abandoned, dispatch operation `release` with the same owner ID and issue number. If the issue has already been closed, the workflow must allow releasing it; verify run status.
 - Completed, merged reservations are also cleaned up automatically under the completion rules below. A pause or owner hold does not meet those rules.
 - A claim does not authorize unsafe merges. Recheck latest main, CI, tests, protection rules and conflicting file edits. Do not force-push or bypass required checks.
@@ -145,7 +208,7 @@ Each Codex chat and Claude Code session must use a **different** worker ID, incl
 
 **Starting:** Check open PRs and any prior handoff first; create a unique worker ID; reserve an eligible Issue; record the confirmed Issue and run ID; then branch from current main. If CLI dispatch is unavailable, use the supported comment entrypoint and verify its result. Do not assume a reservation from an unconfirmed request; continue non-conflicting read-only work while waiting.
 
-**Pausing:** Commit and push all recoverable changes; create/update a Draft PR if unfinished; post the following fields to the Issue (without secrets):
+**Pausing:** Commit and push all recoverable changes; create/update a Draft PR if unfinished. For a planned AI change use `handoff` above; use `park` for review wait. Record these fields on the Issue (without secrets):
 
 ```text
 WORKER: <unique worker ID>
@@ -159,7 +222,7 @@ BLOCKERS: <specific constraints>
 NEXT: <first safe action for the next session>
 ```
 
-**Resuming:** The same worker may continue its reserved branch after verifying the current bot owner/run, successful source run and latest Issue/PR heads. For a different worker with no referencing Open PR, stop the original session and push its work, then release by the original owner and claim by the new worker. For saved Open PRs, use the recorded transfer below; ordinary claim still rejects Open PRs. Never reuse another session's ID or manually write claim markers.
+**Resuming:** The same worker may continue its active reserved branch after verifying the current bot owner/run, successful source run and latest Issue/PR heads; `resume` is required for waiting work. A different worker first uses `pickup` when a valid handoff offer exists. Otherwise, with no referencing Open PR, stop the original session and push its work, then release by the original owner and claim by the new worker. For saved Open PRs without an offer, use the recorded transfer below; ordinary claim still rejects Open PRs. Never reuse another session's ID or manually write claim markers.
 
 ### Recorded handoff of saved Open PRs
 

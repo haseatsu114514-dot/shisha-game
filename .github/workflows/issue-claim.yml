@@ -7,7 +7,7 @@ on:
         description: Reservation operation, or maintain completed claims and outdated instructions
         required: true
         type: choice
-        options: [next, claim, release, status, transfer, park, resume, maintain]
+        options: [next, claim, release, status, transfer, park, resume, handoff, pickup, maintain]
       issue:
         description: Issue number (except next or maintain)
         required: false
@@ -26,6 +26,10 @@ on:
         type: string
       handoff_comment:
         description: Stopped/pushed handoff record for transfer
+        required: false
+        type: string
+      summary:
+        description: Handoff only; DONE / TODO / TEST / NEXT after pushing all work (max 1200 characters)
         required: false
         type: string
       agent:
@@ -87,6 +91,7 @@ jobs:
           REQUEST_ID: ${{ inputs.request_id }}
           CLAIM_RUN: ${{ inputs.claim_run }}
           HANDOFF_COMMENT: ${{ inputs.handoff_comment }}
+          SUMMARY: ${{ inputs.summary }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

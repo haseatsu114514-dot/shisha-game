@@ -2,6 +2,8 @@
 
 const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
 const runMarker = /^<!-- issue-claim-run:v1 id=([1-9][0-9]*) request=([a-zA-Z0-9._-]*) -->$/m;
+const validSummary = value => typeof value === 'string' && !!value.trim() && value.length <= 1200 && !value.includes('<!-- issue-');
+const quoteSummary = value => value.split('\n').map(line => '> ' + line).join('\n');
 
 async function readClaim(github, context, number) {
   const comments = await github.paginate(github.rest.issues.listComments,
@@ -19,9 +21,16 @@ async function readClaim(github, context, number) {
         waiting.prs.some(p => !Number.isSafeInteger(p.number) || p.number < 1 || !/^[a-f0-9]{40}$/.test(p.head))) {
       throw Error('Invalid waiting checkpoint');
     }
+    if ('handoff' in waiting) {
+      const offer = waiting.handoff;
+      if (!offer || Array.isArray(offer) || offer.version !== 1 || offer.from !== match[2] ||
+          match[1] !== 'claimed' || typeof offer.actor !== 'string' || !/^[a-zA-Z0-9-]+$/.test(offer.actor) ||
+          typeof offer.source_run !== 'string' || !/^[1-9][0-9]*$/.test(offer.source_run) || offer.stopped !== true || offer.pushed !== true ||
+          !validSummary(offer.summary)) throw Error('Invalid handoff checkpoint');
+    }
   }
   return {state:match[1], owner:match[2], run_id:source?.[1] || null, comment_id:entry.id,
-    phase:waiting ? 'waiting' : 'active', waiting,
+    phase:waiting?.handoff ? 'handoff' : waiting ? 'waiting' : 'active', waiting,
     request_actor:entry.body.match(/^<!-- issue-claim-actor:v1 login=([a-zA-Z0-9-]+) -->$/m)?.[1] || null};
 }
 
@@ -70,11 +79,13 @@ async function coordinate(github, context, core, inputs = process.env) {
   const request = inputs.REQUEST_ID || '';
   const expectedRun = inputs.CLAIM_RUN || '';
   const handoffComment = inputs.HANDOFF_COMMENT || '';
-  if (!['next', 'claim', 'release', 'status', 'transfer', 'park', 'resume'].includes(op)) throw Error('Invalid operation');
+  const summary = inputs.SUMMARY || '';
+  if (!['next', 'claim', 'release', 'status', 'transfer', 'park', 'resume', 'handoff', 'pickup'].includes(op)) throw Error('Invalid operation');
   if (!['codex', 'claude', 'any'].includes(agent)) throw Error('Invalid agent');
   if (request && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(request)) throw Error('Invalid request ID');
-  if (expectedRun && (!['status', 'transfer', 'park', 'resume'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
-  if (['park', 'resume'].includes(op) && !expectedRun) throw Error('Park/resume requires current claim run');
+  if (expectedRun && (!['status', 'transfer', 'park', 'resume', 'handoff', 'pickup'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
+  if (['park', 'resume', 'handoff'].includes(op) && !expectedRun) throw Error('Park/resume/handoff requires current claim run');
+  if (op === 'handoff' ? !validSummary(summary) : summary !== '') throw Error('Handoff requires a remaining-work summary of 1–1200 characters; other operations do not accept it');
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
   if (op === 'transfer' && (!expectedRun || !/^[1-9][0-9]*$/.test(handoffComment))) throw Error('Transfer requires claim run and approval comment');
   if (op !== 'transfer' && handoffComment) throw Error('Approval comment is only for transfer');
@@ -86,7 +97,8 @@ async function coordinate(github, context, core, inputs = process.env) {
   async function comment(number,state,detail = '', waiting = null) {
     const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
       '<!-- issue-claim-run:v1 id=' + context.runId + ' request=' + request + ' -->\n' +
-      (context.verifiedRequester ? '<!-- issue-claim-actor:v1 login=' + context.verifiedRequester + ' -->\n' : '') +
+      (context.verifiedRequester || ['handoff','pickup'].includes(op)
+        ? '<!-- issue-claim-actor:v1 login=' + (context.verifiedRequester || context.actor) + ' -->\n' : '') +
       (waiting ? '<!-- issue-claim-wait:v1 ' + JSON.stringify(waiting) + ' -->\n' : '') +
       (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.') + detail;
     await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
@@ -105,14 +117,22 @@ async function coordinate(github, context, core, inputs = process.env) {
       throw Error('Open PR already references issue #' + number);
     }
   }
+  async function recheckRequest() {
+    if (!context.verifiedRequest) return;
+    const prior = context.verifiedRequest;
+    const {data: current} = await github.rest.issues.getComment({...context.repo, comment_id:prior.id});
+    if (current.body !== prior.body || current.user?.login !== prior.user.login || current.issue_url !== prior.issue_url) {
+      throw Error('Request comment changed before reservation write');
+    }
+  }
   async function ensureCommentOwner(claim) {
-    if (!context.verifiedRequester) return;
+    if (!context.verifiedRequester && claim.phase !== 'handoff') return;
     let actor = claim.request_actor;
     if (!actor && claim.run_id) {
       const {data: run} = await github.rest.actions.getWorkflowRun({...context.repo,run_id:Number(claim.run_id)});
       actor = run.actor?.login;
     }
-    if (!actor || actor !== context.verifiedRequester) throw Error('Owner operation requires the original reservation requester; use reviewed transfer/recovery otherwise');
+    if (!actor || actor !== (context.verifiedRequester || context.actor)) throw Error('Owner operation requires the original reservation requester; use reviewed transfer/recovery otherwise');
   }
   async function ensureWorkerAvailable(number) {
     const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
@@ -121,36 +141,80 @@ async function coordinate(github, context, core, inputs = process.env) {
       const active = await status(item.number);
       if (active.state !== 'claimed' || active.owner !== worker) continue;
       if (item.state === 'closed' && await cleanupCompleted(github, context, core, item.number)) continue;
-      if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number + '; park saved work or release it before switching.');
+      if (!active.waiting) throw Error('Worker already owns #' + item.number + '; park or handoff saved work before switching.');
       await validateWaiting(github, context, item.number, active);
     }
   }
-  if (op === 'park' || op === 'resume') {
+  if (['park', 'resume', 'handoff'].includes(op)) {
     const number = Number(rawIssue);
     await issue(number);
     const claim = await status(number);
     if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run');
     await ensureCommentOwner(claim);
-    await successfulRun(github, context, expectedRun);
+    const sourceRun = await successfulRun(github, context, expectedRun);
+    const requester = context.verifiedRequester || context.actor;
+    if (op === 'handoff') {
+      if ((claim.request_actor || sourceRun.actor?.login) !== requester) throw Error('Only the original reservation requester can offer a handoff');
+      await requireWriter(github, context, requester);
+      if (claim.waiting) await validateWaiting(github, context, number, claim);
+    }
     if (op === 'resume') {
-      if (claim.phase !== 'waiting') throw Error('Only waiting work needs resume');
+      if (!claim.waiting) throw Error('Only waiting work needs resume');
       await validateWaiting(github, context, number, claim);
       await ensureWorkerAvailable(number);
     }
     const prs = await openPRs(number);
     if (!prs.length || prs.some(pr => pr.head?.repo?.full_name !== repoOwner + '/' + repo || !/^[a-f0-9]{40}$/.test(pr.head?.sha))) {
-      throw Error('Park/resume requires saved same-repository Open PR heads');
+      throw Error('Park/resume/handoff requires saved same-repository Open PR heads');
     }
     const saved = snapshots(prs);
     await issue(number);
     const latest = await status(number);
     if (latest.comment_id !== claim.comment_id || latest.owner !== worker || latest.run_id !== expectedRun ||
         JSON.stringify(snapshots(await openPRs(number))) !== JSON.stringify(saved)) throw Error('Reservation or saved PR heads changed');
-    await comment(number,'claimed', op === 'park' ? '\nSaved review wait; do not edit until resume succeeds.' : '\nResumed saved work.',
-      op === 'park' ? {prs:saved} : null);
+    if (op === 'handoff') {
+      await recheckRequest();
+      await successfulRun(github, context, expectedRun);
+      await requireWriter(github, context, requester);
+    }
+    const waiting = op === 'resume' ? null : {prs:saved};
+    if (op === 'handoff') waiting.handoff = {version:1, from:worker, actor:requester,
+      source_run:expectedRun, stopped:true, pushed:true, summary:summary.trim()};
+    const detail = op === 'handoff' ? '\nSaved handoff; the current worker must stop editing. A new worker can use pickup after this run succeeds.\n' + quoteSummary(summary.trim())
+      : op === 'park' ? '\nSaved review wait; do not edit until resume succeeds.' : '\nResumed saved work.';
+    await comment(number,'claimed', detail, waiting);
     core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
-    core.notice((op === 'park' ? 'PARKED_ISSUE=' : 'RESUMED_ISSUE=') + number + ' RUN=' + context.runId);
+    core.notice((op === 'handoff' ? 'HANDOFF_READY_ISSUE=' : op === 'park' ? 'PARKED_ISSUE=' : 'RESUMED_ISSUE=') + number + ' RUN=' + context.runId);
     await core.summary.addRaw(op + ' #' + number + '; use this successful run as the current reservation run.').write();
+  } else if (op === 'pickup') {
+    const number = Number(rawIssue), requester = context.verifiedRequester || context.actor;
+    await issue(number);
+    const original = await status(number);
+    if (original.state !== 'claimed' || original.phase !== 'handoff') throw Error('No handoff-ready reservation; do not infer a stopped worker');
+    if (original.owner === worker) throw Error('The original worker must use resume to cancel its handoff');
+    if (expectedRun && original.run_id !== expectedRun) throw Error('Handoff run changed');
+    async function validatePickup() {
+      await issue(number);
+      const current = await status(number);
+      if (current.comment_id !== original.comment_id || current.state !== 'claimed' || current.owner !== original.owner ||
+          current.run_id !== original.run_id || current.request_actor !== original.request_actor ||
+          JSON.stringify(current.waiting) !== JSON.stringify(original.waiting)) throw Error('Handoff changed or was consumed');
+      await validateWaiting(github, context, number, current);
+      const run = await successfulRun(github, context, current.run_id);
+      const offer = current.waiting.handoff;
+      if ((current.request_actor || run.actor?.login) !== offer.actor) throw Error('Handoff requester cannot be verified');
+      await requireWriter(github, context, offer.actor);
+      await requireWriter(github, context, requester);
+    }
+    await validatePickup();
+    await ensureWorkerAvailable(number);
+    await validatePickup();
+    await recheckRequest();
+    await comment(number,'claimed','\nPicked up saved handoff from ' + original.owner +
+      ' (checkpoint comment ' + original.comment_id + ', run ' + original.run_id + ').\n' + quoteSummary(original.waiting.handoff.summary));
+    core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+    core.notice('PICKED_UP_ISSUE=' + number + ' FROM=' + original.owner + ' RUN=' + context.runId);
+    await core.summary.addRaw('Picked up #' + number + '; verify this successful run and current owner/run before editing.').write();
   } else if (op === 'transfer') {
     const number = Number(rawIssue);
     const existing = await issue(number);
@@ -247,7 +311,7 @@ async function coordinate(github, context, core, inputs = process.env) {
     if (expectedRun) {
       await issue(number);
       if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run; do not start work');
-      if (claim.phase === 'waiting') throw Error('Work is parked for review; resume before editing');
+      if (claim.waiting) throw Error('Work is parked or handed off; resume or pickup before editing');
       const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
       if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Claim run did not succeed; release or inspect before retrying');
       core.notice('CLAIM_VALIDATED_ISSUE=' + number + ' OWNER=' + worker + ' RUN=' + expectedRun);
@@ -355,6 +419,7 @@ function policyBody(body, context, historicalProcedure = false) {
     '- [予約手順](' + guide + ')を優先。本文・過去コメントの旧共通手順にある追加status起動は任意で、成功runと現在のbot台帳のowner/runを読み取り照合してよい。\n' +
     '- 実装中はworkerごとに1件。全変更をpushして保存PRをparkしたレビュー待ちは別枠で保持し、独立した別Issueをclaimできる。待ち中の編集はresume成功後に再開する。\n' +
     '- IssueまたはPRのConversationから `/issue-claim` JSONコマンドで予約できる（形式は上の予約手順）。writer権限と同じ排他処理を検証し、結果とrun成功を確認する。\n' +
+    '- 利用上限でのAI交代は、現担当がpush済みPRと残作業をhandoff保存し、後任が新worker IDでpickupする。予約を解放せず移管し、plain parkや無反応から停止を推定しない。\n' +
     '- 個別の採用保留・検証条件・範囲指定・停止指示は維持。この欄は元担当の停止確認や未承認素材の採用を代行しない。\n' +
     policyEnd + '\n\n' + rest;
 }
@@ -409,10 +474,11 @@ async function runEvent(github, context, core, inputs = process.env) {
     if (current.body.length > 2000) throw Error('Request comment is too long');
     const raw = current.body.slice('/issue-claim '.length);
     const request = JSON.parse(raw);
-    const allowed = ['operation','issue','owner','agent','request_id','claim_run','handoff_comment'];
+    const allowed = ['operation','issue','owner','agent','request_id','claim_run','handoff_comment','summary'];
     if (!request || Array.isArray(request) || typeof request !== 'object' || Object.keys(request).some(k => !allowed.includes(k)) ||
         Object.values(request).some(v => !['string','number'].includes(typeof v)) ||
-        !['claim','release','status','transfer','park','resume','maintain'].includes(request.operation)) throw Error('Invalid comment request');
+        !['claim','release','status','transfer','park','resume','handoff','pickup','maintain'].includes(request.operation)) throw Error('Invalid comment request');
+    if ('summary' in request && (request.operation !== 'handoff' || typeof request.summary !== 'string')) throw Error('Summary is text for handoff only');
     const attempt = Number(context.runAttempt || process.env.GITHUB_RUN_ATTEMPT || 1);
     if (attempt > 1 && !['status','maintain'].includes(request.operation)) {
       throw Error('Do not rerun reservation request jobs; inspect the ledger and submit a fresh comment');
@@ -433,11 +499,11 @@ async function runEvent(github, context, core, inputs = process.env) {
         // GitHub Context exposes repo through a prototype getter; spreading the
         // instance drops it. Keep the event context and override only identity.
         const requestContext = Object.assign(Object.create(context), {
-          actor:current.user.login, verifiedRequester:current.user.login});
+          actor:current.user.login, verifiedRequester:current.user.login, verifiedRequest:current});
         await coordinate(github, requestContext, core, {
           OPERATION:request.operation, ISSUE:String(number), OWNER:String(request.owner || ''),
           AGENT:String(request.agent || 'any'), REQUEST_ID:String(request.request_id || 'comment-' + current.id),
-          CLAIM_RUN:String(request.claim_run || ''), HANDOFF_COMMENT:String(request.handoff_comment || '')});
+          CLAIM_RUN:String(request.claim_run || ''), HANDOFF_COMMENT:String(request.handoff_comment || ''), SUMMARY:String(request.summary || '')});
       }
     } catch (error) { failure = error; }
     await github.rest.issues.createComment({...context.repo, issue_number:context.payload.issue.number,
