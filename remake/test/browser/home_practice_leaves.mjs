@@ -12,7 +12,7 @@ async function startPractice(page, stock, { auto = "good" } = {}) {
     const core = await import("./js/core/state.js");
     const vn = await import("./js/vn/engine.js"), craft = await import("./js/craft/session.js");
     vn.vnTest.turbo = true; craft.craftTest.auto = auto;
-    core.newGame(); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80, weatherSeed: 4 });
+    core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80, weatherSeed: 4 });
     core.state.flavorStock = { ...stock };
     core.state.flavors = Object.keys(stock);
     core.save(); // 行動前のオートセーブ
@@ -58,6 +58,7 @@ async function realPathToMix(page, tap) {
     const core = await import("./js/core/state.js"), s = core.newState();
     Object.assign(s, { phase: "daily", day: 6, slot: 0, money: 45678, stamina: 90, weatherSeed: 4 });
     Object.assign(s.flags, { _morning_6: true, _lime_tut: 1, _lime_opened: true });
+    s.owned.push("home_rig_set");
     s.flavorStock = { double_apple: 20, mint: 10 };
     localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); localStorage.setItem("suien_remake_slot1", JSON.stringify(s));
   });
@@ -115,7 +116,7 @@ await suite("home-practice-leaves", async (check) => {
   await check("stamina-warning-cancel-changes-nothing", async (page) => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
-      core.newGame(); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
+      core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
       core.state.flavorStock = { double_apple: 20, mint: 10 };
       window.__before = JSON.stringify(core.state);
       window.__practice = { done: false };

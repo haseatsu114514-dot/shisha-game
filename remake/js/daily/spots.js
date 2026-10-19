@@ -155,7 +155,8 @@ export function visitedToday(spotId) {
 
 export function isUnlocked(spot) {
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
-  return !spot.requiresMet || !!state.met[spot.requiresMet];
+  // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。
+  return !spot.requiresMet || !!state.flags[`_spot_guide_${spot.requiresMet}`] || (state.spotVisits?.[spot.id] || 0) > 0;
 }
 
 /** マップに出す名前（店主に会う前は店名の看板だけ） */
@@ -183,6 +184,12 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  */
 export async function visitChar(charId, { welcome = null } = {}) {
   const owner = state;
+  let cancelled = false;
+  const read = async (...args) => {
+    const result = await play(...args);
+    cancelled ||= !!result?.cancelled;
+    return result;
+  };
   if (charId === "sumi") await meetHiyoriAtTonari();
   if (state !== owner) return;
   syncMintoKnowledge();
@@ -191,15 +198,15 @@ export async function visitChar(charId, { welcome = null } = {}) {
   const idx = storyCount(charId);
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
   const followup = spotFollowupDue(charId, state, DB.dialogues);
-  if (followup) await play(followup, { bg });
+  if (followup) await read(followup, { bg });
   // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
   if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
-    const result = await play(welcome, { bg });
+    const result = await read(welcome, { bg });
     if (state !== owner || result?.cancelled) return;
   }
   if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
-    await play("ch1_minto_identity_reveal");
+    await read("ch1_minto_identity_reveal");
     gainAffinity(charId, 10);
   } else if (questionVisitDue(charId)) {
     // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
@@ -207,7 +214,7 @@ export async function visitChar(charId, { welcome = null } = {}) {
     gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
-    await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
+    await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
   } else if (finaleAtVisit(charId)) {
@@ -222,14 +229,16 @@ export async function visitChar(charId, { welcome = null } = {}) {
     const id = rainTalk || pool[n % pool.length];
     const dlg = DB.dialogues[id];
     const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
-    await play(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
+    await read(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
     gainAffinity(charId, 5);
   }
+  if (state !== owner || cancelled) return false;
   // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
   earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
   await maybeRecruitTrpgMember(charId);
+  return state === owner;
 }
 
 export async function visitRival(spot) {
@@ -238,7 +247,10 @@ export async function visitRival(spot) {
   addStamina(spot.stamina || -16);
   playBgm("tonari");
   const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
-  await visitChar(spot.charId, { welcome });
+  const owner = state;
+  const completed = await visitChar(spot.charId, { welcome });
+  // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
+  if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;
 }
 
 /** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
