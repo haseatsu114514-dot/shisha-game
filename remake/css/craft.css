@@ -1162,3 +1162,34 @@
 .pull-summary > .pull-count-box { flex: 1; min-width: 0; gap: 18px; }
 .pull-count-box .pull-pips { gap: 8px; }
 .pull-count-box .pull-pip { width: 18px; height: 18px; }
+
+/* #703: 作業絵は台詞の背後まで。台詞と工程表示を前景に重ねる。 */
+.bench-left { gap: 0; }
+.bench-left .bench-worker { position: relative; }
+.bench-left .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
+.bench-left:has(.bench-audience) .bench-worker-name { bottom: 128px; }
+.bench-left .bench-audience { position: absolute; left: 11px; right: 11px; bottom: 11px; margin: 0; z-index: 2; background: linear-gradient(145deg, #1b1522ee, #100c18ed); }
+.bench-left .bench-audience .audience-note { max-height: 100%; overflow-y: auto; }
+/* 配合も吸い出しと同じ左位置・同じ縦管。操作欄のfooterには置かない。 */
+.mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 454px; padding: 34px 12px 60px; display: block; z-index: 3; }
+.mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
+.mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
+.mix-temperature-preview > .thermo { height: 100%; }
+.mix-temperature-legend { position: absolute; top: calc(100% - 51px); left: 4px; right: 4px; justify-content: center; font-size: 11px; line-height: 1.2; gap: 2px 5px; }
+.mix-temperature-preview > small { position: absolute; top: calc(100% - 19px); left: 2px; width: 84px; text-align: center; font-size: 8px; }
+.mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
+.thermo[hidden], .mix-temperature-preview[hidden] { display: none; }
+/* DSの上画面でも両工程を同じ位置へ。既存の下画面スクロールから独立させる。 */
+body.game-ds .bench[data-step] .pull > .thermo { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 96px); top: calc(64px + var(--ds-vy) + 90px); height: max(80px, calc(var(--ds-vh) - 302px)); }
+body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 108px); top: calc(64px + var(--ds-vy) + 56px); height: max(134px, calc(var(--ds-vh) - 248px)); padding-bottom: 20px; }
+.mix-footer { grid-template-columns: 180px minmax(240px, 1fr); }
+
+.bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
+.mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+
+body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
+body.game-ds .mix-temperature-preview > small { display: none; }
+body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4); transform-origin: 50% 100%; }
+@media (min-height: 600px) and (min-width: 761px) {
+  body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
+}

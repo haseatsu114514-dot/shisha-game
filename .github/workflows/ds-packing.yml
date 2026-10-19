@@ -5,8 +5,10 @@ on:
     paths:
       - 'remake/css/game-ds.css'
       - 'remake/css/craft.css'
+      - 'remake/css/worker-scenes.css'
       - 'remake/js/craft/**'
       - 'remake/test/browser/ds_packing.mjs'
+      - 'remake/test/browser/craft_layout_703.mjs'
       - 'remake/test/browser/package*.json'
       - '.github/workflows/ds-packing.yml'
   workflow_dispatch:
@@ -48,6 +50,8 @@ jobs:
           exit 1
       - name: Isolated LOAD to packing on PC and touch, sandbox enabled
         run: node remake/test/browser/ds_packing.mjs
+      - name: Initial thermometer and craft layout regressions
+        run: node remake/test/browser/craft_layout_703.mjs
       - name: Preserve fixture, inputs, geometry and screenshots
         if: always()
         uses: actions/upload-artifact@v7.0.2

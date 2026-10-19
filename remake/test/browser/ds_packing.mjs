@@ -127,7 +127,7 @@ try {
       assert.equal(await p.locator(".pack-choice:visible").count(), 3);
       const initial = await snap("initial"); horizontal(initial);
       // Every option must receive actual input and update vessel, caption and pressed state.
-      for (const [value,label] of [["fluffy","ふんわり"],["firm","かため"],["normal","ノーマル"]]) {
+      for (const [value,label] of [["fluffy","ふんわり"],["firm","デンスパック"],["normal","ノーマル"]]) {
         await hit(p,`opt-${value}`,device.touch);
         assert.equal(await b(p,`opt-${value}`).getAttribute("aria-pressed"),"true");
         assert.equal(await p.locator('.pack-choice[aria-pressed="true"]').count(),1);
