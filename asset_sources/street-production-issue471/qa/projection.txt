@@ -1,0 +1,1 @@
+street_projection: 12 inverses/edges/fixed vanishing points, 400 eased camera/ground-speed steps, all 3 door height ratios PASS

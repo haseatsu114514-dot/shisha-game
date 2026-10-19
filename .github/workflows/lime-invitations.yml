@@ -7,6 +7,8 @@ on:
       - 'remake/js/daily/invitations.js'
       - 'remake/js/daily/map.js'
       - 'remake/js/daily/street.js'
+      - 'remake/street/**'
+      - 'assets/street_walk/**'
       - 'remake/js/core/stats.js'
       - 'remake/js/daily/hiyori.js'
       - 'remake/test/browser/hiyori_gate.mjs'
@@ -22,6 +24,8 @@ on:
       - 'remake/js/daily/invitations.js'
       - 'remake/js/daily/map.js'
       - 'remake/js/daily/street.js'
+      - 'remake/street/**'
+      - 'assets/street_walk/**'
       - 'remake/js/core/stats.js'
       - 'remake/js/daily/hiyori.js'
       - 'remake/test/browser/hiyori_gate.mjs'
@@ -53,6 +57,7 @@ jobs:
             assets/ui
             assets/proto_street_set
             assets/proto_walk
+            assets/street_walk
             experiments/proto/street
       - uses: actions/setup-node@v7.1.0
         with:

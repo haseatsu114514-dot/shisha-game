@@ -1,0 +1,59 @@
+READY {
+  ready: true,
+  paused: false,
+  night: false,
+  alwaysRun: false,
+  x: 640,
+  y: 625,
+  z: 0.04,
+  worldX: 640,
+  worldY: 625,
+  worldScale: 0.8333333333333334,
+  cameraZoom: 1,
+  renderHeight: 252,
+  camX: 0,
+  vanishing: { x: 640, y: 350 },
+  dir: 'up',
+  gaitFrame: 1,
+  walked: 0,
+  moving: false,
+  frames: 4,
+  msg: '',
+  busy: false,
+  travel: [
+    { id: 'cafe', off: true },
+    { id: 'peppermint', off: true },
+    { id: 'kemurikusa', off: true }
+  ],
+  character: 'hajime'
+}
+FAR {
+  ready: true,
+  paused: false,
+  night: false,
+  alwaysRun: false,
+  x: 737.6178207197459,
+  y: 469.23118231370216,
+  z: 1.0999900000000042,
+  worldX: 681.5664735882583,
+  worldY: 400.7696213047791,
+  worldScale: 0.1538473372872094,
+  cameraZoom: 2.348474919636216,
+  renderHeight: 109.25911979291983,
+  camX: -863.0239485671782,
+  vanishing: { x: 640, y: 350.00000000000006 },
+  dir: 'up',
+  gaitFrame: 3,
+  walked: 5.750250000000025,
+  moving: true,
+  frames: 4,
+  msg: '',
+  busy: false,
+  travel: [
+    { id: 'cafe', off: true },
+    { id: 'peppermint', off: true },
+    { id: 'kemurikusa', off: true }
+  ],
+  character: 'hajime'
+}
+MAIN { day: 4, screen: 'street', phase: 'daily' }

@@ -6,6 +6,7 @@ on:
       - 'data/**'
       - 'experiments/proto/street/**'
       - 'assets/proto_*/**'
+      - 'assets/street_walk/**'
       - '.github/workflows/street-selection.yml'
   push:
     branches: [main]
@@ -14,6 +15,7 @@ on:
       - 'data/**'
       - 'experiments/proto/street/**'
       - 'assets/proto_*/**'
+      - 'assets/street_walk/**'
       - '.github/workflows/street-selection.yml'
   workflow_dispatch:
 permissions:
@@ -47,6 +49,7 @@ jobs:
             assets/cgs
             assets/ui
             assets/proto_street_set
+            assets/street_walk
             assets/proto_walk
       - uses: actions/setup-node@v4
         with:
@@ -68,6 +71,7 @@ jobs:
       - name: Validate selection, saves and input on PC and touch
         if: matrix.route == 'selection'
         run: |
+          node remake/test/street_projection.mjs
           node remake/test/browser/street_selection.mjs
           node --experimental-vm-modules remake/test/illness.mjs
       - name: Complete chapter with direct pins
