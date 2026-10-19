@@ -218,13 +218,13 @@ export async function stepMix(cs) {
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
-  const thermometer = buildMixTemperatureGauge(cs);
+  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
-  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
-    el("b", { text: "合成温度帯" }),
+  const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
+    el("b", { text: "温度帯" }),
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
-    el("small", { text: "低温 → 高温 ｜ 線：中心" }),
+    el("small", { text: "上が高温／線は中心" }),
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
@@ -242,8 +242,8 @@ export async function stepMix(cs) {
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
-    idealLine.textContent = bands.selected ? "適温" : "フレーバー未選択";
-    optimalLine.textContent = bands.selected ? "最適温" : "葉を加えると温度帯を表示";
+    idealLine.textContent = bands.selected ? "適温" : "未選択";
+    optimalLine.textContent = bands.selected ? "最適温" : "葉を加えると表示";
     const m = info.maker;
     const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
     temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
@@ -298,7 +298,8 @@ export async function stepMix(cs) {
     el("div.mix-side", [vessel, taste, recipeLine,
       hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null]),
     el("div.mix-list", [el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
-    el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, okBtn]),
+    temperaturePreview,
+    el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
   ]));
   redraw();
   await new Promise((resolve) => {

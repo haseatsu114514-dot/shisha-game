@@ -10,7 +10,7 @@ const bandsOf = async (page, selector = ".mix-temperature, .thermo") => {
   const thermometer = page.locator(selector);
   await thermometer.locator(".mix-thermal-scale, .thermo-tube").waitFor({ state: "visible" });
   return thermometer.evaluate(root => {
-  const horizontal = root.classList.contains("mix-temperature");
+  const horizontal = !!root.querySelector(".mix-thermal-scale");
   const bar = root.querySelector(horizontal ? ".mix-thermal-scale" : ".thermo-tube");
   const tube = bar.getBoundingClientRect();
   const scaleX = tube.width / bar.offsetWidth;

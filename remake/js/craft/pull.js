@@ -112,7 +112,9 @@ async function pullGame(cs, mode) {
   const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
-  const panel = stepPanel(mode.store, mode.title, mode.hint);
+  const panel = stepPanel(mode.store, mode.title, tutorial
+    ? "中央のキープで温度を保つ。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。吸い終わってから次の針を止める"
+    : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
