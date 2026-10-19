@@ -430,7 +430,11 @@ async function runEvent(github, context, core, inputs = process.env) {
         if (result.errors) throw Error('Maintenance has deferred items');
       } else {
         // The caller identity is taken from the verified event, never from JSON input.
-        await coordinate(github, {...context, actor:current.user.login, verifiedRequester:current.user.login}, core, {
+        // GitHub Context exposes repo through a prototype getter; spreading the
+        // instance drops it. Keep the event context and override only identity.
+        const requestContext = Object.assign(Object.create(context), {
+          actor:current.user.login, verifiedRequester:current.user.login});
+        await coordinate(github, requestContext, core, {
           OPERATION:request.operation, ISSUE:String(number), OWNER:String(request.owner || ''),
           AGENT:String(request.agent || 'any'), REQUEST_ID:String(request.request_id || 'comment-' + current.id),
           CLAIM_RUN:String(request.claim_run || ''), HANDOFF_COMMENT:String(request.handoff_comment || '')});
