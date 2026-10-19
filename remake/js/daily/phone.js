@@ -573,9 +573,10 @@ function declineConflictingInvites(acceptedItem, opts = {}) {
 
 /**
  * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
- * 戻る/閉じるで途中で抜けたら、返事は次に開いたときに続きから
+ * 返信を選ぶ前に戻る/閉じるで抜けたら、次に開いたときに選択から再開
  */
 async function runItem(item, ui, accepted, { forced = false } = {}) {
+  const session = state;
   const m = item.msg;
   const g = ui.gen;
   const alive = () => ui.live(g);
@@ -671,14 +672,25 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   }
   if (m.replies && m.replies.length) {
     const r = await ui.choose(m.replies);
-    if (!r || !alive()) return;
-    await mine(r.text);
-    if (r.response) await theirs(r.response);
+    if (!r || !alive() || state !== session || item.done) return;
+    // 返信は演出を待つ前に一度だけ確定。戻る/再入室では確定済みの履歴を表示する。
+    item.done = true;
+    item.replyState = "replied";
+    item.log.push({ me: true, text: r.text });
+    if (r.response) item.log.push({ me: false, text: r.response });
     bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
-    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-    gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
-    bond.private = false;
+    try {
+      // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
+      const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
+    } finally {
+      bond.private = false;
+    }
+    // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
+    await ui.bubble(r.text, true);
+    if (!alive() || state !== session) return;
+    if (r.response) await ui.bubble(r.response, false, from);
+    return;
   }
   item.done = true;
   item.replyState = m.replies?.length ? "replied" : "none";
