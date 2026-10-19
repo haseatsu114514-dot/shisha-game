@@ -69,3 +69,9 @@ node remake/test/browser/coal_training.mjs
 - 既存総合browserスクリプト`thermal_background.mjs`/`steam_attack_growth.mjs`は通常の`require("playwright")`解決で停止し、PASSに数えない。専用runnerは上記の既存モジュールを明示指定して検証する。既存ch1_tournamentの配置fixtureを新仕様へ更新し構文確認したが、同スイート全件は未実行。
 - 台詞lintの既存7 WARNは旧台本の報酬キュー。追加授業の新規WARN/ERRORはない。CIと独立レビューは別途必要。Draftを保持し、マージ・公開・予約解除は行わない。
 - 日常シフトのVM回帰は新授業の依存先を正しくcraft/coalsへ解決し、saveをmockした上で既存の接客・天候・履歴・収入・時間帯の全assertionがPASS。既存heat_feedbackの上級個数fixtureは習得/4点の両フラグを明示した（構文確認済み、全件の実ブラウザ結果はCIを参照）。
+
+## PR #732 CIのfixture修正
+
+HEAD `94fa8fc70b743ae880f812ff48acb67a58646ca6` の `Chapter 1 eve choices and saves` は未習得の練習に配置工程を期待し、`scenes` は未習得saveで混合炭を期待して失敗した。前者は配置工程がなく、練習だけで習得しないことを明示的に検証する。後者は混合炭の描画・入力テストなので、習得・混合解放・cube所有をfixtureへ明示した。ゲーム本体とdataはこの修正では変更しない。
+
+実Chromeで失敗した3ケース（`pc-practice`、`touch-practice`、`mixed-shapes-keyboard-and-automatic-removal`）がPASS。独立context、既存ローカル素材/Git blobのSHA照合、外部通信を制限したローカル配信で検証した。タッチの初回は起動前にローカルHTTPの接続resetで失敗し、検証サーバーの待受キューを増やした再実行でPASS。テストや本番のtimeout・assertionは緩和していない。構文、diff whitespace、coal_training、daily_consistencyもPASS。GitHub Actions全件の結果はPRの最新HEADを参照する。

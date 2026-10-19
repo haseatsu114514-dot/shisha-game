@@ -107,6 +107,11 @@ await suite("craft-readiness", async check => {
 
   await check("mixed-shapes-keyboard-and-automatic-removal", async page => {
     await init(page);
+    // This fixture exercises unlocked mixed coals, independently of the lesson-gate tests.
+    await page.evaluate(() => {
+      Object.assign(T.core.state.flags, { _coal_cube_learned: true, _coal_mix_unlocked: true });
+      T.core.state.owned.push("cube_charcoal");
+    });
     let release;
     const held = new Promise(resolve => { release = resolve; });
     await page.route("**/img/ui/making/heat_cube_lit.webp", async route => { await held; await route.continue(); });
