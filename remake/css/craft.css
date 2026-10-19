@@ -327,14 +327,14 @@
 .c-ash { opacity: var(--ash, 0); filter: grayscale(.95) brightness(.8); }
 .coal-corners { position: absolute; inset: 0; border: 2px solid #ddd7c077; border-radius: 5px; pointer-events: none; mask-image: linear-gradient(#000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)), linear-gradient(90deg, #000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)); mask-composite: intersect; }
 .coal-now { position: absolute; top: calc(100% + 3px); left: 50%; transform: translateX(-50%); color: #ffe29a; font-family: "Craft Mincho", var(--font); font-size: 20px; line-height: 1.2; opacity: 0; text-shadow: 0 0 8px #ffab46aa; pointer-events: none; }
-.c-core { position: absolute; left: 50%; top: 44%; width: 7px; height: 7px; margin: -3.5px; border-radius: 50%; opacity: 0; background: #fff4d3; box-shadow: 0 0 8px 3px #ffe3aabb; pointer-events: none; }
-.coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #ffdc87; filter: drop-shadow(0 0 4px #ff9c40); }
+.c-core { position: absolute; left: 50%; top: 44%; width: 18px; height: 18px; margin: -9px; border-radius: 50%; opacity: 0; background: #fff9df; box-shadow: 0 0 12px 6px #ffe3aadd, 0 0 26px 10px #ff8a45aa; pointer-events: none; }
+.coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
 .coal.pikan .coal-now { opacity: 1; }
-.coal.pikan .c-core { animation: coal-core .5s ease-out infinite; }
+.coal.pikan .c-core { opacity: 1; }
+.coal.pikan .c-hot { opacity: 1; filter: brightness(1.65) saturate(.85) drop-shadow(0 0 7px #ffc477); }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .coal:focus-visible { outline: 2px solid #fff0bf; outline-offset: 4px; border-radius: 5px; }
 .coal.picked { opacity: 0; pointer-events: none; }
-@keyframes coal-core { from { opacity: 1; } to { opacity: .35; } }
 .heat-info { position: relative; margin-top: 0; padding: 12px 12px 8px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; font-variant-numeric: tabular-nums; }
 .heat-carrier-head { display: flex; justify-content: space-between; align-items: start; color: #eee6d7; }
 .heat-carrier-head h2 { margin: 0; font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 27px; line-height: 1.2; }

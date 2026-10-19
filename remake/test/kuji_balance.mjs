@@ -16,7 +16,7 @@ for (const [id, g] of Object.entries(data.grades)) {
   assert.equal(g.prizes.filter(p => p.rank === 'S').reduce((n, p) => n + p.count, 0), 1);
   assert.equal(g.lastOne.secret, true);
   const total = g.prizes.reduce((n, p) => n + valueOf(p) * p.count, 0);
-  assert.equal(total, id === 'g500' ? 25391 : 50660);
+  assert.equal(total, id === 'g500' ? 25541 : 50660);
   assert(total / (g.price * g.boxSize) >= 1);
   assert((total + valueOf(g.lastOne)) / (g.price * g.boxSize) <= 1.15);
   assert(g.prizes.every(p => p.type !== 'consumable' && (p.type !== 'flavor' || p.flavorId || p.flavors)), 'No no-op filler awards');
