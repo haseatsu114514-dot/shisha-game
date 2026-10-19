@@ -52,6 +52,7 @@ node --experimental-vm-modules remake/test/foil_holes.mjs
 node remake/test/golden_ratio.mjs
 node remake/test/kuji_balance.mjs
 node --experimental-vm-modules remake/test/data_loading.mjs
+node --experimental-vm-modules remake/test/daily_consistency.mjs
 python3 tools/lint_dialogue.py ch1_sumi
 python3 tools/tidy_dialogue_text.py --dry-run
 PLAYWRIGHT_MODULE=/path/to/existing/playwright/index.mjs \
@@ -67,3 +68,4 @@ node remake/test/browser/coal_training.mjs
 - ブラウザは実Chromeで、タッチとmotionはエミュレーション。熱工程の実画像6点はSHA照合済みの既存cacheから配信し、無関係な画像・音声・外部通信は意図的に遮断した。完全な本番素材表示の検証ではない。
 - 既存総合browserスクリプト`thermal_background.mjs`/`steam_attack_growth.mjs`は通常の`require("playwright")`解決で停止し、PASSに数えない。専用runnerは上記の既存モジュールを明示指定して検証する。既存ch1_tournamentの配置fixtureを新仕様へ更新し構文確認したが、同スイート全件は未実行。
 - 台詞lintの既存7 WARNは旧台本の報酬キュー。追加授業の新規WARN/ERRORはない。CIと独立レビューは別途必要。Draftを保持し、マージ・公開・予約解除は行わない。
+- 日常シフトのVM回帰は新授業の依存先を正しくcraft/coalsへ解決し、saveをmockした上で既存の接客・天候・履歴・収入・時間帯の全assertionがPASS。既存heat_feedbackの上級個数fixtureは習得/4点の両フラグを明示した（構文確認済み、全件の実ブラウザ結果はCIを参照）。
