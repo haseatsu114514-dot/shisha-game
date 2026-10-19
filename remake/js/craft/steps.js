@@ -7,13 +7,13 @@ import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
-import { flavorColor, mixBowlPreview, packingBowlPreview } from "./art.js";
+import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
-import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
+import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
-import { buildMixTemperatureGauge, formatTemperatureRange } from "./thermometer.js";
+import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
@@ -242,8 +242,8 @@ export async function stepMix(cs) {
       el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
-    idealLine.textContent = bands.selected ? `適温 ${formatTemperatureRange(bands.ideal)}` : "フレーバー未選択";
-    optimalLine.textContent = bands.selected ? `最適温 ${formatTemperatureRange(bands.optimal)}` : "葉を加えると温度帯を表示";
+    idealLine.textContent = bands.selected ? "適温" : "フレーバー未選択";
+    optimalLine.textContent = bands.selected ? "最適温" : "葉を加えると温度帯を表示";
     const m = info.maker;
     const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
     temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
@@ -272,12 +272,12 @@ export async function stepMix(cs) {
       redraw();
     };
     const row = el("div.flavor-row", { dataset: { flavor: id } }, [
-      el("i.fr-swatch", { style: { background: flavorColor(id) } }),
+      el("span.fr-package", [flavorPackageArt(id, 54)]),
       el("div.fr-name", [
         el("b", { text: f?.short_name || f?.name || id }),
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
           : ownLeaves ? el("small.fr-stock", { text: `${consumes ? "持ち込み" : "手持ち"} 残り${flavorStock(id)}g` })
-          : el("small", { text: f?.description?.slice(0, 22) || "" }),
+          : el("small", { text: f?.description || "" }),
         ratio,
       ]),
       el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
@@ -348,7 +348,7 @@ export async function stepPack(cs) {
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "葉の間に空気を残す", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
     { value: "normal", label: "ノーマル", surface: "均等にならす", desc: "熱が素直に入り、崩れにくい基本の詰め方" },
-    { value: "firm", label: "かため", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
+    { value: "firm", label: "デンスパック", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
   ];
   let selected = options.find(o => o.value === cs.pack) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });

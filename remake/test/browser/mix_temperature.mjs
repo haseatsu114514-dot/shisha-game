@@ -90,8 +90,11 @@ await suite("mix-temperature", async check => {
       await repeatClick(page, "mix-plus-mint", 4); await expectBands(page, 1);
       await repeatClick(page, "mix-minus-vanilla", 6); await repeatClick(page, "mix-plus-mint", 6);
       const preview = await expectBands(page, 1.2);
-      assert.equal(await page.locator(".mix-ideal").textContent(), "適温 52.3〜77.3%");
-      assert.equal(await page.locator(".mix-optimal").textContent(), "最適温 59.6〜70.0%");
+      assert.equal(await page.locator(".mix-ideal").textContent(), "適温");
+      assert.equal(await page.locator(".mix-optimal").textContent(), "最適温");
+      assert.doesNotMatch(await page.locator(".mix-temperature-legend").textContent(), /[\d%]/);
+      assert.doesNotMatch(await page.locator(".mix-temperature").getAttribute("aria-label"), /[\d%]/);
+      assert.equal(await page.locator('[data-test="mix-ratio-mint"]').textContent(), "比率 100%");
       assert.match(await page.locator('.flavor-row[data-flavor="mint"]').textContent(), /課題（支給）/);
       await assertFits(page, '.mix-temperature-preview, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await page.screenshot({ path: path.join(shots, `mix-temperature-preview-${name}.png`) });
