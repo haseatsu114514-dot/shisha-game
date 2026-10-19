@@ -14,6 +14,13 @@ on:
       - "remake/css/vn.css"
       - "remake/js/vn/engine.js"
       - "remake/js/vn/text.js"
+      - "remake/js/vn/layout.js"
+      - "remake/js/vn/inner.js"
+      - "tools/browser/text_editor*.html"
+      - "tools/text_editor_server.py"
+      - "tools/test_text_editor_server.py"
+      - "remake/test/browser/text_editor.mjs"
+      - "remake/test/text_editor_cases.json"
       - "remake/test/notifications_layout.mjs"
       - "remake/test/stat_rewards.mjs"
       - "remake/test/text_wrap.mjs"
@@ -67,6 +74,20 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/motion-test/node_modules
         run: |
+          python3 tools/test_text_editor_server.py
+          python3 tools/text_editor_server.py > "$RUNNER_TEMP/text-editor.log" 2>&1 &
+          python3 - <<'PYREADY'
+          import time, urllib.request
+          for attempt in range(50):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:8321/", timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.1)
+          else:
+              raise SystemExit("Text editor did not start")
+          PYREADY
+          node remake/test/browser/text_editor.mjs
           node remake/test/text_wrap.mjs
           node remake/test/notifications_layout.mjs
           node remake/test/stat_rewards.mjs
