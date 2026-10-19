@@ -1,0 +1,24 @@
+Checkpoint: 2026-10-19, before first draft commit
+Base main: 8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d
+Route: GitHub API branch/tree; local files are a candidate overlay, not a checkout.
+
+PASS: data/characters.json parses; 40 characters before and after.
+PASS: semantic comparison changes only adam.visual_concepts.
+PASS: all other character data and runtime fields are unchanged.
+PASS: tools/make_reference_sheet.py parses with Python ast.parse.
+PASS: normalized AST differs only in one Adam description string.
+PASS: added lines in all four instruction diffs have no trailing whitespace.
+PASS: existing tools/check_char_consistency.py main() returns 0 when
+      CHARS_FILE and PROFILES_FILE are explicitly pointed at the candidate files.
+      Output: characters.json and profiles.md ages agree.
+      The validator itself is unchanged from the verified base.
+PASS: independent review of the four instruction diffs; see review-normal-trial.md.
+
+Not run locally: full check_active_json.py, check_legacy_terms.py,
+dialogue/canon integration, game browser tests, PC/touch art QA.
+The cached scripts derive their own repository root from __file__; merely changing
+the working directory would test the old checkout, so that was not reported as
+candidate validation.
+No production asset, manifest, alpha, layout, or loading verification is complete.
+The generated normal trial is rejected and is not a release candidate.
+Exact PR-head CI results are to be recorded on the PR after the draft is saved.
