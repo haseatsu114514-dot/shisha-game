@@ -11,15 +11,16 @@ import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
-import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
+import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
 const foilSurface = () => artImg("foil_interactive_top.png", 430, "foil-surface", { h: 430 });
 
 async function chooseTemplate(panel, cs) {
-  const templates = HOLE_TEMPLATES.filter((template) => cs.availableHoleTemplateIds
-    ? cs.availableHoleTemplateIds.includes(template.id) : !template.unlockFlag);
+  // Saved sessions keep their captured choices and selected legacy layout.
+  const available = cs.availableHoleTemplateIds || availableHoleTemplates().map(template => template.id);
+  const templates = HOLE_TEMPLATES.filter(template => available.includes(template.id) || template.id === cs.holeTemplateId);
   let selected = templates.find((template) => template.id === cs.holeTemplateId)
     || templates.find((template) => template.id === DEFAULT_HOLE_TEMPLATE) || templates[0];
   const preview = el("div.foil.ht-preview", { role: "img", dataset: { test: "hole-preview" } });
@@ -47,15 +48,16 @@ async function chooseTemplate(panel, cs) {
     ]),
   ]));
   function draw() {
-    preview.replaceChildren(foilSurface());
+    const plane = el("div.foil-target-plane");
+    preview.replaceChildren(foilSurface(), plane);
     preview.setAttribute("aria-label", `${selected.label}：${templateCountsLabel(selected)}`);
-    RINGS.forEach((ring) => preview.append(el("div.foil-ring", {
+    RINGS.forEach((ring) => plane.append(el("div.foil-ring", {
       style: { width: `${ring.r * 100}%`, height: `${ring.r * 100}%`, opacity: selected.counts[ring.id] ? "1" : ".2" },
     })));
     for (const ring of ringsForTemplate(selected)) {
       for (let k = 0; k < ring.targets; k++) {
         const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
-        preview.append(el("i.foil-marker.planned", { style: {
+        plane.append(el("i.foil-marker.planned", { style: {
           left: `${50 + Math.cos(a) * ring.r * 50}%`, top: `${50 + Math.sin(a) * ring.r * 50}%`,
         }, dataset: { ring: ring.id } }));
       }
@@ -94,7 +96,7 @@ export async function runHoles(cs) {
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
   const cursor = el("div.foil-cursor");
-  disc.append(foilSurface(), ...ringEls, markers, holesLayer, cursor);
+  disc.append(foilSurface(), el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]));
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const scoreEl = el("div.hr-score");
@@ -265,18 +267,27 @@ export async function runHoles(cs) {
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
     }
     drawMarkers();
+    if (complete()) {
+      // Freeze at the final real punch, including the time score. Finishing and
+      // the result confirmation remain explicit even after the time limit.
+      elapsed = (gameClock.now() - t0) / 1000;
+      cancelAnimationFrame(raf);
+      drawTime();
+    }
     hud();
   };
 
+  const drawTime = () => {
+    timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
+  };
   const loop = (now) => {
-    if (finished) return;
+    if (finished || complete()) return;
     elapsed = (gameClock.now() - t0) / 1000;
     if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
     highlightNext();
-    timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
-    if (elapsed >= limit && complete()) return finish();
+    drawTime();
     hud();
     raf = requestAnimationFrame(loop);
   };

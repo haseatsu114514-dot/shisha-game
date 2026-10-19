@@ -263,6 +263,8 @@
   touch-action: none;
 }
 .foil .foil-surface { position: absolute; inset: 0; border-radius: 50%; image-rendering: auto; pointer-events: none; }
+/* The silver top is above the crimped lower rim of the adopted foil image. */
+.foil-target-plane { position: absolute; inset: -3% 0 3%; pointer-events: none; }
 .foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed #29253266; pointer-events: none; }
 .foil-ring.cur { border: 1px solid #30263099; box-shadow: 0 0 0 1px #fff5; }
 .foil-markers, .foil-holes { position: absolute; inset: 0; pointer-events: none; }
