@@ -55,7 +55,7 @@ await suite('tournament-story',async check=>{
     await page.route('https://bgmer.net/**',route=>route.fulfill({
       path:new URL('../../../assets/audio/bgm/bgm_tournament_wait.mp3',import.meta.url).pathname,contentType:'audio/mpeg',
     }));
-    await page.evaluate(async()=>{
+    await page.evaluate(()=>{window.tournamentFixture=(async()=>{
       const core=await import('./js/core/state.js');const s=core.newGame();
       Object.assign(s,{day:14,phase:'tournament',stamina:100,flavorStock:{double_apple:60,mint:30}});
       s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
@@ -67,8 +67,9 @@ await suite('tournament-story',async check=>{
       (await import('./js/craft/session.js')).craftTest.auto='good';
       window.events=[];
       vn.hooks.onLine=id=>{if(id.startsWith('tournament_craft_')&&events.at(-1)!==id)events.push(id);};
-      void (await import('./js/chapters/ch1.js')).devTournament();
-    });
+      window.tournamentRun=(await import('./js/chapters/ch1.js')).devTournament();
+    })();});
+    await page.evaluate(()=>window.tournamentFixture);
     await page.waitForFunction(()=>events.includes('tournament_craft_1_tasting'),null,{timeout:60000});
     assert.deepEqual(await page.evaluate(()=>events),['opening','packed','waiting','tasting'].map(e=>`tournament_craft_1_${e}`));
   });
