@@ -196,6 +196,11 @@ export async function visitChar(charId, { welcome = null } = {}) {
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
+  // Keep already-connected legacy saves from repeating the newly early exchange.
+  // The original story-count thresholds remain a compatibility path only.
+  if (["naru", "adam"].includes(charId) && hasContact(charId)) {
+    state.flags[`_lime_contact_${charId}`] = true;
+  }
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
   const followup = spotFollowupDue(charId, state, DB.dialogues);
   if (followup) await read(followup, { bg });
