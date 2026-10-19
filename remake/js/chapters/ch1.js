@@ -24,6 +24,7 @@ import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
+import { playTournamentEvent } from "../craft/tournament-story.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -463,6 +464,7 @@ async function tournamentDay() {
   cs.retryAssist = state.tournament.retryAssist === true;
   await roundCut("ROUND 1", "組み立て");
   await play("remake_round1_intro", { bg: STAGE });
+  await playTournamentEvent(cs, "opening", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
@@ -473,6 +475,7 @@ async function tournamentDay() {
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
   bc.block(cs, "pack");
   await stepPack(cs);
+  await playTournamentEvent(cs, "packed", { bg: STAGE });
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
@@ -482,6 +485,7 @@ async function tournamentDay() {
   await runHeat(cs);
   bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepSteamTime(cs);
+  await playTournamentEvent(cs, "waiting", { bg: STAGE });
   bc.block(cs, "steam");
   await runSteamDodge(cs);
   bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
@@ -498,6 +502,7 @@ async function tournamentDay() {
   bc.block(cs, "pull");
   await runPull(cs);
   if (cs.failed) return failedOut(cs.failed);
+  cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
@@ -526,6 +531,7 @@ async function tournamentDay() {
   playBgm("bgm_tournament_wait");
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
+  await playTournamentEvent(cs, "tasting", { bg: STAGE });
   const out = outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
