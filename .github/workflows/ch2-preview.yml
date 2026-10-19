@@ -14,6 +14,10 @@ on:
       - 'data/dialogue/ch2_isolation.json'
       - 'data/dialogue/ch2_main.json'
       - 'data/dialogue/ch2_tournament.json'
+      - 'data/dialogue/tournament_craft.json'
+      - 'remake/js/craft/tournament-story*.js'
+      - 'remake/test/tournament_story.mjs'
+      - 'remake/test/browser/tournament_story.mjs'
       - 'remake/css/ch2-tournament.css'
       - 'remake/test/ch2_tournament.mjs'
       - 'data/lime_messages.json'
@@ -102,6 +106,11 @@ jobs:
           node remake/test/ch2_tournament.mjs
           node --experimental-vm-modules remake/test/lime_consistency.mjs
           node remake/test/browser/${{ matrix.suite }}.mjs
+      - name: Verify tournament conversations and result callbacks
+        if: matrix.suite == 'ch2_tournament'
+        run: |
+          node remake/test/tournament_story.mjs
+          node remake/test/browser/tournament_story.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
@@ -109,5 +118,6 @@ jobs:
           name: ${{ matrix.suite }}-results
           path: |
             .codex/artifacts/remake-browser/ch2-*
+            .codex/artifacts/remake-browser/tournament-*
             ${{ runner.temp }}/ch2-preview.log
           retention-days: 7

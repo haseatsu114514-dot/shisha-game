@@ -3,6 +3,8 @@
 本リポジトリの現行版。ESモジュールで工程ごとに実装し、共有JSONを直接読む。
 旧ブラウザ版 `web/`・単一HTML配布版は2026-10-07のオーナー指示で削除済み。現行セーブのキーは引き続き `suien_remake_save`。
 
+第1・2章の大会は、制作開始前→パッキング後→加熱待ち→最終試喫の4会話で一台を追います。配合の実gと詰め方へ反応し、提供時の香り・配合別の適温・2回の調整を講評で回収します。会話は工程時計の開始前／終了後だけに入り、第2章は読了も工程保存へ含めます。台詞の正本は `data/dialogue/tournament_craft.json`。確認: `node remake/test/tournament_story.mjs`、`node remake/test/browser/tournament_story.mjs`、`node remake/test/browser/ch2_tournament.mjs`。
+
 2026-10-11のGAME OVER読込:
 
 - 大会中にCONTINUEのUIと候補話者の全表情、外部BGMを先読み。素材のデコードが終わり、画面が表示されてから20秒の期限を開始する。
