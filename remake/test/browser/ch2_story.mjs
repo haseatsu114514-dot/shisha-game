@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
-const end = t('ch2-main-preparation-limit');
+const end = t('ch2-tournament-entry');
 async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, sick = false } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
@@ -15,9 +15,11 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,
       _lime_opened: true, _lime_tut: 1, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+    if (opts.day <= 3) delete s.flags._ch2_naru_warm_done;
+    s.owned.push('home_rig_set'); // 第1章DAY7で受け取り済みの現行保存
     s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true };
     for (const id of Object.keys(s.met)) s.flags[`_intro_${id}`] = true;
-    s.contacts = []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
+    s.contacts = opts.day <= 3 ? ['sumi'] : []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     s.relationshipMemories = ['tsumugi_creature']; s.keepsakes = ['qa_old_keepsake'];
     s.flavorStock = { mint: 21.5 }; s.affinity = { tsumugi: 15, minto: 20, naru: 30, adam: 25 };
     s.lovers = ['minto']; s.loverSince = { minto: 10 }; s.lastDate = { minto: 16 };
@@ -65,6 +67,23 @@ async function reload(page) {
   await page.locator(t('slot-0')).click();
 }
 await suite('ch2-story', async check => {
+  await check('day2-free-night-then-day3-naru-and-ageha-once', async page => {
+    await seed(page, { day: 2 }); await atMap(page, 2, 0);
+    const before = await state(page);
+    await rest(page); await atMap(page, 2, 1); await rest(page); await atMap(page, 3, 0);
+    assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_scout')), 'DAY2 must remain a free night');
+    await rest(page); await atMap(page, 3, 1); await rest(page); await atMap(page, 4, 0);
+    const after = await state(page);
+    assert(after.flags._ch2_read_ch2_naru_warm && after.flags._ch2_read_remake_ch2_ageha_scout);
+    assert(after.contacts.includes('ageha'));
+    const scenes = await page.evaluate(() => __storyTrace.filter(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id)));
+    assert.deepEqual(scenes, ['ch2_naru_warm', 'remake_ch2_ageha_scout']);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock']) assert.deepEqual(after[key], before[key], key);
+    await reload(page); await atMap(page, 4, 0);
+    const loaded = await state(page);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock', 'contacts']) assert.deepEqual(loaded[key], after[key], key);
+    assert(!await page.evaluate(() => __storyTrace.some(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id))), 'LOAD must not replay completed DAY3 scenes');
+  }, { reducedMotion: 'reduce' });
   await check('day4-through-eve-actual-calendar-and-preserved-relationships', async page => {
     await seed(page); await atMap(page, 4, 0);
     const before = await state(page);
@@ -85,7 +104,7 @@ await suite('ch2-story', async check => {
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
-    await assertFits(page, '.ch2-end-card .btn');
+    await assertFits(page, '.ch2-contest .btn');
     await reload(page); await page.locator(end).waitFor();
     const loaded = await state(page); assert.equal(loaded.day, 28); assert.deepEqual(loaded.stats, s.stats); assert.equal(loaded.money, s.money);
   }, { reducedMotion: 'reduce' });
@@ -134,7 +153,10 @@ await suite('ch2-story', async check => {
   await check('legacy-volk-records-kept-without-chapter2-entrance', async page => {
     await seed(page, { legacyVolk: true }); await atMap(page, 4, 0);
     await page.locator(t('map-region-widehanga')).click();
-    assert.equal(await page.locator('.spot-pin').count(), 3); assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 3);
+    assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
+    assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
     }); assert.deepEqual(logos, [768,768,768]);

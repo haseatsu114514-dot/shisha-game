@@ -2,17 +2,18 @@
 // ゲージ停止ではなく、炭の見た目（黒→赤→赤熱→ピカン→白熱→灰かぶり）を観察して取る。
 // ジャストの瞬間だけ、炭の芯そのものが一瞬光る。
 import { el, sleep, clamp, rand } from "../core/util.js";
-import { countdown, flash } from "../core/ui.js";
+import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
-import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
-import { artImg } from "./art.js";
+import { gradeOf, autoSkill, skill, resultCard } from "./common.js";
+import { buildHeatView, coalSpots } from "./heat_view.js";
 import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
+import { createCraftClock } from "./clock.js";
 
 export async function runHeat(cs) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, "heat");
   const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
@@ -28,9 +29,10 @@ export async function runHeat(cs) {
   info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
+    advice: heatAdvice(res),
     grade: res.grade,
     summary: [
-      ...timings.map((timing) => `炭${timing.coal} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
+      ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
       `全体のタイミング精度 ${res.timingAccuracy}% ／ 平均誤差 ${res.meanAbsoluteError.toFixed(2)}秒`,
     ],
     lines: [
@@ -41,67 +43,40 @@ export async function runHeat(cs) {
   });
 }
 
+function heatAdvice(res) {
+  const early = res.picks.some(p => ["raw", "early", "pre"].includes(p));
+  const late = res.picks.some(p => ["hot", "over"].includes(p));
+  if (early && late) return "早い炭と遅い炭がある。一つずつ芯の光を目印に取り出そう";
+  if (late) return res.over ? "焼きすぎた炭がある。次は芯が光ったら、待たずに取り出そう"
+    : "少し遅れた炭がある。次は芯が光る瞬間に取り出そう";
+  return early ? "早く取り出した炭がある。次は芯が光るまで待とう" : "";
+}
+
 // 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
-const SPOT_SETS = {
-  1: [[0.5, 0.40, 1]],
-  2: [[0.39, 0.42, 1], [0.61, 0.42, 1]],
-  // コイルの上に三角に並べる（中心座標はコンロ素材の中身に対する比。奥の炭ほど少し小さい）
-  3: [[0.5, 0.30, 0.90], [0.38, 0.45, 1], [0.62, 0.45, 1]],
-  4: [[0.39, 0.29, .90], [0.61, 0.29, .90], [0.35, 0.47, 1], [0.65, 0.47, 1]],
-};
 export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
-  const img = (st, i) => (types[i] === "cube_charcoal" ? `coal_${st}.png` : `coal_flat_${st}.png`);
   const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
   const clarity = skill.clarity(cs);
 
-  const stove = el("div.stove", [artImg("stove_coil.png", compact ? 420 : 520, "stove-img")]);
-  const SPOTS = SPOT_SETS[count] || SPOT_SETS[3];
-  const coals = SPOTS.map((_, i) => {
-    const [cx, cy, k] = SPOTS[i];
-    const node = el("button.coal", {
-      dataset: { test: `coal-${i}` },
-      "aria-label": `炭${i + 1}を取り出す`,
-      style: { left: `${cx * 100}%`, top: `${cy * 100}%`, "--k": String(k), zIndex: String(Math.round(cy * 10)) },
-    }, [
-      artImg(img("cold", i), 118, "c-cold"),
-      artImg(img("red", i), 118, "c-red"),
-      artImg(img("just", i), 118, "c-hot"),
-      artImg(img("white", i), 118, "c-ash"),
-      el("i.c-core"),
-      el("i.c-burst"),
-      el("span.coal-number", { text: String(i + 1), "aria-hidden": "true" }),
-    ]);
-    stove.append(node);
-    return {
-      node,
-      tj: rand(4.2, 7.4) * (tutorial ? 1.25 : 1), // ジャストまでの秒数（炭ごとに焼けるスピードが違う）
-      picked: null,
-      timing: null,
-      p: 0,
-    };
-  });
-  const timingRows = coals.map((_, i) => el("li", { dataset: { test: `coal-timing-${i}` } }, [
-    el("b", { text: `炭${i + 1}` }), el("span", { text: "焼成中" }),
-  ]));
-  // 炭の操作面とは別の領域に評価を出す（連続評価時は直前の表示を更新）。
-  const feedback = el("div.heat-feedback", { "aria-live": "polite", dataset: { test: "heat-feedback" } });
-  const info = el("div.heat-info", [
-    el("div.hi-row", [el("span", { text: "黒い芯" }), el("i"), el("span", { text: "赤熱" }), el("i"), el("b", { text: "芯が光る" }), el("i"), el("span", { text: "白熱" }), el("i"), el("span", { text: "灰かぶり" })]),
-    feedback,
-    el("ol.heat-picks", { "aria-live": "polite", "aria-label": "各炭のタイミング", style: { "--coal-count": String(count) } }, timingRows),
-  ]);
-  panel.append(el(`div.heat${compact ? ".heat-compact" : ""}`, [stove, info]));
+  await waitBenchReady(cs, "heat", { count });
+  const view = buildHeatView(types, { count, compact });
+  const { info, feedback } = view;
+  const coals = view.coals.map(c => ({ ...c,
+    tj: rand(4.2, 7.4) * (tutorial ? 1.25 : 1),
+    picked: null, timing: null, p: 0,
+  }));
+  panel.append(view.root);
 
-  let t0 = 0;
+  const gameClock = createCraftClock(panel);
+  let t0 = null;
   let raf = 0;
   let finished = false;
   let done;
   const finishedP = new Promise((r) => { done = r; });
 
-  const pick = (c, elapsedSeconds = (performance.now() - t0) / 1000, automatic = false) => {
-    if (c.picked || finished || !t0) return;
+  const pick = (c, elapsedSeconds = (gameClock.now() - t0) / 1000, automatic = false) => {
+    if (c.picked || finished || t0 === null || gameClock.paused) return;
     const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec);
     const g = timing.phase;
     c.p = elapsedSeconds / c.tj;
@@ -109,19 +84,15 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     const index = coals.indexOf(c);
     c.timing = { ...timing, coal: index + 1, automatic };
     const G = HEAT_GRADES[g];
-    timingRows[index].replaceChildren(
-      el("b", { text: `炭${index + 1} ${timing.rating}（${G.label}）` }),
-      el("span", { text: `${formatTimingError(timing.errorSeconds)}${automatic ? "・自動取り出し" : ""}` }),
-    );
-    timingRows[index].dataset.rating = timing.rating;
+    // 入力時刻で先に判定し、同じ素材・その時の焼け具合を炭壺へ残す。
+    paint(c, c.p);
+    view.recordPick(index, { ...c.timing, errorText: formatTimingError(timing.errorSeconds) });
     reactAudience(cs, G.kind);
     c.node.classList.add("picked", `g-${g}`);
     c.node.classList.remove("pikan", "soon");
     c.node.disabled = true;
     c.node.dataset.phase = g;
-    feedback.replaceChildren();
-    popStamp(feedback, G.stamp, G.kind, "50%", "50%");
-    if (g === "just") { SE.just(); flash("gold"); tickerSay("パッキー「出たーッ！ EXCELLENT！ 芯まで焼けたーッ！」"); }
+    if (g === "just") { SE.just(); tickerSay("パッキー「出たーッ！ EXCELLENT！ 芯まで焼けたーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
     SE.coalSnip();
@@ -129,22 +100,24 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (coals.every((x) => x.picked)) finish();
   };
 
+  const paint = (c, progress) => {
+    const jw = justSec / c.tj;
+    c.node.style.setProperty("--red", clamp((progress - .3) / .45, 0, 1).toFixed(3));
+    c.node.style.setProperty("--hot", clamp((progress - .85) / .3, 0, 1).toFixed(3));
+    c.node.style.setProperty("--ash", clamp((progress - (1.15 + jw)) / .35, 0, 1).toFixed(3));
+  };
+
   const loop = (now) => {
     if (finished) return;
-    const t = (now - t0) / 1000;
+    const t = (gameClock.now() - t0) / 1000;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     for (const c of coals) {
       if (c.picked) continue;
       c.p = t / c.tj;
       const jw = justSec / c.tj;
       const ph = phaseOf(c.p, jw);
       const n = c.node;
-      // 見た目: 素材の重ね合わせで色を移ろわせる
-      const red = clamp((c.p - 0.3) / 0.45, 0, 1);
-      const hot = clamp((c.p - 0.85) / 0.3, 0, 1);
-      const ash = clamp((c.p - (1.15 + jw)) / 0.35, 0, 1);
-      n.style.setProperty("--red", red.toFixed(3));
-      n.style.setProperty("--hot", hot.toFixed(3));
-      n.style.setProperty("--ash", ash.toFixed(3));
+      paint(c, c.p);
       n.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
@@ -159,14 +132,19 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (finished) return;
     finished = true;
     cancelAnimationFrame(raf);
+    gameClock.dispose();
     done();
   };
 
-  coals.forEach((c) => c.node.addEventListener("pointerdown", (e) => { e.preventDefault(); pick(c); }));
+  coals.forEach((c) => {
+    c.node.addEventListener("pointerdown", e => { e.preventDefault(); pick(c); });
+    c.node.addEventListener("click", e => { if (e.detail === 0) pick(c); });
+  });
 
   await countdown();
   SE.crackle();
-  t0 = performance.now();
+  t0 = gameClock.now();
+  view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 
   const auto = autoSkill();

@@ -1,0 +1,30 @@
+.venue-host { display: flex; align-items: center; gap: 18px; min-height: 112px; padding: 8px 18px 0 8px; border: 1px solid #99816188; border-radius: 9px; background: linear-gradient(110deg, #493526dd, #18171ddb); text-align: left; color: #f4ead6; }
+.venue-host-portrait { position: relative; flex: 0 0 110px; height: 112px; overflow: hidden; }
+.venue-host-portrait img { position: absolute; left: 50%; width: 260px; height: auto; max-width: none; }
+.venue-host-copy { min-width: 0; padding: 6px 0 12px; }
+.venue-host-copy small { display: block; font-size: 12px; color: #c8b28f; }
+.venue-host-copy strong { display: block; margin: 4px 0 6px; font-size: 20px; }
+.venue-host-copy p { margin: 0; font-size: 17px; line-height: 1.55; overflow-wrap: anywhere; }
+.sub-menu.axe-bar-menu { width: 880px; max-height: 94%; padding: 24px 32px; overflow-y: auto; touch-action: pan-y !important; }
+.axe-bar-menu .sub-title { font-size: 30px; }
+.axe-bar-menu .venue-host { margin: 10px auto; max-width: 660px; }
+.axe-bar-menu .sub-lead { margin: 8px 0 14px; }
+.axe-bar-menu .axe-bar-lesson { margin: 0 auto 12px; border-color: #b99b69; color: #ffe1a7; }
+.axe-bar-menu .sub-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.axe-bar-menu .big-choice { padding: 14px 18px; }
+.axe-bar-menu .axe-bar-records { margin-top: 12px; padding-top: 10px; border-top: 1px solid #99816166; font-size: 14px; line-height: 1.6; }
+.axe-bar-menu .axe-bar-records p { margin: 6px 0 0; }
+.axe-bar-menu .sub-back { margin-top: 14px; }
+.trpg-campaign .venue-host { flex-shrink: 0; min-height: 96px; background: linear-gradient(110deg, #2e4a40, #182b2d); }
+.trpg-campaign .venue-host-portrait { height: 96px; }
+.trpg-campaign .venue-host-copy p { font-size: 16px; }
+.trpg-root.trpg-campaign { overflow-y: auto; }
+.trpg-campaign .trpg-campaign-books { flex: none; overflow-y: visible; }
+.trpg-campaign .trpg-club-proposal { margin: 0 auto; padding: 18px 30px; }
+.trpg-campaign .trpg-club-proposal p { margin: 8px 0; font-size: 17px; }
+.trpg-day-trial { padding: 14px 20px; border: 1px solid #829e87; border-radius: 9px; background: #213d37; }
+.trpg-day-trial h2 { margin: 0 0 7px; font-size: 22px; }
+.trpg-day-trial p { margin: 5px 0 10px; font-size: 15px; }
+.trpg-trial-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.trpg-trial-score { display: flex; align-items: center; gap: 20px; margin: 14px 0; font-size: 30px; color: #ffe6a3; }
+.trpg-trial-die { font-size: 48px; line-height: 1; }

@@ -1,0 +1,4 @@
+.spot-pin.branded { --plate-hi:#d9dfe0; --plate-mid:#c4ced1; --plate-low:#adbbc0; --plate-edge:#6b7b81; }
+ .map[data-night="true"] .spot-pin.branded { --plate-hi:#c2cbce; --plate-mid:#aab8bc; --plate-low:#92a5ad; --plate-edge:#5a6b74; }
+ .spot-pin.branded .shield::before { background-color:transparent; background-image:linear-gradient(150deg,rgba(226,233,229,.9),rgba(194,208,208,.82)); backdrop-filter:blur(7px) saturate(.65); -webkit-backdrop-filter:blur(7px) saturate(.65); border-color:rgba(154,176,181,.9); box-shadow:inset 0 1px 0 rgba(245,253,247,.7),inset 0 0 0 2px rgba(83,112,119,.13),0 2px 0 #657983,0 7px 10px rgba(8,7,12,.4); }
+ .map[data-night="true"] .spot-pin.branded .shield::before { background-image:linear-gradient(150deg,rgba(213,227,224,.87),rgba(156,181,188,.83)); }

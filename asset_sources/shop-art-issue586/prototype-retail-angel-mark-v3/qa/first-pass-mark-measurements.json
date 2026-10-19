@@ -1,0 +1,70 @@
+{
+  "items": [
+    {
+      "id": "mint",
+      "mark_bbox_in_rectified_front_px": [
+        167,
+        108,
+        538,
+        263
+      ],
+      "normalized_width": 0.53,
+      "normalized_height": 0.155,
+      "normalized_center_u": 0.5035714285714286,
+      "normalized_center_v": 0.1855,
+      "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+    },
+    {
+      "id": "double_apple",
+      "mark_bbox_in_rectified_front_px": [
+        167,
+        77,
+        574,
+        240
+      ],
+      "normalized_width": 0.5814285714285714,
+      "normalized_height": 0.163,
+      "normalized_center_u": 0.5292857142857142,
+      "normalized_center_v": 0.1585,
+      "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+    },
+    {
+      "id": "grape",
+      "mark_bbox_in_rectified_front_px": [
+        126,
+        96,
+        572,
+        259
+      ],
+      "normalized_width": 0.6371428571428571,
+      "normalized_height": 0.163,
+      "normalized_center_u": 0.49857142857142855,
+      "normalized_center_v": 0.1775,
+      "method": "Manually inspected front corners; bilinear 700x1000 rectification; white pixels RGB>=210, alpha>=200 in u=.15..85,v=.04..30; approximate."
+    }
+  ],
+  "pairwise_shape_similarity": [
+    {
+      "pair": [
+        "mint",
+        "double_apple"
+      ],
+      "shape_iou_after_bbox_normalization": 0.8780181717785251
+    },
+    {
+      "pair": [
+        "mint",
+        "grape"
+      ],
+      "shape_iou_after_bbox_normalization": 0.8543490221577552
+    },
+    {
+      "pair": [
+        "double_apple",
+        "grape"
+      ],
+      "shape_iou_after_bbox_normalization": 0.8881691454630254
+    }
+  ],
+  "limits": "Approximate front geometry and threshold mask; shape IoU discards scale and placement. Human visual review also required. No claim of pixel-identical printing."
+}

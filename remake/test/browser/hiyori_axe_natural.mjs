@@ -13,7 +13,8 @@ const out = path.resolve(process.env.ARTIFACT_DIR || path.join(root, '.codex/art
 fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_EXECUTABLE_PATH ? {executablePath:process.env.CHROME_EXECUTABLE_PATH} : {}) });
 const results = [];
-const workGoal = process.env.GOAL_HIYORI_WORK === '1';
+const giftGoal = process.env.GOAL_HIYORI_GIFT === '1';
+const workGoal = giftGoal || process.env.GOAL_HIYORI_WORK === '1';
 
 async function boot(page) {
   await page.goto(base);
@@ -26,6 +27,7 @@ try {
     ['pc', { viewport: { width: 1280, height: 720 } }],
     ['mobile', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) {
+    if (process.env.ONLY_DEVICE && process.env.ONLY_DEVICE !== label) continue;
     const context = await browser.newContext(options);
     const page = await context.newPage();
     const errors = [], failedResources = [], cache = { cold: 0, warm: 0 };
@@ -56,16 +58,16 @@ try {
       assert(cache.warm > 0, 'Warm reload must actually reuse cached resources');
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
-        const spots = await import('./js/daily/spots.js'), util = await import('./js/core/util.js');
-        window.Q = { core, vn, spots, util, events: [], current: null };
+        const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
+        window.Q = { core, vn, spots, hiyori, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
         window.__remake.craftTest.auto = 'good';
         vn.hooks.onLine = (id, line) => {
-          vn.vnTest.turbo = !id.startsWith('hiyori_');
+          vn.vnTest.turbo = !id.startsWith('hiyori_') && !id.startsWith('axe_bar_');
           Q.current = { id, speaker: line.speaker, face: line.face, text: line.text, inner: line.inner };
-          if (id.startsWith('hiyori_') && !Q.events.some(e => e.id === id)) {
+          if ((id.startsWith('hiyori_') || id.startsWith('axe_bar_')) && !Q.events.some(e => e.id === id)) {
             const s = core.state;
             Q.events.push({ id, day: s.day, slot: s.slot, money: s.money, affinity: s.affinity.hiyori || 0,
               held: s.flags._hiyori_affinity_waiting_pts || 0, flags: structuredClone(s.flags) });
@@ -76,7 +78,9 @@ try {
       await page.waitForFunction(() => Q.core.state);
       // Only random seeds are fixed; all progress, payments and rewards come from normal gameplay.
       await page.evaluate(() => { Q.core.state.seed = 131; Q.core.state.weatherSeed = 4; Q.core.state.reel.seed = 4321; });
-      const deadline = Date.now() + 8 * 60000;
+      // The gift adds another real visit beyond the original axe/work scope.
+      // Keep those existing modes' budget and all game-state assertions intact.
+      const deadline = Date.now() + (giftGoal ? 12 : 8) * 60000;
       let lastKey = '', lastProgress = Date.now(), lastMapKey = '';
       while (Date.now() < deadline) {
         await page.waitForTimeout(90);
@@ -93,7 +97,9 @@ try {
         const key = JSON.stringify([snap.day, snap.slot, snap.screen, snap.vn, snap.phone, snap.modal, snap.current?.text, snap.flags._hiyori_tonari_afterwork_done]);
         if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
         assert(Date.now() - lastProgress < 45000, `Stalled: ${key}`);
-        if ((workGoal ? snap.flags._hiyori_work_talk_done && snap.flags._hiyori_bond_question_done : snap.flags._hiyori_real_self_known) && !snap.vn) break;
+        if ((giftGoal ? snap.flags._hiyori_bond_finale_done
+          : workGoal ? snap.flags._hiyori_work_talk_done && snap.flags._hiyori_bond_question_done
+          : snap.flags._hiyori_real_self_known) && !snap.vn && snap.slot === 2 && !snap.modal && !snap.cutin) break;
         assert(snap.day < 14, 'The natural hiyori sequence must fit before the tournament');
         const axe=page.locator('[data-test="axe-game"]');
         if(await axe.count()) {
@@ -134,7 +140,7 @@ try {
           continue;
         }
         if (snap.vn) {
-          if (snap.current?.id?.startsWith('hiyori_')) {
+          if (snap.current?.id?.startsWith('hiyori_') || snap.current?.id?.startsWith('axe_bar_')) {
             const shot = `${snap.current.id}-${snap.current.speaker || 'narration'}-${snap.current.face || 'default'}`;
             if (!seen.has(shot) && await page.locator('.vn-next.show').isVisible()) {
               await page.waitForTimeout(350);
@@ -148,20 +154,30 @@ try {
           continue;
         }
         if (!snap.live) continue;
-        if (snap.screen === 'shop') {
+        if (snap.screen === 'shop-entry') {
+          // The scheduled guest may be at the showroom, not the free shopping counter.
+          if (!await click('[data-test="shop-upstairs"]:not([disabled])')) await click('[data-test="shop-enter"]');
+        } else if (snap.screen === 'axe-bar') {
+          // #577: 匿名目撃は無料で完読し、有料ソロを始めず地図へ戻る。
+          await click('[data-test="axe-bar-back"]');
+        } else if (snap.screen === 'shop') {
           await click('.shop-row.errand [data-test^="buy-"]');
           await click('[data-test="shop-checkout"]');
           await click('[data-test="shop-leave"]');
         } else if (snap.screen === 'preparation') await click('[data-test="prep-flavor-blueberry"]');
         else if (snap.screen === 'tonari') {
           // DAY3's optional review can now open the same tonari drill menu.
-          if (!await click('[data-test="drill-heat"]') && !await click('[data-test="tonari-hiyori-axe"]') && !await click('[data-test="tonari-customer"]')) {
-            if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
-          }
+          if (await click('[data-test="drill-heat"]')) continue;
+          if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
+          const earn = snap.money < 6000 && !snap.flags._hiyori_real_self_known;
+          if (earn && await click('[data-test="tonari-baito"]')) continue;
+          if (await click('[data-test="tonari-customer"]')) continue;
+          if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
         } else if (snap.map) {
           const mapKey = `${snap.day}:${snap.slot}`;
           if (lastMapKey !== mapKey) {
             lastMapKey = mapKey;
+            console.log(`[hiyori-axe-natural] ${label} DAY${snap.day}/${snap.slot}: money=${snap.money}, affinity=${snap.affinity}, goal=${giftGoal ? 'gift' : workGoal ? 'work' : 'axe'}`);
             actions.push({ day: snap.day, slot: snap.slot, money: snap.money, affinity: snap.affinity,
               held: snap.flags._hiyori_affinity_waiting_pts || 0, released: snap.flags._hiyori_affinity_released_pts || 0,
               flags: Object.fromEntries(Object.entries(snap.flags).filter(([k]) => k.startsWith('_hiyori_'))) });
@@ -173,40 +189,54 @@ try {
           if (invite && snap.slot === 0 && (snap.flags._hiyori_affinity_waiting_pts > 0 || snap.day >= 11)) {
             await click('[data-test="hud-phone"]'); await click('[data-test="lime-chat-sumi"]'); continue;
           }
-          const selected = await page.evaluate(workGoal => {
+          const selected = await page.evaluate(({ workGoal, giftGoal }) => {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
+            const tonari = sp.spotById('tonari');
+            if (s.stamina < 35) return 'rest';
+            // 新規の噂→実来店で目撃→翌日以降の初対面を、既存の実UIだけで通る。
+            if (!f._axe_bar_rumor_done && !sp.isClosed(tonari)) return 'tonari';
+            if (!f._axe_bar_sighting_done) return s.slot === 1 ? 'axe_bar' : 'rest';
+            // Once the paid axe outing is finished, wait for the free night talks.
+            // A daytime detour would change the fee invariant for work/gift.
+            if (f._hiyori_real_self_known && workGoal) return s.slot === 1 ? 'tonari' : 'rest';
+            // Earn through the actual shift UI before either a paid visit or axe event.
+            // A disabled axe button must never send us back into a used customer seat.
+            if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day) return 'tonari';
             const needsTonari = f._hiyori_meeting_done && !f._hiyori_sumi_message_done
               || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done;
-            const tonari = sp.spotById('tonari');
-            if(f._hiyori_tonari_afterwork_done && s.slot===1 && !sp.isClosed(tonari) && (!workGoal || !f._hiyori_bond_question_done)) return 'tonari';
             if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day) return 'tonari';
-            if (s.stamina < 35 || f._hiyori_encounter_day === `1:${s.day}` || s.money < 3000) return 'rest';
-            const candidates = ['naru','adam','minto','c_station'].map(id => sp.spotById(id))
-              .filter(p => p && !sp.isClosed(p) && sp.isUnlocked(p) && !sp.visitedToday(p.id) && s.money >= (p.cost || 0));
-            const roll = p => {
-              let salt = 2166136261;
-              for (const c of `hiyori:1:${s.day}:${s.slot}:${p.id}`) salt = Math.imul(salt ^ c.charCodeAt(0), 16777619) >>> 0;
-              return Q.util.seeded(s.seed, salt);
-            };
-            candidates.sort((a,b) => roll(a)-roll(b));
-            return candidates[0]?.id || 'rest';
-          },workGoal);
+            if (f._hiyori_tonari_afterwork_done && s.slot === 1 && !sp.isClosed(tonari)
+              && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done)) return 'tonari';
+            const location = Q.hiyori.hiyoriShopLocation();
+            const spot = location && sp.spotById(location);
+            if (spot && !sp.visitedToday(spot.id) && s.money >= (spot.cost || 0)) return spot.id;
+            return 'rest';
+          }, { workGoal, giftGoal });
           await click(`[data-test="pin-${selected}"]`); await click('[data-test="map-go"]');
         }
       }
       const final = await page.evaluate(() => ({ state: structuredClone(Q.core.state), events: Q.events }));
       row.actions = actions; row.events = final.events; row.final = final.state;
-      const required = ['hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
+      assert(Date.now() < deadline, `Natural walkthrough exceeded its existing deadline: ${JSON.stringify({ day: final.state.day, slot: final.state.slot, money: final.state.money, events: final.events.map(e => e.id), requiredFlags: Object.fromEntries(Object.entries(final.state.flags).filter(([key]) => key.startsWith("_hiyori_"))) })}`);
+      const required = ['axe_bar_rumor','axe_bar_sighting','hiyori_meeting','hiyori_sumi_message','hiyori_shop_message','hiyori_cracks','hiyori_tonari_return','hiyori_tonari_followup','hiyori_tonari_afterwork','hiyori_axe_reveal','hiyori_axe_reveal_close'];
       if(workGoal) required.push('hiyori_work_talk','hiyori_bond_question');
+      if(giftGoal) required.push('hiyori_bond_finale');
       let previous = -1;
       for (const id of required) { const at = final.events.findIndex(e => e.id === id); assert(at > previous, `Missing/out-of-order ${id}`); previous = at; }
+      assert(final.events.find(e => e.id === 'hiyori_meeting').day > final.events.find(e => e.id === 'axe_bar_sighting').day,
+        '正式初対面は実目撃の翌日以降');
       assert(final.state.flags._hiyori_tonari_afterwork_done);
       assert(final.state.flags._hiyori_real_self_known);
       assert.equal(!!final.state.flags._hiyori_work_talk_done,workGoal);
       if(workGoal){
         assert(final.state.flags._hiyori_bond_question_done);
         assert.equal(final.state.romanceChoices.bond_q1_hiyori.value,0);
-        assert(!final.state.flags._hiyori_bond_finale_done&&!final.state.finales.hiyori);
+        if (giftGoal) {
+          assert(final.state.flags._hiyori_bond_finale_done);
+          assert.equal(final.state.finales.hiyori.route, 'friend');
+          assert.equal(final.state.owned.filter(id => id === 'suyaki_hiyori').length, 1);
+          assert.equal(final.state.romanceChoices.bond_q2_hiyori, undefined);
+        } else assert(!final.state.flags._hiyori_bond_finale_done&&!final.state.finales.hiyori);
       }
       assert.equal(final.state.slot,2);
       const opening=final.events.find(e=>e.id==='hiyori_axe_reveal');
@@ -229,14 +259,17 @@ try {
       row.status = 'passed';
       console.log(`[hiyori-axe-natural] PASS ${label}: DAY${final.state.day}, affinity ${final.state.affinity.hiyori}, rescue ${final.state.flags._hiyori_affinity_released_pts}`);
     } catch (e) {
-      row.status = 'failed'; row.error = e.stack; row.errors = errors; row.failedResources = failedResources;
+      row.status = 'failed'; row.error = e.stack; row.errors = errors; row.failedResources = failedResources; row.actions = actions;
       row.diagnostic = await page.evaluate(() => window.Q ? { state: Q.core.state, events: Q.events, current: Q.current } : null).catch(() => null);
       await page.screenshot({ path: path.join(out, `${label}-failed.png`) });
       console.error(e.stack);
-    } finally { await context.close(); }
+    } finally { row.elapsedMs = Date.now() - Date.parse(row.startedAt); await context.close(); }
+    // Preserve each completed device result if a later device is interrupted.
+    fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, giftGoal, workGoal, results }, null, 2)+'\n');
   }
 } finally {
   await browser.close();
-  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, results }, null, 2)+'\n');
+  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify({ base, giftGoal, workGoal, results }, null, 2)+'\n');
 }
+assert(results.length > 0, 'No device was selected');
 assert.equal(results.filter(r => r.status !== 'passed').length, 0, 'Public walkthrough failures');

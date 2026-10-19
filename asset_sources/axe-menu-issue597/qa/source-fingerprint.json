@@ -1,0 +1,24 @@
+{
+  "base_main": "1ec3dddba5fd0524f544e6999e84f029a6bcde87",
+  "at": "2026-10-16T03:49:21.186786+00:00",
+  "files": {
+    "remake/css/axe-menu.css": "72172baff9e4d1bcbefab1f9cf0990d4a9d419c2c9ba4d99729dec4633ad88e9",
+    "remake/css/axe-throw.css": "ad5c7accf7c8f5aa38b25a23a73411136dfe3b4eb317ce7ca7df89273770ee2e",
+    "remake/js/axe-throw-page.js": "934a3efcb26a2bfea6f169c347bc41d7ab4f4c3e5a7b6f337e1e4f6de6873bb2",
+    "remake/axe-throw.html": "3d413e2e27fa544c713505e160236516493b9b21cc694af12a4356994f352fbe",
+    "remake/test/browser/axe_menu_decor.mjs": "78e4a04569f035f49ee941510aa9f9047d259437e92c41bd8eaa803b8cb1f3b7",
+    "remake/js/minigames/axe-coach.js": "e7c39b245ae3467739048f35cdfe10d34f8ab07bc8e491b83dce97cc81b626c7",
+    "remake/js/minigames/axe-companions.js": "8cfd6eb77ddd93fab26dfe2217192285cb70be4765309e6e3afdc5d688cab5ac",
+    "remake/js/minigames/axe-flight.js": "d6ce98667833c66171d08c1099db4e0919e8e391b7bc4003fc0df6fe6e5248f4",
+    "remake/js/minigames/axe-geometry.js": "6c5df1915a4c0bcc1c9d8858395001818facb6082e3bbff940fc1f0858c5102f",
+    "remake/js/minigames/axe-match.js": "6dd50711668eab38302286651288c468cc202cebf560e5199467015135756a9c",
+    "remake/js/minigames/axe-model.js": "971bd36806d6f921fbea71c2dc5cd8b037ce5dff751962bc648a22baed38f019",
+    "remake/js/minigames/axe-presentation.js": "877ad0b75148e1cea5e50abf34d0156c8b405c917129820ac2e2a38960ba81e3",
+    "remake/js/minigames/axe-rules.js": "8ef5e8c54275d7e238247f59908f0ca0d57e0162ce63e80ba4db6f7f99e93788",
+    "remake/js/minigames/axe.js": "b46d3e5633d5539c37780d4c7662d463d83a437675107b78fdc1438a99fb973d",
+    "remake/img/ui/axe_throw/menu-crossed-axes.webp": "e75277207a59916c250afd1e1509e8e4a067b1a6aea66bd77fbc1f5646336e16",
+    "remake/img/ui/axe_throw/menu-walnut-panel.webp": "38b2f2e3db43f6c8791f7a444e319a20ca76dbcff4b63517669d48274eb32e6b",
+    "remake/img/ui/axe_throw/target_board.webp": "7c5bcd24544b4f9e2c4f2b1862ec71bc8dc586cd8b95aec0db942c71fc46bbac",
+    "remake/img/ui/axe_throw/throwing_axe.webp": "289638547e802e06956a67172a005479a002ae60ca45f836151bf19cc6940142"
+  }
+}

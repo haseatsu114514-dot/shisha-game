@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 15; // 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 17; // 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -60,7 +60,7 @@ export function newState() {
     keepsakes: [],             // 購入・入手した記念品のID（売却しない）
     best: {},                  // 練習ドリルの自己ベスト（0..2）
     rehearsal: null,           // 前日リハーサルの出来（great/good/rough）
-    tournament: { attempts: 0, lastRank: null },
+    tournament: { attempts: 0, lastRank: null, losses: 0, lastLossAttempt: null, retryAssist: false },
     // MOKUMOKUパッキー（日常スロット）。抽選は seed＋総回転数の決定論＝ロードしても結果は変わらない
     reel: {
       seed: (Math.random() * 0x100000000) >>> 0,
@@ -69,7 +69,14 @@ export function newState() {
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
       lastChapter: 0,
-      note: {},                // スロノート（役ごとの回数）
+      note: {},                // パッキースロットノート（役ごとの回数・ハマり・当たり履歴・フリーズ殿堂入り）
+      setting: 0,              // 設定1〜6（0=未決定。シードから決める）。観音堂で引き直す（#621）
+      settingDraws: 0,         // 設定の引き直し回数
+      settingSince: null,      // 今の設定になった日 {chapter, day}。7日で自動で変わる
+      settingNotice: false,    // 次に筐体が出たとき「設定変更完了〜」を見せる（"kannon"／"weekly"）
+      resetNext: false,        // 設定変更直後の1回転でガックン
+      lock: null,              // 文字色予告を出した次ゲームの抽選結果
+      settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
@@ -125,7 +132,10 @@ function migrate(s) {
       return [key, Math.max(0, Math.min(1 - Number.EPSILON, xp / cost))];
     }));
   }
-  s.flags ||= {};
+  if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
+  // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
+  if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
   // スキーマ12。古いセーブの延期は空から始め、読了を推測しない。
   const nightIds = new Set();
   s.deferredNightEvents = (Array.isArray(s.deferredNightEvents) ? s.deferredNightEvents : []).filter((entry) => {
@@ -230,13 +240,34 @@ function migrate(s) {
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
+  const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
+  if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
+    let refund = 0;
+    for (const id of new Set(s.owned)) {
+      if (id in pipeRefunds) refund += pipeRefunds[id];
+    }
+    s.owned = s.owned.filter((id) => !(id in pipeRefunds));
+    s.money = (Number(s.money) || 0) + refund;
+  }
+  if (s.equip && typeof s.equip === "object" && s.equip.pipe in pipeRefunds) {
+    s.equip.pipe = "harry_the_moon";
+  }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
+  const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
+  if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
+  s.tournament ||= { attempts: 0, lastRank: null };
+  s.tournament.losses ??= 0;
+  s.tournament.lastLossAttempt ??= null;
+  s.tournament.retryAssist ??= false;
   s.schema = SCHEMA;
   return s;
 }

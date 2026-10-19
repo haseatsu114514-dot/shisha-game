@@ -1,0 +1,69 @@
+113: 2026-10-16T03:52:02.5091354Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +04eaff886b2c8a8c422c72efb80c7a04466a8055:refs/remotes/pull/601/merge
+115: 2026-10-16T03:52:02.9502661Z  * [new ref]         04eaff886b2c8a8c422c72efb80c7a04466a8055 -> pull/601/merge
+123: 2026-10-16T03:52:02.9559093Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/601/merge
+227: 2026-10-16T03:52:16.6166575Z Note: switching to 'refs/remotes/pull/601/merge'.
+244: 2026-10-16T03:52:16.6169939Z HEAD is now at 04eaff8 Merge 237a57bc414bd8323be3d8c13d392ba360728fa6 into 1ec3dddba5fd0524f544e6999e84f029a6bcde87
+247: 2026-10-16T03:52:16.6329073Z 04eaff886b2c8a8c422c72efb80c7a04466a8055
+276: 2026-10-16T03:52:18.0720170Z shell: /usr/bin/bash -e {0}
+497: 2026-10-16T03:52:39.8028257Z shell: /usr/bin/bash -e {0}
+672: 2026-10-16T03:52:40.1053235Z # tests 28
+674: 2026-10-16T03:52:40.1053743Z # pass 28
+675: 2026-10-16T03:52:40.1053864Z # fail 0
+686: 2026-10-16T03:52:40.1129372Z [36;1mCOMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs[0m
+687: 2026-10-16T03:52:40.1129787Z [36;1mCOMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs[0m
+688: 2026-10-16T03:52:40.1130206Z [36;1mCOMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs[0m
+689: 2026-10-16T03:52:40.1130646Z [36;1mCOMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs[0m
+690: 2026-10-16T03:52:40.1130953Z [36;1mnode remake/test/browser/axe_menu_decor.mjs[0m
+693: 2026-10-16T03:52:40.1187258Z shell: /usr/bin/bash -e {0}
+697: 2026-10-16T03:52:45.0282711Z [axe-throw] PASS: front-perspective-actual-flight-frames
+698: 2026-10-16T03:52:56.5864986Z [axe-throw] PASS: flight-ui-pc
+699: 2026-10-16T03:53:08.1266890Z [axe-throw] PASS: flight-ui-touch-portrait
+700: 2026-10-16T03:53:19.6896286Z [axe-throw] PASS: flight-ui-touch-landscape
+701: 2026-10-16T03:53:24.4808610Z [axe-throw] PASS: rules-pc
+702: 2026-10-16T03:53:29.1575012Z [axe-throw] PASS: rules-touch-portrait
+703: 2026-10-16T03:53:34.1387900Z [axe-throw] PASS: rules-touch-landscape
+704: 2026-10-16T03:53:42.3092626Z [axe-throw] PASS: visible-sway-focus-budget-and-release
+705: 2026-10-16T03:54:00.5768367Z [axe-throw] PASS: pc
+706: 2026-10-16T03:54:18.7380587Z [axe-throw] PASS: touch-landscape
+707: 2026-10-16T03:54:36.8712151Z [axe-throw] PASS: touch-portrait
+708: 2026-10-16T03:54:51.0819158Z [axe-throw] PASS: keyboard-reduced
+709: 2026-10-16T03:55:32.4039561Z [axe-throw] PASS: ten-throws-killshots-and-companion
+710: 2026-10-16T03:55:35.3763010Z [axe-throw] PASS: pause-reaim-and-repeat
+711: 2026-10-16T03:55:37.6103654Z [axe-throw] PASS: pointer-double-click
+712: 2026-10-16T03:55:39.1852974Z [axe-throw] PASS: pre-abort-and-host-detach
+713: 2026-10-16T03:55:41.5855736Z [axe-throw] PASS: art-catalog-names-and-retry
+714: 2026-10-16T03:55:56.6147674Z [axe-throw] PASS: api-friend-legacy
+715: 2026-10-16T03:56:11.5685951Z [axe-throw] PASS: api-friend
+716: 2026-10-16T03:56:26.5885787Z [axe-throw] PASS: api-lover
+717: 2026-10-16T03:57:27.8291594Z [axe-versus] PASS: pc-twenty-throws
+718: 2026-10-16T03:58:29.3365198Z [axe-versus] PASS: touch-landscape-twenty-throws
+719: 2026-10-16T03:59:30.8350696Z [axe-versus] PASS: touch-portrait-twenty-throws
+720: 2026-10-16T04:00:13.1943369Z [axe-versus] PASS: keyboard-reduced-twenty-throws
+721: 2026-10-16T04:01:12.3454791Z [axe-versus] PASS: seeded-draw-ends-at-ten-and-retry-clears-both-histories
+722: 2026-10-16T04:01:21.2759603Z [axe-versus] PASS: opponent-lock-pause-double-input-and-cancel
+723: 2026-10-16T04:01:40.8452705Z [axe-versus] PASS: abort-detach-load-and-same-host-lifecycle
+724: 2026-10-16T04:01:48.0591251Z [axe-polish] PASS: pc-board-input-results-and-total
+725: 2026-10-16T04:01:54.5296889Z [axe-polish] PASS: touch-portrait-board-input-results-and-total
+726: 2026-10-16T04:02:01.0607743Z [axe-polish] PASS: touch-landscape-board-input-results-and-total
+727: 2026-10-16T04:02:03.1903687Z [axe-polish] PASS: keyboard-focus-is-once-and-reaim-keeps-use
+728: 2026-10-16T04:02:07.3504780Z [axe-polish] PASS: impact-pauses-in-rules-and-opponent-rejects-shortcuts
+729: 2026-10-16T04:02:09.8283374Z [axe-polish] PASS: reduced-motion-keeps-result-without-impact-animation
+730: 2026-10-16T04:02:15.8840473Z [axe-lesson] PASS: pc-guided-one-throw-and-no-save
+731: 2026-10-16T04:02:21.3421527Z [axe-lesson] PASS: touch-portrait-guided-one-throw-and-no-save
+732: 2026-10-16T04:02:26.7102187Z [axe-lesson] PASS: touch-landscape-guided-one-throw-and-no-save
+733: 2026-10-16T04:02:30.1517358Z [axe-lesson] PASS: normal-live-score-and-prominent-killshot-rules
+734: 2026-10-16T04:02:32.3457469Z [axe-lesson] PASS: skip-abort-and-host-removal-close-coach
+735: 2026-10-16T04:02:45.7844394Z [axe-lesson] PASS: free-store-lesson-ignores-cost-and-day-use-without-mutation
+736: 2026-10-16T04:02:48.9233462Z [axe-menu-decor] PASS: 1280x720-live-controls
+737: 2026-10-16T04:02:51.3115738Z [axe-menu-decor] PASS: 800x600-live-controls
+738: 2026-10-16T04:02:53.6456371Z [axe-menu-decor] PASS: 390x844-live-controls
+739: 2026-10-16T04:02:55.9453437Z [axe-menu-decor] PASS: 844x390-live-controls
+740: 2026-10-16T04:02:58.2499149Z [axe-menu-decor] PASS: keyboard-modes-lesson-return-and-no-save
+741: 2026-10-16T04:03:00.9252627Z [axe-menu-decor] PASS: invalid-decoration-images-and-reduced-motion
+742: 2026-10-16T04:03:03.6544551Z [save-load] PASS: all-slots-round-trip
+743: 2026-10-16T04:03:05.1744110Z [save-load] PASS: legacy-migration-auto-and-manual
+744: 2026-10-16T04:03:06.6808637Z [save-load] PASS: missing-and-invalid-json
+745: 2026-10-16T04:03:14.2760780Z [save-load] PASS: desktop-ui
+746: 2026-10-16T04:03:24.1415109Z [save-load] PASS: mobile-ui
+747: 2026-10-16T04:03:25.6444999Z [save-load] PASS: touch-portrait-rotation
+750: 2026-10-16T04:03:25.7548600Z [remake LIME] notification thread, defer, automatic conflict history/retry, six rumor replies, unread/read retry, small affinity, holiday/after-close schedules, queued closing appointment, legacy name introduction, Adam arcade, confession gate, morning copy: PASS

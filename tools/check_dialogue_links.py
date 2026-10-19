@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Check local dialogue choice destinations and duplicate IDs.
-
-This intentionally does not infer cross-scene script transitions beyond next_id.
-"""
+"""Check active dialogue choice, condition and jump destinations and duplicate IDs."""
 import json
 import sys
 from collections import defaultdict
@@ -31,6 +28,15 @@ for sid, record in scenes.items():
             for item in node:
                 visit(item)
         elif isinstance(node, dict):
+            if node.get("type") == "jump":
+                target = node.get("next_id")
+                if not isinstance(target, str) or target not in scenes:
+                    errors.append(f"{record['file']}:{sid}: missing jump dialogue {target}")
+            if node.get("type") == "condition":
+                for field in ("next_true", "next_false"):
+                    target = node.get(field)
+                    if target and target not in branches and target not in scenes:
+                        errors.append(f"{record['file']}:{sid}: missing condition destination {target}")
             if node.get("type") == "choice":
                 for choice in node.get("choices", []):
                     if not isinstance(choice, dict):
@@ -48,10 +54,9 @@ for sid, record in scenes.items():
     for branch in branches.values():
         visit(branch)
 
-for item in duplicates:
-    print("WARN duplicate dialogue ID:", item)
+errors.extend(f"duplicate dialogue ID: {item}" for item in duplicates)
 for item in errors:
     print("ERROR", item, file=sys.stderr)
 if errors:
     sys.exit(1)
-print(f"OK: checked choice destinations in {len(scenes)} dialogue scenes; {len(duplicates)} duplicate IDs (warnings)")
+print(f"OK: checked choice/condition/jump destinations in {len(scenes)} active dialogue scenes; no duplicate IDs")

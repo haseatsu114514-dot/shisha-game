@@ -1,0 +1,29 @@
+{
+  "tool": "image_gen.imagegen (built-in)",
+  "reason": "First pass measured widths .530/.581/.637 and center variation; retain mint as common in-situ template and correct the other two.",
+  "shared_template": "originals/mint-angel-prototype.png",
+  "calls": [
+    {
+      "id": "double_apple_size_correction",
+      "item_id": "double_apple",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/double_apple-angel-first.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/mint-angel-prototype.png"
+      ],
+      "output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-prototype.png",
+      "prompt": "Use case: precise-object-edit. Input image 1 is the EDIT TARGET double_apple carton with an oversized white wings-and-halo emblem. Input image 2 is the APPROVED COMMON PRINT TEMPLATE (mint carton): use ONLY its exact white emblem outline/proportions and normalized placement; NEVER copy its mint ingredient or green brush. Correct ONLY the white emblem on image 1 so it matches image 2: the same single joined wing pair, THREE broad feather lobes on each side, central bottom dip and separate thick oval halo, opaque white with no text. Match the actual emblem on image 2 without redesigning the feather curves or halo proportions. Reduce the current overly wide emblem in image 1. Its new total width must be exactly 53% of its front panel width, center at front-panel u=0.50,v=0.185, aspect ratio identical to the mint emblem. The image canvas is 1254x1254. Target front panel corners are approximately (265,175),(915,195),(915,1110),(265,1090). Place the ENTIRE white emblem including halo inside bounding box x=418..762,y=286..423, centered (590,354), about344 pixels wide. Move it left and slightly down compared with image1, and make it smaller. There must be generous untouched black stock around this bounded printed mark. Keep the carton canvas, silhouette, camera, top/right folds, scale/location, fruit/ingredient illustration, flavor-colored brush stroke and material exactly as image1; do not move or repaint the brush/ingredients. Preserve true transparent RGBA background. Do not reintroduce AF or any letters, crown, human character, gold, glow, new text, grass, leaf borders or extra objects. Only this emblem size/placement/design-consistency correction."
+    },
+    {
+      "id": "grape_size_correction",
+      "item_id": "grape",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/grape-angel-first.png",
+        "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/mint-angel-prototype.png"
+      ],
+      "output": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/grape-angel-prototype.png",
+      "prompt": "Use case: precise-object-edit. Input image 1 is the EDIT TARGET grape carton with an oversized white wings-and-halo emblem. Input image 2 is the APPROVED COMMON PRINT TEMPLATE (mint carton): use ONLY its exact white emblem outline/proportions and normalized placement; NEVER copy its mint ingredient or green brush. Correct ONLY the white emblem on image 1 so it matches image 2: the same single joined wing pair, THREE broad feather lobes on each side, central bottom dip and separate thick oval halo, opaque white with no text. Match the actual emblem on image 2 without redesigning the feather curves or halo proportions. Reduce the current overly wide emblem in image 1. Its new total width must be exactly 53% of its front panel width, center at front-panel u=0.50,v=0.185, aspect ratio identical to the mint emblem. The image canvas is 1254x1254. Target front panel corners are approximately (279,195),(910,210),(910,1120),(279,1102). Place the ENTIRE white emblem including halo inside bounding box x=427..762,y=303..438, centered (594.5,370.5), about335 pixels wide. Keep its center horizontal and make it notably smaller than image1. There must be generous untouched black stock around this bounded printed mark. Keep the carton canvas, silhouette, camera, top/right folds, scale/location, fruit/ingredient illustration, flavor-colored brush stroke and material exactly as image1; do not move or repaint the brush/ingredients. Preserve true transparent RGBA background. Do not reintroduce AF or any letters, crown, human character, gold, glow, new text, grass, leaf borders or extra objects. Only this emblem size/placement/design-consistency correction."
+    }
+  ]
+}

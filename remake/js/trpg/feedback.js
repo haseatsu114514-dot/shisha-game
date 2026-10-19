@@ -1,0 +1,45 @@
+// Public roll information only: never inspect the hidden traveler profile.
+const grades = ["success", "mixed", "trouble"];
+const gradeOf = total => total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble";
+
+function percentages(totals) {
+  const counts = { success: 0, mixed: 0, trouble: 0 };
+  for (const total of totals) counts[gradeOf(total)]++;
+  // Each percentage is approximate; independent rounding may not sum to 100.
+  return Object.fromEntries(grades.map(grade => [grade, Math.round(counts[grade] * 100 / totals.length)]));
+}
+
+function requireBonus(bonus) {
+  if (!Number.isFinite(bonus)) throw new TypeError("A finite roll bonus is required");
+}
+
+export function rollOdds(bonus) {
+  requireBonus(bonus);
+  const totals = [];
+  for (let first = 1; first <= 6; first++) {
+    for (let second = 1; second <= 6; second++) totals.push(first + second + bonus);
+  }
+  return percentages(totals);
+}
+
+export function checkForecast(scenario, state, kind, { support = false } = {}) {
+  const baseBonus = 1 + (support ? 2 : 0);
+  // The potential is deliberately identical for correct and incorrect guesses.
+  const potentialBonus = kind === "prepare" && state.hypothesis ? scenario.rules?.hypothesisBonus || 0 : 0;
+  return {
+    baseBonus,
+    potentialBonus,
+    odds: rollOdds(baseBonus),
+    bestOdds: rollOdds(baseBonus + potentialBonus),
+  };
+}
+
+export function rerollOdds(dice, bonus, index) {
+  requireBonus(bonus);
+  if (![0, 1].includes(index) || !Array.isArray(dice) || dice.length !== 2
+    || dice.some(die => !Number.isInteger(die) || die < 1 || die > 6)) {
+    throw new RangeError("Choose one of two six-sided dice to reroll");
+  }
+  const kept = dice[1 - index];
+  return percentages(Array.from({ length: 6 }, (_, face) => kept + face + 1 + bonus));
+}

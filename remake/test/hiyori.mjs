@@ -56,6 +56,7 @@ try {
     QA.ch1.setupHooks();
     QA.fresh = () => {
       const state = QA.core.newGame();
+      state.flags._axe_bar_legacy_access = true; // #577: 既存ルート回帰は旧保存として保つ
       Object.assign(state, { phase: "daily", day: 5, slot: 1 });
       QA.core.config.textSpeed = 4;
       QA.vn.vnTest.turbo = false;
@@ -220,6 +221,7 @@ try {
         await daily.playHiyoriEvent("work_talk");
         const story = { count: s.story.hiyori, known: !!s.flags._hiyori_real_self_known, contact: s.contacts.includes("hiyori"), done: route.hiyoriStoriesDone() };
         s.affinity.hiyori = 66;
+        data.DB.hiyori.route.finale.gift = null; // 未登録時の拒否を明示するfixture。正式登録はhiyori_hagal.mjsで検証。
         const withoutGift = bonds.finaleDue("hiyori");
         data.DB.hiyori.route.finale.gift = "silicone_bowl"; // 既に所持する実機材を使うテストfixture
         add("hiyori_bond_finale", [{ type: "condition", condition_type: "romance_open", char_id: "hiyori", next_true: "question", next_false: "friend" }], {

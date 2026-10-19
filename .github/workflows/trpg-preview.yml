@@ -10,7 +10,9 @@ on:
       - 'remake/data/manifest.json'
       - 'tools/export_trpg_preview.py'
       - 'remake/js/trpg/**'
-      - 'remake/css/trpg.css'
+      - 'remake/css/trpg*.css'
+      - 'remake/img/ui/trpg/*.webp'
+      - 'assets/ui/trpg/*.png'
       - 'remake/trpg-preview.html'
       - 'remake/trpg-campaign-preview.html'
       - 'remake/js/core/state.js'
@@ -25,8 +27,14 @@ on:
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
+      - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_experience.mjs'
+      - 'remake/test/browser/trpg_tabletop.mjs'
+      - 'remake/test/browser/trpg_layout.mjs'
+      - 'remake/test/browser/trpg_resize.mjs'
       - 'remake/test/browser/trpg_main.mjs'
+      - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
   push:
     branches: [main]
@@ -39,7 +47,9 @@ on:
       - 'remake/data/manifest.json'
       - 'tools/export_trpg_preview.py'
       - 'remake/js/trpg/**'
-      - 'remake/css/trpg.css'
+      - 'remake/css/trpg*.css'
+      - 'remake/img/ui/trpg/*.webp'
+      - 'assets/ui/trpg/*.png'
       - 'remake/trpg-preview.html'
       - 'remake/trpg-campaign-preview.html'
       - 'remake/js/core/state.js'
@@ -54,8 +64,14 @@ on:
       - 'remake/js/scenes/title.js'
       - 'remake/js/scenes/trpg-room.js'
       - 'remake/test/trpg.mjs'
+      - 'remake/test/trpg_feedback.mjs'
       - 'remake/test/browser/trpg.mjs'
+      - 'remake/test/browser/trpg_experience.mjs'
+      - 'remake/test/browser/trpg_tabletop.mjs'
+      - 'remake/test/browser/trpg_layout.mjs'
+      - 'remake/test/browser/trpg_resize.mjs'
       - 'remake/test/browser/trpg_main.mjs'
+      - 'remake/test/browser/support.mjs'
       - '.github/workflows/trpg-preview.yml'
   workflow_dispatch:
 permissions:
@@ -84,6 +100,7 @@ jobs:
       - name: Scenario and session checks
         run: |
           node --test remake/test/trpg.mjs
+          node --test remake/test/trpg_feedback.mjs
           node --test remake/test/trpg_campaign.mjs
           node --experimental-vm-modules remake/test/trpg_campaign_save.mjs
           python3 tools/lint_dialogue.py trpg_
@@ -105,9 +122,13 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/trpg
+          BROWSER_TIMEOUT_MS: '30000'
         run: |
           node remake/test/browser/trpg.mjs
+          ARTIFACT_DIR=.codex/artifacts/trpg/experience node remake/test/browser/trpg_experience.mjs
           node remake/test/browser/trpg_main.mjs
+          ARTIFACT_DIR=.codex/artifacts/trpg/resize node remake/test/browser/trpg_resize.mjs
+          ARTIFACT_DIR=.codex/artifacts/trpg/tabletop node remake/test/browser/trpg_tabletop.mjs
       - name: Upload screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2

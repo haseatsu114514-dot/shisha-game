@@ -1,0 +1,261 @@
+{
+  "ref": "52e4eb0359af2e804ec7e16389bfef1f9b526b9c",
+  "results": [
+    {
+      "device": "pc",
+      "time": "day",
+      "status": "passed",
+      "signs": [
+        {
+          "spot": "tonari",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "naru",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "adam",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "minto",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "shop",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "choizap",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "c_station",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        }
+      ],
+      "faces": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "kannon": true,
+      "preserved": true
+    },
+    {
+      "device": "pc",
+      "time": "night",
+      "status": "passed",
+      "signs": [
+        {
+          "spot": "tonari",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "naru",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "adam",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "minto",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "shop",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "choizap",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "c_station",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        }
+      ],
+      "faces": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "kannon": true,
+      "preserved": true
+    },
+    {
+      "device": "touch",
+      "time": "day",
+      "status": "passed",
+      "signs": [
+        {
+          "spot": "tonari",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "naru",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "adam",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "minto",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "shop",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "choizap",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "c_station",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        }
+      ],
+      "faces": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "kannon": true,
+      "preserved": true
+    },
+    {
+      "device": "touch",
+      "time": "night",
+      "status": "passed",
+      "signs": [
+        {
+          "spot": "tonari",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "naru",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "adam",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "minto",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "shop",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "choizap",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        },
+        {
+          "spot": "c_station",
+          "width": 100,
+          "color": "rgb(255, 250, 240)",
+          "image": "none",
+          "mask": "none"
+        }
+      ],
+      "faces": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "kannon": true,
+      "preserved": true
+    }
+  ]
+}

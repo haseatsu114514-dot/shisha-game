@@ -14,7 +14,9 @@ const mocks = {
   "core/state.js": { state, save: () => saves++ },
   "core/stats.js": { gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
-  "daily/bonds.js": { afterStory: async () => {}, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
+  "daily/bonds.js": { afterStory: async () => {}, hiyoriQuestionReady: () => false, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
+  "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked },
+  "daily/spot-hours.js": { rinUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
 };
 const modules = new Map();
@@ -30,7 +32,7 @@ async function load(name) {
   return mod;
 }
 const mod = await load("daily/hiyori.js"); await mod.evaluate();
-const { visitHiyoriAtShop, meetHiyoriAtTonari, playHiyoriEvent } = mod.namespace;
+const { visitHiyoriAtShop, meetHiyoriAtTonari, playHiyoriEvent, hiyoriShopLocation, hiyoriShopEncounterDue } = mod.namespace;
 const shops = [{ id: "naru", kind: "rival" }, { id: "adam", kind: "rival" },
   { id: "minto", kind: "rival" }, { id: "shop", kind: "shop" }, { id: "c_station", kind: "spot" }];
 function reset(seed = 0, flags = { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
@@ -40,72 +42,71 @@ function reset(seed = 0, flags = { _hiyori_meeting_done: true, _hiyori_sumi_mess
     contacts: [], met: { hiyori: true }, story: {}, affinity: {}, lovers: [], finales: {}, loveLevel: {} });
   played.length = 0; saves = 0;
 }
-// Every first meeting is retained, regardless of the save seed or initial shop.
-for (const shop of shops) for (let seed = 0; seed < 20; seed++) {
-  reset(seed, {}); assert(await visitHiyoriAtShop(shop));
-  assert.equal(state.flags._hiyori_meeting_shop, shop.id);
-  assert(!await visitHiyoriAtShop(shops[(shops.indexOf(shop) + 1) % shops.length]));
-  state.day++; assert(!await visitHiyoriAtShop(shop), "Report must precede the relay");
-  assert(await meetHiyoriAtTonari(), "The mandatory report must not be randomized");
-}
-const rates = {};
-const gaps = new Set();
-for (const shop of shops) {
-  let hits = 0;
-  for (let seed = 0; seed < 500; seed++) {
-    reset(seed); let lastHit = null;
-    for (let day = 1; day <= 14; day++) {
-      state.day = day;
-      if (await visitHiyoriAtShop(shop)) {
-        hits++;
-        if (lastHit !== null) gaps.add(day - lastHit);
-        lastHit = day;
-      }
-    }
-  }
-  rates[shop.id] = hits / 7000;
-  assert(rates[shop.id] > 0.18 && rates[shop.id] < 0.22, JSON.stringify(rates));
-}
-assert(gaps.size > 5 && gaps.has(1) && gaps.has(5), "Encounters must have varying gaps");
-// A miss cannot be rerolled by repeating the call; a hit locks other shops that day.
-let foundMiss = false;
-for (let seed = 0; seed < 100 && !foundMiss; seed++) {
-  reset(seed); const before = JSON.stringify(state);
-  if (!await visitHiyoriAtShop(shops[0])) {
-    foundMiss = true; assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
-    assert(!await visitHiyoriAtShop(shops[0])); assert.equal(JSON.stringify(state), before);
-  }
-}
-assert(foundMiss);
-reset(131); state.day = 6;
-assert(await visitHiyoriAtShop(shops[2]));
-const count = state.flags._hiyori_repeat_count, points = state.affinity.hiyori;
-state.slot = 1; assert(!await visitHiyoriAtShop(shops[1]));
-assert.equal(state.flags._hiyori_repeat_count, count); assert.equal(state.affinity.hiyori, points);
-let chapterTwoHit = false;
-for (let seed = 0; seed < 100 && !chapterTwoHit; seed++) {
-  reset(seed); state.chapter = 2; state.flags._hiyori_encounter_day = "1:1";
-  chapterTwoHit = await visitHiyoriAtShop(shops[0]);
-}
-assert(chapterTwoHit, "The preceding chapter's day must not block a new encounter");
-state.chapter = 3; assert(!await visitHiyoriAtShop(shops[0]));
-let twoSlotHits = 0;
+// A single shop per time slot; first meetings cover all eligible shops over save seeds.
+const firstLocations = new Set();
 for (let seed = 0; seed < 500; seed++) {
+  reset(seed, {}); state.slot = 1;
+  const before = JSON.stringify(state), location = hiyoriShopLocation();
+  assert(location); firstLocations.add(location);
+  assert.equal(shops.filter(hiyoriShopEncounterDue).length, 1);
+  assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
+  const other = shops.find(s => s.id !== location);
+  assert(!await visitHiyoriAtShop(other));
+  assert(await visitHiyoriAtShop(shops.find(s => s.id === location)));
+  assert.equal(state.flags._hiyori_meeting_shop, location);
+  assert.equal(hiyoriShopLocation(), null);
+  state.day++; assert.equal(hiyoriShopLocation(), null, "Report must precede relay");
+  assert(await meetHiyoriAtTonari());
+}
+assert.deepEqual([...firstLocations].sort(), shops.map(s => s.id).sort());
+let encounters = 0, absent = 0;
+for (let seed = 0; seed < 100; seed++) {
   reset(seed);
   for (let day = 1; day <= 14; day++) for (let slot = 0; slot < 2; slot++) {
     Object.assign(state, { day, slot });
-    if (await visitHiyoriAtShop(shops[(day + slot) % shops.length])) twoSlotHits++;
+    const before = JSON.stringify(state), location = hiyoriShopLocation();
+    assert.equal(hiyoriShopLocation(), location);
+    assert.equal(JSON.stringify(state), before);
+    assert(shops.filter(hiyoriShopEncounterDue).length <= 1);
+    if (!location) { absent++; continue; }
+    const other = shops.find(s => s.id !== location);
+    assert(!await visitHiyoriAtShop(other));
+    assert(await visitHiyoriAtShop(shops.find(s => s.id === location)));
+    encounters++;
+    const saved = JSON.stringify(state), savedCount = saves;
+    assert(!await visitHiyoriAtShop(other));
+    assert.equal(hiyoriShopLocation(), null); assert.equal(JSON.stringify(state), saved);
+    assert.equal(saves, savedCount);
   }
 }
-const twoSlotRate = twoSlotHits / 14000;
-assert(twoSlotRate > 0.16 && twoSlotRate < 0.20, "The existing one-encounter-per-day limit must hold");
-// Story order and required tonari scenes remain reachable and reward only once.
+assert(encounters > 500 && absent > 500, "Both encounter and absent slots must be exercised");
+// A store action may change meeting/unlock/consultation state; keep the entry-time schedule.
+reset(131, {}); state.slot = 1;
+const planned = hiyoriShopLocation();
+shops.find(s => s.id === planned).locked = true;
+assert(await visitHiyoriAtShop(shops.find(s => s.id === planned), { scheduledSpot: planned }));
+delete shops.find(s => s.id === planned).locked;
+// Closure, locks, daytime showroom and accepted invitations override spontaneous appearances.
+reset(131, {}); state.slot = 1;
+const scheduled = shops.find(s => s.id === hiyoriShopLocation());
+scheduled.locked = true; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.locked;
+scheduled.closedOn = state.day % 7; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.closedOn;
+state.visitedDay = { [scheduled.id]: state.day }; assert.notEqual(hiyoriShopLocation(), scheduled.id); state.visitedDay = {};
+state.slot = 0; assert.notEqual(hiyoriShopLocation(), "shop");
+state.pendingInvite = { sender: "hiyori", event: "__hiyori_shop__", day: state.day };
+assert.equal(hiyoriShopLocation(), null); delete state.pendingInvite;
+state.chapter = 3; assert.equal(hiyoriShopLocation(), null);
+// Follow the displayed schedule to the actual relay and cracks; no read/reward injection.
 reset(131, { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true });
-state.day = 6; assert(await visitHiyoriAtShop(shops[2])); assert(state.flags._hiyori_message_delivered);
-state.day = 7; assert(await visitHiyoriAtShop(shops[1])); assert(state.flags._hiyori_cracks_done);
+for (let day = 1; day <= 14 && !state.flags._hiyori_cracks_done; day++) {
+  state.day = day; const id = hiyoriShopLocation();
+  if (id) await visitHiyoriAtShop(shops.find(s => s.id === id));
+}
+assert(state.flags._hiyori_message_delivered && state.flags._hiyori_cracks_done);
 assert(await playHiyoriEvent("tonari_return"));
 const reward = state.affinity.hiyori; assert(!await playHiyoriEvent("tonari_return"));
 assert.equal(state.affinity.hiyori, reward);
 assert(await meetHiyoriAtTonari()); assert(state.flags._hiyori_tonari_followup_done);
+assert.equal(hiyoriShopLocation(), null, "The next tonari meeting must not also appear at another shop");
 assert(!state.flags._hiyori_real_self_known);
-console.log("[hiyori frequency] PASS", JSON.stringify({ rates, twoSlotRate, gaps: [...gaps].sort((a,b) => a-b) }));
+console.log("[hiyori schedule] PASS", JSON.stringify({ firstLocations: [...firstLocations], encounters, absent }));

@@ -10,7 +10,11 @@ import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
+import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
+import { SHOP_ART } from "./shop-art.js";
+import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
+import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -63,23 +67,47 @@ const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
   suyaki_hagal: "bowl_empty_clay.png", flat_charcoal: "coal_flat_cold.png", cube_charcoal: "coal_cold.png",
 };
+// A real <img> error handler also covers failed/aborted delivery requests.
+// Cropping retains the approved main sheet windows and the measured carton margin.
+function windowArt(item, url, box, dimensions, size, kind, fallback) {
+  const [x, y, w, h] = box;
+  const k = Math.min(size * (kind === "generated" ? .88 : 1) / w,
+                     size * (kind === "generated" ? .88 : 1) / h);
+  const root = el(`span.shop-product-art.${kind}`, { "aria-hidden": "true", dataset: { productArt: item.id } });
+  const image = el("img", { alt: "", decoding: "async", style: {
+    position: "absolute", maxWidth: "none", width: `${dimensions[0] * k}px`, height: `${dimensions[1] * k}px`,
+    left: `${-x * k}px`, top: `${-y * k}px`,
+  }, onerror: () => root.replaceWith(fallback()) });
+  root.append(el("span", { style: { position: "relative", display: "block", overflow: "hidden",
+    width: `${w * k}px`, height: `${h * k}px`, flex: "none" } }, [image]));
+  image.src = url; // Attach the error listener before starting the request.
+  return root;
+}
+/** 制作の葉選びも、ショップで採用済みの商品パッケージを使う。未収録・配信失敗は文字へ。 */
+export function flavorPackageArt(id, size = 54) {
+  const item = { id };
+  const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
+    el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
+  ]);
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id];
+  return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
+}
 function productArt(item, flavor, size = 66) {
-  if (flavor) {
-    const [x, y, w, h] = FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)];
-    const k = Math.min(size / w, size / h);
-    return el("span.shop-product-art.botanical", { "aria-hidden": "true" }, [el("span", { style: {
-      display: "block", width: `${w * k}px`, height: `${h * k}px`, backgroundRepeat: "no-repeat",
-      backgroundImage: `url("${FLAVOR_ART}")`, backgroundSize: `${1774 * k}px ${887 * k}px`, backgroundPosition: `${-x * k}px ${-y * k}px`,
-    } })]);
-  }
+  const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
+    el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
+  ]);
+  const botanical = () => windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
+    [1774, 887], size, "botanical", textArt);
+  const generated = flavor && (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]);
+  if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", botanical);
+  if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
-  return el("span.shop-product-art", { "aria-hidden": "true" }, art
-    ? [artImg(art, 60)] : [el("span.shop-type-mark", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" })]);
+  return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();
 }
 function shopHeader(sub, money) {
   return el("header.shop-head", [el("h2", { text: "Dr.fookah" }), el("span.shop-sub", { text: sub }), money]);
 }
-const rinUnavailable = () => state.day % 7 === RIN_AWAY_DAY ? "今日は担当者が出張中" : state.visitedDay.rin === state.day ? "今日は訪問済み" : "";
+const rinUnavailable = () => rinVisitReason(state);
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
@@ -115,7 +143,7 @@ function chooseShopFloor() {
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
         card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
-        card("2F", "ショールーム", unavailable || "1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
+        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
     ]));
@@ -128,7 +156,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
-    setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART] });
+    const firstErrand = errand === "mint" && expense && expenseFlag === "_errand_mint_expensed" && !session.flags._errand_shop_done;
+    setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });
@@ -140,6 +169,22 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
     const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
+    let refusedAt = -Infinity;
+    const refuseOtherPurchase = () => {
+      const now = performance.now();
+      if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
+      refusedAt = now;
+      SE.error();
+      toast("スミ「今日は頼んだミントだけだ。ほかの買い物は、買い出しが終わってからにしろ」", { kind: "warn" });
+    };
+    const pointTo = (button, active) => {
+      if (firstErrand) {
+        button.dataset.errandTarget = String(active);
+        button.style.outline = active ? "3px solid #84569d" : "";
+        button.style.outlineOffset = active ? "2px" : "";
+      }
+      return button;
+    };
     const lookup = (id) => SHOP_FLAVORS.includes(id) ? { item: DB.flavorById[id], flavor: true } : { item: DB.equipById[id], flavor: false };
     const order = () => {
       const rows = [];
@@ -154,6 +199,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     };
     const change = (id, delta) => {
       if (!live()) return;
+      if (firstErrand && delta > 0 && id !== "mint") { refuseOtherPurchase(); return; }
       const { item, flavor } = lookup(id);
       if (!item || !flavor && (!forSale(item) || state.owned.includes(id))) return;
       const n = Math.max(0, Math.min(flavor ? 99 : 1, (cart.get(id) || 0) + delta));
@@ -165,17 +211,30 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       return el("div.shop-quantity", [
         el("button.shop-step", { text: "−", disabled: !n, "aria-label": `${name}を1つ減らす`, dataset: { test: `minus-${item.id}` }, onclick: () => change(item.id, -1) }),
         el("output", { text: n, "aria-label": `${name}の購入数`, dataset: { test: `quantity-${item.id}` } }),
-        el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+        pointTo(el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+          item.id === "mint" && !n && flavorStock("mint") < minStock),
       ]);
     };
     const detail = (item, flavor) => {
       if (!live()) return;
       const current = !flavor && DB.equipById[state.equip[item.type]];
+      const cmp = !flavor ? compareEquipment(item.id, current?.id) : null;
+      const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: item.short_name || item.name, className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
         el("p", { text: item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
+        cmp ? el("small.shop-compare", {
+          dataset: { test: "shop-equip-compare" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: cmp.rows.map((r) => `${r.label}：${r.value}`).join(" ／ "),
+        }) : null,
+        fGuide ? el("small.shop-flavor-guide", {
+          dataset: { test: "shop-flavor-guide" },
+          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
+          text: `${fGuide.makerLabel}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
+        }) : null,
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {
@@ -221,10 +280,24 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         const done = flavorStock(errand) >= minStock;
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
+        if (firstErrand) {
+          const step = done ? "leave" : count ? "purchase" : tab !== "flavor" ? "return-tab"
+            : category !== "all" && category !== DB.flavorById.mint.category ? "return-filter" : "select";
+          errandBox.dataset.guideStep = step;
+          errandBox.textContent = {
+            select: `① ミントの「＋」を押す → ② 下の「購入する」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
+            purchase: "② ↓ 下の「購入する」を押して、ミントの仕入れを確定しよう",
+            leave: "③ ←「店を出る」を押して、スミさんのところへ戻ろう",
+            "return-tab": "①「フレーバー」に戻り、ミントを選ぼう。今日はミントだけ仕入れる",
+            "return-filter": "①「すべて」か「清涼」に戻り、ミントの「＋」を押そう",
+          }[step];
+        }
       }
-      tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.tab === tab); b.setAttribute("aria-pressed", String(b.dataset.tab === tab)); });
+      tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.tab === tab); b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
+        pointTo(b, errandBox?.dataset.guideStep === "return-tab" && b.dataset.tab === "flavor"); });
       filters.hidden = tab !== "flavor";
-      filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category)); });
+      filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
+        pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
       body.replaceChildren(...(tab === "flavor" ? SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)).map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(forSale).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
@@ -234,6 +307,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       checkout.disabled = !count || total > state.money;
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
+      pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
+      pointTo(leaveButton, errandBox?.dataset.guideStep === "leave");
       if (focusTest) {
         const button = body.querySelector(`[data-test="${focusTest}"]`);
         if (button && !button.disabled) button.focus({ preventScroll: true });
@@ -243,6 +318,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (!live() || confirming) return;
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
+      if (firstErrand && rows.some(r => !r.flavor || r.item.id !== "mint")) { refuseOtherPurchase(); return; }
       if (state.money < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);
@@ -287,17 +363,25 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       filters.append(el("button.shop-filter", { text: label, dataset: { category: id }, onclick: () => { if (!live()) return; category = id; body.scrollTop = 0; SE.click(); render(); } }));
     }
     filters.append(el("span", { text: `1箱 ${FLAVOR_BOX_GRAMS}g` }));
+    const leaveButton = el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave });
     const root = showScreen("shop", el("section.shop.shop-paper", { "aria-label": "Dr.fookah ショップ" }, [
       shopHeader("1F ショップ", money), errandBox, tabs, filters, body,
-      el("footer.shop-foot", [el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave }), summary, checkout]),
+      el("footer.shop-foot", [leaveButton, summary, checkout]),
     ]));
     // 過去の画面のイベントが、新しくロードしたセーブや閉店後の状態へ届かないようにする。
-    root.addEventListener("click", (event) => { if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+    root.addEventListener("click", (event) => {
+      if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+      // くじの表示・既存担当のdraw処理はそのまま、初回だけ購入入力を手前で断る。
+      if (firstErrand && event.target.closest?.(".kuji-row button")) {
+        event.preventDefault(); event.stopImmediatePropagation(); refuseOtherPurchase();
+      }
+    }, true);
     render();
   });
 }
 
 export async function visitRin() {
+  if (state.phase !== "daily" || rinUnavailable()) return false;
   cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
   state.visitedDay.rin = state.day;
@@ -308,4 +392,5 @@ export async function visitRin() {
     addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
     toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
   }
+  return true;
 }

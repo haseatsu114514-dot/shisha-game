@@ -1,0 +1,126 @@
+{
+  "head": "7c58a04e3674d5b4a559947ee9d7da6cd77fad00",
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:02:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477172/job/116613409617",
+      "name": "check",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "AI documentation checks"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:03:55Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477324/job/116613410883",
+      "name": "presentation",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 presentation and feedback"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:04:05Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477358/job/116613410650",
+      "name": "browser (selection)",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:08:26Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477166/job/116613410170",
+      "name": "venues",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter play spots"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:03:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477199/job/116613410637",
+      "name": "browser",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Issue 439 playtest regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:09:41Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477190/job/116613410076",
+      "name": "recovery",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Progression recovery regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:08:20Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477196/job/116613410281",
+      "name": "Reversible game display on PC and touch",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:12:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477358/job/116613410898",
+      "name": "browser (direct)",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:12:25Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477358/job/116613411152",
+      "name": "browser (street)",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Chapter 1 street selection"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:32:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477196/job/116613410457",
+      "name": "chromium",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:10:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477196/job/116613410463",
+      "name": "Chapter 1 eve choices and saves",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-15T19:07:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38790477196/job/116613410583",
+      "name": "Chapter 1 focused practice and saves",
+      "startedAt": "2026-10-15T19:01:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Remake browser regressions"
+    }
+  ],
+  "meaning": "12 SUCCESS at old head; not approval of either art direction; new head checks must be read separately"
+}

@@ -1,0 +1,1117 @@
+{
+  "items": [
+    {
+      "id": "mint",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          266,
+          91,
+          1002,
+          1172
+        ],
+        "box": [
+          264,
+          89,
+          740,
+          1085
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "3c5a6c1f6b3762aaee7bb25cb35c7841a660f7f47a13f9495d640fdd8a1a8964"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          37,
+          409,
+          479
+        ],
+        "box": [
+          106,
+          35,
+          305,
+          446
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "c4507c64df2786c130c06f9637f6a85c255f122930014bc0f296e8c5bec979cc"
+      },
+      "path": "remake/img/shop/packages/mint.webp",
+      "bytes": 50190
+    },
+    {
+      "id": "double_apple",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          295,
+          145,
+          962,
+          1126
+        ],
+        "box": [
+          293,
+          143,
+          671,
+          985
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "58f819a24dcc96c4d1903e13b885670b2b4050ddc3b203eef6b2be8610c464cc"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          120,
+          59,
+          393,
+          460
+        ],
+        "box": [
+          118,
+          57,
+          277,
+          405
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "8ea772d1ad130c059927c9e6f16cd87fd105c5855df8e2dc1e4603bcc07c4276"
+      },
+      "path": "remake/img/shop/packages/double_apple.webp",
+      "bytes": 42932
+    },
+    {
+      "id": "blueberry",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          289,
+          153,
+          969,
+          1128
+        ],
+        "box": [
+          287,
+          151,
+          684,
+          979
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "eb2b2f600382c1ee6c109a68aece5d148c0d628d4acb01185e9fbdb17ddcca4a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          118,
+          62,
+          396,
+          461
+        ],
+        "box": [
+          116,
+          60,
+          282,
+          403
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "121ac5fbb206d572232570dcbd914364b3abd01a418d04b3546b93641082b9cf"
+      },
+      "path": "remake/img/shop/packages/blueberry.webp",
+      "bytes": 41850
+    },
+    {
+      "id": "strawberry",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          315,
+          174,
+          968,
+          1102
+        ],
+        "box": [
+          313,
+          172,
+          657,
+          932
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "c31925d3b131adbc8c7245b6e94a3cb4d8959e51ae3bcec6ea329814f7bd04c8"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          128,
+          71,
+          396,
+          450
+        ],
+        "box": [
+          126,
+          69,
+          272,
+          383
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "18487e3022f796877f0519ddad9f5983a603a7e3d5d5abc7963a8b68b0bfa57e"
+      },
+      "path": "remake/img/shop/packages/strawberry.webp",
+      "bytes": 42848
+    },
+    {
+      "id": "vanilla",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          281,
+          129,
+          984,
+          1131
+        ],
+        "box": [
+          279,
+          127,
+          707,
+          1006
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "75c9544765b284949f61fcadf53d19d32dbffc5974cc973a5ba50c2be20452fb"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          114,
+          52,
+          402,
+          462
+        ],
+        "box": [
+          112,
+          50,
+          292,
+          414
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "ea663b7db21ecc507c3d7bf4f3087e59163a1be39d6e9d6b118d1fc745e20894"
+      },
+      "path": "remake/img/shop/packages/vanilla.webp",
+      "bytes": 42616
+    },
+    {
+      "id": "pineapple",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          290,
+          132,
+          969,
+          1133
+        ],
+        "box": [
+          288,
+          130,
+          683,
+          1005
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "a839b15b413d1fc54a9a9719498f800c1964c86dfa75f0d39922b6e60d80afa3"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          118,
+          54,
+          396,
+          463
+        ],
+        "box": [
+          116,
+          52,
+          282,
+          413
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "12c6eff02b6f691d643c652e940e879e2be41d0119fb707ee1d5f60e68cc1feb"
+      },
+      "path": "remake/img/shop/packages/pineapple.webp",
+      "bytes": 47514
+    },
+    {
+      "id": "coconut",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          289,
+          124,
+          977,
+          1151
+        ],
+        "box": [
+          287,
+          122,
+          692,
+          1031
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "4b610a793fe6ff3fbbb99ddff9f511dcc0412d59a55ac44abe84839ff204f686"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          118,
+          50,
+          399,
+          470
+        ],
+        "box": [
+          116,
+          48,
+          285,
+          424
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "d5d4055d56a8bb280ead024658c56754087abc5ec96c2a5766e06f7b76609bbd"
+      },
+      "path": "remake/img/shop/packages/coconut.webp",
+      "bytes": 45618
+    },
+    {
+      "id": "mango",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          268,
+          103,
+          991,
+          1168
+        ],
+        "box": [
+          266,
+          101,
+          727,
+          1069
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "944bcab4df46a4b30794d5034594932147f2abfbcc246e85c478ceab54ba1451"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          42,
+          405,
+          477
+        ],
+        "box": [
+          107,
+          40,
+          300,
+          439
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "b8068caac90bd11c68c86d7f1c2291f456c141ca3bc6ec4b52ce95dfa786fa6a"
+      },
+      "path": "remake/img/shop/packages/mango.webp",
+      "bytes": 46000
+    },
+    {
+      "id": "lemon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          263,
+          87,
+          1015,
+          1187
+        ],
+        "box": [
+          261,
+          85,
+          756,
+          1104
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "e5a573b9a73765cc73e55068f6fb8ec0271c8577e27e5b7c5c1bbda723f70a1a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          35,
+          414,
+          485
+        ],
+        "box": [
+          105,
+          33,
+          311,
+          454
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "d559975c369438b14fdcad813a83b5bb93f9322d407519622249c59f3203192e"
+      },
+      "path": "remake/img/shop/packages/lemon.webp",
+      "bytes": 53026
+    },
+    {
+      "id": "peach",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          273,
+          119,
+          1022,
+          1158
+        ],
+        "box": [
+          271,
+          117,
+          753,
+          1043
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "9c5c65203287f60d3596912e5f583cdf16060de004b6c2107040c8c9a1506b86"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          111,
+          48,
+          418,
+          473
+        ],
+        "box": [
+          109,
+          46,
+          311,
+          429
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "4258120ce3dd98a9936be31c73f40eee24220b90aa984376f8d12ee9945ebc85"
+      },
+      "path": "remake/img/shop/packages/peach.webp",
+      "bytes": 49256
+    },
+    {
+      "id": "orange",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          267,
+          90,
+          1005,
+          1172
+        ],
+        "box": [
+          265,
+          88,
+          742,
+          1086
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "dd7a9fa79c21aeb465133f9b2abf29bd71e2b6f6771106db0942eb22550ae343"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          36,
+          410,
+          479
+        ],
+        "box": [
+          107,
+          34,
+          305,
+          447
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "10e874e394846c0a41ff090873398c3b5d8459c64cb38efdcdee2e62ed930ad3"
+      },
+      "path": "remake/img/shop/packages/orange.webp",
+      "bytes": 50190
+    },
+    {
+      "id": "grape",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          260,
+          135,
+          1010,
+          1127
+        ],
+        "box": [
+          258,
+          133,
+          754,
+          996
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "781042ef913ccc87f0a33020bdfa4cbaf2e8a5bc72d98ccbba1a081907ffb0c5"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          55,
+          412,
+          461
+        ],
+        "box": [
+          104,
+          53,
+          310,
+          410
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "327cd109c22ac08bd2045f5948dc1b5b3411b33a0b4b60504cdd5aa114f60dd0"
+      },
+      "path": "remake/img/shop/packages/grape.webp",
+      "bytes": 53906
+    },
+    {
+      "id": "melon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          263,
+          133,
+          1013,
+          1154
+        ],
+        "box": [
+          261,
+          131,
+          754,
+          1025
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "f37de9bc82bc7c5b3b7c970536b0245a40f7cd57415e29fb99cf312044a2ada1"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          54,
+          414,
+          471
+        ],
+        "box": [
+          105,
+          52,
+          311,
+          421
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "0f586e831aa6509e0dc227f17dc67b4ed89780142658985a59ff0c0436cab9f5"
+      },
+      "path": "remake/img/shop/packages/melon.webp",
+      "bytes": 47684
+    },
+    {
+      "id": "watermelon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          293,
+          143,
+          969,
+          1126
+        ],
+        "box": [
+          291,
+          141,
+          680,
+          987
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "8b9d901efdf72d624b6092538d86113d53a4e27690f063d905b00c4d8b4e575f"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          119,
+          58,
+          396,
+          460
+        ],
+        "box": [
+          117,
+          56,
+          281,
+          406
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "c2fa8e55e7113649fde895f7a001978428910f144778221f93b00722c6c54b89"
+      },
+      "path": "remake/img/shop/packages/watermelon.webp",
+      "bytes": 44272
+    },
+    {
+      "id": "banana",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          280,
+          132,
+          983,
+          1144
+        ],
+        "box": [
+          278,
+          130,
+          707,
+          1016
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d46e87daf107d8a0afbed9b14106acc826deec715fdb460cc7d5d05a3756e3ee"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          114,
+          54,
+          402,
+          467
+        ],
+        "box": [
+          112,
+          52,
+          292,
+          417
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "cd00d066c81cd54befd080ef56518baaf9a4754fab864781b45928f561a2703b"
+      },
+      "path": "remake/img/shop/packages/banana.webp",
+      "bytes": 40348
+    },
+    {
+      "id": "cinnamon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          275,
+          134,
+          993,
+          1142
+        ],
+        "box": [
+          273,
+          132,
+          722,
+          1012
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "1084bd11baf962d4c93853698532f364961bfdb787888afbf47e969fd63fb1c8"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          112,
+          55,
+          405,
+          466
+        ],
+        "box": [
+          110,
+          53,
+          297,
+          415
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "c1c8225738c5c16134634f40ea3b520a8f17c889e799130d0d8ed15ce285f935"
+      },
+      "path": "remake/img/shop/packages/cinnamon.webp",
+      "bytes": 43274
+    },
+    {
+      "id": "rose",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          265,
+          95,
+          998,
+          1151
+        ],
+        "box": [
+          263,
+          93,
+          737,
+          1060
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "8fdda81e260f0734617f5134119f49acfd723b24f6a452c3b0e6fae89e2c907a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          38,
+          408,
+          470
+        ],
+        "box": [
+          106,
+          36,
+          304,
+          436
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "e7a933c0d44f49ea66c31b0d49cfbd78c5175c56214bb36134df63d2fdd6b614"
+      },
+      "path": "remake/img/shop/packages/rose.webp",
+      "bytes": 48806
+    },
+    {
+      "id": "lychee",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          264,
+          92,
+          1003,
+          1173
+        ],
+        "box": [
+          262,
+          90,
+          743,
+          1085
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "7825b6d66880fcba44f2adc9cc3b3107da74dfeb9bea6280e157ba856776bb39"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          37,
+          410,
+          479
+        ],
+        "box": [
+          105,
+          35,
+          307,
+          446
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "f99a4ea1c92ff428ff8139523630b60ba980ffaed3e344044fc09dd541ea7595"
+      },
+      "path": "remake/img/shop/packages/lychee.webp",
+      "bytes": 49460
+    },
+    {
+      "id": "lotos_hagal",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          126,
+          319,
+          1235,
+          962
+        ],
+        "box": [
+          124,
+          317,
+          1113,
+          647
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d657732cc764dc824c48970ec55f30fc4a29d3e15147a0cf97399dcb12104870"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          51,
+          130,
+          504,
+          393
+        ],
+        "box": [
+          49,
+          128,
+          457,
+          267
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "ee33939bfad083677d8e8a6fa82dbf219bbe55ec9f026b9e904ffc17f01ce498"
+      },
+      "path": "remake/img/shop/equipment/lotos_hagal.webp",
+      "bytes": 26976
+    },
+    {
+      "id": "tanukish_lid",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          97,
+          177,
+          1156,
+          1079
+        ],
+        "box": [
+          95,
+          175,
+          1063,
+          906
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "76147759957dca9a8913b85cc2a9bee7d43bd536a0e653a501887e89b6643e39"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          39,
+          72,
+          472,
+          441
+        ],
+        "box": [
+          37,
+          70,
+          437,
+          373
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "58f4060eb1345832ae996d30664d132298e9bc27214350676a164f6e9d61d7f3"
+      },
+      "path": "remake/img/shop/equipment/tanukish_lid.webp",
+      "bytes": 37928
+    },
+    {
+      "id": "amaburst_hms",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          85,
+          313,
+          1222,
+          985
+        ],
+        "box": [
+          83,
+          311,
+          1141,
+          676
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d844144b25c090cb0fdd829707c17a1623e498cece925f0e915b6b78d07f065e"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          34,
+          127,
+          499,
+          403
+        ],
+        "box": [
+          32,
+          125,
+          469,
+          280
+        ],
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "5237068d76fc9b19b5c0030a14f2e93665531448a3b58941bb64a76df1a24e61"
+      },
+      "path": "remake/img/shop/equipment/amaburst_hms.webp",
+      "bytes": 42840
+    }
+  ]
+}

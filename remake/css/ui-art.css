@@ -87,17 +87,6 @@
 .dc-row { font-size: 16px; }
 .dc-row span { font-size: 13px; letter-spacing: 0.03em; }
 .dc-row.money b { font-size: 20px; line-height: 1.2; }
-.hud-lime span {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 22px;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  letter-spacing: 0;
-  text-align: center;
-}
 .hud-stamina { width: max-content; flex: none; }
 .hud-stamina > span, .hud-stamina .hud-bar { flex: none; }
 .hud-stamina, .hud-menu, .hud-level { border-image-width: 14px; }

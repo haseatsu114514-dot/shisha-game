@@ -11,7 +11,6 @@ export function withStoreArrival(host, curtain, opts, { fast = false, reduced = 
       "aria-hidden": "true", dataset: { test: "store-arrival", store: opts.spotId },
     }, [el("div.store-arrival-card", [
       storeLogo(opts.spotId, { width: 360, height: 208 }),
-      opts.area ? el("small", { text: opts.area }) : null,
     ])]);
     host.append(node);
     shownAt = performance.now();

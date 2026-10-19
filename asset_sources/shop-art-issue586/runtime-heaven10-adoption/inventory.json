@@ -1,0 +1,224 @@
+[
+  {
+    "id": "mint",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/mint.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "double_apple",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/double_apple.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "blueberry",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/blueberry.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "strawberry",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/strawberry.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "vanilla",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      1180,
+      83,
+      304,
+      246
+    ]
+  },
+  {
+    "id": "pineapple",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/pineapple.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "coconut",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      10,
+      335,
+      285,
+      265
+    ]
+  },
+  {
+    "id": "mango",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      311,
+      335,
+      296,
+      271
+    ]
+  },
+  {
+    "id": "lemon",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/lemon.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "peach",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      893,
+      336,
+      291,
+      266
+    ]
+  },
+  {
+    "id": "orange",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/orange.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "grape",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/grape.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "melon",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      19,
+      608,
+      280,
+      252
+    ]
+  },
+  {
+    "id": "watermelon",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/watermelon.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "banana",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      607,
+      600,
+      281,
+      259
+    ]
+  },
+  {
+    "id": "cinnamon",
+    "kind": "flavor",
+    "active_status": "adopted Heaven10",
+    "active_image": "remake/img/shop/heaven10/cinnamon.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "rose",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      1183,
+      606,
+      309,
+      255
+    ]
+  },
+  {
+    "id": "lychee",
+    "kind": "flavor",
+    "active_status": "pending maker-specific art; approved main botanical baseline retained",
+    "active_image": "remake/img/shop/flavors.webp",
+    "baseline_crop": [
+      1485,
+      602,
+      281,
+      260
+    ]
+  },
+  {
+    "id": "silicone_bowl",
+    "kind": "bowl",
+    "active_status": "existing bowl/charcoal baseline retained",
+    "active_image": "remake/img/ui/making/bowl_empty_silicone.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "hagal_80beat",
+    "kind": "bowl",
+    "active_status": "existing bowl/charcoal baseline retained",
+    "active_image": "remake/img/ui/making/bowl_empty_phunnel.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "suyaki_hagal",
+    "kind": "bowl",
+    "active_status": "existing bowl/charcoal baseline retained",
+    "active_image": "remake/img/ui/making/bowl_empty_clay.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "lotos_hagal",
+    "kind": "hms",
+    "active_status": "held HMD candidate; runtime text HMD",
+    "active_image": null,
+    "baseline_crop": null
+  },
+  {
+    "id": "tanukish_lid",
+    "kind": "hms",
+    "active_status": "held HMD candidate; runtime text HMD",
+    "active_image": null,
+    "baseline_crop": null
+  },
+  {
+    "id": "amaburst_hms",
+    "kind": "hms",
+    "active_status": "held HMD candidate; runtime text HMD",
+    "active_image": null,
+    "baseline_crop": null
+  },
+  {
+    "id": "flat_charcoal",
+    "kind": "charcoal",
+    "active_status": "existing bowl/charcoal baseline retained",
+    "active_image": "remake/img/ui/making/coal_flat_cold.webp",
+    "baseline_crop": null
+  },
+  {
+    "id": "cube_charcoal",
+    "kind": "charcoal",
+    "active_status": "existing bowl/charcoal baseline retained",
+    "active_image": "remake/img/ui/making/coal_cold.webp",
+    "baseline_crop": null
+  }
+]

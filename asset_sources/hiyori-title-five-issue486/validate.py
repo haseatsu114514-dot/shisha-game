@@ -15,4 +15,4 @@ for scene,name in SCENES.items():
     assert {"character":"hiyori","file":name} in manifest["titleArts"]
     assert "ui/title_arts/"+name in manifest["webp"]
     assert Image.open(png).size==Image.open(ROOT/"remake/img/ui/title_arts"/Path(name).with_suffix(".webp")).size==(1024,1536)
-print("PASS: 5 Hiyori / 23 titles / 7 equally weighted characters; two source-identical PNG and decoded WebP; all previously adopted image bytes and Hiyori portraits unchanged")
+print("PASS: 5 Hiyori / 23 titles / 7 equally weighted characters; two source-identical PNG and decoded WebP; previously adopted title image bytes unchanged")

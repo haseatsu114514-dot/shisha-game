@@ -1,0 +1,440 @@
+{
+  "scope": "source-only representative comparison; adoption HOLD",
+  "tool": "image_gen.imagegen built-in",
+  "actual_generation_calls": 9,
+  "unique_native_outputs": 9,
+  "native_source_png_files_checked": 11,
+  "selected_cartons": 3,
+  "canonical_mark": 1,
+  "native_checks": [
+    {
+      "path": "candidates/double_apple-angel-first.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        39,
+        0,
+        1216,
+        1254
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        261,
+        136,
+        995,
+        1117
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "3faefb7c802cc956b92fbc5389c21cc37a10710b8334c40851c397bd74838368",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "candidates/double_apple-angel-size-correction.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        31,
+        20,
+        1210,
+        1222
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        234,
+        94,
+        1031,
+        1150
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "6c4824fc8d053600c468a47369b54b1a4e0698eb5d8335d7807ba43f33f15742",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "candidates/grape-angel-first.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        59,
+        8,
+        1186,
+        1214
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        274,
+        147,
+        985,
+        1123
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "f7baaa446a15a00792dcb52426c5e083133fdef4800b7aee38a3173ddf804a2a",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "candidates/grape-angel-size-correction.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        152,
+        25,
+        1136,
+        1206
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        274,
+        146,
+        988,
+        1124
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "candidates/mint-angel-first.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        0,
+        99,
+        1144,
+        1220
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        308,
+        213,
+        947,
+        1054
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "68425398817265ab63aa3fb5618f143d79ebc5e2216a89641ee2c75d7cebf3fd",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/canonical-white-angel-mark.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        29,
+        262,
+        1200,
+        1017
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        67,
+        406,
+        1187,
+        854
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "909a26df9e58dcf18fba26754a3227a6c63a2811d232bc6726096aebcb509e7c",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/double_apple-angel-aligned.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        0,
+        0,
+        1200,
+        1238
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        261,
+        136,
+        996,
+        1117
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "e38a11b5fbf787be06bb5a87a58ac9bdb7cd6d0aedc04512f263c827551c7cf3",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/double_apple-angel-positioned.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        103,
+        0,
+        1224,
+        1180
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        260,
+        135,
+        996,
+        1117
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/grape-angel-prototype.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        152,
+        25,
+        1136,
+        1206
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        274,
+        146,
+        988,
+        1124
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/mint-angel-aligned.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        140,
+        20,
+        1152,
+        1205
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        308,
+        212,
+        947,
+        1054
+      ],
+      "edge_alpha_max": 0,
+      "sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "matches_generator_bytes": true
+    },
+    {
+      "path": "originals/mint-angel-prototype.png",
+      "decode": "PASS",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        0,
+        99,
+        1144,
+        1220
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        308,
+        213,
+        947,
+        1054
+      ],
+      "edge_alpha_max": 1,
+      "sha256": "68425398817265ab63aa3fb5618f143d79ebc5e2216a89641ee2c75d7cebf3fd",
+      "matches_generator_bytes": true
+    }
+  ],
+  "generator_source_checks": [
+    {
+      "id": "canonical_white_angel_mark",
+      "source_sha256": "909a26df9e58dcf18fba26754a3227a6c63a2811d232bc6726096aebcb509e7c",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/canonical-white-angel-mark.png"
+    },
+    {
+      "id": "mint",
+      "source_sha256": "68425398817265ab63aa3fb5618f143d79ebc5e2216a89641ee2c75d7cebf3fd",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/mint-angel-first.png"
+    },
+    {
+      "id": "double_apple",
+      "source_sha256": "3faefb7c802cc956b92fbc5389c21cc37a10710b8334c40851c397bd74838368",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/double_apple-angel-first.png"
+    },
+    {
+      "id": "grape",
+      "source_sha256": "f7baaa446a15a00792dcb52426c5e083133fdef4800b7aee38a3173ddf804a2a",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/grape-angel-first.png"
+    },
+    {
+      "id": "double_apple_size_correction",
+      "source_sha256": "6c4824fc8d053600c468a47369b54b1a4e0698eb5d8335d7807ba43f33f15742",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/double_apple-angel-size-correction.png"
+    },
+    {
+      "id": "grape_size_correction",
+      "source_sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/candidates/grape-angel-size-correction.png"
+    },
+    {
+      "id": "mint_common_template_alignment",
+      "source_sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/mint-angel-aligned.png"
+    },
+    {
+      "id": "double_apple_common_template_alignment",
+      "source_sha256": "e38a11b5fbf787be06bb5a87a58ac9bdb7cd6d0aedc04512f263c827551c7cf3",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-aligned.png"
+    },
+    {
+      "id": "double_apple_position_only",
+      "source_sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "saved_equals_original": true,
+      "saved_path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/prototype-retail-angel-mark-v3/originals/double_apple-angel-positioned.png"
+    }
+  ],
+  "visual_review": {
+    "af_letters": "Absent from all 3 selected cartons (visual inspection, not OCR automation).",
+    "mark": "White joined wing pair, three feather lobes per side and separate oval halo in all3; original independent motif. Same common reference; generated contours/spacing vary, not pixel-identical.",
+    "size_and_position": "Approximate width 44.6%-46.3% of front panel; centers u=.479-.513,v=.184-.194. Measured with manually estimated panel corners. Final review pending.",
+    "pairwise_contour_iou": [
+      {
+        "pair": [
+          "mint",
+          "double_apple"
+        ],
+        "shape_iou_after_bbox_normalization": 0.8465336243633718
+      },
+      {
+        "pair": [
+          "mint",
+          "grape"
+        ],
+        "shape_iou_after_bbox_normalization": 0.8862463421122639
+      },
+      {
+        "pair": [
+          "double_apple",
+          "grape"
+        ],
+        "shape_iou_after_bbox_normalization": 0.928482486059228
+      }
+    ],
+    "package": "Black shallow cartons, original flavor colors and own mint/apple/grape ingredients retained; no decorative grass/vines/crown/text/human angel/gold/glow. Generator microtexture differs; native sources preserved.",
+    "small_size": "Comparison includes full native framing at128px; white halo+wing motif remains distinguishable.",
+    "alpha": "RGBA true transparency. Faint low-alpha edge noise remains in native outputs; no production-cleanup claim. Preview-only crop/scale ignores alpha<8 for layout; native PNGs unmodified."
+  },
+  "old_asset_preservation": {
+    "baseline_head": "4e6467081959d67d759436cab8f5c83a9a55e456",
+    "checked_files": 1234,
+    "changed_paths": [],
+    "diff_scope": "only new prototype-retail-angel-mark-v3/",
+    "result": "PASS"
+  },
+  "hmd_generated_this_revision": false,
+  "hmd_sha256_unchanged": "e1015b5ed88d31ef81f236905aa5538c6d78ac04bf513eac83901aca57df4466",
+  "runtime_data_delivery_changes": "NONE; full task delta restricted to new v3 source folder",
+  "local_checks": {
+    "png_decode": "PASS",
+    "generator_byte_identity": "PASS",
+    "agent_docs": "PASS (5 instruction files, local links, shared rules and safety)",
+    "git_diff_check": "PASS"
+  },
+  "game_tests": "Not rerun: no game-code/data/delivery changes. Normal required CI runs on exact pushed head. Prior-head CI success is not adoption approval.",
+  "remaining": [
+    "Human art-direction review of common white angel mark and cartons",
+    "Printed contours/halo spacing are not exact copies; uniformity tolerance needs review before adoption",
+    "Alpha-edge cleanup and final delivery/export only after adoption authorization"
+  ],
+  "adoption": "HOLD; no mass generation/integration/merge/deletion"
+}

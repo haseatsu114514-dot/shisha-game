@@ -3,6 +3,8 @@ import {suite,assertFits} from './support.mjs';
 async function setup(page){await page.evaluate(async()=>{
  window.W={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),daily:await import('./js/daily/hiyori.js'),route:await import('./js/core/hiyori-route.js'),bonds:await import('./js/daily/bonds.js'),romance:await import('./js/daily/romance.js')};
  (await import('./js/chapters/ch1.js')).setupHooks();
+ // 未登録機材を前提とする既存の拒否ケース。正式機材の接続はhiyori_hagal.mjsで別に検証する。
+ W.data.DB.hiyori.route.finale.gift=null;
  W.fresh=()=>{const s=W.core.newGame();Object.assign(s,{phase:'daily',day:10,slot:1,money:90000,stamina:80});s.met.hiyori=true;s.contacts.push('hiyori');s.affinity.hiyori=59;
   for(const f of ['_intro_hiyori','_hiyori_meeting_done','_hiyori_sumi_message_done','_hiyori_message_delivered','_hiyori_cracks_done','_hiyori_tonari_return_done','_hiyori_tonari_followup_done','_hiyori_tonari_afterwork_done','_hiyori_real_self_known'])s.flags[f]=true;
   W.core.config.textSpeed=4;W.vn.vnTest.turbo=true;W.vn.vnTest.choose=()=>0;return s;};W.fresh();
@@ -12,6 +14,83 @@ async function setup(page){await page.evaluate(async()=>{
 async function work(page,answer=0){return page.evaluate(async answer=>{W.vn.vnTest.choose=()=>answer;return W.daily.playHiyoriEvent('work_talk');},answer);}
 await suite('hiyori-work-relationship',async run=>{
  const check=(label,...args)=>!process.env.TEST_CASES||label.includes(process.env.TEST_CASES)?run(label,...args):Promise.resolve();
+ await check('tonari-presence-question-can-play',async page=>{
+  await setup(page);
+  for(const chapter of [1,2])for(const answer of [null,0,1]){
+   const before=await page.evaluate(async({chapter,answer})=>{
+    const s=W.fresh();s.chapter=chapter;s.flags._hiyori_work_talk_done=true;
+    if(answer!==null)s.romanceChoices.bond_q1_hiyori={char:'hiyori',value:answer,day:s.day};
+    W.people=await import('./js/daily/spot-people.js');W.spots=await import('./js/daily/spots.js');
+    const snapshot=JSON.stringify(s),present=W.daily.hiyoriAtTonari(),listed=W.people.spotPeople(W.spots.spotById('tonari')).some(p=>p.id==='hiyori');
+    window.mapFlow=(await import('./js/daily/map.js')).chooseSpot();
+    return {present,listed,unchanged:snapshot===JSON.stringify(s)};
+   },{chapter,answer});
+   assert(before.present&&before.listed&&before.unchanged,JSON.stringify({chapter,answer,before}));
+   await page.locator('[data-test="pin-tonari"] img[alt="ひより"]').waitFor();
+   const after=await page.evaluate(async()=>{const played=await W.daily.meetHiyoriAtTonari();return {played,done:W.core.state.flags._hiyori_bond_question_done,value:W.core.state.romanceChoices.bond_q1_hiyori.value,present:W.daily.hiyoriAtTonari()};});
+   assert(after.played&&after.done&&!after.present,JSON.stringify(after));assert.equal(after.value,answer??0);
+  }
+ });
+ await check('tonari-presence-question-unavailable',async page=>{
+  await setup(page);
+  const results=await page.evaluate(async()=>{
+   const people=await import('./js/daily/spot-people.js'),spots=await import('./js/daily/spots.js');
+   const route=structuredClone(W.data.DB.hiyori.route),dialogue=route.question.dialogue,scene=W.data.DB.dialogues[dialogue];
+   const cases={
+    chapter3:s=>s.chapter=3,chapter4:s=>s.chapter=4,
+    disabled:()=>W.data.DB.hiyori.route.enabled=false,
+    unread_reveal:s=>delete s.flags._hiyori_real_self_known,
+    unmet:s=>s.met.hiyori=false,
+    missing_flag:()=>delete W.data.DB.hiyori.route.question.flag,
+    completed:s=>s.flags[route.question.flag]=true,
+    configured_completed:s=>{W.data.DB.hiyori.route.question.flag='_configured_question_done';s.flags._configured_question_done=true;},
+    missing_script:()=>delete W.data.DB.dialogues[dialogue],
+    empty_script:()=>W.data.DB.dialogues[dialogue]={...scene,lines:[]},
+    preview_script:()=>W.data.DB.dialogues[dialogue]={...scene,metadata:{...scene.metadata,preview_only:true}},
+    lover:s=>s.lovers.push('hiyori'),friend:s=>s.flags._friend_hiyori=true,
+    finale_seen:s=>s.finales.hiyori={route:'friend',day:s.day,chapter:s.chapter},
+    invalid_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori'},
+    other_answer:s=>s.romanceChoices[route.question.choice]={char:'rin',value:1},
+    negative_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori',value:-1},
+    nan_answer:s=>s.romanceChoices[route.question.choice]={char:'hiyori',value:NaN},
+   },out=[];
+   for(const [label,change] of Object.entries(cases)){
+    W.data.DB.hiyori.route=structuredClone(route);W.data.DB.dialogues[dialogue]=scene;
+    const s=W.fresh();s.flags._hiyori_work_talk_done=true;change(s);
+    const snapshot=JSON.stringify(s),present=W.daily.hiyoriAtTonari(),listed=people.spotPeople(spots.spotById('tonari')).some(p=>p.id==='hiyori');
+    const played=await W.daily.meetHiyoriAtTonari();out.push({label,present,listed,played,unchanged:snapshot===JSON.stringify(s)});
+   }
+   W.data.DB.hiyori.route=route;W.data.DB.dialogues[dialogue]=scene;return out;
+  });
+  for(const r of results)assert(!r.present&&!r.listed&&!r.played&&r.unchanged,JSON.stringify(r));
+ });
+ await check('tonari-presence-chapter3-map-hides-blocked-question',async page=>{
+  await setup(page);await page.evaluate(async()=>{const s=W.core.state;s.chapter=3;s.flags._hiyori_work_talk_done=true;window.mapFlow=(await import('./js/daily/map.js')).chooseSpot();});
+  await page.locator('[data-test="pin-tonari"] .pin-people').waitFor();
+  assert.equal(await page.locator('[data-test="pin-tonari"] img[alt="ひより"]').count(),0);
+  assert(!await page.evaluate(()=>W.daily.meetHiyoriAtTonari()));
+ });
+ await check('tonari-presence-other-encounters-and-chapter3-finale',async page=>{
+  await setup(page);const results=await page.evaluate(async()=>{
+   const out=[];
+   for(const id of ['tonari_followup','tonari_afterwork','work_talk']){
+    const s=W.fresh();
+    if(id==='tonari_followup')delete s.flags._hiyori_tonari_followup_done;
+    if(id!=='work_talk'){delete s.flags._hiyori_tonari_afterwork_done;delete s.flags._hiyori_real_self_known;}
+    const present=W.daily.hiyoriAtTonari(),played=await W.daily.meetHiyoriAtTonari();
+    out.push({id,present,played,done:!!s.flags[W.route.hiyoriRoute().events.find(e=>e.id===id).flag]});
+   }
+   const report=W.fresh();report.flags={_hiyori_meeting_done:true};
+   out.push({id:'sumi_message',present:W.daily.hiyoriAtTonari(),played:await W.daily.meetHiyoriAtTonari(),done:!!report.flags._hiyori_sumi_message_done});
+   const s=W.fresh();s.chapter=3;s.affinity.hiyori=66;s.flags._hiyori_work_talk_done=s.flags._hiyori_bond_question_done=true;
+   s.romanceChoices.bond_q1_hiyori={char:'hiyori',value:0,day:s.day};W.data.DB.hiyori.route.finale.gift='suyaki_hiyori';
+   s.slot=0;const daytime=W.daily.hiyoriAtTonari();s.slot=1;
+   const present=W.daily.hiyoriAtTonari(),played=await W.daily.meetHiyoriAtTonari();
+   return {out,finale:{daytime,present,played,done:!!s.flags._hiyori_bond_finale_done,remaining:W.daily.hiyoriAtTonari(),gifts:s.owned.filter(id=>id==='suyaki_hiyori').length}};
+  });
+  for(const r of results.out)assert(r.played&&r.done&&r.present===(r.id!=='sumi_message'),JSON.stringify(r));
+  const f=results.finale;assert(!f.daytime&&f.present&&f.played&&f.done&&!f.remaining,JSON.stringify(f));assert.equal(f.gifts,1);
+ });
  await check('only-real-self-read-unlocks-work-and-no-gift-unlocks-finale',async page=>{
   await setup(page);const r=await page.evaluate(async()=>{const s=W.core.state;s.affinity.hiyori=100;delete s.flags._hiyori_real_self_known;const before=JSON.stringify(s),early=await W.daily.playHiyoriEvent('work_talk');
    return {early,same:JSON.stringify(s)===before,finale:W.bonds.finaleDue('hiyori'),status:W.route.hiyoriEventStatus('work_talk')};});

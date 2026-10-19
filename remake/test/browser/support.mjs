@@ -10,19 +10,24 @@ export const baseURL = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const artifacts = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 
 // Each case uses a new browser context: no existing player's storage is opened.
-export async function suite(name, run) {
+export async function suite(name, run, {
+  entry = baseURL,
+  readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
+} = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
+  const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
   const results = [];
   const browser = await chromium.launch({
     headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
   });
   async function check(label, body, options = {}) {
+    if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
     const errors = [];
     const failedResources = [];
-    page.setDefaultTimeout(10000);
+    page.setDefaultTimeout(timeoutMs);
     page.on("pageerror", error => errors.push(error.message));
     page.on("response", response => {
       if (response.status() >= 400) failedResources.push(`${response.status()} ${response.url()}`);
@@ -35,8 +40,9 @@ export async function suite(name, run) {
     });
     const prefix = path.join(artifacts, `${name}-${label}`);
     try {
-      await page.goto(baseURL, { waitUntil: "load" });
-      await page.locator('[data-test="title-new"]').waitFor();
+      await page.goto(entry, { waitUntil: "load" });
+      // 起動時は書体と選んだタイトル画像を待つ。工程中の操作とは別の上限。
+      await page.locator(readySelector).waitFor({ timeout: 30000 });
       await page.locator("#boot").waitFor({ state: "detached" });
       await body(page);
       assert.deepEqual(errors, [], "Unexpected browser errors");
@@ -57,7 +63,7 @@ export async function suite(name, run) {
   } finally {
     await browser.close();
     fs.writeFileSync(path.join(artifacts, `${name}.json`), JSON.stringify({
-      name, baseURL, ref: process.env.TEST_REF || null, results,
+      name, baseURL: entry, timeoutMs, ref: process.env.TEST_REF || null, results,
     }, null, 2) + "\n");
   }
   assert(results.length > 0, "No browser cases were selected");

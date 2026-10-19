@@ -1,0 +1,32 @@
+{
+  "name": "axe-menu-decor",
+  "baseURL": "http://127.0.0.1:8124/remake/",
+  "timeoutMs": 10000,
+  "ref": "working-final-597",
+  "results": [
+    {
+      "label": "1280x720-live-controls",
+      "status": "passed"
+    },
+    {
+      "label": "800x600-live-controls",
+      "status": "passed"
+    },
+    {
+      "label": "390x844-live-controls",
+      "status": "passed"
+    },
+    {
+      "label": "844x390-live-controls",
+      "status": "passed"
+    },
+    {
+      "label": "keyboard-modes-lesson-return-and-no-save",
+      "status": "passed"
+    },
+    {
+      "label": "invalid-decoration-images-and-reduced-motion",
+      "status": "passed"
+    }
+  ]
+}

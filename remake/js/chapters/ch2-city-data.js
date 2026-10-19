@@ -1,6 +1,6 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
-import { CH2_NIGHTS } from "./ch2-story-data.js";
+import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY } from "./ch2-story-data.js";
 
 export const MAP = {
   day: "../assets/backgrounds/bg_widehanga_map_day.webp",
@@ -16,7 +16,7 @@ export const STOPS = [
 export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_city_${id}`);
 
-async function readDialogues(name, required) {
+export async function readDialogues(name, required) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {
@@ -47,12 +47,22 @@ export async function loadChapterTwoDialogues() {
 }
 
 export async function loadPreparationDialogues() {
-  const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+  const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   const files = { ch2_preparation: required };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
+  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
+  if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
+    if (file === "ch2_preparation") {
+      for (const id of ids.filter(id => id.endsWith("_followup"))) {
+        if (!dialogues[id].lines.every(line => line && !line.type && typeof line.text === "string"
+          && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
+          throw new Error(`${file}: 続編台本の形式を確認してください ${id}`);
+        }
+      }
+    }
     return Object.fromEntries(ids.map(id => [id, dialogues[id]]));
   }));
   Object.assign(DB.dialogues, ...groups);

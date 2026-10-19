@@ -1,0 +1,67 @@
+{
+  "recorded_utc": "2026-10-16T04:06:22.141497+00:00",
+  "source_run": {
+    "conclusion": "success",
+    "display_title": "claim #586 / codex-c-shop-art-20261016-8e7fb2cb0e / c586-claim-20261016-8e7fb2cb0e",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "id": 38786636524,
+    "path": ".github/workflows/issue-claim.yml",
+    "run_attempt": 1,
+    "status": "completed"
+  },
+  "all_comment_pages_read": true,
+  "comment_count": 14,
+  "latest_bot_ledger": "<!-- issue-claim:v1 state=claimed owner=codex-c-shop-art-20261016-8e7fb2cb0e -->\n<!-- issue-claim-run:v1 id=38786636524 request=c586-claim-20261016-8e7fb2cb0e -->\nReserved by codex-c-shop-art-20261016-8e7fb2cb0e (codex). Start only after this workflow run succeeds.",
+  "ledger_url": "https://github.com/haseatsu114514-dot/shisha-game/issues/586#issuecomment-6199462633",
+  "pr_before_edit": {
+    "headRefName": "codex/c-586-shop-package-art",
+    "headRefOid": "182c7fa4d9f15b037dc91ac5972fca8b18a16929",
+    "isDraft": true,
+    "state": "OPEN",
+    "url": "https://github.com/haseatsu114514-dot/shisha-game/pull/587"
+  },
+  "overlap": [
+    {
+      "pr": 602,
+      "head": "af63e0d9bcb59486f088bb13707d5ed2603f6dba",
+      "overlap": []
+    },
+    {
+      "pr": 601,
+      "head": "237a57bc414bd8323be3d8c13d392ba360728fa6",
+      "overlap": []
+    },
+    {
+      "pr": 580,
+      "head": "8cd408e7e88448d60793df767b289b05e79fb7fd",
+      "overlap": []
+    },
+    {
+      "pr": 566,
+      "head": "c8ecfa40f9aebde91651d2bdcb2bbba5c00ba10f",
+      "overlap": []
+    },
+    {
+      "pr": 557,
+      "head": "e7e055c5376131c7aae518e8981f01c1e8048aa8",
+      "overlap": []
+    },
+    {
+      "pr": 550,
+      "head": "0b34114b85d5d562b7b8a3b37c51540bfc0ca1b2",
+      "overlap": []
+    },
+    {
+      "pr": 539,
+      "head": "233bcd96d0b792fa1e48343a2c1de7c95241dea6",
+      "overlap": []
+    },
+    {
+      "pr": 481,
+      "head": "018a26193b94e9131a4984339fade9ecc1a35445",
+      "overlap": []
+    }
+  ],
+  "workflow_dispatch_this_resume": false
+}

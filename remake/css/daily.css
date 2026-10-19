@@ -121,7 +121,9 @@
   padding: 12px 16px;
 }
 body.in-vn .hud, body.vn-open .hud { opacity: 0; }
-body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; }
+/* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
+body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; pointer-events: none; }
+body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
 .hud-card, .hud-level, .hud-menu, .hud-stamina {
@@ -184,34 +186,83 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .hud-radar { width: 44px; height: 44px; display: block; }
 .hr-grid { fill: none; stroke: rgba(244, 210, 122, 0.3); stroke-width: 0.8; }
 .hr-fill { fill: rgba(255, 158, 109, 0.45); stroke: #ffd35e; stroke-width: 1.2; stroke-linejoin: round; transition: all 0.4s; }
-/* LIME はアプリのアイコン風（緑の角丸＋白抜き文字） */
+/* LIME は正方形のアプリアイコン（緑の角丸＋白い吹き出し）。 */
 .hud-lime {
   position: relative;
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
+  flex: 0 0 48px;
+  aspect-ratio: 1;
+  margin-right: 4px; /* 右上へ出る赤丸と隣の操作の間隔を確保 */
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 13px;
-  background: linear-gradient(180deg, #2cc75c, #169a3e);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border: 0;
+  border-radius: 11px;
+  background: #00c300;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: transform 0.12s;
 }
 .hud-lime span {
-  padding: 1px 4px;
-  font-family: var(--font);
-  font-size: 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 28px;
+  padding: 2px 0 0; /* Latin capitals sit optically high in the font line box. */
+  margin: 0 0 3px;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.1em;
-  color: #169a3e;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #00a900;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 50%;
+}
+.hud-lime span::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  bottom: -4px;
+  width: 9px;
+  height: 8px;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .hud-lime:hover { transform: translateY(-2px); }
-.hud-lime .badge { position: absolute; right: -7px; top: -7px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--danger); border: 2px solid #fff; color: #fff; font-size: 13px; font-weight: 700; font-style: normal; display: none; place-items: center; }
-.hud-lime.has .badge { display: grid; }
+/* 数字を円の中央へ固定し、100件以上だけ小さい上付き+を添える。 */
+.hud-lime .badge {
+  position: absolute;
+  left: auto;
+  right: -8px;
+  top: -8px;
+  box-sizing: border-box;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  background: #f00;
+  border: 0;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.hud-lime .badge-number { font: inherit; transform: translateX(0.5px); } /* 数字の見た目の中央を補正 */
+.hud-lime .badge.single { font-size: 14px; }
+.hud-lime .badge-plus { position: absolute; right: 1px; top: 2px; font-size: 6px; line-height: 1; }
+.hud-lime.has .badge { display: flex; }
 .hud-menu { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
 .hud-menu i { width: 13px; height: 9px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
 .hud-menu i::after { content: ""; position: absolute; left: 0; right: 0; top: 1.5px; border-top: 2px solid currentColor; }
@@ -363,7 +414,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   line-height: 1;
   letter-spacing: 0;
   text-align: center;
-  padding-bottom: 2px; /* 一文字の行高と字間を固定し、字面を丸の中央に置く */
+  padding: 0;
+  font-family: Arial, sans-serif; /* Keep the ! centered independently of the game font. */
   color: #2a1a00;
   background: #ffd35e;
   border: 2px solid #fff2cc;
@@ -405,7 +457,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
-.map-info { right: 16px; bottom: 16px; z-index: 3; width: 300px; padding: 11px 14px 13px; transition: opacity 0.2s, transform 0.2s; }
+.map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
   display: inline-block;
@@ -423,7 +475,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 6;
+  aspect-ratio: 16 / 5;
   margin: 2px 0 8px;
   background: center 40% / cover no-repeat;
   border: 2px solid rgba(212, 182, 106, 0.75);
@@ -455,6 +507,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 }
 .mi-go:hover { filter: brightness(1.08); }
 .mi-go:active { transform: scale(0.98); }
+.mi-go.mi-go-alt { margin-top: 6px; color: var(--text); background: rgba(20, 14, 26, 0.85); border-color: #f4d27a99; }
 .mi-no { padding: 8px; text-align: center; font-size: 13px; color: #f0b9b9; background: rgba(40, 18, 24, 0.6); border: 1px dashed rgba(240, 185, 185, 0.35); border-radius: 4px; }
 .map-notice {
   top: 92px;
@@ -511,6 +564,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .big-choice b { font-size: 21px; letter-spacing: 0.05em; }
 .big-choice small { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
 .big-choice:hover { border-color: var(--gold); transform: translateX(6px); }
+.big-choice:disabled { opacity: .5; cursor: not-allowed; }
+.big-choice:disabled:hover { border-color: inherit; transform: none; }
 .sub-back { margin-top: 18px; }
 
 /* ---------------------------------------------------------------- ショップ */
@@ -772,11 +827,6 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .lime-note.day { background: rgba(29, 36, 51, 0.32); }
 .lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
 
-/* HUD の LIME: 小さな通知バッジに未読件数を表示する */
-.hud-lime .badge { right: -6px; top: -6px; min-width: 20px; width: auto; height: 20px; padding: 0 3px; border-radius: 999px; font-size: 11px; line-height: 1; }
-.hud-lime.has .badge { animation: lime-badge 1.8s ease-in-out infinite; }
-@keyframes lime-badge { 50% { box-shadow: 0 0 0 5px rgba(255, 59, 78, 0.25); } }
-
 /* 朝のプッシュ通知（スマホの通知バナー風に上から降りてくる） */
 .lime-push {
   appearance: none;
@@ -999,6 +1049,31 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .street-heading span { display: block; font-size: 16px; }
 .street-heading p { margin: 4px 0 0; font-size: 20px; }
 .street-back { position: absolute; top: 128px; right: 22px; font-size: 22px; padding: 12px 16px; background: #000; color: #fff; border: 2px solid var(--gold); border-radius: 6px; cursor: pointer; }
-.street-reel { position: absolute; left: 18px; top: 224px; width: 136px; transform: scale(.6); transform-origin: top left; }
-.street-reel .reel-widget { left: 0; top: 0; bottom: auto; }
 .mi-preview.loading { display: grid; place-items: center; font-size: 20px; color: #cdb8e6; background: #171225; }
+
+/* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
+.home-shisha-dialog .home-mix { display: grid; gap: 8px; max-height: 56vh; overflow-y: auto; padding-right: 4px; }
+.home-shisha-dialog .home-mix-row { display: grid; grid-template-columns: minmax(0, 1fr) 44px 3.2em 44px 3.2em; align-items: center; gap: 8px; }
+.home-shisha-dialog .home-mix-ratio { color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .home-mix-name { min-width: 0; overflow-wrap: anywhere; }
+.home-shisha-dialog .home-mix-g { text-align: center; font-variant-numeric: tabular-nums; }
+.home-shisha-dialog .fr-btn { display: grid; place-items: center; padding: 0; line-height: 1; }
+.home-shisha-dialog .home-mix-total { margin-top: 4px; font-weight: 700; }
+.home-shisha-dialog .modal-actions .btn:disabled { opacity: .45; cursor: not-allowed; }
+/* 縮小したstageのbackdrop-filterはタッチChromiumで部屋を鏡像状に反復する。
+   この窓では暗幕だけで背景を落とし、台と部屋を一枚のまま見せる。 */
+@media (pointer: coarse) {
+  #modal:has(.home-shisha-dialog) .modal-backdrop { backdrop-filter: none; }
+}
+
+/* Newly revealed destinations: one short, nonblocking pop at the shield's anchor. */
+.spot-pin.newly-revealed .shield { animation: spot-reveal-pop 640ms var(--reveal-delay, 0ms) both; }
+.pin-reveal-ring { position: absolute; inset: -10px; border: 4px solid #fff3b0; border-radius: 50%; pointer-events: none; animation: spot-reveal-ring 800ms var(--reveal-delay, 0ms) both; }
+.pin-reveal-label { position: absolute; bottom: -8px; right: -6px; padding: 2px 7px; border-radius: 12px; color: #35200d; background: #ffe59a; font: bold 12px/1.4 sans-serif; pointer-events: none; animation: spot-reveal-label 1600ms var(--reveal-delay, 0ms) both; }
+@keyframes spot-reveal-pop { 0% { transform: scale(.35); opacity: 0; } 48% { transform: scale(1.22); opacity: 1; } 72% { transform: scale(.94); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes spot-reveal-ring { 0% { transform: scale(.55); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes spot-reveal-label { 0%, 80% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) {
+  .spot-pin.newly-revealed .shield { animation: none; }
+  .spot-pin.newly-revealed .pin-reveal-ring { animation: spot-reveal-label 1200ms both; transform: none; }
+}

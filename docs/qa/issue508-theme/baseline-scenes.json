@@ -1,0 +1,1352 @@
+{
+  "ref": "b69cb548718a963e88c05e1b3dec1fe6fe154964",
+  "scenes": {
+    "ch1_salaryman_regular": {
+      "dialogue_id": "ch1_salaryman_regular",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。顔を出すと、スミさんに「ちょうどいい、カウンター頼めるか」と頼まれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際のつむぎが、タブレットに描いていた。目が合うと、小さく会釈して、また画面に目を落とす。",
+          "portrait": "tsumugi",
+          "portrait_face": "bow"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "tsumugi"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの時間。いつもの足音。ドアが開くと、外の空気と一緒にコンビニコーヒーの匂いが入ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものサラリーマンが、いつもの席に座る。ネクタイを少しだけ緩めて、無言でメニューを指差した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは小さく頷くだけ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは丁寧にボウルを詰める。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーを計って、ほぐして、一粒ずつ空気の通り道を作るように詰めていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭をコンロに並べて、赤くなるのを待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしの間、店内には炭が静かに弾ける音だけが鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「お待たせしました」。テーブルにシーシャを置く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは無言でホースを手に取り、ゆっくりと吸い始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、と水面が揺れる。吐き出された白い煙が、オレンジ色の照明の中で崩れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その瞬間、ほんの少しだけ──肩の力が抜けたように見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人、いつも何も言わないけど……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここに来ると、ちょっとだけ楽になるのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけの、いつも通りの光景。でも今日は少しだけ、気になった。"
+        }
+      ]
+    },
+    "ch1_salaryman_change": {
+      "dialogue_id": "ch1_salaryman_change",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席に座らず、入口に近い席を選んだ。ネクタイも、緩めていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、でいいですか？"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……ああ。いや……今日は、ミント多めで。頭、冷やしたいんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……何かあったのかな。聞かない方がいい気がする）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、サラリーマンは一度だけ振り返って、小さく頭を下げた。──初めてのことだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、つむぎが画面から顔を上げていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日の人、帰る時に肩が少し下がってましたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。ここで少し、休めたならいいな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "顔は描かないけど。座ってた時の手は、残したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、空いた席とテーブルの間に短い線を足した。"
+        }
+      ]
+    },
+    "ch1_tsumugi_sketch": {
+      "dialogue_id": "ch1_tsumugi_sketch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のtonari。つむぎが、カウンターの前でタブレットを開いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……できました。応募する絵"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_art_seen",
+          "next_true": "submission_known",
+          "next_false": "submission_new"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tsumugi_heart_art"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの照明。棚のボトル。煙の向こうで、客席を向くはじめの後ろ姿。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓辺には、あの猫がいる。店の中のいくつもの手元が、１枚に収まっていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "知らない人にも、ここで座ってる感じが伝わればいいなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。俺も、この店に来たくなると思う"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店の名前も入ってるな。いい宣伝だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……はい。でも、賞もちゃんと狙ってます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは絵を閉じ、応募フォームを開いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "送るところまで、ここでやってもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もちろん。見てるよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "送信の上で、指が一度止まる。つむぎは息を吐いて、画面に触れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「応募完了」。短い文字を、２人で確かめた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_submitted"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_art_seen"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……出せました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさま。ずっと描いてたもんね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "結果は、まだ先です。……その前に、はじめさんの大会"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、ちゃんと１台出してくるよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……今度は、私が見てます"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは応募完了の画面を、LIMEにも送ってきた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_submission"
+        }
+      ],
+      "branches": {
+        "submission_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "お守りに送ってくれた絵だ。いよいよ、応募するんだね"
+          }
+        ],
+        "submission_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの下描きが、こうなったんだ、……俺もいる"
+          }
+        ]
+      }
+    },
+    "ch1_tsumugi_work_in_progress": {
+      "dialogue_id": "ch1_tsumugi_work_in_progress",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの合間、つむぎがカウンターの端に来た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……下描き、少し進みました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の光。空いた席。トングを持つ、はじめの手。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、俺だ。……俺の手って、こんなふうに動いてるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "渡す前に、一度お客さんの方を見るので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "その時の手が、描きたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙を描くって聞いてたから、手も見てるとは思わなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……煙だけだと、ここの絵にならなかったんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、まだ色を置いていない場所がいくつもある。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんは、どこが好きですか"
+        },
+        {
+          "type": "choice",
+          "id": "tsumugi_contest_draft",
+          "choices": [
+            {
+              "text": "窓辺の煙と猫",
+              "next": "draft_window"
+            },
+            {
+              "text": "カウンターの手元",
+              "next": "draft_hands"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の方も試作中。今日のは、どうだった？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……好きです。でも、描きながらだと少し強くて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっか。集中する時は、もう少し軽い方がいいんだね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。大会の１台は、ちゃんと手を止めて吸います"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、その時の感想も聞かせて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はじめさんも、完成した絵の感想を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "完成前のものを見せて、ひとつ聞いて、また手を動かす。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが次の線を引く間、はじめは試作のメモを書き足した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_progress"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_progress"
+        }
+      ],
+      "branches": {
+        "draft_window": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "窓辺の、この煙。猫が寝やすそうで"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……私も、ここは残したいです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは窓辺を拡大して、猫の背中に線を１本足した。"
+          }
+        ],
+        "draft_hands": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ここの手、好きだな。顔がなくても、仕事してるのがわかる"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……よかった。手だけ、何回も描き直したので"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは手元を拡大して、トングの先に線を１本足した。"
+          }
+        ]
+      }
+    },
+    "ch1_naru_third": {
+      "dialogue_id": "ch1_naru_third",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おー、来た来た。ちょうどいいとこに。座れ座れ。新作できたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（今日はいきなりシーシャが出てきた……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出されたシーシャを吸う。……途轍もなく甘い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だが、全く喉に引っかかる感じがなく、上品な後味が残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……すごい。この甘さで、全然煙が重たくないんですね。どうやって……"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "チョコレートバニラの黄金比、3年かけて詰めたやつ。甘い系は重くなった瞬間に終わるからな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "温度カーブで逃がすんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "──で、どうだった。遠慮なしの感想くれ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "客の『美味しい』より、作る側の『美味しい』のほうが信用できる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "正直、悔しいくらい美味しいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……でも、最後のひと吸いだけ、ほんの少し焦げの気配がしました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "多分、炭の最後の位置が"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "…………お前、それ気づくのか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "──はは。いいね。スミさんがお前を大会に出す理由、ちょっと分かったわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは悔しそうに、でもどこか嬉しそうに、ノートに何かを書き込んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、俺が言った炭の位置ですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ああ。お前が吸わなきゃ、気づかなかったかもしれない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（教わりに来た俺の言葉も、次の１台に入るんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（強い人は、負けを拾うのも速い）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "naru_together"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ],
+      "branches": {}
+    },
+    "ch1_naru_fourth": {
+      "dialogue_id": "ch1_naru_fourth",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "おう。……なあ、前から聞こうと思ってたんだけど。お前、なんでシーシャやってんの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "えっ、……実は、いつか自分の店を持ちたいなって思ってて。名前ももう決めてるんですよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "内装は木をベースにして、照明は暖色で、音楽はローファイ系で──"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "へえ、いいじゃん。具体的だな。──で、なんで店なの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え？　なんでって……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言葉が、すぐに出てこなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ほら、かっこいいじゃないですか。自分の城って感じで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あと、tonari出身って言ったら、お客さんも来てくれそうだし"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……うちの実家さ、喫茶店だったんだよ。商店街の小さいやつ。俺が中2のとき、潰れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "親父の珈琲、うまかったぜ。常連もいた。それでも潰れるんだ、店ってのは"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "──だから俺は『潰れない店の作り方』を探しにここで働いてる"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今でもさ、あの建物の前を通ると、珈琲の匂いがする気がするんだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "店ってのは、匂いが染みつくんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "──畳んだあとも、消えねえくらい"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "お前の夢を笑う気はねえよ。内装まで決めてるのは、ちゃんと好きってことだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……ただ、『なんで』は、いつか自分の言葉で言えるようにしとけ。それがないと、店は持たねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "ま、説教くさくなったな。ほら、一服してけ。今日のは試作のキャラメル・マキアート風だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なるさんの言葉は、優しかった。なのに、なんでだろう。胸の奥が少しだけチクッとした）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（──多分、気のせいだ）"
+        }
+      ],
+      "branches": {}
+    },
+    "ch1_tournament_arrival": {
+      "dialogue_id": "ch1_tournament_arrival",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png",
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会当日。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会を運営するのは、シーシャチェーン『C.STATION』。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場は同じビルにあるイベントホール。大会のために借りた大空間だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口をくぐると、フレーバーの混ざった濃い香りが一気に押し寄せてきた。tonariとも、どの店とも違う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何十種類もの香りが重なり合った、SMOKE CROWN CUPだけの空気。"
+        },
+        {
+          "type": "sfx",
+          "id": "crowd"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホールの中央にステージがあり、4台のシーシャ台が整然と並んでいる。上からスポットライト。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観客席は前方に100席ほど。すでに半分以上が埋まっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……広い。こんなところで作るのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観客の視線。スタッフの無線。会場の熱気。全部が、tonariの閉店後とは別世界だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（場違いだ。俺みたいなバイトが来るところじゃない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出場者控室に入る。すでにライバルたちが準備を進めていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが、タブレットで何かのデータを睨んでいる。説明会の夜の、あの陽気さはない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブルの下で、ペンを持つ右手の指が微かにリズムを刻んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの癖だろうが、今日はそれが少し速い。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、はじめ。来たな。大衆チェーンが仕切る大会か……息苦しいだろ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……なるさん、顔がマジですね"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そりゃな。湿度と気圧が店と違うから、蒸らしを10秒伸ばすか迷ってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは隅の椅子に座り、黙々とボウルを磨いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ステンレスの表面は既に鏡のように光っているのに、まだ磨いている。止められないのだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度目が合った。アダムは無言で小さく頷いた。それだけで、少し落ち着いた気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは鏡の前でリップを塗っている。もう十分な仕上がりなのに、何度も塗り直す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──余裕に見せようとしているその仕草こそが、彼女の緊張を物語っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "はじめくん、緊張してる？ みんとは全然だよっ♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……みんとも、本当は緊張してるんだろうな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんな「自分のシーシャ」を持っている。準備の仕方も、向き合い方も、それぞれ違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……今の俺にできることを、やるしかない）"
+        }
+      ]
+    },
+    "ch1_tournament_after": {
+      "dialogue_id": "ch1_tournament_after",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会後。会場のロビー。"
+        },
+        {
+          "speaker": "naru",
+          "face": "sad",
+          "text": "──負けた。完敗だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは壁に背を預けて、天井を仰いだ。ポケットに突っ込んだ右手が、悔しさで微かに震えている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それでも、声は揺れていなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "南雲さんのあの顔……俺のシーシャには一度も見せたことのない顔だった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "3年詰めた黄金比が、お前の１台に届かなかった。それが今日の全部だ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "──おめでとう、はじめ。今日のお前の煙は、文句なしに美味かった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なるさん……"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_naru_fifth",
+          "next_true": "promise_kept",
+          "next_false": "promise_new"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "俺は別の街の大会から、もう１回登り直す。いつかまたお前と当たる。──その時は、俺が勝つ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、おめでとっ♡ でも、可愛さはみんとの方が上だったでしょ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はは……それは間違いなく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは何も言わずに帰っていった。でも、すれ違いざまに一度だけ振り返り、親指を立てて見せた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その親指が、微かに震えていた。あの男にとっても、今日は本気だったのだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そのとき、ロビーの空気が少し変わった。──南雲修二が、こちらへ歩いてくる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "と思ったら、南雲はまず、なるの前で足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "──鳴切くん。あの配合、自分で？"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……はい"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "技術は今日一番面白かった。だが、届け先が見えん"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "あれが『伝わる形』で出ていたら、結果は分からなかったよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "また大会で会おう。その時は、答えを持ってきなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが何か言うより先に、南雲はもう歩き出していた。──そして、はじめの前で止まる。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "蒸野くん、と言ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "は、はいっ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "……懐かしい味だ。実に、懐かしい"
+        },
+        {
+          "type": "choice",
+          "id": "after_natsukashii",
+          "choices": [
+            {
+              "text": "あの、懐かしいって……？",
+              "next": "nat_ask"
+            },
+            {
+              "text": "（懐かしい……？）",
+              "next": "nat_think"
+            }
+          ]
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……なんだ、今の。お前、南雲さんと知り合いなの？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_c_station_registered",
+          "next_true": "nat_met_before",
+          "next_false": "nat_first_time"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるはまだ、南雲が消えた出口の方を見ていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……『伝わる形』、ね"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "──宿題、もらっちまったな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふと視線を感じて観客席を見上げると、人の捌けた席の隅に、チャコール博士が１人だけ残っていた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_dr_kemuri_hook"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査員席を離れても、拍手をするでもなく、ノートPCに何かを打ち込み続けている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が合う寸前、男は画面を閉じて、出口へ消えた。"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──表彰式のあと、地元メディアの簡単なインタビューがあった。マイクを向けられる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「優勝の感想と、勝因を一言お願いします！」"
+        },
+        {
+          "type": "choice",
+          "id": "victory_interview",
+          "choices": [
+            {
+              "text": "「正直、いけると思ってました。手応えあったので」",
+              "next": "iv_pride"
+            },
+            {
+              "text": "「対戦相手のいいところを、全部もらったので」",
+              "next": "iv_honest"
+            },
+            {
+              "text": "「師匠のおかげです。tonariに来てください」",
+              "next": "iv_sumi"
+            }
+          ]
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──その夜。閉店後のtonari。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。よくやった。今日は一杯、付き合え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見てくださいよこれ、優勝トロフィー。……ね、これ、店に飾りません？　カウンターの上とか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "飾れ。客が来たら、お前が磨くんだぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスが鳴った。スミさんが、トロフィーを置く場所を空ける。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "祝いに、自分用の１台を作って吸った。──馬鹿みたいに、うまい。どの一服よりも濃い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（優勝って、味まで変えるんだなあ）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_tsumugi",
+          "next_true": "ta_tsumugi_named",
+          "next_false": "ta_tsumugi_unnamed"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_submitted",
+          "next_true": "ta_tsumugi_today",
+          "next_false": "ta_tsumugi_no_draft"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日の煙、すごかったです。きれいでした、……でも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は少しだけ迷ってから、ドアの前で振り返った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……最後の方だけ、ちょっとだけ──濁ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……ううん。なんでもないです。おやすみなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアベルが鳴って、彼女は夜に消えた。──濁ってた？ 優勝した日の煙が？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアの方へ顔を上げる前に、スマホがまた震えた。"
+        }
+      ],
+      "branches": {
+        "iv_pride": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "正直、いけると思ってました。毎日tonariのカウンターに立ってますし、手応えはあったので"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "記者が笑顔でメモを取る。カメラのフラッシュ。マイク。視線。──悪くない。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "むしろ、ちょっと気持ちいい。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──少し離れた場所で、なるがその答えを聞いていた。何も言わず、ただ静かに目を細めて。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "interview_pride"
+          }
+        ],
+        "iv_honest": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "対戦相手のいいところを、全部もらったので"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なるさんの熱の入れ方も、アダムさんの一途さも、みんとさんの空気の作り方も"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……全部、今日の１台に入ってます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "記者が「いい答えですね」と笑った。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "interview_honest"
+          }
+        ],
+        "iv_sumi": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "師匠のおかげです。シーシャラウンジtonari、駅から徒歩8分です。よろしくお願いします"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "記者が吹き出した。「ちゃっかりしてますね」──まあ、宣伝も実力のうちだ。多分。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "interview_sumi"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──数日後、tonariに「配信で見ました」という新規のお客さんが２人来た。"
+          }
+        ],
+        "nat_ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの、懐かしいって……？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "だが南雲は答えず、軽く手を上げただけで立ち去った。"
+          }
+        ],
+        "nat_think": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（懐かしい……？ 俺の１台が？）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "それだけ言って、南雲は何も説明せずに立ち去った。"
+          }
+        ],
+        "promise_kept": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "けど、約束は覚えてるよな。勝った方が作る。──それと、もう１つ"
+          }
+        ],
+        "promise_new": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "明日、うちで一服しようぜ。勝った方が作る──今決めた。それと、もう１つ"
+          }
+        ],
+        "nat_met_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いや、全然です。受付で一度、挨拶しただけで……（懐かしいって、何が？）"
+          }
+        ],
+        "nat_first_time": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いや、全然です。初対面ですけど……（懐かしいって、何が？）"
+          }
+        ],
+        "ta_tsumugi_named": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "そのとき、店の奥の席から小さな音がした。──つむぎだ。閉店までいつもの席にいたらしい。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り支度をして、はじめの横で立ち止まる。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……優勝、おめでとうございます。会場で、見てました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとう。つむぎちゃんが来てくれてたの、心強かった"
+          }
+        ],
+        "ta_tsumugi_unnamed": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "そのとき、店の奥の席から小さな音がした。窓際の席の、いつもの女の子だ。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り支度をして、はじめの横で立ち止まる。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……優勝、おめでとうございます。会場で、見てました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとう。……会場まで、来てくれてたんだ"
+          }
+        ],
+        "ta_tsumugi_today": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日も少し、描きました。あとで、見てもらえますか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指がタブレットにかかる。はじめのスマホは、通知で何度も震えていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん、あとで。今、優勝の写真を送ってて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面を開きかけた手が、鞄の中に戻った。はじめは、そこまで見ていなかった。"
+          }
+        ],
+        "ta_tsumugi_no_draft": []
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@ try {
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
     const vn = await import("./js/vn/engine.js"), spots = await import("./js/daily/spots.js");
     const tonari = await import("./js/daily/tonari.js"), shop = await import("./js/daily/shop.js");
+    const hours = await import("./js/daily/spot-hours.js");
     const reel = await import("./js/daily/reel.js"), craft = await import("./js/craft/session.js");
     vn.vnTest.turbo = true; craft.craftTest.auto = "good";
     function reset() { core.newGame(); core.state.phase = "daily"; core.state.day = 8;
@@ -30,6 +31,7 @@ try {
     reel.onAction();
     forced.sameReel = forced.before === JSON.stringify(core.state.reel); delete forced.before;
     const cases = [];
+    let rinRefusal = null;
     for (const [name, run] of [
       ["naru", () => spots.visitRival(spots.spotById("naru"))],
       ["adam", () => spots.visitRival(spots.spotById("adam"))],
@@ -42,12 +44,22 @@ try {
       ["rest", () => spots.restAtHome(spots.spotById("rest"))],
     ]) {
       reset(); core.state.stamina = 80;
+      if (name === "cafe") core.state.slot = 0; // 喫茶こはくの営業時間内で回復を検証。
       const previous = { ...core.state.stats };
       const { spent } = await stats.paidAction(run);
       const perStat = Object.fromEntries(core.STAT_KEYS.map(k => [k, core.state.stats[k] - previous[k]]));
       const earned = xp(); reel.onAction({ spent });
       cases.push({ name, spent, earned, perStat, spins: core.state.reel.count });
       if (spent > 0) {
+        if (name === "rin") {
+          const snapshot = JSON.stringify(core.state), count = core.state.reel.count;
+          const refused = await stats.paidAction(run);
+          reel.onAction({ spent: refused.spent });
+          rinRefusal = { spent: refused.spent, unchanged: snapshot === JSON.stringify(core.state), spins: core.state.reel.count - count };
+          // 同日再訪の拒否を確認し、既存の再訪報酬assertは次の営業夜で実行する。
+          for (let i = 0; i < 7 && hours.rinUnavailable(core.state); i++) core.state.day++;
+          if (hours.rinUnavailable(core.state)) throw new Error("No available Rin night in the next week");
+        }
         const before = xp();
         const previous = { ...core.state.stats };
         const repeat = await stats.paidAction(run);
@@ -58,12 +70,10 @@ try {
       }
     }
     // 給料・物語を維持し、無料のシフト後会話はシフトと同じ成長枠。
-    for (const after of ["none", "sumi", "drill"]) {
+    for (const after of ["none", "sumi"]) {
       reset();
       const timer = setInterval(() => {
         document.querySelector(`[data-test="after-${after}"]`)?.click();
-        document.querySelector('[data-test="drill-heat"]')?.click();
-        document.querySelector('[data-test="drill-finish"]')?.click();
       }, 20);
       try {
         const before = core.state.money;
@@ -72,6 +82,23 @@ try {
         cases.push({ name: `baito:${after}`, spent, earned, pay: core.state.money - before, spins: core.state.reel.count });
       } finally { clearInterval(timer); }
     }
+    // #638: 自主練は無料のシフト後メニューから家へ移った。旧ボタンを待たず、
+    // 家の実メニュー・工程・終了を通し、体力を使っても能力報酬がないことを保つ。
+    // 工程ドリルは配合しないので葉は減らない（一台を通したときの消費は home_shisha.mjs で検証・#638）。
+    reset(); core.state.stamina = 80; core.state.owned.push("home_rig_set");
+    const homeBefore = { stats: { ...core.state.stats }, statXp: { ...core.state.statXp }, money: core.state.money,
+      flavorStock: { ...core.state.flavorStock }, slot: core.state.slot };
+    const practiceTimer = setInterval(() => {
+      document.querySelector('[data-test="drill-heat"]')?.click();
+      document.querySelector('[data-test="drill-finish"]')?.click();
+    }, 20);
+    let homePractice;
+    try {
+      const { value, spent } = await stats.paidAction(() => import("./js/daily/home-practice.js")
+        .then(home => home.runHomePractice({ staminaGuard: async () => true })));
+      homePractice = { value, spent, stamina: core.state.stamina, stats: { ...core.state.stats },
+        statXp: { ...core.state.statXp }, money: core.state.money, flavorStock: { ...core.state.flavorStock }, slot: core.state.slot };
+    } finally { clearInterval(practiceTimer); }
     // 誘いは会話の後払いでも成長する。低体力で実消耗ゼロなら経験値も付かない。
     reset();
     const invitation = await stats.paidAction(async () => {
@@ -98,11 +125,12 @@ try {
       text: vn.backlog().slice(-2).map(l => l.text).join(" ") };
     // 既存セーブの残高を初期金額で置き換えない。
     reset(); core.state.money = 12345; core.save(); core.newGame(); core.load();
-    return { money, forced, cases, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
+    return { money, forced, cases, homeBefore, homePractice, rinRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
       restoredMoney: core.state.money };
   });
   assert.equal(report.money, 30000); assert.equal(report.restoredMoney, 12345);
   assert.deepEqual(report.forced, { xp: 0, sameReel: true });
+  assert.deepEqual(report.rinRefusal, { spent: 0, unchanged: true, spins: 0 });
   for (const entry of report.cases) {
     const recovery = ["cafe", "kannon", "rest"].includes(entry.name);
     assert.equal(entry.spins > 0, !recovery, JSON.stringify(entry));
@@ -114,6 +142,8 @@ try {
     }
     if (entry.pay !== undefined) assert(entry.pay >= 8000);
   }
+  assert.deepEqual(report.homePractice, { ...report.homeBefore, value: { used: true, exerted: true }, spent: 10, stamina: 70 },
+    "Home practice consumes stamina without free ability growth, money or flavor-stock changes");
   assert(report.carrySaved); assert.equal(report.invitationSpent, 10); assert.equal(report.invitationXp, 2);
   assert.equal(report.zeroXp, 0); assert.equal(report.zeroSpins, 0); assert.equal(report.smallXp, 1);
   assert.equal(report.mixed.xp, 0); assert(report.mixed.affinity > 0);

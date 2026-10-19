@@ -5,30 +5,34 @@ import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
-import { coldRisk, catchesCold } from "../core/illness.js";
+import { coldRisk, catchesCold, fitActive, FIT_DAYS } from "../core/illness.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
+import { runHomeShisha } from "./home-shisha.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
-import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
+import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
+import { runHomePractice } from "./home-practice.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
+import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
 import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./samechan.js";
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
-import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout } from "./hiyori.js";
+import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 
@@ -49,6 +53,8 @@ export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
   queuedLimeSender = null;
+  // 中断/旧保存の回転も、日付更新や朝のイベントより先に完了させる。再抽選はしない。
+  await showReelNow({ label: "前回のスロット" });
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
@@ -177,7 +183,9 @@ async function openMenu() {
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-  if (v === "title") { save(); location.reload(); }
+  // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
+  // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
+  if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
 }
 
 // ---------------------------------------------------------------- 1日目の案内
@@ -272,7 +280,7 @@ async function deliver({ charId, scene, text }) {
   addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
   if (charId === "minto") {
-    // 配達は店先まで。勝手に客席へ進まず、店内の初来店は後の自由行動に任せる。
+    // 到着から入店し、カウンターで引き渡す。客としての初回接客は自由行動に残す。
     await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/bg_street_day.png" });
     f.known_name_minto = true;
     f._met_minto = true;
@@ -295,7 +303,8 @@ async function staminaGuard(cost) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
   const go = await modal({
     title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。",
+    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。"
+      + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });
   return go;
@@ -353,20 +362,42 @@ async function takeAction() {
     }),
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
-  const spot = chapterDef.spotById?.(spotId) || spotById(spotId);
+  // 家で練習（#638）は地図から "rest:practice" で来る
+  const [baseId, spotMode] = String(spotId).split(":");
+  const homePractice = spotMode === "practice";
+  const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const facility = ["kannon", "choizap"].includes(spot.id);
-  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
+  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => (homePractice && spot.kind === "rest"
+    ? runHomePractice({ staminaGuard }) : performSpotAction(spot)), {
     ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
     consumed: (result) => result.used && spot.kind === "spot",
   });
   if (!used) return;
-  state.visitedDay[spot.id] = state.day;
+  state.visitedDay[homePractice ? "home_practice" : spot.id] = state.day;
+  // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
+  // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
+  // 場所は明かさない（遊び方は「特定のスポット」とだけ書く・#634）
+  if (spot.id === "kannon" && changeReelSetting()) toast("……ふと、パッキースロットの設定が変わった気がする", { kind: "good" });
+  // チョコザップ: その日から数日、風邪をひきにくい
+  if (spot.id === "choizap" && state.flags._gym_member) {
+    state.flags._fit_since = { chapter: state.chapter, day: state.day };
+    toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
+  }
   state.slot = Math.min(2, state.slot + slotsUsed);
   await afterAction({ exerted, spent });
 }
 
 async function performSpotAction(spot) {
+  const scheduledGuestSpot = hiyoriShopLocation();
+  if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
+  if (spot.kind === "axe") {
+    // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
+    if (!axeBarDiscovered(state)) return { used: false, exerted: false };
+    const { visitAxeBar } = await import("./axe-bar.js");
+    const completed = await visitAxeBar({ staminaGuard });
+    return { used: completed, exerted: completed };
+  }
   if (chapterDef.performSpot) {
     const result = await chapterDef.performSpot(spot, { staminaGuard });
     if (result) return result;
@@ -392,11 +423,10 @@ async function performSpotAction(spot) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : sub === "practice" ? -12 : -10))) return { used: false, exerted };
+    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
-    else if (sub === "practice") await tonariPractice();
     else await tonariCustomer();
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -410,7 +440,7 @@ async function performSpotAction(spot) {
     const r = await openShop();
     if (r !== "rin") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { await visitRin(); exerted = true; }
+    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; }
     else used = false;
   } else if (spot.kind === "spot") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -446,7 +476,7 @@ async function performSpotAction(spot) {
     save();
     return { used: false, exerted };
   }
-  if (used) await visitHiyoriAtShop(spot, { bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
+  if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
   return { used, exerted, slotsUsed };
 }
 
@@ -520,14 +550,14 @@ function cancelSamechanAppointment(inv) {
   save();
 }
 
-/** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
+/** 行動を1回使ったあと: そのイベントの終わりにスロットが1回転。告白は営業後に endDay で扱う */
 async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
-  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio())) state.flags._cold_pending = true;
+  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio(), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
   spinReel({ spent });
   save();
-  // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
-  if (state.slot >= 2) await showReelNow();
+  // 昼夜とも、別イベントやマップ・翌朝へ進む前に、この行動の演出を完了する。
+  await showReelNow({ label: "今回のスロット" });
   await bannersIdle();
 }
 
@@ -597,6 +627,8 @@ async function endDay() {
     await play(`remake_homecoming_${state.day % 3}`);
   }
   await bannersIdle();
+  // 寝る前の一服（家シーシャ・#638）: 行動の枠は使わないちょい足し。大会前夜は聞かない
+  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   await advanceDay();
 }
 

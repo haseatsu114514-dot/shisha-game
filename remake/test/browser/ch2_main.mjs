@@ -16,6 +16,10 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     Object.assign(value, { chapter: 1, phase: 'cleared', day: 14, slot: 2, money: 45678, stamina: 67 });
     value.stats = { technique: 36, sense: 27, guts: 25, charm: 28, insight: 32 };
     value.statXp = { sense: .6 };
+    // 現行の第1章クリア済みfixtureはDAY7に受け取った台を持つ。
+    // 旧セーブからの付与はlegacyケースとhome_shisha.mjsで別に検証する。
+    value.owned.push('home_rig_set');
+    value.flags._ev_midcheck = true;
     value.flags._ch1_preview_seen = true;
     value.flags._minto_name_known = true;
     value.flags._minto_identity_known = true;
@@ -39,7 +43,12 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     value.inbox = [{ id: 'qa_history', originId: 'qa_history', day: 13, read: true, done: true, replyState: 'none', log: [], msg: { sender: 'sumi', type: 'info', messages: ['previous chapter'] } }];
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
     core.save();
-    if (legacy) { const old = JSON.parse(localStorage.getItem(core.SAVE_KEY)); old.schema = 13; delete old.trpg; localStorage.setItem(core.SAVE_KEY, JSON.stringify(old)); }
+    if (legacy) {
+      const old = JSON.parse(localStorage.getItem(core.SAVE_KEY));
+      old.schema = 13; delete old.trpg;
+      old.owned = old.owned.filter(id => id !== 'home_rig_set');
+      localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
+    }
     for (let i = 1; i <= 3; i++) localStorage.setItem(`suien_remake_slot${i}`, JSON.stringify({ ...value, savedAt: 1000 + i, money: 40000 + i }));
     window.__remake.vnTest.turbo = true;
     (await import('./js/chapters/ch1.js')).setupHooks();
@@ -120,7 +129,7 @@ await suite('ch2-main', async check => {
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
     for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
-    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*制作中/);
+    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*DAY14は県大会本戦/);
     await screenshot(page, 'touch-first-day-complete.png');
     await preserved(page, before);
     await reloadSaved(page);
@@ -180,10 +189,13 @@ await suite('ch2-main', async check => {
     assert(text.includes('街を見てるのか'));
   });
 
-  await check('unknown-doctor-introduces-himself-and-is-saved', async page => {
+  await check('missing-doctor-met-flag-still-remembers-chapter-one-judge', async page => {
     const before = await setup(page, { knownDoctor: false }); await begin(page);
     const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
-    assert(text.includes('私はチャコール博士'));
+    assert(text.includes('地元大会以来だね'));
+    assert(text.includes('審査のあとも'));
+    assert(!text.includes('私はチャコール博士'));
+    assert(!text.includes('どうして俺の名前を'));
     assert.equal(await page.evaluate(() => window.__remake.state.met.dr_kemuri), true);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).met.dr_kemuri), true);
     await preserved(page, before);
@@ -208,7 +220,8 @@ await suite('ch2-main', async check => {
     assert.equal(await page.evaluate(() => window.__remake.state.day), 15);
     await preserved(page, before, { loaded: true });
     const value = await page.evaluate(() => window.__remake.state);
-    for (const key of ['money','flavorStock','lovers','loverSince','relationshipMemories']) assert.deepEqual(value[key], before.value[key]);
+    for (const key of ['money','stamina','stats','statXp','owned','equip','flavors','flavorStock','lovers','loverSince','relationshipMemories']) assert.deepEqual(value[key], before.value[key]);
+    assert.equal(value.owned.filter(id => id === 'home_rig_set').length, 1, 'Legacy migration grants exactly one tabletop rig');
     assert.deepEqual(value.trpg, { ...before.value.trpg, owned: [] }, 'Old saves acquired unread TRPG records');
   });
 });

@@ -1,0 +1,420 @@
+{
+  "items": [
+    {
+      "id": "lychee",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          267,
+          81,
+          1018,
+          1203
+        ],
+        "box": [
+          265,
+          79,
+          755,
+          1126
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "fda03ff34583cd2e6ccd819bc5e63e1abb0b5fff5ba0462f5f2ea14a33f0082b"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          33,
+          416,
+          491
+        ],
+        "box": [
+          107,
+          31,
+          311,
+          462
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "54a3cfe788ed9c5c213c10f4c4af08d9cc8751c9d29a734266f100fb9bad33c4"
+      },
+      "bytes": 23480
+    },
+    {
+      "id": "rose",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          267,
+          111,
+          992,
+          1160
+        ],
+        "box": [
+          265,
+          109,
+          729,
+          1053
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "ed0bbcc310ae3972cffa29a48baca637d221a382a3e40fd6405bfe76abab403a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          45,
+          405,
+          474
+        ],
+        "box": [
+          107,
+          43,
+          300,
+          433
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "9b597e8e9474297ffd092df273301e5f7987eb61add07f01f000cd0ade13934f"
+      },
+      "bytes": 23214
+    },
+    {
+      "id": "banana",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          268,
+          110,
+          989,
+          1158
+        ],
+        "box": [
+          266,
+          108,
+          725,
+          1052
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "2145bb41c67c468cdd430c902179cd0632e1f56df9fd074d433e0194613bed7a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          45,
+          404,
+          473
+        ],
+        "box": [
+          107,
+          43,
+          299,
+          432
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "fd2b77fa94af22e50fde271209625e234c1afbd339aeb31e637ce2ab9fdfdad4"
+      },
+      "bytes": 20728
+    },
+    {
+      "id": "coconut",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          248,
+          72,
+          1051,
+          1238
+        ],
+        "box": [
+          246,
+          70,
+          807,
+          1170
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "65e0c0e2ec9e410cfd95f5954662f80f5b4d37ba16e84ac3337bc9c09d21f5f2"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          101,
+          29,
+          429,
+          506
+        ],
+        "box": [
+          99,
+          27,
+          332,
+          481
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "9219bf1dba81003a4706223c62f8271e2e742688ee17023f1f868c3389f22c4d"
+      },
+      "bytes": 23518
+    },
+    {
+      "id": "mango",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          269,
+          110,
+          989,
+          1160
+        ],
+        "box": [
+          267,
+          108,
+          724,
+          1054
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "811f9ce1615c25c6adbfca682ebf7277083be6082c459b690da12722eefcc829"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          110,
+          45,
+          404,
+          474
+        ],
+        "box": [
+          108,
+          43,
+          298,
+          433
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "187f7ee8fcc1e83982e1ca6cca2b52e4e6108baa2ff9e495edb9eb1f29b4e974"
+      },
+      "bytes": 21098
+    },
+    {
+      "id": "melon",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          268,
+          110,
+          993,
+          1160
+        ],
+        "box": [
+          266,
+          108,
+          729,
+          1054
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "0125f1051b90c2c47f984ec4816dad9da85a9b3854ac3bb2f62773818daecba6"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          109,
+          45,
+          405,
+          474
+        ],
+        "box": [
+          107,
+          43,
+          300,
+          433
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "26485a5014424c0644f71d2c388887f31d6335a818b62b808a2e30e0f6070b02"
+      },
+      "bytes": 23638
+    },
+    {
+      "id": "peach",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          238,
+          65,
+          1045,
+          1233
+        ],
+        "box": [
+          236,
+          63,
+          811,
+          1172
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b0266e6be64f074c01f4aa55d65e36c9f3b985c46324090f8841f8c6aa8c42f4"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          97,
+          26,
+          427,
+          503
+        ],
+        "box": [
+          95,
+          24,
+          334,
+          481
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "3949a191cde8c87e6e7f10fbf990b743f13f6142500a5109db8e7c2a4de836db"
+      },
+      "bytes": 24758
+    },
+    {
+      "id": "vanilla",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          269,
+          110,
+          990,
+          1159
+        ],
+        "box": [
+          267,
+          108,
+          725,
+          1053
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "743c682bf5d0ea939134aef20a12ae5a0c6180fb6ba227fe56811a0bda082c9a"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          110,
+          45,
+          405,
+          474
+        ],
+        "box": [
+          108,
+          43,
+          299,
+          433
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "e71f3167e753ff1f3f472b0789b7f1f1ba5b97dde1dfcafc0fc0fd7dc09697a1"
+      },
+      "bytes": 22182
+    }
+  ]
+}

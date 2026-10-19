@@ -7,7 +7,9 @@ import { layers, toast } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
+import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
+import { RIN_AWAY_DAY } from "../core/rules.js";
 
 const grades = () => Object.entries(DB.kuji?.grades || {})
   .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
@@ -16,15 +18,24 @@ const grades = () => Object.entries(DB.kuji?.grades || {})
 function newBox(g) {
   const order = [];
   g.prizes.forEach((p, i) => { for (let k = 0; k < p.count; k++) order.push(i); });
-  return { order: shuffle(order), drawn: 0, emptyDay: null };
+  return { order: shuffle(order), drawn: 0, emptyDay: null,
+    version: DB.kuji.meta.version, prizes: structuredClone(g.prizes), lastOne: structuredClone(g.lastOne) };
 }
 
 /** 箱の状態。引き切ってから refillDays 経ったら新しい箱に入れ替わる */
 function boxOf(g) {
   let b = state.kuji[g.id];
   const refill = DB.kuji.meta?.refillDays || 3;
-  if (b && b.drawn >= g.boxSize && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
+  // 既存セーブの20/12枚箱は順番も景品もそのまま。引き切った次の補充から50枚へ。
+  if (b && b.drawn >= b.order.length && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
   if (!b) { b = state.kuji[g.id] = newBox(g); save(); }
+  if (!b.prizes) {
+    const original = DB.kuji.legacyGrades?.[g.id] || g;
+    b.prizes = structuredClone(original.prizes);
+    b.lastOne = structuredClone(original.lastOne);
+    b.version = 1;
+    save();
+  }
   return b;
 }
 
@@ -36,7 +47,11 @@ function grant(prize) {
     return;
   }
   if (prize.type === "flavor" && prize.flavorId) {
-    addFlavorStock(prize.flavorId, FLAVOR_BOX_GRAMS); // 1箱（50g）ぶん在庫に入る
+    addFlavorStock(prize.flavorId, prize.grams ?? FLAVOR_BOX_GRAMS);
+    return;
+  }
+  if (prize.type === "flavor" && prize.flavors) {
+    for (const leaf of prize.flavors) addFlavorStock(leaf.id, leaf.grams);
     return;
   }
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });
@@ -49,21 +64,26 @@ export function kujiRows(rerender) {
   const rows = [];
   if (!state.flags._kuji_seen) {
     state.flags._kuji_seen = true;
-    rows.push(el("p.kuji-note", { text: `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+    const staffed = state.slot === 1 && state.day % 7 !== RIN_AWAY_DAY && state.met.rin;
+    rows.push(el("p.kuji-note", { text: staffed
+      ? `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
+      : "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。" }));
   }
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {
     const box = boxOf(g);
-    const left = g.boxSize - box.drawn;
+    const size = box.order.length;
+    const left = size - box.drawn;
     const empty = left <= 0;
-    const top = g.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
+    const top = box.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
     rows.push(el("div.shop-row.kuji-row", [
       el("span.shop-cat.kuji-cat", { text: "くじ" }),
       el("div.shop-main", [
         el("b", { text: g.label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${g.boxSize} 枚 ・ S賞: ${top}${left === 1 ? " ・ 次がラスト1枚！ラストワン賞つき" : ""}` }),
+          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? "（旧箱・次回は50枚）" : ""}` }),
+        el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
       ]),
       el("button.btn.small", {
         text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
@@ -78,53 +98,91 @@ export function kujiRows(rerender) {
 
 async function draw(g) {
   const box = boxOf(g);
-  if (box.drawn >= g.boxSize || state.money < g.price) return;
+  if (box.drawn >= box.order.length || state.money < g.price) return;
   addMoney(-g.price);
-  const prize = g.prizes[box.order[box.drawn]];
+  const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;
-  const last = box.drawn >= g.boxSize;
+  const last = box.drawn >= box.order.length;
   if (last) box.emptyDay = state.day;
   grant(prize);
-  const extras = last && g.lastOne ? [g.lastOne] : [];
+  const extras = last && box.lastOne ? [box.lastOne] : [];
   extras.forEach(grant);
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
   await reveal(prize, extras);
 }
 
-// 引き演出: 棚の箱から1つを引き当てる → ランクが開く。上位賞は光が走る
-function reveal(prize, extras) {
+// 引き演出: ガラガラ（福引きの回転抽選器）を回し、賞の色の玉が出る → 賞のカードが開く。上位賞は係の人が鐘を鳴らす。
+// 箱の最後の1枚なら、カードを閉じたあとにもう一度ガラガラを回し、ラストワン賞の黒い玉とカードを見せる（extras）。
+// （motions/garagara.js。SKIP中とテストの高速送りでは回さずにカードだけ出し、ラストワン賞はトーストで知らせる）
+function reveal(prize, extras = []) {
   return new Promise((resolve) => {
-    const shelf = el("div.kuji-shelf", Array.from({ length: 6 }, (_, i) => el("i.kuji-box")));
-    const pickIdx = Math.floor(Math.random() * 6);
-    const card = el("div.kuji-card.drawing", [shelf, el("div.kuji-label", { text: "箱を引いています……" })]);
-    const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } }, [card]);
+    const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } });
     layers.modal.replaceChildren(ov);
     layers.modal.classList.add("show");
-    SE.select();
-    requestAnimationFrame(() => shelf.children[pickIdx].classList.add("reach"));
+    const skip = vnTest.turbo || document.body.classList.contains("vn-skip");
+    const queue = skip ? [prize] : [prize, ...extras];
     let open = false;
-    setTimeout(async () => {
-      const top = prize.rank === "S" || prize.rank === "LAST";
+    const next = async () => {
+      const p = queue.shift();
+      if (!p) {
+        layers.modal.classList.remove("show");
+        layers.modal.replaceChildren();
+        resolve();
+        return;
+      }
+      await revealOne(ov, p, skip);
+      open = true;
+      if (skip) for (const ex of extras) { await sleep(500); toast(`${ex.name} を手に入れた！`, { kind: "good" }); }
+    };
+    ov.onclick = () => {
+      if (!open) return;
+      open = false;
+      SE.click();
+      next();
+    };
+    next();
+  });
+}
+
+/** 1つの賞を引いて見せる。カードが開いたら解決する */
+function revealOne(ov, prize, skip) {
+  return new Promise((done) => {
+    const card = el("div.kuji-card.drawing", [el("div.kuji-label", { text: prize.rank === "LAST" ? "ラストワン賞！" : "ガラガラ……" })]);
+    // 前のカードが残っていれば、ガラガラが上に重なり切ってから入れ替える（いきなり消えて背景だけになる間を作らない）
+    const prev = [...ov.children];
+    if (skip || !prev.length) ov.replaceChildren(card);
+    else setTimeout(() => { prev.forEach((n) => n.remove()); ov.prepend(card); }, 360);
+    SE.select();
+    let shown = false;
+    const show = () => {
+      if (shown) return;
+      shown = true;
+      card.style.visibility = "";
+      const last = prize.rank === "LAST";
       card.className = `kuji-card reveal rank-${prize.rank}`;
       card.replaceChildren(
-        el("div.kuji-rank", { text: prize.rank === "LAST" ? "LAST" : `${prize.rank}賞` }),
-        el("div.kuji-name", { text: prize.name }),
+        el("div.kuji-rank", { text: last ? "ラストワン賞" : `${prize.rank}賞` }),
+        el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
         el("div.kuji-desc", { text: prize.desc || "" }),
         el("div.kuji-tap", { text: "タップで閉じる" }),
       );
       SE.stamp();
-      if (top) SE.fanfare();
-      open = true;
-      for (const ex of extras) { await sleep(500); toast(`${ex.name} を手に入れた！`, { kind: "good" }); }
-    }, 800);
-    ov.onclick = () => {
-      if (!open) return;
-      SE.click();
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      resolve();
+      if (prize.rank === "S" || last) SE.fanfare();
+      done();
     };
+    // ガラガラが消え始めたところでカードを下で開き、重ねて受け渡す（回っているあいだ札は隠す）
+    if (!skip) card.style.visibility = "hidden";
+    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank, { onHandoff: show })).catch((e) => console.error(e))).then(show);
   });
+}
+
+/** 開発用: 景品を渡さずに、指定の賞で引く演出だけ見る（__remake.dev.motion("garagara-S") など）。
+ * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞のカードを閉じたあとにラストワン賞へ続く */
+export function previewReveal(rank = "S") {
+  const g = grades()[0];
+  const find = (r) => (r === "LAST" ? g?.lastOne : g?.prizes.find((p) => p.rank === r)) || { rank: r, name: r === "LAST" ? "ラストワン賞" : `${r}賞`, desc: "" };
+  const [main, extra] = String(rank).split("+");
+  return reveal(find(main), extra ? [find(extra)] : []);
 }
 
 /** 売れる小物（くじの景品など）の買い取り行 */

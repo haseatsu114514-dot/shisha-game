@@ -52,11 +52,11 @@ async function act(page,id,{touch=false}={}) {
   await go(page,id,touch);
   await page.waitForFunction(old => window.__remake.state.day > old.day || window.__remake.state.slot > old.slot,
     { day: before.day, slot: before.slot });
-  await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
+  await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
 }
 async function reloadSave(page, slot = 0) {
   await page.reload(); await page.locator(t('title-load')).click(); await page.locator(t(`slot-${slot}`)).click();
-  await page.locator(`${map}, ${t('ch2-main-preparation-limit')}`).first().waitFor();
+  await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
   await page.evaluate(() => { window.__remake.vnTest.turbo = true; });
 }
 async function capture(page,file) { await page.waitForTimeout(700); await page.screenshot({path:evidence+file}); }
@@ -75,7 +75,10 @@ await suite('ch2-daily',async check=>{
       });
     });
     for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
-    assert.equal(await page.locator('.spot-pin').count(),3);
+    // mainの3店舗を保持し、今回追加するカフェだけを隣町へ接続する。
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),3);
+    assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
     await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{
@@ -106,8 +109,20 @@ await suite('ch2-daily',async check=>{
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
     assert.equal(v.inbox.filter(i=>i.id==='lime_ch2_ageha_after_visit').length,1);
     await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000);assert.equal(v.flags._ch2_talks.ageha,2);
-    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_repeat'));
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_followup'));
+    assert.equal(v.flags._ch2_followup_done.ageha,true);
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
+    await page.evaluate(async()=>{
+      window.__dailyTrace=[];
+      (await import('./js/vn/engine.js')).hooks.onLine=(id)=>{
+        if(window.__dailyTrace.at(-1)!==id)window.__dailyTrace.push(id);
+      };
+    });
+    await page.locator(t('map-region-home')).click();await act(page,'rest');
+    await wide(page);await act(page,'ch2_ageha');v=await value(page);
+    assert.equal(v.money,27000);assert.equal(v.flags._ch2_talks.ageha,3);
+    // 続編のあとは、あげはの店に通う回を順に読む（#626）。全部読んだら従来の repeat に戻る
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_gyaru'));assert(v.flags._ch2_read_remake_ch2_ageha_gyaru);
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');

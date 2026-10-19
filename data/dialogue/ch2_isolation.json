@@ -1,5 +1,5 @@
 {
-  "comment": "第2章後半『外側の崩壊』── 勝ち続けるはじめから、仲間が一人ずつ離れていく。テイルズオブジアビス型の孤立アーク。味覚スランプ（内側の崩壊）と並走する。ch2エンジン実装時に組み込む。",
+  "comment": "第2章のすれ違い。勝利や味覚不調を人格の罰にしない。応援席は前夜の選択に従う。",
   "dialogues": [
     {
       "dialogue_id": "ch2_naru_warm",
@@ -126,87 +126,122 @@
           "text": "うまくなってるよ。けど、話してる相手まで点で見なくていいだろ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "──勝ったのは、俺です"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "言った瞬間、後悔した。でも、もう遅かった。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "……そうだな。勝ったのは、お前だ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるは静かにボウルを置いて、店の奥へ下がった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "吸う前のホースと、採点表だけが手元に残った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その夜送った「すみません」に、帰りの電車でも返事はつかなかった。"
+          "type": "choice",
+          "id": "ch2_naru_response",
+          "choices": [
+            {
+              "text": "スマホを伏せて、話を聞く",
+              "next": "listen"
+            },
+            {
+              "text": "勝ったのは俺だと言い返す",
+              "next": "push"
+            }
+          ]
         }
-      ]
+      ],
+      "branches": {
+        "listen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……すみません。店の話、もう一度聞かせてください"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今は頭に入らないだろ。顔に出てる"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "大会が終わったら、点のつかない話をしようぜ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。俺から連絡します"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_naru_listened"
+          }
+        ],
+        "push": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "──勝ったのは、俺です"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "言った瞬間、後悔した。"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "そうだな。けど今、勝ち負けの話はしてない"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は帰れ。俺も、言い方を考える"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道に謝った。返事を待つ画面から、目を離せなかった。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_naru_hurt"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_adam_distance",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_eden_shop.png"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "EDENに顔を出した。アダムはカウンターにいた。目が合った。"
+          "text": "EDENのカウンターで、アダムが試作を差し出した。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "今日は熱を少し変えた。どうだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "アダムさん、お久しぶりです"
+          "text": "……大会なら、何点くらいになりますか"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "アダムは何も言わずに、ダブルアップルのボウルを見つめていた。すれ違いざま、ぽつりと。"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……お前の煙、全部入ってるんだってな。なんでも吸収して、なんでも出せる"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "──なあ。俺の宇宙、いる？"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "　ダブルアップルしかない俺の宇宙なんて、お前にはもう、いらないんじゃないのか"
+          "text": "点は聞いてない。お前がどう感じたか、聞いてる"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "そんなこと──"
+          "face": "normal",
+          "text": "すみません。今は、うまく言えなくて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "言いかけた言葉が続かなかった。アダムはもう、こちらを見ていなかった。"
+          "text": "アダムはホースを台に戻した。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "なら、無理に答えなくていい。また分かる日に吸え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に差し出されたのは、水の入ったグラスだった。"
         }
       ]
     },
@@ -229,7 +264,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "ねえ。……なるちゃんが沈んでるの、アダムくんが店を閉めがちなの、知ってる？"
+          "text": "ねえ。最近、連絡の返事まで大会の話になってない？"
         },
         {
           "speaker": "hajime",
@@ -328,129 +363,6 @@
           "speaker": "",
           "face": "",
           "text": "つむぎは色の名前を決めず、コップをこちらへ寄せた。"
-        }
-      ]
-    },
-    {
-      "dialogue_id": "ch2_empty_victory",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
-      },
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──県大会、当日。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "朝、スミさんからLIMEが一通。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "『ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい。だが一つだけ言わせろ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──お前は今、誰のために作ってる？』"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "返信は、打てなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "本番の煙は、自分史上もっとも綺麗にまとまった。審査員が満点に近い札を上げる。──優勝。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "地区の頂点。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "最後の吸い出しのとき、癖で、誰かの顔を思い出そうとした。──誰の顔も、浮かばなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "結果が出た瞬間、あげはは無言で機材をまとめた。すれ違いざま、一言だけ。"
-        },
-        {
-          "speaker": "ageha",
-          "face": "sad",
-          "text": "……ごめん。理由は、聞かないで"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "呼び止める間もなく、背中は人混みに消えた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "表彰台。スポットライト。拍手はまばらだった。観客席に、知っている顔は一つもない。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるは来ていない。アダムも、みんとも。応援席は、最後まで空いたままだった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "控え室。優勝賞品のフレーバー缶を抱えて、ひとり。スマホを開く。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「おめでとう」は、一通も来ていない。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ただ一件だけ。みんとから。──『勝ったね。でも、声が聞きたくなったらいつでも吸いに来な』。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "祝福の言葉は、なかった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "…………"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "祝勝の一服を、自分で作って、自分で吸った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "味は、しなかった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "sad",
-          "text": "（……あれ。俺、なんのために勝ったんだっけ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "誰もいない控え室で、優勝トロフィーだけが鈍く光っていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──東京行きの切符を握ったまま、はじめは長いこと、動けなかった。"
         }
       ]
     }

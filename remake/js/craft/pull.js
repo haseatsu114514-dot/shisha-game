@@ -21,6 +21,8 @@ import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
+import { makerMixProfile } from "./temperature-model.js";
+import { createCraftClock } from "./clock.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -103,12 +105,17 @@ export async function runCare(cs, { round = 0 } = {}) {
 }
 
 async function pullGame(cs, mode) {
-  await waitBenchReady(cs);
+  await waitBenchReady(cs, mode.store);
   const tutorial = cs.mode === "tutorial";
   const bands = temperatureBands(cs), ideal = bands.ideal, center = bands.center;
+  const maker = makerMixProfile(cs);
+  const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
-  const panel = stepPanel(mode.store, mode.title, mode.hint);
+  const panel = stepPanel(mode.store, mode.title, tutorial
+    ? "中央のキープで温度を保つ。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。吸い終わってから次の針を止める"
+    : mode.hint);
+  const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
   const slowNow = () => skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
@@ -123,7 +130,7 @@ async function pullGame(cs, mode) {
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  const baseCool = mode.drift ? rand(0.006, 0.013) : 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
   let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
@@ -236,8 +243,10 @@ async function pullGame(cs, mode) {
   const loop = (now) => {
     if (!running || drawing || finished) return;
     if (!play.isConnected) { abandoned = true; running = false; serve(); return; }
-    const dt = Math.min(0.05, (now - last) / 1000);
-    last = now;
+    const current = gameClock.now();
+    const dt = Math.min(0.05, (current - last) / 1000);
+    last = current;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     pos += (dir * dt * 2) / period;
     if (pos >= 1) { pos = 1; dir = -1; }
     if (pos <= 0) { pos = 0; dir = 1; }
@@ -275,7 +284,7 @@ async function pullGame(cs, mode) {
     if (T >= harshTemp) SE.miss();
   };
   const doPull = async (at = pos) => {
-    if (failed || !running || drawing || finished || pulls >= MAX_PULLS) return;
+    if (failed || !running || drawing || finished || pulls >= MAX_PULLS || gameClock.paused) return;
     const before = T;
     const { z, isJust, delta } = actionAt(at);
     drawing = true;
@@ -293,6 +302,7 @@ async function pullGame(cs, mode) {
     render();
     try {
       const complete = await animateDraw({ duration,
+        paused: () => gameClock.paused,
         active: () => running && !finished && !failed && play.isConnected,
         update: (progress, linear) => {
           coreTemp = from + (to - from) * progress;
@@ -307,7 +317,7 @@ async function pullGame(cs, mode) {
         return;
       }
       if (isJust) justs++;
-      const overdone = pulls > mode.safe;
+      const overdone = pulls > safeLimit;
       reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good");
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
       if (overdone || T >= harshTemp) strain();
@@ -321,7 +331,7 @@ async function pullGame(cs, mode) {
       drawStatus.textContent = "";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();
-        last = performance.now();
+        last = gameClock.now();
         raf = requestAnimationFrame(loop);
       }
     }
@@ -381,9 +391,9 @@ async function pullGame(cs, mode) {
     await sleep(autoSkill() ? 40 : 450);
     choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = performance.now(), dur = autoSkill() ? 200 : 1400;
+    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
-      const k = Math.min(1, (performance.now() - started) / dur);
+      const k = Math.min(1, (gameClock.now() - started) / dur);
       coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
       render();
       if (isBurnt(T)) { failed = "burnt"; break; }
@@ -400,7 +410,7 @@ async function pullGame(cs, mode) {
   pullBtn.addEventListener("click", (e) => { if (e.detail === 0) doPull(); });
   let serve;
   const served = new Promise((r) => { serve = r; });
-  const finish = () => { if (!serveBtn.disabled) { finished = true; serve(); } };
+  const finish = () => { if (!serveBtn.disabled && !gameClock.paused) { finished = true; serve(); } };
   serveBtn.addEventListener("click", finish);
   const unkey = keys({ " ": (e) => !e.repeat && doPull(), Space: (e) => !e.repeat && doPull(), Enter: (e) => !e.repeat && finish() });
 
@@ -410,7 +420,7 @@ async function pullGame(cs, mode) {
     render();
     await countdown();
     running = true;
-    last = performance.now();
+    last = gameClock.now();
     raf = requestAnimationFrame(loop);
     render();
   } else serve();
@@ -441,6 +451,7 @@ async function pullGame(cs, mode) {
     })();
   }
   await served;
+  gameClock.dispose();
   running = false; finished = true;
   cancelAnimationFrame(raf);
   stopBubbles();
@@ -462,7 +473,7 @@ async function pullGame(cs, mode) {
     return true;
   }
 
-  const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, mode.safe);
+  const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, safeLimit);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {

@@ -34,9 +34,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ds-layout:
+    name: Reversible game display on PC and touch
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned browser dependencies
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start production preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ds-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/ds-preview.log"
+          exit 1
+      - name: Shared progression, old saves, reversible layout and style failure
+        run: node remake/test/browser/game_layout.mjs
+      - name: Preserve display results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: game-layout-results
+          path: |
+            .codex/artifacts/game-layout/
+            ${{ runner.temp }}/ds-preview.log
+          retention-days: 7
   chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The full suite reached the final developer-tool checks before its 30m
+    # job limit on PR #555. Keep every assertion and allow the suite to finish.
+    timeout-minutes: 40
     env:
       TEST_REF: ${{ github.sha }}
     steps:
@@ -73,11 +113,24 @@ jobs:
           cat "$RUNNER_TEMP/remake-preview.log"
           exit 1
       # Keep browser suites sequential; they share the preview server and runner.
+      - name: Pakki reel lifecycle and introduction read-through
+        timeout-minutes: 3
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          # Ubuntu's AppArmor permits namespaces for the installed Chrome binary.
+          # Keep Chromium sandboxing enabled and use that vendor browser in CI.
+          CHROME_EXECUTABLE_PATH: /opt/google/chrome/chrome
+        run: |
+          test -x "$CHROME_EXECUTABLE_PATH"
+          node remake/test/reel_lifecycle.mjs
       - name: Save/load, legacy migration and PC/mobile controls
         run: |
           node remake/test/browser/save_load.mjs
+          node remake/test/browser/title_layout.mjs
           node remake/test/browser/sumi_contact.mjs
           node remake/test/browser/lover_hidden_growth.mjs
+          node remake/test/browser/home_shisha.mjs
+          node remake/test/browser/home_practice_leaves.mjs
       - name: Saved-lover date UI routes and legacy invitation boundaries
         run: |
           node remake/test/lover_dates.mjs
@@ -88,7 +141,10 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hiyori
         run: |
           node --experimental-vm-modules remake/test/hiyori_frequency.mjs
+          node remake/test/axe_bar_discovery.mjs
+          node remake/test/browser/axe_bar_discovery.mjs
           node remake/test/hiyori.mjs
+          node remake/test/browser/map_guests.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
           node remake/test/samechan_portrait.mjs
@@ -114,6 +170,7 @@ jobs:
         run: |
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
+          node remake/test/browser/tonari_opening.mjs
           node remake/test/browser/tutorial_transition.mjs
       - name: Adopted store logos and entry cards on PC and mobile
         env:
@@ -122,6 +179,8 @@ jobs:
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/store_logos.mjs
+          ARTIFACT_DIR=.codex/artifacts/remake-browser/map-facilities node remake/test/browser/facility_map.mjs
+          ARTIFACT_DIR=.codex/artifacts/remake-browser/map-reveals node remake/test/browser/map_reveals.mjs
           node remake/test/browser/shop_ui.mjs
       - name: Continue captions, asset readiness, clock and audio
         env:

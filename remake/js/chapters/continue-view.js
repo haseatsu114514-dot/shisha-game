@@ -7,6 +7,9 @@ const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反�
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
 const HEAD_PADDING = 24;
+// #590 採用C。neonだけ、最初から顔bboxを2.05倍・同じ中心へ揃える。
+const NEON_FACE_PX = 524.8;
+const NEON_FACE_CENTER_Y = 273;
 
 export function createContinueView({ script, speaker, character, premium, layout = "neon", background = "stage", onType = null }) {
   const neon = layout === "neon";
@@ -22,11 +25,14 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (!info) return;
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
     const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
-    const height = FACE_PX / (framing?.size || info.h * .2), width = height * info.aspect;
-    // 顔アイコンの上端は髪/帽子の上端と異なる。全表情の人物bboxを基準に頭を枠内へ収める。
+    const faceSize = framing?.size || info.h * .2;
+    const height = (neon ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
+    // neonは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。
     const top = 1 - info.h - info.b;
+    const imageTop = neon ? NEON_FACE_CENTER_Y - ((framing?.top ?? top) + faceSize / 2) * height
+      : HEAD_PADDING - top * height;
     Object.assign(image.style, { height: `${height}px`, width: `${width}px`,
-      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${HEAD_PADDING - top * height}px` });
+      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${imageTop}px` });
   }
   framePortrait(portrait);
   const caption = el("p.go-speech-text", { "aria-hidden": "true" });

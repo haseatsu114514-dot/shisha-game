@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>章タイトルコール確認 — 水煙前線 -EN:CODE-</title>
+<link rel="stylesheet" href="css/base.css">
+<style>
+body { overflow:auto; }
+.preview-tools { position:fixed; inset:8px 8px auto; z-index:100; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; color:var(--text); font:14px var(--font); }
+.preview-tools select,.preview-tools button { min-height:44px; padding:6px 12px; color:var(--text); background:#241632; border:1px solid #bda06b; }
+.preview-note { width:100%; text-align:center; margin:0; }
+#viewport { top:130px; bottom:16px; }
+</style>
+</head>
+<body>
+<div class="preview-tools">
+ <label for="chapter">章タイトル</label><select id="chapter"></select>
+ <button id="play" type="button">再生する</button>
+ <p class="preview-note">第3章は保留中。第4・5章は表示確認用で、本編進行は未接続です。</p>
+ <p class="preview-note" id="status" role="status">ゲームの保存データは変更しません。</p>
+</div>
+<div id="viewport"><div id="stage"><div id="fx"></div></div></div>
+<script type="module">
+import { CHAPTER_TITLE_ART } from './js/core/chapter-title-art.js';
+import { chapterTitle, layers } from './js/core/ui.js';
+import { unlockAudio } from './js/core/audio.js';
+const selector = document.getElementById('chapter'), play = document.getElementById('play'), status = document.getElementById('status');
+layers.fx = document.getElementById('fx');
+for (const entry of CHAPTER_TITLE_ART) selector.add(new Option(`${entry.no}　${entry.name}`, String(entry.chapter)));
+function fit() { document.getElementById('stage').style.setProperty('--k', Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - 150) / 720))); }
+addEventListener('resize', fit); fit();
+play.addEventListener('click', async () => {
+  play.disabled = selector.disabled = true;
+  status.textContent = '再生中…';
+  try { unlockAudio(); await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === Number(selector.value))); status.textContent = '再生終了。保存データは変更していません。'; }
+  catch (error) { status.textContent = `表示エラー：${error.message}`; }
+  finally { play.disabled = selector.disabled = false; }
+});
+</script>
+</body>
+</html>
