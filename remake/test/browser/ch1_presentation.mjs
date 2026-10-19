@@ -38,23 +38,30 @@ await suite("ch1-presentation", async check => {
       assert(after.restored && after.state); await page.waitForTimeout(1000);
       assert.equal(await page.locator(".cold-open").count(), 0);
     }, options);
-    await check(`${device}-mix-and-basic-taste`, async page => {
+    for (const mode of ["tutorial", "drill"]) await check(`${device}-${mode}-mix-and-basic-taste`, async page => {
       await setup(page);
-      await page.evaluate(async () => {
-        V.cs = V.craft.newSession("tutorial"); await V.craft.openBench(V.cs).ready;
+      await page.evaluate(async mode => {
+        // Normal practice uses owned mint; the first lesson supplies its two flavors.
+        if (mode === "drill") { V.core.state.flavors.push("mint"); V.core.state.flavorStock.mint = 50; }
+        V.stockBefore = JSON.stringify(V.core.state.flavorStock);
+        V.cs = V.craft.newSession(mode); await V.craft.openBench(V.cs).ready;
         V.running = V.steps.stepMix(V.cs);
-      });
+      }, mode);
       await page.locator('[data-test="mix-plus-double_apple"]').waitFor();
       assert.equal(await page.locator(".bowl-layers").count(), 0);
-      assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
+      const preview = page.locator('[data-test="mix-temperature-preview"]');
+      assert.equal(await preview.count(), 1, "The preview stays mounted in both modes");
+      assert.equal(await preview.isVisible(), mode !== "tutorial", "Only the first lesson hides the preview");
+      assert.equal(await page.locator('[data-test="mix-temperature"]').isVisible(), mode !== "tutorial");
       assert.match(await page.locator('.mix-temperature-legend').textContent(), /未選択/);
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /どんな一服/);
       for (const [id, times] of [["double_apple", 10], ["mint", 2]]) for (let i = 0; i < times; i++) await select(page, `[data-test="mix-plus-${id}"]`, touch);
       await assertFits(page, ".mix-vessel, .mix-taste, .mix-footer, .fr-btn");
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /アニス.*ミント/);
-      await page.screenshot({ path: `${shots}/${device}-mix-basic.png` });
-      await assertFits(page, ".mix-temperature, .mix-temperature-legend");
-      await page.screenshot({ path: `${shots}/${device}-mix-temperature.png` });
+      assert.equal(await preview.isVisible(), mode !== "tutorial", "Adding leaves preserves the mode's visibility");
+      await page.screenshot({ path: `${shots}/${device}-${mode}-mix-basic.png` });
+      if (mode !== "tutorial") await assertFits(page, ".mix-temperature, .mix-temperature-legend");
+      await page.screenshot({ path: `${shots}/${device}-${mode}-mix-temperature.png` });
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       await page.evaluate(() => { V.running = V.steps.stepPack(V.cs); });
       await page.locator('[data-test="opt-normal"]').waitFor();
@@ -63,6 +70,7 @@ await suite("ch1-presentation", async check => {
       await select(page, '[data-test="pack-confirm"]', touch); await page.evaluate(() => V.running);
       assert.deepEqual(await page.evaluate(() => V.cs.mix), { double_apple: 10, mint: 2 });
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.double_apple), 50);
+      assert(await page.evaluate(() => JSON.stringify(V.core.state.flavorStock) === V.stockBefore));
     }, options);
     await check(`${device}-many-flavors-and-regulation`, async page => {
       await setup(page);
