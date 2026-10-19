@@ -50,6 +50,70 @@ try{
   const last=await choices(5,'naru','ch1_naru_first');assert(last.some(x=>x.marked[0]));
   const expired=await choices(6,'naru','ch1_naru_first');assert(expired.every(x=>x.marked.every(v=>!v)),'hint survived fourth day');
   const second=await choices(3,'rin','ch1_rin_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
+  const riftAndTrivia=await page.evaluate(async()=>{
+   const snap=JSON.stringify(Q.core.state);
+   // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
+   Object.assign(Q.core.state,{chapter:1,day:6,slot:0,fortuneDay:0,money:13000,met:{naru:true},affinity:{naru:10}});
+   Q.core.state.flags._fortune_trivia_seen_naru=31;
+   const newDone=await Q.fortune.doFortune();
+   const newLines=Q.vn.backlog().map(x=>x.text);
+   const newMatched=Q.data.DB.fortuneTrivia.characters.naru.filter(x=>newLines.includes(x.teller)).map(x=>x.id);
+   // Chapter 2 before and after Naru confrontation (rift).
+   const naruSpot=Q.spots.spotById('naru');
+   Object.assign(Q.core.state,{chapter:2,day:27,slot:0,fortuneDay:0,money:13000,met:{naru:true,adam:true},affinity:{naru:30,adam:20}});
+   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true};
+   const beforeRiftOpen=Q.access.spotAvailability(naruSpot).ok;
+   Q.core.state.day=24; // 24 % 7 === 3 (regular weekly holiday before rift)
+   const beforeRiftHoliday=Q.access.spotAvailability(naruSpot).tag;
+   // Mid-selection transition in doFortune: if rift activates while choosing Naru, abort without charging.
+   Q.core.state.day=27;
+   Q.vn.vnTest.choose=did=>{
+    if(did==='remake_fortune_pick_live'){Q.core.state.flags._ch2_read_ch2_naru_confrontation=true;return 0;}
+    return 0;
+   };
+   const midTransition=await Q.fortune.doFortune();
+   Q.vn.vnTest.choose=null;
+   const midTransitionSafe=!midTransition&&Q.core.state.money===13000&&Q.core.state.fortuneDay===0;
+   // Continuous temporary closure after rift across normal days, regular holiday (day 24), SAVE/LOAD, and direct entry.
+   const afterRiftNormal=Q.access.spotAvailability(naruSpot).tag;
+   Q.core.state.day=24;
+   const afterRiftHoliday=Q.access.spotAvailability(naruSpot).tag;
+   Q.core.save();Q.core.newGame();Q.core.load();
+   const afterReloadTag=Q.access.spotAvailability(naruSpot).tag;
+   const moneyBeforeVisit=Q.core.state.money,staminaBeforeVisit=Q.core.state.stamina;
+   const blockedRival=await Q.spots.visitRival(naruSpot);
+   const blockedChar=await Q.spots.visitChar('naru');
+   const entryBlocked=!blockedRival&&!blockedChar&&Q.core.state.money===moneyBeforeVisit&&Q.core.state.stamina===staminaBeforeVisit;
+   // Fortune picker after rift excludes Naru and only offers Adam (or no_target if Naru was sole acquaintance).
+   Q.core.state.day=27;
+   let offeredChoices=[];
+   Q.vn.vnTest.choose=(did,texts)=>{if(did==='remake_fortune_pick_live')offeredChoices=texts;return 0;};
+   const adamPicked=await Q.fortune.doFortune();
+   Q.vn.vnTest.choose=null;
+   const pickedChar=Q.core.state.fortune?.char;
+   delete Q.core.state.affinity.adam;Q.core.state.fortuneDay=0;
+   const soleNaruNoTarget=!(await Q.fortune.doFortune());
+   Object.assign(Q.core.state,JSON.parse(snap));
+   Q.core.save();
+   return {
+    newDone,newMatched,beforeRiftOpen,beforeRiftHoliday,midTransitionSafe,
+    afterRiftNormal,afterRiftHoliday,afterReloadTag,entryBlocked,
+    adamPicked,offeredChoices,pickedChar,soleNaruNoTarget,
+   };
+  });
+  assert(riftAndTrivia.newDone);
+  assert(riftAndTrivia.newMatched.some(id=>['naru_9','naru_12','naru_15'].includes(id)),'legacy mask 31 did not advance to new naru trivia');
+  assert(riftAndTrivia.beforeRiftOpen);
+  assert.equal(riftAndTrivia.beforeRiftHoliday,'本日定休日');
+  assert(riftAndTrivia.midTransitionSafe,'mid-selection rift transition charged or granted reading');
+  assert.equal(riftAndTrivia.afterRiftNormal,'本日臨時休業');
+  assert.equal(riftAndTrivia.afterRiftHoliday,'本日臨時休業');
+  assert.equal(riftAndTrivia.afterReloadTag,'本日臨時休業');
+  assert(riftAndTrivia.entryBlocked,'direct entry to KEMURIKUSA or Naru succeeded after rift');
+  assert(riftAndTrivia.adamPicked);
+  assert.equal(riftAndTrivia.pickedChar,'adam');
+  assert(riftAndTrivia.offeredChoices.every(t=>!t.includes('なる')),'Naru remained in fortune choices after rift');
+  assert(riftAndTrivia.soleNaruNoTarget);
   // Capture real choice DOM before selecting; this scene is authored data, not a synthetic quiz.
   await page.evaluate(()=>{
    Q.vn.vnTest.turbo=false;Q.vn.vnTest.choose=null;
@@ -69,6 +133,6 @@ try{
   await page.locator('.vn-portraits img[src*="uranaishi"]').waitFor();await page.locator('.vn-portraits img[src*="uranaishi"]').evaluate(i=>i.decode());
   await page.waitForTimeout(500);
   await page.screenshot({path:`${out}/portrait-${name}.jpg`,type:'jpeg',quality:80});
-  assert.deepEqual(errors,[]);results.push({name,night,unsuccessful,paid,duplicate,bonus,persisted,today,last,expired,second,errors});console.log(`PASS fortune UI: ${name}`);await ctx.close();
+  assert.deepEqual(errors,[]);results.push({name,night,unsuccessful,paid,duplicate,bonus,persisted,today,last,expired,second,riftAndTrivia,errors});console.log(`PASS fortune UI: ${name}`);await ctx.close();
  }
 }finally{fs.writeFileSync(`${out}/fortune-browser.json`,JSON.stringify({ref:process.env.TEST_REF||null,results},null,2)+'\n');await browser.close();}

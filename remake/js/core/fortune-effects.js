@@ -3,26 +3,64 @@ import { relationshipElapsedDay } from "./chapter-clock.js";
 
 export const FORTUNE_SIGHT_DAYS = 3;
 const SIGHT_KEY = '_fortune_choice_sight';
+export function naruRiftActive(save) {
+  const flags = save?.flags;
+  return (save?.chapter || 1) >= 2 && !!(
+    flags?._ch2_read_ch2_naru_confrontation
+    || flags?._ch2_night_11_done
+    || flags?._ch2_naru_listened
+    || flags?._ch2_naru_hurt
+  );
+}
+export function isFortuneTargetAvailable(save, charId) {
+  return typeof charId === 'string' && charId.length > 0 && !(charId === 'naru' && naruRiftActive(save));
+}
+export function fortuneTargets(save, characters = {}) {
+  return Object.keys(save?.affinity || {}).filter(
+    id => save?.met?.[id] && characters?.[id] && isFortuneTargetAvailable(save, id)
+  );
+}
+function normalizeSeenTrivia(raw, char, entries) {
+  const validIds = new Set(entries.map(e => e.id));
+  const seen = new Set();
+  if (Array.isArray(raw)) {
+    for (const id of raw) {
+      if (typeof id === 'string' && validIds.has(id)) seen.add(id);
+    }
+  } else if (Number.isInteger(raw) && raw > 0) {
+    const mask = raw & 31;
+    for (let bit = 0; bit < 5; bit += 1) {
+      if (mask & (1 << bit)) {
+        const legacyId = `${char}_${bit + 1}`;
+        if (validIds.has(legacyId)) seen.add(legacyId);
+      }
+    }
+  }
+  return seen;
+}
 export function activeFortuneSight(save) {
   const sight = save?.flags?.[SIGHT_KEY];
-  return sight && typeof sight.char === 'string' && Number.isInteger(sight.chapter) && sight.chapter <= save.chapter
+  return sight && typeof sight.char === 'string' && isFortuneTargetAvailable(save, sight.char)
+    && Number.isInteger(sight.chapter) && sight.chapter <= save.chapter
     && Number.isInteger(sight.from) && sight.from > 0 && Number.isInteger(sight.until) && sight.until === sight.from + FORTUNE_SIGHT_DAYS - 1
     && relationshipElapsedDay(save) >= sight.from && relationshipElapsedDay(save) <= sight.until ? sight : null;
 }
 export function grantFortuneReading(save, char, trivia) {
+  if (!isFortuneTargetAvailable(save, char)) return null;
   save.fortune = { char };
   const day = relationshipElapsedDay(save);
   save.flags[SIGHT_KEY] = { char, chapter: save.chapter, from: day, until: day + FORTUNE_SIGHT_DAYS - 1 };
   const entries = trivia?.characters?.[char] || [];
   if (!entries.length) return null; // Old/custom targets keep their original reading.
   const key = `_fortune_trivia_seen_${char}`;
-  let mask = Number.isInteger(save.flags[key]) ? save.flags[key] & 31 : 0;
-  if (mask === 31) mask = 0;
-  const available = entries.map((_, i) => i).filter(i => !(mask & (1 << i)));
+  const seen = normalizeSeenTrivia(save.flags[key], char, entries);
+  if (seen.size >= entries.length) seen.clear();
+  const available = entries.filter(e => !seen.has(e.id));
   const seed = Math.abs(Math.trunc(save.seed || 0)) + save.day * 7 + [...char].reduce((n, c) => n + c.charCodeAt(0), 0);
-  const index = available[seed % available.length];
-  save.flags[key] = mask | (1 << index);
-  return entries[index];
+  const picked = available[seed % available.length];
+  seen.add(picked.id);
+  save.flags[key] = [...seen];
+  return picked;
 }
 export const fortuneResultId = entry => `remake_fortune_trivia_${entry.id}`;
 export function registerFortuneReadings(db) {

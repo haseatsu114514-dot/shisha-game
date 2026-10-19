@@ -144,9 +144,22 @@ export function isClosed(spot) {
   return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
 }
 
-/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。 */
+export function naruRiftActive(save = state) {
+  const flags = save?.flags;
+  return (save?.chapter || 1) >= 2 && !!(
+    flags?._ch2_read_ch2_naru_confrontation
+    || flags?._ch2_night_11_done
+    || flags?._ch2_naru_listened
+    || flags?._ch2_naru_hurt
+  );
+}
+
+/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるとの決裂後は継続して臨時休業にする。 */
 export function isTemporaryClosed(spot) {
-  return !!spot.charId && state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`;
+  return !!spot.charId && (
+    state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`
+    || spot.charId === "naru" && naruRiftActive(state)
+  );
 }
 
 export function visitedToday(spotId) {
@@ -183,6 +196,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
 export async function visitChar(charId, { welcome = null } = {}) {
+  if (charId === "naru" && naruRiftActive(state)) return false;
   const owner = state;
   let cancelled = false;
   const read = async (...args) => {
@@ -247,6 +261,7 @@ export async function visitChar(charId, { welcome = null } = {}) {
 }
 
 export async function visitRival(spot) {
+  if (!spot || isClosed(spot)) return false;
   refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
@@ -256,6 +271,7 @@ export async function visitRival(spot) {
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;
+  return completed;
 }
 
 /** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
