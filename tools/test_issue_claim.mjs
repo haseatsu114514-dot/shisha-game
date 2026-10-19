@@ -1,19 +1,11 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
+import {createRequire} from 'node:module';
 
-// Execute the actual github-script block, not a second coordinator implementation.
-const yaml = readFileSync(new URL('../.github/workflows/issue-claim.yml', import.meta.url), 'utf8');
-const lines = yaml.split('\n');
-const start = lines.findIndex(line => line.trim() === 'script: |') + 1;
-assert.ok(start > 0, 'workflow must contain its inline coordinator');
-const scriptLines = [];
-for (const line of lines.slice(start)) {
-  if (line.trim() && !line.startsWith('            ')) break;
-  scriptLines.push(line.slice(12));
-}
-const execute = new (Object.getPrototypeOf(async function () {}).constructor)(
-  'github', 'context', 'core', scriptLines.join('\n'));
+// Execute the same coordinator module as every production event entrypoint.
+const require = createRequire(import.meta.url);
+const {coordinate: execute, runEvent, maintain, policyBody} = require('./issue_claim_coordinator.cjs');
 const bot = 'github-actions[bot]';
 const fixture = (number, extra = {}) => ({number, state: 'open', title: `[P1] Task ${number}`, labels: [], url: `https://api.github.com/repos/example.dot/game/issues/${number}`, ...extra});
 const entry = (state, owner, extra = {}) => ({id: 1, user: {login: bot},
@@ -25,7 +17,7 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
   const method = (name, fn) => async args => {
     calls.push({name, args});
     await hook?.(name, args, {issues, prs, comments});
-    return {data: await fn(args)};
+    return {data: structuredClone(await fn(args))};
   };
   const github = {rest: {
     issues: {
@@ -40,14 +32,22 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
       }),
       listForRepo: method('listForRepo', a => issues.filter(i => a.state === 'all' || i.state === a.state)),
       listComments: method('listComments', a => comments[a.issue_number] || []),
+      listCommentsForRepo: method('repoComments', () => Object.values(approvals)),
+      update: method('update', a => {
+        const issue = issues.find(i => i.number === a.issue_number);
+        if (!issue) throw Error('Not found');
+        issue.body = a.body;
+        return issue;
+      }),
       createComment: method('createComment', a => {
         const c = {id: ++id, user: {login: bot}, body: a.body};
         (comments[a.issue_number] ||= []).push(c);
         writes.push(a); return c;
       }),
     },
-    repos: {getCollaboratorPermissionLevel: method('permission', a => ({permission: permissions[a.username] || 'read'}))},
-    pulls: {list: method('pulls', () => prs)},
+    repos: {getCollaboratorPermissionLevel: method('permission', a => ({permission: permissions[a.username] || 'read'})),
+      get: method('repo', () => ({default_branch:'main'}))},
+    pulls: {list: method('pulls', a => prs.filter(pr => a.state === 'all' || (pr.state || 'open') === a.state))},
     actions: {getWorkflowRun: method('run', a => runs[a.run_id] || {status: 'completed', conclusion: 'success'})},
   }, paginate: async (fn, args) => (await fn(args)).data};
   const context = {repo: {owner: 'example.dot', repo: 'game'}, runId: 901, actor: 'admin', serverUrl: 'https://github.com', payload: {repository: {default_branch: 'main'}}};
@@ -62,7 +62,7 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
       if (value === undefined) delete process.env[key]; else process.env[key] = value;
     } }
   }
-  return {run, writes, notices, calls, issues, comments, context, approvals, prs};
+  return {run, writes, notices, calls, issues, comments, context, approvals, prs, runs, github, core};
 }
 
 test('claim records its exact run/request and rejects both duplicate owners', async () => {
@@ -456,4 +456,328 @@ test('canceled recovery after a write retains the reservation without authorizin
   await assert.rejects(s.run('status', 1, 'worker-B', {CLAIM_RUN: '901'}), /did not succeed/);
   await assert.rejects(s.run('claim', 1, 'worker-C'), /Already claimed/);
   assert.equal(s.writes.length, 1);
+});
+
+const savedPR = (number = 11, issue = 1, extra = {}) => ({number, state:'open', body:`Refs #${issue}`,
+  head:{sha:savedHead, repo:{full_name:'example.dot/game'}}, base:{ref:'main'}, ...extra});
+const modernEntry = (owner = 'worker-A', run = 800) => entry('claimed', owner,
+  {body:`<!-- issue-claim:v1 state=claimed owner=${owner} -->\n<!-- issue-claim-run:v1 id=${run} request=original -->`});
+const parkingSetup = options => setup({prs:[savedPR()], comments:{1:[modernEntry()]}, ...options});
+const park = s => s.run('park', 1, 'worker-A', {CLAIM_RUN:'800'});
+
+test('park keeps the Issue exclusive and allows a separate active task, then resume after release', async () => {
+  const s = parkingSetup();
+  await park(s);
+  assert.match(s.writes[0].body, /state=claimed owner=worker-A/);
+  assert.match(s.writes[0].body, /issue-claim-wait:v1/);
+  await assert.rejects(s.run('claim', 1, 'worker-B'), /Already claimed/);
+  await assert.rejects(s.run('status', 1, 'worker-A', {CLAIM_RUN:'901'}), /parked/);
+  s.context.runId = 902;
+  await s.run('claim', 2);
+  await assert.rejects(s.run('resume', 1, 'worker-A', {CLAIM_RUN:'901'}), /Worker already owns #2/);
+  await s.run('release', 2);
+  s.context.runId = 904;
+  await s.run('resume', 1, 'worker-A', {CLAIM_RUN:'901'});
+  assert.doesNotMatch(s.writes.at(-1).body, /issue-claim-wait/);
+  await s.run('status', 1, 'worker-A', {CLAIM_RUN:'904'});
+});
+
+for (const change of ['owner','run','no-pr','fork','bad-head','cancelled-source']) {
+  test(`park refuses missing ownership or a saved checkpoint: ${change}`, async () => {
+    const s = parkingSetup();
+    if (change === 'owner') s.comments[1] = [modernEntry('other-worker')];
+    if (change === 'run') s.comments[1] = [modernEntry('worker-A', 700)];
+    if (change === 'no-pr') s.prs.length = 0;
+    if (change === 'fork') s.prs[0].head.repo.full_name = 'other/game';
+    if (change === 'bad-head') s.prs[0].head.sha = 'short';
+    if (change === 'cancelled-source') s.runs[800] = {status:'completed', conclusion:'cancelled'};
+    await assert.rejects(park(s));
+    assert.equal(s.writes.length, 0);
+  });
+}
+
+test('park rechecks the PR head before recording review wait', async () => {
+  let reads = 0;
+  const s = parkingSetup({hook(name, args, data) {
+    if (name === 'pulls' && ++reads === 2) data.prs[0].head.sha = 'b'.repeat(40);
+  }});
+  await assert.rejects(park(s), /changed/);
+  assert.equal(s.writes.length, 0);
+});
+
+for (const change of ['head','new-pr','closed-unmerged','missing-pr','cancelled-park','malformed']) {
+  test(`waiting reservations do not permit switching with unverified saved work: ${change}`, async () => {
+    const s = parkingSetup();
+    await park(s);
+    if (change === 'head') s.prs[0].head.sha = 'b'.repeat(40);
+    if (change === 'new-pr') s.prs.push(savedPR(12));
+    if (change === 'closed-unmerged') s.prs[0].state = 'closed';
+    if (change === 'missing-pr') s.prs.length = 0;
+    if (change === 'cancelled-park') s.runs[901] = {status:'completed', conclusion:'cancelled'};
+    if (change === 'malformed') s.comments[1].at(-1).body = s.comments[1].at(-1).body.replace('"prs":', '"invalid":');
+    await assert.rejects(s.run('claim', 2));
+    assert.equal(s.writes.length, 1);
+  });
+}
+
+test('a merged saved PR may remain waiting for further review without blocking unrelated work', async () => {
+  const s = parkingSetup();
+  await park(s);
+  s.prs[0].state = 'closed'; s.prs[0].merged_at = '2026-10-16T04:00:00Z';
+  await s.run('claim', 2);
+  assert.equal(s.writes.length, 2);
+});
+
+test('a worker with a valid waiting PR can receive a separate active transfer', async () => {
+  const waiting = modernEntry('worker-B',700);
+  waiting.body += '\n<!-- issue-claim-wait:v1 ' + JSON.stringify({prs:[{number:22, head:savedHead}]}) + ' -->';
+  const s = transferSetup({comments:{1:[modernEntry()],2:[waiting]},
+    prs:[savedPR(),savedPR(22,2)]});
+  await transfer(s);
+  assert.equal(s.writes.length, 1);
+});
+
+const completedSetup = options => setup({issues:[fixture(1,{state:'closed',state_reason:'completed',body:''}),fixture(2)],
+  comments:{1:[modernEntry()]}, prs:[savedPR(11,1,{state:'closed',merged_at:'2026-10-16T04:00:00Z'})], ...options});
+
+test('completed merged work releases the recorded owner once, including before that worker claims another task', async () => {
+  const s = completedSetup();
+  await s.run('claim', 2);
+  assert.match(s.writes[0].body, /state=released owner=worker-A/);
+  assert.match(s.writes[1].body, /state=claimed owner=worker-A/);
+  const result = await maintain(s.github,s.context,s.core,1);
+  assert.equal(result.released,0);
+  assert.equal(s.writes.length,2);
+});
+
+for (const change of ['open','not-planned','open-pr','no-merged-pr','fork','wrong-base','blocked','legacy','failed-run']) {
+  test(`maintenance preserves unfinished or unverifiable reservations: ${change}`, async () => {
+    const s = completedSetup();
+    if (change === 'open') s.issues[0].state = 'open';
+    if (change === 'not-planned') s.issues[0].state_reason = 'not_planned';
+    if (change === 'open-pr') s.prs.push(savedPR(12));
+    if (change === 'no-merged-pr') s.prs[0].merged_at = null;
+    if (change === 'fork') s.prs[0].head.repo.full_name = 'other/game';
+    if (change === 'wrong-base') s.prs[0].base.ref = 'feature';
+    if (change === 'blocked') s.issues[0].labels = ['blocked'];
+    if (change === 'legacy') s.comments[1] = [entry('claimed','worker-A')];
+    if (change === 'failed-run') s.runs[800] = {status:'completed',conclusion:'failure'};
+    await maintain(s.github,s.context,s.core,1);
+    assert.equal(s.writes.length,0);
+  });
+}
+
+for (const change of ['reopened','new-owner','new-pr','head']) {
+  test(`completion cleanup rechecks mutable state before releasing: ${change}`, async () => {
+    let reads = 0;
+    const s = completedSetup({hook(name,args,data) {
+      if (name !== 'get' || ++reads !== 2) return;
+      if (change === 'reopened') data.issues[0].state = 'open';
+      if (change === 'new-owner') data.comments[1].push({...modernEntry('worker-B',801),id:55});
+      if (change === 'new-pr') data.prs.push(savedPR(12));
+      if (change === 'head') data.prs[0].head.sha = 'b'.repeat(40);
+    }});
+    await maintain(s.github,s.context,s.core,1);
+    assert.equal(s.writes.length,0);
+  });
+}
+
+test('policy sync preserves owner holds and original prose, and is idempotent', async () => {
+  const original = '\n\n作業はclaim/status成功後。新デザインの採用はオーナー確認まで保留。';
+  const s = setup({issues:[fixture(1,{body:original})]});
+  const result = await maintain(s.github,s.context,s.core,1);
+  assert.equal(result.updated,1);
+  assert.ok(s.issues[0].body.endsWith(original));
+  assert.match(s.issues[0].body,/status起動は任意/);
+  assert.match(s.issues[0].body,/個別の採用保留/);
+  assert.equal((await maintain(s.github,s.context,s.core,1)).updated,0);
+  assert.equal((s.issues[0].body.match(/issue-claim-policy:v2:start/g)||[]).length,1);
+});
+
+test('policy sync does not overwrite an intervening human edit', async () => {
+  let reads = 0;
+  const s = setup({issues:[fixture(1,{body:'claim/status成功後'})],hook(name,args,data) {
+    if (name === 'get' && ++reads === 3) data.issues[0].body = '新しい個別の停止指示';
+  }});
+  await maintain(s.github,s.context,s.core,1);
+  assert.equal(s.issues[0].body,'新しい個別の停止指示');
+  assert.equal(s.calls.filter(c=>c.name==='update').length,0);
+});
+
+test('a damaged managed block is preserved, and ordinary prose is not rewritten', () => {
+  const s=setup();
+  assert.equal(policyBody('通常のゲーム要望',s.context),'通常のゲーム要望');
+  assert.throws(()=>policyBody('<!-- issue-claim-policy:v2:start -->\n保留',s.context),/Incomplete/);
+  assert.throws(()=>policyBody('説明中の例: <!-- issue-claim-policy:v2:start -->内容<!-- issue-claim-policy:v2:end -->',s.context),/Incomplete/);
+});
+
+function commentSetup(request={operation:'claim',owner:'worker-A',agent:'codex'}, options={}) {
+  const s=setup({permissions:{writer:'write'},...options});
+  const comment={id:50,user:{login:'writer',type:'User'},body:'/issue-claim '+JSON.stringify(request),issue_url:fixture(1).url};
+  s.context.eventName='issue_comment';
+  s.context.payload.action='created';
+  s.context.payload.issue=fixture(1);
+  s.context.payload.comment=structuredClone(comment);
+  s.approvals[50]=comment;
+  return s;
+}
+const runComment=s=>runEvent(s.github,s.context,s.core,{});
+
+test('a writer comment uses the same reservation logic and duplicate event delivery cannot book twice', async () => {
+  const s=commentSetup();
+  await runComment(s);
+  assert.match(s.writes[0].body,/state=claimed owner=worker-A/);
+  assert.match(s.writes[0].body,/request=comment-50/);
+  assert.match(s.writes[1].body,/issue-claim-request:v1 comment=50/);
+  await runComment(s);
+  assert.equal(s.writes.length,2);
+});
+
+test('a PR Conversation can request a reservation for an explicit Issue through the connector', async () => {
+  const s=commentSetup({operation:'claim',issue:2,owner:'worker-A'});
+  s.context.payload.issue.pull_request={};
+  await runComment(s);
+  assert.equal(s.writes[0].issue_number,2);
+  assert.equal(s.writes[1].issue_number,1);
+});
+
+for (const change of ['read','unknown-permission','changed-body','wrong-thread','wrong-author','unknown-field','malformed-json']) {
+  test(`comment entrypoint refuses unauthorized or changed input: ${change}`, async () => {
+    const s=commentSetup({}, {permissions:{writer:change==='read'?'read':'write'},hook(name) {
+      if (change==='unknown-permission' && name==='permission') throw Error('Permission unavailable');
+    }});
+    s.context.payload.comment.body='/issue-claim '+JSON.stringify({operation:'claim',owner:'worker-A'});
+    s.approvals[50].body=s.context.payload.comment.body;
+    if (change==='changed-body') s.approvals[50].body='edited';
+    if (change==='wrong-thread') s.approvals[50].issue_url=fixture(2).url;
+    if (change==='wrong-author') s.approvals[50].user.login='someoneElse';
+    if (change==='unknown-field') s.approvals[50].body=s.context.payload.comment.body='/issue-claim {"operation":"claim","owner":"worker-A","actor":"admin"}';
+    if (change==='malformed-json') s.approvals[50].body=s.context.payload.comment.body='/issue-claim {invalid}';
+    await assert.rejects(runComment(s));
+    assert.equal(s.writes.length,0);
+  });
+}
+
+test('ordinary discussion and bot responses do not recursively trigger operations', async () => {
+  for (const body of ['discussion','<!-- issue-claim-request:v1 comment=50 -->']) {
+    const s=commentSetup();s.context.payload.comment.body=body;
+    await runComment(s);assert.equal(s.calls.length,0);
+  }
+  const s=commentSetup();s.context.payload.comment.user.type='Bot';
+  await runComment(s);assert.equal(s.calls.length,0);
+});
+
+test('a rejected duplicate comment gets a result without taking over another worker', async () => {
+  const s=commentSetup(undefined,{comments:{1:[modernEntry('worker-B')]}});
+  await assert.rejects(runComment(s),/Already claimed/);
+  assert.equal(s.writes.length,1);
+  assert.match(s.writes[0].body,/Request refused/);
+  assert.doesNotMatch(s.writes[0].body,/issue-claim:v1 state=claimed/);
+});
+
+test('Issue events and scheduled maintenance use the same guarded cleanup', async () => {
+  const s=completedSetup();s.context.eventName='issues';s.context.payload.issue=fixture(1);
+  await runEvent(s.github,s.context,s.core,{});
+  assert.equal(s.writes.length,1);
+  s.context.eventName='schedule';
+  await runEvent(s.github,s.context,s.core,{});
+  assert.equal(s.writes.length,1);
+});
+
+test('workflow entrypoints keep the shared lock and never check out comment or PR head code', () => {
+  const workflow=readFileSync(new URL('../.github/workflows/issue-claim.yml',import.meta.url),'utf8');
+  assert.match(workflow,/group: issue-claim-coordinator/);
+  assert.match(workflow,/event_name == 'workflow_dispatch' && github.sha \|\| github.event.repository.default_branch/);
+  assert.doesNotMatch(workflow.match(/^\s+ref:.*$/m)[0],/pull_request\.head|comment\.body/);
+  assert.match(workflow,/require\('\.\/tools\/issue_claim_coordinator.cjs'\)/);
+  assert.match(workflow,/comment.author_association/);
+});
+
+test('the verified comment requester is retained for ordinary handoff', async () => {
+  const s=commentSetup();
+  s.context.actor='admin';
+  await runEvent(s.github,s.context,s.core,{});
+  assert.match(s.writes[0].body,/issue-claim-actor:v1 login=writer/);
+  s.prs.push(savedPR());
+  s.approvals[70]={id:70,user:{login:'writer'},issue_url:fixture(1).url,html_url:'https://github.com/example.dot/game/issues/1#issuecomment-70',
+    body:'<!-- issue-handoff:v1 '+JSON.stringify({...approvedHandoff(),claim_run:'901'})+' -->'};
+  s.context.actor='writer';
+  s.runs[901]={status:'completed',conclusion:'success',actor:{login:'admin'}};
+  await s.run('transfer',1,'worker-B',{CLAIM_RUN:'901',HANDOFF_COMMENT:'70'});
+  assert.match(s.writes.at(-1).body,/state=claimed owner=worker-B/);
+});
+
+test('obsolete steps in historical comments receive a current policy block without editing the comment', async () => {
+  const old={id:1,user:{login:'writer'},body:'1worker1件。claim/status成功まで編集禁止。'};
+  const s=setup({issues:[fixture(1,{body:'元の要望と個別の停止指示'})],comments:{1:[old]}});
+  await maintain(s.github,s.context,s.core,1);
+  assert.match(s.issues[0].body,/現行の共通作業手順/);
+  assert.ok(s.issues[0].body.endsWith('元の要望と個別の停止指示'));
+  assert.deepEqual(s.comments[1][0],old);
+});
+
+test('scheduled completion can obtain the default branch when event metadata omits it', async () => {
+  const s=completedSetup();s.context.payload.repository={};
+  const result=await maintain(s.github,s.context,s.core,1);
+  assert.equal(result.released,1);
+});
+
+test('a failed conditional Issue update is deferred without replacing the original body', async () => {
+  const original='claim/status成功後。採用保留。';
+  const s=setup({issues:[fixture(1,{body:original})],hook(name) {
+    if (name==='update') throw Error('Precondition failed');
+  }});
+  const result=await maintain(s.github,s.context,s.core,1);
+  assert.equal(result.errors,1);
+  assert.equal(s.issues[0].body,original);
+});
+
+test('a writer cannot release a different requester merely by copying its public worker ID', async () => {
+  const s=commentSetup({operation:'release',owner:'worker-A'},
+    {comments:{1:[modernEntry()]},runs:{800:{status:'completed',conclusion:'success',actor:{login:'otherWriter'}}}});
+  await assert.rejects(runComment(s),/original reservation requester/);
+  assert.equal(s.writes.length,1);
+  assert.match(s.writes[0].body,/Request refused/);
+});
+
+test('the original requester can release its failed reservation and retry safely', async () => {
+  const s=commentSetup({operation:'release',owner:'worker-A'},
+    {comments:{1:[modernEntry()]},runs:{800:{status:'completed',conclusion:'cancelled',actor:{login:'writer'}}}});
+  await runComment(s);
+  assert.match(s.writes[0].body,/state=released owner=worker-A/);
+});
+
+test('maintenance never replays old request comments or overrides a canceled execution', async () => {
+  const s=commentSetup();s.context.eventName='schedule';
+  s.comments[1]=[s.approvals[50]];
+  await runEvent(s.github,s.context,s.core,{});
+  assert.equal(s.writes.length,0);
+});
+
+test('a later PR merge cleans up an already-completed Issue without waiting for the daily sweep', async () => {
+  const s=completedSetup();s.context.eventName='pull_request';
+  s.context.payload.pull_request={...s.prs[0],merged:true};
+  await runEvent(s.github,s.context,s.core,{});
+  assert.match(s.writes[0].body,/state=released owner=worker-A/);
+});
+
+for (const change of ['unmerged','fork','non-default']) {
+  test(`PR events cannot release work from an ineligible merge: ${change}`, async () => {
+    const s=completedSetup();s.context.eventName='pull_request';
+    s.context.payload.pull_request={...structuredClone(s.prs[0]),merged:change!=='unmerged'};
+    if (change==='fork') s.context.payload.pull_request.head.repo.full_name='other/game';
+    if (change==='non-default') s.context.payload.pull_request.base.ref='feature';
+    await runEvent(s.github,s.context,s.core,{});
+    assert.equal(s.writes.length,0);
+  });
+}
+
+test('rerunning an acknowledged failed comment cannot turn its persisted reservation into permission to work', async () => {
+  const s=commentSetup();
+  await runComment(s);
+  s.runs[901]={status:'completed',conclusion:'failure'};
+  s.context.runAttempt=2;
+  await assert.rejects(runComment(s),/Do not rerun reservation request jobs/);
+  assert.equal(s.writes.length,2);
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'901'}),/did not succeed/);
 });
