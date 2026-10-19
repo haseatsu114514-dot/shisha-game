@@ -623,6 +623,24 @@ function commentSetup(request={operation:'claim',owner:'worker-A',agent:'codex'}
 }
 const runComment=s=>runEvent(s.github,s.context,s.core,{});
 
+test('comment reservations preserve the GitHub Context prototype and original actor', async () => {
+  const s = commentSetup();
+  const repository = s.context.repo;
+  delete s.context.repo;
+  Object.setPrototypeOf(s.context, { get repo() { return repository; } });
+  assert.equal(Object.hasOwn(s.context, 'repo'), false);
+  assert.equal(({...s.context}).repo, undefined);
+  await runComment(s);
+  assert.match(s.writes[0].body, /state=claimed owner=worker-A/);
+  assert.match(s.writes[0].body, /issue-claim-actor:v1 login=writer/);
+  assert.equal(s.context.actor, 'admin', 'request identity must not mutate the event context');
+  assert.equal(s.context.verifiedRequester, undefined);
+  for (const {args} of s.calls) {
+    assert.equal(args.owner, 'example.dot');
+    assert.equal(args.repo, 'game');
+  }
+});
+
 test('a writer comment uses the same reservation logic and duplicate event delivery cannot book twice', async () => {
   const s=commentSetup();
   await runComment(s);

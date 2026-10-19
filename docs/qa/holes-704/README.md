@@ -27,4 +27,8 @@ WORKER: `codex-701-holes-20261019-01`。予約コメントの実行は失敗し�
 - `remake/test/browser/craft_materials.mjs`: PC/タッチの実穴入力で、3%上の共通中心、全24目印、25実穴（空打ちを含む）、全穴後60秒のバー固定・結果未確定、仕上げ後の結果確認を検査。固定40ms待機を実フレーム反映待ちへ置換し、採点目印と光の座標assertを保持。
 - Git Safety / agent docs / diff check: PASS。
 
+## CIで見つかった既存セレクタの追補
+
+初稿のChapter 1 presentation CI run39216430621は、`first_brew.mjs` が旧DOMの `.foil > .foil-cursor` を探して停止した。共通平面を挟んだ本番DOMに合わせ `.foil-target-plane > .foil-cursor` へ2か所変更し、ヘルプ中の光/入力停止assertをすべて維持。`CASE_FILTER=holes-and-steam-help` の実ブラウザ再検証はPASS。本番の停止処理や待機時間を変えて回避していない。
+
 物理スマホ/Safari、公開版での動作とNEW GAMEからの全章通しは未実施。GitHub ActionsとPRレビューの最終結果はPRへ記録する。
