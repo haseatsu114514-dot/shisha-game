@@ -31,7 +31,19 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - 大容量通信が見込まれる取得・更新・テスト・アップロードは、実行前に目的・推定通信量（不明なら不明）・節約案を提示し、承認を得る。
 - shallow/filtered fetchでも少量通信は保証されない。想定外に転送量が増えたら中断し、取得量（計測できなければ不明）と状況を報告する。
 
+## 実行経路: CLI / GitHub連携
+
+- ローカルCLIと、認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・ローカルcheckoutの有無を実装許可の条件にせず、利用可能な経路で同じ予約・差分・保存・検証条件を満たす。CLIの未導入とGitHub権限不足は区別する。
+- CLI経路では下のGit Safetyを実行する。checkoutを持たないGitHub連携では、対象repo、最新main SHA、作業branchのbase/head、既存PRの変更ファイル、現在の予約owner/runをAPIで確認する。ローカル専用のroot・hooks・スクリプト検査は「対象外」と記録し、実行済みとは報告しない。実際にcheckoutで編集する場合はCLI側の検査も必要。
+- 連携経路での保存は、最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitを作成する。ref更新は期待headを指定し、forceを使わない。無関係なtreeを置き換えず、予期しないhead変更は再読・再比較する。既存PRの再開にはそのbranchと、別workerなら正式な移管を使う。
+- 予約は両経路ともゲームrepoの同じ `issue-claim.yml` を使う。dispatchがない連携はIssue/PR Conversationへの `/issue-claim` コメントを使い、コメントIDに対応した成功runと最新bot owner/runを照合する。`next`が使えなくても、候補を読み取り選定して `claim` できる。詳細と両経路の例: [予約手順書](docs/issue_claim_protocol.md)。
+- GitHub連携でcommit作成とbranch更新を確認することはCLIのcommit/pushに相当する。PRを作り、変更を含む正確なheadのCIを確認する。ローカルテスト不能なら未実施と記録し、対応CIで検証する。テスト・run情報も読めなければ確認済みとせず、必要な変更だけを保留する。
+- 既存認証の範囲で可能な経路を使い、CLI不在だけを理由に再承認・新規ログインを求めない。新しい認証情報、権限拡大、公開範囲変更が必要な場合だけ、その変更の前に相談する。権限拒否を別アカウントや別経路で迂回しない。
+- 共通コードの分離先は非公開の `haseatsu114514-dot/dot-ai-bridge-test`。分離先のPRやゲームPR #731を、ゲームmainへの導入済み機能とは扱わない。外部コードの取得・本番切替が承認・導入されるまでは、このrepoのmainと予約台帳を使う。非公開repoの参照権限がなくても、このrepo内の手順で既存作業を継続できる。既存予約をコピー・初期化・再取得しない。
+
 ## Git Safety
+
+この節のローカルコマンドはcheckoutで作業する場合に適用する。checkoutを持たないGitHub連携では、上のAPIによる同等の確認・保存・検証に従う。
 
 If this machine uses a canonical checkout path, store it in local Git
 config with:
@@ -105,10 +117,13 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 - 未完了の作業は、既存 Issue があれば更新し、なければ GitHub Issue を作成する。完了範囲、残タスク、関連 PR/ブランチ/コミット、テスト結果、ブロッカー、次の具体的手順を記す。未完成の変更を完成扱いでマージしない。
 - 作業中の有効な変更は安全な作業ブランチへ commit/push してから終了する。push 不可・Git 安全チェック失敗時は無理に回避せず、失われる恐れのある差分と復旧手順を報告する。秘密情報は Issue に書かない。
 - 制限到達後に追加操作できることを前提にしない。余裕があるうちに小さな単位で保存し、次のセッションは Issue と PR を確認して再開する。
+- 利用上限で別AIへ交代する運用は維持する。CLIのcommit/push、またはGitHub連携でのcommit/branch更新とDraft PRに成果を保存し、DONE/TODO/TEST/NEXTと編集停止を記録する。現行mainの `transfer` などの正式手順で移管し、無反応だけで予約を奪わない。`handoff`／`pickup` はmainへの導入が確認されるまで実行しない。
 
 ### Mac 利用枠チェック補助
 
 Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切り・終了前に `python3 tools/agent_quota_guard.py check codex` または `check claude` を実行し、表示された対応方針に従う。取得値が古い・不明なら推測せず、通常の小刻みな commit/push と Issue 引き継ぎを行う。手動設定・公式画面の確認・制約は `docs/agent_quota_guard.md` を参照。これは自動取得・自動マージ機能ではない。
+
+GitHub連携だけの環境では、このローカル補助の実行を要求しない。残量は不明とし、タスクの区切りでGitHubへ保存する。別環境の認証情報や利用履歴を取り出して補完しない。
 
 
 ### 低残量時の柔軟な運用・マージ負債を溜めない
