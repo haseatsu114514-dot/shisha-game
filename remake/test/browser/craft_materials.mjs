@@ -57,19 +57,25 @@ await suite("craft-materials", async check => {
         F.running = F.holes.runHoles(F.cs);
       });
       await click(page, '[data-test="hole-template-outer12-middle12"]', touch);
+      assert.equal(await page.locator('.ht-option').count(), 1);
       assert.equal(await page.locator(".ht-preview .foil-hole").count(), 0, "Template already has punched holes");
       assert.equal(await page.locator(".ht-preview .foil-marker").count(), 24);
       assert.match(await page.locator(".ht-preview .foil-surface").evaluate(n => n.style.backgroundImage), /foil_interactive_top/);
+      const center = await page.locator('.ht-preview').evaluate(n => {
+        const disc=n.getBoundingClientRect(), plane=n.querySelector('.foil-target-plane').getBoundingClientRect();
+        return ((plane.top+plane.bottom)/2-disc.top)/disc.height;
+      });
+      assert(Math.abs(center-.47)<.001, 'Foil targets must sit above the lower crimped rim');
       await capture(page, `${device}-foil-template`);
       await click(page, '[data-test="hole-start"]', touch);
       await page.locator(".countdown").waitFor(); await page.locator(".countdown").waitFor({ state: "detached" });
       await assertFits(page, ".foil, .foil-legend, .hr-side, .hr-punch, .hr-row");
       const turnTo = async (ring, k, turn = 0) => {
-        await page.evaluate(({ ring, k, turn }) => {
+        await page.evaluate(async ({ ring, k, turn }) => {
           const period = F.holes.RINGS.find(r => r.id === ring).period * F.common.skill.slow(F.cs) * 1.3;
           F.clock = 1000 + period * (turn + k / 12) * 1000;
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
         }, { ring, k, turn });
-        await page.waitForTimeout(40);
       };
       for (let k = 0; k < 12; k++) {
         await turnTo("outer", k);
@@ -78,7 +84,7 @@ await suite("craft-materials", async check => {
           const a = document.querySelector(".foil-markers .next").getBoundingClientRect(), b = document.querySelector("[data-test=foil] .foil-cursor").getBoundingClientRect();
           return Math.hypot((a.left + a.right - b.left - b.right) / 2, (a.top + a.bottom - b.top - b.bottom) / 2);
         });
-        assert(gap < 1, "Next marker disagrees with the scoring target");
+        assert(gap < 1, `Next marker disagrees with the scoring target: ${gap}px`);
         if (touch) await click(page, '[data-test="hole-punch"]', true); else await page.keyboard.press("Space");
       }
       assert.equal(await page.locator(".foil-holes .foil-hole.perfect").count(), 12);
@@ -100,10 +106,20 @@ await suite("craft-materials", async check => {
       assert.equal(await page.locator(".foil-markers .next").count(), 0);
       assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 25, "Hand illustration lost the real holes");
       assert(!await page.locator('[data-test="hole-done"]').isDisabled());
+      const finalBar = await page.locator('.hr-time-bar b').evaluate(n=>n.style.width);
+      await page.evaluate(async () => {
+        F.clock += 60000;
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      });
+      assert.equal(await page.locator('.hr-time-bar b').evaluate(n=>n.style.width),finalBar);
+      assert.equal(await page.evaluate(()=>F.cs.holes),null,'Completed foil advanced without confirmation');
+      assert.equal(await page.locator('[data-test="step-next"]').count(),0);
       await click(page, '[data-test="hole-done"]', touch);
       await page.waitForFunction(() => F.cs.holes !== null);
       const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
       assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 13, inner: 0 });
+      await click(page, '[data-test="step-next"]', touch);
+      await page.evaluate(()=>F.running);
     }, options);
     await check(`${device}-preview-isolated`, async page => {
       await page.evaluate(() => { localStorage.setItem("craft-preview-sentinel", "keep"); sessionStorage.setItem("craft-preview-sentinel", "keep"); });
