@@ -55,21 +55,30 @@ await suite('tournament-story',async check=>{
     await page.route('https://bgmer.net/**',route=>route.fulfill({
       path:new URL('../../../assets/audio/bgm/bgm_tournament_wait.mp3',import.meta.url).pathname,contentType:'audio/mpeg',
     }));
-    await page.evaluate(()=>{window.tournamentFixture=(async()=>{
-      const core=await import('./js/core/state.js');const s=core.newGame();
+    // CDPへ動的importのPromiseを返さず、ブラウザ自身に依存moduleを読み込ませる。
+    await page.addScriptTag({type:'module',content:`
+      import * as core from './js/core/state.js';
+      import * as chapter from './js/chapters/ch1.js';
+      import * as story from './js/chapters/tsumugi-story.js';
+      import * as data from './js/core/data.js';
+      import * as vn from './js/vn/engine.js';
+      import * as session from './js/craft/session.js';
+      window.tournamentFixture={core,chapter,story,data,vn,session};
+    `});
+    await page.evaluate(()=>{
+      const {core,chapter,story,data,vn,session}=window.tournamentFixture;
+      const s=core.newGame();
       Object.assign(s,{day:14,phase:'tournament',stamina:100,flavorStock:{double_apple:60,mint:30}});
       s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
-      for(const step of (await import('./js/chapters/tsumugi-story.js')).TSUMUGI_STORY)s.flags[step.flag]=true;
-      const data=await import('./js/core/data.js');
+      for(const step of story.TSUMUGI_STORY)s.flags[step.flag]=true;
       for(const id of Object.keys(data.DB.characters))s.flags[`_intro_${id}`]=true;
-      Object.assign(core.config,{textSpeed:0,bgmVolume:0,seVolume:0,voiceBlip:false});
-      const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
-      (await import('./js/craft/session.js')).craftTest.auto='good';
+      Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
+      vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+      session.craftTest.auto='good';
       window.events=[];
       vn.hooks.onLine=id=>{if(id.startsWith('tournament_craft_')&&events.at(-1)!==id)events.push(id);};
-      window.tournamentRun=(await import('./js/chapters/ch1.js')).devTournament();
-    })();});
-    await page.evaluate(()=>window.tournamentFixture);
+      window.tournamentRun=chapter.devTournament();
+    });
     await page.waitForFunction(()=>events.includes('tournament_craft_1_tasting'),null,{timeout:60000});
     assert.deepEqual(await page.evaluate(()=>events),['opening','packed','waiting','tasting'].map(e=>`tournament_craft_1_${e}`));
   });
