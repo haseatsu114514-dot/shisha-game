@@ -333,3 +333,58 @@ jobs:
             .codex/artifacts/remake-browser/practice/
             ${{ runner.temp }}/practice-preview.log
           retention-days: 7
+
+  hud-fortune:
+    name: Unified HUD and daylight fortune readings
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_REF: ${{ github.sha }}
+      NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+      ARTIFACT_DIR: .codex/artifacts/remake-browser/hud-fortune
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          sparse-checkout: |
+            asset_sources/fortune-teller-682
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned test dependencies and Chromium
+        working-directory: remake/test/browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Unified HUD, 56 approved trivia readings and Naru rift closure
+        run: |
+          python3 -m pip install Pillow==12.3.0
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/hud-fortune-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
+            sleep 1
+          done
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node --experimental-vm-modules remake/test/data_loading.mjs
+          node remake/test/fortune_readings.mjs
+          node remake/test/browser/hud_fortune.mjs
+          node remake/test/browser/fortune_readings.mjs
+      - name: Preserve HUD and fortune screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: hud-fortune-results
+          path: |
+            .codex/artifacts/remake-browser/hud-fortune/
+            ${{ runner.temp }}/hud-fortune-preview.log
+          retention-days: 7
+

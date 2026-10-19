@@ -74,6 +74,7 @@ async function getJSON(path) {
 }
 
 export async function loadAll(onProgress = () => {}) {
+  globalThis.performance?.setResourceTimingBufferSize?.(1000);
   const jobs = [
     ["characters", `${ROOT}data/characters.json`],
     ["relationshipMemories", `${ROOT}data/relationship_memories.json`],
