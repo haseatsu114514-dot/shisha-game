@@ -142,11 +142,20 @@ async function portraitMetrics(page) {
 async function textFits(page, selector) {
   const result = await page.locator(selector).evaluateAll(nodes => nodes.map(node => {
     const r = node.getBoundingClientRect(), s = document.querySelector('#stage').getBoundingClientRect();
-    return { text: node.textContent.trim(), box: r.toJSON(),
-      contained: r.left >= s.left - 1 && r.top >= s.top - 1 && r.right <= s.right + 1 && r.bottom <= s.bottom + 1,
-      scrollFits: node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
+    // scrollWidth/scrollHeight can include a decorative ::before rule or the
+    // flex line box even when the visible glyphs are fully on stage. Inspect
+    // the actual text range, not the element's unclipped scrollable overflow.
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const glyphs = range.getBoundingClientRect();
+    const inside = box => box.left >= s.left - 1 && box.top >= s.top - 1
+      && box.right <= s.right + 1 && box.bottom <= s.bottom + 1;
+    return { text: node.textContent.trim(), box: r.toJSON(), glyphBox: glyphs.toJSON(),
+      contained: inside(r),
+      textContained: glyphs.width > 0 && glyphs.height > 0 && inside(glyphs),
+      layoutScrollOverflow: node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1 };
   }));
-  assert(result.length && result.every(x => x.text && x.contained && x.scrollFits), JSON.stringify(result));
+  assert(result.length && result.every(x => x.text && x.contained && x.textContained), JSON.stringify(result));
   return result;
 }
 
