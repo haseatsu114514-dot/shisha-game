@@ -1,4 +1,15 @@
-# Issue #563 — 採用3会話の接続と採用2表情の取得待ち
+# Issue #563 — 採用3会話と既存表情の選択
+
+## 2026-10-18：既存normalを採用する現在の方針
+
+ユーザー「563は既存」により、今回の対象場面には既存画像を使う。組長・零は現行mainの本人立ち絵がnormal各1枚だけであり、別人物や別画風を流用しない。神崎の迎え・助言2箇所のsmile指定、REIが曲の間を語る4箇所のserious指定を、明示的にnormalへ変更する。normalの落ち着いた顔を場面に合わせて使い、笑顔・集中専用の新差分が存在するとは扱わない。
+
+使用元は `assets/sprites/characters/kumicho/chr_kumicho_normal.png`／`assets/sprites/characters/rei/chr_rei_normal.png`。実表示は既存の同名normal.webp。画像bytes・manifest・会話本文・会話順・読了／保存処理は変更しない。採用3会話の接続（PR #603）は保持する。
+
+以下の旧smile／serious採用原本の識別・403取得障害は履歴として保持するが、今回の既存画像方式の開始条件にはしない。不採用の生成候補と1回修正は別ブランチ`codex/563-expression-previews-20261018`に保全し、本編へ流用しない。追加生成・顔合成・旧原本の取得再試行は行わない。
+
+[既存表情の実表示・手動SAVE/LOAD・3会話回帰QA](../../docs/qa/ch2-existing-expressions-563/README.md)を参照。夜背景・営業中器具差分は保留し、別の受入項目として残す。以下は2026-10-16時点の制作・採用履歴。
+
 
 同worker `codex-563-20261015-01a13c35`、claim `38697952277`を保持。開始基準main `6c05ae3198e4959b59557e272f74ff94f4eae4e5`。旧棚卸しPR #567はマージ済みなので、後続ブランチ`codex/563-approved-dialogues-expressions`を使用する。
 
