@@ -84,6 +84,7 @@ jobs:
         with:
           sparse-checkout: |
             asset_sources/fortune-teller-682
+            docs/qa/hud-fortune-682
             remake
             data
             assets/audio
@@ -347,6 +348,7 @@ jobs:
         with:
           sparse-checkout: |
             asset_sources/fortune-teller-682
+            docs/qa/hud-fortune-682
             remake
             data
             assets/audio
