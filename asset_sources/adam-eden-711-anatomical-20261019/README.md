@@ -1,89 +1,91 @@
-# #711 アダム・EDEN：本人基準の配色監査
+# #711 アダム・EDEN：本人基準の配色修正
 
-**DRAFT / 画像修正待ち。** このチェックポイントでは本番のPNG・WebP・顔アイコンをすべて保持する。新しい配色の採用・本編修正完了を示す記録ではない。通常立ち絵の試作 `normal-01` は不採用。
+**素材の局所補正と配信用更新を保存したPR候補。本編のPC・横持ちタッチの最新head CIと、取得した画面の目視確認は実行待ち。** 通常絵の生成試作 `normal-01` は引き続き不採用。採用候補は既存原画の色だけをマスクで補正した版である。
 
-基準mainは [`8a5bb15b8392`](https://github.com/haseatsu114514-dot/shisha-game/commit/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d)。予約は `codex-711-20261019-588761470c34`、[成功run 39273098251](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39273098251)、[bot台帳 6270296054](https://github.com/haseatsu114514-dot/shisha-game/issues/711#issuecomment-6270296054) のowner/run一致をrootセッションで確認済み。対象は [Issue #711](https://github.com/haseatsu114514-dot/shisha-game/issues/711)。
+[Issue #711](https://github.com/haseatsu114514-dot/shisha-game/issues/711) / [PR #742](https://github.com/haseatsu114514-dot/shisha-game/pull/742)。基準mainは [`8a5bb15b8392`](https://github.com/haseatsu114514-dot/shisha-game/commit/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d)。正式claimは owner `codex-711-20261019-588761470c34`、[成功run 39273098251](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39273098251)、[bot台帳 6270296054](https://github.com/haseatsu114514-dot/shisha-game/issues/711#issuecomment-6270296054) の一致を編集前・継続時に確認した。
 
-## 現在の左右ルール
+## 現在の指定と承認
 
 最新訂正「本人から見て正しい色がいいの」を優先する。
 
 | 基準 | 左 | 右 |
 |---|---|---|
-| アダム本人の髪 | 緑のリンゴ色 | 赤のリンゴ色 |
+| アダム本人の髪 | 緑リンゴの緑 | 赤リンゴの赤 |
 | 正面像を見た画面 | 赤 | 緑 |
-| EDENの対のリンゴ・対応する意匠を見た画面 | 赤 | 緑 |
+| EDENの対のリンゴを見た画面 | 赤 | 緑 |
 
-横顔・振り向きは本人の左右を保つ。画面の中央で二色に分割しない。緑を青色にしない。顔・表情・髪型・ポーズ・衣装、店名・ラベル・文字、構図・透過・余白・対以外のリンゴは保持する。画像全体を左右反転しない。CI30・CI58など過去の画面基準の指示は履歴として保存し、現在の指示へ読み替える。
+横顔・振り向きは本人の左右を保つ。緑を青へ置換しない。旧CI30・CI58などの画面基準の指示は履歴として残し、現行指示を適用する。
 
-## 調査結果と採用元
+2026-10-19、原画のマスク内だけをローカル処理する方法と、追加通信30 MB以内の限定取得・保存について承認を受けた。「アダムは全て差し替えるなら多少顔がかわっってもいい」という許容も受領した。今回の採用候補では、立ち絵5表情の顔・表情・服・体格・ポーズ・キャンバス・alphaを維持して髪色を揃えた。顔アイコンは既存の160px/256色パイプラインから作るため、顔周辺にもパレット再量子化によるRGB差があるが、形・表情・切り抜き・alphaは維持する。
 
-詳細なパス、Git blob SHA-1、分かっているファイルサイズ・SHA-256、確認方法は [inventory.json](inventory.json) に記録した。SHA-256の未取得値は `null`。Git blob SHA-1と混同しない。
+## 実画像の一覧と処置
 
-### 立ち絵5表情と顔アイコン：修正待ち
+採用元、全パス、beforeのGit blob、SHA-256、範囲外の確認限界は [inventory.json](inventory.json)。今回の出力と採用履歴は [adoption.json](adoption.json)。原画の再取得では3 PNGだけ、計7,589,671 bytesを取得し、全て基準mainのGit blobと照合して実画像を確認した。
 
-原画は `assets/sprites/characters/adam/chr_adam_<表情>.png`、表示用は `remake/img/sprites/characters/adam/chr_adam_<表情>.webp`。各PNGは `asset_sources/portraits/adam-remaster-v1/<表情>-preview.png` と同一blob。採用経緯は [ch1-artの採用記録](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/adoptions/ch1-art-20261008/adoption.json) にある。
-
-| 表情 | 原画bytes | 原画の確認結果 |
-|---|---:|---|
-| normal | 455,958 | 画面左＝緑・右＝赤。髪色のみ修正待ち |
-| smile | 445,809 | 同上 |
-| serious | 453,657 | 同上 |
-| surprise | 460,197 | 同上 |
-| intense | 423,200 | 同上。登場カットで使う表情 |
-
-5枚の実PNGを目視。すべて896×1200 RGBA。顔・服・体格・ポーズを作り直す依頼ではない。
-
-`assets/ui/face_icons/face_adam.png`（42,159 bytes、160×160 RGBA）も実PNGで画面左＝緑・右＝赤を確認。通常絵の修正が成立してから `tools/make_face_icons.py adam` で対象1人だけ再生成する。現在の設定は160px・256色、Adamの切り抜きは `f=0.188, dy=0.03`。アイコンはPNGを直接表示する。
-
-### 登場背景・EDEN・大会CG
-
-| 対象／本番パス | 表示・採用元 | 判定と修正の限界 |
+| 対象 | 原画での判定 | 今回の処置 |
 |---|---|---|
-| `assets/ui/character_intros/adam.png` | `remake/img/ui/character_intros/adam.webp`。原画は `asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png` と同一blob | 表示用WebPで対のリンゴが画面左＝緑・右＝赤。リンゴと対応する色の部分を修正待ち。蛇・書物の装飾・構図は保持。原画PNG 3,336,242 bytesは生データ未取得・未目視 |
-| `assets/backgrounds/bg_eden_shop.png` | `assets/backgrounds/eden.png` は同一blobの別名。各表示用は同名の `remake/img/backgrounds/*.webp` | 実PNGを確認。**中央額の手前2個だけ**が画面左＝緑・右＝赤。左右の額は赤→緑で正しい。中央奥の3個目の赤いリンゴも色・数・位置を保持 |
-| `assets/ui/store_logos/eden.png` | [採用台帳](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/store-logos/ch1-issue470/adopted.json) の **`archive/v1-decorative/sheets/eden.png`**。後のトップ階層 `sheets/eden.png` は別候補 | **正しいので保持。** [採用ロゴQA](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/store-logos/ch1-issue470/ingame-qa/adopted-logos.png) は画面左＝赤・右＝緑。原画1,455,770 bytesは生データ未取得・未デコード。判定は採用記録とQA画像の組合せ |
-| `assets/cgs/cg_ch1_tournament_battle.png` | `remake/img/cgs/cg_ch1_tournament_battle.webp`。`ch1_tournament_match` の `show_cg` で本編使用 | 表示用WebPで、左から3人目のアダムの髪が画面左＝緑・右＝赤。**その髪色のみ**修正待ち。他の人物・表情・服・手・機材・文字は保持。原画PNG 2,797,659 bytesは生データ未取得・未目視 |
+| Adam normal / smile / serious / surprise / intense | 正面で画面左緑・右赤 | 5枚とも本人左緑・本人右赤へ髪だけ補正。896×1200 RGBA維持 |
+| Adam顔アイコン | 画面左緑・右赤 | 補正したnormalから既存設定で再生成。160×160 RGBA維持 |
+| Adam登場絵 | リンゴが画面左緑・右赤 | 対のリンゴと直後の色付き内側模様だけ補正。蛇・金色／クリーム色の装飾・書物・文字用余白・左の大きな斜めの緑面は保持 |
+| EDEN背景2別名 | 中央額の手前が左緑・右赤 | 中央額の手前2個だけ補正。奥の3個目、茎、左右の額、店内構造・機材を保持 |
+| EDEN採用ロゴ | 画面左赤・右緑で正しい | 元blob維持。採用元は `archive/v1-decorative/sheets/eden.png` |
+| 第1章大会CG | 左から3人目のAdamが画面左緑・右赤 | Adamの髪だけ補正。他の3人、顔・手・服・機材・ラベル・舞台の青紫照明を保持 |
+| 第1章の実Adamレイヤー `naru.png` | 右向き横顔で本人左が緑、奥の右が赤 | 正しいため元blob維持。対応WebP・影も維持 |
+| 第1章レイヤー `adam.png` | 実画像は銀髪のなる | 対象外として維持。命名整理は行わない |
+| 採用済み第1章全体タイトル | 左から2人目のAdamが正しい横顔 | 元blob維持 |
+| 旧ch1 keyart、大会の南雲・博士CG | 確認した表示用画像にAdam／リンゴ対なし | 維持 |
+| tournament_tension仮PNG | 文字だけで現行CG目録・非legacy参照なし | 未採用のまま維持 |
 
-EDEN背景のPNGは395,780 bytes、1280×720 RGB。2つの背景PNGは同一blobで、2つのWebP同士も同一blob。`sceneBg()` は `eden.png` と `bg_adam_shop.png` を `bg_eden_shop.png` へ解決する。
+立ち絵の旧採用元は `asset_sources/portraits/adam-remaster-v1/<expression>-preview.png` で、元の本番PNGと同一blob。[ch1-art採用記録](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/adoptions/ch1-art-20261008/adoption.json) は改変しない。登場原画は `asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png` と同一blobだった。
 
-EDENロゴは1960×802のシートから `[36,53,605,719]` を表示する。今回の正しい採用元を、後の未採用候補へ置き換えない。
+EDEN背景は `assets/backgrounds/{bg_eden_shop,eden}.png` の同一画像別名。両PNGと両WebPはそれぞれ同一bytesを保つ。ロゴは1960×802の採用シートから `[36,53,605,719]` を表示する。[採用台帳](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/store-logos/ch1-issue470/adopted.json) と原画を照合し、後の別候補で上書きしていない。
 
-登場カットは背景＋`intense`立ち絵＋文字の合成。過去の `cutin_adam.png` は確認用スクリーンショットで、本番の独立した差し替え先ではない。
+章題の実Adamは `assets/ui/chapters/ch1_layers/naru.png`。通常の本編第1章開始は `ch1.js → ch1-title-motion.js` が `remake/img/ui/chapters/ch1-title.webp` をcanvasへ描く。共通章題・プレビューは個別レイヤーも使うため、レイヤーを未使用扱いにしない。全体の採用原画は [selected-D/D-title.png](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png)、採用記録SHA-256 `8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972`。この原画PNG自体は未取得で、確認は実レイヤーPNGと採用全体WebPによる。
 
-### 章題：本人を画像で確認し、保持する
+現行CG11件と台本のshow_cgを照合した。大会3CGは表示用実画像まで確認した。他の8CGはスミ／はじめの練習、みんと・つむぎの場面として目録・台本から除外した範囲で、全8枚の背景人物を目視したとは報告しない。titleArts 23件はヒロインに紐づく目録上の範囲確認。`shisha_eden.png` は現行manifest.scenePropsに存在せず表示対象外。未採用候補・旧生成指示は履歴として保持する。
 
-**ファイル名と人物が入れ替わっている。** [実アダムのレイヤー](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/assets/ui/chapters/ch1_layers/naru.png) は `naru.png`。画面右へ歩き、手前に見える本人左側が緑・奥の本人右側が赤で、最新の本人基準に合っている。[`adam.png`](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/assets/ui/chapters/ch1_layers/adam.png) は銀髪のなる。双方のPNG、対応する `remake/img/ui/chapters/ch1/{naru,adam}.webp`、各影は保持し、#711で命名や人物配置を直さない。
+## 編集方法と保存物
 
-[現行の全体章題](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/remake/img/ui/chapters/ch1-title.webp) も目視済み。左から2人目が正しい横顔のアダム。採用原画は [selected-D/D-title.png](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png)（採用記録SHA-256: `8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972`）。[type-polish/adoption.json](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/adoption.json) と `tools/build_chapter_titles.py` がこの原画から `ch1-title.webp` を生成する。原画PNG自体の生データ確認は行っていない。
+[recolor.py](recolor.py) と [recipe.json](recipe.json) は、原画の色相条件と画像別の多角形を組み合わせた再現可能な色補正。HSLの色相・彩度を調整し、明度、キャンバス、原画alpha、未選択画素を保持する。目・眉・耳・額・首を保護し、本人右側に既に赤く描かれた画面左の襟足はそのまま残す。全体／CSSの左右反転は使用しない。
 
-通常の第1章開始は `ch1.js → ch1-title-motion.js` で全体WebPをcanvasに表示する。共通の章題・プレビューは `core/ui.js → motions/chapter-title.js` から人物レイヤーも使うため、個別レイヤーを完全な未使用ファイルとは扱わない。
+- `before/`: 5表情、顔、登場絵、EDEN背景、大会CGの原画9枚。既存Git blobを再利用した不変スナップショット。
+- `after/`: 今回採用候補のPNG9枚。配信用の採用元と同じGit blobを参照する不変スナップショット。
+- `masks/`: 実際の変更対象を白で示す8枚の二値マスク。
+- [配色比較](qa/portraits-before-after.jpg)、[場面比較](qa/scenes-before-after.jpg)、[拡大比較](qa/details-before-after.png)、[保持素材の確認](qa/preserved-art.jpg)。比較画像は検品用で、ゲーム素材ではない。
+- [色補正記録](qa/color-validation.json)、[配信用検証](qa/asset-validation.json)、[立ち絵・背景・アイコンの独立レビュー](reviews/portraits/final-v2-review.md)、[登場絵・大会CGの独立レビュー](reviews/scenes/final-scene-review.md)と各詳細測定・凍結マスク案を保存。[監査資料の独立照合](reviews/metadata-review.md)でbefore/after、採用元・出力のハッシュとローカル参照を確認した。
+- [不採用normal-01](trials/normal-01.png)、[実行した生成指示](prompts/normal-01.txt)、[不採用比較](qa/normal-01-comparison.png) は保持。別の顔・服・キャンバス・alphaになった生成試作から採用画像を派生していない。
 
-## 関連CGと除外範囲
+再現はこのフォルダの原画スナップショットを使う。既存のcheckoutで、作業用出力先を指定する例:
 
-現行目録のCG11件と非legacy台本の `show_cg` を照合した。大会3CGは表示用画像まで確認し、`cg_ch1_nagumo_smile` は南雲1人、`cg_ch1_dr_kemuri_hook` は空いた会場の博士1人で、アダムやリンゴはない。どちらも保持する。
+```sh
+python3 asset_sources/adam-eden-711-anatomical-20261019/recolor.py \
+  --recipe asset_sources/adam-eden-711-anatomical-20261019/recipe.json \
+  --source-root . --snapshot-inputs \
+  --output-root /tmp/adam-711-reproduction \
+  --records /tmp/adam-711-reproduction/color-validation.json
+```
 
-残る8CGはスミ／はじめの練習、みんと・つむぎの場面で、該当場面データにアダム／EDENの指定はない。これは台本・目録による範囲確認であり、8枚すべての背景人物を目視済みという意味ではない。23件の `titleArts` はすべてヒロインに紐付き、Adamの項目はない。各一覧と根拠をinventoryへ残した。
+原画の期待Git blobが違えば停止する。以前の別担当の原画や候補を編集先にしない。
 
-- `assets/cgs/cg_ch1_tournament_tension.png` は文字だけの仮画像。人物・リンゴなし。**現行CG目録に含まれず、現行非legacy台本・コードからの参照もない。** `cgUrl()` が解決しないため本番採用CGとして数えない。
-- `assets/ui/chapters/ch1_keyart.png`／`remake/img/ui/chapters/ch1_keyart.webp` は、表示用WebPでシーシャと煙だけの背景を確認。アダムやリンゴの対はない。PNGは `asset_sources/ch1-keyart/original.png` と同一blob。保持する。
-- `scene-art.js` の `shisha_eden.png` は現行 `manifest.sceneProps` に存在しないため表示対象外。#711で新規に作らない。
-- 原生成指示・初案・不採用案・旧立ち絵・以前のカットイン・参考シート・ハガル候補などは履歴として保持する。ファイル名だけで新たに本番へ採用しない。
+## 配信用とmanifest
 
-## 不採用試作と原画の保持
+現行mainの `build_images.py`、`build_manifest.py`、`make_face_icons.py` をそのまま利用した。
 
-[normal-01原画](trials/normal-01.png)、[実行した正確なプロンプト](prompts/normal-01.txt)、[比較画像](qa/normal-01-comparison.png)、[比較条件](qa/normal-01-comparison.json) を保存する。画面左＝赤・右＝緑にはなったが、顔の本人性・服の質感、キャンバス・透過／余白に変化があり、色だけの修正として成立していない。**REJECTED：本番と派生物には使わない。**
+1. `python3 tools/make_face_icons.py adam`
+2. `python3 remake/tools/build_manifest.py --portraits-only adam`
+3. `python3 remake/tools/build_manifest.py --backgrounds-only bg_eden_shop.png eden.png`
+4. 登場絵と大会CGは `build_images.encode(source, relative_path)` を対象2点にだけ実行。
 
-元絵896×1200に対して試作は1084×1451。比較用に試作だけを896×1200へLANCZOSで正規化した後、同じ座標を切り出している。比較画像は検品用で、採用原画ではない。
+5表情のWebPは可逆で、デコードしたRGBAが採用PNGと全画素一致。全表情の原画alphaと896×1200キャンバスは不変。顔アイコンalphaも元の160px版と一致する。両背景の別名はPNG同士・WebP同士が一致する。
 
-`before/` の5表情・顔・EDEN背景・登場背景・大会CGは、既存の原画blobをそのまま指す保存用スナップショットとする。対応先と期待blobはinventoryの `original_snapshots` に列挙。raw未確認の登場背景・大会CGをスナップショット化しても、目視／デコード済みの証拠にはしない。正しいロゴ・章題などは上記の固定mainリンクで参照し、複製しない。
+manifestは限定再生成で `generated` だけが更新された。全メンバー、Adamの5表情、`h=.8717, b=.0258, ax=.5053, aspect=.7467`、登場カットframes、他担当に関係する項目は保持した。素材が揃わない作業領域での全体再生成は行っていない。
 
-## 続きの制作・検証（未実施）
+大会CGの配信用WebPは現行エンコーダを適用して385,392 bytes（旧配信205,492 bytes）。同じ現行エンコーダを編集前原画へ適用した場合は385,462 bytesで、今回の色補正後との差は70 bytes。旧配信の圧縮条件との差を含む更新であり、原画の非対象人物や構図の描き直しではない。登場絵・背景も現行の対象別設定で変換する。
 
-1. 顔・服・896×1200の余白とalphaを維持できる局所修正を通常絵で成立させる。今回の不採用試作から他表情やアイコンを派生させない。
-2. 5表情の髪、登場背景の対の色、EDEN中央額の手前2個、大会CG内のアダムの髪だけを明示したファイル一覧で直す。正しいロゴ・横顔・章題・左右の額・3個目の赤いリンゴは元blobを保持する。
-3. 採用元PNGから対象だけを既存の変換設定でWebPへ出力する。`remake/tools/build_images.py` の実際の設定を確認し、全画像の一括変換を避ける。通常絵の検品後、顔アイコンは `python3 tools/make_face_icons.py adam` だけを実行する。
-4. 必要な場合だけmanifestを更新し、無関係な項目・表情・配置値を保持する。素材が欠けた作業領域から `build_manifest.py` で全体を作り直さない。原画／派生物の寸法・alpha・期待画素と、保持対象のblobを照合する。
-5. 実ゲームの**1280×720 PC**と**844×390横持ち**で、5表情・顔アイコン・初登場・EDEN訪問・大会CG・保持した章題／ロゴを確認する。非対象の人物・文字・構図、画像読み込みも確認する。
+## 検証結果と残る確認
 
-このチェックポイントでは画像修正、派生物／manifest更新、上記実ゲームQAは未完了。実施済みの別Issueや過去のQA結果を#711の合格として扱わない。
+[asset-validation.json](qa/asset-validation.json) の寸法・alpha・マスク外画素・保護する元色・WebP一致・別名一致・manifest保持は合格。色配置と髪／肌の境界、蛇・金色・茎・店内を原画との比較および独立レビューで確認した。人物データ・人物設定の整合チェック、JSON/Python/Node/YAMLの構文確認も実施した。
+
+本編確認は `remake/test/browser/adam_eden_711.mjs` を既存 `remake-browser.yml` のChromiumジョブで実行する。PC1280×720と横持ち844×390（hasTouch/isMobile）で5表情、登場、マップ顔／ロゴ、入店カード、EDEN訪問、大会CG、保持した章タイトルを確認し、JPEGと結果JSONを専用 `adam-eden-711-results` artifactへ保存する。既存ジョブと依存・素材を再利用し、ジョブ・権限・新しい依存を増やさない。[テストとCI追加の独立レビュー](reviews/code-review.md)で実表示背景レイヤーの参照漏れを修正した。`PR_HEAD_SHA` はPRのhead、`TEST_REF` は既存checkoutの実行commit（PRイベントではmerge commit）として両方を記録し、検証結果と結び付ける。
+
+**この保存時点では、新しいheadのCI、専用artifactの目視、マージ前の最終競合・レビュー確認は待ち。** ローカルにはブラウザバイナリがなく、接続ブラウザも利用できず、クラウドブラウザは作業ホストのlocalhostへ接続できなかった。ブラウザの大容量取得や新規認証は行っていない。対象場面を本物のゲームモジュールで確認するテストであり、全章通しプレイの完了は主張しない。最新結果はPRの正確なheadに結び付けて追記し、安全条件が揃ってからマージ・Issueクローズ・予約解除へ進む。

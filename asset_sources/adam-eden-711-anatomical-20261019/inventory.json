@@ -7,10 +7,10 @@
   },
   "audit_date": "2026-10-19",
   "base_main_commit": "8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d",
-  "checkpoint_status": "DRAFT_PENDING_ASSET_REPAIR",
-  "production_images_modified": false,
+  "checkpoint_status": "CANDIDATE_ART_COMPLETE_PENDING_RUNTIME_QA",
+  "production_images_modified": true,
   "replacement_art_adopted": false,
-  "asset_repair_complete": false,
+  "asset_repair_complete": true,
   "claim": {
     "owner": "codex-711-20261019-588761470c34",
     "run_id": 39273098251,
@@ -49,23 +49,23 @@
       "old CI58 screen-left-green/screen-right-red direction"
     ],
     "historical_records_modified": false,
-    "blue_as_green_substitute_is_allowed": false
+    "blue_as_green_substitute_is_allowed": false,
+    "current_edit_method": "owner-authorized local polygon masks and original-pixel HSL color correction; no generation or reflection",
+    "face_variation_permission": "Owner permits small face changes if all Adam art is replaced coherently; standing and scene source pixels outside color masks remain exact in this candidate."
   },
   "evidence_limits": {
     "sha256_null_means": "not obtained, never inferred from a Git blob SHA-1",
     "bytes_null_means": "not known from available evidence",
     "local_hashes": "computed from existing audit inputs; metadata reads do not claim original-vs-WebP pixel equality",
     "raw_original_png_not_viewed": [
-      "assets/ui/character_intros/adam.png",
-      "assets/ui/store_logos/eden.png",
-      "assets/cgs/cg_ch1_tournament_battle.png",
       "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png",
       "assets/ui/chapters/ch1_keyart.png",
       "assets/cgs/cg_ch1_nagumo_smile.png",
       "assets/cgs/cg_ch1_dr_kemuri_hook.png"
     ],
-    "unretrieved_runtime_derivatives": "standing WebPs, EDEN background WebPs, and per-person chapter WebPs have not all been independently decoded or pixel-compared",
-    "game_qa_complete": false
+    "unretrieved_runtime_derivatives": "All changed runtime derivatives decoded locally; five Adam WebPs match source RGBA exactly. Unchanged per-person chapter WebPs have not all been independently decoded or compared.",
+    "game_qa_complete": false,
+    "runtime_webp_limits": "Lossy intro, background and CG WebPs retain dimensions and current build settings; their decoded pixels are not claimed to equal PNG pixels."
   },
   "assets": [
     {
@@ -83,7 +83,7 @@
       ],
       "source_relation": "original_and_final_preview_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/normal.png",
-      "status": "needs_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/sprites/characters/adam/chr_adam_normal.png",
         "kind": "raw_png_viewed",
@@ -93,7 +93,25 @@
         "target_screen_right": "green"
       },
       "repair_limit": "hair colors only; preserve expression, face, strand geometry, clothing, pose, 896x1200 canvas, margins and alpha",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/normal.png",
+      "output": {
+        "bytes": 450844,
+        "sha256": "b1200dd85c3949eeb534f28ba90f4219a1fe3b1bc442f35cd24ec581023c5baf",
+        "git_blob_sha1": "9ee76e3d2713b15022dfb78b4528a416ec64a6da",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "adam_portrait_smile",
@@ -110,7 +128,7 @@
       ],
       "source_relation": "original_and_final_preview_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/smile.png",
-      "status": "needs_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/sprites/characters/adam/chr_adam_smile.png",
         "kind": "raw_png_viewed",
@@ -120,7 +138,25 @@
         "target_screen_right": "green"
       },
       "repair_limit": "hair colors only; preserve expression, face, strand geometry, clothing, pose, 896x1200 canvas, margins and alpha",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/smile.png",
+      "output": {
+        "bytes": 441084,
+        "sha256": "a9663ef76a2b8efdd3fa4362a6519c97302d0a3a5068098b55c7d576d1e711c9",
+        "git_blob_sha1": "388b9f7594d9878deb969d8d209086fea9011019",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "adam_portrait_serious",
@@ -137,7 +173,7 @@
       ],
       "source_relation": "original_and_final_preview_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/serious.png",
-      "status": "needs_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/sprites/characters/adam/chr_adam_serious.png",
         "kind": "raw_png_viewed",
@@ -147,7 +183,25 @@
         "target_screen_right": "green"
       },
       "repair_limit": "hair colors only; preserve expression, face, strand geometry, clothing, pose, 896x1200 canvas, margins and alpha",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/serious.png",
+      "output": {
+        "bytes": 449258,
+        "sha256": "c8efbed43ecf0ad88338e14c23b9cf5db4238130e5f55a82e1147e1439329b3b",
+        "git_blob_sha1": "873064ac9238a4494fa8393a7e18ae93e225d06e",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "adam_portrait_surprise",
@@ -164,7 +218,7 @@
       ],
       "source_relation": "original_and_final_preview_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/surprise.png",
-      "status": "needs_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/sprites/characters/adam/chr_adam_surprise.png",
         "kind": "raw_png_viewed",
@@ -174,7 +228,25 @@
         "target_screen_right": "green"
       },
       "repair_limit": "hair colors only; preserve expression, face, strand geometry, clothing, pose, 896x1200 canvas, margins and alpha",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/surprise.png",
+      "output": {
+        "bytes": 452763,
+        "sha256": "b9d11d4bc616b37fd114f304cffcf3838b7d53744780af31280e4dbce7b9ccad",
+        "git_blob_sha1": "a069c3c8a07fe0dcd19c6dded5644e729a6fcd90",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "adam_portrait_intense",
@@ -191,7 +263,7 @@
       ],
       "source_relation": "original_and_final_preview_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/intense.png",
-      "status": "needs_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/sprites/characters/adam/chr_adam_intense.png",
         "kind": "raw_png_viewed",
@@ -201,7 +273,25 @@
         "target_screen_right": "green"
       },
       "repair_limit": "hair colors only; preserve expression, face, strand geometry, clothing, pose, 896x1200 canvas, margins and alpha",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/intense.png",
+      "output": {
+        "bytes": 418820,
+        "sha256": "79bf60369bc7a6eee4b3fbc5d16464b3d9a4b2e89a60c0c534c4adc74d8a4399",
+        "git_blob_sha1": "b8e940dbab2f9d7cbf66a39f2268a5cbf1798604",
+        "size": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "adam_face_icon",
@@ -223,14 +313,32 @@
         "adam_dy": 0.03
       },
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/face_adam.png",
-      "status": "needs_regeneration_after_validated_normal",
+      "status": "derived_from_validated_normal",
       "visual_evidence": {
         "path": "assets/ui/face_icons/face_adam.png",
         "kind": "raw_png_viewed",
         "observed_screen_left": "green",
         "observed_screen_right": "red"
       },
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/face_adam.png",
+      "output": {
+        "bytes": 42385,
+        "sha256": "593a00769659a284095be0268ee432c062b53af8a8d093b486b456261a9eb6c2",
+        "git_blob_sha1": "3e62f8f167f75818ff35132971154885bc2e5a6f",
+        "size": [
+          160,
+          160
+        ],
+        "mode": "RGBA"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "derivative_limit": "Same 160x160 crop/geometry/expression and exact alpha; 256-color MEDIANCUT recomputes RGB palette across the crop."
     },
     {
       "id": "adam_intro",
@@ -245,17 +353,35 @@
       ],
       "source_relation": "original_and_v4_source_are_byte_identical",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/intro_adam.png",
-      "status": "needs_paired_apple_and_corresponding_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
-        "path": "remake/img/ui/character_intros/adam.webp",
-        "kind": "runtime_webp_viewed",
+        "path": "assets/ui/character_intros/adam.png",
+        "kind": "raw_png_viewed_and_git_blob_verified",
         "observed_screen_left": "green apple",
         "observed_screen_right": "red apple",
-        "raw_original_png_viewed": false
+        "raw_original_png_viewed": true
       },
       "composition": "Runtime combines this background with the adopted intense portrait and live text; archived cutin_adam PNGs are review screenshots.",
       "repair_limit": "paired apples and corresponding color motifs only; preserve serpent, book decoration, typography, placement and all non-target content",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/intro_adam.png",
+      "output": {
+        "bytes": 3077020,
+        "sha256": "e373cd560a82a6cf7416a47cd48eb1fe6de6bce18e2c94ffdd484522ec23a8c6",
+        "git_blob_sha1": "7b1c4743717d92e660409878ff3ba65c4bf29db0",
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGB"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      },
+      "source_relation_basis": "at_base_main_before_this_correction"
     },
     {
       "id": "eden_shop_background",
@@ -272,7 +398,7 @@
       "sources": [],
       "source_archive": "No separate source archive established; preserve the current original blob.",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/bg_eden_shop.png",
-      "status": "needs_center_frame_front_pair_only",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
         "path": "assets/backgrounds/bg_eden_shop.png",
         "kind": "raw_png_viewed"
@@ -313,7 +439,24 @@
         }
       ],
       "repair_limit": "Only the center framed painting foreground pair; preserve both outer paintings, rear third red apple, lighting, frames, room, furnishings and hardware.",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/bg_eden_shop.png",
+      "output": {
+        "bytes": 405458,
+        "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+        "git_blob_sha1": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+        "size": [
+          1280,
+          720
+        ],
+        "mode": "RGB"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      }
     },
     {
       "id": "eden_store_logo",
@@ -340,12 +483,11 @@
       ],
       "status": "preserve_correct",
       "visual_evidence": {
-        "path": "asset_sources/store-logos/ch1-issue470/ingame-qa/adopted-logos.png",
-        "kind": "adopted_logo_qa_screenshot_viewed_plus_adoption_record",
+        "path": "assets/ui/store_logos/eden.png",
+        "kind": "raw_png_viewed_and_git_blob_verified",
         "observed_screen_left": "red apple",
         "observed_screen_right": "green apple",
-        "raw_original_png_viewed": false,
-        "limitation": "1,455,770-byte original PNG was not retrieved or independently decoded."
+        "raw_original_png_viewed": true
       },
       "production_change_at_checkpoint": false
     },
@@ -360,14 +502,14 @@
       "sources": [],
       "source_archive": "Separate generation archive not established from available records; current production PNG is the known source.",
       "snapshot": "asset_sources/adam-eden-711-anatomical-20261019/before/tournament_battle.png",
-      "status": "needs_adam_hair_color_repair",
+      "status": "color_repaired_candidate",
       "visual_evidence": {
-        "path": "remake/img/cgs/cg_ch1_tournament_battle.webp",
-        "kind": "runtime_webp_viewed_by_root",
+        "path": "assets/cgs/cg_ch1_tournament_battle.png",
+        "kind": "raw_png_viewed_and_git_blob_verified",
         "adam_location": "third contestant from screen left, front three-quarter view",
         "observed_screen_left": "green hair",
         "observed_screen_right": "red hair",
-        "raw_original_png_viewed": false
+        "raw_original_png_viewed": true
       },
       "runtime_reference": {
         "dialogue": "data/dialogue/ch1_tournament.json",
@@ -376,7 +518,24 @@
         "cg_id": "cg_ch1_tournament_battle"
       },
       "repair_limit": "Adam hair colors only; preserve every other person, face, pose, clothing, setting, lettering and shisha hardware.",
-      "production_change_at_checkpoint": false
+      "production_change_at_checkpoint": true,
+      "after_snapshot": "asset_sources/adam-eden-711-anatomical-20261019/after/tournament_battle.png",
+      "output": {
+        "bytes": 2798440,
+        "sha256": "cf59f7021f45f51c005d4ff84a8f05b35fbdf4d6e65eca1a21bedefb7f785d53",
+        "git_blob_sha1": "799fac1a563b009cb309592decc09b6fd36068ac",
+        "size": [
+          1920,
+          1080
+        ],
+        "mode": "RGB"
+      },
+      "after_visual_evidence": {
+        "kind": "raw_png_compared_and_independently_reviewed",
+        "screen_left": "red",
+        "screen_right": "green",
+        "runtime_game_screen_review": "pending_latest_head_CI"
+      }
     },
     {
       "id": "chapter_actual_adam",
@@ -593,9 +752,15 @@
     "asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png": {
       "bytes": 3336242,
       "git_blob_sha1": "f8bccfc15dadeb47a1a281597706d9b966fed09f",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "sha256": "f80e8e102f034765f428a4e45626fafe61120e20db6ac32ac378bebe827bd08b",
+      "hash_basis": "verified_original_bytes_with_matching_git_blob",
+      "raw_bytes_locally_available": true,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "format": "PNG"
     },
     "asset_sources/portraits/adam-remaster-v1/intense-preview.png": {
       "bytes": 423200,
@@ -636,8 +801,14 @@
       "bytes": 1455770,
       "git_blob_sha1": "6452b16c9a516c4c5bc5178a37493c7a67d56689",
       "sha256": "68b3102129af4c1f8c3bc218c9a03ffa7216483285c62bbd227f62aa062ca2a6",
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "hash_basis": "verified_original_bytes_with_matching_git_blob",
+      "raw_bytes_locally_available": true,
+      "dimensions": [
+        1960,
+        802
+      ],
+      "mode": "RGBA",
+      "format": "PNG"
     },
     "asset_sources/store-logos/ch1-issue470/ingame-qa/adopted-logos.png": {
       "bytes": 221831,
@@ -687,9 +858,15 @@
     "assets/cgs/cg_ch1_tournament_battle.png": {
       "bytes": 2797659,
       "git_blob_sha1": "079edba78a47487b203bc6c2ab9b4e65ac0595dd",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "sha256": "694eb554d9f8e302b4047f0fbd5812ca38bfcc9814d6d92c3050234ec8691974",
+      "hash_basis": "verified_original_bytes_with_matching_git_blob",
+      "raw_bytes_locally_available": true,
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "mode": "RGB",
+      "format": "PNG"
     },
     "assets/cgs/cg_ch1_tournament_tension.png": {
       "bytes": 39826,
@@ -811,9 +988,15 @@
     "assets/ui/character_intros/adam.png": {
       "bytes": 3336242,
       "git_blob_sha1": "f8bccfc15dadeb47a1a281597706d9b966fed09f",
-      "sha256": null,
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "sha256": "f80e8e102f034765f428a4e45626fafe61120e20db6ac32ac378bebe827bd08b",
+      "hash_basis": "verified_original_bytes_with_matching_git_blob",
+      "raw_bytes_locally_available": true,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "format": "PNG"
     },
     "assets/ui/face_icons/face_adam.png": {
       "bytes": 42159,
@@ -831,8 +1014,14 @@
       "bytes": 1455770,
       "git_blob_sha1": "6452b16c9a516c4c5bc5178a37493c7a67d56689",
       "sha256": "68b3102129af4c1f8c3bc218c9a03ffa7216483285c62bbd227f62aa062ca2a6",
-      "hash_basis": "verified_main_tree_or_adoption_record",
-      "raw_bytes_locally_available": false
+      "hash_basis": "verified_original_bytes_with_matching_git_blob",
+      "raw_bytes_locally_available": true,
+      "dimensions": [
+        1960,
+        802
+      ],
+      "mode": "RGBA",
+      "format": "PNG"
     },
     "remake/img/backgrounds/bg_eden_shop.webp": {
       "bytes": 154890,
@@ -990,63 +1179,72 @@
       "original_path": "assets/sprites/characters/adam/chr_adam_normal.png",
       "expected_git_blob_sha1": "a6eb1b7f8883e4e3d3b03144cc55c72fb5c0f31c",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/smile.png",
       "original_path": "assets/sprites/characters/adam/chr_adam_smile.png",
       "expected_git_blob_sha1": "022c836d6bcc4658d791bedb5a6a378aefd21dfb",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/serious.png",
       "original_path": "assets/sprites/characters/adam/chr_adam_serious.png",
       "expected_git_blob_sha1": "1a224b963280ea0db201bedb6fcbd8d04e9cf342",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/surprise.png",
       "original_path": "assets/sprites/characters/adam/chr_adam_surprise.png",
       "expected_git_blob_sha1": "371e3be16e1f87bc034877e45393d2f92f0f19d6",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/intense.png",
       "original_path": "assets/sprites/characters/adam/chr_adam_intense.png",
       "expected_git_blob_sha1": "6a3d8ef31be2a49a722d2c8be4fe314f00f22a22",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/face_adam.png",
       "original_path": "assets/ui/face_icons/face_adam.png",
       "expected_git_blob_sha1": "0cdf9682b8d51b40f39e208563d4dde31d3b145e",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/intro_adam.png",
       "original_path": "assets/ui/character_intros/adam.png",
       "expected_git_blob_sha1": "f8bccfc15dadeb47a1a281597706d9b966fed09f",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/bg_eden_shop.png",
       "original_path": "assets/backgrounds/bg_eden_shop.png",
       "expected_git_blob_sha1": "7ca4d97d95181cf0279ce3099877a512e2b3cde2",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     },
     {
       "path": "asset_sources/adam-eden-711-anatomical-20261019/before/tournament_battle.png",
       "original_path": "assets/cgs/cg_ch1_tournament_battle.png",
       "expected_git_blob_sha1": "079edba78a47487b203bc6c2ab9b4e65ac0595dd",
       "method": "reuse_existing_original_blob_in_git_tree",
-      "raw_inspection_is_inherited": false
+      "raw_inspection_is_inherited": false,
+      "raw_original_inspected_this_task": true
     }
   ],
   "rejected_trials": [
@@ -1067,9 +1265,10 @@
       "adopted": false,
       "used_by_runtime": false,
       "comparison_is_art_source": false,
-      "retry_or_method_selection_pending": true,
+      "retry_or_method_selection_pending": false,
       "generator": "built-in image_gen",
-      "candidate_git_blob_sha1": "d317b24d5fc3837251697dffe868ca61011ab299"
+      "candidate_git_blob_sha1": "d317b24d5fc3837251697dffe868ca61011ab299",
+      "selected_alternative": "Owner-authorized direct local masked color correction of original PNGs"
     }
   ],
   "coverage": {
@@ -1147,25 +1346,25 @@
     "asset_sources/hagal-bond-concepts-issue504/v2/02_adam_rin.png"
   ],
   "scoped_pipeline_recommendation": [
-    "First obtain a hair-only correction that preserves face, fabric, 896x1200 canvas and alpha; normal-01 is rejected and must not seed runtime derivatives.",
-    "Repair only the five portrait hair regions, the paired intro colors, the center EDEN painting foreground pair, and Adam hair in the tournament battle CG. Preserve already-correct logo, chapter art, outer paintings, and third red apple.",
-    "Use each adopted original and an explicit per-file export list; inspect existing build_images.py settings before applying them. Regenerate the face icon only with make_face_icons.py adam after normal is validated.",
-    "Update only affected PNG/WebP derivatives. Rebuild or adjust manifest only if required, preserve every unrelated entry and geometry field, and never rebuild a global manifest from an incomplete sparse asset set.",
-    "Compare source/runtime dimensions, alpha and expected pixels; verify preserved production blobs and exact changed-file list.",
-    "Run actual-game QA at 1280x720 and landscape 844x390 for five expressions, face icon, intro, EDEN visit/background, tournament battle CG, and preserved chapter/title/EDEN logo displays."
+    "Completed: original PNGs corrected through frozen per-file masks; rejected normal-01 is not used.",
+    "Completed: five standing hair regions, intro paired colors, EDEN center foreground pair and tournament Adam hair only.",
+    "Completed: standard make_face_icons.py adam, scoped build_manifest portrait/background modes, and current build_images.encode for intro/CG.",
+    "Completed: affected derivatives only; manifest changed only generated; all geometry and unrelated entries preserved.",
+    "Completed locally: raw dimensions/alpha/outside-mask checks, five lossless WebP RGBA matches, alias equality, independent source-art review.",
+    "Pending: actual-game PC1280x720 and landscape844x390 execution/screenshots on latest PR head, visual review and final CI/conflict gates."
   ],
   "pending_qa": [
     {
       "id": "localized_art_repairs",
-      "status": "pending"
+      "status": "passed_local"
     },
     {
       "id": "source_and_derivative_validation",
-      "status": "pending"
+      "status": "passed_local"
     },
     {
       "id": "manifest_preservation",
-      "status": "pending"
+      "status": "passed_local"
     },
     {
       "id": "pc_1280x720_runtime",
@@ -1174,6 +1373,212 @@
     {
       "id": "landscape_844x390_runtime",
       "status": "pending"
+    },
+    {
+      "id": "independent_source_art_review",
+      "status": "passed_local"
+    },
+    {
+      "id": "latest_head_CI",
+      "status": "pending"
+    },
+    {
+      "id": "rendered_screens_visual_review",
+      "status": "pending"
     }
-  ]
+  ],
+  "adoption_status": "candidate in PR; release adoption requires latest-head CI and rendered-screen review",
+  "file_metadata_basis": "files records identify immutable before/main inputs, with after outputs recorded separately in output_files and adoption.json",
+  "output_files": {
+    "assets/sprites/characters/adam/chr_adam_normal.png": {
+      "bytes": 450844,
+      "sha256": "b1200dd85c3949eeb534f28ba90f4219a1fe3b1bc442f35cd24ec581023c5baf",
+      "git_blob_sha1": "9ee76e3d2713b15022dfb78b4528a416ec64a6da",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_smile.png": {
+      "bytes": 441084,
+      "sha256": "a9663ef76a2b8efdd3fa4362a6519c97302d0a3a5068098b55c7d576d1e711c9",
+      "git_blob_sha1": "388b9f7594d9878deb969d8d209086fea9011019",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_serious.png": {
+      "bytes": 449258,
+      "sha256": "c8efbed43ecf0ad88338e14c23b9cf5db4238130e5f55a82e1147e1439329b3b",
+      "git_blob_sha1": "873064ac9238a4494fa8393a7e18ae93e225d06e",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_surprise.png": {
+      "bytes": 452763,
+      "sha256": "b9d11d4bc616b37fd114f304cffcf3838b7d53744780af31280e4dbce7b9ccad",
+      "git_blob_sha1": "a069c3c8a07fe0dcd19c6dded5644e729a6fcd90",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_intense.png": {
+      "bytes": 418820,
+      "sha256": "79bf60369bc7a6eee4b3fbc5d16464b3d9a4b2e89a60c0c534c4adc74d8a4399",
+      "git_blob_sha1": "b8e940dbab2f9d7cbf66a39f2268a5cbf1798604",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/backgrounds/bg_eden_shop.png": {
+      "bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "git_blob_sha1": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "assets/ui/character_intros/adam.png": {
+      "bytes": 3077020,
+      "sha256": "e373cd560a82a6cf7416a47cd48eb1fe6de6bce18e2c94ffdd484522ec23a8c6",
+      "git_blob_sha1": "7b1c4743717d92e660409878ff3ba65c4bf29db0",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    "assets/cgs/cg_ch1_tournament_battle.png": {
+      "bytes": 2798440,
+      "sha256": "cf59f7021f45f51c005d4ff84a8f05b35fbdf4d6e65eca1a21bedefb7f785d53",
+      "git_blob_sha1": "799fac1a563b009cb309592decc09b6fd36068ac",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_normal.webp": {
+      "bytes": 310280,
+      "sha256": "b193efa1028acdc6139ed37a7ae258807dd2590e22112f70b611e0f54bb1fe1c",
+      "git_blob_sha1": "2b1c616e1d1dc12657ebbe8307157e2c520284e8",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_smile.webp": {
+      "bytes": 299526,
+      "sha256": "bde8b43d251383445986c10a7e67fab35faeae14895ed3a02f54f5bdad16f59f",
+      "git_blob_sha1": "7f716340d288a48a294c57f505b201534eca007e",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_serious.webp": {
+      "bytes": 308346,
+      "sha256": "4d28b8cdbd6f447b566d555a25fbedf39a6f45e614e65707bd1a7c857cc14dd0",
+      "git_blob_sha1": "f1a6efe89edb271783b2fc10fcb4f55ddbd47dc2",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_surprise.webp": {
+      "bytes": 308340,
+      "sha256": "b5a3f03260cf1a2ffeff50c73a7a121e0085b28f5475a3d247be6cbd930a06db",
+      "git_blob_sha1": "76f6599eb571696dfdb6bb73e956863a9cb95be2",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_intense.webp": {
+      "bytes": 283078,
+      "sha256": "4583ccd5b2fb6cf3818b6ef6a6ca8615ed1390eb81417a00be2bcf248bd456b0",
+      "git_blob_sha1": "22d3f90ea467b56796b02522c9fb58f65441da81",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/backgrounds/eden.png": {
+      "bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "git_blob_sha1": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/backgrounds/bg_eden_shop.webp": {
+      "bytes": 155184,
+      "sha256": "577227cbda42b8739d53c28eb60d5fac0130ae570bab9beb032b738f44c1a7b8",
+      "git_blob_sha1": "f404ecf214ae4b9107f82ab0bf7230614dd4a0c4",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/backgrounds/eden.webp": {
+      "bytes": 155184,
+      "sha256": "577227cbda42b8739d53c28eb60d5fac0130ae570bab9beb032b738f44c1a7b8",
+      "git_blob_sha1": "f404ecf214ae4b9107f82ab0bf7230614dd4a0c4",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/ui/character_intros/adam.webp": {
+      "bytes": 576302,
+      "sha256": "4a515a42e925b31fa835bd2836ec5005d8719c04793c2aef497a7c898837f080",
+      "git_blob_sha1": "69e8004914b854304bed3481ba63ed0494d32721",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/cgs/cg_ch1_tournament_battle.webp": {
+      "bytes": 385392,
+      "sha256": "2bf20cc24999f9793dd397954ba2dde5724b2c17d1f942af0b574bc0c239787b",
+      "git_blob_sha1": "adaae647abeb067c086dbd061c9275ee98eb8a20",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "RGB"
+    },
+    "assets/ui/face_icons/face_adam.png": {
+      "bytes": 42385,
+      "sha256": "593a00769659a284095be0268ee432c062b53af8a8d093b486b456261a9eb6c2",
+      "git_blob_sha1": "3e62f8f167f75818ff35132971154885bc2e5a6f",
+      "size": [
+        160,
+        160
+      ],
+      "mode": "RGBA"
+    }
+  }
 }
