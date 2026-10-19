@@ -344,7 +344,7 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
+/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は同じ行動の終了時） */
 export function onAction({ spent = 0 } = {}) {
   if (!(spent > 0) || !state?.reel?.installed || state.phase !== "daily") { statBuffer = {}; return; }
   commitSpinSeries();
@@ -577,7 +577,7 @@ export function mountReel(host, { delay = 500 } = {}) {
 }
 let current = Promise.resolve();
 
-/** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
+/** 行動のあと: その場でスロットを見せてから次の場面へ進む */
 export async function presentNow({ label = "今夜のスロット" } = {}) {
   const owner = state;
   await current; // 昼の分の演出が途中なら、終わってから今夜の分を回す

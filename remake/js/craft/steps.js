@@ -226,7 +226,7 @@ export async function stepMix(cs) {
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
     el("small", { text: "上が高温／線は中心" }),
   ]);
-  const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このミックスで詰める" })]);
+  const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このフレーバーで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
 
   const redraw = () => {

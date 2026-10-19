@@ -83,11 +83,10 @@ export function setupHooks() {
       save();
     }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
-    if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
+    if (dialogueId === "remake_tutorial_offer" && branch === "practice") {
       const progress = openingProgress();
       progress.tutorialChoice = branch;
-      if (branch === "practice") setFlag("_tutorial_requested");
-      else delete state.flags._tutorial_requested;
+      setFlag("_tutorial_requested");
       save();
     }
     // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
@@ -156,22 +155,20 @@ async function openingPart() {
   // 旧版で一台を完成済み・新しい注文記録なしなら、接客だけ従来どおり続ける。
   const legacyLesson = flag("_tutorial_done") && !progress.firstOrderDone && !progress.firstBrew;
   if (!legacyLesson && await firstBrewOrder(progress) === false) return false;
-  // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
-  progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
-    : flag("_tutorial_skipped") ? "skip" : null;
+  // 冒頭の一台は必修。未完了の旧「skip」保存も、注文済みの配合を使ってレッスンへ戻す。
+  // 既に日常へ進んだ保存は openingPart を通らないので、完了した冒頭を繰り返さない。
+  if (progress.tutorialChoice === "skip" && !flag("_tutorial_done")) progress.offerDone = false;
+  const resumeChoice = progress.tutorialChoice === "practice" || flag("_tutorial_done");
+  progress.tutorialChoice = "practice";
+  setFlag("_tutorial_requested");
+  delete state.flags._tutorial_skipped;
   if (!progress.offerDone) {
     const offer = DB.dialogues.remake_tutorial_offer;
-    await play(progress.tutorialChoice
-      ? { ...offer, lines: offer.branches[progress.tutorialChoice], branches: {} }
-      : "remake_tutorial_offer", { bg: TONARI });
+    await play(resumeChoice ? { ...offer, lines: offer.branches.practice, branches: {} } : offer, { bg: TONARI });
     progress.offerDone = true;
     save();
   }
-  if (progress.tutorialChoice === "practice") await tutorial(progress);
-  else {
-    setFlag("_tutorial_skipped");
-    save();
-  }
+  await tutorial(progress);
   if (!progress.oneesanDone) {
     if (legacyLesson) await play("ch1_tutorial_oneesan", { bg: TONARI });
     else if (await serveFirstBrew(progress) === false) return false;

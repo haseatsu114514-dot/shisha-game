@@ -103,6 +103,7 @@ try {
           const core=await import("./js/core/state.js"), s=core.newState();
           Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
           Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds:"preserved",_hiyori_meeting_done:true});
+          s.owned.push("home_rig_set");
           s.lovers=["hiyori"];s.affinity.hiyori=66;s.relationshipMemories=["actually-read"];
           localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         });

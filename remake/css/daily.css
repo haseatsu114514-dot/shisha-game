@@ -457,7 +457,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
-.map-info { right: 16px; bottom: 16px; z-index: 3; width: 300px; padding: 11px 14px 13px; transition: opacity 0.2s, transform 0.2s; }
+.map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
   display: inline-block;
@@ -475,7 +475,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 6;
+  aspect-ratio: 16 / 5;
   margin: 2px 0 8px;
   background: center 40% / cover no-repeat;
   border: 2px solid rgba(212, 182, 106, 0.75);
