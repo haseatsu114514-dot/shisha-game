@@ -64,8 +64,8 @@ export function grantFortuneReading(save, char, trivia) {
 }
 export const fortuneResultId = entry => `remake_fortune_trivia_${entry.id}`;
 export function registerFortuneReadings(db) {
-  const base = db.dialogues.remake_fortune_result;
-  if (!base) return;
+  const base = db.dialogues?.remake_fortune_result;
+  if (!base || !base.lines) return;
   for (const entries of Object.values(db.fortuneTrivia?.characters || {})) for (const entry of entries) {
     const id = fortuneResultId(entry);
     db.dialogues[id] = { ...base, dialogue_id: id, lines: [
@@ -75,8 +75,8 @@ export function registerFortuneReadings(db) {
       { speaker: 'hajime', face: 'normal', text: entry.reaction },
     ] };
   }
-  const offer = db.dialogues.remake_fortune_offer;
-  if (offer) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
+  const offer = db.dialogues?.remake_fortune_offer;
+  if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
     { speaker: 'uranaishi', face: 'smile', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.

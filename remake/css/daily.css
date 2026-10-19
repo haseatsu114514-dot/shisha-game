@@ -279,7 +279,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   pointer-events: none;
 }
 /* ピンは右下パネルより前面（重なっても必ず押せる）。層そのものはクリックを素通しさせる */
-.map-pins { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.map-pins { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
 .spot-pin {
   position: absolute;
   /* しっぽの先が (x, y) を指す。拡縮は .shield 側だけで行う（外側を動かすと hover が暴れる） */

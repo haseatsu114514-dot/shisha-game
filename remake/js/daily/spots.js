@@ -248,7 +248,7 @@ export async function visitChar(charId, { welcome = null } = {}) {
     const id = rainTalk || pool[n % pool.length];
     const dlg = DB.dialogues[id];
     const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
-    await read(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
+    await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg });
     gainAffinity(charId, 5);
   }
   if (state !== owner || cancelled) return false;

@@ -238,7 +238,7 @@ function linePortraits(line) {
 
 /** 最初の表示行に必要な絵だけを幕の内側で準備する。後続の表情は先読みへ任せる。 */
 function firstPortraits(dlg) {
-  for (const l of dlg.lines || []) {
+  for (const l of dlg?.lines || []) {
     if (!l.type) return linePortraits(l);
     // 分岐・別場面・演出を越えた行を、今の場面の開始条件にしない。
     if (["choice", "condition", "jump", "bg", "show_cg", "hide_cg", "motion", "reflection", "game_over"].includes(l.type)) break;
@@ -253,6 +253,7 @@ function sceneSetBg(ref, ready = []) {
 }
 
 function prefetch(dlg) {
+  if (!dlg) return;
   const urls = new Set();
   const collect = (lines) => {
     for (const l of lines || []) {

@@ -123,7 +123,7 @@ try {
         for (const id of Object.keys(expected)) {
           const pin = page.locator(`[data-test="pin-${id}"]`);
           await pin.scrollIntoViewIfNeeded();
-          if (touch) await pin.tap({ force: true }); else await pin.click({ force: true });
+          if (touch) await pin.tap(); else await pin.click();
           assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true);
         }
         assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved, 'pin selection changes save');
