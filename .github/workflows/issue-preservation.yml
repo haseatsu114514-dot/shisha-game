@@ -1,0 +1,60 @@
+name: Issue preservation preflight (read only)
+run-name: "Preservation check #${{ inputs.issue }} / approval ${{ inputs.approval_comment }} / ${{ github.actor }}"
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue to inspect; this check never changes its reservation
+        required: true
+        type: string
+      approval_comment:
+        description: Explicit preservation approval comment ID on that Issue
+        required: true
+        type: string
+      approval_sha256:
+        description: SHA-256 of the complete approval comment body in UTF-8
+        required: true
+        type: string
+permissions:
+  contents: read
+  issues: read
+  actions: read
+  pull-requests: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: issue-preservation-read-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: /tools/issue_preservation.cjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Explain the unavailable production operation
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
+          This workflow only reads and checks an explicitly identified approval.
+          Production stopping and fencing evidence is not connected. A refusal,
+          including UNSUPPORTED_FENCING, is a failed check and permits no writes.
+          This workflow cannot save artifacts, create branches or Draft PRs,
+          transfer or release reservations, or authorize implementation.
+          SUMMARY
+      - name: Check approval and current reservation without writing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRESERVATION_ACTOR: ${{ github.actor }}
+          PRESERVATION_ISSUE: ${{ inputs.issue }}
+          PRESERVATION_APPROVAL_COMMENT: ${{ inputs.approval_comment }}
+          PRESERVATION_APPROVAL_SHA256: ${{ inputs.approval_sha256 }}
+        run: |
+          node tools/issue_preservation.cjs check \
+            --issue "$PRESERVATION_ISSUE" \
+            --approval-comment "$PRESERVATION_APPROVAL_COMMENT" \
+            --approval-sha256 "$PRESERVATION_APPROVAL_SHA256"
