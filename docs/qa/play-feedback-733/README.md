@@ -40,6 +40,8 @@ node remake/test/home_shisha.mjs
 node --experimental-vm-modules remake/test/daily_consistency.mjs
 ```
 
+検証結果: 専用8/8、冒頭保存/再開11/11、家練習の葉/中断9/9、解放演出4/4、初回ミント単1/1がPASS。スロット既存lifecycle＋導入10ケース、paid_action_growth、home_shisha、daily_consistencyもPASS。台詞lintはERROR0（ch1_mainの既存WARN6、remake_ch1はWARN0）、tidy dry-run変更0、agent docs・構文・diff・Git SafetyがPASS。
+
 専用テストをprogression-recovery CIへ接続。既存の家練習/施設表示テストは、台の所持・自主訪問済みをfixtureへ明示し、旧「？？？」ピン期待を非表示へ更新。
 
 実機Safari・公開版・全章通しは未実施。今回変更したfixtureを含む既存のDSパッキング/ゲーム全体レイアウト/店舗ロゴ/Issue439スイート全件も未実行。CI結果はPRで確認する。
