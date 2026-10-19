@@ -1,6 +1,6 @@
 # 第2章「才能の壁 — Hollow Crown」王冠の構図比較
 
-2026-10-13、Issue [#549](https://github.com/haseatsu114514-dot/shisha-game/issues/549)。**比較候補。正式採用・本編への組み込みは未決定。**
+2026-10-13、Issue [#549](https://github.com/haseatsu114514-dot/shisha-game/issues/549)。**案C（背景の王冠輪郭）採用決定。**
 
 オーナーは第2章に「Hollow Crown」を移す方向を選び、先行案の王冠の位置について「いまいち」「王冠をうまいこと盛り込んで何個か案欲しい」と依頼した。既存の大きなアゲハと小さなはじめ、桃色・紫・黒の背景を保ち、王冠の意味と置き方を変えた3案を保存する。
 
@@ -34,6 +34,6 @@
 
 ## 先行案と採用状態
 
-[`previous/floating-crown.png`](previous/floating-crown.png) は「王冠の位置を再検討」となった先行案。採用候補A〜Cと区別する。以前の正式採用ファイルや `adoption.json` は、この比較作業では更新していない。
+[`previous/floating-crown.png`](previous/floating-crown.png) は「王冠の位置を再検討」となった先行案。採用候補A〜Cと区別する。
 
-画像内の英題はすべて `Hollow Crown`。第3章の新しい日本語題・英題は未決定。物語と共同制作向け資料の更新方針は [`docs/plans/story_revision.md`](../../../docs/plans/story_revision.md) を参照。
+2026-10-19、オーナー指示により **C（背景の王冠輪郭 / `images/C-crown-background.png`）の採用が決定**。第3章題は『嘘つきたちの夜 / SMOKE AND MIRRORS』が決定した。本編設定・タイトルコールへの接続および物語・共同制作向け資料の更新方針は [`docs/plans/story_revision.md`](../../../docs/plans/story_revision.md) を参照。

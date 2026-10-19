@@ -1,20 +1,19 @@
 {
-  "status": "comparison_only",
-  "selected_variant": null,
+  "status": "variant_selected",
+  "selected_variant": "C",
   "runtime_integrated": false,
   "issue": 549,
   "created_utc": "2026-10-13",
   "base_commit": "ad74d6e40525d695b8ad00bf502074fa94611e6e",
-  "worker": "codex-crown-story-549-20261013",
-  "claim_run": 38425739051,
-  "validated_status_run": 38425990044,
+  "worker": "argon-handoff-549-20261019-cdd3",
+  "claim_run": 39266300323,
   "generator": "image_gen.imagegen",
   "pixel_postprocessing": "none",
   "chapter_title_direction": {
     "chapter": 2,
     "japanese": "才能の壁",
     "english": "Hollow Crown",
-    "chapter_3_title": "undecided"
+    "chapter_3_title": "嘘つきたちの夜 / SMOKE AND MIRRORS"
   },
   "references": [
     {
@@ -100,7 +99,7 @@
       "label": "背景の王冠の輪郭",
       "prompt": "prompts/C.txt",
       "qa_note": "Crown is a distressed background graphic, naturally occluded by characters.",
-      "adopted": false,
+      "adopted": true,
       "sha256": "15470e0a16d2b9b8ceb1fea49dac232a1db13d0cd96754551134b71cb493be16",
       "dimensions": [
         1672,
