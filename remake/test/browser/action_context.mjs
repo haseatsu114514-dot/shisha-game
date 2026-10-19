@@ -107,6 +107,8 @@ await suite('action-context', async check => {
     await run(`day${day}-${action}`, async page => {
       await setup(page, day);
       await page.evaluate(({ day, action }) => {
+        // This case starts after Naru's voluntary visit, which unlocks C.STATION (#733).
+        if (action === 'visit') C.core.state.flags._spot_guide_naru = true;
         if (action === 'baito' && day === 4) C.core.state.pendingInvite = {
           sender: 'sumi', event: '__sumi_baito__', day, slot: 1 };
         C.core.save(); C.core.load(); C.start();

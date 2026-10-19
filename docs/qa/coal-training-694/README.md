@@ -79,3 +79,19 @@ HEAD `94fa8fc70b743ae880f812ff48acb67a58646ca6` の `Chapter 1 eve choices and s
 `95fde17258f33a4517a5513b5e6741c945ee5af5` では前夜練習とscenesを含む21ジョブが成功し、最後のchromiumで `title_arts` の起動時画像数が0件となった。ローカル再現では既定のResource Timingバッファが250件で満杯（fullイベント8回）となり、読み込み済み画像が記録から欠落していた。起動前に2048件を確保すると全262リソースとタイトル画像1件を記録できた。テスト支援の任意initScriptで起動前に確保し、バッファ未満であることと画像が正確に1件であることをassertする。本番の起動・配信・画像選択には変更なし。
 
 修正後のtitle_arts全3ケースがPASS。CIで停止地点より後のvn_visual_readiness、tonari_opening、tutorial_transition、continue_readiness、continue_audio、continue_neon、continue_typing、steam_slash、steam_word_cut、steam_attack_growth、steam_refresh、steam_forecast、thermometer_alignment、dev_toolsの14スイートも既存ChromeとローカルキャッシュでPASS。store_logos、facility_map、map_reveals、shop_uiはソースが既存キャッシュになく、ローカル未実行（PASSには含めない）。新規ダウンロードなし。最新HEADのActionsでこれらを含む全体を確認する。
+
+## 最新mainとの地図ピン待ちの切り分け
+
+`ec7fe36`のCIが実際に実行した合成commitは`d636a1a`（main親`20ed21c`）だった。PRの記録上のbaseやローカル`97dba20`だけでは、実行コードの同一性を判断できない。前の調査での「ゲーム本体は同一」という判断を訂正する。最新main照合値は`8a5bb15`で、`20ed21c`以後はCLI/予約文書の変更のみ。
+
+オーナー許可の成果物`12194362245`を1回取得（14,410,179 bytes、SHA256は[ci-map-compat.json](ci-map-compat.json)）。DAY4/5の失敗画面ではC.STATIONを含む未解放施設のピンがなく、通信失敗とpage errorは各0件だった。mainの`bc9e131`（#733 / merged PR #734）は、自主来店後の`_spot_guide_*`を施設解放条件とし、未解放ピン自体を非表示にしている。面識だけのfixture・旧「？？？」ピン待ちが不整合の原因。main側でもselection/chromiumが失敗し、Open PR #683にも同じ境界が記録されていた。
+
+- `action_context`は訪問ケースだけ、自主来店済みのなるのguideフラグを明示。実SAVE/LOAD後の訪問、料金、日程、遭遇、夜イベントの既存assertionを保持。
+- `street_selection`は通常・画像欠落の来店済みfixtureへ同フラグを明示。未解放ではピンなしをassertし、街の入口でも入れないことを保持。さらに面識あり・guideなしのPC/タッチケースを追加した。閉店・臨時休業・既訪問・資金不足・ガイド・保存・行動/報酬の不変確認は削除しない。
+- `axe_bar_discovery`は噂前の非表示をassertし、実VNでの噂読了後に実ピンから入れる流れを保持。中断・状態変更・旧保存の検証も維持。
+
+上記3テストはOpen PR #683/#731/#736/#550の変更ファイルと重複なし。#683のHUD/占い/施設処理、#598/#636の担当コード、mainの解放仕様は変更しない。今回の対応はテストと検証記録のみ。
+
+CI合成commitの15テキストファイル（計611,780 bytes）はGit treeのblob SHAを照合し、検証サーバーだけで差し替えた。checkoutの本番ファイルは変更しない。街の不足ソース5点（約19KB）、施設画像1点（465,736 bytes）、街素材4点（計1,103,804 bytes）だけ限定取得しSHA照合。フルクローン・一括素材取得・依存追加なし。14.4MBのZIPや画像は再アップロードせず、小さな検証JSONを保存する。
+
+実ChromeでDAY4/5の訪問2件、axe_bar_discovery全12件、street_selection全35項目がPASS。未解放・旧保存・画像欠落の境界を含む。素材不足の途中実行は全体PASSに数えない。timeout延長や検証の省略はせず、旧ピン表示の期待値を現行仕様の非表示assertionへ置き換えた。最終HEADのCI結果はPRのChecksを参照する。
