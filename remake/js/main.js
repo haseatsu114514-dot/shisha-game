@@ -18,8 +18,13 @@ import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
   const stage = $("#stage");
-  const w = window.visualViewport?.width || window.innerWidth;
-  const h = window.visualViewport?.height || window.innerHeight;
+  const viewport = window.visualViewport;
+  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
+  // of the game fit so it does not also change --k (or cancel accessible zoom).
+  // Keep following the visible height when browser chrome / the keyboard moves.
+  const zoom = viewport?.scale || 1;
+  const w = viewport ? viewport.width * zoom : window.innerWidth;
+  const h = viewport ? viewport.height * zoom : window.innerHeight;
   stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
 }
 

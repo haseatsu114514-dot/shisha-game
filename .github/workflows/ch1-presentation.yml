@@ -55,6 +55,7 @@ jobs:
           node remake/test/browser/ch1_presentation.mjs
           node remake/test/browser/ch1_story_feedback.mjs
           node remake/test/browser/craft_materials.mjs
+          node remake/test/browser/first_brew.mjs
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2

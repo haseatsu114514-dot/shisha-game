@@ -1,4 +1,4 @@
-// 任意チュートリアル・無言の会釈・HUD回復・実際のスマホ弾幕操作を検証。
+// 必修チュートリアル・無言の会釈・HUD回復・実際のスマホ弾幕操作を検証。
 // サーバーを8123で起動後: node remake/test/gameplay_polish.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -20,17 +20,19 @@ try {
   const page = await open(desktop);
   await page.evaluate(() => {
     __remake.vnTest.turbo = true; __remake.craftTest.auto = 'good';
-    __remake.vnTest.choose = (id, choices) => id === 'remake_tutorial_offer' ? choices.indexOf('今は練習しない') : 0;
+    __remake.vnTest.choose = (id, choices) => id === 'remake_tutorial_offer' ? choices.indexOf('一台作る') : 0;
     window.benches = 0;
     new MutationObserver(() => { if (document.body.dataset.screen === 'bench') window.benches++; })
       .observe(document.body, { attributes: true, attributeFilter: ['data-screen'] });
   });
   await page.click('[data-test="title-new"]');
   await page.waitForFunction(() => __remake.state?.phase === 'daily');
-  const skipped = await page.evaluate(() => ({ skipped: __remake.state.flags._tutorial_skipped,
+  const lesson = await page.evaluate(() => ({ skipped: __remake.state.flags._tutorial_skipped,
     practiced: !!__remake.state.flags._tutorial_done, benches: window.benches }));
-  assert.deepEqual(skipped, { skipped: true, practiced: false, benches: 0 });
-  console.log('[polish] PASS: skipping the offered lesson reaches daily life without opening a craft bench');
+  assert.equal(lesson.skipped, undefined);
+  assert.equal(lesson.practiced, true);
+  assert(lesson.benches > 0);
+  console.log('[polish] PASS: the required first brew completes before daily life');
   await page.reload(); await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => {
     const core = await import('./js/core/state.js'); core.newGame(); core.state.phase = 'daily';

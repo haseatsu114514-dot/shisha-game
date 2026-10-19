@@ -83,6 +83,15 @@ function windowArt(item, url, box, dimensions, size, kind, fallback) {
   image.src = url; // Attach the error listener before starting the request.
   return root;
 }
+/** 制作の葉選びも、ショップで採用済みの商品パッケージを使う。未収録・配信失敗は文字へ。 */
+export function flavorPackageArt(id, size = 54) {
+  const item = { id };
+  const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
+    el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
+  ]);
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id];
+  return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
+}
 function productArt(item, flavor, size = 66) {
   const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
     el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
@@ -147,6 +156,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
+    const firstErrand = errand === "mint" && expense && expenseFlag === "_errand_mint_expensed" && !session.flags._errand_shop_done;
     setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
@@ -159,6 +169,22 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
     const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
+    let refusedAt = -Infinity;
+    const refuseOtherPurchase = () => {
+      const now = performance.now();
+      if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
+      refusedAt = now;
+      SE.error();
+      toast("スミ「今日は頼んだミントだけだ。ほかの買い物は、買い出しが終わってからにしろ」", { kind: "warn" });
+    };
+    const pointTo = (button, active) => {
+      if (firstErrand) {
+        button.dataset.errandTarget = String(active);
+        button.style.outline = active ? "3px solid #84569d" : "";
+        button.style.outlineOffset = active ? "2px" : "";
+      }
+      return button;
+    };
     const lookup = (id) => SHOP_FLAVORS.includes(id) ? { item: DB.flavorById[id], flavor: true } : { item: DB.equipById[id], flavor: false };
     const order = () => {
       const rows = [];
@@ -173,6 +199,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     };
     const change = (id, delta) => {
       if (!live()) return;
+      if (firstErrand && delta > 0 && id !== "mint") { refuseOtherPurchase(); return; }
       const { item, flavor } = lookup(id);
       if (!item || !flavor && (!forSale(item) || state.owned.includes(id))) return;
       const n = Math.max(0, Math.min(flavor ? 99 : 1, (cart.get(id) || 0) + delta));
@@ -184,7 +211,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       return el("div.shop-quantity", [
         el("button.shop-step", { text: "−", disabled: !n, "aria-label": `${name}を1つ減らす`, dataset: { test: `minus-${item.id}` }, onclick: () => change(item.id, -1) }),
         el("output", { text: n, "aria-label": `${name}の購入数`, dataset: { test: `quantity-${item.id}` } }),
-        el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+        pointTo(el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+          item.id === "mint" && !n && flavorStock("mint") < minStock),
       ]);
     };
     const detail = (item, flavor) => {
@@ -252,10 +280,24 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         const done = flavorStock(errand) >= minStock;
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
+        if (firstErrand) {
+          const step = done ? "leave" : count ? "purchase" : tab !== "flavor" ? "return-tab"
+            : category !== "all" && category !== DB.flavorById.mint.category ? "return-filter" : "select";
+          errandBox.dataset.guideStep = step;
+          errandBox.textContent = {
+            select: `① ミントの「＋」を押す → ② 下の「購入する」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
+            purchase: "② ↓ 下の「購入する」を押して、ミントの仕入れを確定しよう",
+            leave: "③ ←「店を出る」を押して、スミさんのところへ戻ろう",
+            "return-tab": "①「フレーバー」に戻り、ミントを選ぼう。今日はミントだけ仕入れる",
+            "return-filter": "①「すべて」か「清涼」に戻り、ミントの「＋」を押そう",
+          }[step];
+        }
       }
-      tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.tab === tab); b.setAttribute("aria-pressed", String(b.dataset.tab === tab)); });
+      tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.tab === tab); b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
+        pointTo(b, errandBox?.dataset.guideStep === "return-tab" && b.dataset.tab === "flavor"); });
       filters.hidden = tab !== "flavor";
-      filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category)); });
+      filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
+        pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
       body.replaceChildren(...(tab === "flavor" ? SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)).map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(forSale).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
@@ -265,6 +307,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       checkout.disabled = !count || total > state.money;
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
+      pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
+      pointTo(leaveButton, errandBox?.dataset.guideStep === "leave");
       if (focusTest) {
         const button = body.querySelector(`[data-test="${focusTest}"]`);
         if (button && !button.disabled) button.focus({ preventScroll: true });
@@ -274,6 +318,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (!live() || confirming) return;
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
+      if (firstErrand && rows.some(r => !r.flavor || r.item.id !== "mint")) { refuseOtherPurchase(); return; }
       if (state.money < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);
@@ -318,12 +363,19 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       filters.append(el("button.shop-filter", { text: label, dataset: { category: id }, onclick: () => { if (!live()) return; category = id; body.scrollTop = 0; SE.click(); render(); } }));
     }
     filters.append(el("span", { text: `1箱 ${FLAVOR_BOX_GRAMS}g` }));
+    const leaveButton = el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave });
     const root = showScreen("shop", el("section.shop.shop-paper", { "aria-label": "Dr.fookah ショップ" }, [
       shopHeader("1F ショップ", money), errandBox, tabs, filters, body,
-      el("footer.shop-foot", [el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave }), summary, checkout]),
+      el("footer.shop-foot", [leaveButton, summary, checkout]),
     ]));
     // 過去の画面のイベントが、新しくロードしたセーブや閉店後の状態へ届かないようにする。
-    root.addEventListener("click", (event) => { if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+    root.addEventListener("click", (event) => {
+      if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+      // くじの表示・既存担当のdraw処理はそのまま、初回だけ購入入力を手前で断る。
+      if (firstErrand && event.target.closest?.(".kuji-row button")) {
+        event.preventDefault(); event.stopImmediatePropagation(); refuseOtherPurchase();
+      }
+    }, true);
     render();
   });
 }

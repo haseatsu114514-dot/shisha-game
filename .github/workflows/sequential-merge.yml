@@ -1,0 +1,73 @@
+name: Sequential merge read-only preflight
+
+on:
+  pull_request:
+    paths:
+      - 'tools/sequential_merge/**'
+      - 'docs/sequential_merge.md'
+      - '.github/workflows/sequential-merge.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/sequential_merge/**'
+      - 'docs/sequential_merge.md'
+      - '.github/workflows/sequential-merge.yml'
+  workflow_dispatch:
+    inputs:
+      pull_request:
+        description: 'PR number to inspect; read-only, execution disabled'
+        required: true
+        type: string
+
+# Deliberately no write scopes or extra read scopes. Unavailable evidence blocks.
+permissions:
+  contents: read
+
+concurrency:
+  group: sequential-merge-read-only-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            tools/sequential_merge
+            .github/workflows/sequential-merge.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute actual evaluator, collector and offline sequence fixtures
+        run: node --test tools/sequential_merge/test.mjs
+
+  dry-run:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Dispatch SHA is main code, never the candidate PR checkout.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: tools/sequential_merge
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Collect evidence and report blockers without repository writes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {pathToFileURL} = require('node:url');
+            const {resolve} = require('node:path');
+            const moduleURL = pathToFileURL(resolve('tools/sequential_merge/dry-run.mjs')).href;
+            const {dryRun} = await import(moduleURL);
+            await dryRun({github, context, core});

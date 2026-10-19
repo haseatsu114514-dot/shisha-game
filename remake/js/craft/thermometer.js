@@ -4,7 +4,7 @@
 // 一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶（TH32〜TH35）。
 import { el } from "../core/util.js";
 import { DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
-import { makingUrl } from "../core/data.js";
+import { DB, makingUrl } from "../core/data.js";
 import { artImg } from "./art.js";
 
 const FLAME = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.2 1c.6 2.6 3.8 4.1 3.8 7.6A4 4 0 0 1 4 8.9c0-1.7.8-2.9 1.9-3.8-.1 1.6.6 2.6 1.6 2.8C7 6 7.3 3.3 8.2 1Z"/></svg>`;
@@ -36,10 +36,20 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
   const frameWidth = width;
+  const skin = framed ? artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }) : null;
+  const frameBox = DB.manifest.makingBox?.["ui_temperature_frame.png"];
+  if (skin && frameBox) {
+    // 同じbboxの切り取りを比率で指定し、DSの短い管にも枠を追従させる。
+    const [l, t, r, b] = frameBox, w = r - l, h = b - t;
+    Object.assign(skin.style, { height: "100%", backgroundSize: `${100 / w}% ${100 / h}%`,
+      backgroundPosition: `${w < 1 ? l / (1 - w) * 100 : 0}% ${h < 1 ? t / (1 - h) * 100 : 0}%` });
+  }
   const housing = framed ? el("div.thermo-housing", { style: { "--thermo-width": `${frameWidth}px` } }, [
-    tube, artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }),
+    tube, skin,
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${bandPreview ? ".mix-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
+    // 初回レッスンには出さない。再表示の解放条件（日付・好感度等）は未指定。
+    hidden: cs?.mode === "tutorial",
     role: bandPreview ? "img" : "meter", "aria-label": bandPreview ? "配合の適温・最適温" : "煙の温度",
     "aria-valuemin": bandPreview ? null : "0", "aria-valuemax": bandPreview ? null : "1", dataset: { test: bandPreview ? "mix-temperature" : compact ? "steam-temperature" : "pull-temperature" },
     style: { "--thermo-inset": framed ? "10%" : "0%", "--thermo-span": framed ? `${frameWidth}px` : "44px" },
@@ -61,7 +71,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     heat.style.bottom = pct(bands.ideal[1]);
     root.style.setProperty("--thermo-gradient", `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})`);
     Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1] });
-    if (bandPreview) root.setAttribute("aria-label", `配合の温度帯：緑の適温 ${formatTemperatureRange(bands.ideal)}、虹の最適温 ${formatTemperatureRange(bands.optimal)}`);
+    if (bandPreview) root.setAttribute("aria-label", "配合の温度帯：緑が適温、虹色が最適温");
     return bands;
   };
   updateBands();
@@ -105,8 +115,21 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
 
 export const formatTemperatureRange = (band) => `${(band[0] * 100).toFixed(1)}〜${(band[1] * 100).toFixed(1)}%`;
 
-/** 配合中は現在温度を持たない横ゲージ。判定と同じ帯を色・境界線・文字で示す。 */
-export function buildMixTemperatureGauge(cs) {
+/** 配合中は現在温度を持たない。左プレビューは共通の縦管、既存の横ゲージも維持する。 */
+export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {
+  if (vertical) {
+    const meter = buildThermometer({ cs, bandPreview: true, height: 360, width: 64 });
+    return { root: meter.root, updateBands() {
+      meter.updateBands();
+      const bands = temperatureBands(cs);
+      meter.root.dataset.selected = String(bands.selected);
+      for (const node of meter.root.querySelectorAll(".thermo-zone, .thermo-optimal, .thermo-danger, .thermo-heat")) node.hidden = !bands.selected;
+      meter.root.setAttribute("aria-label", bands.selected
+        ? "合成温度帯：緑が適温、虹色が最適温。線は中心"
+        : "フレーバー未選択。葉を加えると合成温度帯を表示");
+      return bands;
+    } };
+  }
   const ideal = el("i.mix-thermal-ideal", { title: "適温" });
   const optimal = el("i.mix-thermal-optimal", { title: "最適温" });
   const center = el("i.mix-thermal-center", { title: "適温中心" });
@@ -126,7 +149,7 @@ export function buildMixTemperatureGauge(cs) {
     scale.style.background = bands.selected
       ? `linear-gradient(90deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})` : "";
     root.setAttribute("aria-label", bands.selected
-      ? `合成温度帯：適温 ${formatTemperatureRange(bands.ideal)}、最適温 ${formatTemperatureRange(bands.optimal)}。線は中心`
+      ? "合成温度帯：緑が適温、虹色が最適温。線は中心"
       : "フレーバー未選択。葉を加えると合成温度帯を表示");
     return bands;
   } };

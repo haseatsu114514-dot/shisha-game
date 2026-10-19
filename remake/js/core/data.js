@@ -47,6 +47,7 @@ const DIALOGUE_FILES = [
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
   "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃

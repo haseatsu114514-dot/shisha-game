@@ -1,8 +1,34 @@
 .facility-icon { display: inline-grid; place-items: center; flex: none; vertical-align: middle; }
 .facility-icon-crop { display: block; position: relative; overflow: hidden; }
 .facility-icon-crop > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
+.facility-icon.sticker .facility-icon-crop { filter: url(#facility-sticker-outline) drop-shadow(0 3px 6px rgb(0 0 0 / 45%)); }
 
-/* Dedicated preview only. No rules target the game map. */
+/* The 108px shield centers its artwork on the background landmark, independently of labels/status. */
+.map .spot-pin.facility-location { transform: translate(-50%, -54px); }
+body.game-ds .map .spot-pin.facility-location { transform: none; }
+
+/* Only revealed facilities use the alpha-contour sticker; existing logos/locked pins keep their skin. */
+.map .spot-pin.facility-location .shield { width: 120px; min-width: 120px; min-height: 108px; padding: 6px 12px; }
+.map .spot-pin.facility-pin .shield { background: none; border: 0; border-image: none; box-shadow: none; }
+.map .spot-pin.facility-pin .shield::before, .map .spot-pin.facility-pin .shield::after { content: none; }
+.map .spot-pin.facility-location .ico { width: 96px; height: 96px; }
+.map .spot-pin.facility-pin.sel .facility-icon { filter: drop-shadow(0 0 5px #ffe9a8); }
+body.game-ds .map .spot-pin.facility-location .shield { width: 64px; min-width: 64px; min-height: 64px; padding: 4px; }
+body.game-ds .map .spot-pin.facility-location .ico { width: 56px; height: 56px; }
+body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .5833333333; }
+
+/* Per-art alpha-contour anchors keep marks touching the illustration, not transparent corners. */
+.map .spot-pin.facility-pin .evt-badge {
+  top: calc(6px + (96px - var(--facility-art-height)) / 2 + var(--facility-badge-y) - 13.5px);
+  left: calc(12px + (96px - var(--facility-art-width)) / 2 + var(--facility-badge-x) - 2.5px);
+  right: auto;
+}
+body.game-ds .map .spot-pin.facility-pin .evt-badge {
+  top: calc(4px + (56px - var(--facility-art-height) * .5833333333) / 2 + var(--facility-badge-y) * .5833333333 - 13.5px);
+  left: calc(4px + (56px - var(--facility-art-width) * .5833333333) / 2 + var(--facility-badge-x) * .5833333333 - 2.5px);
+}
+
+/* Standalone comparison using the same artwork as the map. */
 .facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 system-ui, sans-serif; }
 .facility-preview main { max-width: 1000px; margin: auto; }
 .facility-preview h1 { font-size: 24px; }

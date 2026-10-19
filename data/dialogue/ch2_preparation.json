@@ -482,7 +482,7 @@
         },
         {
           "speaker": "kumicho",
-          "face": "smile",
+          "face": "normal",
           "text": "おう、小僧。今日は何が引っかかってる"
         },
         {
@@ -532,7 +532,7 @@
         },
         {
           "speaker": "kumicho",
-          "face": "smile",
+          "face": "normal",
           "text": "ああ。お前の手に合う場所を探せばいい"
         }
       ]
@@ -557,7 +557,7 @@
         },
         {
           "speaker": "rei",
-          "face": "serious",
+          "face": "normal",
           "text": "……音が、すぐには重ならない"
         },
         {
@@ -567,17 +567,17 @@
         },
         {
           "speaker": "rei",
-          "face": "serious",
+          "face": "normal",
           "text": "ひとつ鳴って、消えかけたところに、次の音が来る"
         },
         {
           "speaker": "rei",
-          "face": "serious",
+          "face": "normal",
           "text": "その間が……いい。静かになっても、まだ続きがある感じがして"
         },
         {
           "speaker": "rei",
-          "face": "serious",
+          "face": "normal",
           "text": "だから、急いで次の曲にしない。……少し、そのままにしてる"
         },
         {

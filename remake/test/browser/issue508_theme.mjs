@@ -37,7 +37,7 @@ const scenarios = [
   ...[false, true].map(practice => ({ id: "ch1_tournament_arrival", practice, legacy: true })),
   ...[0, 1, 2].flatMap(choice => [false, true].map(met => ({ id: "ch1_tournament_after", choice, met }))),
   ...[false, true].map(art => ({ id: "ch1_tsumugi_sketch", art })),
-  { id: "ch1_salaryman_regular" }, { id: "ch1_salaryman_change" },
+  ...[0, 1].map(choice => ({ id: "ch1_salaryman_regular", choice })), { id: "ch1_salaryman_change" },
 ];
 async function advanceTo(page, text, touch) {
   await page.waitForFunction(() => document.querySelector("#vn.active") && T.vn.backlog().length > 0,
@@ -91,7 +91,17 @@ await suite("issue508-theme", async checkAll => {
         const current = structuredClone(T.core.state), lines = T.lines();
         return { before, current, lines };
       }, { opts, previous: baseline.scenes[opts.id] });
-      if (opts.id === "ch1_tsumugi_work_in_progress") {
+      if (opts.id === "ch1_salaryman_regular") {
+        // #452 adds only the actual service answer and its immediate save.
+        const { savedAt: beforeAt, ...beforeGame } = result.before;
+        const { savedAt: currentAt, ...currentGame } = result.current;
+        assert(Number.isFinite(currentAt));
+        assert.equal(currentGame.flags._salaryman_service_order, opts.choice === 0);
+        assert.equal(currentGame.flags._salaryman_service_water, opts.choice === 1);
+        delete currentGame.flags._salaryman_service_order;
+        delete currentGame.flags._salaryman_service_water;
+        assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
+      } else if (opts.id === "ch1_tsumugi_work_in_progress") {
         // #452 saves the actual answer immediately. Compare every game field,
         // and check the refreshed save timestamp separately.
         const { savedAt: beforeAt, ...beforeGame } = result.before;
@@ -154,14 +164,24 @@ await suite("issue508-theme", async checkAll => {
     }, options);
     await check(`${label}-four-portrait-scenes-and-skip`, async page => {
       await prepare(page);
-      await page.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.fresh();
+      await page.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_regular").then(() => { window.finished = true; }); });
       await advanceTo(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
       await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-regular.png` });
       const skip = page.getByRole("button", { name: "SKIP", exact: true });
       if (touch) await skip.tap(); else await skip.click();
+      const service = page.locator(".vn-choices button");
+      await service.first().waitFor();
+      await page.waitForTimeout(200);
+      assert.deepEqual(await service.allTextContents(), ["注文を先に聞く", "水を出して少し待つ"]);
+      assert.equal(await page.evaluate(() => window.finished), false, "SKIP passed an unanswered service choice");
+      assert.deepEqual(await page.evaluate(() => [T.core.state.flags._salaryman_service_order ?? null,
+        T.core.state.flags._salaryman_service_water ?? null]), [null, null]);
+      if (touch) await service.nth(1).tap(); else await service.first().click();
       await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
+      assert.deepEqual(await page.evaluate(() => [T.core.state.flags._salaryman_service_order,
+        T.core.state.flags._salaryman_service_water]), [!touch, touch]);
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
       await page.evaluate(() => { T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_change").then(() => { window.finished = true; }); });
@@ -203,7 +223,7 @@ await suite("issue508-theme", async checkAll => {
     await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", false);
     const saved = await page.evaluate(() => { T.core.saveToSlot("suien_remake_slot1"); return structuredClone(T.core.state); });
     assert.equal(!!saved.flags._ev_salaryman_change, false);
-    await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await prepare(page);
+    await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
     const result = await page.evaluate(async () => {
       T.core.loadFromSlot("suien_remake_slot1"); T.vn.vnTest.turbo = true;
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);

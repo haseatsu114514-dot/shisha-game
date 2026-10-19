@@ -10,24 +10,20 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ、時間があるなら一台、練習してくか？"
+          "text": "はじめ、あのお姉さんの一台を作るぞ。俺が横で見てる"
         },
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "俺が横で見てる。手順を確かめたいなら付き合うぞ"
+          "text": "配合から提供まで、一つずつ手順を確かめよう"
         },
         {
           "type": "choice",
           "id": "tutorial_offer",
           "choices": [
             {
-              "text": "練習していく",
+              "text": "一台作る",
               "next": "practice"
-            },
-            {
-              "text": "今は練習しない",
-              "next": "skip"
             }
           ]
         }
@@ -42,18 +38,6 @@
             "speaker": "hajime",
             "face": "smile",
             "text": "お願いします。最初から確認させてください"
-          }
-        ],
-        "skip": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "今日はこのまま、お客さんの方をやります"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "おう。練習したくなったら、店の作業台を使え"
           }
         ]
       }
@@ -880,7 +864,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "本番までの{daysLeft}日間、店も練習台も好きに使え"
+          "text": "本番までの{daysLeft}日間、手順を覚えておけ。台が用意できたら、家でも練習できる"
         },
         {
           "speaker": "sumi",
@@ -2326,7 +2310,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "１つずつ手を動かして覚えろ。tonariの作業台は、練習にも使っていい"
+          "text": "１つずつ手を動かして覚えろ。家での練習は、台が用意できてからだ"
         }
       ]
     },
@@ -2619,6 +2603,118 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "……ここまでだな。次は、温度と葉を見ながら一つずつ確かめよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_first_brew_order",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "じゃあ……今日は、サッパリした一台をお願いしても、いい？"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "ミントは……好き。ほかの香りは、きみが選んでくれたら……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かしこまりました。サッパリ系ですね。香りを選んで、お作りします"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店のレモン、オレンジ、ミントを使え。単体でも混ぜてもいい。まずはあの人の好みに応えてみろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_first_brew_assisted",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "配合は決まったな。今日は俺が横で、詰めと熱を一緒に確かめるぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "選んだ葉を器へ入れ、スミさんと手順を確かめながら仕上げた。サッパリした香りが、ふわりと立つ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この香りを、あの人に。どうだろう……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_first_brew_response",
+      "metadata": {},
+      "lines": [],
+      "branches": {
+        "lemon": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……レモン。きゅっとして、あとがすっきりする。こういうの、今吸いたかった……"
+          }
+        ],
+        "lemon_mint": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "レモンのあとに、ミントがすうっと来る……。うん、サッパリしてる。好き……"
+          }
+        ],
+        "orange": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……オレンジだ。優しい甘さなのに、あとが軽いね。サッパリしてて……落ち着く"
+          }
+        ],
+        "orange_mint": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……オレンジの香りと、ミント。甘さが残りすぎなくて、すっきりする……"
+          }
+        ],
+        "mint": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……ミント、しっかり感じる。口の中がすうっとして……うん。こういうの、好き"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_tutorial_retry",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──吸い重ねるうち、葉の香りが薄くなってしまった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸いすぎたな。回数を重ねるほど葉は消耗する。温度が合ったら、提供していいんだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉は詰め直してやる。吸い出しから、もう１回だ"
         }
       ]
     }

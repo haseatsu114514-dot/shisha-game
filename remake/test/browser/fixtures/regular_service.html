@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><base href="../../../">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0812">
+<title>水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<!-- 文字は同梱の1書体（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+<link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/axe-throw.css">
+<link rel="stylesheet" href="css/trpg.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<link rel="stylesheet" href="css/tonari-opening.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/title-ds.css">
+<link rel="stylesheet" href="css/chapter-preview.css">
+<link rel="stylesheet" href="css/ch2-preview.css">
+<link rel="stylesheet" href="css/ch2-tournament.css">
+<link rel="stylesheet" href="css/store-logos.css">
+<link rel="stylesheet" href="css/craft.css">
+<link rel="stylesheet" href="css/reel.css">
+<link rel="stylesheet" href="css/extras.css">
+<link rel="stylesheet" href="css/ui-art.css">
+<link rel="stylesheet" href="css/ui-inner.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/steam.css">
+<link rel="stylesheet" href="css/worker-scenes.css">
+<link rel="stylesheet" href="css/craft-header.css">
+<link rel="stylesheet" href="css/tournament.css">
+<link rel="stylesheet" href="css/motions.css">
+<link rel="stylesheet" href="css/motions/cheki.css">
+<link rel="stylesheet" href="css/motions/tarot.css">
+<link rel="stylesheet" href="css/motions/gift.css">
+<link rel="stylesheet" href="css/motions/shift.css">
+<link rel="stylesheet" href="css/motions/shark.css">
+<link rel="stylesheet" href="css/motions/sketch.css">
+<link rel="stylesheet" href="css/motions/door.css">
+<link rel="stylesheet" href="css/motions/dawn.css">
+<link rel="stylesheet" href="css/motions/garagara.css">
+<link rel="stylesheet" href="css/motions/chapter-title.css">
+<link rel="stylesheet" href="css/continue.css">
+<link rel="stylesheet" href="css/game-ds.css">
+</head>
+<body data-screen="boot"><div id="viewport"><div id="stage">
+<div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div><div id="fx"></div><div id="toasts"></div><div id="banners"></div><div id="wipe"><i></i><i></i><i></i><i></i><i></i></div><div id="modal"></div>
+</div></div><div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
+<script type="module">
+// Isolated real VN fixture: no title/map-wide asset warm-up and no mock game modules.
+import {loadAll} from './js/core/data.js';
+import {initLayers, FRAME_ART, imageReady} from './js/core/ui.js';
+import {loadConfig} from './js/core/state.js';
+import {initGameLayout} from './js/scenes/game-layout.js';
+function fit(){document.querySelector('#stage').style.setProperty('--k',String(Math.min(innerWidth/1280,innerHeight/720)));}
+fit();window.addEventListener('resize',fit);initLayers();initGameLayout();loadConfig();
+await Promise.all([loadAll(), ...['500','700','900'].map(w=>document.fonts.load(`${w} 20px "Suien Gothic"`,'水煙前線あA7')), ...FRAME_ART.map(u=>imageReady(u,3000))]);
+const ready=document.createElement('span');ready.dataset.test='vn-fixture-ready';ready.textContent='VN fixture ready';ready.style.position='absolute';ready.style.top='0';document.body.append(ready);
+</script></body></html>

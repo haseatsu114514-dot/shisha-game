@@ -194,6 +194,8 @@
 .mix-list { min-width: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
 .mix-list-caption { margin: 8px 0 2px; font-size: 16px; letter-spacing: .08em; color: #d3c2a8; }
 .flavor-row { display: flex; align-items: center; gap: 8px; padding: 12px; min-height: 76px; background: linear-gradient(120deg, #a2815520, #ffffff04); border: 1px solid #ae906c38; border-radius: 10px; }
+.fr-package { flex: none; grid-area: 1 / 1; width: 54px; height: 64px; display: grid; place-items: center; }
+.fr-package .shop-product-art { width: 54px; height: 64px; }
 .fr-swatch { flex: none; width: 28px; height: 38px; border-radius: 70% 18% 70% 18%; box-shadow: inset 0 -4px 8px #0006; transform: rotate(-20deg); }
 .fr-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .fr-name b { font-size: 16px; }
@@ -201,7 +203,8 @@
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
 .fr-name .fr-ratio { color: var(--accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.fr-name .fr-ratio:empty { display: none; }
+.fr-name .fr-ratio { min-height: 21px; }
+.fr-name .fr-ratio:empty { visibility: hidden; }
 .fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }
@@ -261,6 +264,8 @@
   touch-action: none;
 }
 .foil .foil-surface { position: absolute; inset: 0; border-radius: 50%; image-rendering: auto; pointer-events: none; }
+/* The silver top is above the crimped lower rim of the adopted foil image. */
+.foil-target-plane { position: absolute; inset: -3% 0 3%; pointer-events: none; }
 .foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed #29253266; pointer-events: none; }
 .foil-ring.cur { border: 1px solid #30263099; box-shadow: 0 0 0 1px #fff5; }
 .foil-markers, .foil-holes { position: absolute; inset: 0; pointer-events: none; }
@@ -1160,3 +1165,34 @@
 .pull-summary > .pull-count-box { flex: 1; min-width: 0; gap: 18px; }
 .pull-count-box .pull-pips { gap: 8px; }
 .pull-count-box .pull-pip { width: 18px; height: 18px; }
+
+/* #703: 作業絵は台詞の背後まで。台詞と工程表示を前景に重ねる。 */
+.bench-left { gap: 0; }
+.bench-left .bench-worker { position: relative; }
+.bench-left .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
+.bench-left:has(.bench-audience) .bench-worker-name { bottom: 128px; }
+.bench-left .bench-audience { position: absolute; left: 11px; right: 11px; bottom: 11px; margin: 0; z-index: 2; background: linear-gradient(145deg, #1b1522ee, #100c18ed); }
+.bench-left .bench-audience .audience-note { max-height: 100%; overflow-y: auto; }
+/* 配合も吸い出しと同じ左位置・同じ縦管。操作欄のfooterには置かない。 */
+.mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 454px; padding: 34px 12px 60px; display: block; z-index: 3; }
+.mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
+.mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
+.mix-temperature-preview > .thermo { height: 100%; }
+.mix-temperature-legend { position: absolute; top: calc(100% - 51px); left: 4px; right: 4px; justify-content: center; font-size: 11px; line-height: 1.2; gap: 2px 5px; }
+.mix-temperature-preview > small { position: absolute; top: calc(100% - 19px); left: 2px; width: 84px; text-align: center; font-size: 8px; }
+.mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
+.thermo[hidden], .mix-temperature-preview[hidden] { display: none; }
+/* DSの上画面でも両工程を同じ位置へ。既存の下画面スクロールから独立させる。 */
+body.game-ds .bench[data-step] .pull > .thermo { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 96px); top: calc(64px + var(--ds-vy) + 90px); height: max(80px, calc(var(--ds-vh) - 302px)); }
+body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 108px); top: calc(64px + var(--ds-vy) + 56px); height: max(134px, calc(var(--ds-vh) - 248px)); padding-bottom: 20px; }
+.mix-footer { grid-template-columns: 180px minmax(240px, 1fr); }
+
+.bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
+.mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+
+body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
+body.game-ds .mix-temperature-preview > small { display: none; }
+body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4); transform-origin: 50% 100%; }
+@media (min-height: 600px) and (min-width: 761px) {
+  body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
+}

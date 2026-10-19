@@ -33,7 +33,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 39ファイルを読み、本文の受信中も同時接続が4本を超えない。
+// 大会制作会話を含む40ファイルを読み、本文の受信中も同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -49,11 +49,11 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 39);
-assert.equal(new Set(requests).size, 39);
+assert.equal(requests.length, 40);
+assert.equal(new Set(requests).size, 40);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 39);
+assert.equal(progress.length, 40);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -71,6 +71,8 @@ assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 40);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
+assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "pakki");
+assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.DB.characters.maki.display_name, "斧崎マキ");
 assert.equal(all.DB.characters.sai.display_name, "六角サイ");
 assert(all.DB.dialogues.venue_maki_greet.lines[0].text);
@@ -130,4 +132,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 39 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 40 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

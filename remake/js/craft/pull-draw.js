@@ -7,7 +7,7 @@ export function drawProgress(elapsed, duration) {
   return p * p * (3 - 2 * p);
 }
 
-export function animateDraw({ duration, update, active = () => true }) {
+export function animateDraw({ duration, update, active = () => true, paused = () => false }) {
   return new Promise((resolve) => {
     let elapsed = 0, last = performance.now();
     // 描画が重くても短い一口を長引かせない。タブを隠した時間は数えない。
@@ -16,7 +16,7 @@ export function animateDraw({ duration, update, active = () => true }) {
     const finish = (complete) => { document.removeEventListener("visibilitychange", visibility); resolve(complete); };
     const frame = (now) => {
       if (!active()) { finish(false); return; }
-      if (!document.hidden) elapsed += Math.max(0, now - last);
+      if (!document.hidden && !paused()) elapsed += Math.max(0, now - last);
       last = now;
       update(drawProgress(elapsed, duration), elapsed / duration);
       if (elapsed >= duration || !active()) finish(elapsed >= duration);

@@ -34,6 +34,11 @@ await suite("map-guests", async check => {
       assert.deepEqual(snapshot.one, [location]); assert(snapshot.unchanged); assert.equal(snapshot.after, location);
       await page.locator(`[data-spot="${location}"]`).click();
       await page.locator('[data-test="map-go"]').waitFor();
+      const anchored = await page.locator('.pin-people').evaluateAll(rows => document.body.classList.contains('game-ds') || rows.every(row => {
+        const face = row.firstElementChild.getBoundingClientRect(), shield = row.parentElement.querySelector('.shield').getBoundingClientRect();
+        return Math.abs(face.left - shield.left) <= 10 && Math.abs(face.bottom - shield.top) <= 14;
+      }));
+      assert(anchored, 'Faces must stay at the shield left edge regardless of caption width');
       await assertFits(page, '.pin-people');
       await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();
       await assertFits(page, '[data-test="map-go"]');
@@ -69,6 +74,11 @@ await suite("map-guests", async check => {
         return boxes.every((a,i)=>boxes.slice(i+1).every(b=>Math.min(a.right,b.right)<=Math.max(a.left,b.left)+1 || Math.min(a.bottom,b.bottom)<=Math.max(a.top,b.top)+1));
       });
       assert(clear, "Guest faces and event badge must not overlap");
+      const anchored = await page.locator('.pin-people').evaluateAll(rows => document.body.classList.contains('game-ds') || rows.every(row => {
+        const face = row.firstElementChild.getBoundingClientRect(), shield = row.parentElement.querySelector('.shield').getBoundingClientRect();
+        return Math.abs(face.left - shield.left) <= 10 && Math.abs(face.bottom - shield.top) <= 14;
+      }));
+      assert(anchored, 'Faces must stay at the shield left edge regardless of caption width');
       await assertFits(page, '.pin-people');
       await page.locator('[data-test="pin-tonari"]').click();
       await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();

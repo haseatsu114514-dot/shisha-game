@@ -344,9 +344,14 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
+/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は同じ行動の終了時） */
 export function onAction({ spent = 0 } = {}) {
   if (!(spent > 0) || !state?.reel?.installed || state.phase !== "daily") { statBuffer = {}; return; }
+  commitSpinSeries();
+}
+
+// 行動後と初回体験で、同じ抽選・報酬・記録を一度だけ確定する。
+function commitSpinSeries() {
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
   reel.lastChapter = state.chapter;
@@ -527,6 +532,7 @@ function lampOff() {
  */
 export function mountReel(host, { delay = 500 } = {}) {
   if (!state?.reel?.installed) return Promise.resolve();
+  const owner = state;
   // 演出中は、停止処理が参照している同じリールを新しいマップへ移す。
   // 筐体だけ作り直すと、古いリールが止まり、新しい方には前回の出目が残る。
   if (busy) {
@@ -548,7 +554,8 @@ export function mountReel(host, { delay = 500 } = {}) {
   busy = true; // 初回説明の待機中も、再マウントで別の演出を始めない。
   current = (async () => {
     try {
-      if (!state.reel.introDone) await showIntro();
+      if (!owner.reel.introDone && !await showIntro()) return;
+      if (state !== owner) return;
       if (notice) await presentSettingChange();
       // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
       const items = queue.splice(0, queue.length);
@@ -570,11 +577,13 @@ export function mountReel(host, { delay = 500 } = {}) {
 }
 let current = Promise.resolve();
 
-/** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
-export async function presentNow() {
+/** 行動のあと: その場でスロットを見せてから次の場面へ進む */
+export async function presentNow({ label = "今夜のスロット" } = {}) {
+  const owner = state;
   await current; // 昼の分の演出が途中なら、終わってから今夜の分を回す
+  if (state !== owner) return;
   if (!state?.reel?.installed || !state.reel.pending?.length) return;
-  const host = el("div.reel-night", [el("div.rn-label", { text: "今夜のスロット" })]);
+  const host = el("div.reel-night", [el("div.rn-label", { text: label })]);
   layers.fx.append(host);
   requestAnimationFrame(() => host.classList.add("show"));
   // フェードインした時点で今夜の回転を始めておく。前回の停止出目を見せて待たない。
@@ -1078,15 +1087,37 @@ const INTRO_LINES = [
   "外れても大丈夫。回したぶんだけ、がんばりがちゃーんと積もるよ。ボクの顔をタップすると記録ノートも見られるからね！",
 ];
 // 初回のみ: パッキーの説明のあとに、遊び方カードを1枚（システムの説明）。ノートの遊び方で読み返せる
-/** 会場で参加登録した時にアプリを導入する。既存の回転・報酬は保持する。 */
-export async function installReel() {
-  state.reel.installed = true;
-  state.flags.pakki_app_installed = true; // 観音堂のアダムの会話（設定の匂わせ）の条件
-  save();
-  if (!state.reel.introDone) await showIntro();
+let installation = null;
+/** 会場で導入し、説明直後に最初の一回を体験する。再訪・再開では増やさない。 */
+export function installReel() {
+  const owner = state;
+  if (installation?.owner === owner) return installation.task;
+  const run = { owner };
+  installation = run;
+  run.task = (async () => {
+    const reel = owner.reel;
+    // 導入済み旧セーブから体験を推測しない。新規導入の途中だけ再開する。
+    if (!reel.installed && !reel.introDone && !reel.count && !reel.pending.length) {
+      owner.flags._pakki_first_spin_pending = true;
+    }
+    reel.installed = true;
+    owner.flags.pakki_app_installed = true;
+    save();
+    if (!reel.introDone && !await showIntro()) return;
+    if (state !== owner || !owner.flags._pakki_first_spin_pending) return;
+    delete owner.flags._pakki_first_spin_pending;
+    // 既に行動の回転がある場合はそれを見せ、体験分を追加抽選しない。
+    if (!reel.count && !reel.pending.length) commitSpinSeries();
+    save(); // 結果・報酬・体験済みを、演出に入る前に同じ保存へ。
+    await presentNow({ label: "はじめてのスロット" });
+  })().finally(() => {
+    if (installation === run) installation = null;
+  });
+  return run.task;
 }
 
 function showIntro() {
+  const owner = state;
   const pages = [...INTRO_LINES.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
     let i = 0;
@@ -1099,6 +1130,20 @@ function showIntro() {
       el("span.ri-next", { text: "▼ タップ" }),
     ]);
     const box = el("div.reel-intro", { role: "dialog", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" } }, [panel]);
+    const close = (read) => {
+      unsubscribe();
+      if (box.parentElement === layers.modal) {
+        box.remove();
+        if (!layers.modal.childElementCount) layers.modal.classList.remove("show");
+      }
+      if (read) {
+        owner.reel.introDone = true;
+        owner.reel.settingGuideDone = true;
+        save();
+      }
+      resolve(read);
+    };
+    const unsubscribe = on("hud", () => { if (state !== owner) close(false); });
     // 設定の説明はパッキーの台詞ではなくシステムの説明として見せる
     const render = () => {
       const page = pages[i];
@@ -1113,15 +1158,11 @@ function showIntro() {
     layers.modal.classList.add("show");
     SE.phone();
     box.onclick = () => {
+      if (state !== owner) { close(false); return; }
       i += 1;
       if (i === 2) SE.puka();
       if (i < pages.length) { render(); SE.click(); return; }
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      state.reel.introDone = true;
-      state.reel.settingGuideDone = true;
-      save();
-      resolve();
+      close(true);
     };
   });
 }

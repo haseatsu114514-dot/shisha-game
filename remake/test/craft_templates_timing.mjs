@@ -48,6 +48,15 @@ try {
     });
     await page.waitForSelector('[data-test="hole-start"]');
     assert.equal(await page.locator(".countdown, .foil-cursor").count(), 0);
+    assert.equal(await page.locator('.ht-option').count(), 1);
+    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12・内周0");
+    await capture(page, `templates-initial-${name}`);
+    // A serialized old session retains its previously available layouts.
+    await page.evaluate(() => {
+      const saved = JSON.stringify({...cs, availableHoleTemplateIds:['outer24','outer12-middle12'], holeTemplateId:'outer24'});
+      window.cs = JSON.parse(saved); window.holesRun = T.holes.runHoles(cs);
+    });
+    await page.locator('[data-test="hole-template-outer24"]').waitFor();
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="outer"]').count(), 24);
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="middle"]').count(), 0);
     assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周24・中周0・内周0");

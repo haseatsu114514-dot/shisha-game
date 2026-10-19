@@ -106,6 +106,7 @@ try {
         const core = await import("./js/core/state.js"), s = core.newState();
         Object.assign(s, {phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
         Object.assign(s.flags, {_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds678:"isolated"});
+        s.owned.push("home_rig_set");
         s.flavorStock = {double_apple:20,mint:10};
         localStorage.setItem(core.SAVE_KEY,JSON.stringify(s)); localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         return s;
@@ -127,7 +128,7 @@ try {
       assert.equal(await p.locator(".pack-choice:visible").count(), 3);
       const initial = await snap("initial"); horizontal(initial);
       // Every option must receive actual input and update vessel, caption and pressed state.
-      for (const [value,label] of [["fluffy","ふんわり"],["firm","かため"],["normal","ノーマル"]]) {
+      for (const [value,label] of [["fluffy","ふんわり"],["firm","デンスパック"],["normal","ノーマル"]]) {
         await hit(p,`opt-${value}`,device.touch);
         assert.equal(await b(p,`opt-${value}`).getAttribute("aria-pressed"),"true");
         assert.equal(await p.locator('.pack-choice[aria-pressed="true"]').count(),1);

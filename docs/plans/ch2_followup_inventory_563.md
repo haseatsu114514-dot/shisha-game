@@ -1,6 +1,21 @@
 # Issue #563 — 第2章3店の素材・個別交流 棚卸し
 
-## 2026-10-16の採用・接続追補
+## 2026-10-18の再棚卸し（現行状態）
+
+照合main: `7d63fbdc5ce75e57c3cca438476452b7238bd12e`。旧棚卸しは[PR #567](https://github.com/haseatsu114514-dot/shisha-game/pull/567)で保存・統合済み、採用3会話の接続は[PR #603](https://github.com/haseatsu114514-dot/shisha-game/pull/603)で統合済み（merge `4834e9eccb54d7aff466cac03bf784b5227e5735`）。直下の「後続Draftを準備」と、以下の基準main時点の不足・候補は履歴として読む。現在の接続を未実装・承認待ちへ戻さない。
+
+| 対象 | 現行の既存／不足 | 候補・承認待ち・依存 |
+| --- | --- | --- |
+| 3店の昼夜・場面・営業時間 | MELTY PUFF／神崎煙草店／零-ZERO-のROOMSは各`bg_ch2_<id>_entry.webp`を継続。PREPARATION_SPOTSにopenSlotsはなく、openingStatusは昼夜とも許可。実時刻や無条件入店を意味しない | 夜専用室内・営業中器具の採用差分は未接続。夜背景は保留。店ごとの必要場面・照明・器具状態の候補は下記の旧棚卸しを参照し、採用済みへ昇格させない |
+| 神崎smile／REI serious | 採用済みだが現行manifestの両者はnormalのみ。表情の指示と画像の実在・表示完了を区別 | 既存の採用原画は正規転送403により本環境に未取得。bytes・寸法・alpha・本人性・足元・実会話表示の検証が依存。取得障害は[素材記録](../../asset_sources/ch2-followups-issue563/README.md)と[直近引き継ぎ](https://github.com/haseatsu114514-dot/shisha-game/issues/563#issuecomment-6251858868)を参照。採用を再承認待ちへ戻さない |
+| 個別会話続編 | `remake_ch2_ageha_followup` 14行／`remake_ch2_kumicho_followup` 12行／`remake_ch2_rei_followup` 14行が存在。chat→followup（一度）へ接続済み。神崎／REIは以後repeat | あげははfollowup後に#626の店に通う回を選ぶ分岐も現行に存在するため、「3人とも直ちにrepeatだけ」と要約しない。既存の別会話を再実装しない。#564の全体添削は対象外 |
+| 保存・報酬 | 新続編読了は`flags._ch2_followup_done`。旧訪問回数等から推定せず、正常終端とstate所有者一致後に費用・体力・読了を確定する現行コードを確認 | 過去のブラウザQAは[会話QA](../qa/ch2-followups/README.md)の実施範囲。今回の読取照合を新画像・ブラウザ通し・実機Safariの成功とは扱わない |
+
+同worker `codex-563-20261015-01a13c35`を維持。今回もclaim `38697952277`／status `38698135764`の成功job実ログと、最新bot台帳のowner/run一致を読取確認。全13 Open PRの実変更パスに本資料との重複はない。#683は共有manifest・spot-hours等を変更中のため、その予定を現行mainの事実に混ぜず保持する。未push作業の有無は他環境について証明していない。
+
+今回の変更は本資料の現状追補のみ。runtime・本編台詞・manifest・採用画像・`ch2-city-data.js`は読取のみ。画像生成・素材取得・マージ・公開・Issue終了・予約の再発行／解除／移管は行わない。#548のDAY14・章末、#564全体添削、ヴォルクの第2章登場・離別理由・味覚回復を追加しない。
+
+## 2026-10-16の採用・接続追補（履歴）
 
 同じworker `codex-563-20261015-01a13c35`で、採用済みの3会話を初回chat→followupを一度→既存repeatへ接続する後続Draftを準備。新読了は`flags._ch2_followup_done`で記録し、旧相談回数・総訪問・好感度・思い出から推定しない。費用・体力は続編の正常終端後に確定する。
 

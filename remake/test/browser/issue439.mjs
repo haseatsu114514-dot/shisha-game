@@ -67,6 +67,7 @@ await suite("issue439", async (check) => {
       await setup(page);
       await page.evaluate(async () => {
         for (const id of Object.keys(I.data.DB.characters)) { I.core.state.met[id] = true; I.core.state.flags[`_intro_${id}`] = true; }
+        Object.assign(I.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
         I.core.state.flags._gym_member = true; I.core.state.flags._morning_8 = true; I.core.state.flags._lime_opened = true;
         I.core.state.reel.installed = false;
         I.run = (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
@@ -106,7 +107,7 @@ await suite("issue439", async (check) => {
     await setup(page);
     await page.route("**/backgrounds/bg_kannon*.webp", async route => { await new Promise(resolve => setTimeout(resolve, 1200)); await route.continue(); });
     await page.evaluate(async () => {
-      I.core.state.met.adam = true;
+      I.core.state.met.adam = true; I.core.state.flags._spot_guide_adam = true;
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();

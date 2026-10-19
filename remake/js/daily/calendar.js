@@ -53,6 +53,8 @@ export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
   queuedLimeSender = null;
+  // 中断/旧保存の回転も、日付更新や朝のイベントより先に完了させる。再抽選はしない。
+  await showReelNow({ label: "前回のスロット" });
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
@@ -548,14 +550,14 @@ function cancelSamechanAppointment(inv) {
   save();
 }
 
-/** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
+/** 行動を1回使ったあと: そのイベントの終わりにスロットが1回転。告白は営業後に endDay で扱う */
 async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
   if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio(), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
   spinReel({ spent });
   save();
-  // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
-  if (state.slot >= 2) await showReelNow();
+  // 昼夜とも、別イベントやマップ・翌朝へ進む前に、この行動の演出を完了する。
+  await showReelNow({ label: "今回のスロット" });
   await bannersIdle();
 }
 

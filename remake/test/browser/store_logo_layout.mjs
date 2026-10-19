@@ -15,6 +15,7 @@ await suite('store-logo-layout', async check => {
         const fixture = core.newState();
         Object.assign(fixture, { schema: 11, phase: 'daily', day: 4, slot, money: 30000, seed: 574 });
         for (const id of ['naru', 'adam', 'minto', 'rin', 'tsumugi']) fixture.met[id] = true;
+        Object.assign(fixture.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
         localStorage.setItem(core.SAVE_KEY, JSON.stringify(fixture));
         core.load(); // Synthetic pre-schema12 save, through the real migration path.
         hud.initHud({}); hud.showHud(); await ui.warmUiArt();
@@ -68,12 +69,11 @@ await suite('store-logo-layout', async check => {
       await page.locator('[data-test="pin-shop"] .store-logo').waitFor();
       assert.equal(await page.locator('.spot-pin.branded').count(), 7);
       // No logo/name disclosure before the existing unlock condition is met.
-      await page.evaluate(() => { delete L.core.state.met.naru; L.open(); });
-      await page.locator('[data-test="pin-c_station"].pin-locked').waitFor();
-      assert.equal(await page.locator('[data-test="pin-c_station"] .store-logo').count(), 0);
-      assert.equal(await page.locator('[data-test="pin-c_station"] .sub-label').textContent(), '？？？');
+      await page.evaluate(() => { delete L.core.state.flags._spot_guide_naru; L.open(); });
+      await page.locator('.map:not(.done)').waitFor();
+      assert.equal(await page.locator('[data-test="pin-c_station"]').count(), 0);
       // Leave a useful final screenshot with all brands unlocked.
-      await page.evaluate(() => { L.core.state.met.naru = true; L.open(); });
+      await page.evaluate(() => { L.core.state.flags._spot_guide_naru = true; L.open(); });
       await page.locator('[data-test="pin-c_station"] .store-logo').waitFor();
       // Exercise each real text mode before returning to the same map.
       // Short synthetic dialogue avoids claiming a chapter playthrough.

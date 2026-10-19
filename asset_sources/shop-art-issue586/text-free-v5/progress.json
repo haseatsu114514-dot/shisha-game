@@ -1,0 +1,61 @@
+{
+  "status": "paused-for-user-AGENTS-only-task",
+  "saved": 8,
+  "pending": [
+    "native/source measurements",
+    "complete18 comparison",
+    "before-after comparison",
+    "final review and merge"
+  ],
+  "note": "All already-running generation calls completed. No further generation initiated. Source Draft remains unmerged.",
+  "outputs": [
+    {
+      "id": "vanilla",
+      "filename": "outputs/dobaj-vanilla.png",
+      "blob_sha": "9720b793aecdd4bc9ba305b55925f39ed331a4ab",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-d70f2bf7-3726-4777-8a93-6ef9f75796d6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "coconut",
+      "filename": "outputs/dobaj-coconut.png",
+      "blob_sha": "b39956e7f544b0196f5ec12835310410de6ff258",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b14e94b5-8e1f-4372-ba0b-2959c6b42d0b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "mango",
+      "filename": "outputs/dobaj-mango.png",
+      "blob_sha": "3daf751e7f482f8f902bb390839726cafdab0949",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6055d351-608d-4056-b434-62ff159fcfac.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "peach",
+      "filename": "outputs/dobaj-peach.png",
+      "blob_sha": "1e2c99e6696be0c9667f9c61e07f787febee5118",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-cf274894-2c81-4cec-8612-6f44f3fec48c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "melon",
+      "filename": "outputs/dobaj-melon.png",
+      "blob_sha": "00a70470b4e3d402ddfec3c95524f1ceb6a9dc26",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-d6e05939-06d1-4e8b-9666-c8001388ed07.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "banana",
+      "filename": "outputs/dobaj-banana.png",
+      "blob_sha": "8c22cbb867e7ee1980d4f2463e72faab759a1b66",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-951a9602-fbf9-4b7b-8649-3b95acdc09b7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "rose",
+      "filename": "outputs/afsaal-rose.png",
+      "blob_sha": "b96a18d216b9b878fd019cdcb37410a19f5f2022",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-2b569488-bbe4-4992-9910-c407cd5b57e4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "id": "lychee",
+      "filename": "outputs/afsaal-lychee.png",
+      "blob_sha": "40833a5922768c9aa43b6648c2d9c7d71ae7801a",
+      "generator_output_hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-d09916ad-1094-4a55-a976-28f053c5b9eb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    }
+  ]
+}
