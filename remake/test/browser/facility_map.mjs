@@ -43,6 +43,7 @@ try {
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
         if (scenario !== 'locked') {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
+          s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }
@@ -90,7 +91,10 @@ try {
       const wanted = { ...expected, ...(scenario === 'chapter2' ? { trpg_bar: 'trpg_bar' } : {}) };
       for (const [id, facility] of Object.entries(wanted)) {
         const pin = pins.find(p => p.id === id);
-        if (!pin) { assert(id === 'fortune' && scenario === 'chapter2'); continue; }
+        if (!pin) {
+          assert((id === 'fortune' && scenario === 'chapter2') || (scenario === 'locked' && ['kannon', 'cafe', 'choizap'].includes(id)));
+          continue;
+        }
         const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
