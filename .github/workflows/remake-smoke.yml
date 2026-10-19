@@ -74,6 +74,8 @@ jobs:
         run: node --experimental-vm-modules remake/test/data_loading.mjs
       - name: Validate handoff and daily shift dialogue
         run: node --experimental-vm-modules remake/test/daily_consistency.mjs
+      - name: Validate early delivery order and accounting (#709)
+        run: node --experimental-vm-modules remake/test/early_deliveries.mjs
       - name: Validate recipe golden ratios (#627)
         run: node remake/test/golden_ratio.mjs
       - name: Validate home shisha bedtime puff (#638)
