@@ -2,6 +2,95 @@
 
 All Codex and Claude Code sessions are independent workers. GitHub Actions `.github/workflows/issue-claim.yml` is the central, serialized reservation coordinator.
 
+## CLI and GitHub integration: the same authority
+
+Use either an already-authorized CLI or a supported GitHub integration/API.
+Installing `gh`, opening a shell, or creating a local checkout is not required
+when the integration can perform the operation and verify its result.
+Both routes use the **game repository's** coordinator, current bot ledger,
+owner/run validation and `issue-claim-coordinator` concurrency group with
+`cancel-in-progress: false`. Do not run a second writer in the bridge repository.
+
+| Step | CLI with a checkout | GitHub integration without a checkout |
+| --- | --- | --- |
+| Inspect | Read current main, Issue, all comment pages, open PRs and changed paths | Fetch the same repository/ref, Issue/comments and PR files through the integration |
+| Request | `gh workflow run` with explicit repo/default branch and unique request ID, or a comment | Dispatch if supported; otherwise create one Issue/PR Conversation comment |
+| Identify result | Match the whole dispatch request ID, or the comment ID and its result/run URL | Read the result for that exact comment ID or dispatch request; never guess from the newest run |
+| Authorize editing | Read the successful run and latest bot owner/run | Read the same run/summary or job logs and all current ledger pages; no second status run is required |
+| Save | Git Safety, commit, push and confirm remote head | Verify base/blob/tree, create commits on a separate branch, update its ref and confirm remote head |
+| Validate | Run relevant local checks and inspect CI on the submitted head | Mark local checks unrun; use relevant CI on that exact head and record actual results |
+
+Local root/hooks/script checks apply when a checkout is used. An API-only worker
+records those local checks as not applicable and follows the API checks in
+`AGENTS.md`; it must not claim to have run a shell script. In either route,
+preserve other workers' uncommitted work, branches, PRs, owner/run and history.
+If a ref unexpectedly changes while saving, reread and compare it instead of
+forcing an update. A saved PR resumes on its existing branch after ownership
+verification or formal transfer, not by copying another worker's branch.
+
+If dispatch/`next` is unavailable, read eligible Issues and their dependencies,
+choose an unclaimed candidate within the authorized scope, and post `claim`.
+Comment `next` is not supported. A CLI can also use the same comment route:
+
+```sh
+gh issue comment 325 --repo haseatsu114514-dot/shisha-game --body '/issue-claim {"operation":"claim","issue":325,"owner":"codex-example-unique","agent":"codex"}'
+```
+
+An integration sends that exact one-line body using its existing Issue-comment
+tool. These are examples, not instructions to reserve Issue 325. On a PR
+Conversation, provide the target Issue number explicitly. Do not use a review
+comment or manually create bot ledger markers. Keep the returned comment ID;
+the bot's `issue-claim-request:v1 comment=<id>` acknowledgment/result identifies
+its run URL. This request acknowledgment is not itself the reservation ledger.
+
+Useful read-only API resources (use the same resources via a connector):
+
+```text
+GET /repos/haseatsu114514-dot/shisha-game/issues/<issue>
+GET /repos/haseatsu114514-dot/shisha-game/issues/<issue>/comments?per_page=100&page=<page>
+GET /repos/haseatsu114514-dot/shisha-game/actions/runs/<run-id>
+GET /repos/haseatsu114514-dot/shisha-game/actions/runs/<run-id>/jobs
+```
+
+Follow every comment page. Match the current latest bot ledger to the successful
+run's repository, `.github/workflows/issue-claim.yml`, operation, Issue and worker
+using its title/summary/logs. Do not substitute a run from the bridge repository
+or a different workflow. A `park`/`resume`/`transfer` success writes a new current
+run: validate that new ID, not the original claim. If required result data cannot
+be read, do not edit based on a dispatch response or assumed success.
+
+A missing CLI capability is different from an authorization denial. Use an
+already-authorized alternative when available; do not install/login merely to
+reproduce a CLI example. Ask before creating credentials, expanding permissions
+or changing repository visibility. Do not bypass a denial with another identity.
+If neither route can submit or verify a request, preserve the claim/work and
+report the missing capability; read-only investigation can continue.
+
+## Bridge separation and commands not yet deployed
+
+The shared code is being preserved in private `haseatsu114514-dot/dot-ai-bridge-test`.
+Open PRs there, including #13, and game PR #731 are not proof of deployment.
+Until a separately reviewed game-side switch is actually deployed, continue to
+use this repository's current main workflow and ledger. Do not copy reservations,
+release/reclaim existing work, change the concurrency group, or execute production
+coordinator code directly as part of separation.
+
+`handoff` and `pickup` are proposals saved in #731. They are **not supported by
+the current main workflow**. Keep AI switching available through pushed commits /
+confirmed API branch updates, a Draft PR, DONE/TODO/TEST/NEXT and an explicit
+stopped-session record, then the existing `transfer`/recovery rules below.
+`park` remains review wait, not permission for another worker to resume.
+Before using any newly introduced command, verify deployment on main first.
+
+The public game cannot use private-repository Action sharing as a direct
+connection to the bridge; its default `GITHUB_TOKEN` is repository-scoped.
+An authenticated code-fetch design needs separate review of access and public
+job logs/artifacts. No new credential, private sharing setting, visibility change
+or production switch is authorized merely by these instructions. Keep this
+game-side procedure self-contained so private bridge access is not required for
+ordinary game work. See GitHub's [private sharing](https://docs.github.com/en/actions/how-tos/reuse-automations/share-across-private-repositories)
+and [token scope](https://docs.github.com/en/actions/concepts/security/github_token).
+
 ## Comments are a supported entrypoint
 
 Post one JSON command on an Issue or a PR Conversation. The same coordinator
@@ -43,8 +132,8 @@ not replay old requests or undo an explicit cancellation or stop instruction.
 
 1. Inspect current open PRs, branches, and any handoffs. Do not duplicate existing work.
 2. Generate a unique worker ID, e.g. `codex-a-20261011-01` or `claude-b-20261011-01`. Different chats MUST use different IDs, even under the same account.
-3. Dispatch **Issue claim coordinator** on the default branch: operation `next`, owner `<worker ID>`, agent `codex` or `claude`. Leave issue blank.
-   `gh workflow run issue-claim.yml -f operation=next -f owner=codex-a-20261011-01 -f agent=codex`
+3. Dispatch **Issue claim coordinator** on the default branch: operation `next`, owner `<worker ID>`, agent `codex` or `claude`. Leave issue blank. If dispatch is unavailable, use the integration's read/select/`claim` comment route above.
+   `gh workflow run issue-claim.yml --repo haseatsu114514-dot/shisha-game --ref main -f operation=next -f owner=codex-a-20261011-01 -f agent=codex`
 4. Wait for the **specific** workflow run to complete successfully, read its job summary / `CLAIMED_ISSUE` log, and match the current bot ledger's owner/run to it. A successful dispatch alone does NOT grant a reservation. Read-only API verification is sufficient; a second `status` dispatch is optional (see below).
 5. For new work, create a branch from latest `origin/main`, implement, test, push, and create a PR referencing the claimed issue. Resume saved work on its existing branch after verifying ownership and any required transfer. Document owner, branch, PR and remaining work on the issue.
 
@@ -54,7 +143,7 @@ work identifier; a worker ID identifies one session and must not be shared.
 Current ownership and adoption/hold decisions belong on the Issue/PR, not in
 permanent skills or old handoff notes.
 
-To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -f issue=325 -f owner=codex-a-20261011-01 -f agent=codex`.
+To claim a specific issue: `gh workflow run issue-claim.yml --repo haseatsu114514-dot/shisha-game --ref main -f operation=claim -f issue=325 -f owner=codex-a-20261011-01 -f agent=codex`, or the same `claim` comment through CLI/integration.
 
 ## Selection
 
@@ -262,13 +351,13 @@ Actions authorization; installing the CLI alone does not establish access.
 
 ```sh
 request_id=$(python3 -c 'import uuid; print(uuid.uuid4())')
-gh workflow run issue-claim.yml --ref main -f operation=claim -f issue=325 \
+gh workflow run issue-claim.yml --repo haseatsu114514-dot/shisha-game --ref main -f operation=claim -f issue=325 \
   -f owner=codex-a-20261011-01 -f agent=codex -f request_id="$request_id"
-gh run list --workflow issue-claim.yml --json databaseId,displayTitle,status,conclusion
+gh run list --repo haseatsu114514-dot/shisha-game --workflow issue-claim.yml --json databaseId,displayTitle,status,conclusion
 ```
 
 Match the **entire request ID** in `displayTitle`; never select the newest run
-without checking it. Use `gh run view <run-id> --log` to confirm its owner, Issue
+without checking it. Use `gh run view <run-id> --repo haseatsu114514-dot/shisha-game --log` (or the integration's run/job-summary/log reader) to confirm its owner, Issue
 and `CLAIMED_ISSUE`. Record the actual run ID and wait for completed/success.
 Each new bot ledger entry also records the run and request ID, while preserving
 the original v1 state/owner marker for existing reservations and readers.
