@@ -132,7 +132,7 @@ export function openBench(cs, { steps = [] } = {}) {
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -181,7 +181,7 @@ export function benchRoot(cs) {
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
-  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[lessonStep] : null;
+  const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.open = false;
@@ -381,10 +381,10 @@ export function refreshBench() {
 }
 
 /** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */
-export function presentBenchResult(panel, title) {
+export function presentBenchResult(panel, title, advice = "") {
   const score = bench?.panel === panel ? bench.cs[panel.dataset.step]?.score ?? 0 : 0;
   const evaluation = evaluationOf(score);
-  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, final: true });
+  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, text: advice, final: true });
   return { evaluation, hasAudience: !!(bench?.panel === panel && bench.audience) };
 }
 

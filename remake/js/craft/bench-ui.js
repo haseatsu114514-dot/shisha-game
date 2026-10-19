@@ -34,7 +34,13 @@ export function buildGuide() {
   const note = el("p");
   const root = el("details.bench-guide", [
     el("summary", { text: "?", "aria-label": "操作の説明", title: "操作の説明" }),
-    el("div.bench-guide-tip", [el("b", { text: "操作の説明" }), note]),
+    el("div.bench-guide-tip", [el("b", { text: "操作の説明" }), note,
+      el("small", { text: "説明を閉じると制作を再開します。" })]),
   ]);
+  root.addEventListener("toggle", () => {
+    const bench = root.closest(".bench"), panel = bench?.querySelector(".bench-panel");
+    if (panel) panel.inert = root.open;
+    if (bench) bench.dataset.helpPaused = String(root.open);
+  });
   return { root, note };
 }

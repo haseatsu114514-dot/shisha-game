@@ -2,6 +2,7 @@
 // テンプレートの配置を選び、円周を回るカーソルが目印に重なった瞬間に打つ。
 // メイン評価は均等度。実際の穴数・リング配置を後工程の熱へ渡す。
 import { el, sleep, clamp, rand } from "../core/util.js";
+import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
@@ -83,7 +84,7 @@ export async function runHoles(cs) {
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
-  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1);
+  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
   // ---- 画面
@@ -127,6 +128,7 @@ export async function runHoles(cs) {
     extra: 0,
   }));
   let ri = 0;
+  const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
   let combo = 0;
@@ -218,7 +220,7 @@ export async function runHoles(cs) {
   };
 
   const punch = () => {
-    if (finished || t0 === null) return;
+    if (finished || t0 === null || gameClock.paused) return;
     const ring = state[ri];
     if (ring.closed || ring.taken.every(Boolean)) return;
     const a = cursorAngle();
@@ -268,7 +270,8 @@ export async function runHoles(cs) {
 
   const loop = (now) => {
     if (finished) return;
-    elapsed = (now - t0) / 1000;
+    elapsed = (gameClock.now() - t0) / 1000;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
     highlightNext();
@@ -284,6 +287,7 @@ export async function runHoles(cs) {
     if (finished || !complete()) return;
     finished = true;
     cancelAnimationFrame(raf);
+    gameClock.dispose();
     unkey();
     state.forEach(closeRing);
     done();
@@ -300,7 +304,7 @@ export async function runHoles(cs) {
   hud();
   place(cursor, state[0].phase, state[0].r);
   await countdown();
-  t0 = performance.now();
+  t0 = gameClock.now();
   raf = requestAnimationFrame(loop);
 
   const auto = autoSkill();

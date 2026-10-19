@@ -54,7 +54,7 @@ function choose(panel, options, { cols = 2 } = {}) {
   });
 }
 
-const lessonHint = (cs, id, fallback) => (cs.mode === "tutorial" && LESSON[id]) || fallback;
+const lessonHint = (cs, id, fallback) => id === "mix" && cs.orderHint ? cs.orderHint : (cs.mode === "tutorial" && LESSON[id]) || fallback;
 
 // ---------------------------------------------------------------- 機材
 
@@ -208,6 +208,7 @@ export async function stepMix(cs) {
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
+  if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
   const limit = (id) => (ownLeaves && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
@@ -296,7 +297,7 @@ export async function stepMix(cs) {
   panel.append(el("div.mix", [
     el("div.mix-side", [vessel, taste, recipeLine,
       hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null]),
-    el("div.mix-list", [el("p.mix-list-caption", { text: "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
+    el("div.mix-list", [el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), temperaturePreview, okBtn]),
   ]));
   redraw();
@@ -311,6 +312,7 @@ export async function stepMix(cs) {
         cs.mix = { strawberry: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (cs.venue === "home") cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
+      if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
       setTimeout(() => okBtn.click(), 60);
     }

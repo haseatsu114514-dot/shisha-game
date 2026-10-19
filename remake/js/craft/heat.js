@@ -10,6 +10,7 @@ import { buildHeatView, coalSpots } from "./heat_view.js";
 import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
+import { createCraftClock } from "./clock.js";
 
 export async function runHeat(cs) {
   await waitBenchReady(cs, "heat");
@@ -28,6 +29,7 @@ export async function runHeat(cs) {
   info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
+    advice: heatAdvice(res),
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
@@ -39,6 +41,15 @@ export async function runHeat(cs) {
       res.over ? "焼きすぎの炭がある。香りが飛びやすいかもしれない" : res.early ? "早取りの炭がある。立ち上がりが遅れそうだ" : "",
     ],
   });
+}
+
+function heatAdvice(res) {
+  const early = res.picks.some(p => ["raw", "early", "pre"].includes(p));
+  const late = res.picks.some(p => ["hot", "over"].includes(p));
+  if (early && late) return "早い炭と遅い炭がある。一つずつ芯の光を目印に取り出そう";
+  if (late) return res.over ? "焼きすぎた炭がある。次は芯が光ったら、待たずに取り出そう"
+    : "少し遅れた炭がある。次は芯が光る瞬間に取り出そう";
+  return early ? "早く取り出した炭がある。次は芯が光るまで待とう" : "";
 }
 
 // 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
@@ -57,14 +68,15 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   }));
   panel.append(view.root);
 
-  let t0 = 0;
+  const gameClock = createCraftClock(panel);
+  let t0 = null;
   let raf = 0;
   let finished = false;
   let done;
   const finishedP = new Promise((r) => { done = r; });
 
-  const pick = (c, elapsedSeconds = (performance.now() - t0) / 1000, automatic = false) => {
-    if (c.picked || finished || !t0) return;
+  const pick = (c, elapsedSeconds = (gameClock.now() - t0) / 1000, automatic = false) => {
+    if (c.picked || finished || t0 === null || gameClock.paused) return;
     const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec);
     const g = timing.phase;
     c.p = elapsedSeconds / c.tj;
@@ -97,7 +109,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
 
   const loop = (now) => {
     if (finished) return;
-    const t = (now - t0) / 1000;
+    const t = (gameClock.now() - t0) / 1000;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     for (const c of coals) {
       if (c.picked) continue;
       c.p = t / c.tj;
@@ -119,6 +132,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (finished) return;
     finished = true;
     cancelAnimationFrame(raf);
+    gameClock.dispose();
     done();
   };
 
@@ -129,7 +143,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
 
   await countdown();
   SE.crackle();
-  t0 = performance.now();
+  t0 = gameClock.now();
   view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 
