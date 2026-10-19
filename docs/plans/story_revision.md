@@ -93,9 +93,20 @@
 
 ## タイトル画像の状態
 
-- 第2章の[王冠構図3案](../../asset_sources/chapter-title/ch2-crown-composition/README.md)から、**案C（背景の王冠輪郭 / `C-crown-background.png`）の採用が決定**。
+- 第2章の[王冠構図3案](../../asset_sources/chapter-title/ch2-crown-composition/README.md)から、**案C（背景の王冠輪郭 / `C-crown-background.png`）の採用が決定**。1280×720の正式画像からロスレスWebP（`remake/img/ui/chapters/ch2-title.webp`）を生成し、本編タイトルコール（`remake/js/core/chapter-title-art.js`、`remake/js/chapters/ch2.js`、`remake/js/chapters/ch1.js`、`data/chapter_previews/ch2.json`）へ接続・反映完了。
 - 宙に浮く先行案は位置の再検討を求められた経緯を保持する。
-- 採用決定を受け、今後文字の分離・必要解像度・実際のタイトルコールへの接続を確認する。第3章の画像は決定した新章題『嘘つきたちの夜』と章の終着点に合わせて検討する。
+- 第3章の画像は決定した新章題『嘘つきたちの夜』と章の終着点に合わせて今後検討する。
+
+## 本タスク（#549）での実施範囲と今後の残作業
+
+2026-10-19のオーナー指示に基づき、今回の範囲を以下のように整理・限定した。
+
+- **今回実施した範囲**:
+  - 第2章王冠構図案C（背景の王冠輪郭）の確定・1280×720解像度検証・本編タイトルコール（`remake/img/ui/chapters/ch2-title.webp`、`remake/js/core/chapter-title-art.js`）および既存表示箇所（`ch2.js`、`ch1.js`、`ch2.json`、`docs/chapter_previews.md`）への接続・英題 `Hollow Crown` への統一。
+  - 第3章題『嘘つきたちの夜 / SMOKE AND MIRRORS』の設定正本（`brand/story_and_structure.md`）および既存参照箇所への反映。
+- **今回混ぜず残作業とする範囲**:
+  - 物語・台詞の大幅な本改稿（`data/dialogue/` や個別イベントの改稿、選択の因果調整など）。
+  - 共同制作向け資料（Issue #544）の編集元・Word・PDFの更新。これらは設定方針が固まった後の別タスクとして進行する。
 
 ## 反映先と順序
 

@@ -1,12 +1,12 @@
 {
   "status": "variant_selected",
   "selected_variant": "C",
-  "runtime_integrated": false,
+  "runtime_integrated": true,
   "issue": 549,
   "created_utc": "2026-10-13",
   "base_commit": "ad74d6e40525d695b8ad00bf502074fa94611e6e",
   "worker": "argon-handoff-549-20261019-cdd3",
-  "claim_run": 39266300323,
+  "claim_run": 39270166935,
   "generator": "image_gen.imagegen",
   "pixel_postprocessing": "none",
   "chapter_title_direction": {
@@ -125,7 +125,19 @@
     "title_text": "水煙前線 -EN:CODE- / CHAPTER 2 / 才能の壁 / Hollow Crown readable",
     "hands_and_crown": "checked per candidate",
     "shisha_hardware": "not depicted; not applicable",
-    "runtime_title_call_test": "not performed; selection and integration pending"
+    "runtime_title_call_test": "connected to remake/js/core/chapter-title-art.js and delivered via remake/img/ui/chapters/ch2-title.webp (1280x720 lossless)"
+  },
+  "runtime_delivery": {
+    "path": "remake/img/ui/chapters/ch2-title.webp",
+    "source_1280_png": "asset_sources/chapter-title/ch2-crown-composition/images/C-crown-background-1280x720.png",
+    "source_1280_sha256": "0c9634fcc5e363489321ac0b7962cc39f8913e4b0f5abf1cd3f1b19a3f77f4c9",
+    "delivery_sha256": "13a133a7b7f5957a3eb0b8893fdf8fd97d6f87087e00f34e5bd05bab8f26bc3a",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "format": "WEBP (lossless, method=6)",
+    "lossless_pixel_match": true
   },
   "story_revision_plan": "docs/plans/story_revision.md",
   "setting_book_followup_issue": 544

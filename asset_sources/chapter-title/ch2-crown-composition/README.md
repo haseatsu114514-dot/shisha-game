@@ -36,4 +36,8 @@
 
 [`previous/floating-crown.png`](previous/floating-crown.png) は「王冠の位置を再検討」となった先行案。採用候補A〜Cと区別する。
 
-2026-10-19、オーナー指示により **C（背景の王冠輪郭 / `images/C-crown-background.png`）の採用が決定**。第3章題は『嘘つきたちの夜 / SMOKE AND MIRRORS』が決定した。本編設定・タイトルコールへの接続および物語・共同制作向け資料の更新方針は [`docs/plans/story_revision.md`](../../../docs/plans/story_revision.md) を参照。
+2026-10-19、オーナー指示により **C（背景の王冠輪郭 / `images/C-crown-background.png`）の採用が決定**。第3章題は『嘘つきたちの夜 / SMOKE AND MIRRORS』が決定した。
+
+本編タイトルコール（1280×720）への接続として、案Cから1280×720の正式PNG（[`images/C-crown-background-1280x720.png`](images/C-crown-background-1280x720.png)）を生成し、配信アセット [`remake/img/ui/chapters/ch2-title.webp`](../../../remake/img/ui/chapters/ch2-title.webp) へロスレスWebP形式（method=6、寸法1280×720一致、全画素検証済み）で反映した。`remake/js/core/chapter-title-art.js` および `remake/js/chapters/ch2.js` の読み表示を `ホロウ・クラウン ── Hollow Crown` へ更新した。
+
+物語・台詞の大幅な改稿および共同制作向け資料（Issue #544）の改稿は今回混ぜず、今後の残作業として整理する（[`docs/plans/story_revision.md`](../../../docs/plans/story_revision.md) 参照）。
