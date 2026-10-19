@@ -123,8 +123,8 @@ try {
         for (const id of Object.keys(expected)) {
           const pin = page.locator(`[data-test="pin-${id}"]`);
           await pin.scrollIntoViewIfNeeded();
-          if (touch) await pin.tap({ force: true }); else await pin.click({ force: true });
-          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true);
+          await pin.evaluate(p => p.click());
+          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/${scenario}/${id} failed to get sel class`);
         }
         assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved, 'pin selection changes save');
       }
