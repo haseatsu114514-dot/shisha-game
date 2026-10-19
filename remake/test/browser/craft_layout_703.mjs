@@ -4,6 +4,16 @@ import path from 'node:path';
 import { suite, assertFits } from './support.mjs';
 const shots = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
 const test = (page,id) => page.locator(`[data-test="${id}"]`);
+async function setGuide(page, open, touch) {
+  const summary = page.locator('.bench-guide summary');
+  if (touch) await summary.tap(); else await summary.click();
+  // Native details.toggle is queued after the input; wait for its pause handler.
+  await page.waitForFunction(open => {
+    const guide = document.querySelector('.bench-guide'), panel = document.querySelector('.bench-panel');
+    return guide?.open === open && panel?.inert === open
+      && guide.closest('.bench').dataset.helpPaused === String(open);
+  }, open);
+}
 async function init(page, mode, load = false) {
   await page.evaluate(async ({mode, load}) => {
     const core = await import('./js/core/state.js');
@@ -61,9 +71,10 @@ await suite('craft-layout-703', async check => {
       const mixRect=await page.locator('.mix-temperature .thermo-housing').boundingBox();
       await page.screenshot({path:path.join(shots,`${name}-mix.png`)});
       const before=await page.evaluate(()=>JSON.stringify(QA.cs));
-      await page.locator('.bench-guide summary').click();
+      await setGuide(page, true, options.hasTouch);
       assert(await page.locator('.bench-panel').evaluate(n=>n.inert));
-      await page.locator('.bench-guide summary').click();
+      await setGuide(page, false, options.hasTouch);
+      assert.equal(await page.locator('.bench-panel').evaluate(n=>n.inert), false);
       assert.equal(await page.evaluate(()=>JSON.stringify(QA.cs)),before);
       await page.evaluate(()=>{QA.cs.steam={temp:.54,score:100};});await run(page,'pull');
       const pullRect=await page.locator('.pull .thermo-housing').boundingBox();
@@ -96,9 +107,9 @@ await suite('craft-layout-703', async check => {
           await run(page,step);
           assert.equal(await page.locator('.thermo:visible, .mix-temperature-preview:visible').count(),0,step);
           if(step==='pull') {
-            await page.locator('.bench-guide summary').click();
+            await setGuide(page, true, options.hasTouch);
             assert.doesNotMatch(await page.locator('.bench-guide-tip').textContent(),/温度計|虹色/);
-            await page.locator('.bench-guide summary').click();
+            await setGuide(page, false, options.hasTouch);
             assert.match(await page.locator('.audience-note').textContent(),/針を止めて吸い/);
           }
           await overlap(page);

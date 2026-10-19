@@ -40,3 +40,12 @@ node --experimental-vm-modules remake/test/mix_temperature.mjs
 ```
 
 最終結果はPR本文と [validation.json](validation.json) に記録する。実機Safari・公開版・全章通しは未実施。再表示時期の判断・レビュー/統合は未完として、Issue #703と予約を保持する。
+
+## #718マージ後のCI追補
+
+#718はmerge commit `f74bdafa` でmainへ統合済み。ただし提出HEAD `b70e8b94` の最終CIは全成功ではなかった。ローカルの成功記録と、次のCI失敗を区別する。
+
+- [DS run39185731379 / job117847658926](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39185731379/job/117847658926): パッキング4条件は成功。追加表示回帰の5条件が、ヘルプclick直後の `panel.inert` 確認で失敗した。`details.toggle` の通知が入力後のタスクに送られるため、pauseハンドラの完了前に確認していた。実click/tap後に `open / inert / helpPaused` の一致を待ち、閉じた後の再開も確認する。元のinert・セッション不変・座標・吸引assertを維持し、固定sleepやタイムアウト延長は追加しない。
+- [Presentation run39185731409 / job117847659113](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39185731409/job/117847659113): PC/タッチの初回レッスンで、旧「温度プレビューが見える」期待が失敗。未修正の最新mainでもローカル再現した。初回の未選択/配合後の両方でhiddenを確認し、visible/はみ出し検査は通常の大会ケースで未選択/配合後の両方を検査する。実配合→パッキング、在庫・味・採点関連のassertは維持する。
+
+追補の開始mainは `e95f7abe0ed23ab154b2a7bdfd5f477751e735e0`。変更はテスト2ファイルとこのQA記録のみ。本番の初回非表示、通常表示、温度モデル、操作、素材は変更しない。Open PR12件の実変更ファイルを照合し、対象2ファイルに重複なし。初回温度計の再表示時期は未指定のまま。追補の実結果は [ci-followup.json](ci-followup.json) と追補PRに記録する。
