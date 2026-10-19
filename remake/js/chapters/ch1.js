@@ -75,6 +75,13 @@ export function setupHooks() {
       state.flags._tsumugi_contest_draft_hands = branch === "draft_hands";
       save();
     }
+    // 後日の反応は、実際に選んだ接し方とDAY2の読了だけを根拠にする。
+    if (dialogueId === "ch1_salaryman_regular" && choiceId === "salaryman_first_serve"
+      && ["regular_order", "regular_water"].includes(branch)) {
+      state.flags._salaryman_service_order = branch === "regular_order";
+      state.flags._salaryman_service_water = branch === "regular_water";
+      save();
+    }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
     if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
       const progress = openingProgress();
