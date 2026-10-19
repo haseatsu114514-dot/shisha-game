@@ -52,6 +52,8 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: node remake/test/browser/issue439.mjs
+      - name: Verify early contact exchange and legacy saves
+        run: node remake/test/browser/early_contacts_705.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
