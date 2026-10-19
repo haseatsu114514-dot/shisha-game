@@ -18,6 +18,8 @@ import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
+import { newlyRevealedSpots } from "./map-reveals.js";
+import { createMapFacilityIcon, hasFacilityIcon } from "./facility-icons.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
 function peopleRow(people) {
@@ -225,34 +227,60 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     function renderPins() {
       pins.replaceChildren();
-      for (const s of mapSpots()) {
-      if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
+      const spots = mapSpots().filter(s => s.kind !== "fortune" || fortuneToday());
+      const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
+        id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
+      })));
+      for (const s of spots) {
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
+      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
-        el("div.shield", [
-          badge,
-          el("div.ico", [logo || (locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s))]),
+        el("div.pin-visual", [
+          el("div.shield", [
+            badge,
+            el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
+              ? el("span", { text: "？" }) : pinSymbol(s))]),
+          ]),
+          peopleRow(people),
         ]),
-        peopleRow(people),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
+      if (facility) {
+        const crop = facility.querySelector('.facility-icon-crop');
+        btn.style.setProperty('--facility-art-width', crop.style.width);
+        btn.style.setProperty('--facility-art-height', crop.style.height);
+        for (const axis of ['x', 'y']) btn.style.setProperty(`--facility-badge-${axis}`, facility.style.getPropertyValue(`--facility-badge-${axis}`));
+      }
+      const revealIndex = reveals.indexOf(s.id);
+      if (revealIndex >= 0) {
+        btn.classList.add("newly-revealed");
+        btn.style.setProperty("--reveal-delay", `${Math.min(revealIndex * 90, 360)}ms`);
+        btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }));
+        const revealLabel = el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" });
+        revealLabel.addEventListener("animationend", () => {
+          btn.classList.remove("newly-revealed");
+          btn.querySelector(".pin-reveal-ring")?.remove();
+          revealLabel.remove();
+        }, { once: true });
+        btn.querySelector(".shield").append(revealLabel);
+        btn.setAttribute("aria-label", `新しいスポット・${btn.getAttribute("aria-label")}`);
+      }
       pins.append(btn);
       }
     }
