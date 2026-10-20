@@ -12,10 +12,12 @@ await suite("conversation-ui", async check => {
         const controls = document.querySelector(".vn-controls").getBoundingClientRect();
         const name = document.querySelector(".vn-name");
         return { gap: (box.top - controls.bottom) / (box.width / 1120), font: getComputedStyle(name).fontFamily,
+          nameTop: parseFloat(getComputedStyle(name).top),
           buttons: [...document.querySelectorAll(".vn-ctl")].map(el => parseFloat(getComputedStyle(el).minHeight)) };
       });
-      assert(Math.abs(geometry.gap - 10) < .1, "Control frame must have a 10px gap above dialogue");
+      assert(Math.abs(geometry.gap - 6) < .1, "Control frame must have a 6px gap above dialogue");
       assert(geometry.font.includes("Suien Name"));
+      assert.equal(geometry.nameTop, -31);
       assert(geometry.buttons.every(height => height >= 44));
       await page.locator('[data-test="vn-auto"]').click();
       assert(await page.locator('[data-test="vn-auto"]').evaluate(el => el.classList.contains("on")));
@@ -34,6 +36,24 @@ await suite("conversation-ui", async check => {
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……今日はどうしようか");
       await page.locator('[data-test="vn-skip"]').click();
       await page.locator('[data-test="choice-0"]').waitFor();
+      const modes = () => page.evaluate(() => ({
+        auto: document.querySelector('[data-test="vn-auto"]').getAttribute("aria-pressed"),
+        skip: document.querySelector('[data-test="vn-skip"]').getAttribute("aria-pressed"),
+        fast: document.body.classList.contains("vn-skip"),
+      }));
+      await page.locator('[data-test="vn-auto"]').click();
+      assert.deepEqual(await modes(), { auto: "true", skip: "false", fast: false });
+      await page.locator('[data-test="vn-skip"]').click();
+      assert.deepEqual(await modes(), { auto: "false", skip: "true", fast: true });
+      await page.locator('[data-test="vn-auto"]').click();
+      await page.keyboard.down("Control");
+      assert.deepEqual(await modes(), { auto: "false", skip: "true", fast: true });
+      await page.locator('[data-test="vn-auto"]').click();
+      await page.keyboard.up("Control");
+      assert.deepEqual(await modes(), { auto: "true", skip: "false", fast: false });
+      await page.locator('[data-test="vn-auto"]').click();
+      assert.deepEqual(await modes(), { auto: "false", skip: "false", fast: false });
+      await page.locator('[data-test="vn-skip"]').click();
       await page.locator('[data-test="choice-0"]').click();
       await page.waitForFunction(() => document.querySelector("#preview-status").textContent.includes("会話終了"));
       await page.selectOption("#preview-scene", "names");

@@ -67,6 +67,8 @@ function buildDom() {
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
+  dom.autoBtn.setAttribute("aria-pressed", "false");
+  dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
   host.addEventListener("pointerup", (e) => {
@@ -85,11 +87,20 @@ function buildDom() {
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
 }
 
-function setAuto(v) { autoMode = v; dom?.autoBtn.classList.toggle("on", v); if (v) kickAuto(); }
+function setAuto(v) {
+  if (v) setSkip(false);
+  autoMode = v;
+  dom?.autoBtn.classList.toggle("on", v);
+  dom?.autoBtn.setAttribute("aria-pressed", String(v));
+  clearTimeout(autoTimer);
+  if (v) kickAuto();
+}
 function setSkip(v) {
+  if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
+  dom?.skipBtn.setAttribute("aria-pressed", String(v));
   clearTimeout(autoTimer);
   if (v && running?.typing) completeTyping();
   if (v || autoMode) kickAuto();

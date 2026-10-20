@@ -33,7 +33,7 @@
 }
 .vn-box .vn-name {
   left: 31px;
-  top: -35px;
+  top: -31px;
   width: 210px;
   min-width: 0;
   height: 37px;
@@ -59,7 +59,7 @@
 }
 .vn-controls {
   right: 80px;
-  bottom: 210px; /* 本文上辺から10px。枠線を重ねない。 */
+  bottom: 206px; /* 本文上辺から6px。枠線を重ねない。 */
   width: 370px;
   height: 54px;
   padding: 5px 8px;
