@@ -1,0 +1,1360 @@
+{
+  "status": "PASS",
+  "scope": "isolated static CSS/DOM-shape fixture; no game scripts/playthrough; art placeholder and fallback fonts",
+  "source_main": "0fef9526f37696b134a80a119e1051b8247f6122",
+  "count": 38,
+  "cases": [
+    {
+      "label": "pc",
+      "step": "setup",
+      "applies": false,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 1.5,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "desktop-narrow",
+      "step": "setup",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "phone-844",
+      "step": "setup",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09503173828125,
+          "height": 44.095054626464844
+        },
+        ".opt": {
+          "width": 252.4166717529297,
+          "height": 103.06055450439453
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 94
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-915",
+      "step": "setup",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.096923828125,
+          "height": 44.09687805175781
+        },
+        ".opt": {
+          "width": 266.65557861328125,
+          "height": 104.23384857177734
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 65
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-740",
+      "step": "setup",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".opt": {
+          "width": 233,
+          "height": 101.484375
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 139
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "ds",
+      "step": "setup",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "pc",
+      "step": "mix",
+      "applies": false,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 1.5,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "desktop-narrow",
+      "step": "mix",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "phone-844",
+      "step": "mix",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 8.6667,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 18.41668701171875,
+          "height": 18.416667938232422
+        },
+        ".fr-btn": {
+          "width": 44.09503173828125,
+          "height": 44.095062255859375
+        },
+        ".mix-footer>.btn": {
+          "width": 314.1666564941406,
+          "height": 44.09503173828125
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 149
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 183
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 695.86328125,
+            "r": 739.9583129882812,
+            "t": 252.5182342529297,
+            "b": 296.61328125
+          },
+          "b": {
+            "l": 503.7916564941406,
+            "r": 749.7083129882812,
+            "t": 44.958335876464844,
+            "b": 296.61327362060547
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_rect_after": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_hidden": true,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "phone-915",
+      "step": "mix",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 9.1556,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 19.45556640625,
+          "height": 19.455554962158203
+        },
+        ".fr-btn": {
+          "width": 44.09686279296875,
+          "height": 44.09687805175781
+        },
+        ".mix-footer>.btn": {
+          "width": 331.888916015625,
+          "height": 44.09686279296875
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 130
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 176
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 749.2975463867188,
+            "r": 793.3944702148438,
+            "t": 272.5208435058594,
+            "b": 316.6177062988281
+          },
+          "b": {
+            "l": 543.905517578125,
+            "r": 803.6944580078125,
+            "t": 47.49444580078125,
+            "b": 316.7786560058594
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_rect_after": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_hidden": true,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "phone-740",
+      "step": "mix",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 8.0,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 17,
+          "height": 17
+        },
+        ".fr-btn": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".mix-footer>.btn": {
+          "width": 290,
+          "height": 44.09375
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 177
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 203
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 619.40625,
+            "r": 663.5,
+            "t": 225.015625,
+            "b": 269.109375
+          },
+          "b": {
+            "l": 445.5,
+            "r": 672.5,
+            "t": 41.5,
+            "b": 269.109375
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_rect_after": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 0,
+          "client": 0
+        },
+        "preview_hidden": true,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "ds",
+      "step": "mix",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "pc",
+      "step": "mix-visible",
+      "applies": false,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 1.5,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "desktop-narrow",
+      "step": "mix-visible",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "phone-844",
+      "step": "mix-visible",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 8.6667,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 18.41668701171875,
+          "height": 18.416667938232422
+        },
+        ".fr-btn": {
+          "width": 44.09503173828125,
+          "height": 44.095062255859375
+        },
+        ".mix-footer>.btn": {
+          "width": 314.1666564941406,
+          "height": 44.09503173828125
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 149
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 187
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 695.86328125,
+            "r": 739.9583129882812,
+            "t": 252.5182342529297,
+            "b": 296.61328125
+          },
+          "b": {
+            "l": 503.7916564941406,
+            "r": 749.7083129882812,
+            "t": 44.958335876464844,
+            "b": 296.61327362060547
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 255.70831298828125,
+          "y": 43.333335876464844,
+          "width": 47.66668701171875,
+          "height": 245.91665649414062,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_rect_after": {
+          "x": 255.70831298828125,
+          "y": 43.333335876464844,
+          "width": 47.66668701171875,
+          "height": 245.91665649414062,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_hidden": false,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "phone-915",
+      "step": "mix-visible",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 9.1556,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 19.45556640625,
+          "height": 19.455554962158203
+        },
+        ".fr-btn": {
+          "width": 44.09686279296875,
+          "height": 44.09687805175781
+        },
+        ".mix-footer>.btn": {
+          "width": 331.888916015625,
+          "height": 44.09686279296875
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 130
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 170
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 749.2975463867188,
+            "r": 793.3944702148438,
+            "t": 272.5208435058594,
+            "b": 316.6177062988281
+          },
+          "b": {
+            "l": 543.905517578125,
+            "r": 803.6944580078125,
+            "t": 47.49444580078125,
+            "b": 316.7786560058594
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 281.8277587890625,
+          "y": 45.77777862548828,
+          "width": 50.3555908203125,
+          "height": 259.7889099121094,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_rect_after": {
+          "x": 281.8277587890625,
+          "y": 45.77777862548828,
+          "width": 50.3555908203125,
+          "height": 259.7889099121094,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_hidden": false,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "phone-740",
+      "step": "mix-visible",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 8.0,
+        ".fr-name small": 14.0,
+        ".mix-side .recipe-line": 14.0,
+        ".mix-taste p": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 17,
+          "height": 17
+        },
+        ".fr-btn": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".mix-footer>.btn": {
+          "width": 290,
+          "height": 44.09375
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".mix-side",
+          "initial": 0,
+          "final": 177
+        },
+        {
+          "selector": ".mix-list",
+          "initial": 0,
+          "final": 203
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": {
+        "focused": true,
+        "fits": true,
+        "rect": {
+          "a": {
+            "l": 619.40625,
+            "r": 663.5,
+            "t": 225.015625,
+            "b": 269.109375
+          },
+          "b": {
+            "l": 445.5,
+            "r": 672.5,
+            "t": 41.5,
+            "b": 269.109375
+          }
+        },
+        "outline": 3
+      },
+      "mix_preserved": {
+        "preview_rect_before": {
+          "x": 216.5,
+          "y": 40,
+          "width": 44,
+          "height": 227,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_rect_after": {
+          "x": 216.5,
+          "y": 40,
+          "width": 44,
+          "height": 227,
+          "font": 13,
+          "outline": "3px",
+          "scroll": 454,
+          "client": 454
+        },
+        "preview_hidden": false,
+        "clip_ancestors_equal": true,
+        "outer_and_guide_and_legend_rects_equal": true
+      }
+    },
+    {
+      "label": "ds",
+      "step": "mix-visible",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "pc",
+      "step": "pack",
+      "applies": false,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 1.5,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "desktop-narrow",
+      "step": "pack",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "phone-844",
+      "step": "pack",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09503173828125,
+          "height": 44.095054626464844
+        },
+        ".pack-choice": {
+          "width": 339.0833740234375,
+          "height": 59.88801574707031
+        },
+        ".pack-confirm": {
+          "width": 264.875,
+          "height": 44.095062255859375
+        }
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 133.1822967529297,
+            "bottom": 193.0703125
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 197.40365600585938,
+            "bottom": 257.3001403808594
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 261.63348388671875,
+            "bottom": 321.52996826171875
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 329.11328125,
+            "bottom": 373.2083435058594
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 38
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-915",
+      "step": "pack",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.096923828125,
+          "height": 44.09687805175781
+        },
+        ".pack-choice": {
+          "width": 358.21112060546875,
+          "height": 60.92378234863281
+        },
+        ".pack-confirm": {
+          "width": 279.816650390625,
+          "height": 44.09686279296875
+        }
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 137.0651092529297,
+            "bottom": 197.9888916015625
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 202.56666564941406,
+            "bottom": 263.4904479980469
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 268.0682373046875,
+            "bottom": 328.9920349121094
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 350.16424560546875,
+            "bottom": 394.2611083984375
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 36
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-740",
+      "step": "pack",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".pack-choice": {
+          "width": 313,
+          "height": 52.5
+        },
+        ".pack-confirm": {
+          "width": 244.5,
+          "height": 44.09375
+        }
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 127.890625,
+            "bottom": 180.390625
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 184.390625,
+            "bottom": 236.8984375
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 240.8984375,
+            "bottom": 293.40625
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 300.40625,
+            "bottom": 344.5
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 40
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "ds",
+      "step": "pack",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "pc",
+      "step": "place",
+      "applies": false,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 1.5,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "desktop-narrow",
+      "step": "place",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": false,
+      "hoverNone": false,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "phone-844",
+      "step": "place",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09503173828125,
+          "height": 44.095054626464844
+        },
+        ".opt": {
+          "width": 252.4166717529297,
+          "height": 103.06055450439453
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 94
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-915",
+      "step": "place",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.096923828125,
+          "height": 44.09687805175781
+        },
+        ".opt": {
+          "width": 266.65557861328125,
+          "height": 104.23384857177734
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 65
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "phone-740",
+      "step": "place",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".opt small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".opt": {
+          "width": 233,
+          "height": 101.484375
+        }
+      },
+      "initial_pack_actions": null,
+      "touch_scroll": [
+        {
+          "selector": ".bench-panel",
+          "initial": 0,
+          "final": 139
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "ds",
+      "step": "place",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "holes",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "heat",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "timer",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "steam",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "pull",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "care",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "outside",
+      "step": "serve",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    },
+    {
+      "label": "water",
+      "step": "setup-water",
+      "applies": false,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "before_after_geometry_equal": true
+    }
+  ]
+}
