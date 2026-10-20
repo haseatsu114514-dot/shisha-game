@@ -243,7 +243,7 @@ async function day1Errands() {
     save();
   }
   f._errand_scout_done = true;
-  state.slot = 2; // 偵察でこの日は終了。消耗・費用・抽選は従来の1回だけ。
+  state.slot = 2; // 偵察でこの日は終了。消耗・費用・行動後処理は従来の1回だけ。
   await afterAction({ exerted: true });
 }
 

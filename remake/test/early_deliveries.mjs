@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const source=await fs.readFile(new URL('../js/daily/calendar.js',import.meta.url),'utf8');
 const state={}, calls=[], saves=[], closed=new Set();
-let spins=0;
+let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
 const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
 const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
@@ -26,7 +26,7 @@ const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
  visitSpot:async spot=>{assert.equal(spot.cost,0);assert.equal(spot.stamina,0);state.flags._c_station_registered=true;calls.push({type:'register',day:state.day,slot:state.slot})},
  visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot})},
  storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),markMet:id=>state.met[id]=true,
- onAction:()=>spins++,presentNow:asyncNoop,
+ onAction:()=>actionEnds++,presentNow:asyncNoop,
  restingToday:()=>!!state.restDay?.fullDay,
  runNightPlan:async()=>0,nightPlan:()=>[],nightOccupied:()=>false,
  runHomeShisha:async()=>false,maybeConfession:async()=>false,unreadCount:()=>0,
@@ -44,10 +44,10 @@ await calendar.link(async spec=>{
 });
 await calendar.evaluate();const c=calendar.namespace;
 function reset({day=2,slot=0,flags={},story={}}={}){
- Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;spins=0;closed.clear();
+ Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();
 }
 reset();assert.equal(c.dueDelivery().charId,'minto');await c.deliver(c.dueDelivery());assert.equal(c.dueDelivery().charId,'adam');await c.deliver(c.dueDelivery());
-assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(state.slot,2);assert.equal(spins,2);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);
+assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(state.slot,2);assert.equal(actionEnds,2);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);
 assert(calls.find(x=>x.id==='remake_delivery_minto_handoff').opts.bg.endsWith('/peppermint.png'));
 // A reload from the committed checkpoint cannot pay or consume a slot twice.
 Object.assign(state,structuredClone(saves.at(-1)));assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);
@@ -63,16 +63,16 @@ reset({day:1,flags:{_errand_scout_done:false,_c_station_registered:false}});awai
 assert.deepEqual(calls.filter(x=>['shop','scout','register','visit'].includes(x.type)).map(x=>[x.type,x.id||'',x.day||1]),[['shop','',1],['scout','',1],['register','',2],['visit','adam',2]]);
 assert.equal(calls.find(x=>x.id==='remake_delivery_minto_handoff').day,2);
 assert(!calls.some(x=>x.type==='map'&&x.day===1&&!['shop','naru'].includes(x.pin)));
-assert.equal(spins,3);assert.equal(state.money,11000);assert.equal(state.flags._c_station_registered,true);
+assert.equal(actionEnds,3);assert.equal(state.money,11000);assert.equal(state.flags._c_station_registered,true);
 // Old DAY1-night checkpoints do not replay scouting or the existing registration.
-reset({day:1,slot:1});await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>['scout','register','shop'].includes(x.type)));assert.equal(state.money,14000);assert.equal(spins,2);
+reset({day:1,slot:1});await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>['scout','register','shop'].includes(x.type)));assert.equal(state.money,14000);assert.equal(actionEnds,2);
 // A full DAY2 rest defers both registration and ordered deliveries, without losing them.
 reset({day:2,slot:2,flags:{_c_station_registered:false,_delivery_schedule_v2:true}});
 state.restDay={chapter:1,day:2,fullDay:true};await c.runDaily({untilDay:4,nightEvents:{}});
 assert.equal(calls.find(x=>x.type==='register').day,3);
 assert.equal(calls.find(x=>x.id==='remake_delivery_minto_handoff').day,3);
 assert.equal(calls.find(x=>x.type==='visit'&&x.id==='adam').day,3);
-assert.equal(state.money,14000);assert.equal(spins,2);
+assert.equal(state.money,14000);assert.equal(actionEnds,2);
 // Saved scouting consumes no second fare/stamina on resume before its old registration.
 reset({day:1,flags:{_errand_scout_done:false,_errand_naru_visited:true,_errand_shop_done:true}});
 await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>x.type==='scout'));assert.equal(state.money,14000);
