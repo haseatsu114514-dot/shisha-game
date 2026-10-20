@@ -5,6 +5,7 @@ import { RINGS } from "./holes_logic.js";
 export const HOLE_TEMPLATES = [
   {
     id: "outer24", label: "外周24穴",
+    unlockFlag: "_hole_outer24_unlocked",
     counts: { outer: 24, middle: 0, inner: 0 },
     description: "外周から広く熱を回す。温度を落ち着かせやすい",
   },
@@ -14,7 +15,7 @@ export const HOLE_TEMPLATES = [
     description: "中周にも熱を届ける。外周だけより温度を動かしやすい",
   },
 ];
-export const DEFAULT_HOLE_TEMPLATE = "outer24";
+export const DEFAULT_HOLE_TEMPLATE = "outer12-middle12";
 export const availableHoleTemplates = (flags = {}, templates = HOLE_TEMPLATES) =>
   templates.filter((template) => !template.unlockFlag || flags[template.unlockFlag]);
 export const ringsForTemplate = (template) => RINGS

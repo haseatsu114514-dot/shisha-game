@@ -261,6 +261,13 @@
         {
           "type": "set_flag",
           "flag": "_naru_venue_invited"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_naru",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         }
       ],
       "branches": {
@@ -328,6 +335,37 @@
             "speaker": "naru",
             "face": "smile",
             "text": "難しく考えなくていい。お前が好きな菓子から、試してみろよ"
+          }
+        ],
+        "early_lime_exchange": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺も聞きたいことあったら投げる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、ライバルなのに、いいんですか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "ライバルだからだよ。中途半端な相手に勝っても、なんも残らねえ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、なるさんとLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_naru"
           }
         ]
       }
@@ -398,24 +436,11 @@
           "text": "（惜しみなく教えてくれる。……俺がこの人の立場なら、ここまでやれるだろうか）"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "俺も聞きたいことあったら投げる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、ライバルなのに、いいんですか？"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "ライバルだからだよ。中途半端な相手に勝っても、なんも残らねえ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_naru",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         },
         {
           "speaker": "naru",
@@ -436,15 +461,6 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……強いだけじゃない。この人は、強くなり方がまっすぐだ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──こうして、なるさんとLIMEを交換した。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_lime_contact_naru"
         }
       ],
       "branches": {
@@ -481,7 +497,38 @@
             "text": "（……信頼されてるのか、これは）"
           }
         ],
-        "cb_none": []
+        "cb_none": [],
+        "early_lime_exchange": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺も聞きたいことあったら投げる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、ライバルなのに、いいんですか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "ライバルだからだよ。中途半端な相手に勝っても、なんも残らねえ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、なるさんとLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_naru"
+          }
+        ]
       }
     },
     {

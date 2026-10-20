@@ -6,14 +6,16 @@ import { state, markMet, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
+import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable } from "../core/fortune-effects.js";
 
 export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
 
-export const fortuneToday = () => !!state && state.chapter === 1 && (state.day % 7 === 3 || state.day % 7 === 6);
+export const fortuneToday = () => !!state && [1, 2].includes(state.chapter) && (state.day % 7 === 3 || state.day % 7 === 6);
 
 /** 占い師の出店に寄る（時間は使わない）。戻り値=占ってもらったか */
 export async function doFortune() {
+  if (!fortuneToday() || state.slot !== 0 || state.fortuneDay === state.day) return false;
   const bg = bgRef(BG);
   const first = !state.flags._fortune_met;
   state.flags._fortune_met = true;
@@ -28,8 +30,8 @@ export async function doFortune() {
   if (!state.flags._fortune_go) return false;
   delete state.flags._fortune_go;
 
-  // 占える相手 = 知り合って好感度のある相手
-  const targets = Object.keys(state.affinity || {}).filter((id) => state.met[id] && DB.characters[id]);
+  // 占える相手 = 知り合って好感度のある相手（第2章でなると決裂した後は除外）
+  const targets = fortuneTargets(state, DB.characters);
   if (!targets.length) {
     await play("remake_fortune_no_target", { bg });
     return false;
@@ -42,11 +44,11 @@ export async function doFortune() {
   }, { bg });
   const picked = targets.find((id) => state.flags[`_fortune_pick_${id}`]);
   for (const id of targets) delete state.flags[`_fortune_pick_${id}`];
-  if (!picked) return false;
+  if (!picked || !isFortuneTargetAvailable(state, picked)) return false;
   addMoney(-FORTUNE_FEE);
-  state.fortune = { char: picked };
+  const trivia = grantFortuneReading(state, picked, DB.fortuneTrivia);
   state.fortuneDay = state.day;
   save();
-  await play("remake_fortune_result", { bg }); // {fortuneName} は interpolate で相手の名前になる
+  await play(trivia ? fortuneResultId(trivia) : "remake_fortune_result", { bg }); // {fortuneName} は interpolate で相手の名前になる
   return true;
 }

@@ -203,7 +203,8 @@
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
 .fr-name .fr-ratio { color: var(--accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.fr-name .fr-ratio:empty { display: none; }
+.fr-name .fr-ratio { min-height: 21px; }
+.fr-name .fr-ratio:empty { visibility: hidden; }
 .fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }
@@ -263,6 +264,8 @@
   touch-action: none;
 }
 .foil .foil-surface { position: absolute; inset: 0; border-radius: 50%; image-rendering: auto; pointer-events: none; }
+/* The silver top is above the crimped lower rim of the adopted foil image. */
+.foil-target-plane { position: absolute; inset: -3% 0 3%; pointer-events: none; }
 .foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed #29253266; pointer-events: none; }
 .foil-ring.cur { border: 1px solid #30263099; box-shadow: 0 0 0 1px #fff5; }
 .foil-markers, .foil-holes { position: absolute; inset: 0; pointer-events: none; }

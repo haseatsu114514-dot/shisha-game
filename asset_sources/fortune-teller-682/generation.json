@@ -1,0 +1,14 @@
+{
+  "tool": "image_gen",
+  "date": "2026-10-18",
+  "references": [
+    "assets/sprites/characters/sumi/chr_sumi_normal.png",
+    "assets/sprites/characters/maki/chr_maki_normal.png"
+  ],
+  "description": "Full-body elderly Japanese female street tarot teller, muted purple deep hood, gray hair, wrinkled hands, suspicious knowing smile, transparent; existing sprites referenced for style only. No smoking equipment.",
+  "source": "/workspace/generated_images/exec-5711fe9c-0881-4bf7-9e84-4cbc2746ac01.png",
+  "source_sha256": "01f6129fc01b34c86213b2e74c62fdf29e196f18d72b038d791d29f5d85e6bf6",
+  "runtime_sha256": "f2897a4feacb76c9353ea037251f34c4d787a16238d8e65991fe87b0fca1501f",
+  "encoding": "Lossless PNG optimize; RGBA unchanged.",
+  "prompt": "Create ONE new visual novel character sprite on a fully transparent background. The attached images are STYLE / technical framing references only: match their polished Japanese anime game illustration, crisp clean line work, carefully shaded cloth, readable full-body pose and approximately 7-head adult proportions. Do NOT copy their characters, outfits, faces or apron. New character: an elderly Japanese female street tarot fortune teller, about 65-70 years old, a recognizably classic mysterious fortune teller. Full body head to toe, centered, standing relaxed, both hands clearly visible. A deep muted plum-purple hooded robe, layered worn dark violet cloth with a few restrained dull gold details; hood casts a real shadow over upper face. Wisps of gray-white hair, visible subtle wrinkles at cheeks and chin, weathered wrinkled hands, narrow knowing eyes still slightly visible in hood shadow, a crooked small secretive smile (not broad friendly grin). Suspicious but charismatic, not evil, no horror monster, not a young woman in costume. One hand holds three worn tarot cards fanned close to her chest with generic symbolic card patterns; the other hand extends slightly as if inviting someone to sit. Cards have no lettering. Correct elderly hands with five fingers each, natural posture. Robe reaches ankles, small practical dark shoes visible. Full silhouette fits inside image with margin at top and bottom; body scale and portrait framing compatible with the attached game sprites. No furniture, no tarot table, no crystal ball, no background, no ground shadow, no frame, no writing or logos, no hookah or smoking equipment. Preserve truly transparent alpha."
+}

@@ -10,24 +10,20 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ、時間があるなら一台、練習してくか？"
+          "text": "はじめ、あのお姉さんの一台を作るぞ。俺が横で見てる"
         },
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "俺が横で見てる。手順を確かめたいなら付き合うぞ"
+          "text": "配合から提供まで、一つずつ手順を確かめよう"
         },
         {
           "type": "choice",
           "id": "tutorial_offer",
           "choices": [
             {
-              "text": "練習していく",
+              "text": "一台作る",
               "next": "practice"
-            },
-            {
-              "text": "今は練習しない",
-              "next": "skip"
             }
           ]
         }
@@ -42,18 +38,6 @@
             "speaker": "hajime",
             "face": "smile",
             "text": "お願いします。最初から確認させてください"
-          }
-        ],
-        "skip": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "今日はこのまま、お客さんの方をやります"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "おう。練習したくなったら、マップの家から「家で練習する」を選べ"
           }
         ]
       }
@@ -880,7 +864,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "本番までの{daysLeft}日間、家で手を動かせ。マップの「家で練習する」からだ"
+          "text": "本番までの{daysLeft}日間、手順を覚えておけ。台が用意できたら、家でも練習できる"
         },
         {
           "speaker": "sumi",
@@ -2326,7 +2310,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "１つずつ手を動かして覚えろ。通し練習は、マップの家から「家で練習する」だ"
+          "text": "１つずつ手を動かして覚えろ。家での練習は、台が用意できてからだ"
         }
       ]
     },

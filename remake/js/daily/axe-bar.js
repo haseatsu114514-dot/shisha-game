@@ -60,7 +60,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         }
       } });
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
-        venueHost("maki", DB.dialogues[welcome].lines[0].text, DB), el("p.sub-lead", { text: status }),
+        venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
         lesson,
         el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
           disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
@@ -83,7 +83,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       best: newBest ? entry : previous.best };
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
-    toast(`斧崎マキ「${DB.dialogues[reply].lines[0].text}」`, { kind: "good" });
+    toast(`斧崎マキ「${DB.dialogues[reply]?.lines?.[0]?.text || ""}」`, { kind: "good" });
     return true;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);

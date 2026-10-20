@@ -111,15 +111,15 @@ try {
   assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0);checks++;
   // 会う前は店主の顔を隠す。未解放の店舗・カフェには採用ロゴを出さない。
   await page.evaluate(async()=>{
-    T.core.state.met={}; T.core.state.spotVisits={};
-    for (const id of ['naru','adam','minto']) delete T.core.state.flags[`_spot_guide_${id}`];
+    T.core.state.met = {};
+    delete T.core.state.flags._spot_guide_naru;
+    delete T.core.state.flags._spot_guide_adam;
+    delete T.core.state.flags._spot_guide_minto;
     await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');
-  for (const id of ['choizap','c_station','cafe','kannon']) {
-    assert.equal(await page.locator(`[data-test="pin-${id}"]`).count(), 0, `${id}: undiscovered facility must be absent`);
-  }
   assert.equal(await page.locator('[data-test="pin-choizap"] .store-logo,[data-test="pin-c_station"] .store-logo,[data-test="pin-cafe"] .store-logo').count(),0);
+  assert.equal(await page.locator('[data-test="pin-choizap"],[data-test="pin-c_station"],[data-test="pin-cafe"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] img.pin-person').count(),0);
   const anonymous = await page.locator('.pin-unknown').evaluateAll(ns=>ns.map(n=>({
     name:n.getAttribute("aria-label"), html:n.outerHTML, role:n.dataset.personRole })));

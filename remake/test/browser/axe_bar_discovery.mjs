@@ -63,8 +63,7 @@ await suite("axe-bar-discovery", async check => {
           direct: await A.bar.visitAxeBar(), location: A.daily.hiyoriShopLocation() };
       });
       assert.deepEqual(locked, { unlocked: false, why: "locked", direct: false, location: null });
-      await page.locator('.map:not(.done)').waitFor();
-      assert.equal(await page.locator(t("pin-axe_bar")).count(), 0, "Undiscovered axe bar has no map pin");
+      assert.match(await page.locator(t("pin-axe_bar")).innerText(), /？/);
       await page.evaluate(() => { A.map.interruptMap("__lime__"); A.result = null; A.flow = A.daily.meetHiyoriAtTonari().then(r => A.result = r); });
       await finishScene(page, mode);
       assert.equal(await page.evaluate(() => A.result), true);

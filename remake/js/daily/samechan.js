@@ -43,10 +43,11 @@ function visitScript(id) {
   const answer = state.romanceChoices?.[SAMECHAN_BOND_CHOICE];
   if (id !== "samechan_shop_bond_question" || !answer) return id;
   const scene = DB.dialogues[id];
-  return { ...scene, lines: scene.lines.flatMap(line => {
+  if (!scene) return id;
+  return { ...scene, lines: (scene.lines || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== SAMECHAN_BOND_CHOICE) return [line];
     const choice = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
-    return scene.branches[choice.next];
+    return scene.branches?.[choice.next] || [];
   }) };
 }
 

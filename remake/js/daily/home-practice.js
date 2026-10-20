@@ -8,6 +8,7 @@ import { modal, setBg, showScreen, retire } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { runDrill, DRILLS } from "../craft/session.js";
 import { runFullPractice } from "../craft/practice.js";
+import { homeRig } from "./home-rig.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "./shop.js";
 
 export const HOME_PRACTICE_STAMINA = { full: -12, drill: -10 };
@@ -49,6 +50,7 @@ export function chooseHomePractice() {
 
 /** 家で練習する（1行動）。staminaGuard は calendar の体力確認。やめたら used: false */
 export async function runHomePractice({ staminaGuard }) {
+  if (!homeRig()) return { used: false, exerted: false };
   const pick = await chooseHomePractice();
   if (!pick) return { used: false, exerted: false };
   const cost = pick === "full" ? HOME_PRACTICE_STAMINA.full : HOME_PRACTICE_STAMINA.drill;

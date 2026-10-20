@@ -170,6 +170,13 @@
         {
           "type": "remember",
           "memory_id": "adam_origin"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_adam",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         }
       ],
       "branches": {
@@ -246,6 +253,32 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。必ず伝えます"
+          }
+        ],
+        "early_lime_exchange": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "煙の求道者よ。リンゴの導きで出会った縁だ。LIME、交換しておこう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、はい……"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、アダムとLIMEの連絡先を交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_adam"
           }
         ]
       }
@@ -423,35 +456,46 @@
           "text": "お前も、その魂の片鱗を持っている。だからこそ、俺の店に引き寄せられたのだ……"
         },
         {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……ならば、煙の求道者同士として繋がっておくのは道理。LIME、交換しておこう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あ、はい……"
-        },
-        {
-          "speaker": "adam",
-          "face": "smile",
-          "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──こうして、アダムとLIMEの連絡先を交換した。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_lime_contact_adam"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_adam",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "early_lime_exchange": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……ならば、煙の求道者同士として繋がっておくのは道理。LIME、交換しておこう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、はい……"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、アダムとLIMEの連絡先を交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_adam"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_adam_fourth",

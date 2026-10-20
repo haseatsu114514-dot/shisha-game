@@ -61,10 +61,10 @@ await suite("first-brew", async check => {
     await page.evaluate(async () => { await T.open(); window.running = T.holes.runHoles(cs); });
     await page.locator('[data-test="hole-start"]').click();
     await page.waitForTimeout(3500); await guide(page).click(); await page.waitForTimeout(100);
-    const hole = await page.locator(".foil > .foil-cursor").getAttribute("style");
+    const hole = await page.locator(".foil-target-plane > .foil-cursor").getAttribute("style");
     await page.evaluate(() => document.activeElement.blur());
     await page.keyboard.press("Space"); await page.waitForTimeout(1500);
-    assert.equal(await page.locator(".foil > .foil-cursor").getAttribute("style"), hole);
+    assert.equal(await page.locator(".foil-target-plane > .foil-cursor").getAttribute("style"), hole);
     assert.equal(await page.locator(".foil-holes .foil-hole").count(), 0);
     // 別の実セッション。弾幕・残り時間・温度も一緒に停止する。
     await page.evaluate(async () => {

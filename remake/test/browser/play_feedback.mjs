@@ -1,0 +1,151 @@
+// #733: 実配合の寸法・自主訪問解放・台の有無・イベント終端のスロット。
+import assert from 'node:assert/strict';
+import { suite } from './support.mjs';
+async function setup(page) {
+  await page.evaluate(async () => {
+    const core = await import('./js/core/state.js'); core.newGame(); core.state.phase = 'daily';
+    core.config.bgmVolume = core.config.seVolume = 0;
+    window.F = { core, ui: await import('./js/core/ui.js'), map: await import('./js/daily/map.js'),
+      spots: await import('./js/daily/spots.js'), rig: await import('./js/daily/home-rig.js'),
+      practice: await import('./js/daily/home-practice.js'), vn: await import('./js/vn/engine.js'),
+      chapter: await import('./js/chapters/ch1.js'), steps: await import('./js/craft/steps.js'),
+      session: await import('./js/craft/session.js'), data: await import('./js/core/data.js'),
+      stats: await import('./js/core/stats.js'), calendar: await import('./js/daily/calendar.js') };
+    F.chapter.setupHooks(); F.vn.vnTest.turbo = true;
+    F.vn.vnTest.choose = () => 0;
+    F.openMap = () => { F.mapRun = F.map.chooseSpot(); };
+  });
+}
+const devices = [['pc', {}], ['touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]];
+await suite('play-feedback', async check => {
+  for (const [device, options] of devices) {
+    const press = (page, selector) => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
+    await check(`${device}-mix-reserves-ratio-space`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        F.cs = F.session.newSession('tutorial');
+        F.cs.orderFlavorIds = ['lemon', 'orange', 'mint'];
+        F.session.openBench(F.cs); F.task = F.steps.stepMix(F.cs);
+      });
+      await page.locator('[data-test="mix-plus-mint"]').waitFor();
+      const boxes = () => page.locator('.bench-panel, .flavor-row, .fr-ratio').evaluateAll(ns => ns.map(n => {
+        const b = n.getBoundingClientRect(); return [b.x, b.y, b.width, b.height];
+      }));
+      const empty = await boxes();
+      await press(page, '[data-test="mix-plus-mint"]');
+      assert.deepEqual(await boxes(), empty, '1gで行・パネルが移動/拡大した');
+      assert.equal(await page.locator('[data-test="mix-ratio-mint"]').textContent(), '比率 100%');
+      await press(page, '[data-test="mix-plus-lemon"]');
+      assert.deepEqual(await boxes(), empty, '2種類目で行・パネルが移動/拡大した');
+      assert.equal(await page.locator('[data-test="mix-ratio-mint"]').textContent(), '比率 50%');
+      await press(page, '[data-test="mix-minus-lemon"]');
+      for (let i = 1; i < 12; i++) await press(page, '[data-test="mix-plus-mint"]');
+      assert.equal(await page.locator('[data-test="mix-ok"]').textContent(), 'このフレーバーで詰める');
+      await press(page, '[data-test="mix-ok"]'); await page.evaluate(() => F.task);
+      assert.deepEqual(await page.evaluate(() => F.cs.mix), { mint: 12 });
+    }, options);
+
+    await check(`${device}-map-layer-locks-and-home-rig`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        Object.assign(F.core.state.met, { naru: true, adam: true, minto: true });
+        F.openMap();
+      });
+      await page.locator('.map:not(.done)').waitFor();
+      for (const id of ['cafe', 'kannon', 'choizap', 'c_station']) assert.equal(await page.locator(`[data-spot="${id}"]`).count(), 0);
+      await press(page, '[data-spot="rest"]');
+      assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0);
+      assert.deepEqual(await page.evaluate(() => F.practice.runHomePractice({ staminaGuard: () => { throw Error('台なしで消耗確認'); } })), { used: false, exerted: false });
+      const geometry = await page.locator('.map-info').evaluate(n => {
+        const p = document.querySelector('.map-pins');
+        const b = n.getBoundingClientRect();
+        return { info: +getComputedStyle(n).zIndex, pins: +getComputedStyle(p).zIndex,
+          width: parseFloat(getComputedStyle(n).width), inStage: b.right <= innerWidth && b.bottom <= innerHeight };
+      });
+      assert(geometry.info > geometry.pins); assert.equal(geometry.width, 270); assert(geometry.inStage);
+      // ピンを説明の下へ置き、重なり位置の実ヒットテストでも説明が手前か確認。
+      assert(await page.evaluate(() => {
+        const info = document.querySelector('.map-info'), pin = document.querySelector('[data-spot="rest"]');
+        const b = info.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
+        pin.style.left = `${(b.x + 40 - stage.x) * 1280 / stage.width}px`;
+        pin.style.top = `${(b.y + 40 - stage.y) * 720 / stage.height}px`;
+        return !!document.elementFromPoint(b.x + 40, b.y + 40)?.closest('.map-info');
+      }));
+      await page.evaluate(() => { F.map.interruptMap(null); F.core.state.owned.push(F.rig.SUMI_RIG); F.openMap(); });
+      await page.locator('.map:not(.done)').waitFor(); await press(page, '[data-spot="rest"]');
+      await page.locator('[data-test="map-home-practice"]').waitFor();
+    }, options);
+  }
+  await check('voluntary-conversations-unlock-and-save', async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const s = F.core.state, can = id => F.spots.isUnlocked(F.spots.spotById(id));
+      // 配達で通る実visitCharは面識だけで解放しない。
+      await F.spots.visitChar('adam');
+      const tutorial = can('kannon');
+      s.spotVisits = { kannon: 1 }; const legacyVisited = can('kannon');
+      delete s.spotVisits.kannon;
+      for (const char of ['adam', 'naru', 'minto']) {
+        s.stamina = 100;
+        await F.spots.visitRival(F.spots.spotById(char));
+      }
+      const unlocked = ['kannon', 'cafe', 'c_station', 'choizap'].map(can);
+      F.core.save(); F.core.load();
+      return { tutorial, legacyVisited, unlocked, restored: ['kannon', 'cafe', 'c_station', 'choizap'].map(can) };
+    });
+    assert.equal(result.tutorial, false); assert.equal(result.legacyVisited, true); assert.deepEqual(result.unlocked, [true, true, true, true]);
+    assert.deepEqual(result.restored, result.unlocked);
+    await page.evaluate(() => F.openMap()); await page.locator('[data-spot="kannon"]').waitFor();
+    assert.equal(await page.locator('[data-spot="cafe"]').count(), 1);
+  });
+  await check('saved-night-pending-finishes-before-morning-without-new-reward', async page => {
+    await setup(page);
+    const before = await page.evaluate(async () => {
+      const s = F.core.state, reel = await import('./js/daily/reel.js');
+      Object.assign(s, { day: 5, slot: 2, weatherSeed: 4 });
+      Object.assign(s.flags, { _morning_5: true, _morning_6: true, _lime_tut: true,
+        _delivery_minto_done: true, _delivery_adam_done: true, _errand_scout_done: true,
+        _hiyori_meeting_done: true, _hiyori_message_delivered: true, _home_tonight: true });
+      Object.assign(s.reel, { installed: true, introDone: true, settingGuideDone: true, seed: 1 });
+      reel.onAction({ spent: 10 }); F.core.save(); F.core.load();
+      const before = { count: F.core.state.reel.count, stats: { ...F.core.state.stats } };
+      F.task = F.calendar.runDaily({ nightEvents: {}, untilDay: 7 });
+      return before;
+    });
+    await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
+    assert.equal(await page.evaluate(() => F.core.state.day), 5);
+    assert.equal(await page.locator('.rn-label').textContent(), '前回のスロット');
+    await page.locator('.reel-night').waitFor({ state: 'detached', timeout: 30000 });
+    await page.locator('.map:not(.done)').waitFor({ timeout: 30000 });
+    const after = await page.evaluate(() => ({ count: F.core.state.reel.count, stats: { ...F.core.state.stats },
+      pending: F.core.state.reel.pending.length, day: F.core.state.day }));
+    assert.equal(after.count, before.count); assert.deepEqual(after.stats, before.stats);
+    assert.equal(after.pending, 0); assert.equal(after.day, 6);
+  });
+  for (const slot of [0, 1]) await check(`slot-${slot}-spin-before-next-map-or-morning`, async page => {
+    await setup(page);
+    await page.evaluate(slot => {
+      const s = F.core.state;
+      Object.assign(s, { day: 5, slot, weatherSeed: 4 });
+      Object.assign(s.flags, { _morning_5: true, _morning_6: true, _lime_tut: true,
+        _delivery_minto_done: true, _delivery_adam_done: true, _errand_scout_done: true,
+        _hiyori_meeting_done: true, _hiyori_message_delivered: true });
+      Object.assign(s.reel, { installed: true, introDone: true, settingGuideDone: true, seed: 1 });
+      F.task = F.calendar.runDaily({ nightEvents: {}, untilDay: 7 });
+    }, slot);
+    await page.locator('.map:not(.done)').waitFor();
+    await page.locator('[data-spot="naru"]').click(); await page.locator('[data-test="map-go"]').click();
+    await page.locator('.reel-night .rw-strip.spinning').first().waitFor({ timeout: 30000 });
+    const spinning = await page.evaluate(() => ({ day: F.core.state.day, slot: F.core.state.slot,
+      maps: document.querySelectorAll('.map:not(.done)').length, label: document.querySelector('.rn-label').textContent }));
+    assert.equal(spinning.day, 5); assert.equal(spinning.slot, slot + 1); assert.equal(spinning.maps, 0);
+    assert.equal(spinning.label, '今回のスロット');
+    await page.locator('.reel-night').waitFor({ state: 'detached', timeout: 30000 });
+    await page.locator('.map:not(.done)').waitFor({ timeout: 30000 });
+    const done = await page.evaluate(() => ({ day: F.core.state.day, slot: F.core.state.slot,
+      pending: F.core.state.reel.pending.length, count: F.core.state.reel.count,
+      saved: JSON.parse(localStorage.getItem(F.core.SAVE_KEY)).reel.pending.length }));
+    assert.equal(done.pending, 0); assert.equal(done.saved, 0); assert(done.count >= 1);
+    assert.equal(done.day, slot === 0 ? 5 : 6); assert.equal(done.slot, slot === 0 ? 1 : 0);
+  });
+});

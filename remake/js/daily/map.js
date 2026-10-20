@@ -10,6 +10,7 @@ import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
 import { updateHud } from "./hud.js";
+import { homeRig } from "./home-rig.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
@@ -191,7 +192,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
           : el("div.mi-no", { text: av.why }),
         // 家ではシーシャ作りの練習もできる（#638・tonari から移した）。休むのは「家に帰る」のまま
-        av.ok && s.kind === "rest"
+        av.ok && s.kind === "rest" && homeRig()
           ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
           : null,
       );
@@ -227,7 +228,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     function renderPins() {
       pins.replaceChildren();
-      const spots = mapSpots().filter(s => s.kind !== "fortune" || fortuneToday());
+      const spots = mapSpots().filter(s => (s.kind !== "spot" || isUnlocked(s)) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
         id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
       })));
@@ -313,7 +314,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     renderPins();
     showScreen("map", root);
     interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
-    mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
+    mountReel(root); // 中断・旧保存に残った演出だけを回収する（通常は行動終了時に提示済み）
     onShown?.();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
     const previews = [...new Set(mapSpots().filter(isUnlocked)
