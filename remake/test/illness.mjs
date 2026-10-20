@@ -27,7 +27,7 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {} };
 const values = {
-  "hiyori.js": { visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
+  "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
@@ -59,7 +59,7 @@ const values = {
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null },
 };
-const files = { "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 const modules = new Map(), pending = new Map();
 function load(name) {
   if (!pending.has(name)) pending.set(name, (async () => {
