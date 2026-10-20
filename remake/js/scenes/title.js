@@ -8,10 +8,15 @@ import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
-import { openTrpgRoom } from "./trpg-room.js";
 import { mountTitleLayout } from "./title-layout.js";
 
+let titleRevision = 0;
+
 export function showTitle(preparedArt = null) {
+  const revision = ++titleRevision;
+  let leaving = false;
+  const current = () => !leaving && revision === titleRevision && document.body.dataset.screen === "title";
+  const refresh = () => { if (current()) showTitle(); };
   layers.hud.classList.remove("show");
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
@@ -29,22 +34,22 @@ export function showTitle(preparedArt = null) {
         title: "はじめから",
         body: "今のセーブデータは上書きされます。よろしいですか？",
         options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
-      }))) return;
+      }))) { refresh(); return; }
+      if (!current()) return;
+      leaving = true;
       wipeSave();
       newGame();
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
     }, "title-new"),
     item("LOAD", "つづきから", async () => {
       const key = await loadFlow();
-      if (!key || !loadFromSlot(key)) return;
+      if (!current()) return;
+      if (!key || !loadFromSlot(key)) { refresh(); return; }
+      leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
-    item("BOOKSHELF", "物語の本棚", () => openTrpgRoom(() => {
-      showTitle(art);
-      document.querySelector('[data-test="title-trpg"]')?.focus({ preventScroll: true });
-    }), "title-trpg"),
-    item("GALLERY", "ギャラリー", openGallery, "title-gallery"),
-    item("CONFIG", "設定", openConfig, "title-config"),
+    item("GALLERY", "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
+    item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
 
   const art = preparedArt || pickTitleArt();
@@ -97,7 +102,7 @@ function openConfig() {
   }));
   const blip = el("input", { type: "checkbox", onchange: (e) => { config.voiceBlip = e.target.checked; saveConfig(); } });
   blip.checked = config.voiceBlip;
-  modal({
+  return modal({
     title: "設定",
     body: el("div.cfg", [
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05)),
