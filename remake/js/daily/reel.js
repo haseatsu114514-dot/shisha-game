@@ -344,7 +344,7 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
+/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は同じ行動の終了時） */
 export function onAction({ spent = 0 } = {}) {
   if (!(spent > 0) || !state?.reel?.installed || state.phase !== "daily") { statBuffer = {}; return; }
   commitSpinSeries();
@@ -415,10 +415,12 @@ export const SETTING_HINTS = [
   { id: "ge4", w: (s) => (s >= 4 ? 4 : 0), lines: ["今日のボク、ちょっと本気かも？"] },           // 設定4以上確定
   { id: "six", w: (s) => (s === 6 ? 5 : 0), lines: ["……今日は、ボクにまかせて。"] },               // 設定6確定
 ];
-function settingHint(setting) {
+export function settingHint(setting) {
   const kinds = SETTING_HINTS.map((h) => ({ id: h.id, weight: h.w(setting) }));
-  const kind = SETTING_HINTS.find((h) => h.id === pickWeighted(Math.random, kinds));
-  return kind.lines[Math.floor(Math.random() * kind.lines.length)];
+  const picked = pickWeighted(Math.random, kinds);
+  const kind = SETTING_HINTS.find((h) => h.id === picked) || SETTING_HINTS[0];
+  const pool = kind?.lines?.length ? kind.lines : SETTING_HINTS[0].lines;
+  return pool[Math.floor(Math.random() * pool.length)] || SETTING_HINTS[0].lines[0];
 }
 const HINT_KEEP = 8;
 /** 示唆を記録する。period＝今の設定が何回目の抽選か（settingDraws）。設定が変わると前の示唆は「前の設定」になる */
@@ -577,7 +579,7 @@ export function mountReel(host, { delay = 500 } = {}) {
 }
 let current = Promise.resolve();
 
-/** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
+/** 行動のあと: その場でスロットを見せてから次の場面へ進む */
 export async function presentNow({ label = "今夜のスロット" } = {}) {
   const owner = state;
   await current; // 昼の分の演出が途中なら、終わってから今夜の分を回す

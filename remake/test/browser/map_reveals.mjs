@@ -36,6 +36,7 @@ try {
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'first map must not celebrate existing places');
     const saved = await page.evaluate(async () => {
       Object.assign(R.core.state.met, { adam: true, minto: true, sumi: true, tsumugi: true });
+      Object.assign(R.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
       return reopen();
     });
     await page.locator('[data-test="pin-kannon"].newly-revealed').waitFor();

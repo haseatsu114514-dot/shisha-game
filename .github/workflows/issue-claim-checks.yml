@@ -25,11 +25,13 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          # checkout@v4 uses blob:none automatically for sparse checkout.
           sparse-checkout: |
-            /.github/workflows/issue-claim.yml
             /tools/issue_claim_coordinator.cjs
             /tools/test_issue_claim.mjs
-          sparse-checkout-cone-mode: false
+            /.github/workflows/issue-claim.yml
+            /.github/workflows/issue-claim-checks.yml
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

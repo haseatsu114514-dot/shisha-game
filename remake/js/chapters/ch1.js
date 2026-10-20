@@ -32,6 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -83,11 +84,10 @@ export function setupHooks() {
       save();
     }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
-    if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
+    if (dialogueId === "remake_tutorial_offer" && branch === "practice") {
       const progress = openingProgress();
       progress.tutorialChoice = branch;
-      if (branch === "practice") setFlag("_tutorial_requested");
-      else delete state.flags._tutorial_requested;
+      setFlag("_tutorial_requested");
       save();
     }
     // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
@@ -156,22 +156,20 @@ async function openingPart() {
   // 旧版で一台を完成済み・新しい注文記録なしなら、接客だけ従来どおり続ける。
   const legacyLesson = flag("_tutorial_done") && !progress.firstOrderDone && !progress.firstBrew;
   if (!legacyLesson && await firstBrewOrder(progress) === false) return false;
-  // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
-  progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
-    : flag("_tutorial_skipped") ? "skip" : null;
+  // 冒頭の一台は必修。未完了の旧「skip」保存も、注文済みの配合を使ってレッスンへ戻す。
+  // 既に日常へ進んだ保存は openingPart を通らないので、完了した冒頭を繰り返さない。
+  if (progress.tutorialChoice === "skip" && !flag("_tutorial_done")) progress.offerDone = false;
+  const resumeChoice = progress.tutorialChoice === "practice" || flag("_tutorial_done");
+  progress.tutorialChoice = "practice";
+  setFlag("_tutorial_requested");
+  delete state.flags._tutorial_skipped;
   if (!progress.offerDone) {
     const offer = DB.dialogues.remake_tutorial_offer;
-    await play(progress.tutorialChoice
-      ? { ...offer, lines: offer.branches[progress.tutorialChoice], branches: {} }
-      : "remake_tutorial_offer", { bg: TONARI });
+    await play(resumeChoice ? { ...offer, lines: offer.branches.practice, branches: {} } : offer, { bg: TONARI });
     progress.offerDone = true;
     save();
   }
-  if (progress.tutorialChoice === "practice") await tutorial(progress);
-  else {
-    setFlag("_tutorial_skipped");
-    save();
-  }
+  await tutorial(progress);
   if (!progress.oneesanDone) {
     if (legacyLesson) await play("ch1_tutorial_oneesan", { bg: TONARI });
     else if (await serveFirstBrew(progress) === false) return false;
@@ -446,12 +444,12 @@ async function tournamentDay() {
     const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
     if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
-    state.tournament.stockSnap = { ...state.flavorStock }; // 再挑戦は大会の頭から＝持ち込み在庫も会場入り前に戻す
+    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
   showHud(false);
-  if (state.tournament.stockSnap) state.flavorStock = { ...state.tournament.stockSnap };
+  restoreEntryResources(state);
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
@@ -601,6 +599,7 @@ async function victory(cs) {
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
+  delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
   // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
@@ -661,7 +660,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
@@ -704,24 +703,25 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  const owner = state;
   if (state?.phase === "tournament") {
     recordTournamentLoss(state.tournament);
     save();
   }
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
+  if (state !== owner) return; // 準備待ち中にLOADした旧画面を、新しい保存の上へ出さない。
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
     onRetry: async () => {
-      const owner = state;
       if (!owner) { location.reload(); return; }
       await chooseRetryAssist(owner.tournament);
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
-      smokeWipe(() => { tournamentDay(); }, { color: "dark" });
+      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
     },
     onTitle: () => location.reload(),
   });

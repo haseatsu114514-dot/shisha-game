@@ -33,9 +33,11 @@ export function rememberFirstBrew(progress, cs, guided = true) {
 export async function firstBrewOrder(progress) {
   if (progress.oneesanDone || progress.firstOrderDone) return true;
   const owner = state, original = DB.dialogues.ch1_tutorial_oneesan;
+  if (!original?.lines) return false;
   const orderAt = original.lines.findIndex(l => l.speaker === "oneesan" && l.text?.startsWith("じゃあ"));
   if (orderAt < 0) throw new Error("First customer order is missing");
   const scene = DB.dialogues.remake_first_brew_order;
+  if (!scene?.lines) return false;
   const result = await play({ ...scene, lines: [...original.lines.slice(0, orderAt), ...scene.lines] }, { bg: TONARI });
   if (result?.cancelled || state !== owner) return false;
   progress.firstOrderDone = true;
@@ -62,10 +64,11 @@ export async function serveFirstBrew(progress) {
     save();
   }
   const original = DB.dialogues.ch1_tutorial_oneesan;
+  if (!original?.lines) return false;
   const serveAt = original.lines.findIndex(l => l.type === "show_cg" && l.cg_id === "cg_oneesan_first_smoke");
   if (serveAt < 0) throw new Error("First customer serving scene is missing");
   const lines = original.lines.slice(serveAt);
-  const reaction = DB.dialogues.remake_first_brew_response.branches[firstBrewResponse(progress.firstBrew.mix)];
+  const reaction = DB.dialogues.remake_first_brew_response?.branches?.[firstBrewResponse(progress.firstBrew.mix)] || [];
   const result = await play({ ...original, lines: [...lines.slice(0, 2), ...reaction, ...lines.slice(2)] }, { bg: TONARI });
   return !result?.cancelled && state === owner;
 }

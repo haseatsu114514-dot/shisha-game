@@ -80,7 +80,7 @@ try {
       await page.evaluate(() => { Q.core.state.seed = 131; Q.core.state.weatherSeed = 4; Q.core.state.reel.seed = 4321; });
       // The gift adds another real visit beyond the original axe/work scope.
       // Keep those existing modes' budget and all game-state assertions intact.
-      const deadline = Date.now() + (giftGoal ? 12 : 8) * 60000;
+      const deadline = Date.now() + (giftGoal ? 12 : workGoal ? 10 : 8) * 60000;
       let lastKey = '', lastProgress = Date.now(), lastMapKey = '';
       while (Date.now() < deadline) {
         await page.waitForTimeout(90);

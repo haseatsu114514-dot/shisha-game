@@ -106,7 +106,9 @@ reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(mone
 reset({ story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
 reset({ slot: 1, story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
-assert(handoff && /PEPPERMINT/.test(JSON.stringify(handoff)) && /この後よかったら/.test(JSON.stringify(handoff)));
+assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));
+assert.equal(handoff.lines[0].speaker, "minto");
+assert(!/bg_street|到着した|看板を確かめ|ドアを|店内に入ると/.test(JSON.stringify(handoff)));
 assert(!/一服してって|どうぞ、こっちへ/.test(JSON.stringify(handoff)), "Delivery must not auto-enter PEPPERMINT");
 const mintoFirst = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_minto.json", dataRoot), "utf8")).dialogues.find((d) => d.dialogue_id === "ch1_minto_first");
 assert(mintoFirst?.branches?.dl_door?.some((line) => /配達してくれた/.test(line.text || "")));
