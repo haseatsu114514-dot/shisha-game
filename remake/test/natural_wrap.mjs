@@ -11,6 +11,26 @@ for (const text of ["今日は準備をします。お客様のため丁寧に�
   const rows = autoWrap(text, 12).split("\n");
   assert(rows.some(row => row.includes(text.includes("お客様") ? "お客様のため" : "私の大切")), rows.join("｜"));
 }
+// P2: fit-sized words/chunks must yield to kinsoku when punctuation needs room.
+for (const [text, limit] of [
+  ["こんにちは。今日は晴れです。", 5],
+  ["私の友達の仕事の仲間の家族の会社の車の鍵の持ち主。次です", 24],
+]) {
+  const layouts = [[limit, {}], [limit, {maxWidth:limit, measure:textWidth}]];
+  if (limit < 24) layouts.push([24, {maxWidth:limit, measure:textWidth}]);
+  for (const [unitLimit, layout] of layouts) {
+    const rows = autoWrap(text, unitLimit, layout).split("\n");
+    assert.equal(rows.join(""), text);
+    assert(rows.every(row => textWidth(row) <= limit));
+    assert(!rows.slice(1).some(row => /^[、。！？』）]/u.test(row)), rows.join("｜"));
+    const diagnostics = wrapDiagnostics(text, unitLimit, layout);
+    assert(!diagnostics.some(d => d.reason === "kinsoku"));
+    assert(diagnostics.some(d => d.protectionRelaxed && d.forced), JSON.stringify(diagnostics));
+  }
+}
+// At one unit there is genuinely no safe boundary for a following fullwidth stop.
+assert.equal(autoWrap("あ。", 1), "あ\n。");
+assert(wrapDiagnostics("あ。", 1).some(d => d.reason === "kinsoku" && d.forced));
 for (const text of ["ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", "あいうえおかきくけこさしすせそ", "👩‍🍳が👩‍🍳が"] ) {
   for (const limit of [0.5, 1, 3, 8]) {
     const rows = autoWrap(text, limit).split("\n");

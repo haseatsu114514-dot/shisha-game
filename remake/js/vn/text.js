@@ -178,7 +178,10 @@ function boundaryInfo(tokens, limit, layout) {
       const k = byOffset.get(at);
       if (k === undefined) continue;
       const prior = protectedAt.get(k);
-      if (!prior || wholeFits || !prior.fits) protectedAt.set(k, { reason, fits: wholeFits });
+      const selected = !prior || wholeFits || !prior.fits ? { reason, fits: wholeFits } : prior;
+      protectedAt.set(k, { ...selected,
+        wordFits: !!prior?.wordFits || (reason === "inside-word" && wholeFits),
+        insideWord: !!prior?.insideWord || reason === "inside-word" });
     }
   }
   return { fits, protectedAt, phrases: phraseStarts(tokens) };
@@ -189,7 +192,7 @@ function boundaryPenalty(tokens, k, info) {
   if (!safeBoundary(tokens, k)) return Infinity;
   const protectedPart = info.protectedAt.get(nextVisible(tokens, k));
   if (protectedPart?.fits) return Infinity;
-  if (protectedPart?.reason === "inside-word") return 2;
+  if (protectedPart?.insideWord) return 2;
   const before = tokens[previousVisible(tokens, k)]?.value || "";
   const after = tokens[nextVisible(tokens, k)]?.value || "";
   if (CLOSERS.includes(before) && HIRAGANA.test(after)) return 1;
@@ -202,7 +205,7 @@ function naturalWrap(segment, limit, layout) {
   if (!tokens.length) return [];
   const info = boundaryInfo(tokens, limit, layout), n = tokens.length;
   const best = new Array(n + 1);
-  best[n] = { penalty: 0, count: 0, cost: 0 };
+  best[n] = { kinsoku: 0, words: 0, chunks: 0, penalty: 0, count: 0, cost: 0 };
   // 後続行の最良結果を保存する反復DP。再帰・組合せの全列挙はしない。
   for (let start = n - 1; start >= 0; start--) {
     let visible = "", units = 0, visibleCount = 0;
@@ -220,16 +223,21 @@ function naturalWrap(segment, limit, layout) {
       const tail = best[next];
       if (!tail) continue;
       const penalty = boundaryPenalty(tokens, end, info);
+      const part = end < n ? info.protectedAt.get(nextVisible(tokens, end)) : null;
       const before = tokens[previousVisible(tokens, end)]?.value || "";
-      choices.push({ end, next, penalty: penalty + tail.penalty, count: 1 + tail.count,
+      choices.push({ end, next,
+        kinsoku: tail.kinsoku + (end < n && !safeBoundary(tokens, end) ? 1 : 0),
+        words: tail.words + (part?.wordFits ? 1 : 0),
+        chunks: tail.chunks + (part?.fits ? 1 : 0),
+        penalty: tail.penalty + (Number.isFinite(penalty) ? penalty : 0), count: 1 + tail.count,
         cost: tail.cost + (end === n ? 0 : (BREAK_AFTER.includes(before) ? 0 : 1) + (1 - units / limit) ** 2) });
       if (!fits) break;
     }
-    const compare = (a, b) => a.penalty - b.penalty || a.count - b.count || a.cost - b.cost || b.end - a.end;
-    const valid = choices.filter(c => Number.isFinite(c.penalty));
-    // 禁則と幅が両立しない極小幅だけ、最も先へ進む境界を使う（診断対象）。
-    best[start] = valid.reduce((best, c) => !best || compare(c, best) < 0 ? c : best, null) || choices.at(-1);
-    if (best[start] && !Number.isFinite(best[start].penalty)) best[start].penalty = 100 + best[best[start].next].penalty;
+    // 全経路で禁則を最優先。両立不能なら接続句、次に単語の保護を緩める。
+    // 後続行の違反も比較するので、局所的に安全でも句点を次行へ追い出す案を避ける。
+    const compare = (a, b) => a.kinsoku - b.kinsoku || a.words - b.words || a.chunks - b.chunks ||
+      a.penalty - b.penalty || a.count - b.count || a.cost - b.cost || b.end - a.end;
+    best[start] = choices.reduce((best, c) => !best || compare(c, best) < 0 ? c : best, null);
   }
   const lines = [];
   for (let start = 0; start < n;) {
@@ -269,8 +277,10 @@ export function wrapDiagnostics(raw, limit = WRAP_LIMIT, layout = {}) {
       if (at < tokens.length) {
         const part = info.protectedAt.get(nextVisible(tokens, at));
         const penalty = boundaryPenalty(tokens, at, info);
-        if (part || penalty > 0) diagnostics.push({ paragraph, row, reason: part?.reason ||
-          (safeBoundary(tokens, at) ? "weak-boundary" : "kinsoku"), line, next: rows[row + 1], forced: !part?.fits });
+        const safe = safeBoundary(tokens, at);
+        if (part || penalty > 0) diagnostics.push({ paragraph, row,
+          reason: !safe ? "kinsoku" : part?.insideWord ? "inside-word" : part?.reason || "weak-boundary",
+          line, next: rows[row + 1], forced: !!part || !safe, protectionRelaxed: !!part?.fits });
       }
       while (at < tokens.length && SPACES.includes(tokens[at].value)) at++;
     });
