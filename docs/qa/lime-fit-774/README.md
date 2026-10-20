@@ -1,82 +1,68 @@
-# Issue #774 / PR #778 — 再開時の検証と未完事項
+# LIME交換演出のstage fitting — #774 / PR #778
 
-担当: `codex-b-lime-20261021-774`。2026-10-21 JST。
+1280×720固定構図の採用済み交換演出を可変stage全体へfitする。
+既存画像・文字・音・交換条件・一度きり判定・保存schemaは変更しない。
 
-## 保存済み修正と予約
+## 実ブラウザで確認した欠陥
 
-既存ブランチ `codex/b-774-lime-fit-4c70` の保存HEAD
-`4b863d9d9618d8b93c3c9fbdad62f0a40fb9bb30` を継続する。
-今回、製品コードは変更していない。採用済み1280×720の交換演出を
-stage全体へfitする既存修正を保持する。
+DS横844×390ではstageが844×326になる一方、修正前のカードはtop210px・高さ250px、
+見出しはtop510px。元のmotionを同じ本番VN/DSレイアウトで実行すると、
+カードは下端で切れ、見出しは画面外になる。収容assertionも修正前だけ失敗した。
 
-再開直前の公開APIでPRの現HEAD一致、pickup run `39500193768` の
-completed/success、最新bot comment `6301843686` のowner/run一致を確認。
-handoff `39486565024` / comment `6299967812` の stopped/pushed=true を確認済み。
-予約の再取得・解放・他workerのowner流用なし。
+![修正前の横DS](touch-before.png)
+![修正後の横DS](touch-after.png)
+![修正後のPC](pc-after.png)
 
-## 確認した経路と限界
+修正はLIME専用1280×720コンテナの中央fitとResizeObserverの終了時解除だけ。
+背景はstage全面を維持する。報告者本人の相手・画面・設定・セーブ状態は情報不足で未特定。
+本記録は再現できたstage欠陥の修復証拠であり、元報告の全経路を特定した証拠ではない。
 
-なる／アダムの初回交換会話は `data/dialogue/ch1_naru.json` と
-`ch1_adam.json` の `early_lime_exchange` から `_lime_contact_*` を設定する。
-`vn/engine.js` は既存contacts/フラグで未交換なら
-`core/scene-motions.js` → `motions/lime.js` を呼ぶ。
-SKIP・動き軽減・既存contacts・既読演出は既存仕様による抑止。
+## 検証結果
 
-DS横844×390で上64pxを除くstage高326pxに対し、修正前の見出しtopは
-510px。この固定座標の欠陥は既存修正の根拠であり、報告者が実際に
-この経路を通った証拠ではない。相手・場面・画面方向・設定・セーブ状態を
-質問したが、本記録作成時点では回答未受領。原因を特定済みとは扱わない。
+- `node --experimental-vm-modules remake/test/lime_fit_774.mjs`: PASS。
+  PC1280×720・横DS844×326・縦390×622、resize、正常/例外cleanup、SE1回、
+  初回/繰返し抑止、旧contacts、SKIP、動き軽減。main統合でengineが変わったため今回再検証。
+- `node --experimental-vm-modules remake/test/lime_save_774.mjs`: PASS。
+  実state/save/load/手動枠/migrateとengine分岐、Map storage/代替演出による局所検証。
+  なる/アダム初回・交換後LOAD抑止、schema17旧contacts、SKIP後LOADを確認。
+- `node remake/test/browser/lime_exchange_774.mjs`: PC/横持ちタッチ2ケースPASS。
+  本番shell/CSS、VN engine、実際の交換branch、scene wrapper/motion、DS layout、
+  saveFlow/loadFlow/slot保存・読込を使う局所ブラウザ検証。
+  手動枠を実clickし、交換前SAVE→新state→LOAD→初回演出1回、
+  交換後SAVE→新state→LOAD→再演出0回、savedAt以外の全state復元を確認。
+  PCはscale1、横DSはscale0.452777…、カード/見出しの実rect収容を確認。
+  pageerror0。favicon404のみ対象外として記録し、ゲームresourceの404は0。
+  [生の測定結果](results.json)。スクリーンショットも目視確認した。
+- 修正前moduleを同じ横DSテストへ渡すと収容assertion失敗（上記before画像）。
+- 構文検査、diff whitespace、Git Safety: PASS。
 
-## 検証
+ブラウザテストは本編boot/loadAll・全章・実visitChar・実機Safariを走らせない。
+実交換branchだけを本番エンジンに渡す。モジュール、DOM、animation、storage、保存UIは代替しない。
+Chrome/Playwrightは既存導入分、sandbox有効。先のsandbox内SIGABRT後、実行環境の変更承認を
+受けたため再確認できた。初回fixtureのサーバーパス誤りと不足resourceは検査対象を確認して修正し、
+同条件の不明な再試行ではない。assertionは緩和していない。
 
-- 保存HEADの既存 `lime_fit_774.mjs` 成功結果と独立レビュー記録を再利用。
-  製品motion/test blobを変更していないため同じfit検証は再実行していない。
-- 新規 `node --experimental-vm-modules remake/test/lime_save_774.mjs`: PASS。
-  本番state/save/load/saveToSlot/loadFromSlot/migrateと本番engineのset_flag分岐を使用。
-  なる・アダムについて交換前SAVE/LOAD後の初回1回、交換後の手動枠SAVE/LOADと
-  全state復元（savedAt除外）、再演出0回を確認。schema17のcontactsあり旧セーブ、
-  SKIPを模した演出省略後のSAVE/LOADで再演出0回も確認。
-  localStorageはMap、演出は代替。visitChar終了後のcontacts登録はfixtureで行う。
-  ブラウザUI・実visitChar・描画の検証ではない。
-- 新規test構文検査とdiff whitespace: PASS。
-- 既存ChromeをPlaywrightからsandbox有効で起動: SIGABRTで失敗、UNCLASSIFIED。
-  ブラウザ起動前のためスクリーンショット・実画面・実SAVE/LOAD操作は未確認。
-  sandbox無効化・権限拡大・再試行・ブラウザ導入なし。
+実行例（既存Playwright/Chromeを使う場合のみ環境変数を指定）:
 
-## checkout・並行作業
+```sh
+PLAYWRIGHT_MODULE=/path/to/playwright-core/index.mjs \
+CHROME_PATH='/path/to/Google Chrome' node remake/test/browser/lime_exchange_774.mjs
+```
 
-初期未展開のindexを `git read-tree -mu HEAD` で展開し、必要な
-AGENTS/protocol、Git Safety、hooksをsparse対象に保持した。
-独立root・origin・canonicalRoot一致、clean status、Git Safety PASS、
-core.hooksPath=.githooksを確認。merge-baseは
-`625f197ca6f06d47073f3a1734cdd49edd99220c`。
-確認したorigin/mainは `ea0229dbd6635299b78faba04c4956f28a9e0577`、14 commits先。
-最新main取込は未実施。Git Safetyのbehind WARNを残し、ERRORなしを確認した。
+`LIME_SOURCE`で修正前lime.js、`QA_ONLY=touch`で修正前の横DSだけを検証できる。
+`QA_OUT`は証拠出力先。全ゲーム起動や全章検証の代替とはしない。
 
-PR738/794/793/761の取得済み変更一覧、Issue790/804/760の範囲に対し、
-既存lime.js/fit test・今回の保存test/QA記録の重複なし。
-spots.js等の並行作業ファイルは変更していない。
-PR794・#775・他担当フォルダ・明示保留Issueの変更なし。
+## 保存・予約・境界
 
-## 通信上限超過・停止
+担当 `codex-b-lime-20261021-774`、pickup39500193768 success、bot6301843686のowner/run一致を
+再開時に確認。旧handoff39486565024 stopped/pushedと保存HEAD4b863d9を保全し、同じbranchを継続。
+main `ea0229dbd6635299b78faba04c4956f28a9e0577` をmerge commit d6f7e749で統合済み。
+#775/PR794・並行PRの製品ファイルには追加編集しない。
 
-本担当累計のAPI応答本文は1,329,196 bytes、保存された受信Git packは
-17,064,490 bytes、合計18,393,686 bytes。前回報告4,019,404 bytesからの
-増分は14,374,282 bytes。今回残枠約8MBを超過したため追加取得を停止。
-これは保存本文/packサイズの実測で、HTTP/TLS等を含む回線総量は未計測。
-他担当約7.5MBは司令塔の申告値であり、本担当の実測ではない。
+通信量の旧上限超過（累計本文/pack18,393,686 bytes）はIssueに保全する。
+その後07:32–07:33 JSTの本人承認で上限・GitHub書込み禁止・main merge禁止は撤回された。
+これは未検証のmerge条件を免除する承認ではない。
 
-想定外pack `9b70a26820cd24ecd81a3c229c6ae74aa9c4db5c` は13,225,567 bytes。
-ローカルverify-pack/ls-treeによりmainの動画参考シートPNG等を含む20 blobsと確認。
-`--track`切替失敗時にindexだけ旧PRへ変わった後、mainに対するstatusの
-rename検出がlazy fetchを誘発した可能性があるが、原因は推測。
-対象外画像を意図せず取得した事実と、事前見積もり・取得監視の不足を記録する。
-以後、追加取得とGitHub書込みは行わない。
-
-## 次の作業
-
-ローカルcommitは保存・引継ぎ用。完成・Ready・CI成功ではない。
-司令塔へのpush/Issue/PR記録依頼は作業フォルダ直下 `GITHUB_REQUEST.md` に記載する。
-報告者経路の特定、実画面と実SAVE/LOAD、最新main統合と競合再確認、
-提出HEADの必須CI、公開確認が残る。追加取得は通信枠の再指示後のみ。
-mainへのmergeは禁止。未完Draftと予約を維持する。
+提出HEADのCI、最新main、正式なSequential merge read-only preflightとサーバー強制条件を
+最終確認する。preflightは現policy未承認、main保護APIはBranch not protectedと返している。
+これらを緑色checkや手動確認で置き換えない。公開はmergeされるまで未確認。
