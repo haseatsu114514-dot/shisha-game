@@ -1,0 +1,88 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "excited",
+      "normal",
+      "serious",
+      "smile",
+      "surprise",
+      "ventriloquism"
+    ],
+    "h": 0.7642,
+    "b": 0.0217,
+    "ax": 0.5009,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/dialogue/samechan.json#profile",
+  "setting": {
+    "id": "samechan",
+    "name": "波多野なぎさ",
+    "full_name": "波多野なぎさ",
+    "display_name": "サメちゃん",
+    "speech_style": {
+      "samechan": "一人称は「わし」、はじめへの呼びかけは「お主」。親しみのある「〜じゃ」「〜のじゃ」「〜じゃぞ」で話し、照れたり慌てたりすると言いよどむ。",
+      "korochan": "一人称は「余」。はじめは「勇者はじめ」、サメちゃんは「側近」と呼ぶ。王らしく短く断定する「〜である」「〜だ」、命令する「〜せよ」「〜しろ」の調子。本人の「じゃ」「のう」「おる」を使わず、落ち着いて本心をばらす。"
+    },
+    "role": "heroine_candidate",
+    "adult": true,
+    "nationality": "Japan",
+    "affiliation": "SHISHARK",
+    "romance_available": true,
+    "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
+    "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
+    "favorite_flavor": null,
+    "specialty_flavor": null,
+    "spriteScale": 0.91,
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "センス",
+      "notes": "競技の評価ではなく、客が過ごしやすい店を作るために試し、直す。大会のライバル枠へは追加しない。"
+    },
+    "visual_notes": "若々しく可愛らしい顔立ち。柔らかな半目、青い瞳のハイライト、笑うと目立つギザ歯。サメのフードと、王冠をつけたサメのぬいぐるみコロンブレ。",
+    "future_romance_id": "samechan",
+    "age": 20,
+    "height_cm": 156,
+    "intro_cutin": {
+      "title": "サメの王の側近",
+      "line": "お主、サメは好きか？",
+      "face": "smile",
+      "color": "#5aa8e6",
+      "name": "alias"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_excited.png",
+      "sha": "718a6f2a3c849f30f25f75bed31895aa93a0a29a",
+      "size": 552805
+    },
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_normal.png",
+      "sha": "22768d83367e0560e4576a1d15f2010008dc2076",
+      "size": 537895
+    },
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_serious.png",
+      "sha": "6a866e38a647b0a1050b3d75b88767ef95dd0df6",
+      "size": 530897
+    },
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_smile.png",
+      "sha": "7a2e9acdfea252f163fddb7545683f139c1e6087",
+      "size": 532253
+    },
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_surprise.png",
+      "sha": "f55d1339a17be927765183e81f4b8d1d88f8007f",
+      "size": 530046
+    },
+    {
+      "path": "assets/sprites/characters/samechan/chr_samechan_ventriloquism.png",
+      "sha": "c79e0572b1e5ceef2f13167541df868e52ec956a",
+      "size": 466594
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

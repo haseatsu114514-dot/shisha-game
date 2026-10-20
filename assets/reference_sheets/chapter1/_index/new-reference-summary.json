@@ -1,0 +1,82 @@
+[
+  {
+    "id": "samechan",
+    "name": "サメちゃん",
+    "bytes": 2120210,
+    "sha256": "0c056e4bd9ae04c2148106241bd2eb0c897c2d13ecb8d844340a9f4574d86324",
+    "path": "assets/reference_sheets/chapter1/samechan/samechan-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "tsumugi",
+    "name": "つむぎ",
+    "bytes": 1713379,
+    "sha256": "ee42166079415b4c14fb5769bdaff7f4636609988606ce8929597ca47435767f",
+    "path": "assets/reference_sheets/chapter1/tsumugi/tsumugi-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "rin",
+    "name": "凛",
+    "bytes": 1833700,
+    "sha256": "e2ad397e0d21b612d558ec68936527a5a16987107194cd20dfdd815a040cc4ad",
+    "path": "assets/reference_sheets/chapter1/rin/rin-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "naru",
+    "name": "なる",
+    "bytes": 2011583,
+    "sha256": "da91916ae72c61f073b41ade8e25a4ad295b8024850f3654c4d2a3bc8e084ac8",
+    "path": "assets/reference_sheets/chapter1/naru/naru-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "hiyori",
+    "name": "ひより",
+    "bytes": 2063797,
+    "sha256": "b576aa0766edb5a42574fc5bfd0dbda7276c0814851a10e3e5c16285258d437c",
+    "path": "assets/reference_sheets/chapter1/hiyori/hiyori-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "nagumo",
+    "name": "南雲",
+    "bytes": 1753531,
+    "sha256": "6ceda0b6c52346d71d47c4928a561677c1ec3bf9ce2b80f8e166c7fcea3bfa29",
+    "path": "assets/reference_sheets/chapter1/nagumo/nagumo-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "maezono",
+    "name": "上園",
+    "bytes": 1873936,
+    "sha256": "44f267cfa7a8f22885694285b10fc13fe266394178b479bc5f89bfcc0097acfe",
+    "path": "assets/reference_sheets/chapter1/maezono/maezono-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "pakki",
+    "name": "パッキー",
+    "bytes": 1716672,
+    "sha256": "1e2b945a8c57042cf11169e9faabaf628628ef834b6a4820e5acf251dd0b1b8b",
+    "path": "assets/reference_sheets/chapter1/pakki/pakki-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "salaryman",
+    "name": "サラリーマン",
+    "bytes": 1841564,
+    "sha256": "8e76d779b2a9f67d9714bda0d4bd7e7d4ddee6a8b7433e0474c53f56600e2f7f",
+    "path": "assets/reference_sheets/chapter1/salaryman/salaryman-reference-sheet.png",
+    "library_saved": true
+  },
+  {
+    "id": "maki",
+    "name": "斧崎マキ",
+    "bytes": 1963037,
+    "sha256": "4c5c37205fa44a4268e0545193b0643b1f3eef3437d4b5fb701634973b11c3bb",
+    "path": "assets/reference_sheets/chapter1/maki/maki-reference-sheet.png",
+    "library_saved": true
+  }
+]

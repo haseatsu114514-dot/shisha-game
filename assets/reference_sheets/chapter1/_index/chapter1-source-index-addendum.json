@@ -1,0 +1,43 @@
+{
+  "main": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "additional_ch1_sources": {
+    "data/dialogue/ch1_events.json": [
+      "naru",
+      "hajime",
+      "adam",
+      "minto",
+      "tsumugi",
+      "ageha"
+    ],
+    "data/dialogue/ch1_incognito.json": [
+      "hajime",
+      "???",
+      "customer"
+    ],
+    "data/dialogue/ch1_interval.json": [
+      "hajime",
+      "naru",
+      "adam",
+      "sumi"
+    ],
+    "data/dialogue/hiyori.json": [
+      "hiyori",
+      "hajime",
+      "sumi"
+    ]
+  },
+  "chapter_gates": {
+    "trpg": [
+      "export const trpgSpot = () => state?.chapter >= 2 ? {",
+      "  theme: \"cafe\", glyph: \"卓\", preview: \"bg_cafe\", minChapter: 2,",
+      "  if (recruiting || !state || state.chapter < 2 || state.phase !== \"daily\" || !state.trpg?.club?.founded",
+      "  if (!owner || owner.chapter < 2 || owner.phase !== \"daily\") return { completed: false };"
+    ],
+    "axe": [
+      "  if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== \"daily\" || state.slot !== 1 || signal?.aborted) return false;",
+      "        try { await runAxeThrow({ host: document.getElementById(\"stage\"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true }); }",
+      "        venueHost(\"maki\", DB.dialogues[welcome]?.lines?.[0]?.text || \"\", DB), el(\"p.sub-lead\", { text: status }),"
+    ]
+  },
+  "maki_tutorial_speaker": "data/dialogue/axe_tutorial.json: maki"
+}

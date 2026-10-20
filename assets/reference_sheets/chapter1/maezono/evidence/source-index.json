@@ -1,0 +1,75 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "excited",
+      "normal",
+      "serious",
+      "smile",
+      "surprise"
+    ],
+    "h": 0.9333,
+    "b": 0.0217,
+    "ax": 0.5068,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "maezono",
+    "name": "上園 文太郎",
+    "role": "judge",
+    "age": 39,
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "大会審査員の一人。口癖は「シーシャはおいしいねえ」。どんな一杯も本当に美味しそうに吸うため、出場者全員が彼に吸ってもらいたがる。\n煙の量・個性・インパクトを重視するスタイルで、見ていて「楽しい」「美味しそう」を感じさせる煙に対して特に高い評価を与える。\nシーシャ業界の有名ライター兼コラムニストで、日本最大のシーシャ情報サイト「HOOKAH PRESS」の編集長を務める。彼の記事やレビューはシーシャファンへの影響力が絶大。大会後の総評コラムはシーシャ界隈で毎回話題になる。",
+    "background_secret": "新しい物好きで、常に刺激的なシーシャ体験を求めている。\n実は超がつく平和主義者で、誰かが負けるシーンが見ていられないため、大会後は必ず全出場者を「それぞれに良さがあった」とフォローするコラムを書く。\nシーシャ以外にも「美味しいもの全般」が大好きで、大会の隙間に地元グルメを開拓するのが趣味。出張大会のたびにご当地グルメレポートをSNSにあげており、料理系フォロワーの方が多いのが悩み。",
+    "favorite_flavor": "ミント、ダブルアップル",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": "「美味しい」の語彙がシーシャ以外でも増えていた。はじめの煙を吸ってから、なぜかコラムに食事の描写が入るようになった。"
+    },
+    "visual_concepts": [
+      "39s friendly japanese male journalist, round cheerful face with a warm welcoming smile, slightly pudgy build, wearing smart casual (shirt with blazer, no tie), always holding a notepad and a shisha hose, genuinely excited expression while tasting",
+      "enthusiastic shisha media person, expressive happy face, wearing glasses and a press lanyard, leaning forward eagerly over the judge table, looking like he's about to declare something delicious at any moment"
+    ],
+    "spriteScale": 0.98,
+    "intro_cutin": {
+      "title": "HOOKAH PRESS編集長",
+      "line": "シーシャはおいしいねえ",
+      "face": "excited",
+      "color": "#ffb84a"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+      "sha": "fab35b1a52a1b59b4ec74cbb1f351ef10a0141b0",
+      "size": 624128
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+      "sha": "a6edd59479a9d683cfcce4933f041777091ef2de",
+      "size": 615222
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+      "sha": "0173690f1934d8298f61b38f83f3945ab33a8201",
+      "size": 568176
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+      "sha": "d23c0388b432f5520d42120a3460a6c15266ede9",
+      "size": 625488
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+      "sha": "760f59d94a68242b0b63f0194faf5d89c829e9b1",
+      "size": 622893
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}
