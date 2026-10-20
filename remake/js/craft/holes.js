@@ -202,9 +202,9 @@ export async function runHoles(cs) {
     punchBtn.disabled = finished || ringComplete();
     nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
     doneBtn.disabled = finished || !ready;
-    plan.textContent = elapsed >= limit && !ready ? "時間評価は終了。穴あけは続けられます"
-      : ready ? "選んだ配置が完成。結果を確認しよう"
+    plan.textContent = ready ? "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
+      : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
       : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`;
   };
 
