@@ -33,5 +33,5 @@ Branch: `codex/c-786-person-display-f3a71d8c`
 
 ## 保存・予約条件
 
-親の最新指示はbranch保存まで。PR/CI/skip-ciを実行しない。通常のfeature pushだけでは現mainのworkflowは起動しないことを確認して保存する。
-park/handoffは現coordinatorが保存済みsame-repository Open PR headsを要求するため、PRなしの本件では実行しない。#786はactive予約を保持。#782はPR794/head54ea55c・park39434947781のまま、P2修正は未実施。別IDや無断releaseで一件制約を回避しない。
+上記のbranch保存後、親から今回の具体的な追加許可を受領: この記録だけをHEAD `[skip ci]` でcommit/pushし、CI未実施・背景未完・マージ禁止を明記した保存専用Draftを作成する。製品・検証差分は `e7fcf257f1d8e01d17e244c9ae05d2b2a49cb9a8` と同一。CI・Ready化・merge・公開・背景編集/生成は許可されていない。
+そのDraftのremote headを照合して正式parkし、成功runと最新bot owner/run・保存head一致を確認後、#782を正式resumeする。#782のP2だけを最小修正・境界回帰後、既存Draftへfix commit `[skip ci]` で保存する範囲が今回の許可。各手続の完了前に次の編集へ進まない。別IDや無断releaseで一件制約を回避しない。
