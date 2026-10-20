@@ -119,11 +119,11 @@ export async function afterStory(dialogueId, { bg = null, signal = null, deferSa
 
 /** 保存済みの実回答から反応へ戻す。友人のvalue:0も回答で、再選択・再加算しない。 */
 function resumeChoice(scene, key, answer) {
-  if (!answer) return scene;
+  if (!answer || !scene) return scene;
   const rows = lines => (lines || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== key) return [line];
     const selected = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
-    return selected ? scene.branches[selected.next] : [line];
+    return selected ? scene.branches?.[selected.next] || [] : [line];
   });
   return { ...scene, lines: rows(scene.lines), branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([k,v]) => [k,rows(v)])) };
 }
@@ -218,10 +218,11 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   const answer = ["samechan", "hiyori"].includes(id) && state.romanceChoices?.[def.question];
   if (id === "hiyori" && answer && (answer.char !== id || !Number.isFinite(answer.value) || answer.value < 0)) return false;
   const scene = DB.dialogues[def.dialogue];
-  const resumeRows = rows => rows.flatMap(line => {
+  if (!scene) return false;
+  const resumeRows = rows => (rows || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== def.question) return [line];
     const choice = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
-    return scene.branches[choice.next];
+    return scene.branches?.[choice.next] || [];
   });
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
     branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;

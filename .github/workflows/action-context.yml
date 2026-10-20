@@ -59,6 +59,8 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/remake-browser/action-context
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/action-context-preview.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           for attempt in {1..30}; do
             if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
             sleep 1
