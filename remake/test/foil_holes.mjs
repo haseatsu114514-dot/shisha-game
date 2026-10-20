@@ -136,11 +136,13 @@ assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
 // 時間が0になってもテンプレート未完成では終えない。完成後は時間評価0で終了。
-active = await start(); await frame(35000); assert.equal(active.cs.holes, null); assert(find("hole-plan").textContent.includes("時間0"));
+active = await start(); await frame(35000); assert.equal(active.cs.holes, null); assert(find("hole-plan").textContent.includes("時間評価は終了。穴あけは続けられます"));
 fire("hole-done"); fire("hole-next"); keymap.Enter(); assert.equal(active.cs.holes, null);
 await punchCircle(6.4, 24, 38.4); await frame(now + 1);
 assert.equal(active.cs.holes, null, "timeout must not bypass the explicit finish");
+assert(!find("hole-plan").textContent.includes("続けられます"), "Completed foil must guide to the result instead of further punching");
 fire("hole-done"); await active.running;
+assert.equal(results.at(-1).button, "確認して次の工程へ");
 assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.total, 24); assert.equal(active.cs.holes.timeRatio, 0);
 assert.equal(active.cs.holes.score, sparse.score - 5);
 // 両テンプレートの既存good/badフックを通し、少穴の品質計算も引き続き同じ尺度に保つ。

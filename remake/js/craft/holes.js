@@ -111,7 +111,7 @@ export async function runHoles(cs) {
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
   const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = el("button.btn.small.ghost", { text: "この配置で仕上げる", dataset: { test: "hole-done" } });
+  const doneBtn = el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
     el("div.hr-stage", [disc, el("div.foil-legend", { "aria-label": "穴あけの目印" }, [
       el("span", [el("i.foil-marker.cur.next", { "aria-hidden": "true" }), "次の目標"]),
@@ -202,9 +202,10 @@ export async function runHoles(cs) {
     punchBtn.disabled = finished || ringComplete();
     nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
     doneBtn.disabled = finished || !ready;
-    plan.textContent = `${elapsed >= limit ? "時間0｜" : ""}${ready ? "選んだ配置が完成。仕上げて次へ進める"
+    plan.textContent = elapsed >= limit && !ready ? "時間評価は終了。穴あけは続けられます"
+      : ready ? "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
-      : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`}`;
+      : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`;
   };
 
   const closeRing = (ring) => {
@@ -333,6 +334,7 @@ export async function runHoles(cs) {
   await sleep(300);
   await resultCard(panel, {
     title: "穴あけ 結果",
+    button: "確認して次の工程へ",
     grade: res.grade,
     lines: [
       `テンプレート：${template.label}`,
