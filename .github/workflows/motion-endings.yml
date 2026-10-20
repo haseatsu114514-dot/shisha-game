@@ -38,9 +38,22 @@ permissions:
 jobs:
   motion-endings:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Leave room for repository checkout, browser setup and the full VN/editor suite.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Runtime inputs only; skip source-art archives and unrelated history.
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+            tools
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
