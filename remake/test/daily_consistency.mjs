@@ -136,6 +136,27 @@ for (const [day, slot, present] of [[6, 0, false], [6, 1, true], [8, 0, true], [
   await tonari.doBaito();
   assert.equal(selected() === "baito_baito_tsumugi_rain", present);
 }
+// #782 P2: DAY8昼の実来店で個別会話3→4へ進んでも、その日の夜に再登場しない。
+reset({ day: 8, slot: 0, story: { tsumugi: 3 }, visits: {}, contacts: [],
+  visitedDay: { tonari_baito: 8, tonari_customer: 8 } });
+db.dialogues = { ch1_tsumugi_fourth: { lines: [] } };
+await tonari.tonariCustomer();
+assert.equal(state.story.tsumugi, 4);
+assert(plays.includes("ch1_tsumugi_fourth"));
+state.slot = 1;
+assert(!peopleModule.namespace.spotPeople({ id: "tonari", kind: "tonari" }).some(p => p.id === "tsumugi"),
+  "昼の会話進行で同じ夜の在店表示が復活した");
+assert.equal(spots.hasNewEvent({ id: "tonari", kind: "tonari" }), false);
+plays.length = 0; rainy = true; db.baito = [byid.baito_tsumugi_rain];
+await tonari.doBaito();
+assert.equal(selected(), undefined, "昼に会ったつむぎが夜の接客候補へ戻った");
+// 後半の夜専用会話はDAY12夜に引き続き到達できる。
+reset({ day: 12, slot: 1, story: { tsumugi: 4 }, visits: {}, contacts: [],
+  flags: { _tsumugi_contest_submitted: true }, visitedDay: {} });
+db.dialogues = { ch1_tsumugi_fifth: { lines: [] } };
+await tonari.tonariCustomer();
+assert(plays.includes("ch1_tsumugi_fifth"));
+assert.equal(state.story.tsumugi, 5);
 // 相席日は昼の単独挨拶だけを省略。通常昼・夜の挨拶と来店報酬はそのまま。
 for (const [slot, guest, welcome] of [[0, true, false], [0, false, true], [1, true, true]]) {
   reset({ day: 8, slot, story: { minto: 1 }, visits: {}, contacts: [], visitedDay: {} }); hiyoriDue = guest;

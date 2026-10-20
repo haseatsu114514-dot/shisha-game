@@ -12,8 +12,8 @@ export function tsumugiAtTonari(save) {
   if (save.flags?._tsumugi_story_day === `${save.chapter}:${save.day}`) return false;
   if (save.chapter === 1 && TSUMUGI_STORY.some(step => step.day <= save.day
     && (step.day === save.day || !save.flags?.[step.flag]))) return false;
-  // 基本は夜。序盤の一部だけ昼に来る。夜専用の後半会話は夜に残す。
-  const slot = save.day % 4 === 0 && (save.story?.tsumugi || 0) < 4 ? 0 : 1;
+  // 序盤のDAY4/8だけ昼、それ以外は夜。会話の進行で同じ日の在店枠を変えない。
+  const slot = save.day < 10 && save.day % 4 === 0 ? 0 : 1;
   return save.slot === slot;
 }
 

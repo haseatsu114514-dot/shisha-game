@@ -11,7 +11,14 @@ assert.equal(tsumugiAtTonari(state), false);
 assert.equal(tsumugiAtTonari({ ...state, slot: 1 }), true);
 assert.equal(tsumugiAtTonari({ ...state, day: 8 }), true);
 assert.equal(tsumugiAtTonari({ ...state, day: 8, slot: 1 }), false);
-assert.equal(tsumugiAtTonari({ ...state, day: 8, slot: 1, story: { tsumugi: 4 } }), true);
+assert.equal(tsumugiAtTonari({ ...state, day: 8, slot: 1, story: { tsumugi: 4 } }), false);
+for (const day of [4, 8, 12]) {
+  for (const tsumugi of [0, 3, 4, 5, 6]) {
+    const at = { ...state, day, story: { tsumugi } };
+    assert.equal(tsumugiAtTonari({ ...at, slot: 0 }), day < 10);
+    assert.equal(tsumugiAtTonari({ ...at, slot: 1 }), day >= 10);
+  }
+}
 assert.equal(tsumugiAtTonari({ ...state, slot: 2 }), false);
 for (const step of TSUMUGI_STORY) {
   for (const slot of [0, 1]) assert.equal(tsumugiAtTonari({ ...state, day: step.day, slot }), false);
