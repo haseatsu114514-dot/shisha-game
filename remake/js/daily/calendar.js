@@ -25,7 +25,7 @@ import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
@@ -53,8 +53,21 @@ export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
   queuedLimeSender = null;
+  const owner = state;
+  // 登録済みでも、説明中に保存された初回体験は配達・日付更新より先に完了する。
+  // 導入済み旧保存から初回体験を推測せず、既存の確定・報酬処理を再利用する。
+  if (owner.flags._pakki_first_spin_pending) {
+    if (owner.flags._c_station_registered && owner.visitedDay.c_station == null) {
+      owner.visitedDay.c_station = owner.day;
+      // 初回確定でpendingが消え、その演出中に再中断しても訪問日を失わない。
+      save(); // 会話・訪問回数・成長・行動は繰り返さない。
+    }
+    await installReel();
+    if (state !== owner) return;
+  }
   // 中断/旧保存の回転も、日付更新や朝のイベントより先に完了させる。再抽選はしない。
   await showReelNow({ label: "前回のスロット" });
+  if (state !== owner) return;
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });

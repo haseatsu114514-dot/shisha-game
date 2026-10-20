@@ -60,6 +60,10 @@ jobs:
         env:
           ARTIFACT_DIR: .codex/artifacts/minto-start709
         run: node remake/test/browser/minto_delivery.mjs
+      - name: Resume registration first spin through production LOAD (#749)
+        run: |
+          node --experimental-vm-modules remake/test/early_deliveries.mjs
+          node remake/test/browser/reel_registration_load.mjs
       - name: Preserve compact delivery frame evidence
         if: always()
         run: |
