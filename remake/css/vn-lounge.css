@@ -6,6 +6,8 @@
   font-weight: 700;
   font-display: swap;
 }
+/* 会話枠と操作バーを一緒に2px下げ、内部組版と5pxの間隔を保つ。 */
+.vn-box, .vn-controls { translate: 0 2px; }
 :root {
   --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
   --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
