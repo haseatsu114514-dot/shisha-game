@@ -567,7 +567,7 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
