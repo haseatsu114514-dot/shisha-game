@@ -42,9 +42,35 @@ async function receiptToIntro(page, touch) {
   assert.fail('Actual C.STATION receipt did not reach installation intro');
 }
 async function readIntro(page, touch) {
-  for (let i = 0; i < 5; i++) await tap(page, '[data-test="reel-intro"]', touch);
-  await page.locator('[data-test="reel-guide-card"]').waitFor();
-  await tap(page, '[data-test="reel-intro"]', touch);
+  const intro = page.locator('[data-test="reel-intro"]');
+  await intro.waitFor();
+  const countBefore = await page.evaluate(async () =>
+    (await import('./js/core/state.js')).state.reel.count);
+  // Five text pages followed by the guide. Observe the current page: receipt
+  // input may already have advanced it. Each input must transition once; no retries.
+  for (let i = 0; i < 6; i++) {
+    const shown = await intro.evaluate(root => ({
+      text: root.querySelector('.ri-text')?.textContent,
+      guide: !!root.querySelector('[data-test="reel-guide-card"]'),
+    }));
+    if (shown.guide) {
+      await page.locator('[data-test="reel-guide-card"]').waitFor();
+      assert.equal(await page.evaluate(async () =>
+        (await import('./js/core/state.js')).state.reel.count), countBefore,
+      'Drew before explanation/guide finished');
+      await tap(page, '[data-test="reel-intro"]', touch);
+      await intro.waitFor({ state: 'detached' });
+      return;
+    }
+    assert(shown.text?.trim(), 'Missing intro text before guide');
+    await tap(page, '[data-test="reel-intro"]', touch);
+    await page.waitForFunction(previous => {
+      const root = document.querySelector('[data-test="reel-intro"]');
+      return !!root && (!!root.querySelector('[data-test="reel-guide-card"]')
+        || root.querySelector('.ri-text')?.textContent !== previous);
+    }, shown.text);
+  }
+  assert.fail('Intro exceeded five text pages without reaching the guide');
 }
 async function mintoNext(page, touch) {
   // Only advance the delivery instruction; never select/perform a delivery.
