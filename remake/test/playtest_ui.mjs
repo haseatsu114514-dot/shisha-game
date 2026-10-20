@@ -115,7 +115,7 @@ try {
   const appearance = shark.history.findIndex((l) => l.speaker === "samechan");
   assert(shark.history.slice(0, appearance).every((l) => l.bgm === "tonari"), `Theme before arrival: ${JSON.stringify(shark.history.slice(0, appearance))}`);
   assert.equal(shark.history[appearance].bgm, "sweets_or_sweets");
-  assert(shark.history.filter((l) => l.voice === "korochan").every((l) => l.name === "コロちゃん（腹話術）"));
+  assert(shark.history.filter((l) => l.voice === "korochan").every((l) => l.name === "コロちゃん"));
   assert(shark.history.some((l) => l.speaker === "samechan" && l.name === "サメちゃん"));
   assert.equal(shark.after, "tonari"); assert(shark.contact);
   assert.deepEqual(errors, []);

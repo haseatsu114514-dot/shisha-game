@@ -13,6 +13,7 @@ const artifacts = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifac
 export async function suite(name, run, {
   entry = baseURL,
   readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
+  initScript = null,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
@@ -25,6 +26,7 @@ export async function suite(name, run, {
     if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
+    if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];
     page.setDefaultTimeout(timeoutMs);

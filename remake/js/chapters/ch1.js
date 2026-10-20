@@ -134,7 +134,8 @@ async function openingPart() {
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
-    await scene.ready;
+    // Decorative images keep loading alongside narration; decoding them must not
+    // hold the first dialogue window (the cold-open lines need no portraits/bg).
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();

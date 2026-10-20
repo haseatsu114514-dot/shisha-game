@@ -7,8 +7,12 @@ import { suite, storageSnapshot, assertFits } from "./browser/support.mjs";
 await suite("title-arts", async (check) => {
   await check("boot-and-random", async page => {
     await page.locator(".title-art.ready").waitFor();
-    const bootImages = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /\/title_arts\/title_art_/.test(entry.name)).map(entry => entry.name));
-    assert.equal(bootImages.length, 1, "Boot downloaded more than the selected title image");
+    const timing = await page.evaluate(() => {
+      const resources = performance.getEntriesByType("resource");
+      return { count: resources.length, images: resources.filter(entry => /\/title_arts\/title_art_/.test(entry.name)).map(entry => entry.name) };
+    });
+    assert(timing.count < 2048, "Resource Timing buffer filled before title-image measurement");
+    assert.equal(timing.images.length, 1, "Boot must load exactly one selected title image");
     const before = await storageSnapshot(page);
     let previous = await page.locator(".title-art").getAttribute("data-character");
     for (let i = 0; i < 24; i++) {
@@ -83,4 +87,8 @@ await suite("title-arts", async (check) => {
       assert.deepEqual(await storageSnapshot(page), before);
     }, { viewport });
   }
+}, {
+  // Startup exceeds the default 250 entries. Allocate before navigation so the
+  // selected image stays observable; keep the exactly-one-image assertion.
+  initScript: () => performance.setResourceTimingBufferSize(2048),
 });

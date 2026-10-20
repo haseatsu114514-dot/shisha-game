@@ -202,15 +202,22 @@ await suite("trpg-main", async check => {
     assert((await button(page, "trpg-campaign-notice").textContent()).includes("予定"));
     await hit(page, "trpg-buy-ordinary-cup"); assert(await button(page, "trpg-play-ordinary-cup").isDisabled());
   });
-  await check("title-shelf-is-read-only-and-restores-focus", async page => {
+  await check("retained-shelf-module-is-read-only-without-title-entry", async page => {
     await prepare(page);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.trpg.stock = ["ordinary-cup"]; core.save(); const { showTitle } = await import("./js/scenes/title.js"); showTitle(); });
     const before = await storageSnapshot(page), stateBefore = await snapshot(page);
-    await hit(page, "title-trpg"); await button(page, "trpg-buy-ordinary-cup").waitFor();
+    assert.equal(await button(page, "title-trpg").count(), 0);
+    // Exercise the retained module directly; it is no longer a player-facing title route.
+    await page.evaluate(async () => {
+      const { openTrpgRoom } = await import("./js/scenes/trpg-room.js");
+      const { showTitle } = await import("./js/scenes/title.js");
+      openTrpgRoom(() => showTitle());
+    });
+    await button(page, "trpg-buy-ordinary-cup").waitFor();
     assert(await button(page, "trpg-buy-ordinary-cup").isDisabled());
     assert.equal(await page.locator('[data-test^="trpg-play-"]:enabled').count(), 0);
-    await hit(page, "trpg-campaign-close"); await button(page, "title-trpg").waitFor();
-    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "title-trpg");
+    await hit(page, "trpg-campaign-close"); await button(page, "title-new").waitFor();
+    assert.equal(await button(page, "title-trpg").count(), 0);
     assert.deepEqual(await storageSnapshot(page), before); assert.deepEqual(await snapshot(page), stateBefore);
   });
   await check("load-retry-cancel-and-owner-cleanup", async page => {

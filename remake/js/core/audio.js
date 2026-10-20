@@ -133,10 +133,16 @@ function ensureCtx() {
 export function unlockAudio() {
   audioUnlocked = true;
   const c = ensureCtx();
-  if (c && c.state === "suspended") c.resume().then(() => { syncRain(); syncPulls(); }, () => {});
-  else { syncRain(); syncPulls(); }
+  const ready = () => {
+    if (c?.state !== "running") return;
+    syncRain(); syncPulls();
+    // resume() is asynchronous. Read the latest request only after it succeeds;
+    // stop/scene changes during unlock must not revive an old title request.
+    if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
+  };
+  if (c && c.state === "suspended") c.resume().then(ready, () => {});
+  else ready();
   preloadSe();
-  if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
 }
 
 export function applyVolumes() {

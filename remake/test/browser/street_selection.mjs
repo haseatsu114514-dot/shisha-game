@@ -30,6 +30,7 @@ try {
         Object.assign(s, { phase: 'daily', day: 4 }); s.met.naru = s.met.minto = true;
         s.flags._spot_guide_naru = s.flags._spot_guide_minto = true;
         if (kind === 'locked') { delete s.met.naru; delete s.flags._spot_guide_naru; }
+        if (kind === 'met-only') delete s.flags._spot_guide_naru;
         if (kind === 'closed') s.day = 3;
         if (kind === 'temporary') s.flags._temporary_closed_naru = '1:4';
         if (kind === 'visited') s.visitedDay.naru = 4;
@@ -102,7 +103,7 @@ try {
       const s=await frame.evaluate(()=>__street.state());
       assert.equal(seen.size,4,`${dir}: all gait poses must appear`);
       assert.equal(s.moving,false,`${dir}: key release must stop`);
-      assert(s.strideDistance>320&&s.strideDistance<460,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
+      assert(s.strideDistance>320&&s.strideDistance<410,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
       distances.push(s.strideDistance);
     }
     assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction apparent-speed spread: ${JSON.stringify(distances)}`);
@@ -121,14 +122,14 @@ try {
     pass(`${label}: arcade/Hajime, fixed horizon/readable size, all 8 actual key directions/4 poses/equal speed/stop, ${touch ? 'touch' : 'pointer'}, cost zero`);
 
     for (const [kind, id, door, why] of [
-      ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
+      ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['met-only', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
       ['temporary', 'naru', 'kemurikusa', '本日臨時休業'], ['visited', 'naru', 'kemurikusa', '今日はもう行った'],
       ['poor', 'naru', 'kemurikusa', 'お金が足りない（3,000円）'],
       ['', 'cafe', 'cafe', '今はスミさんの頼みが先'],
     ]) {
       const opts = why.includes('頼み') ? { guide: { pin: 'naru', text: '偵察' } } : {};
       await reset(kind, opts);
-      if (kind === 'locked') {
+      if (kind === 'locked' || kind === 'met-only') {
         assert.equal(await page.locator(`[data-test="pin-${id}"]`).count(), 0);
       } else {
         await page.locator(`[data-test="pin-${id}"]`).click();

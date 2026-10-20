@@ -8,6 +8,12 @@ export const HEAT_GRADES = {
   over: { label: "焼きすぎ", stamp: "OVER HEAT", kind: "bad", score: 28, hp: 35, hs: -10, su: 25, br: 30, ar: -20 },
 };
 
+/** 旧goodsの正式名も保持。複数所持で重複せず、通常幅への加算は倍率計算後に1回だけ。 */
+export function coalJustSeconds(windowMultiplier, tutorial = false, goods = []) {
+  const superior = goods.some(good => good?.name === "ステンレストング（上物）");
+  return .5 * windowMultiplier * (tutorial ? 1.5 : 1) + (superior ? .05 : 0);
+}
+
 /** 経過比 p（1.0 でジャスト開始）と、ジャストの幅 jw から既存の状態を返す */
 export function phaseOf(p, jw) {
   if (p < 0.35) return "raw";

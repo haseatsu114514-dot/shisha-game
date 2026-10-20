@@ -14,7 +14,8 @@ concurrency:
 jobs:
   presentation:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Allow existing stages plus ten production LOAD cases; assertion timeouts stay unchanged.
+    timeout-minutes: 20
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/presentation
@@ -60,6 +61,10 @@ jobs:
         env:
           ARTIFACT_DIR: .codex/artifacts/minto-start709
         run: node remake/test/browser/minto_delivery.mjs
+      - name: Resume registration first spin through production LOAD (#749)
+        run: |
+          node --experimental-vm-modules remake/test/early_deliveries.mjs
+          node remake/test/browser/reel_registration_load.mjs
       - name: Preserve compact delivery frame evidence
         if: always()
         run: |

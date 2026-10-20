@@ -130,15 +130,14 @@ await suite("ch1-tournament", async check => {
     await init(page);
     await page.evaluate(async () => {
       window.cs = T.session.newSession("tournament"); await T.open(cs);
-      window.placement = T.steps.stepPlace(cs);
+      await T.steps.stepPlace(cs);
     });
-    await page.locator('[data-test="opt-triangle"]').waitFor();
+    assert.equal(await page.locator('[data-test="opt-triangle"]').count(), 0);
     assert.equal(await page.locator('[data-test="opt-four"]').count(), 0);
     assert.equal(await page.locator('[data-test="opt-mixed"]').count(), 0);
-    await page.locator('[data-test="opt-triangle"]').click();
-    await page.evaluate(() => window.placement);
+    assert.deepEqual(await page.evaluate(() => cs.coalTypes), Array(3).fill("flat_charcoal"));
     await page.evaluate(() => {
-      Object.assign(T.core.state.flags, { _coal_four_unlocked: true, _coal_mix_unlocked: true });
+      Object.assign(T.core.state.flags, { _coal_cube_learned: true, _coal_four_unlocked: true, _coal_mix_unlocked: true });
       T.core.state.owned.push("cube_charcoal");
       window.placement = T.steps.stepPlace(cs);
     });

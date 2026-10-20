@@ -73,7 +73,8 @@ export function temperatureWave(cs, seconds) {
 /** 少穴は上下の調整が大きく、雨は熱が入る側だけ少し鈍い。 */
 export function heatDelta(cs, delta) {
   const { rainy } = craftConditions(cs);
-  return delta * foilHeatProfile(cs.holes).response * (rainy && delta > 0 ? 0.9 : 1);
+  return delta * foilHeatProfile(cs.holes).response * (rainy && delta > 0 ? 0.9 : 1)
+    * (delta > 0 ? coalWarmth(cs).pullResponse : 1);
 }
 
 /** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
