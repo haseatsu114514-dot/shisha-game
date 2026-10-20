@@ -1,9 +1,9 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
 import { bgUrl } from "../core/data.js";
-import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
 import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
-import { playBgm, SE, applyVolumes } from "../core/audio.js";
+import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
@@ -12,6 +12,7 @@ import { openTrpgRoom } from "./trpg-room.js";
 import { mountTitleLayout } from "./title-layout.js";
 
 export function showTitle(preparedArt = null) {
+  layers.hud.classList.remove("show");
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
   const saved = peekSave();
@@ -31,12 +32,12 @@ export function showTitle(preparedArt = null) {
       }))) return;
       wipeSave();
       newGame();
-      smokeWipe(() => { startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
+      smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
     }, "title-new"),
     item("LOAD", "つづきから", async () => {
       const key = await loadFlow();
       if (!key || !loadFromSlot(key)) return;
-      smokeWipe(() => { resumeGame(); }, { color: "dark" });
+      smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
     item("BOOKSHELF", "物語の本棚", () => openTrpgRoom(() => {
       showTitle(art);

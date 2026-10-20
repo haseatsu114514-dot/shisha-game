@@ -110,6 +110,8 @@
 /* ---------------------------------------------------------------- HUD */
 #hud { opacity: 0; transition: opacity 0.4s; }
 #hud.show { opacity: 1; }
+/* A late gameplay update must never expose controls over boot/title. */
+body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
 .hud {
   position: absolute;
   left: 0;
