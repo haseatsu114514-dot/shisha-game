@@ -1424,7 +1424,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "それと、もうひとつ。買い出しのついでだ──『ケムリクサ』を覗いてこい"
+          "text": "今日はもう上がっていい。帰りに『ケムリクサ』を覗いてこい"
         },
         {
           "speaker": "sumi",
@@ -1439,7 +1439,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "それが一番よく分かる"
+          "text": "それが一番よく分かる。今日はそのまま帰って休め"
         },
         {
           "speaker": "hajime",
@@ -2378,29 +2378,13 @@
     {
       "dialogue_id": "remake_delivery_minto_handoff",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
-          "speaker": "",
-          "text": "繁華街のPEPPERMINTに到着した。店の看板を確かめ、入口のドアをそっと開ける。"
-        },
-        {
-          "type": "sfx",
-          "id": "doorbell"
-        },
-        {
-          "type": "bg",
-          "bg": "res://assets/backgrounds/peppermint.png"
-        },
-        {
-          "speaker": "",
-          "text": "店内に入ると、ミント色のリボンをつけた店員がカウンターから顔を上げた。"
-        },
-        {
           "speaker": "minto",
           "face": "smile",
-          "text": "はーいっ♡ ……あっ、その大きな袋。tonariさんからのお届け物？"
+          "text": "いらっしゃいっ♡ その大きな袋、tonariさんからのお届け物？"
         },
         {
           "speaker": "hajime",

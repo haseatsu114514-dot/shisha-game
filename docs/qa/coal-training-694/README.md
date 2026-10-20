@@ -15,6 +15,41 @@ WORKER: `codex-a-694-transfer-20261020-01a15877` / transfer run `39396201748`。
 - 旧HEADのCI25件成功・独立レビューは今回差分を覆わない。この追加差分の正確な保存HEADのCI/レビューはPRに記録する。最新mainのローカル取得/統合は未実施。実機iPhone/Safari・全章通し・長期バランスも未検証。
 - マージ・公開・Issue終了・予約解除は行わない。通常の個別実行承認で成果を保存し、新HEADのCIを追跡する。
 
+## 2026-10-20 A: main統合のcommit前確認（初回履歴）
+
+- source HEAD `c808388975023ea0cbbbd7bf80c980e56551e2a1`、MERGE_HEAD `df3d9897b94a9f4d8e5a628ebb85b890ba7255a9`。調整側の通常mergeは未commitで74パスがstage済み、unmergedなし。今回Aはmerge/commit/pushを実行しない。
+- 承認済み取得ledgerはdecoded blob 10,371,958 bytes、応答本文14,842,144 bytes（blob14,311,798 / metadata530,346）、decoded metadata44,406 bytes。TLS等の通信量は未計測。今回の追加fetch/素材取得は0。
+- 最初は新規60パスがsparseで実ファイル化されず`layout.js`不足で採点ユニットが起動しなかった。その後、調整task-6の`main-materialization.json`で統合済みindexから60パスを実ファイル化した記録を確認し、Aでもmanifest全74パスの実ファイルとstage-0 SHA一致を照合した。index SHA256は`e9707d6c652a830f970e77777678cd1be239469cb18875b3c7f946ae90f7dc6f`で不変。mainからの直接checkoutは行わない。
+- `daily_consistency.mjs`は#694の`save` mockと`coals.js`解決、mainの店内配達・先頭話者・店外描写禁止assertionを両方保持し、VM回帰PASS。
+- 実行済みPASS: `coal_training`、`daily_consistency`、`data_loading`、`early_deliveries`、`mix_temperature`、`craft_scoring_spec`。VM系3件は`--experimental-vm-modules`付き。`early_deliveries`の最初の実行はフラグ不足で起動失敗し、修正したコマンドの結果だけをPASSに数える。
+- `remake/fonts/ZenOldMincho-Name-OFL.txt`はmainと同一blob `665345ba7787f0bfb9c5942e2a02a28b1082aa68`。source HEAD比のcached whitespace検査はmain由来の21行末空白でexit2だが、main比のcached検査と今回のunstaged変更を含むmain比検査はPASS。第三者ライセンスは無変更のまま保持する。
+- 追加テスト差分: 炭専用browserのローカルallowlist/MIMEに採用済み会話SVG2点と名前woff2だけを追加。実授業での名前書体と、この3素材のHTTP200をassertする。他のmedia遮断・判定/入力/採点assertionは保持し、外部通信は許可しない。構文/whitespace PASS、browserでの動作は未検証。
+- 統合後browserは`listen EPERM 127.0.0.1`で停止。PC/touch/reduced-motionの実授業・発光・保存、および最新`conversation_ui`は正規localhost実行承認待ち。新しい結果画像はない。統合前の3条件PASSと画像は今回の統合後PASSには数えない。
+- 旧CIのownership失敗は依存導入時のapt HTTP403でテスト本体未実行という調整側記録を維持。街テストは850msの20msポーリングで`gaitFrame`4値を観測するが、3値になった原因を今回再現していない。runtime・4姿勢assertion・timeoutは変更しない。新統合HEADのCI結果はまだ存在しない。
+- NEXT: 調整側の個別承認で既存cacheを使うlocalhost配信と炭browser全3条件・`conversation_ui`を実行し、必要に応じ街テストの実測を採取する。今回のテスト/QA差分をレビュー・stageしてからmerge commit/pushを別途実行し、正確な新HEADのCIを確認する。実機iPhone/Safari・全章・長期バランスは未検証。
+
+## 2026-10-20 A: 炭の失敗方向別助言と統合回帰の追跡
+
+- 追加本人要望「遅すぎる自動取り出し後に、さらに待つ助言を出さない」を確認。既存`heat.js`は`res.picks`の早取り/遅取り/混在と`res.over`から方向別助言を作り、`runHeat → resultCard → presentBenchResult → audience.react(final)`で表示する。`force:true`により通常の反応間隔制限を受けず、`text`が汎用の低評価コメントより優先される。
+- `tutorial`/`rehearsal`はスミ、`drill`ははじめの心の声、大会1・2章は審査員の表示欄を持つ。現行の炭結果に「焦らず待つんだ」はなく、スミの汎用heat低評価も中立文。main比で`heatAdvice`と表示経路に追加修正は不要と判断し、本番コードは変更しない。
+- 既存`heat_feedback`は実入力・結果・採点まで確認するが、助言本文のassertionはない。`browser/heat_advice.mjs`を追加し、実際の`runHeat`で無入力の遅い自動取り出し、早い実クリック、早取り＋遅い自動取り出しの混在を作る。スミ/自主練の各3条件とrehearsal/大会の遅い自動取り出しで、実際の結果カード・助言欄・自動記録・保存不変を検証する。private関数の抽出や結果の直接代入は行わない。構文検査PASS、browser実行は正規承認待ちであり、表示成功とはまだ扱わない。
+- 調整task-6の`coal-integrated/browser-results.json`を読み、採用VN素材の読込assertionを含む統合後PC/touch/reduced-motion全3条件passed、missing=[]を確認した。これは調整側の実行結果であり、Aの再実行とは報告しない。既存の画像・JSONは保持する。
+- 別回帰`conversation_ui`はdesktop/landscapeとも53行のControl保持中AUTOクリック後の状態で失敗。`engine.js`と当該テストはmainと同一。`setSkip(false)`自体はAUTOを解除しないため、keyupだけが原因とは断定できない。MacのControl+clickによるイベント差も未立証。VN runtime/他担当テストは変更しない。
+- VN担当への引継ぎ: 調整task-6の`conversation-integrated.log`と`conversation-integrated/`を根拠に、Control keydown→AUTOへのpointerdown/mousedown/contextmenu/click→keyupのイベント種別、button/ctrlKey、各時点のaria-pressedを採取し、通常クリック・キーボード操作と比較する。原因確定前に期待値を弱めない。今回の炭助言とは別境界で、未解決の統合回帰として保持する。
+- NEXT: 既存index/cache localhost配信で`heat_advice.mjs`を実行。結果と新テスト差分を確認後にのみ調整側の個別承認でstage/merge commit/pushへ進む。旧CIのAPT403・街の4姿勢観測失敗、会話UI失敗を成功に数えない。実機iPhone/Safari・全章・長期バランスは未検証。
+
+## 2026-10-20: 統合後の実行結果と助言回帰
+
+source `c808388975023ea0cbbbd7bf80c980e56551e2a1` と main `df3d9897b94a9f4d8e5a628ebb85b890ba7255a9` の通常mergeを確認した。以下は上の初回承認待ち記録を更新する実行結果であり、最終保存HEADとGitHub CIはPRで追跡する。
+
+- 正規の個別実行承認で、採用済み会話SVG2点・名前fontの読込assertionを含む炭browserを実Chromeで実行。PC/touch/低減motionの全3条件PASS、missing=[]。授業SKIP/AUTO/中断・保存復帰、炭1〜4個の実入力、判定前/判定中/トング延長、文字ラベル不在を保持。[結果](integrated-browser-results.json)。
+- 本人が旧固定版で観測した「遅い自動取り出しに待つよう助言」の件は、現main/PRの`heatAdvice`で既に方向別対応済みだった。本番助言・判定・熱・採点は変更せず、実`runHeat → resultCard → presentBenchResult → audience.react`を通す8ケースを追加。tutorial/drillの遅い自動取り出し・早取り・混在、rehearsal/tournamentの遅い自動取り出しが全PASS。時計/RNGを制御する専用回帰であり、章通し試遊ではない。[結果](heat-advice-results.json)。
+- 遅い結果は「芯が光ったら、待たずに取り出そう」、早い結果は「芯が光るまで待とう」、混在は各炭の芯を見る助言を表示した。自動/手動・実判定・scoreモデル値・保存不変もassert。回帰コードは`remake/test/browser/heat_advice.mjs`。既存Chrome/Playwrightと正規localhost配信で実行した手動回帰で、CI実行済みとは扱わない。
+- 統合後の炭・日常・data_loading・early_deliveries・text_wrapは調整側でもPASS。Aのmix_temperature/craft_scoring_spec PASSも保持。main比の差分whitespace PASS、ライセンスはmain同一blobで原文保持。
+- 街selectionは同梱ブラウザ未導入で起動前停止した後、既存ChromeのexecutablePathだけを指定し直して35項目PASS。CIのdown姿勢3/4は未再現で、runtime/assertion/待ち時間は変更しない。新HEAD CIで別途確認する。
+- 既存conversation_uiはdesktop/landscapeともControl保持中AUTO切替後の状態assertion（53行）でFAIL。期待auto=trueに対しfalse。main同一ソースの別境界として記録し、Mac入力差は未立証。VN runtime/他担当テストは変更せず、成功に数えない。[統合検証概要](integration-validation.json)。
+- 新しい正確HEADのCI/差分レビュー、会話UI失敗の切り分けが残る。旧CIのownership依存APT HTTP403を認証/配信経路変更で迂回しない。Draftを保持し、マージ・公開・Issue終了・予約解除は行わない。実機iPhone/Safari・全章・長期バランス未検証、停止済み別A第1章試遊は再開しない。
+
 ## 以下はBの保存済み検証履歴
 
 Worker: `codex-b-694-handoff-20261019-16adcc966e`。Claim run: `39213455496`。

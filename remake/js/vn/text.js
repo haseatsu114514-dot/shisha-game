@@ -30,6 +30,8 @@ function tokensOf(raw) {
   return tokens;
 }
 const widthOf = (raw) => tokensOf(raw).reduce((n, t) => n + t.width, 0);
+/** 装飾・改行を除く全角換算の目安。実際の組版には表示要素の測定値も使う。 */
+export const textWidth = (raw) => widthOf(String(raw).replaceAll("\n", ""));
 function previousVisible(tokens, end) {
   while (--end >= 0) if (!tokens[end].tag) return end;
   return -1;

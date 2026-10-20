@@ -10,7 +10,8 @@ const root = path.resolve(fileURLToPath(new URL("../../../", import.meta.url)));
 const output = path.resolve(root, process.env.COAL_ARTIFACTS || ".codex/artifacts/coal-694");
 fs.mkdirSync(output, { recursive: true });
 const missing = new Set(), results = [];
-const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp" };
+const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
+const vnAssets = ["/remake/img/ui/vn-lounge/dialogue.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   const file = path.resolve(root, "." + (pathname.endsWith("/") ? pathname + "index.html" : pathname));
@@ -34,11 +35,15 @@ try {
     const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, reducedMotion });
     await context.route("**/*", route => {
       const u = new URL(route.request().url());
-      // Actual heat sprites are served. Unrelated media is deliberately omitted, never fetched remotely.
-      const allowed = /\.(html|js|css|json)$/.test(u.pathname) || /\/img\/ui\/making\/heat_[^/]+\.webp$/.test(u.pathname);
+      // Heat sprites and the adopted VN frame/font are local. Other media remains blocked.
+      const allowed = /\.(html|js|css|json)$/.test(u.pathname) || /\/img\/ui\/making\/heat_[^/]+\.webp$/.test(u.pathname) || vnAssets.includes(u.pathname);
       return u.origin === origin && (allowed || u.pathname.endsWith("/")) ? route.continue() : route.abort();
     });
-    const page = await context.newPage(), errors = [];
+    const page = await context.newPage(), errors = [], vnResponses = new Map();
+    page.on("response", response => {
+      const pathname = new URL(response.url()).pathname;
+      if (vnAssets.includes(pathname)) vnResponses.set(pathname, response.status());
+    });
     page.setDefaultTimeout(20000);
     page.on("pageerror", e => errors.push(e.message));
     await page.goto(origin + "/remake/");
@@ -66,6 +71,11 @@ try {
     await page.evaluate(() => { Q.vn.vnTest.turbo = false; });
     await page.locator('[data-test="after-cube-coals"]').click();
     await page.locator("#vn.active").waitFor();
+    const nameFontLoaded = await page.evaluate(async () => {
+      await document.fonts.load('700 24px "Suien Name"');
+      return document.fonts.check('700 24px "Suien Name"') && getComputedStyle(document.querySelector(".vn-name")).fontFamily.includes("Suien Name");
+    });
+    assert.equal(nameFontLoaded, true, "統合後の授業で採用済み会話UIの名前書体を使う");
     assert.equal(await page.evaluate(() => Q.coals.hasCoalTraining(Q.core.state.flags)), false);
     await page.locator('[data-test="vn-skip"]').click();
     await page.evaluate(() => Q.shift);
@@ -238,6 +248,7 @@ try {
     assert.equal(served.careHistory.length, 2);
     assert(served.careHistory.every(care => !care.failed && care.inZone));
     assert.deepEqual(errors, []);
+    assert.deepEqual(vnAssets.map(path => [path, vnResponses.get(path)]), vnAssets.map(path => [path, 200]), "採用済み会話枠・操作枠・名前書体をローカルで読み込む");
     results.push({ label, status: "passed", glow, timing, served,
       scope: "real Chrome; touch and reduced-motion emulation; unrelated media intentionally omitted; steam outcome is a numerical fixture, not a dodge playthrough" });
     console.log(`[coal browser] PASS ${label}: boot, shift menu, real lesson SKIP/AUTO/abort, save, glow, production burn 1..4 and pointer/keyboard`);
