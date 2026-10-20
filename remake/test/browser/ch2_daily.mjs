@@ -22,6 +22,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false } = {}
       ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
     value.reel.installed = reel;
+    if (reel) Object.assign(value.reel, { introDone: true, settingGuideDone: true });
     for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
     core.save();
     for (let i=1;i<=3;i++) localStorage.setItem(`suien_remake_slot${i}`, JSON.stringify({ ...value, money: 1000+i }));

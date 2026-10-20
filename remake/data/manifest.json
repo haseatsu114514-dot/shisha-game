@@ -269,6 +269,15 @@
    "b": 0.0208,
    "ax": 0.5318,
    "aspect": 0.7467
+  },
+  "uranaishi": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9752,
+   "b": 0.0165,
+   "ax": 0.5476,
+   "aspect": 0.7471
   }
  },
  "backgrounds": [
@@ -2002,6 +2011,7 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "sprites/characters/uranaishi/chr_uranaishi_normal.png"
  ]
 }

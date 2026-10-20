@@ -19,14 +19,14 @@
     {
       "chapter": 2,
       "title": "才能の壁",
-      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch2.png",
-      "sha256": "7d032f0d2c321012d532db116f5fc17a44170d2f7b662ba8439d4f998dd49f61",
-      "variant": "ch2-02-horizontal",
-      "palette": "pink / deep shadows, selected C"
+      "path": "asset_sources/chapter-title/ch2-crown-composition/images/C-crown-background-1280x720.png",
+      "sha256": "0c9634fcc5e363489321ac0b7962cc39f8913e4b0f5abf1cd3f1b19a3f77f4c9",
+      "variant": "ch2-crown-composition-C",
+      "palette": "pink / deep shadows, selected C (background crown)"
     },
     {
       "chapter": 3,
-      "title": "虚ろな王冠",
+      "title": "嘘つきたちの夜",
       "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch3.png",
       "sha256": "15068735e34b21a52987c6fdfa1c94b0efa7a3bd60b96267a2e328e13f164574",
       "variant": "ch3-01-rain-mincho",
