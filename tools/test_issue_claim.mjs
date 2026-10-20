@@ -1497,3 +1497,190 @@ test('a failed cancellation run retains ownership but cannot authorize editing',
   await assert.rejects(pickup(s),/No handoff-ready/);
   assert.equal(s.writes.length,2);
 });
+
+// #769 is an independent implementation task; it does not transfer #711 here.
+const issue711Target = [711,'codex-711-20261019-588761470c34','39273098251',742,'2224b428b341ee58680caf46dba550c6cb4794b7'];
+function issue711RecoverySetup(options = {}) {
+  const s=ownerRecoverySetup(issue711Target,options);
+  s.h.approval_issue=769;
+  s.h.known_active_observed=false;
+  s.h.consent_evidence='Owner question: 保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。 Answers: 742は再開したい / すすめてよい';
+  s.approvalBody=()=>{
+    s.approvals[50].body=`<!-- issue-711-owner-recovery:v1 ${JSON.stringify(s.h)} -->\n`+
+      `I authorize ${s.h.to} to resume saved PR #742 for Issue #711 under #769 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
+      s.h.scope+'\n'+s.h.consent_evidence;
+  };
+  s.approvalBody();return s;
+}
+for(const route of ['dispatch','comment']) test(`711 independent recovery succeeds via ${route}, preserves unknowns and rejects replay`,async()=>{
+  const s=issue711RecoverySetup();if(route==='comment') recoveryComment(s);
+  const before=structuredClone({claim:s.comments[711][0],prs:s.prs,approval:s.approvals[50]});
+  await s.recover();
+  const writes=ledgerWrites(s);assert.equal(writes.length,1);
+  const audit=JSON.parse(writes[0].body.match(/<!-- issue-711-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit,{...s.h,approval_comment:50});
+  for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
+  assert.equal(audit.known_active_observed,false);
+  assert.doesNotMatch(writes[0].body,/issue-owner-recovery-audit:|"(?:stopped|pushed)":true|state=released/);
+  assert.deepEqual(s.comments[711][0],before.claim);assert.deepEqual(s.prs,before.prs);
+  assert.deepEqual(s.approvals[50],before.approval);
+  if(route==='comment') await s.recover();else await assert.rejects(s.recover());
+  assert.equal(ledgerWrites(s).length,1);
+  await s.run('status',711,s.h.to,{CLAIM_RUN:'901'});
+});
+
+for(const change of ['673','738','717','769','repo','record-repo','from','run','input-run','head','pr','to','same-worker','approval-issue',
+  'loss','consent','evidence','scope','no-prose','extra','legacy','missing','duplicate','malformed','mixed-745','mixed-handoff',
+  'author','actor-read','actor-write','author-write','permission-error','closed','blocked','source-failed','source-pending',
+  'claim-owner','claim-run','claim-released','fork','extra-pr','no-pr','other-active','other-closed','other-handoff','wrong-thread']) {
+  test(`711 independent recovery refuses ${change} and preserves original claim`,async()=>{
+    const s=issue711RecoverySetup(),h=s.h;
+    const before=structuredClone(s.comments[711][0]);
+    if(['673','738','717','769'].includes(change)) {
+      s.input.ISSUE=change;s.issues[0].number=Number(change);h.issue=Number(change);
+    }
+    if(change==='repo') s.context.repo.repo='other';
+    if(change==='record-repo') h.repo='other/repo';
+    if(change==='from') h.from='other-worker';
+    if(change==='run') h.claim_run='800';
+    if(change==='input-run') s.input.CLAIM_RUN='800';
+    if(change==='head') h.prs[0].head='b'.repeat(40);
+    if(change==='pr') h.prs[0].number=743;
+    if(change==='to') h.to='other-worker';
+    if(change==='same-worker') h.to=s.input.OWNER=h.from;
+    if(change==='approval-issue') h.approval_issue=745;
+    if(change==='loss') h.accept_loss=false;
+    if(change==='consent') h.consent='approved';
+    if(change==='evidence') h.consent_evidence='An admin said that recovery was authorized.';
+    if(change==='scope') h.scope='Only saved work is in scope, without any loss statement.';
+    if(change==='extra') h.extra=true;
+    if(change==='legacy') h.recovery={claim_comment:1,released_comment:2};
+    s.approvalBody();
+    if(change==='no-prose') s.approvals[50].body=s.approvals[50].body.split('\n')[0];
+    if(change==='missing') s.approvals[50].body='Approved';
+    if(change==='duplicate') s.approvals[50].body+='\n'+s.approvals[50].body.split('\n')[0];
+    if(change==='malformed') s.approvals[50].body+='\n<!-- issue-711-owner-recovery:v1 broken';
+    if(change==='mixed-745') s.approvals[50].body+='\n<!-- issue-owner-recovery:v1 {} -->';
+    if(change==='mixed-handoff') s.approvals[50].body+='\n<!-- issue-handoff:v1 {} -->';
+    if(change==='author') s.approvals[50].user.login='otherAdmin';
+    if(change==='actor-read') s.permissions.admin='read';
+    if(change==='actor-write') s.permissions.admin='write';
+    if(change==='author-write') s.permissions['haseatsu114514-dot']='write';
+    if(change==='permission-error') s.github.rest.repos.getCollaboratorPermissionLevel=async()=>{throw Error('permission unknown');};
+    if(change==='closed') s.issues[0].state='closed';
+    if(change==='blocked') s.issues[0].labels=['blocked'];
+    if(change==='source-failed') s.runs[h.claim_run]={status:'completed',conclusion:'failure'};
+    if(change==='source-pending') s.runs[h.claim_run]={status:'in_progress',conclusion:null};
+    if(change==='claim-owner') s.comments[711][0].body=before.body.replace(h.from,'other-worker');
+    if(change==='claim-run') s.comments[711][0].body=before.body.replace(h.claim_run,'800');
+    if(change==='claim-released') s.comments[711][0].body=before.body.replace('state=claimed','state=released');
+    if(change==='fork') s.prs[0].head.repo.full_name='other/repo';
+    if(change==='extra-pr') s.prs.push({...s.prs[0],number:999});
+    if(change==='no-pr') s.prs.length=0;
+    if(['other-active','other-closed','other-handoff'].includes(change)) {
+      s.comments[999]=[entry('claimed',h.to)];
+      if(change==='other-closed') s.issues[1].state='closed';
+      if(change==='other-handoff') s.comments[999][0].body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:999,head:'a'.repeat(40)}],handoff:{version:1,from:h.to,actor:'admin',source_run:'800',stopped:true,pushed:true,summary:'Saved work.'}})+' -->';
+    }
+    if(change==='wrong-thread') s.approvals[50].issue_url=fixture(999).url;
+    const current=structuredClone(s.comments);
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,current);
+  });
+}
+for(const key of ['stopped','pushed','unsaved_work','known_active_observed']) {
+  const values=key==='known_active_observed'?[true,'false','unknown',null,undefined]:[true,false,null,undefined];
+  for(const value of values) test(`711 strictly rejects ${key}=${String(value)}`,async()=>{
+    const s=issue711RecoverySetup();s.h[key]=value;s.approvalBody();
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+    assert.equal(s.comments[711].length,1);
+  });
+}
+
+for(const stage of ['last-worker-scan','final-pr-scan']) for(const change of ['approval','author','timestamp','permission','owner','run','claim-comment','source','closed','known-active']) {
+  test(`711 revalidates ${change} changed during ${stage}`,async()=>{
+    let scans=0;
+    const s=issue711RecoverySetup({hook(name,args,data){
+      if(name!==(stage==='last-worker-scan'?'listForRepo':'pulls')||++scans!==2) return;
+      if(change==='approval') s.approvals[50].body+='\nConsent revoked';
+      if(change==='author') s.approvals[50].user.login='otherAdmin';
+      if(change==='timestamp') s.approvals[50].updated_at='later';
+      if(change==='permission') s.permissions.admin='write';
+      if(change==='owner') data.comments[711][0].body=data.comments[711][0].body.replace(s.h.from,'other-worker');
+      if(change==='run') data.comments[711][0].body=data.comments[711][0].body.replace(s.h.claim_run,'800');
+      if(change==='claim-comment') data.comments[711].push({...data.comments[711][0],id:99});
+      if(change==='source') s.runs[s.h.claim_run]={status:'completed',conclusion:'cancelled'};
+      if(change==='closed') data.issues[0].state='closed';
+      if(change==='known-active') {s.h.known_active_observed=true;s.approvalBody();}
+    }});
+    await assert.rejects(s.recover());assert.equal(scans,2);assert.equal(s.writes.length,0);
+  });
+}
+for(const change of ['head','pr-set','availability']) test(`711 refuses changed ${change} during last worker scan`,async()=>{
+  let scans=0;
+  const s=issue711RecoverySetup({hook(name,args,data){
+    if(name!=='listForRepo'||++scans!==2) return;
+    if(change==='head') data.prs[0].head.sha='b'.repeat(40);
+    if(change==='pr-set') data.prs.push({...data.prs[0],number:999});
+    if(change==='availability') data.comments[999]=[entry('claimed',s.h.to)];
+  }});
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+test('711 completes all enumeration before final target evidence reads',async()=>{
+  const s=issue711RecoverySetup();await s.recover();
+  const names=s.calls.map(c=>c.name),last=Math.max(names.lastIndexOf('pulls'),names.lastIndexOf('listForRepo'));
+  const final=names.slice(last+1,names.indexOf('createComment'));
+  for(const name of ['get','permission','getComment','listComments','run']) assert.ok(final.includes(name),name);
+  assert.equal(final.filter(n=>n==='permission').length,2);
+  assert.equal(ledgerWrites(s).length,1);
+});
+test('711 write failure leaves original reservation intact',async()=>{
+  const s=issue711RecoverySetup({hook(name){if(name==='createComment') throw Error('write denied');}});
+  const before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/write denied/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const failure of ['cancelled','failure','summary']) test(`711 post-write ${failure} retains protected reservation without authorizing editing`,async()=>{
+  const s=issue711RecoverySetup();
+  if(failure==='summary') {
+    s.core.summary.write=async()=>{throw Error('summary failed');};
+    await assert.rejects(s.recover(),/summary failed/);
+  } else await s.recover();
+  s.runs[901]={status:'completed',conclusion:failure==='summary'?'failure':failure};
+  await assert.rejects(s.run('status',711,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.run('claim',711,'third-worker'),/Already claimed/);
+  await assert.rejects(s.recover());assert.equal(ledgerWrites(s).length,1);
+});
+test('711 mutating comment rerun is refused without ledger write',async()=>{
+  const s=issue711RecoverySetup();recoveryComment(s);s.context.runAttempt=2;
+  await assert.rejects(s.recover(),/Do not rerun/);assert.equal(s.writes.length,0);
+});
+test('711 comment permission refusal only adds a request receipt',async()=>{
+  const s=issue711RecoverySetup();recoveryComment(s);s.permissions.admin='write';
+  await assert.rejects(s.recover(),/admin/);assert.equal(ledgerWrites(s).length,0);
+  assert.equal(s.writes.length,1);assert.match(s.writes[0].body,/Request refused/);
+  assert.equal(s.comments[711][0].body.includes(issue711Target[1]),true);
+});
+test('745 marker cannot authorize 711 and mixed 711 marker cannot authorize 745 targets',async()=>{
+  const s=ownerRecoverySetup(issue711Target);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  const t=ownerRecoverySetup();t.approvals[50].body+='\n<!-- issue-711-owner-recovery:v1 {} -->';
+  await assert.rejects(t.recover());assert.equal(t.writes.length,0);
+});
+for(const valid of [true,false]) test(`711 ${valid?'accepts valid':'rejects stale'} parked worker checkpoint`,async()=>{
+  const s=issue711RecoverySetup();
+  const waiting=modernEntry(s.h.to,700);
+  waiting.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:998,head:savedHead}]})+' -->';
+  s.comments[999]=[waiting];
+  s.prs.push(savedPR(998,999,{head:{sha:valid?savedHead:'b'.repeat(40),repo:{full_name:recoveryRepo}}}));
+  if(valid) {await s.recover();assert.equal(ledgerWrites(s).length,1);}
+  else {await assert.rejects(s.recover(),/Waiting PR checkpoint changed/);assert.equal(s.writes.length,0);}
+  assert.deepEqual(s.comments[999],[waiting]);
+});
+test('711 rechecks comment request immutability immediately before writing',async()=>{
+  let scans=0;
+  const s=issue711RecoverySetup({hook(name){
+    if(name==='pulls'&&++scans===2) s.approvals[60].body+=' ';
+  }});
+  recoveryComment(s);
+  await assert.rejects(s.recover(),/Request comment changed/);
+  assert.equal(ledgerWrites(s).length,0);assert.equal(s.comments[711][0].body.includes(s.h.from),true);
+});

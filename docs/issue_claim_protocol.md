@@ -496,6 +496,96 @@ branch; preserve the existing failure recovery rules above. These snapshot
 checks do not lock external PR writers. Recheck live heads before editing and
 keep all Git Safety, CI, review and merge gates. No test performs a live transfer.
 
+#### #769 implementation: independent #711 / PR742 owner recovery
+
+Issue **#769 implements this procedure only**. It does not itself transfer the
+reservation for Issue **#711**, resume PR **#742**, fix canceled CI, or authorize
+editing before a successful future transfer. Independent review and deployment
+of this implementation to **main are required before execution**. The future
+operator must select a fresh session-specific new worker ID at execution time;
+the worker implementing #769 is not a preselected owner of #711. Do not transfer,
+claim or release #711 as part of implementing or testing #769.
+
+This separate `issue-711-owner-recovery:v1` branch accepts only
+`operation=transfer` with `handoff_comment`. It neither extends #745's target map
+or marker nor relaxes #746, ordinary transfer, handoff, pickup, or legacy recovery.
+#738 and #673 are outside its scope. The only allowed tuple is:
+
+| Repository | Issue | Original owner | Original successful run | Saved Open PR | Saved head | Approval implementation Issue |
+| --- | --- | --- | --- | --- | --- | --- |
+| `haseatsu114514-dot/shisha-game` | 711 | `codex-711-20261019-588761470c34` | `39273098251` | 742 | `2224b428b341ee58680caf46dba550c6cb4794b7` | 769 |
+
+After deployment and live evidence review, repository owner
+`haseatsu114514-dot` must author an approval comment on **#711**. Both author and
+request actor require current repository **admin** permission; a different admin
+cannot author it. A comment on #769 does not substitute for this live approval.
+Use exactly these fields, no extra keys, with a unique new worker replacing
+`<NEW_OWNER>`:
+
+```text
+<!-- issue-711-owner-recovery:v1 {"repo":"haseatsu114514-dot/shisha-game","issue":711,"from":"codex-711-20261019-588761470c34","to":"<NEW_OWNER>","claim_run":"39273098251","prs":[{"number":742,"head":"2224b428b341ee58680caf46dba550c6cb4794b7"}],"approval_issue":769,"consent":"resume-saved-pr","accept_loss":true,"stopped":"unknown","pushed":"unknown","unsaved_work":"unknown","known_active_observed":false,"scope":"Only saved PR742 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted.","consent_evidence":"Question: 保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。 Answers: 742は再開したい / すすめてよい"} -->
+I authorize <NEW_OWNER> to resume saved PR #742 for Issue #711 under #769 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.
+Only saved PR742 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted.
+Question: 保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。 Answers: 742は再開したい / すすめてよい
+```
+
+The integer/string/PR-object types and scope/evidence prose rules match the
+strict declarations described for #745, with **approval_issue:769** and the
+separate marker above. `consent_evidence` must contain the original question and
+both original answers shown above, and appear verbatim in prose. The exact
+English authorization sentence must also appear in prose. These checks bind the
+declaration to the recorded consent; code cannot authenticate the historical
+conversation merely by matching quoted text. The owner must review its truth.
+
+`known_active_observed` must be the JSON boolean **false**, meaning the operator
+has not observed known ongoing work by the old session. `true`, unknown, omitted,
+null, or string values refuse. **If the old session is known active, do not
+transfer.** This declaration does not establish that it stopped: `stopped`,
+`pushed` and `unsaved_work` must each remain exactly the string **unknown**.
+The coordinator does not inspect or detect actual processes or remote sessions;
+it validates the owner's declaration and unchanged approval, not actual process
+liveness. A newly observed active old session requires stopping the transfer and
+revoking/updating the approval, not claiming that unknown means stopped.
+
+Before execution, verify the current pinned owner/run, successful source run,
+only one referencing Open PR (including Drafts), PR742's exact same-repo head,
+unchanged owner approval and new-worker availability. Other active or handoff
+reservations refuse, including on closed Issues; only valid parked waiting
+checkpoints are allowed. This branch never cleans up or releases reservations.
+
+Execution templates below are documentation only. Choose **one** route after
+reviewed main deployment and all live checks; replace placeholders then:
+
+```sh
+gh workflow run issue-claim.yml --repo haseatsu114514-dot/shisha-game --ref main -f operation=transfer -f issue=711 -f owner='<NEW_OWNER>' -f agent=codex -f claim_run=39273098251 -f handoff_comment='<711_APPROVAL_COMMENT_ID>' -f request_id='<FRESH_UNIQUE_REQUEST_ID>'
+```
+
+Or post on #711 (or explicitly target #711 from a PR Conversation):
+
+```text
+/issue-claim {"operation":"transfer","issue":711,"owner":"<NEW_OWNER>","agent":"codex","claim_run":"39273098251","handoff_comment":<711_APPROVAL_COMMENT_ID>}
+```
+
+After all full worker and PR enumerations, the final target reads recheck open/
+unblocked state, permissions, unchanged approval body/author/thread/edit time/link,
+original ledger comment/owner/run, and source run success immediately before the
+single new claim write. The separate `issue-711-owner-recovery-audit:v1` copies
+all approval fields plus `approval_comment`, preserving the three unknowns,
+`known_active_observed:false`, and accepted loss. Original comments, PR, branch
+and history remain intact. Pre-write refusal or a failed write leaves the old
+reservation intact; comment requests may add only their usual refusal receipt.
+Replay cannot append another claim: dispatch fails on the changed owner/run,
+completed comment requests are idempotent, and mutating comment reruns refuse.
+
+If the claim was written but the run fails/cancels (including a later summary or
+receipt failure), the new reservation stays protected and does **not** authorize
+editing. Do not roll back or release it automatically. Require that exact run's
+success, `CLAIMED_ISSUE`, and current bot owner/new-run match before resuming the
+saved branch. Serialized API snapshots do not lock external writers or detect
+new activity after the final reads; recheck live state before editing. CI fixes,
+review and eventual merging of PR742 keep their existing gates. No test or #769
+implementation action performs a live #711 transfer.
+
 #### Released legacy reservation with a saved Draft
 
 For a reservation released **before run metadata was introduced**, an admin may

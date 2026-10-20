@@ -251,6 +251,84 @@ async function coordinate(github, context, core, inputs = process.env) {
     const {data: approval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
     if (approval.issue_url !== existing.url) throw Error('Approval must belong to the target Issue');
     const authorPermission = await requireWriter(approval.user?.login);
+    // #769 implements only the pinned #711 exception. Never infer stopped/pushed
+    // from the declaration that no known active old session was observed.
+    if (approval.body?.includes('issue-711-owner-recovery:')) {
+      const pinned = number === 711 ? {from:'codex-711-20261019-588761470c34', run:'39273098251', pr:742, head:'2224b428b341ee58680caf46dba550c6cb4794b7'} : null;
+      const lines = approval.body.match(/^<!-- issue-711-owner-recovery:v1 (.+) -->$/gm) || [];
+      if (repoOwner !== 'haseatsu114514-dot' || repo !== 'shisha-game' || !pinned || lines.length !== 1 ||
+          (approval.body.match(/issue-711-owner-recovery:/g) || []).length !== 1 ||
+          (approval.body.includes('issue-handoff:') || approval.body.includes('issue-owner-recovery:'))) throw Error('Issue 711 owner recovery requires the exact pinned repository/target and independent record');
+      const h = JSON.parse(lines[0].slice('<!-- issue-711-owner-recovery:v1 '.length, -4));
+      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence','known_active_observed'];
+      const prose = approval.body.replace(lines[0], '');
+      const consentStatement = 'I authorize ' + worker + ' to resume saved PR #' + pinned.pr +
+        ' for Issue #' + number + ' under #769 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.';
+      if (!h || Object.keys(h).length !== keys.length || Object.keys(h).some(k => !keys.includes(k)) ||
+          h.repo !== 'haseatsu114514-dot/shisha-game' || h.issue !== number || h.from !== pinned.from ||
+          h.to !== worker || worker === pinned.from || h.claim_run !== pinned.run || expectedRun !== pinned.run ||
+          h.approval_issue !== 769 || h.consent !== 'resume-saved-pr' || h.accept_loss !== true ||
+          h.known_active_observed !== false || h.stopped !== 'unknown' || h.pushed !== 'unknown' || h.unsaved_work !== 'unknown' ||
+          !Array.isArray(h.prs) || h.prs.length !== 1 || h.prs[0]?.number !== pinned.pr || h.prs[0]?.head !== pinned.head ||
+          Object.keys(h.prs[0]).sort().join(',') !== 'head,number' ||
+          !['scope','consent_evidence'].every(k => typeof h[k] === 'string' && h[k].trim().length >= 20 && prose.includes(h[k])) ||
+          !prose.includes(consentStatement) || !/unknown\/unrecoverable/.test(h.scope) ||
+          !/uncommitted/.test(h.scope) || !/unpushed/.test(h.scope) ||
+          !['保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。','742は再開したい','すすめてよい'].every(text => h.consent_evidence.includes(text))) throw Error('Incomplete owner recovery approval or wrong pinned tuple');
+      let originalClaim;
+      async function validateOwnerRecoveryTarget() {
+        await issue(number);
+        if (await requireWriter(context.actor) !== 'admin' ||
+            await requireWriter(approval.user?.login) !== 'admin' || approval.user?.login !== repoOwner) {
+          throw Error('Issue 711 owner recovery requires repository owner author and admin author/actor');
+        }
+        const {data: current} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+        if (current.body !== approval.body || current.user?.login !== approval.user?.login ||
+            current.issue_url !== existing.url || current.updated_at !== approval.updated_at ||
+            current.html_url !== approval.html_url) throw Error('Issue 711 owner recovery approval changed');
+        const claim = await status(number);
+        if (claim.state !== 'claimed' || claim.owner !== pinned.from || claim.run_id !== pinned.run ||
+            (originalClaim && JSON.stringify(claim) !== JSON.stringify(originalClaim))) {
+          throw Error('Issue 711 owner recovery current reservation does not match original owner/run');
+        }
+        originalClaim ||= claim;
+        await successfulRun(github, context, pinned.run);
+      }
+      async function validateOwnerRecoveryPRs() {
+        const prs = await openPRs(number);
+        if (prs.length !== 1 || prs[0].number !== pinned.pr || prs[0].head?.sha !== pinned.head ||
+            prs[0].head?.repo?.full_name !== h.repo) throw Error('Issue 711 owner recovery exact PR set/head changed');
+      }
+      async function validateOwnerRecoveryAvailability() {
+        // Unlike ordinary availability cleanup, this exception never releases any
+        // reservation as a side effect, even a completed closed Issue.
+        const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
+        for (const item of all) {
+          if (item.pull_request || item.number === number) continue;
+          const active = await status(item.number);
+          if (active.state !== 'claimed' || active.owner !== worker) continue;
+          if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number);
+          await validateWaiting(github, context, item.number, active);
+        }
+      }
+      // Initial PR and target snapshot, followed by the full worker scan.
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await validateOwnerRecoveryAvailability();
+      // Complete every repository-wide enumeration (including PR scans for
+      // parked workers) before the final target-specific reads. These remain
+      // serialized snapshots, not an atomic lock against external writers.
+      await validateOwnerRecoveryAvailability();
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await comment(number,'claimed','\nIssue 711 owner-approved recovery from ' + pinned.from + ': ' + approval.html_url +
+        '\n<!-- issue-711-owner-recovery-audit:v1 ' + JSON.stringify({...h, approval_comment:Number(handoffComment)}) + ' -->' +
+        '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
+      core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+      core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + pinned.from + ' APPROVAL=' + handoffComment);
+      await core.summary.addRaw('Issue 711 owner-approved recovery #' + number + '; stopped/pushed/unsaved work unknown. Wait for this exact run success and current owner/run before editing.').write();
+      return;
+    }
     // #745 is an independent owner-approved loss-risk exception, never a
     // stopped/pushed handoff or a released legacy reservation recovery.
     if (approval.body?.includes('issue-owner-recovery:')) {
