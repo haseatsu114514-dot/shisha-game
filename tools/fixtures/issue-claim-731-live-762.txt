@@ -1,0 +1,2 @@
+Disposable saved handoff checkpoint for Issue #762 and PR #731 live protocol verification.
+No game changes. Do not merge this fixture.
