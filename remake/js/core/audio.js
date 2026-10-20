@@ -369,12 +369,12 @@ export function playSe(id, ...args) {
 
 /** CONTINUE専用SE。既存AudioContext/設定を共有し、離脱時は予約済みの音も止める。 */
 export function createContinueAudio({ enabled = true } = {}) {
-  let alive = true, output = null, restore = 0, holdMix = 1;
+  let alive = true, paused = false, output = null, restore = 0, holdMix = 1;
   const voices = new Set();
   const ownsMusic = () => currentKey === "bgm_continue_urgent" || pendingBgm === "bgm_continue_urgent";
   function instrument() {
     const c = ensureCtx();
-    if (!alive || !enabled || !c || c.state !== "running" || document.hidden
+    if (!alive || paused || !enabled || !c || c.state !== "running" || document.hidden
       || config.mute || config.muted || !(config.seVolume > 0)) return null;
     if (!output) { output = c.createGain(); output.connect(seBus); }
     return c;
@@ -421,7 +421,7 @@ export function createContinueAudio({ enabled = true } = {}) {
     }
   }
   function pulse(fn) {
-    if (!alive || !enabled || document.hidden || config.mute || config.muted || !(config.seVolume > 0)) return;
+    if (!alive || paused || !enabled || document.hidden || config.mute || config.muted || !(config.seVolume > 0)) return;
     if (!instrument()) return;
     fn(); mix(.8);
     clearTimeout(restore);
@@ -442,6 +442,8 @@ export function createContinueAudio({ enabled = true } = {}) {
       const f = (BLIP[speaker] || 600) * (.95 + Math.random() * .1);
       note(f, { dur: .045, vol: .06, type: "triangle" });
     },
+    // 通常の刻みは毎秒BGMをduckせず、他の予約SEと同じvoicesで停止する。
+    tick() { note(1000, { dur: .04, vol: .045, type: "triangle" }); },
     count(remaining) {
       pulse(() => remaining === 0 ? note(70, { to: 45, dur: .2, vol: .22 })
         : note([990, 870, 780, 700, 620][remaining - 1], { dur: .07, vol: .13, type: "triangle" }));
@@ -458,12 +460,16 @@ export function createContinueAudio({ enabled = true } = {}) {
     expire() { holdMix = .1; clearTimeout(restore); mix(holdMix, 350); },
     setEnabled(value) { enabled = !!value; if (!enabled) { silence(); clearTimeout(restore); mix(holdMix); } },
     pause() {
-      if (!alive || !ownsMusic()) return;
+      if (!alive) return;
+      paused = true;
       silence(); clearTimeout(restore);
+      if (!ownsMusic()) return;
       bgmPaused = true; currentEl?.pause(); mix(holdMix);
     },
     resume() {
-      if (!alive || !ownsMusic()) return;
+      if (!alive) return;
+      paused = false;
+      if (!ownsMusic()) return;
       bgmPaused = false;
       if (currentEl) currentEl.play().catch(() => {});
       mix(holdMix);
