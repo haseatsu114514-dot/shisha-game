@@ -73,5 +73,24 @@
   ],
   "save_api_body_bytes_so_far": 3415754,
   "remaining_save_api_body_reserve_bytes": 50000,
-  "unknown": "Built-in image-generation transport, TLS/HTTP headers/compression/protocol overhead and earlier unmeasured stdout are unknown. This does not certify total wire bytes under20MiB. No full clone, original PNG redownload or large CI was used."
+  "unknown": "Built-in image-generation transport, TLS/HTTP headers/compression/protocol overhead and earlier unmeasured stdout are unknown. This does not certify total wire bytes under20MiB. No full clone, original PNG redownload or large CI was used.",
+  "initial_record_stage": {
+    "save_api_body_bytes_so_far": 3415754,
+    "remaining_reserve_bytes": 50000,
+    "status": "Intermediate snapshot, not final actual. The later recursive metadata response was 2,379,369 bytes and exceeded this original reserve; no more recursive tree reads are permitted."
+  },
+  "phase1_final_actual": {
+    "save_api_request_and_response_body_bytes": 5852730,
+    "checkpoint": "After Draft PR creation, final metadata verification and issuecomment6287987059. Includes 5,827,216 bytes through Draft PR creation plus 25,514 bytes final checks/comment.",
+    "accounting_proxy_total_bytes": 14749317,
+    "formula": "5,877,570 stored evidence proxy + 2,779,029 built-in input/output image file payload + 239,988 parent additional read responses + 5,852,730 phase1 save API request/response bodies = 14,749,317",
+    "proxy_caveat": "Stored evidence proxy can include duplicated/reserialized/previous cache evidence and is deliberately conservative. It is not wire measurement. Built-in input/output file bytes are file payload, not measured transport.",
+    "unknown": "Built-in transport, HTTP/TLS/protocol overhead and earlier unmeasured stdout remain unknown; do not claim a guaranteed20MiB wire bound."
+  },
+  "this_append_stage": {
+    "purpose": "Preserve phase1 final actual in the artifact itself; text only, no images or recursive tree downloads.",
+    "application_body_bytes_before_serializing_this_file": 5803,
+    "self_accounting": "This file captures the stage before its own upload. Final append request/response total is recorded in a subsequent Issue comment.",
+    "append_budget_target_bytes": 50000
+  }
 }
