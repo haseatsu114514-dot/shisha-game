@@ -1687,11 +1687,26 @@ test('711 rechecks comment request immutability immediately before writing',asyn
 
 // #798 implements only this procedure. All #673 state below is mocked.
 const issue673Target = [673,'codex-577-limited-20261018-3a8c921e','39271009573',738,'426f78b331abba79653b8499117f818f152914ca'];
+const issue673Preserved = [
+  {number:776,head:'a0c8932d4a4ffafe161b64fa0a1d4fff5264d365'},
+  {number:794,head:'c0cd15adf50f6f2b673cf5d1a49575dad3153edc'},
+  {number:795,head:'ff4d1eb26d879f17aa03f61a8782777e971718df'},
+];
+const issue673PreservationStatement = 'PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.';
 const issue673Question = '#738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。';
 function issue673RecoverySetup(options = {}) {
   const s=ownerRecoverySetup(issue673Target,options);
   Object.assign(s.h,{approval_issue:798,known_active_observed:false,
     consent_evidence:`Question: ${issue673Question} Answer: 1はAに引き継いで`});
+  s.h.preserved_prs=structuredClone(issue673Preserved);
+  s.h.scope+=' '+issue673PreservationStatement;
+  for(const saved of issue673Preserved) {
+    s.prs.push({number:saved.number,body:'Preservation boundary: #673 is outside this work.',
+      head:{sha:saved.head,repo:{full_name:recoveryRepo}}});
+    const otherIssue=saved.number+1000;
+    s.issues.push(fixture(otherIssue));
+    s.comments[otherIssue]=[modernEntry('other-worker-'+saved.number,700)];
+  }
   s.approvalBody=()=>{
     s.approvals[50].body=`<!-- issue-673-owner-recovery:v1 ${JSON.stringify(s.h)} -->\n`+
       `I authorize ${s.h.to} to resume saved PR #738 for Issue #673 under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
@@ -1702,7 +1717,12 @@ function issue673RecoverySetup(options = {}) {
 for(const route of ['dispatch','comment']) test(`673 recovery ${route}: exact independent audit, preservation and replay refusal`,async()=>{
   const s=issue673RecoverySetup();if(route==='comment') recoveryComment(s);
   const before=structuredClone({claim:s.comments[673][0],prs:s.prs,approval:s.approvals[50]});
+  const otherClaims=structuredClone(issue673Preserved.map(p=>s.comments[p.number+1000]));
   await s.recover();const writes=ledgerWrites(s);assert.equal(writes.length,1);
+  assert.deepEqual(issue673Preserved.map(p=>s.comments[p.number+1000]),otherClaims);
+  assert.ok(s.writes.every(w=>w.issue_number===673));
+  assert.deepEqual(s.h.prs,[{number:issue673Target[3],head:issue673Target[4]}]);
+  assert.deepEqual(s.h.preserved_prs,issue673Preserved);
   const audit=JSON.parse(writes[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
   assert.deepEqual(audit,{...s.h,approval_comment:50});
   for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
@@ -1847,4 +1867,58 @@ test('673 comment refuses rerun and preserves original reservation',async()=>{
 test('673 comment request mutation refuses before claim write',async()=>{
   let scans=0;const s=issue673RecoverySetup({hook(name){if(name==='pulls'&&++scans===2) s.approvals[60].body+=' ';}});
   recoveryComment(s);await assert.rejects(s.recover(),/Request comment changed/);assert.equal(ledgerWrites(s).length,0);
+});
+
+const invalid673Preservation = {
+  'old-marker-missing-preserved':s=>{delete s.h.preserved_prs;},
+  'missing-entry':s=>{s.h.preserved_prs.pop();},
+  'extra-entry':s=>{s.h.preserved_prs.push({number:999,head:savedHead});},
+  'duplicate-entry':s=>{s.h.preserved_prs[1]={...s.h.preserved_prs[0]};},
+  'editable-target-in-preserved':s=>{s.h.preserved_prs[0]={...s.h.prs[0]};},
+  'changed-head':s=>{s.h.preserved_prs[0].head=savedHead;},
+  'unknown-entry-field':s=>{s.h.preserved_prs[0].editable=false;},
+  'string-number':s=>{s.h.preserved_prs[0].number='776';},
+  'null-list':s=>{s.h.preserved_prs=null;},
+  'object-list':s=>{s.h.preserved_prs={...s.h.preserved_prs};},
+  'null-entry':s=>{s.h.preserved_prs[0]=null;},
+  'scope-omits-boundary':s=>{s.h.scope=s.h.scope.replace(issue673PreservationStatement,'');},
+};
+for(const [reason,mutate] of Object.entries(invalid673Preservation)) test(`673 preserved declaration refuses ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate(s);s.approvalBody();const before=structuredClone(s.comments);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+test('673 preservation boundary must appear in prose, not just JSON',async()=>{
+  const s=issue673RecoverySetup();
+  s.approvals[50].body=s.approvals[50].body.split('\n').map((line,i)=>i?line.replace(issue673PreservationStatement,''):line).join('\n');
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+const mutate673PreservedPR = (s,reason) => {
+  const index=s.prs.findIndex(pr=>pr.number===776);
+  if(reason==='missing') s.prs.splice(index,1);
+  if(reason==='extra') s.prs.push({...s.prs[index],number:999});
+  if(reason==='duplicate') s.prs.push(structuredClone(s.prs[index]));
+  if(reason==='head') s.prs[index].head.sha=savedHead;
+  if(reason==='foreignrepo') s.prs[index].head.repo.full_name='other/repo';
+  if(reason==='not-referencing') s.prs[index].body='Preserved work with no target reference.';
+};
+for(const reason of ['missing','extra','duplicate','head','foreignrepo','not-referencing']) test(`673 exact full reference set refuses initial preserved ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate673PreservedPR(s,reason);const before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const [stage,reason] of [['listForRepo','head'],['listForRepo','missing'],['pulls','head'],['pulls','extra'],['pulls','foreignrepo']]) {
+  test(`673 final ${stage} refuses preserved ${reason}`,async()=>{
+    let scans=0;
+    const s=issue673RecoverySetup({hook(name){if(name===stage&&++scans===2) mutate673PreservedPR(s,reason);}});
+    const before=structuredClone(s.comments);
+    await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(scans,2);
+    assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+  });
+}
+test('673 full reference-set comparison is order-independent and audit keeps edit authority on PR738',async()=>{
+  const s=issue673RecoverySetup();s.prs.reverse();s.h.preserved_prs.reverse();s.approvalBody();
+  const before=structuredClone(s.prs);await s.recover();assert.deepEqual(s.prs,before);
+  const audit=JSON.parse(ledgerWrites(s)[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit.prs,[{number:738,head:issue673Target[4]}]);
+  assert.deepEqual(audit.preserved_prs,[...issue673Preserved].reverse());
+  assert.ok(audit.scope.includes(issue673PreservationStatement));assert.ok(s.writes.every(w=>w.issue_number===673));
 });

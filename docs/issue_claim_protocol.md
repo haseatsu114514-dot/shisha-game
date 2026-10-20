@@ -602,6 +602,30 @@ Only `operation=transfer` with `handoff_comment` and the independent
 | --- | --- | --- | --- | --- | --- | --- |
 | `haseatsu114514-dot/shisha-game` | 673 | `codex-577-limited-20261018-3a8c921e` | `39271009573` | 738 | `426f78b331abba79653b8499117f818f152914ca` | 798 |
 
+The original implementation was deployed via #799, but actual transfer run
+**39447132230** refused before writing: `Issue 673 owner recovery exact PR set/head
+changed`. The existing `referencesIssue` rule correctly also finds #776, #794 and
+#795 through their preservation-boundary explanations mentioning #673. Do not
+remove those references, change the general matching rule, or ignore those PRs.
+This #798 correction requires the full Open PR reference set to be **PR738 plus
+these three pinned preservation-only PRs**:
+
+| Preservation-only PR | Exact head |
+| --- | --- |
+| 776 | `a0c8932d4a4ffafe161b64fa0a1d4fff5264d365` |
+| 794 | `c0cd15adf50f6f2b673cf5d1a49575dad3153edc` |
+| 795 | `ff4d1eb26d879f17aa03f61a8782777e971718df` |
+
+Only PR738 in `prs` is authorized for resumption/editing. `preserved_prs` grants
+no editing or transfer rights over other workers' work. Preserve their
+reservations, PRs, images, bodies, references, branches and history unchanged.
+The exact boundary sentence below must occur both in `scope` and in prose.
+Missing/extra/duplicate/changed entries, wrong repository or unknown object keys
+refuse; every entry is exactly `{number,head}`. Set comparison is independent of
+list order and requires the exact pinned heads for all four referencing PRs,
+both initially and after the final full worker scan. Any changed set or head
+requires a separately reviewed approval, not silently updating the pin.
+
 This does not extend #745 or #711's tuples, reuse their authorization, or relax
 ordinary transfer/handoff/pickup or legacy recovery. #733 and every other target
 are excluded. Mixed #745, #711 or `issue-handoff` markers refuse in either
@@ -620,17 +644,21 @@ After reviewed main deployment and live checks, repository owner
 `haseatsu114514-dot` must author an approval on **#673**, not #798. Both author
 and request actor require current repository **admin** permission; another admin
 cannot author it. Use the exact schema below, replacing `<NEW_OWNER>` in both
-marker and prose with the new session's unique worker ID:
+marker and prose with the new session's unique worker ID. Post a **new approval
+comment** after this correction is reviewed and deployed; never edit and reuse
+the old approval. Old markers without `preserved_prs` must refuse:
 
 ```text
-<!-- issue-673-owner-recovery:v1 {"repo":"haseatsu114514-dot/shisha-game","issue":673,"from":"codex-577-limited-20261018-3a8c921e","to":"<NEW_OWNER>","claim_run":"39271009573","prs":[{"number":738,"head":"426f78b331abba79653b8499117f818f152914ca"}],"approval_issue":798,"consent":"resume-saved-pr","accept_loss":true,"stopped":"unknown","pushed":"unknown","unsaved_work":"unknown","known_active_observed":false,"scope":"Only saved PR738 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted.","consent_evidence":"Question: #738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。 Answer: 1はAに引き継いで"} -->
+<!-- issue-673-owner-recovery:v1 {"repo":"haseatsu114514-dot/shisha-game","issue":673,"from":"codex-577-limited-20261018-3a8c921e","to":"<NEW_OWNER>","claim_run":"39271009573","prs":[{"number":738,"head":"426f78b331abba79653b8499117f818f152914ca"}],"approval_issue":798,"consent":"resume-saved-pr","accept_loss":true,"stopped":"unknown","pushed":"unknown","unsaved_work":"unknown","known_active_observed":false,"scope":"Only saved PR738 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted. PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.","consent_evidence":"Question: #738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。 Answer: 1はAに引き継いで","preserved_prs":[{"number":776,"head":"a0c8932d4a4ffafe161b64fa0a1d4fff5264d365"},{"number":794,"head":"c0cd15adf50f6f2b673cf5d1a49575dad3153edc"},{"number":795,"head":"ff4d1eb26d879f17aa03f61a8782777e971718df"}]} -->
 I authorize <NEW_OWNER> to resume saved PR #738 for Issue #673 under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.
-Only saved PR738 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted.
+Only saved PR738 is recoverable; loss of unknown/unrecoverable uncommitted and unpushed work is accepted. PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.
 Question: #738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。 Answer: 1はAに引き継いで
 ```
 
 `issue`, `approval_issue` and PR `number` are integers, `claim_run` is a string,
-`prs` is exactly the pinned single `{number,head}` object, `accept_loss` is boolean
+`prs` contains exactly the pinned single PR738 `{number,head}` object;
+`preserved_prs` contains exactly the three pinned preservation-only objects above.
+`accept_loss` is boolean
 true, and `consent` is exactly `resume-saved-pr`. `scope` and `consent_evidence`
 must each have at least 20 non-padding characters and occur verbatim in prose.
 Scope must contain `unknown/unrecoverable`, `uncommitted` and `unpushed`. Evidence
@@ -648,7 +676,8 @@ this declaration never means `stopped:true` or `pushed:true`.
 
 Initial and final checks require the open/unblocked target, exact current old
 owner/run and original ledger comment, successful source run, complete Open PR
-set of exactly one same-repository PR738 at the saved head, unchanged approval
+set of exactly four same-repository PRs (editable PR738 plus the three fixed
+preservation-only PRs), all at their pinned heads, unchanged approval
 body/author/thread/edit time/link, current admin permissions and new-worker
 availability. Other active/handoff reservations refuse, including closed Issues;
 valid parked checkpoints are checked. No cleanup or release is performed.
@@ -671,7 +700,8 @@ Or post on #673 (or explicitly target it from a PR Conversation):
 
 The separate `issue-673-owner-recovery-audit:v1` copies all approval fields and
 `approval_comment`, retaining three unknowns, the known-activity declaration and
-accepted loss. Original comments/PR/branch/history stay intact. Pre-write refusal
+`preserved_prs`, the explicit preservation-only scope, and accepted loss.
+Original comments/PR/branch/history and all other workers' reservations stay intact. Pre-write refusal
 or write failure leaves the original reservation intact; a comment request may
 write its ordinary refusal receipt. Replays cannot add another claim; comment
 receipts are idempotent and mutating job reruns refuse. A failed/canceled run
