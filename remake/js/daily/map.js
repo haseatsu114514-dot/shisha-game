@@ -228,7 +228,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     function renderPins() {
       pins.replaceChildren();
-      const spots = mapSpots().filter(s => isUnlocked(s) && (s.kind !== "fortune" || fortuneToday()));
+      const spots = mapSpots().filter(s => (s.kind !== "spot" || isUnlocked(s)) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
         id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
       })));

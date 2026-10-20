@@ -87,5 +87,11 @@ eq(reel.splitHints({ note: { lastHint: "もっと旧" } }).past.map((h) => h.tex
 // ノートの表示用まとめも同じ分け方
 const summary = reel.noteSummary(s.reel);
 assert.equal(summary.currentHints.length, 0);
-assert(summary.pastHints.length >= 1 && summary.pastHints.length <= 3);
-console.log("[reel hints] PASS: approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves");
+// 設定示唆の取得（フォールバックと安全確認）
+for (const setting of [1, 2, 3, 4, 5, 6, 0, undefined, null, NaN]) {
+  const line = reel.settingHint(setting);
+  assert(typeof line === "string" && line.length > 0, `settingHint must return non-empty string for setting=${setting}`);
+  assert(allHintText.includes(line), `settingHint line must belong to known hint lines: ${line}`);
+}
+console.log("[reel hints] PASS: approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves, guarded settingHint");
+

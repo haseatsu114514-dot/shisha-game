@@ -19,6 +19,7 @@ async function setup(page, day = 4, slot = 1) {
         _errand_scout_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true });
       s.flags[`_morning_${day}`] = s.flags[`_morning_${day + 1}`] = true;
       s.met.naru = s.met.adam = s.met.minto = true;
+      s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
       s.flavors.push('blueberry'); s.flavorStock.blueberry = 50;
       return s;
     };

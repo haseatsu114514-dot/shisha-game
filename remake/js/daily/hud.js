@@ -94,9 +94,9 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left])]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina]),
     ]),
-    el("div.hud-right", [dom.stamina, dom.status, dom.phone, dom.menu]),
+    el("div.hud-right", [dom.status, dom.phone, dom.menu]),
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
