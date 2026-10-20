@@ -556,6 +556,8 @@ async function showLine(line) {
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
+    dom.name.style.setProperty("--vn-name-length", String([...name].length));
+    dom.name.title = name;
     dom.name.classList.add("show");
   } else {
     dom.name.classList.remove("show");
