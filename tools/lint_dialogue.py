@@ -221,7 +221,7 @@ def main() -> int:
                         warns.append(f"{where}: 要確認語 '{bad}'（ステ名として使っていないか）")
 
                 if "\\n" in text or "\n" in text:
-                    warns.append(f"{where}: 手動改行を含む（autoWrap に任せたい）")
+                    warns.append(f"{where}: 手動改行を含む（画面合わせには使わず、演出意図と語中分割を確認）")
 
                 # 句読点規範（G1・2026-07-07 オーナー指定。正本: .claude/skills/text-style）
                 # 「。……＋短い続き」だけ警告（続きが独立文なら「。……」のままで良い＝tidyと同じ判定）
