@@ -83,7 +83,8 @@ export async function runDaily(def) {
     // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
-      && state.flags._errand_scout_done) {
+      && state.flags._errand_scout_done
+      && !(state.flags._delivery_adam_done && state.flags._delivery_minto_done)) {
       state.flags._delivery_schedule_v2 = true;
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
     }

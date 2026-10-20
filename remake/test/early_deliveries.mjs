@@ -19,7 +19,7 @@ const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
  catchesCold:()=>false,conditionForRatio:()=>({health:'green'}),
  paidAction:async fn=>({value:await fn(),spent:0}),
  play:async(id,opts)=>calls.push({type:'scene',id,opts,day:state.day,slot:state.slot}),
- chooseSpot:async opts=>{calls.push({type:'map',pin:opts.guide?.pin,day:state.day,slot:state.slot});return opts.guide?.pin||'rest'},
+ chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,day:state.day,slot:state.slot});return opts.guide?.pin||'rest'},
  spotById:id=>spots[id]||{id,kind:'rest',stamina:0},ownsFlavor:()=>false,
  openShop:async()=>calls.push({type:'shop'}),
  visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story.naru=1;calls.push({type:'scout',day:state.day})},
@@ -32,7 +32,7 @@ const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
  runHomeShisha:async()=>false,maybeConfession:async()=>false,unreadCount:()=>0,
  completeInvitation:()=>{state.pendingInvite=null},
  invitationCost:()=>0,invitationGrowth:()=>({}),isFriendEvent:()=>false,isFinaleEvent:()=>false,CHAR_STAT:{},storeInvitationSpot:()=>false,
- restAtHome:async()=>{},currentCondition:()=>({health:'green'}),
+ openingStatus:()=>({ok:true}),VISIT_BG:{},restAtHome:async()=>{},currentCondition:()=>({health:'green'}),
 };
 const context=vm.createContext({console,Math,Set,String,Number,Array,Promise});
 const modules=new Map();
@@ -79,4 +79,9 @@ await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>x.type==='sc
 // Keep an already-accepted old DAY1-night appointment when ending the shift.
 reset({day:1,slot:1});state.pendingInvite={day:1,slot:1,sender:'naru',event:'legacy_appointment'};
 await c.runDaily({untilDay:3,nightEvents:{}});assert.equal(calls.filter(x=>x.id==='legacy_appointment').length,1);assert.equal(state.pendingInvite,null);
+// Do not insert a registration guide into an already-completed legacy DAY2.
+reset({day:2,flags:{_c_station_registered:false,_delivery_adam_done:true,_delivery_minto_done:true}});
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert(!calls.some(x=>x.type==='register'));assert.equal(state.flags._c_station_registered,false);
+assert.equal(state.money,10000);
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');
