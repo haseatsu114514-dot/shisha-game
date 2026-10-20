@@ -74,7 +74,7 @@ try {
         if (mode === "ds") await p.screenshot({ path: path.join(dir, `${device}-same-art-normal.png`) });
         await layout(p, mode);
         assert.equal(await p.locator(".title-art").getAttribute("data-art"), artBefore, "switching must keep the approved original art");
-        assert.equal(await p.locator(".title-item").count(), 5);
+        assert.equal(await p.locator(".title-item").count(), 4);
         assert.equal(await button(p, "title-load").isEnabled(), true);
         await p.screenshot({ path: path.join(dir, `${device}-${mode}-title.png`) });
         if (mode === "ds") {
@@ -99,9 +99,9 @@ try {
         await button(p, "title-load").click(); await button(p, "slot-cancel").click();
         await button(p, "title-new").click(); await button(p, "cancel-new").click();
         assert.deepEqual(await snapshot(p), before, "opening/cancelling menus changed save");
-        await button(p, "title-trpg").click(); await p.locator('#screen[data-screen="trpg"]').waitFor(); await stageIsOriginal(p);
+        assert.equal(await button(p, "title-trpg").count(), 0);
+        await stageIsOriginal(p);
         await p.setViewportSize({ width: 1280, height: 720 });
-        await p.getByRole("button", { name: "タイトルへ戻る", exact: true }).click();
         await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
         await layout(p, "normal"); await stageIsOriginal(p);
         await p.reload(); await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
@@ -158,7 +158,7 @@ try {
   }
   for (const mode of ["normal", "ds"]) {
     await check(`${mode}-image-failure`, sizes.phone, async p => {
-      await layout(p, mode); assert.equal(await p.locator(".title-item").count(), 5);
+      await layout(p, mode); assert.equal(await p.locator(".title-item").count(), 4);
       await p.locator(".title-logo-fallback:not([hidden])").waitFor();
       if (mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();

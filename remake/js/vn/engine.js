@@ -1,6 +1,7 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
+import { createNameFit } from "./name-fit.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
@@ -35,6 +36,7 @@ export const hooks = {
 
 const log = [];
 let dom = null;
+let nameFit = null;
 let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
@@ -72,6 +74,7 @@ function buildDom() {
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
@@ -564,13 +567,14 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
     dom.name.style.setProperty("--vn-name-length", String([...name].length));
     dom.name.title = name;
     dom.name.classList.add("show");
+    nameFit.fit();
   } else {
     dom.name.classList.remove("show");
   }
