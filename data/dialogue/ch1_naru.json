@@ -1,6 +1,13 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch1_naru_cafe_intro",
+      "lines": [
+        { "speaker": "naru", "face": "normal", "text": "昼にひと息つくなら、喫茶こはくもいいよ。焼き菓子もうまいんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "喫茶こはく、覚えておくよ" }
+      ]
+    },
+    {
       "dialogue_id": "ch1_naru_first",
       "lines": [
         {

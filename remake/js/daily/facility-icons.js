@@ -63,6 +63,8 @@ export function createFacilityIcon(id, { size = 48, decorative = false, sticker 
   crop.style.width = `${layout.width}px`;
   crop.style.height = `${layout.height}px`;
   const image = document.createElement('img');
+  image.fetchPriority = 'high';
+  image.decoding = 'async';
   image.src = layout.src;
   image.alt = '';
   image.draggable = false;
