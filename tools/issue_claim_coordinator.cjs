@@ -413,12 +413,18 @@ async function coordinate(github, context, core, inputs = process.env) {
     // #798 is solely the pinned #673 / PR738 exception; unknown stays unknown.
     if (approval.body?.includes('issue-673-owner-recovery:')) {
       const pinned = number === 673 ? {from:'codex-577-limited-20261018-3a8c921e', run:'39271009573', pr:738, head:'426f78b331abba79653b8499117f818f152914ca'} : null;
+      const preserved = [
+        {number:776, head:'a0c8932d4a4ffafe161b64fa0a1d4fff5264d365'},
+        {number:794, head:'c0cd15adf50f6f2b673cf5d1a49575dad3153edc'},
+        {number:795, head:'ff4d1eb26d879f17aa03f61a8782777e971718df'},
+      ];
+      const preservationStatement = 'PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.';
       const lines = approval.body.match(/^<!-- issue-673-owner-recovery:v1 (.+) -->$/gm) || [];
       if (repoOwner !== 'haseatsu114514-dot' || repo !== 'shisha-game' || !pinned || lines.length !== 1 ||
           (approval.body.match(/issue-673-owner-recovery:/g) || []).length !== 1 ||
           (approval.body.includes('issue-handoff:') || approval.body.includes('issue-owner-recovery:') || approval.body.includes('issue-711-owner-recovery:'))) throw Error('Issue 673 owner recovery requires the exact pinned repository/target and independent record');
       const h = JSON.parse(lines[0].slice('<!-- issue-673-owner-recovery:v1 '.length, -4));
-      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence','known_active_observed'];
+      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence','known_active_observed','preserved_prs'];
       const prose = approval.body.replace(lines[0], '');
       const consentStatement = 'I authorize ' + worker + ' to resume saved PR #' + pinned.pr +
         ' for Issue #' + number + ' under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.';
@@ -429,7 +435,13 @@ async function coordinate(github, context, core, inputs = process.env) {
           h.known_active_observed !== false || h.stopped !== 'unknown' || h.pushed !== 'unknown' || h.unsaved_work !== 'unknown' ||
           !Array.isArray(h.prs) || h.prs.length !== 1 || h.prs[0]?.number !== pinned.pr || h.prs[0]?.head !== pinned.head ||
           Object.keys(h.prs[0]).sort().join(',') !== 'head,number' ||
+          !Array.isArray(h.preserved_prs) || h.preserved_prs.length !== preserved.length ||
+          h.preserved_prs.some(p => !p || typeof p !== 'object' || Array.isArray(p) ||
+            Object.keys(p).sort().join(',') !== 'head,number' ||
+            !preserved.some(saved => p.number === saved.number && p.head === saved.head)) ||
+          new Set(h.preserved_prs.map(p => p.number)).size !== preserved.length ||
           !['scope','consent_evidence'].every(k => typeof h[k] === 'string' && h[k].trim().length >= 20 && prose.includes(h[k])) ||
+          !h.scope.includes(preservationStatement) || !prose.includes(preservationStatement) ||
           !prose.includes(consentStatement) || !/unknown\/unrecoverable/.test(h.scope) ||
           !/uncommitted/.test(h.scope) || !/unpushed/.test(h.scope) ||
           !['#738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。','1はAに引き継いで'].every(text => h.consent_evidence.includes(text))) throw Error('Incomplete owner recovery approval or wrong pinned tuple');
@@ -454,8 +466,14 @@ async function coordinate(github, context, core, inputs = process.env) {
       }
       async function validateOwnerRecoveryPRs() {
         const prs = await openPRs(number);
-        if (prs.length !== 1 || prs[0].number !== pinned.pr || prs[0].head?.sha !== pinned.head ||
-            prs[0].head?.repo?.full_name !== h.repo) throw Error('Issue 673 owner recovery exact PR set/head changed');
+        // Preserve the entire referencesIssue set without granting authority over
+        // the three other workers' PRs. Only h.prs (PR738) is editable.
+        const expected = [...h.prs, ...preserved];
+        if (prs.length !== expected.length || new Set(prs.map(pr => pr.number)).size !== expected.length ||
+            prs.some(pr => pr.head?.repo?.full_name !== h.repo ||
+              !expected.some(saved => pr.number === saved.number && pr.head?.sha === saved.head))) {
+          throw Error('Issue 673 owner recovery exact PR set/head changed');
+        }
       }
       async function validateOwnerRecoveryAvailability() {
         // Unlike ordinary availability cleanup, this exception never releases any
@@ -481,7 +499,7 @@ async function coordinate(github, context, core, inputs = process.env) {
       await validateOwnerRecoveryTarget();
       await comment(number,'claimed','\nIssue 673 owner-approved recovery from ' + pinned.from + ': ' + approval.html_url +
         '\n<!-- issue-673-owner-recovery-audit:v1 ' + JSON.stringify({...h, approval_comment:Number(handoffComment)}) + ' -->' +
-        '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
+        '\n' + preservationStatement + '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
       core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
       core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + pinned.from + ' APPROVAL=' + handoffComment);
       await core.summary.addRaw('Issue 673 owner-approved recovery #' + number + '; stopped/pushed/unsaved work unknown. Wait for this exact run success and current owner/run before editing.').write();
