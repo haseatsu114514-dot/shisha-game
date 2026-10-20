@@ -1,8 +1,8 @@
 {
   "status": "PASS",
-  "scope": "isolated static CSS/DOM-shape fixture; no game scripts/playthrough; art placeholder and fallback fonts",
-  "source_main": "0fef9526f37696b134a80a119e1051b8247f6122",
-  "count": 38,
+  "scope": "actual audience DOM static component; pure text formatter only; no game progression/playthrough; art placeholder and fallback fonts",
+  "source_main": "7d8e1f81ab47d244134666d38d1b5c910b180b83",
+  "count": 41,
   "cases": [
     {
       "label": "pc",
@@ -55,12 +55,47 @@
           "height": 103.06055450439453
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 44.416664123535156,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 91
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 94
+          "final": 94,
+          "maximum": 94,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -93,12 +128,47 @@
           "height": 104.23384857177734
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 46.92223358154297,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 96.13333129882812
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 65
+          "final": 65,
+          "maximum": 65,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -131,12 +201,47 @@
           "height": 101.484375
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 41,
+            "height": 41
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 107,
+            "height": 41
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 107,
+            "height": 84
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 139
+          "final": 139,
+          "maximum": 139,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -214,17 +319,23 @@
           "height": 44.09503173828125
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 149
+          "final": 149,
+          "maximum": 149,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 183
+          "final": 187,
+          "maximum": 563,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -306,17 +417,23 @@
           "height": 44.09686279296875
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 130
+          "final": 130,
+          "maximum": 130,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 176
+          "final": 176,
+          "maximum": 511,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -398,17 +515,23 @@
           "height": 44.09375
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 177
+          "final": 177,
+          "maximum": 177,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 203
+          "final": 202,
+          "maximum": 765,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -529,17 +652,23 @@
           "height": 44.09503173828125
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 149
+          "final": 149,
+          "maximum": 149,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 187
+          "final": 187,
+          "maximum": 563,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -621,17 +750,23 @@
           "height": 44.09686279296875
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 130
+          "final": 130,
+          "maximum": 130,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 170
+          "final": 175,
+          "maximum": 511,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -713,17 +848,23 @@
           "height": 44.09375
         }
       },
+      "audience": null,
+      "audience_arrangement": null,
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".mix-side",
           "initial": 0,
-          "final": 177
+          "final": 177,
+          "maximum": 177,
+          "keyboardFocusable": null
         },
         {
           "selector": ".mix-list",
           "initial": 0,
-          "final": 203
+          "final": 202,
+          "maximum": 765,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -842,6 +983,39 @@
           "height": 44.095062255859375
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 44.416664123535156,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 91
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": [
         {
           "text": "ふんわり葉の間に空気を残す",
@@ -896,7 +1070,9 @@
         {
           "selector": ".pack-caption",
           "initial": 0,
-          "final": 38
+          "final": 38,
+          "maximum": 38,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -932,6 +1108,39 @@
           "width": 279.816650390625,
           "height": 44.09686279296875
         }
+      },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 46.92223358154297,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 96.13333129882812
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
       },
       "initial_pack_actions": [
         {
@@ -987,7 +1196,9 @@
         {
           "selector": ".pack-caption",
           "initial": 0,
-          "final": 36
+          "final": 36,
+          "maximum": 36,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -1023,6 +1234,39 @@
           "width": 244.5,
           "height": 44.09375
         }
+      },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 41,
+            "height": 41
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 107,
+            "height": 41
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 107,
+            "height": 84
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 203
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
       },
       "initial_pack_actions": [
         {
@@ -1076,9 +1320,18 @@
       ],
       "touch_scroll": [
         {
+          "selector": ".audience-note",
+          "initial": 0,
+          "final": 35,
+          "maximum": 35,
+          "keyboardFocusable": true
+        },
+        {
           "selector": ".pack-caption",
           "initial": 0,
-          "final": 40
+          "final": 40,
+          "maximum": 40,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -1150,12 +1403,47 @@
           "height": 103.06055450439453
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 44.416664123535156,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 91
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 94
+          "final": 94,
+          "maximum": 94,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -1188,12 +1476,47 @@
           "height": 104.23384857177734
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 46.92223358154297,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 96.13333129882812
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 65
+          "final": 65,
+          "maximum": 65,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -1226,12 +1549,47 @@
           "height": 101.484375
         }
       },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 41,
+            "height": 41
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 107,
+            "height": 41
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 107,
+            "height": 84
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 168
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
       "initial_pack_actions": null,
       "touch_scroll": [
         {
           "selector": ".bench-panel",
           "initial": 0,
-          "final": 139
+          "final": 139,
+          "maximum": 139,
+          "keyboardFocusable": null
         }
       ],
       "touch_ancestors_allow_pan": true,
@@ -1251,6 +1609,405 @@
       "hoverNone": true,
       "k": 0.5416666666666666,
       "before_after_geometry_equal": true
+    },
+    {
+      "label": "long-description",
+      "step": "pack-detail",
+      "applies": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5416666666666666,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09503173828125,
+          "height": 44.095054626464844
+        },
+        ".pack-choice": {
+          "width": 339.0833740234375,
+          "height": 59.88801574707031
+        },
+        ".pack-confirm": {
+          "width": 264.875,
+          "height": 44.095062255859375
+        }
+      },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 44.416664123535156,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 44.41667175292969
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 115.91666412353516,
+            "height": 91
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 187
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 133.1822967529297,
+            "bottom": 193.0703125
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 197.40365600585938,
+            "bottom": 257.3001403808594
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 261.63348388671875,
+            "bottom": 321.52996826171875
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 329.11328125,
+            "bottom": 373.2083435058594
+          },
+          "p": {
+            "top": 94.47005462646484,
+            "bottom": 376.45833587646484
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".audience-note",
+          "initial": 0,
+          "final": 19,
+          "maximum": 19,
+          "keyboardFocusable": true
+        },
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 38,
+          "maximum": 38,
+          "keyboardFocusable": null
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "long-description",
+      "step": "pack-detail",
+      "applies": true,
+      "viewport": [
+        915,
+        412
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5722222222222222,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.096923828125,
+          "height": 44.09687805175781
+        },
+        ".pack-choice": {
+          "width": 358.21112060546875,
+          "height": 60.92378234863281
+        },
+        ".pack-confirm": {
+          "width": 279.816650390625,
+          "height": 44.09686279296875
+        }
+      },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 46.92223358154297,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 46.922210693359375
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 122.45555877685547,
+            "height": 96.13333129882812
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 177
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 137.0651092529297,
+            "bottom": 197.9888916015625
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 202.56666564941406,
+            "bottom": 263.4904479980469
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 268.0682373046875,
+            "bottom": 328.9920349121094
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 350.16424560546875,
+            "bottom": 394.2611083984375
+          },
+          "p": {
+            "top": 97.31354522705078,
+            "bottom": 397.69446563720703
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".audience-note",
+          "initial": 0,
+          "final": 9,
+          "maximum": 9,
+          "keyboardFocusable": true
+        },
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 36,
+          "maximum": 36,
+          "keyboardFocusable": null
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
+    },
+    {
+      "label": "long-description",
+      "step": "pack-detail",
+      "applies": true,
+      "viewport": [
+        740,
+        360
+      ],
+      "coarse": true,
+      "hoverNone": true,
+      "k": 0.5,
+      "font_px": {
+        ".audience-note": 14.0,
+        ".pack-choice small": 14.0
+      },
+      "control_rects": {
+        ".bench-guide summary": {
+          "width": 44.09375,
+          "height": 44.09375
+        },
+        ".pack-choice": {
+          "width": 313,
+          "height": 52.5
+        },
+        ".pack-confirm": {
+          "width": 244.5,
+          "height": 44.09375
+        }
+      },
+      "audience": {
+        "children": [
+          {
+            "className": "audience-people",
+            "contained": true,
+            "width": 41,
+            "height": 41
+          },
+          {
+            "className": "audience-heading",
+            "contained": true,
+            "width": 107,
+            "height": 41
+          },
+          {
+            "className": "audience-note",
+            "contained": true,
+            "width": 107,
+            "height": 84
+          }
+        ],
+        "note": {
+          "client": 168,
+          "scroll": 244
+        }
+      },
+      "audience_arrangement": {
+        "workerNameInside": true,
+        "workerNameAboveAudience": true,
+        "faceBeforeName": true,
+        "noteBelowFace": true,
+        "noteBelowHeading": true
+      },
+      "initial_pack_actions": [
+        {
+          "text": "ふんわり葉の間に空気を残す",
+          "fits": true,
+          "r": {
+            "top": 127.890625,
+            "bottom": 180.390625
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "ノーマル均等にならす",
+          "fits": true,
+          "r": {
+            "top": 184.390625,
+            "bottom": 236.8984375
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "デンスパック隙間を詰める",
+          "fits": true,
+          "r": {
+            "top": 240.8984375,
+            "bottom": 293.40625
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        },
+        {
+          "text": "この詰め方で決める",
+          "fits": true,
+          "r": {
+            "top": 300.40625,
+            "bottom": 344.5
+          },
+          "p": {
+            "top": 90.59375,
+            "bottom": 347.5
+          }
+        }
+      ],
+      "touch_scroll": [
+        {
+          "selector": ".audience-note",
+          "initial": 0,
+          "final": 76,
+          "maximum": 76,
+          "keyboardFocusable": true
+        },
+        {
+          "selector": ".pack-caption",
+          "initial": 0,
+          "final": 40,
+          "maximum": 40,
+          "keyboardFocusable": null
+        }
+      ],
+      "touch_ancestors_allow_pan": true,
+      "last_action_reachable": true,
+      "focus_outline": "3px",
+      "mix_list_reach": null
     },
     {
       "label": "outside",
@@ -1356,5 +2113,17 @@
       "k": 0.5416666666666666,
       "before_after_geometry_equal": true
     }
-  ]
+  ],
+  "regression": {
+    "head": "f18fa461994a4b41b705f7b82cf82f30156cf249",
+    "result": "expected FAIL",
+    "case": "phone-844/pack with actual audience DOM, step text and pure autoWrap",
+    "old_note_width": 59.5833,
+    "old_note_height": 121.7734,
+    "old_note_client_and_scroll_height": 225
+  },
+  "pc_pixel_identical": {
+    "mix": true,
+    "pack": true
+  }
 }
