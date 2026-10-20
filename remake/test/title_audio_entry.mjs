@@ -89,10 +89,10 @@ for (const action of ["start", "stop", "replace", "repeat", "reject-resume"]) {
 }
 console.log("PASS: first gesture, deferred/rejected resume, stop/replacement races, deduplication, mute/volume and autoplay retry");
 
-// Title LOAD is an in-page transition; cancellations must retain title music.
-let buttons = new Map(), screen, selectedSlot = null, confirm = false;
-let galleryOpens = 0, configOpens = 0;
-const events = [], hudClasses = new Set(["show"]);
+// Production title callbacks: cancelled/closed subviews rotate art; accepted exits do not.
+let buttons = new Map(), selectedSlot = null, confirm = false, renders = 0, picks = 0, wipes = 0;
+const events = [], hudClasses = new Set(["show"]), galleryCloses = [], configCloses = [];
+const body = { dataset: { screen: "title" } };
 function el(selector, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
   const node = { selector, children: [...children], ...attrs, dataset: attrs.dataset || {}, style: {},
@@ -109,29 +109,65 @@ function el(selector, attrs = {}, children = []) {
 }
 const title = await load(await read("../js/scenes/title.js"), {
   el, bgUrl: () => "title-bg", layers: { hud: { classList: { remove: k => hudClasses.delete(k) } } },
-  showScreen: name => { screen = name; }, peekSave: () => ({}), anySlotSaved: () => true,
+  showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}), anySlotSaved: () => true,
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
-  SE: { select() {} }, smokeWipe: fn => fn(), modal: async options => { if (options.title === "設定") configOpens++; return confirm; },
+  SE: { select() {} }, smokeWipe: fn => fn(),
+  modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
   loadFlow: async () => selectedSlot, loadFromSlot: () => true,
+  wipeSave: () => wipes++,
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
-  openGallery: () => galleryOpens++,
+  openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
+  pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   config: {},
-}, { document: { querySelector: () => null } });
+}, { document: { body } });
 const art = { ready: true, file: "test", character: "test", url: "test" };
 const show = () => { buttons = new Map(); title.showTitle(art); };
-show(); assert.equal(screen, "title"); assert.equal(hudClasses.has("show"), false);
-buttons.get("title-load").onclick(); await flush(); assert.deepEqual(events, ["title"]);
-selectedSlot = "slot1";
-buttons.get("title-load").onclick(); await flush(); assert.deepEqual(events.slice(-2), ["stop:0", "resume"]);
-show(); buttons.get("title-new").onclick(); await flush(); assert.equal(events.at(-1), "title");
-confirm = true; buttons.get("title-new").onclick(); await flush(); assert.deepEqual(events.slice(-2), ["stop:0", "new"]);
-show();
-assert.deepEqual([...buttons.keys()], ["title-new", "title-load", "title-gallery", "title-config"], "only the four retained title routes are exposed");
-buttons.get("title-gallery").onclick(); buttons.get("title-config").onclick();
-assert.equal(galleryOpens, 1); assert.equal(configOpens, 1);
-hudClasses.add("show"); show();
-assert.equal(hudClasses.has("show"), false); assert.equal(events.at(-1), "title");
-console.log("PASS: title HUD reset, LOAD/new cancellation and accepted exits, retained menus and title re-entry");
+const click = async id => { buttons.get(id).onclick(); await flush(); };
+show(); assert.equal(body.dataset.screen, "title"); assert.equal(hudClasses.has("show"), false);
+assert.deepEqual([...buttons.keys()], ["title-new", "title-load", "title-gallery", "title-config"]);
+for (const [id, closes] of [["title-gallery", galleryCloses], ["title-config", configCloses]]) {
+  const before = renders, beforePicks = picks;
+  await click(id); assert.equal(renders, before, "keep title until subview closes");
+  closes.shift()(); await flush();
+  assert.equal(renders, before + 1); assert.equal(picks, beforePicks + 1);
+}
+for (const id of ["title-new", "title-load"]) {
+  const before = renders, beforePicks = picks;
+  await click(id);
+  assert.equal(renders, before + 1); assert.equal(picks, beforePicks + 1);
+  assert.equal(wipes, 0, "cancelling must not erase saves");
+}
+for (const [id, expected] of [["title-load", "resume"], ["title-new", "new"]]) {
+  show(); await click("title-gallery");
+  selectedSlot = "slot1"; confirm = true;
+  const before = renders, beforePicks = picks;
+  await click(id); assert.deepEqual(events.slice(-2), ["stop:0", expected]);
+  // Even while the wipe still has data-screen=title, the outgoing title is retired.
+  galleryCloses.shift()(); await flush();
+  assert.equal(renders, before); assert.equal(picks, beforePicks, "accepted exit never rebuilds title");
+}
+// A previous title's late close cannot replace a newer title or an outside screen.
+show(); await click("title-gallery"); show();
+let before = renders; galleryCloses.shift()(); await flush(); assert.equal(renders, before);
+await click("title-config"); body.dataset.screen = "map";
+before = renders; configCloses.shift()(); await flush(); assert.equal(renders, before);
+hudClasses.add("show"); show(); assert.equal(hudClasses.has("show"), false);
+console.log("PASS: four retained menus, gallery/config return, NEW/LOAD cancel rotation, accepted exits and stale-close guards");
+
+// First narration must be entered even when the cold-open decoration is still decoding.
+let mounted = false, firstDialogue = null;
+const chapter = await load(await read("../js/chapters/ch1.js"), {
+  state: { flags: {} }, hooks: {}, CRAFT_STEPS: [],
+  DB: { dialogues: { ch1_cold_open: { dialogue_id: "ch1_cold_open", metadata: { effect: "smoke" }, lines: [] } } },
+  setBg: async () => {},
+  mountColdOpen: () => { mounted = true; return { ready: new Promise(() => {}), stop() {} }; },
+  play: dialogue => { firstDialogue = dialogue; return new Promise(() => {}); },
+});
+void chapter.startNewGame(); await flush();
+assert.equal(mounted, true);
+assert.equal(firstDialogue?.dialogue_id, "ch1_cold_open", "decoration decode must not gate first narration");
+assert.equal(firstDialogue.metadata.effect, "", "the existing cold-open scene still owns the presentation");
+console.log("PASS: pending decorative assets do not block the initial dialogue call");
 // Display behavior still requires an actual browser; this assertion only protects the guard's presence.
 const css = await read("../css/daily.css");
 assert.match(css, /body\[data-screen="boot"\] #hud, body\[data-screen="title"\] #hud \{ display: none; \}/);
