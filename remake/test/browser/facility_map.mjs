@@ -78,6 +78,10 @@ try {
           anchorDelta, logicalTarget: [pin.offsetWidth, pin.offsetHeight], people: [...pin.querySelectorAll('.pin-person')].map(p => p.getAttribute('alt') || p.getAttribute('aria-label')) };
       }));
       for (const id of protectedLogos) {
+        if (scenario === 'locked' && id === 'c_station') {
+          assert.equal(pins.find(p => p.id === id), undefined, `${id} must be hidden while locked`);
+          continue;
+        }
         const pin = pins.find(p => p.id === id);
         assert.equal(pin?.logo, pin?.locked ? null : id, `${id} logo changed`);
       }
@@ -127,12 +131,24 @@ try {
           assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/${scenario}/${id} failed to get sel class`);
         }
         assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved, 'pin selection changes save');
+        for (const id of ['rest', 'fortune']) {
+          const pin = page.locator(`[data-test="pin-${id}"]`);
+          await pin.scrollIntoViewIfNeeded();
+          if (touch) await pin.tap(); else await pin.click();
+          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/${scenario}/${id} failed to select via user interaction`);
+          assert.equal(await page.locator('[data-test="map-go"]').isVisible(), true, `${device}/${layout}/${scenario}/${id} map-go not visible`);
+        }
       }
       cases.push({ scenario, pins, stateUnchanged: true, rotateHint: rotates });
     }
     if (!(device === 'portrait' && layout === 'normal')) {
+      const restPin = page.locator('[data-test="pin-rest"]'); await restPin.scrollIntoViewIfNeeded();
+      if (touch) await restPin.tap(); else await restPin.click();
+      assert.equal(await restPin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/rest failed to select via user interaction`);
+      assert.equal(await page.locator('[data-test="map-go"]').isVisible(), true, `${device}/${layout}/rest map-go not visible`);
       const pin = page.locator('[data-test="pin-axe_bar"]'); await pin.scrollIntoViewIfNeeded();
       if (touch) await pin.tap(); else await pin.click();
+      assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/axe_bar failed to select via user interaction`);
       const go = page.locator('[data-test="map-go"]'); await go.scrollIntoViewIfNeeded();
       if (touch) await go.tap(); else await go.click();
       assert.equal(await page.evaluate(() => window.mapFlow), 'axe_bar', 'legacy axe destination changed');
