@@ -19,7 +19,8 @@ async function setup(page, { chapter = 1, slot = 0 } = {}) {
     // 未発見のロック／目撃の中断・無報酬はaxe_bar_discovery.mjsの専用回帰で検査する。
     Object.assign(s.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true,
       _axe_bar_sighting_day: s.day - 1, _axe_bar_sighting_chapter: chapter,
-      _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" } });
+      _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" },
+      _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
     V.vn.vnTest.turbo = true; V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0;
     (await import("./js/chapters/ch1.js")).setupHooks();
     V.ui.clearScreen(); V.hud.initHud({}); V.hud.showHud();

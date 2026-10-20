@@ -4,12 +4,15 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoWrap, paginate, WRAP_LIMIT, MAX_PAGE_LINES } from "../js/vn/text.js";
+import { autoWrap, paginate, WRAP_LIMIT, MAX_PAGE_LINES, textWidth } from "../js/vn/text.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const strip = (s) => s.replace(/\[\/?[a-z]+\]/g, "");
 const width = (s) => [...strip(s)].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
 const lines = (text) => autoWrap(text).split("\n");
+
+// エディタの字数目安も本編のトークン計算を使う（装飾・改行・結合文字）。
+assert.equal(textWidth("[imp]👩‍🍳が[/imp]\nAB"), 3);
 
 // 1) 以前は語の途中で折れていた第1章の台詞。守る語が2行に分かれない
 const keepWhole = [

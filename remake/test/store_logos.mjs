@@ -24,6 +24,7 @@ try {
     window.T = { core, ui, map, spots, data, hud, transitions, logos, util, shop, tonari };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 0, money: 30000 });
     for (const id of ["naru", "adam", "minto", "rin", "tsumugi"]) core.state.met[id] = true;
+    Object.assign(core.state.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
     // 顔画像を持つ既知の店主の小バッジを、空のmanifestでも実物素材で検証する。
     data.DB.manifest.faceIcons = ["sumi", "naru", "adam", "minto", "tsumugi", "hiyori"].map(id => `face_${id}.png`);
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
@@ -109,9 +110,16 @@ try {
   await page.waitForFunction(()=>T.delayedVisitDone);
   assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0);checks++;
   // 会う前は店主の顔を隠す。未解放の店舗・カフェには採用ロゴを出さない。
-  await page.evaluate(async()=>{T.core.state.met={}; await T.openMap();});
-  await page.waitForSelector('[data-test="pin-choizap"]');
+  await page.evaluate(async()=>{
+    T.core.state.met = {};
+    delete T.core.state.flags._spot_guide_naru;
+    delete T.core.state.flags._spot_guide_adam;
+    delete T.core.state.flags._spot_guide_minto;
+    await T.openMap();
+  });
+  await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-choizap"] .store-logo,[data-test="pin-c_station"] .store-logo,[data-test="pin-cafe"] .store-logo').count(),0);
+  assert.equal(await page.locator('[data-test="pin-choizap"],[data-test="pin-c_station"],[data-test="pin-cafe"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] img.pin-person').count(),0);
   const anonymous = await page.locator('.pin-unknown').evaluateAll(ns=>ns.map(n=>({
     name:n.getAttribute("aria-label"), html:n.outerHTML, role:n.dataset.personRole })));

@@ -177,7 +177,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           renderSceneArt(preview, pv.url);
         });
       }
-      info.replaceChildren(
+      info.replaceChildren(...[
         el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
         preview,
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
@@ -195,7 +195,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok && s.kind === "rest" && homeRig()
           ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
           : null,
-      );
+      ].filter(child => child != null));
     };
 
     const select = (s, btn) => {
@@ -228,7 +228,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     function renderPins() {
       pins.replaceChildren();
-      const spots = mapSpots().filter(s => isUnlocked(s) && (s.kind !== "fortune" || fortuneToday()));
+      const spots = mapSpots().filter(s => (s.kind !== "spot" || isUnlocked(s)) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
         id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
       })));

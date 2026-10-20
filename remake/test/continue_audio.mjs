@@ -56,6 +56,12 @@ session.start(); session.title();
 assert.equal(contexts, 1, "SE must share the existing AudioContext");
 assert.equal(media[0].playbackRate, 1.08);
 assert.equal(media[0].preservesPitch, true);
+step(400); step(200); // settle the entry/title pulse's existing fade before measuring tick-only output
+const ordinaryStart = sources.length, ordinaryMix = media[0].volume;
+for (let remaining = 20; remaining >= 6; remaining--) session.tick();
+assert.deepEqual(sources.slice(ordinaryStart).map(node => node.frequency.value), Array(15).fill(1000));
+step(300);
+assert.equal(media[0].volume, ordinaryMix, "ordinary ticks do not duck the BGM each second");
 const firstCount = sources.length;
 for (const remaining of [5, 4, 3, 2, 1, 0]) session.count(remaining);
 assert.deepEqual(sources.slice(firstCount).map(node => node.frequency.value), [620, 700, 780, 870, 990, 70]);
@@ -68,6 +74,9 @@ assert(Math.abs(media[0].volume - .6 * .68 * .5) < 1e-9, "reaction ducks the act
 config.bgmVolume = .2; audio.applyVolumes();
 assert(Math.abs(media[0].volume - .2 * .68 * .5) < 1e-9, "settings must retain the reaction duck");
 session.pause(); assert.equal(media[0].paused, true);
+const pausedSources = sources.length;
+session.tick(); session.count(3); session.voice("sumi"); session.title();
+assert.equal(sources.length, pausedSources, "rotation/menu pause also prevents new SE while document is visible");
 step(100); assert.equal(media[0].volume, 0);
 session.resume(); step(100);
 assert.equal(media[0].paused, false);
@@ -78,15 +87,28 @@ audio.applyVolumes();
 assert(Math.abs(media[0].volume - .2 * .68 * .1) < 1e-9, "settings preserve the GAME OVER fade");
 const mutedStart = sources.length;
 config.seVolume = 0; session.count(2); session.choose("quit", "canvas"); session.voice("tsumugi");
+session.tick();
 assert.equal(sources.length, mutedStart, "SE volume zero creates no audible sources");
 config.bgmVolume = 0; audio.applyVolumes(); step(300);
 assert.equal(media[0].volume, 0, "fade never restores a muted BGM");
+config.seVolume = .5;
+for (const key of ["mute", "muted"]) {
+  config[key] = true;
+  session.tick(); session.count(5); session.voice("sumi");
+  assert.equal(sources.length, mutedStart, `${key} suppresses CONTINUE SE`);
+  config[key] = false;
+}
+session.setEnabled(false);
+session.tick(); session.count(0); session.voice("sumi");
+assert.equal(sources.length, mutedStart, "soundEffects=false suppresses all CONTINUE SE");
+config.seVolume = 0; // restore the BGM-only fixture for the prepared-media checks below
 session.cleanup(); session.cleanup(); step(300);
 await Promise.resolve();
 assert.equal(media[0].paused, true);
 assert(sources.every(source => source.stops.at(-1) === undefined), "cleanup stops even future scheduled SE");
 const stoppedStart = sources.length;
 session.beat(); session.count(5); session.choose("retry", "shark"); session.voice("sumi");
+session.tick();
 assert.equal(sources.length, stoppedStart, "destroyed session cannot schedule SE");
 config.bgmVolume = .4;
 audio.playBgm("tonari"); step(1500);

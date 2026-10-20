@@ -1,0 +1,117 @@
+/* 採用した墨紫と真鍮の会話枠。本文の幅・改ページ・入力処理は既存のまま。 */
+@font-face {
+  font-family: "Suien Name";
+  src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+/* 会話枠と操作バーを一緒に2px下げ、内部組版と5pxの間隔を保つ。 */
+.vn-box, .vn-controls { translate: 0 2px; }
+:root {
+  --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
+  --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
+  --vn-lounge-name: #edca82;
+}
+.vn-box {
+  background: none;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  isolation: isolate;
+}
+.vn-box::before {
+  content: "";
+  position: absolute;
+  inset: -41px 0 0;
+  width: auto;
+  border-radius: 0;
+  background: var(--vn-lounge-frame) center / 100% 100% no-repeat;
+  opacity: 1;
+  z-index: -1;
+  pointer-events: none;
+}
+.vn-box .vn-name {
+  left: 31px;
+  top: -30px;
+  width: 210px;
+  min-width: 0;
+  height: 37px;
+  padding: 0;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: none;
+  clip-path: none;
+  font-family: "Suien Name", var(--font);
+  font-size: var(--vn-name-fit-size, clamp(14px, calc(192px / var(--vn-name-length, 4)), 30px));
+  font-weight: 700;
+  line-height: 37px;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  text-align: center;
+  color: var(--vn-lounge-name);
+  text-shadow: 0 1px 1px #000b;
+}
+.vn-box.narration::before {
+  /* 地の文でも本文の寸法と金縁を保つ。名前の文字だけが非表示。 */
+  opacity: 1;
+}
+.vn-controls {
+  right: 80px;
+  bottom: 205px; /* 本文上辺から5px。枠線を重ねない。 */
+  width: 370px;
+  height: 54px;
+  padding: 5px 8px;
+  gap: 0;
+  align-items: stretch;
+  background: var(--vn-lounge-controls) center / 100% 100% no-repeat;
+}
+.vn-controls .vn-ctl {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #e6dfd2;
+  background: none;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  filter: none;
+}
+.vn-controls .vn-ctl + .vn-ctl::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 13px;
+  bottom: 13px;
+  width: 1px;
+  background: #b18e4e88;
+}
+.vn-controls .vn-ctl:is(:hover, :focus-visible, .on) {
+  background: none;
+  color: #f0cd82;
+  filter: none;
+}
+.vn-controls .vn-ctl.on::after { content: "·"; margin-left: 3px; color: #f0cd82; }
+.vn-controls .vn-ctl:focus-visible { outline: 2px solid #f0cd82; outline-offset: -3px; }
+.vn-next { right: 32px; bottom: 13px; color: #edca82; }
+
+/* DS表示でも同じ素材。本文と選択肢の領域・44pxの操作範囲を維持。 */
+body.game-ds .vn-box { overflow: visible; border-image: none; }
+body.game-ds .vn-box::before { inset: -20px 0 0; }
+body.game-ds .vn-box .vn-name {
+  left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
+  font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
+}
+body.game-ds .vn-controls { gap: 0; padding: 3px 5px; height: 50px; }
+body.game-ds .vn-controls .vn-ctl { font-size: 14px; padding: 0 5px; }
+body.game-ds .vn-next { right: 16px; bottom: 5px; }

@@ -2,6 +2,8 @@
 
 const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
 const runMarker = /^<!-- issue-claim-run:v1 id=([1-9][0-9]*) request=([a-zA-Z0-9._-]*) -->$/m;
+const validSummary = value => typeof value === 'string' && !!value.trim() && value.length <= 1200 && !value.includes('<!-- issue-');
+const quoteSummary = value => value.split('\n').map(line => '> ' + line).join('\n');
 
 async function readClaim(github, context, number) {
   const comments = await github.paginate(github.rest.issues.listComments,
@@ -12,16 +14,24 @@ async function readClaim(github, context, number) {
   const waitingLine = entry.body.match(/^<!-- issue-claim-wait:v1 (.+) -->$/m);
   let waiting = null;
   if (entry.body.includes('<!-- issue-claim-wait:')) {
-    if (!waitingLine) throw Error('Invalid waiting checkpoint');
+    if (!waitingLine || (entry.body.match(/<!-- issue-claim-wait:/g) || []).length !== 1) throw Error('Invalid waiting checkpoint');
     waiting = JSON.parse(waitingLine[1]);
     if (!waiting || !Array.isArray(waiting.prs) || !waiting.prs.length ||
         new Set(waiting.prs.map(p => p.number)).size !== waiting.prs.length ||
         waiting.prs.some(p => !Number.isSafeInteger(p.number) || p.number < 1 || !/^[a-f0-9]{40}$/.test(p.head))) {
       throw Error('Invalid waiting checkpoint');
     }
+    if ('handoff' in waiting) {
+      const offer = waiting.handoff;
+      if (!offer || Array.isArray(offer) || offer.version !== 1 || offer.from !== match[2] ||
+          match[1] !== 'claimed' || typeof offer.actor !== 'string' || !/^[a-zA-Z0-9-]+$/.test(offer.actor) ||
+          typeof offer.source_run !== 'string' || !/^[1-9][0-9]*$/.test(offer.source_run) || offer.stopped !== true || offer.pushed !== true ||
+          !validSummary(offer.summary)) throw Error('Invalid handoff checkpoint');
+    }
   }
   return {state:match[1], owner:match[2], run_id:source?.[1] || null, comment_id:entry.id,
-    phase:waiting ? 'waiting' : 'active', waiting,
+    phase:waiting?.handoff ? 'handoff' : waiting ? 'waiting' : 'active', waiting,
+    ...(waiting?.handoff ? {checkpoint_body:entry.body, checkpoint_updated_at:entry.updated_at} : {}),
     request_actor:entry.body.match(/^<!-- issue-claim-actor:v1 login=([a-zA-Z0-9-]+) -->$/m)?.[1] || null};
 }
 
@@ -70,11 +80,13 @@ async function coordinate(github, context, core, inputs = process.env) {
   const request = inputs.REQUEST_ID || '';
   const expectedRun = inputs.CLAIM_RUN || '';
   const handoffComment = inputs.HANDOFF_COMMENT || '';
-  if (!['next', 'claim', 'release', 'status', 'transfer', 'park', 'resume'].includes(op)) throw Error('Invalid operation');
+  const summary = inputs.SUMMARY || '';
+  if (!['next', 'claim', 'release', 'status', 'transfer', 'park', 'resume', 'handoff', 'pickup'].includes(op)) throw Error('Invalid operation');
   if (!['codex', 'claude', 'any'].includes(agent)) throw Error('Invalid agent');
   if (request && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(request)) throw Error('Invalid request ID');
-  if (expectedRun && (!['status', 'transfer', 'park', 'resume'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
-  if (['park', 'resume'].includes(op) && !expectedRun) throw Error('Park/resume requires current claim run');
+  if (expectedRun && (!['status', 'transfer', 'park', 'resume', 'handoff', 'pickup'].includes(op) || !/^[1-9][0-9]*$/.test(expectedRun))) throw Error('Invalid claim run');
+  if (['park', 'resume', 'handoff'].includes(op) && !expectedRun) throw Error('Park/resume/handoff requires current claim run');
+  if (op === 'handoff' ? !validSummary(summary) : summary !== '') throw Error('Handoff requires a remaining-work summary of 1–1200 characters; other operations do not accept it');
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
   if (op === 'transfer' && (!expectedRun || !/^[1-9][0-9]*$/.test(handoffComment))) throw Error('Transfer requires claim run and approval comment');
   if (op !== 'transfer' && handoffComment) throw Error('Approval comment is only for transfer');
@@ -84,9 +96,11 @@ async function coordinate(github, context, core, inputs = process.env) {
     return readClaim(github, context, number);
   }
   async function comment(number,state,detail = '', waiting = null) {
+    await recheckRequest();
     const body = '<!-- issue-claim:v1 state=' + state + ' owner=' + worker + ' -->\n' +
       '<!-- issue-claim-run:v1 id=' + context.runId + ' request=' + request + ' -->\n' +
-      (context.verifiedRequester ? '<!-- issue-claim-actor:v1 login=' + context.verifiedRequester + ' -->\n' : '') +
+      (context.verifiedRequester || ['handoff','pickup'].includes(op)
+        ? '<!-- issue-claim-actor:v1 login=' + (context.verifiedRequester || context.actor) + ' -->\n' : '') +
       (waiting ? '<!-- issue-claim-wait:v1 ' + JSON.stringify(waiting) + ' -->\n' : '') +
       (state === 'claimed' ? 'Reserved by ' + worker + ' (' + agent + '). Start only after this workflow run succeeds.' : 'Released by ' + worker + '.') + detail;
     await github.rest.issues.createComment({owner:repoOwner,repo,issue_number:number,body});
@@ -105,14 +119,24 @@ async function coordinate(github, context, core, inputs = process.env) {
       throw Error('Open PR already references issue #' + number);
     }
   }
+  async function recheckRequest() {
+    if (!context.verifiedRequest) return;
+    const prior = context.verifiedRequest;
+    const {data: current} = await github.rest.issues.getComment({...context.repo, comment_id:prior.id});
+    if (current.body !== prior.body || current.user?.login !== prior.user.login || current.issue_url !== prior.issue_url ||
+        current.updated_at !== prior.updated_at || current.html_url !== prior.html_url) {
+      throw Error('Request comment changed before reservation write');
+    }
+    await requireWriter(github, context, prior.user.login);
+  }
   async function ensureCommentOwner(claim) {
-    if (!context.verifiedRequester) return;
+    if (!context.verifiedRequester && claim.phase !== 'handoff') return;
     let actor = claim.request_actor;
     if (!actor && claim.run_id) {
       const {data: run} = await github.rest.actions.getWorkflowRun({...context.repo,run_id:Number(claim.run_id)});
       actor = run.actor?.login;
     }
-    if (!actor || actor !== context.verifiedRequester) throw Error('Owner operation requires the original reservation requester; use reviewed transfer/recovery otherwise');
+    if (!actor || actor !== (context.verifiedRequester || context.actor)) throw Error('Owner operation requires the original reservation requester; use reviewed transfer/recovery otherwise');
   }
   async function ensureWorkerAvailable(number) {
     const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
@@ -120,37 +144,101 @@ async function coordinate(github, context, core, inputs = process.env) {
       if (item.pull_request || item.number === number) continue;
       const active = await status(item.number);
       if (active.state !== 'claimed' || active.owner !== worker) continue;
-      if (item.state === 'closed' && await cleanupCompleted(github, context, core, item.number)) continue;
-      if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number + '; park saved work or release it before switching.');
+      if (item.state === 'closed') await recheckRequest();
+      if (item.state === 'closed' && await cleanupCompleted(github, context, core, item.number, recheckRequest)) continue;
+      if (!active.waiting) throw Error('Worker already owns #' + item.number + '; park or handoff saved work before switching.');
       await validateWaiting(github, context, item.number, active);
     }
   }
-  if (op === 'park' || op === 'resume') {
+  if (['park', 'resume', 'handoff'].includes(op)) {
     const number = Number(rawIssue);
     await issue(number);
     const claim = await status(number);
     if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run');
     await ensureCommentOwner(claim);
-    await successfulRun(github, context, expectedRun);
+    const sourceRun = await successfulRun(github, context, expectedRun);
+    const requester = context.verifiedRequester || context.actor;
+    if (op === 'handoff') {
+      if ((claim.request_actor || sourceRun.actor?.login) !== requester) throw Error('Only the original reservation requester can offer a handoff');
+      await requireWriter(github, context, requester);
+      if (claim.waiting) await validateWaiting(github, context, number, claim);
+    }
     if (op === 'resume') {
-      if (claim.phase !== 'waiting') throw Error('Only waiting work needs resume');
+      if (!claim.waiting) throw Error('Only waiting work needs resume');
       await validateWaiting(github, context, number, claim);
       await ensureWorkerAvailable(number);
     }
-    const prs = await openPRs(number);
-    if (!prs.length || prs.some(pr => pr.head?.repo?.full_name !== repoOwner + '/' + repo || !/^[a-f0-9]{40}$/.test(pr.head?.sha))) {
-      throw Error('Park/resume requires saved same-repository Open PR heads');
+    const cancelHandoff = op === 'resume' && claim.phase === 'handoff';
+    let saved;
+    if (cancelHandoff) {
+      // Like pickup, cancellation accepts unchanged open or merged saved heads.
+      // Revalidate after worker enumeration; ordinary review-wait resume stays below.
+      await validateWaiting(github, context, number, claim);
+      saved = claim.waiting.prs;
+    } else {
+      const prs = await openPRs(number);
+      if (!prs.length || prs.some(pr => pr.head?.repo?.full_name !== repoOwner + '/' + repo || !/^[a-f0-9]{40}$/.test(pr.head?.sha))) {
+        throw Error('Park/resume/handoff requires saved same-repository Open PR heads');
+      }
+      saved = snapshots(prs);
+      // Finish repository-wide PR enumeration before the final target snapshots.
+      const currentPRs = await openPRs(number);
+      if (currentPRs.some(pr => pr.head?.repo?.full_name !== repoOwner + '/' + repo) ||
+          JSON.stringify(snapshots(currentPRs)) !== JSON.stringify(saved)) throw Error('Reservation or saved PR heads changed');
     }
-    const saved = snapshots(prs);
     await issue(number);
     const latest = await status(number);
-    if (latest.comment_id !== claim.comment_id || latest.owner !== worker || latest.run_id !== expectedRun ||
-        JSON.stringify(snapshots(await openPRs(number))) !== JSON.stringify(saved)) throw Error('Reservation or saved PR heads changed');
-    await comment(number,'claimed', op === 'park' ? '\nSaved review wait; do not edit until resume succeeds.' : '\nResumed saved work.',
-      op === 'park' ? {prs:saved} : null);
+    if (JSON.stringify(latest) !== JSON.stringify(claim)) throw Error('Reservation or saved PR heads changed');
+    await ensureCommentOwner(latest);
+    const finalRun = await successfulRun(github, context, expectedRun);
+    if (op === 'handoff') {
+      if ((latest.request_actor || finalRun.actor?.login) !== requester) throw Error('Only the original reservation requester can offer a handoff');
+      await requireWriter(github, context, requester);
+    }
+    if (cancelHandoff) {
+      await successfulRun(github, context, claim.waiting.handoff.source_run);
+      await requireWriter(github, context, requester);
+    }
+    const waiting = op === 'resume' ? null : {prs:saved};
+    if (op === 'handoff') waiting.handoff = {version:1, from:worker, actor:requester,
+      source_run:expectedRun, stopped:true, pushed:true, summary:summary.trim()};
+    const detail = op === 'handoff' ? '\nSaved handoff; the current worker must stop editing. A new worker can use pickup after this run succeeds.\n' + quoteSummary(summary.trim())
+      : op === 'park' ? '\nSaved review wait; do not edit until resume succeeds.' : '\nResumed saved work.';
+    await comment(number,'claimed', detail, waiting);
     core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
-    core.notice((op === 'park' ? 'PARKED_ISSUE=' : 'RESUMED_ISSUE=') + number + ' RUN=' + context.runId);
+    core.notice((op === 'handoff' ? 'HANDOFF_READY_ISSUE=' : op === 'park' ? 'PARKED_ISSUE=' : 'RESUMED_ISSUE=') + number + ' RUN=' + context.runId);
     await core.summary.addRaw(op + ' #' + number + '; use this successful run as the current reservation run.').write();
+  } else if (op === 'pickup') {
+    const number = Number(rawIssue), requester = context.verifiedRequester || context.actor;
+    await issue(number);
+    const original = await status(number);
+    if (original.state !== 'claimed' || original.phase !== 'handoff') throw Error('No handoff-ready reservation; do not infer a stopped worker');
+    if (original.owner === worker) throw Error('The original worker must use resume to cancel its handoff');
+    if (expectedRun && original.run_id !== expectedRun) throw Error('Handoff run changed');
+    async function validatePickup() {
+      await issue(number);
+      const current = await status(number);
+      if (current.comment_id !== original.comment_id || current.state !== 'claimed' || current.owner !== original.owner ||
+          current.run_id !== original.run_id || current.request_actor !== original.request_actor ||
+          JSON.stringify(current) !== JSON.stringify(original)) throw Error('Handoff changed or was consumed');
+      await validateWaiting(github, context, number, current);
+      await issue(number);
+      if (JSON.stringify(await status(number)) !== JSON.stringify(original)) throw Error('Handoff changed or was consumed');
+      const run = await successfulRun(github, context, current.run_id);
+      const offer = current.waiting.handoff;
+      await successfulRun(github, context, offer.source_run);
+      if ((current.request_actor || run.actor?.login) !== offer.actor) throw Error('Handoff requester cannot be verified');
+      await requireWriter(github, context, offer.actor);
+      await requireWriter(github, context, requester);
+    }
+    await validatePickup();
+    await ensureWorkerAvailable(number);
+    await validatePickup();
+    await comment(number,'claimed','\nPicked up saved handoff from ' + original.owner +
+      ' (checkpoint comment ' + original.comment_id + ', run ' + original.run_id + ').\n' + quoteSummary(original.waiting.handoff.summary));
+    core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+    core.notice('PICKED_UP_ISSUE=' + number + ' FROM=' + original.owner + ' RUN=' + context.runId);
+    await core.summary.addRaw('Picked up #' + number + '; verify this successful run and current owner/run before editing.').write();
   } else if (op === 'transfer') {
     const number = Number(rawIssue);
     const existing = await issue(number);
@@ -163,6 +251,260 @@ async function coordinate(github, context, core, inputs = process.env) {
     const {data: approval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
     if (approval.issue_url !== existing.url) throw Error('Approval must belong to the target Issue');
     const authorPermission = await requireWriter(approval.user?.login);
+    // #769 implements only the pinned #711 exception. Never infer stopped/pushed
+    // from the declaration that no known active old session was observed.
+    if (approval.body?.includes('issue-711-owner-recovery:')) {
+      const pinned = number === 711 ? {from:'codex-711-20261019-588761470c34', run:'39273098251', pr:742, head:'2224b428b341ee58680caf46dba550c6cb4794b7'} : null;
+      const lines = approval.body.match(/^<!-- issue-711-owner-recovery:v1 (.+) -->$/gm) || [];
+      if (repoOwner !== 'haseatsu114514-dot' || repo !== 'shisha-game' || !pinned || lines.length !== 1 ||
+          (approval.body.match(/issue-711-owner-recovery:/g) || []).length !== 1 ||
+          (approval.body.includes('issue-handoff:') || approval.body.includes('issue-owner-recovery:') || approval.body.includes('issue-673-owner-recovery:'))) throw Error('Issue 711 owner recovery requires the exact pinned repository/target and independent record');
+      const h = JSON.parse(lines[0].slice('<!-- issue-711-owner-recovery:v1 '.length, -4));
+      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence','known_active_observed'];
+      const prose = approval.body.replace(lines[0], '');
+      const consentStatement = 'I authorize ' + worker + ' to resume saved PR #' + pinned.pr +
+        ' for Issue #' + number + ' under #769 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.';
+      if (!h || Object.keys(h).length !== keys.length || Object.keys(h).some(k => !keys.includes(k)) ||
+          h.repo !== 'haseatsu114514-dot/shisha-game' || h.issue !== number || h.from !== pinned.from ||
+          h.to !== worker || worker === pinned.from || h.claim_run !== pinned.run || expectedRun !== pinned.run ||
+          h.approval_issue !== 769 || h.consent !== 'resume-saved-pr' || h.accept_loss !== true ||
+          h.known_active_observed !== false || h.stopped !== 'unknown' || h.pushed !== 'unknown' || h.unsaved_work !== 'unknown' ||
+          !Array.isArray(h.prs) || h.prs.length !== 1 || h.prs[0]?.number !== pinned.pr || h.prs[0]?.head !== pinned.head ||
+          Object.keys(h.prs[0]).sort().join(',') !== 'head,number' ||
+          !['scope','consent_evidence'].every(k => typeof h[k] === 'string' && h[k].trim().length >= 20 && prose.includes(h[k])) ||
+          !prose.includes(consentStatement) || !/unknown\/unrecoverable/.test(h.scope) ||
+          !/uncommitted/.test(h.scope) || !/unpushed/.test(h.scope) ||
+          !['保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。','742は再開したい','すすめてよい'].every(text => h.consent_evidence.includes(text))) throw Error('Incomplete owner recovery approval or wrong pinned tuple');
+      let originalClaim;
+      async function validateOwnerRecoveryTarget() {
+        await issue(number);
+        if (await requireWriter(context.actor) !== 'admin' ||
+            await requireWriter(approval.user?.login) !== 'admin' || approval.user?.login !== repoOwner) {
+          throw Error('Issue 711 owner recovery requires repository owner author and admin author/actor');
+        }
+        const {data: current} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+        if (current.body !== approval.body || current.user?.login !== approval.user?.login ||
+            current.issue_url !== existing.url || current.updated_at !== approval.updated_at ||
+            current.html_url !== approval.html_url) throw Error('Issue 711 owner recovery approval changed');
+        const claim = await status(number);
+        if (claim.state !== 'claimed' || claim.owner !== pinned.from || claim.run_id !== pinned.run ||
+            (originalClaim && JSON.stringify(claim) !== JSON.stringify(originalClaim))) {
+          throw Error('Issue 711 owner recovery current reservation does not match original owner/run');
+        }
+        originalClaim ||= claim;
+        await successfulRun(github, context, pinned.run);
+      }
+      async function validateOwnerRecoveryPRs() {
+        const prs = await openPRs(number);
+        if (prs.length !== 1 || prs[0].number !== pinned.pr || prs[0].head?.sha !== pinned.head ||
+            prs[0].head?.repo?.full_name !== h.repo) throw Error('Issue 711 owner recovery exact PR set/head changed');
+      }
+      async function validateOwnerRecoveryAvailability() {
+        // Unlike ordinary availability cleanup, this exception never releases any
+        // reservation as a side effect, even a completed closed Issue.
+        const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
+        for (const item of all) {
+          if (item.pull_request || item.number === number) continue;
+          const active = await status(item.number);
+          if (active.state !== 'claimed' || active.owner !== worker) continue;
+          if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number);
+          await validateWaiting(github, context, item.number, active);
+        }
+      }
+      // Initial PR and target snapshot, followed by the full worker scan.
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await validateOwnerRecoveryAvailability();
+      // Complete every repository-wide enumeration (including PR scans for
+      // parked workers) before the final target-specific reads. These remain
+      // serialized snapshots, not an atomic lock against external writers.
+      await validateOwnerRecoveryAvailability();
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await comment(number,'claimed','\nIssue 711 owner-approved recovery from ' + pinned.from + ': ' + approval.html_url +
+        '\n<!-- issue-711-owner-recovery-audit:v1 ' + JSON.stringify({...h, approval_comment:Number(handoffComment)}) + ' -->' +
+        '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
+      core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+      core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + pinned.from + ' APPROVAL=' + handoffComment);
+      await core.summary.addRaw('Issue 711 owner-approved recovery #' + number + '; stopped/pushed/unsaved work unknown. Wait for this exact run success and current owner/run before editing.').write();
+      return;
+    }
+    // #745 is an independent owner-approved loss-risk exception, never a
+    // stopped/pushed handoff or a released legacy reservation recovery.
+    if (approval.body?.includes('issue-owner-recovery:')) {
+      const pinned = {
+        709: {from:'codex-709-20261019-peppermint-0015', run:'39272409432', pr:740, head:'a30de7f8d9900f8a1ca5a866181b4a0a7d444d03'},
+        717: {from:'codex-text-717-20261019-f31a', run:'39385075235', pr:739, head:'7ae8077d0cc0d2f233fd2d139d18bd0b3ebda91e'},
+        726: {from:'codex-701-holes-20261019-01', run:'39236047840', pr:731, head:'14713be78dac4356cd4c31219d612b173014b465'},
+      }[number];
+      const lines = approval.body.match(/^<!-- issue-owner-recovery:v1 (.+) -->$/gm) || [];
+      if (repoOwner !== 'haseatsu114514-dot' || repo !== 'shisha-game' || !pinned || lines.length !== 1 ||
+          (approval.body.match(/issue-owner-recovery:/g) || []).length !== 1 ||
+          (approval.body.includes('issue-handoff:') || approval.body.includes('issue-673-owner-recovery:'))) throw Error('Owner recovery requires the exact pinned repository/target and independent record');
+      const h = JSON.parse(lines[0].slice('<!-- issue-owner-recovery:v1 '.length, -4));
+      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence'];
+      const prose = approval.body.replace(lines[0], '');
+      const consentStatement = 'I authorize ' + worker + ' to resume saved PR #' + pinned.pr +
+        ' for Issue #' + number + ' under #745 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.';
+      if (!h || Object.keys(h).length !== keys.length || Object.keys(h).some(k => !keys.includes(k)) ||
+          h.repo !== 'haseatsu114514-dot/shisha-game' || h.issue !== number || h.from !== pinned.from ||
+          h.to !== worker || worker === pinned.from || h.claim_run !== pinned.run || expectedRun !== pinned.run ||
+          h.approval_issue !== 745 || h.consent !== 'resume-saved-pr' || h.accept_loss !== true ||
+          h.stopped !== 'unknown' || h.pushed !== 'unknown' || h.unsaved_work !== 'unknown' ||
+          !Array.isArray(h.prs) || h.prs.length !== 1 || h.prs[0]?.number !== pinned.pr || h.prs[0]?.head !== pinned.head ||
+          Object.keys(h.prs[0]).sort().join(',') !== 'head,number' ||
+          !['scope','consent_evidence'].every(k => typeof h[k] === 'string' && h[k].trim().length >= 20 && prose.includes(h[k])) ||
+          !prose.includes(consentStatement) || !/unknown\/unrecoverable/.test(h.scope) ||
+          !/uncommitted/.test(h.scope) || !/unpushed/.test(h.scope)) throw Error('Incomplete owner recovery approval or wrong pinned tuple');
+      let originalClaim;
+      async function validateOwnerRecoveryTarget() {
+        await issue(number);
+        if (await requireWriter(context.actor) !== 'admin' ||
+            await requireWriter(approval.user?.login) !== 'admin' || approval.user?.login !== repoOwner) {
+          throw Error('Owner recovery requires repository owner author and admin author/actor');
+        }
+        const {data: current} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+        if (current.body !== approval.body || current.user?.login !== approval.user?.login ||
+            current.issue_url !== existing.url || current.updated_at !== approval.updated_at ||
+            current.html_url !== approval.html_url) throw Error('Owner recovery approval changed');
+        const claim = await status(number);
+        if (claim.state !== 'claimed' || claim.owner !== pinned.from || claim.run_id !== pinned.run ||
+            (originalClaim && JSON.stringify(claim) !== JSON.stringify(originalClaim))) {
+          throw Error('Owner recovery current reservation does not match original owner/run');
+        }
+        originalClaim ||= claim;
+        await successfulRun(github, context, pinned.run);
+      }
+      async function validateOwnerRecoveryPRs() {
+        const prs = await openPRs(number);
+        if (prs.length !== 1 || prs[0].number !== pinned.pr || prs[0].head?.sha !== pinned.head ||
+            prs[0].head?.repo?.full_name !== h.repo) throw Error('Owner recovery exact PR set/head changed');
+      }
+      async function validateOwnerRecoveryAvailability() {
+        // Unlike ordinary availability cleanup, this exception never releases any
+        // reservation as a side effect, even a completed closed Issue.
+        const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
+        for (const item of all) {
+          if (item.pull_request || item.number === number) continue;
+          const active = await status(item.number);
+          if (active.state !== 'claimed' || active.owner !== worker) continue;
+          if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number);
+          await validateWaiting(github, context, item.number, active);
+        }
+      }
+      // Initial PR and target snapshot, followed by the full worker scan.
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await validateOwnerRecoveryAvailability();
+      // Complete every repository-wide enumeration (including PR scans for
+      // parked workers) before the final target-specific reads. These remain
+      // serialized snapshots, not an atomic lock against external writers.
+      await validateOwnerRecoveryAvailability();
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await comment(number,'claimed','\nOwner-approved recovery from ' + pinned.from + ': ' + approval.html_url +
+        '\n<!-- issue-owner-recovery-audit:v1 ' + JSON.stringify({...h, approval_comment:Number(handoffComment)}) + ' -->' +
+        '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
+      core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+      core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + pinned.from + ' APPROVAL=' + handoffComment);
+      await core.summary.addRaw('Owner-approved recovery #' + number + '; stopped/pushed/unsaved work unknown. Wait for this exact run success and current owner/run before editing.').write();
+      return;
+    }
+    // #798 is solely the pinned #673 / PR738 exception; unknown stays unknown.
+    if (approval.body?.includes('issue-673-owner-recovery:')) {
+      const pinned = number === 673 ? {from:'codex-577-limited-20261018-3a8c921e', run:'39271009573', pr:738, head:'426f78b331abba79653b8499117f818f152914ca'} : null;
+      const preserved = [
+        {number:776, head:'a0c8932d4a4ffafe161b64fa0a1d4fff5264d365'},
+        {number:794, head:'c0cd15adf50f6f2b673cf5d1a49575dad3153edc'},
+        {number:795, head:'ff4d1eb26d879f17aa03f61a8782777e971718df'},
+      ];
+      const preservationStatement = 'PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.';
+      const lines = approval.body.match(/^<!-- issue-673-owner-recovery:v1 (.+) -->$/gm) || [];
+      if (repoOwner !== 'haseatsu114514-dot' || repo !== 'shisha-game' || !pinned || lines.length !== 1 ||
+          (approval.body.match(/issue-673-owner-recovery:/g) || []).length !== 1 ||
+          (approval.body.includes('issue-handoff:') || approval.body.includes('issue-owner-recovery:') || approval.body.includes('issue-711-owner-recovery:'))) throw Error('Issue 673 owner recovery requires the exact pinned repository/target and independent record');
+      const h = JSON.parse(lines[0].slice('<!-- issue-673-owner-recovery:v1 '.length, -4));
+      const keys = ['repo','issue','from','to','claim_run','prs','approval_issue','consent','accept_loss','stopped','pushed','unsaved_work','scope','consent_evidence','known_active_observed','preserved_prs'];
+      const prose = approval.body.replace(lines[0], '');
+      const consentStatement = 'I authorize ' + worker + ' to resume saved PR #' + pinned.pr +
+        ' for Issue #' + number + ' under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.';
+      if (!h || Object.keys(h).length !== keys.length || Object.keys(h).some(k => !keys.includes(k)) ||
+          h.repo !== 'haseatsu114514-dot/shisha-game' || h.issue !== number || h.from !== pinned.from ||
+          h.to !== worker || worker === pinned.from || h.claim_run !== pinned.run || expectedRun !== pinned.run ||
+          h.approval_issue !== 798 || h.consent !== 'resume-saved-pr' || h.accept_loss !== true ||
+          h.known_active_observed !== false || h.stopped !== 'unknown' || h.pushed !== 'unknown' || h.unsaved_work !== 'unknown' ||
+          !Array.isArray(h.prs) || h.prs.length !== 1 || h.prs[0]?.number !== pinned.pr || h.prs[0]?.head !== pinned.head ||
+          Object.keys(h.prs[0]).sort().join(',') !== 'head,number' ||
+          !Array.isArray(h.preserved_prs) || h.preserved_prs.length !== preserved.length ||
+          h.preserved_prs.some(p => !p || typeof p !== 'object' || Array.isArray(p) ||
+            Object.keys(p).sort().join(',') !== 'head,number' ||
+            !preserved.some(saved => p.number === saved.number && p.head === saved.head)) ||
+          new Set(h.preserved_prs.map(p => p.number)).size !== preserved.length ||
+          !['scope','consent_evidence'].every(k => typeof h[k] === 'string' && h[k].trim().length >= 20 && prose.includes(h[k])) ||
+          !h.scope.includes(preservationStatement) || !prose.includes(preservationStatement) ||
+          !prose.includes(consentStatement) || !/unknown\/unrecoverable/.test(h.scope) ||
+          !/uncommitted/.test(h.scope) || !/unpushed/.test(h.scope) ||
+          !['#738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。','1はAに引き継いで'].every(text => h.consent_evidence.includes(text))) throw Error('Incomplete owner recovery approval or wrong pinned tuple');
+      let originalClaim;
+      async function validateOwnerRecoveryTarget() {
+        await issue(number);
+        if (await requireWriter(context.actor) !== 'admin' ||
+            await requireWriter(approval.user?.login) !== 'admin' || approval.user?.login !== repoOwner) {
+          throw Error('Issue 673 owner recovery requires repository owner author and admin author/actor');
+        }
+        const {data: current} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
+        if (current.body !== approval.body || current.user?.login !== approval.user?.login ||
+            current.issue_url !== existing.url || current.updated_at !== approval.updated_at ||
+            current.html_url !== approval.html_url) throw Error('Issue 673 owner recovery approval changed');
+        const claim = await status(number);
+        if (claim.state !== 'claimed' || claim.owner !== pinned.from || claim.run_id !== pinned.run ||
+            (originalClaim && JSON.stringify(claim) !== JSON.stringify(originalClaim))) {
+          throw Error('Issue 673 owner recovery current reservation does not match original owner/run');
+        }
+        originalClaim ||= claim;
+        await successfulRun(github, context, pinned.run);
+      }
+      async function validateOwnerRecoveryPRs() {
+        const prs = await openPRs(number);
+        // Preserve the entire referencesIssue set without granting authority over
+        // the three other workers' PRs. Only h.prs (PR738) is editable.
+        const expected = [...h.prs, ...preserved];
+        if (prs.length !== expected.length || new Set(prs.map(pr => pr.number)).size !== expected.length ||
+            prs.some(pr => pr.head?.repo?.full_name !== h.repo ||
+              !expected.some(saved => pr.number === saved.number && pr.head?.sha === saved.head))) {
+          throw Error('Issue 673 owner recovery exact PR set/head changed');
+        }
+      }
+      async function validateOwnerRecoveryAvailability() {
+        // Unlike ordinary availability cleanup, this exception never releases any
+        // reservation as a side effect, even a completed closed Issue.
+        const all = await github.paginate(github.rest.issues.listForRepo, {owner:repoOwner,repo,state:'all',per_page:100});
+        for (const item of all) {
+          if (item.pull_request || item.number === number) continue;
+          const active = await status(item.number);
+          if (active.state !== 'claimed' || active.owner !== worker) continue;
+          if (active.phase !== 'waiting') throw Error('Worker already owns #' + item.number);
+          await validateWaiting(github, context, item.number, active);
+        }
+      }
+      // Initial PR and target snapshot, followed by the full worker scan.
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await validateOwnerRecoveryAvailability();
+      // Complete every repository-wide enumeration (including PR scans for
+      // parked workers) before the final target-specific reads. These remain
+      // serialized snapshots, not an atomic lock against external writers.
+      await validateOwnerRecoveryAvailability();
+      await validateOwnerRecoveryPRs();
+      await validateOwnerRecoveryTarget();
+      await comment(number,'claimed','\nIssue 673 owner-approved recovery from ' + pinned.from + ': ' + approval.html_url +
+        '\n<!-- issue-673-owner-recovery-audit:v1 ' + JSON.stringify({...h, approval_comment:Number(handoffComment)}) + ' -->' +
+        '\n' + preservationStatement + '\nStopped, pushed and unsaved work remain unknown. Owner accepted loss of uncommitted and unpushed work. Preserve original comments, PR, branch and history.');
+      core.notice('CLAIMED_ISSUE=' + number + ' OWNER=' + worker);
+      core.notice('TRANSFERRED_ISSUE=' + number + ' FROM=' + pinned.from + ' APPROVAL=' + handoffComment);
+      await core.summary.addRaw('Issue 673 owner-approved recovery #' + number + '; stopped/pushed/unsaved work unknown. Wait for this exact run success and current owner/run before editing.').write();
+      return;
+    }
     const adminRecovery = actorPermission === 'admin' && authorPermission === 'admin';
     const record = approval.body?.match(/^<!-- issue-handoff:v1 (.+) -->$/m);
     if (!record) throw Error('Missing structured stopped/pushed handoff record');
@@ -225,9 +567,18 @@ async function coordinate(github, context, core, inputs = process.env) {
               pr.head.repo?.full_name === repoOwner + '/' + repo))) {
         throw Error('Referencing Open PR set/head changed or approval is incomplete');
       }
+      await issue(number);
+      if (JSON.stringify(await status(number)) !== JSON.stringify(claim)) throw Error('Current reservation changed during transfer');
+      const finalSource = await successfulRun(github, context, expectedRun);
+      if (!adminRecovery && (claim.request_actor || finalSource.actor?.login) !== approval.user?.login) {
+        throw Error('Handoff record must be written by the original claim actor; otherwise use admin recovery');
+      }
+      if (await requireWriter(context.actor) !== actorPermission ||
+          await requireWriter(approval.user?.login) !== authorPermission) throw Error('Transfer permissions changed');
       const {data: currentApproval} = await github.rest.issues.getComment({owner:repoOwner,repo,comment_id:Number(handoffComment)});
       if (currentApproval.body !== approval.body || currentApproval.user?.login !== approval.user?.login ||
-          currentApproval.issue_url !== existing.url) throw Error('Handoff record changed during transfer');
+          currentApproval.issue_url !== existing.url || currentApproval.updated_at !== approval.updated_at ||
+          currentApproval.html_url !== approval.html_url) throw Error('Handoff record changed during transfer');
     }
     await validateTransfer();
     await ensureWorkerAvailable(number);
@@ -247,7 +598,7 @@ async function coordinate(github, context, core, inputs = process.env) {
     if (expectedRun) {
       await issue(number);
       if (claim.state !== 'claimed' || claim.owner !== worker || claim.run_id !== expectedRun) throw Error('Claim no longer matches owner/run; do not start work');
-      if (claim.phase === 'waiting') throw Error('Work is parked for review; resume before editing');
+      if (claim.waiting) throw Error('Work is parked or handed off; resume or pickup before editing');
       const {data: sourceRun} = await github.rest.actions.getWorkflowRun({owner:repoOwner,repo,run_id:Number(expectedRun)});
       if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'success') throw Error('Claim run did not succeed; release or inspect before retrying');
       core.notice('CLAIM_VALIDATED_ISSUE=' + number + ' OWNER=' + worker + ' RUN=' + expectedRun);
@@ -306,7 +657,7 @@ async function coordinate(github, context, core, inputs = process.env) {
   }
 }
 
-async function cleanupCompleted(github, context, core, number) {
+async function cleanupCompleted(github, context, core, number, beforeWrite = async () => {}) {
   async function evidence() {
     const {data: issue} = await github.rest.issues.get({...context.repo, issue_number:number});
     if (issue.pull_request || issue.state !== 'closed' || issue.state_reason !== 'completed' ||
@@ -329,6 +680,7 @@ async function cleanupCompleted(github, context, core, number) {
   const latest = await evidence();
   if (!latest || latest.claim.comment_id !== initial.claim.comment_id || latest.claim.owner !== initial.claim.owner ||
       latest.claim.run_id !== initial.claim.run_id || JSON.stringify(latest.saved) !== JSON.stringify(initial.saved)) return false;
+  await beforeWrite();
   await github.rest.issues.createComment({...context.repo, issue_number:number,
     body:'<!-- issue-claim:v1 state=released owner=' + latest.claim.owner + ' -->\n' +
       '<!-- issue-claim-run:v1 id=' + context.runId + ' request=completion-cleanup -->\n' +
@@ -355,6 +707,7 @@ function policyBody(body, context, historicalProcedure = false) {
     '- [予約手順](' + guide + ')を優先。本文・過去コメントの旧共通手順にある追加status起動は任意で、成功runと現在のbot台帳のowner/runを読み取り照合してよい。\n' +
     '- 実装中はworkerごとに1件。全変更をpushして保存PRをparkしたレビュー待ちは別枠で保持し、独立した別Issueをclaimできる。待ち中の編集はresume成功後に再開する。\n' +
     '- IssueまたはPRのConversationから `/issue-claim` JSONコマンドで予約できる（形式は上の予約手順）。writer権限と同じ排他処理を検証し、結果とrun成功を確認する。\n' +
+    '- 利用上限でのAI交代は、現担当がpush済みPRと残作業をhandoff保存し、後任が新worker IDでpickupする。予約を解放せず移管し、plain parkや無反応から停止を推定しない。\n' +
     '- 個別の採用保留・検証条件・範囲指定・停止指示は維持。この欄は元担当の停止確認や未承認素材の採用を代行しない。\n' +
     policyEnd + '\n\n' + rest;
 }
@@ -409,10 +762,11 @@ async function runEvent(github, context, core, inputs = process.env) {
     if (current.body.length > 2000) throw Error('Request comment is too long');
     const raw = current.body.slice('/issue-claim '.length);
     const request = JSON.parse(raw);
-    const allowed = ['operation','issue','owner','agent','request_id','claim_run','handoff_comment'];
+    const allowed = ['operation','issue','owner','agent','request_id','claim_run','handoff_comment','summary'];
     if (!request || Array.isArray(request) || typeof request !== 'object' || Object.keys(request).some(k => !allowed.includes(k)) ||
         Object.values(request).some(v => !['string','number'].includes(typeof v)) ||
-        !['claim','release','status','transfer','park','resume','maintain'].includes(request.operation)) throw Error('Invalid comment request');
+        !['claim','release','status','transfer','park','resume','handoff','pickup','maintain'].includes(request.operation)) throw Error('Invalid comment request');
+    if ('summary' in request && (request.operation !== 'handoff' || typeof request.summary !== 'string')) throw Error('Summary is text for handoff only');
     const attempt = Number(context.runAttempt || process.env.GITHUB_RUN_ATTEMPT || 1);
     if (attempt > 1 && !['status','maintain'].includes(request.operation)) {
       throw Error('Do not rerun reservation request jobs; inspect the ledger and submit a fresh comment');
@@ -433,11 +787,11 @@ async function runEvent(github, context, core, inputs = process.env) {
         // GitHub Context exposes repo through a prototype getter; spreading the
         // instance drops it. Keep the event context and override only identity.
         const requestContext = Object.assign(Object.create(context), {
-          actor:current.user.login, verifiedRequester:current.user.login});
+          actor:current.user.login, verifiedRequester:current.user.login, verifiedRequest:current});
         await coordinate(github, requestContext, core, {
           OPERATION:request.operation, ISSUE:String(number), OWNER:String(request.owner || ''),
           AGENT:String(request.agent || 'any'), REQUEST_ID:String(request.request_id || 'comment-' + current.id),
-          CLAIM_RUN:String(request.claim_run || ''), HANDOFF_COMMENT:String(request.handoff_comment || '')});
+          CLAIM_RUN:String(request.claim_run || ''), HANDOFF_COMMENT:String(request.handoff_comment || ''), SUMMARY:String(request.summary || '')});
       }
     } catch (error) { failure = error; }
     await github.rest.issues.createComment({...context.repo, issue_number:context.payload.issue.number,

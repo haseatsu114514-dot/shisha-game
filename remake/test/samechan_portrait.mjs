@@ -36,7 +36,7 @@ await suite("samechan-portrait", async check => {
         await page.locator('#vn.active .vn-next.show').waitFor();
         const img = page.locator('img[data-speaker="samechan"]');
         assert.match(await img.getAttribute("src"), /chr_samechan_ventriloquism\.webp$/);
-        assert.equal(await page.locator(".vn-name").textContent(), "コロちゃん（腹話術）");
+        assert.equal(await page.locator(".vn-name").textContent(), "コロちゃん");
         assert(await img.evaluate(i => i.complete && i.naturalWidth === 896 && i.naturalHeight === 1200));
         await assertFits(page, ".vn-box, .vn-text, .vn-controls");
         if (scene === "samechan_first_encounter" && line.text === lines[0].line.text) {

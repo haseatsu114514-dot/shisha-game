@@ -1,6 +1,18 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch1_sumi_cube_coals",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "はじめ、片付けが済んだら炭を見ていけ。今日は四角いやつだ" },
+        { "speaker": "hajime", "face": "normal", "text": "キューブ炭ですね。いつものフラットと、何が違うんですか？" },
+        { "speaker": "sumi", "face": "serious", "text": "同じ三つでも火が強く入る。いつもの待ち方のままじゃ、熱くなるぞ" },
+        { "speaker": "", "face": "", "text": "スミさんと並んで炭の芯を見て、ボウルへ置いたあとの温まり方を確かめた。" },
+        { "speaker": "hajime", "face": "normal", "text": "形だけ替えるんじゃなくて、温度を見て待ち方も変えるんですね" },
+        { "speaker": "sumi", "face": "smile", "text": "そういうことだ。まずは三つで試せ。数を増やす話は、また別だ" },
+        { "speaker": "", "face": "", "text": "キューブ炭の心得を習得した。手持ちのキューブ炭を、制作で選べるようになった。" }
+      ]
+    },
+    {
       "dialogue_id": "ch1_sumi_tutorial",
       "lines": [
         {

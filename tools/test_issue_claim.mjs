@@ -54,7 +54,7 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
   const core = {info() {}, notice: text => notices.push(text),
     summary: {addRaw() { return this; }, async write() {}}};
   async function run(op, number = 1, owner = 'worker-A', input = {}) {
-    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', HANDOFF_COMMENT: '', ...input};
+    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', HANDOFF_COMMENT: '', SUMMARY: '', ...input};
     const original = Object.fromEntries(Object.keys(values).map(k => [k, process.env[k]]));
     Object.assign(process.env, values);
     try { return await execute(github, context, core); }
@@ -465,6 +465,161 @@ const modernEntry = (owner = 'worker-A', run = 800) => entry('claimed', owner,
 const parkingSetup = options => setup({prs:[savedPR()], comments:{1:[modernEntry()]}, ...options});
 const park = s => s.run('park', 1, 'worker-A', {CLAIM_RUN:'800'});
 
+const handoffSummary = 'DONE: pushed the draft\nTODO: finish the remaining scene\nTEST: focused regression passed\nNEXT: continue on the saved branch';
+const handoffEntry = () => {
+  const c = modernEntry();c.body += '\n<!-- issue-claim-actor:v1 login=admin -->';return c;
+};
+const handoffSetup = options => setup({prs:[savedPR()], comments:{1:[handoffEntry()]},
+  permissions:{admin:'write',successor:'write'},...options});
+const handoff = (s, summary=handoffSummary) => s.run('handoff',1,'worker-A',{CLAIM_RUN:'800',SUMMARY:summary});
+const pickup = (s,input={}) => {
+  s.context.actor='successor';s.context.runId=902;
+  return s.run('pickup',1,'worker-B',input);
+};
+
+test('handoff saves one exclusive checkpoint and a future unknown worker picks it up without release', async () => {
+  const s=handoffSetup();await handoff(s);
+  assert.equal(s.writes.length,1);
+  assert.match(s.writes[0].body,/state=claimed owner=worker-A/);
+  assert.match(s.writes[0].body,/issue-claim-wait:v1/);
+  assert.match(s.writes[0].body,/"stopped":true,"pushed":true/);
+  assert.match(s.writes[0].body,/> NEXT: continue on the saved branch/);
+  await assert.rejects(s.run('claim',1,'worker-B'),/Already claimed/);
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'901'}),/handed off/);
+  s.context.runId=903;await s.run('claim',2);
+  await pickup(s);
+  assert.match(s.writes.at(-1).body,/state=claimed owner=worker-B/);
+  assert.match(s.writes.at(-1).body,/login=successor/);
+  assert.match(s.writes.at(-1).body,/checkpoint comment 101, run 901/);
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  assert(!s.writes.some(w=>w.body.startsWith('<!-- issue-claim:v1 state=released')));
+  await s.run('status',1,'worker-B',{CLAIM_RUN:'902'});
+  await assert.rejects(s.run('resume',1,'worker-A',{CLAIM_RUN:'901'}),/no longer matches/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('the original worker can cancel its handoff with resume before another worker consumes it', async () => {
+  const s=handoffSetup();await handoff(s);
+  await assert.rejects(s.run('pickup',1,'worker-A'),/must use resume/);
+  s.context.runId=903;await s.run('resume',1,'worker-A',{CLAIM_RUN:'901'});
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+for(const change of ['missing-summary','long-summary','ledger-in-summary','no-pr','fork','bad-head','unknown-actor','wrong-actor','read-only','failed-source']) {
+  test(`handoff refuses an unverified or incomplete checkpoint: ${change}`,async()=>{
+    const s=handoffSetup();let summary=handoffSummary;
+    if(change==='missing-summary')summary=' ';
+    if(change==='long-summary')summary='x'.repeat(1201);
+    if(change==='ledger-in-summary')summary='TODO\n<!-- issue-claim-wait:v1 {} -->';
+    if(change==='no-pr')s.prs.length=0;
+    if(change==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(change==='bad-head')s.prs[0].head.sha='short';
+    if(change==='unknown-actor')s.comments[1]=[modernEntry()];
+    if(change==='wrong-actor')s.context.actor='successor';
+    if(change==='read-only')s.context.actor='reader';
+    if(change==='failed-source')s.runs[800]={status:'completed',conclusion:'failure'};
+    await assert.rejects(handoff(s,summary));assert.equal(s.writes.length,0);
+  });
+}
+
+test('handoff validates the original requester permission for both dispatch and comment entrypoints', async()=>{
+  const s=handoffSetup({permissions:{admin:'read'}});
+  await assert.rejects(handoff(s),/write permission/);assert.equal(s.writes.length,0);
+});
+
+test('a parked PR may be explicitly offered for handoff, but a changed parked head must resume first', async()=>{
+  const s=handoffSetup();await park(s);s.context.runId=903;
+  s.runs[901]={status:'completed',conclusion:'success',actor:{login:'admin'}};
+  await s.run('handoff',1,'worker-A',{CLAIM_RUN:'901',SUMMARY:handoffSummary});
+  assert.match(s.writes.at(-1).body,/"handoff"/);
+  const changed=handoffSetup();await park(changed);changed.prs[0].head.sha='b'.repeat(40);
+  changed.runs[901]={status:'completed',conclusion:'success',actor:{login:'admin'}};
+  await assert.rejects(changed.run('handoff',1,'worker-A',{CLAIM_RUN:'901',SUMMARY:handoffSummary}),/changed/);
+});
+
+for(const change of ['active','review-wait','head','new-pr','missing-pr','closed-unmerged','fork','cancelled-handoff','failed-handoff','wrong-run','old-permission','new-permission','actor','malformed','other-active-issue']) {
+  test(`pickup preserves the reservation when unsafe: ${change}`,async()=>{
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions});
+    if(change==='active'){}else if(change==='review-wait')await park(s);else await handoff(s);
+    const before=s.writes.length;
+    if(change==='head')s.prs[0].head.sha='b'.repeat(40);
+    if(change==='new-pr')s.prs.push(savedPR(12));
+    if(change==='missing-pr')s.prs.length=0;
+    if(change==='closed-unmerged')s.prs[0].state='closed';
+    if(change==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(change==='cancelled-handoff')s.runs[901]={status:'completed',conclusion:'cancelled'};
+    if(change==='failed-handoff')s.runs[901]={status:'completed',conclusion:'failure'};
+    if(change==='old-permission')permissions.admin='read';
+    if(change==='new-permission')permissions.successor='read';
+    if(change==='actor')s.comments[1].at(-1).body=s.comments[1].at(-1).body.replace('login=admin','login=other');
+    if(change==='malformed')s.comments[1].at(-1).body=s.comments[1].at(-1).body.replace('"pushed":true','"pushed":false');
+    if(change==='other-active-issue')s.comments[2]=[modernEntry('worker-B',700)];
+    await assert.rejects(pickup(s,change==='wrong-run'?{CLAIM_RUN:'700'}:{}));
+    assert.equal(s.writes.length,before);
+  });
+}
+
+for(const change of ['head','cancelled-offer','resumed','new-checkpoint','closed']) {
+  test(`pickup rechecks after other worker reservations are inspected: ${change}`,async()=>{
+    const s=handoffSetup({hook(name,args,data){
+      if(name!=='listForRepo')return;
+      if(change==='head')data.prs[0].head.sha='b'.repeat(40);
+      if(change==='cancelled-offer')s.runs[901]={status:'completed',conclusion:'cancelled'};
+      if(change==='resumed')data.comments[1].push({...modernEntry('worker-A',903),id:500});
+      if(change==='new-checkpoint')data.comments[1].push({...data.comments[1].at(-1),id:500});
+      if(change==='closed')data.issues[0].state='closed';
+    }});
+    await handoff(s);await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+test('dispatch cannot cancel or release another requester handoff by copying the public worker ID',async()=>{
+  for(const op of ['resume','release','park']){
+    const s=handoffSetup();await handoff(s);s.context.actor='successor';
+    await assert.rejects(s.run(op,1,'worker-A',op==='release'?{}:{CLAIM_RUN:'901'}),/original reservation requester/);
+    assert.equal(s.writes.length,1);
+  }
+});
+
+test('a canceled pickup keeps the new reservation but never authorizes editing or a silent retry',async()=>{
+  const s=handoffSetup();await handoff(s);await pickup(s);
+  s.runs[902]={status:'completed',conclusion:'cancelled'};
+  await assert.rejects(s.run('status',1,'worker-B',{CLAIM_RUN:'902'}),/did not succeed/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+  await assert.rejects(s.run('resume',1,'worker-A',{CLAIM_RUN:'901'}),/no longer matches/);
+});
+
+for(const change of ['version','actor-type','run-type','empty-prs','summary','stopped']) {
+  test(`pickup rejects malformed handoff metadata: ${change}`,async()=>{
+    const s=handoffSetup();await handoff(s);
+    const c=s.comments[1].at(-1),line=c.body.match(/^<!-- issue-claim-wait:v1 (.+) -->$/m);
+    const checkpoint=JSON.parse(line[1]);
+    if(change==='version')checkpoint.handoff.version=2;
+    if(change==='actor-type')checkpoint.handoff.actor=['admin'];
+    if(change==='run-type')checkpoint.handoff.source_run=800;
+    if(change==='empty-prs')checkpoint.prs=[];
+    if(change==='summary')checkpoint.handoff.summary='';
+    if(change==='stopped')checkpoint.handoff.stopped=false;
+    c.body=c.body.replace(line[0],'<!-- issue-claim-wait:v1 '+JSON.stringify(checkpoint)+' -->');
+    await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+test('a human-written ready marker cannot turn an active bot reservation into a handoff',async()=>{
+  const s=handoffSetup();await handoff(s);
+  const forged={...s.comments[1].pop(),user:{login:'admin'}};
+  s.comments[1].push(forged);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('a merged saved head is still a valid checkpoint while the Issue has remaining work',async()=>{
+  const s=handoffSetup();await handoff(s);
+  s.prs[0].state='closed';s.prs[0].merged_at='2026-10-19T07:00:00Z';
+  await pickup(s);assert.match(s.writes.at(-1).body,/state=claimed owner=worker-B/);
+});
+
 test('park keeps the Issue exclusive and allows a separate active task, then resume after release', async () => {
   const s = parkingSetup();
   await park(s);
@@ -622,6 +777,64 @@ function commentSetup(request={operation:'claim',owner:'worker-A',agent:'codex'}
   return s;
 }
 const runComment=s=>runEvent(s.github,s.context,s.core,{});
+
+test('comment handoff and pickup work through the real Context getter without a named successor or approval comment',async()=>{
+  const claim=modernEntry();claim.body+='\n<!-- issue-claim-actor:v1 login=writer -->';
+  const s=commentSetup({operation:'handoff',owner:'worker-A',claim_run:'800',summary:handoffSummary},
+    {comments:{1:[claim]},prs:[savedPR()],permissions:{writer:'write',successor:'write'}});
+  const repository=s.context.repo;delete s.context.repo;
+  Object.setPrototypeOf(s.context,{get repo(){return repository}});
+  s.context.actor='eventActor';
+  await runComment(s);
+  assert.match(s.writes[0].body,/"actor":"writer"/);
+  const request={id:51,user:{login:'successor',type:'User'},issue_url:fixture(1).url,
+    body:'/issue-claim {"operation":"pickup","owner":"worker-B","agent":"claude"}'};
+  s.approvals[51]=request;s.context.payload.comment=structuredClone(request);s.context.runId=902;
+  await runComment(s);
+  assert.match(s.writes[2].body,/state=claimed owner=worker-B/);
+  assert.match(s.writes[2].body,/login=successor/);
+  assert.equal(s.context.actor,'eventActor');
+});
+
+test('an edited handoff request cannot be saved after the initial comment verification',async()=>{
+  let reads=0;
+  const claim=modernEntry();claim.body+='\n<!-- issue-claim-actor:v1 login=writer -->';
+  const s=commentSetup({operation:'handoff',owner:'worker-A',claim_run:'800',summary:handoffSummary},
+    {comments:{1:[claim]},prs:[savedPR()],hook(name){
+      if(name==='pulls'&&++reads===2)s.approvals[50].body='canceled by writer';
+    }});
+  await assert.rejects(runComment(s),/Request comment changed/);
+  assert.equal(s.writes.length,1);assert.match(s.writes[0].body,/Request refused/);
+});
+
+test('an edited pickup request cannot consume a checkpoint after inspecting other reservations',async()=>{
+  const request={id:55,user:{login:'successor'},issue_url:fixture(1).url,body:'/issue-claim pickup'};
+  const s=handoffSetup({approvals:{55:structuredClone(request)},hook(name){
+    if(name==='listForRepo')s.approvals[55].body='cancel pickup';
+  }});
+  await handoff(s);s.context.verifiedRequest=request;
+  await assert.rejects(pickup(s),/Request comment changed/);assert.equal(s.writes.length,1);
+});
+
+for(const operation of ['handoff','pickup']) {
+  test(`a rerun cannot replay a reservation-changing ${operation} comment`,async()=>{
+    const s=commentSetup({operation,owner:'worker-A',claim_run:'800',...(operation==='handoff'?{summary:handoffSummary}:{})});
+    s.context.runAttempt=2;
+    await assert.rejects(runComment(s),/Do not rerun/);assert.equal(s.writes.length,0);
+  });
+}
+
+for(const request of [
+  {operation:'handoff',owner:'worker-A',claim_run:'800',summary:42},
+  {operation:'pickup',owner:'worker-B',summary:handoffSummary},
+  {operation:'maintain',owner:'worker-A',summary:handoffSummary},
+]) {
+  test(`comment summary is accepted only as handoff text: ${request.operation}/${typeof request.summary}`,async()=>{
+    const s=commentSetup(request);
+    await assert.rejects(runComment(s),/Summary is text for handoff only/);
+    assert.equal(s.writes.length,0);
+  });
+}
 
 test('comment reservations preserve the GitHub Context prototype and original actor', async () => {
   const s = commentSetup();
@@ -798,4 +1011,914 @@ test('rerunning an acknowledged failed comment cannot turn its persisted reserva
   await assert.rejects(runComment(s),/Do not rerun reservation request jobs/);
   assert.equal(s.writes.length,2);
   await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'901'}),/did not succeed/);
+});
+
+// #745 fixtures deliberately keep every pinned target open; production #709 is
+// closed and must still fail the ordinary open/unblocked gate.
+const recoveryRepo = 'haseatsu114514-dot/shisha-game';
+const recoveryTargets = [
+  [709,'codex-709-20261019-peppermint-0015','39272409432',740,'a30de7f8d9900f8a1ca5a866181b4a0a7d444d03'],
+  [717,'codex-text-717-20261019-f31a','39385075235',739,'7ae8077d0cc0d2f233fd2d139d18bd0b3ebda91e'],
+  [726,'codex-701-holes-20261019-01','39236047840',731,'14713be78dac4356cd4c31219d612b173014b465'],
+];
+function ownerRecoverySetup(target = recoveryTargets[1], options = {}) {
+  const [number,from,run,pr,head] = target;
+  const h = {repo:recoveryRepo,issue:number,from,to:'new-recovery-worker',claim_run:run,
+    prs:[{number:pr,head}],approval_issue:745,consent:'resume-saved-pr',accept_loss:true,
+    stopped:'unknown',pushed:'unknown',unsaved_work:'unknown',
+    scope:'Only this saved PR is recoverable; any unknown/unrecoverable uncommitted and unpushed work is accepted as lost.',
+    consent_evidence: number === 726
+      ? 'The owner separately authorized the later additional Issue 726 loss-risk scope in task 745.'
+      : 'The owner explicitly authorized Issues 709 and 717 loss-risk scope in the initial task 745 instruction.'};
+  const url = `https://api.github.com/repos/${recoveryRepo}/issues/${number}`;
+  const permissions = {admin:'admin','haseatsu114514-dot':'admin',otherAdmin:'admin'};
+  const s = setup({issues:[fixture(number,{url}),fixture(999)],
+    comments:{[number]:[entry('claimed',from,{body:`<!-- issue-claim:v1 state=claimed owner=${from} -->\n<!-- issue-claim-run:v1 id=${run} request=original -->`})]},
+    prs:[{number:pr,body:`Refs #${number}`,head:{sha:head,repo:{full_name:recoveryRepo}}}],
+    approvals:{50:{id:50,user:{login:'haseatsu114514-dot'},issue_url:url,
+      html_url:`https://github.com/${recoveryRepo}/issues/${number}#issuecomment-50`,updated_at:'2026-10-20T01:00:00Z'}},
+    permissions,...options});
+  s.context.repo={owner:'haseatsu114514-dot',repo:'shisha-game'};
+  function approvalBody() {
+    s.approvals[50].body=`<!-- issue-owner-recovery:v1 ${JSON.stringify(h)} -->\n`+
+      `I authorize ${h.to} to resume saved PR #${pr} for Issue #${number} under #745 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
+      h.scope+'\n'+h.consent_evidence;
+  }
+  approvalBody();
+  const input={OPERATION:'transfer',ISSUE:String(number),OWNER:h.to,AGENT:'codex',CLAIM_RUN:run,HANDOFF_COMMENT:'50'};
+  return Object.assign(s,{h,permissions,approvalBody,input,
+    recover:()=>runEvent(s.github,s.context,s.core,input)});
+}
+function recoveryComment(s) {
+  const c={id:60,user:{login:'admin',type:'User'},issue_url:s.issues[0].url,
+    body:'/issue-claim '+JSON.stringify({operation:'transfer',issue:s.h.issue,owner:s.h.to,agent:'codex',claim_run:s.h.claim_run,handoff_comment:50})};
+  s.approvals[60]=c;s.context.eventName='issue_comment';s.context.payload.action='created';
+  s.context.payload.issue=s.issues[0];s.context.payload.comment=structuredClone(c);
+}
+const ledgerWrites = s => s.writes.filter(w=>w.body.startsWith('<!-- issue-claim:v1'));
+for (const target of recoveryTargets) for (const entrypoint of ['dispatch','comment']) {
+  test(`owner recovery ${target[0]} succeeds via ${entrypoint} with unknown audit and one atomic claim`, async () => {
+    const s=ownerRecoverySetup(target);
+    if(entrypoint==='comment') recoveryComment(s);
+    const original=structuredClone({comments:s.comments,prs:s.prs,approval:s.approvals[50]});
+    await s.recover();
+    const writes=ledgerWrites(s);assert.equal(writes.length,1);
+    const audit=JSON.parse(writes[0].body.match(/<!-- issue-owner-recovery-audit:v1 (.+) -->/)[1]);
+    assert.deepEqual(audit,{...s.h,approval_comment:50});
+    for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
+    assert.doesNotMatch(writes[0].body,/"(?:stopped|pushed)":true|state=released/);
+    assert.deepEqual(s.prs,original.prs);assert.deepEqual(s.approvals[50],original.approval);
+    assert.deepEqual(s.comments[target[0]][0],original.comments[target[0]][0]);
+    if(entrypoint==='comment') await s.recover(); // receipt makes event replay a no-op
+    else await assert.rejects(s.recover());
+    assert.equal(ledgerWrites(s).length,1);
+    await s.run('status',target[0],s.h.to,{CLAIM_RUN:'901'});
+  });
+}
+
+for(const change of ['repo','target','from','run','head','pr','to','same-worker','missing','malformed','false-consent','no-consent','no-prose','no-evidence','no-scope','stopped-true','pushed-true','unsaved-false','extra','legacy','mixed','duplicate','author-admin','author-read','actor-read','actor-write','closed','blocked','failed-source','cancelled-source','other-active','other-closed','ledger-owner','ledger-run','released','fork','extra-pr']) {
+  test(`owner recovery refuses ${change} without any ledger write`, async () => {
+    const s=ownerRecoverySetup();const h=s.h;
+    if(change==='repo') s.context.repo.repo='other';
+    if(change==='target') s.input.ISSUE='745';
+    if(change==='from') h.from='other-worker';
+    if(change==='run') h.claim_run=s.input.CLAIM_RUN='800';
+    if(change==='head') h.prs[0].head='f'.repeat(40);
+    if(change==='pr') h.prs[0].number=740;
+    if(change==='to') h.to='different-worker';
+    if(change==='same-worker') h.to=s.input.OWNER=h.from;
+    if(change==='false-consent') h.accept_loss=false;
+    if(change==='no-consent') delete h.consent;
+    if(change==='no-evidence') h.consent_evidence='';
+    if(change==='no-scope') h.scope='unknown';
+    if(change==='stopped-true') h.stopped=true;
+    if(change==='pushed-true') h.pushed=true;
+    if(change==='unsaved-false') h.unsaved_work=false;
+    if(change==='extra') h.unapproved=true;
+    if(change==='legacy') h.recovery={claim_comment:1,released_comment:2};
+    s.approvalBody();
+    if(change==='missing') s.approvals[50].body='Approved';
+    if(change==='malformed') s.approvals[50].body='<!-- issue-owner-recovery:v1 {bad} -->';
+    if(change==='no-prose') s.approvals[50].body=s.approvals[50].body.split('\n')[0];
+    if(change==='mixed') s.approvals[50].body+='\n<!-- issue-handoff:v1 {} -->';
+    if(change==='duplicate') s.approvals[50].body+='\n'+s.approvals[50].body.split('\n')[0];
+    if(change==='author-admin') s.approvals[50].user.login='otherAdmin';
+    if(change==='author-read') s.permissions['haseatsu114514-dot']='read';
+    if(change==='actor-read') s.permissions.admin='read';
+    if(change==='actor-write') s.permissions.admin='write';
+    if(change==='closed') s.issues[0].state='closed';
+    if(change==='blocked') s.issues[0].labels=['status:blocked'];
+    if(change==='failed-source'||change==='cancelled-source') s.runs[h.claim_run]={status:'completed',conclusion:change==='failed-source'?'failure':'cancelled'};
+    if(change==='other-active'||change==='other-closed') {
+      s.comments[999]=[entry('claimed',h.to)];
+      if(change==='other-closed') s.issues[1].state='closed';
+    }
+    if(change==='ledger-owner') s.comments[h.issue][0].body=s.comments[h.issue][0].body.replace(h.from,'other-worker');
+    if(change==='ledger-run') s.comments[h.issue][0].body=s.comments[h.issue][0].body.replace(h.claim_run,'800');
+    if(change==='released') s.comments[h.issue][0].body=s.comments[h.issue][0].body.replace('state=claimed','state=released');
+    if(change==='fork') s.prs[0].head.repo.full_name='other/repo';
+    if(change==='extra-pr') s.prs.push({...s.prs[0],number:999});
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  });
+}
+
+for(const mutation of ['approval','author','approval-time','actor-permission','author-permission','permission-error','head','pr-set','owner','run','same-tuple-new-comment','issue','blocked','source','availability']) {
+  test(`owner recovery revalidates mutable ${mutation} before write`, async () => {
+    let scans=0;
+    const s=ownerRecoverySetup(undefined,{hook(name,args,data) {
+      if(name!=='listForRepo'||++scans!==1) return;
+      if(mutation==='approval') s.approvals[50].body+='\nEdited';
+      if(mutation==='author') s.approvals[50].user.login='otherAdmin';
+      if(mutation==='approval-time') s.approvals[50].updated_at='later';
+      if(mutation==='actor-permission') s.permissions.admin='write';
+      if(mutation==='author-permission') s.permissions['haseatsu114514-dot']='write';
+      if(mutation==='permission-error') s.github.rest.repos.getCollaboratorPermissionLevel=async()=>{throw Error('Permission unavailable');};
+      if(mutation==='head') data.prs[0].head.sha='b'.repeat(40);
+      if(mutation==='pr-set') data.prs.length=0;
+      if(mutation==='owner') data.comments[717][0].body=data.comments[717][0].body.replace(s.h.from,'other-worker');
+      if(mutation==='run') data.comments[717][0].body=data.comments[717][0].body.replace(s.h.claim_run,'800');
+      if(mutation==='same-tuple-new-comment') data.comments[717].push({...data.comments[717][0],id:99});
+      if(mutation==='issue') data.issues[0].state='closed';
+      if(mutation==='blocked') data.issues[0].labels=['blocked'];
+      if(mutation==='source') s.runs[s.h.claim_run]={status:'completed',conclusion:'failure'};
+      if(mutation==='availability') data.comments[999]=[entry('claimed',s.h.to)];
+    }});
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  });
+}
+
+test('owner recovery #709 refuses closed live-state fixture without reopen or release', async()=>{
+  const s=ownerRecoverySetup(recoveryTargets[0]);s.issues[0].state='closed';
+  await assert.rejects(s.recover(),/Not an open issue/);assert.equal(s.writes.length,0);
+  assert.equal(s.issues[0].state,'closed');
+});
+
+test('owner recovery write failure preserves old reservation', async()=>{
+  const s=ownerRecoverySetup(undefined,{hook(name){if(name==='createComment') throw Error('write denied');}});
+  await assert.rejects(s.recover(),/write denied/);assert.equal(s.writes.length,0);
+  assert.equal(s.comments[717].length,1);assert.match(s.comments[717][0].body,new RegExp(s.h.from));
+});
+for(const conclusion of ['cancelled','failure']) test(`owner recovery ${conclusion} after write protects reservation without edit authorization`, async()=>{
+  const s=ownerRecoverySetup();s.runs[901]={status:'completed',conclusion};
+  await s.recover();
+  await assert.rejects(s.run('status',717,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.run('claim',717,'third-worker'),/Already claimed/);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,1);
+});
+
+test('owner recovery comment rerun refuses before a ledger write',async()=>{
+  const s=ownerRecoverySetup();recoveryComment(s);s.context.runAttempt=2;
+  await assert.rejects(s.recover(),/Do not rerun/);assert.equal(s.writes.length,0);
+});
+
+for(const change of ['unsupported-open-target','record-repo','approval-issue','wrong-thread','missing-field','fake-flag','malformed-second-marker','missing-live-approval']) {
+  test(`owner recovery rejects incomplete or unpinned record: ${change}`,async()=>{
+    const s=ownerRecoverySetup();
+    if(change==='unsupported-open-target') {
+      s.issues[0].number=s.h.issue=745;s.input.ISSUE='745';
+    }
+    if(change==='record-repo') s.h.repo='other/repo';
+    if(change==='approval-issue') s.h.approval_issue=731;
+    if(change==='missing-field') delete s.h.unsaved_work;
+    if(change==='fake-flag') s.h.stopped=true;
+    s.approvalBody();
+    if(change==='wrong-thread') s.approvals[50].issue_url=fixture(999).url;
+    if(change==='malformed-second-marker') s.approvals[50].body+='\n<!-- issue-owner-recovery:v1 broken';
+    if(change==='missing-live-approval') delete s.approvals[50];
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  });
+}
+
+test('owner recovery comment refusal writes only its result receipt and preserves old claim',async()=>{
+  const s=ownerRecoverySetup();recoveryComment(s);s.permissions.admin='write';
+  await assert.rejects(s.recover(),/admin/);
+  assert.equal(ledgerWrites(s).length,0);assert.equal(s.writes.length,1);
+  assert.match(s.writes[0].body,/issue-claim-request:v1 comment=60/);
+  assert.match(s.writes[0].body,/Request refused/);assert.equal(s.comments[717].length,2);
+});
+
+test('owner recovery failure after claim but before completion cannot authorize editing',async()=>{
+  const s=ownerRecoverySetup();s.core.summary.write=async()=>{throw Error('summary write failed');};
+  await assert.rejects(s.recover(),/summary write failed/);
+  s.runs[901]={status:'completed',conclusion:'failure'};
+  await assert.rejects(s.run('status',717,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.recover());assert.equal(ledgerWrites(s).length,1);
+});
+
+for (const mutation of ['owner','head','approval','author','permission','run','closed']) {
+  test(`owner recovery refuses late ${mutation} during LAST availability scan`, async()=>{
+    let scans=0;
+    const s=ownerRecoverySetup(undefined,{hook(name,args,data){
+      if(name!=='listForRepo'||++scans!==2) return;
+      if(mutation==='owner') data.comments[717][0].body=data.comments[717][0].body.replace(s.h.from,'late-worker');
+      if(mutation==='head') data.prs[0].head.sha='b'.repeat(40);
+      if(mutation==='approval') s.approvals[50].body+='\nLate revocation';
+      if(mutation==='author') s.approvals[50].user.login='otherAdmin';
+      if(mutation==='permission') s.permissions.admin='write';
+      if(mutation==='run') s.runs[s.h.claim_run]={status:'completed',conclusion:'failure'};
+      if(mutation==='closed') data.issues[0].state='closed';
+    }});
+    await assert.rejects(s.recover());
+    assert.equal(scans,2);assert.equal(s.writes.length,0);
+    assert.equal(s.comments[717].length,1);
+  });
+}
+
+test('owner recovery final evidence checks follow the last full worker scan',async()=>{
+  const s=ownerRecoverySetup();await s.recover();
+  const names=s.calls.map(c=>c.name);
+  assert.equal(names.filter(n=>n==='listForRepo').length,2);
+  const final=names.slice(names.lastIndexOf('listForRepo')+1,names.indexOf('createComment'));
+  for(const name of ['get','permission','getComment','listComments','run','pulls']) assert.ok(final.includes(name),name);
+  assert.equal(ledgerWrites(s).length,1);
+});
+
+for (const mutation of ['approval','approval-author','approval-timestamp','owner','current-run','executor-admin','author-admin','closed','blocked','source-run']) {
+  test(`owner recovery refuses ${mutation} changed during FINAL PR enumeration`,async()=>{
+    let enumerations=0;
+    const s=ownerRecoverySetup(undefined,{hook(name,args,data){
+      // The API mock applies this before returning the second full PR listing,
+      // matching revocation/state changes while a paginated listing is in flight.
+      if(name!=='pulls'||++enumerations!==2) return;
+      if(mutation==='approval') s.approvals[50].body+='\nOwner revoked consent while PR enumeration was in flight.';
+      if(mutation==='approval-author') s.approvals[50].user.login='otherAdmin';
+      if(mutation==='approval-timestamp') s.approvals[50].updated_at='2026-10-20T23:00:00Z';
+      if(mutation==='owner') data.comments[717].push({...data.comments[717][0],id:90,
+        body:data.comments[717][0].body.replace(s.h.from,'replacement-worker')});
+      if(mutation==='current-run') data.comments[717].push({...data.comments[717][0],id:90,
+        body:data.comments[717][0].body.replace(s.h.claim_run,'999999')});
+      if(mutation==='executor-admin') s.permissions.admin='write';
+      if(mutation==='author-admin') s.permissions['haseatsu114514-dot']='write';
+      if(mutation==='closed') data.issues[0].state='closed';
+      if(mutation==='blocked') data.issues[0].labels=['blocked'];
+      if(mutation==='source-run') s.runs[s.h.claim_run]={status:'completed',conclusion:'cancelled'};
+    }});
+    await assert.rejects(s.recover());
+    assert.equal(enumerations,2);assert.equal(ledgerWrites(s).length,0);
+    assert.equal(s.writes.length,0);
+  });
+}
+
+test('owner recovery performs no repository-wide enumeration after final point reads',async()=>{
+  const s=ownerRecoverySetup();await s.recover();
+  const names=s.calls.map(c=>c.name);
+  const lastEnumeration=Math.max(names.lastIndexOf('pulls'),names.lastIndexOf('listForRepo'));
+  const write=names.indexOf('createComment');
+  const final=names.slice(lastEnumeration+1,write);
+  assert.ok(lastEnumeration<write);
+  for(const name of ['get','permission','getComment','listComments','run']) assert.ok(final.includes(name),name);
+  assert.equal(final.filter(name=>name==='permission').length,2);
+  assert.ok(!final.some(name=>['pulls','listForRepo'].includes(name)));
+  assert.equal(ledgerWrites(s).length,1);
+});
+
+// Integration guards: repository-wide scans must precede final target reads.
+for (const mutation of ['owner','run','offer-body','offer-edited-at','source-run','permission','issue','head']) {
+  test(`pickup refuses ${mutation} changed during final PR enumeration`, async () => {
+    let scans=0, armed=false;
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions,hook(name,args,data) {
+      if (!armed || name!=='pulls' || ++scans!==2) return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='owner') c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run') c.body=c.body.replace('id=901','id=999');
+      if(mutation==='offer-body') c.body+='\nOffer withdrawn.';
+      if(mutation==='offer-edited-at') c.updated_at='2026-10-20T12:00:00Z';
+      if(mutation==='source-run') s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission') permissions.admin='read';
+      if(mutation==='issue') data.issues[0].state='closed';
+      if(mutation==='head') data.prs[0].head.sha='b'.repeat(40);
+    }});
+    await handoff(s);armed=true;
+    await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+for (const mutation of ['owner','run','actor','source-run','permission','issue','head']) {
+  test(`handoff refuses ${mutation} changed during final PR enumeration`, async () => {
+    let scans=0;
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions,hook(name,args,data) {
+      if(name!=='pulls'||++scans!==2)return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='owner')c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')c.body=c.body.replace('id=800','id=999');
+      if(mutation==='actor')c.body=c.body.replace('login=admin','login=other');
+      if(mutation==='source-run')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission')permissions.admin='read';
+      if(mutation==='issue')data.issues[0].state='closed';
+      if(mutation==='head')data.prs[0].head.sha='b'.repeat(40);
+    }});
+    await assert.rejects(handoff(s));assert.equal(s.writes.length,0);
+  });
+}
+
+for (const operation of ['claim','park','resume','release','transfer']) {
+  for (const mutation of ['body','edited-at','permission']) {
+    test(`${operation} refuses a revoked comment request before ledger write: ${mutation}`,async()=>{
+      const request={id:55,user:{login:'admin'},issue_url:fixture(1).url,body:'/issue-claim original',updated_at:'before'};
+      const s=operation==='transfer'?transferSetup():parkingSetup();
+      s.approvals[55]=structuredClone(request);s.context.verifiedRequest=request;
+      // This models an accepted request that is revoked before the mutation.
+      if(mutation==='body')s.approvals[55].body='canceled';
+      if(mutation==='edited-at')s.approvals[55].updated_at='after';
+      if(mutation==='permission') {
+        const original=s.github.rest.repos.getCollaboratorPermissionLevel;
+        s.github.rest.repos.getCollaboratorPermissionLevel=async a=>a.username==='admin'?{data:{permission:'read'}}:original(a);
+      }
+      if(operation==='claim')s.comments[1]=[];
+      if(operation==='resume') {
+        const c=s.comments[1][0];
+        c.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:s.prs[0].number,head:s.prs[0].head.sha}]})+' -->';
+      }
+      const action=operation==='transfer'?()=>transfer(s):()=>s.run(operation,1,'worker-A',
+        ['park','resume'].includes(operation)?{CLAIM_RUN:'800'}:{});
+      await assert.rejects(action);assert.equal(s.writes.length,0);
+    });
+  }
+}
+
+for (const mutation of ['owner','run','source-run','actor-permission','author-permission']) {
+  test(`transfer refuses ${mutation} changed during final PR enumeration`,async()=>{
+    let scans=0;
+    const permissions={admin:'admin',oldUser:'admin'};
+    const s=transferSetup({permissions,hook(name,args,data){
+      if(name!=='pulls'||++scans!==2)return;
+      if(mutation==='owner')data.comments[1][0].body=data.comments[1][0].body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')data.comments[1][0].body=data.comments[1][0].body.replace('id=800','id=999');
+      if(mutation==='source-run')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='actor-permission')permissions.admin='read';
+      if(mutation==='author-permission')permissions.oldUser='read';
+    }});
+    s.approvals[50].user.login='oldUser';
+    await assert.rejects(transfer(s));assert.equal(s.writes.length,0);
+  });
+}
+
+for (const operation of ['claim','handoff','pickup']) {
+  test(`comment ${operation} canceled during worker enumeration cannot write a claim`,async()=>{
+    let armed=false;
+    const permissions={writer:'write',admin:'write',successor:'write'};
+    const request={operation,owner:operation==='pickup'?'worker-B':'worker-A',
+      ...(operation==='handoff'?{claim_run:'800',summary:handoffSummary}:{})};
+    const claim=handoffEntry();
+    if(operation==='handoff')claim.body=claim.body.replace('login=admin','login=writer');
+    const s=commentSetup(request,{permissions,comments:operation==='claim'?{}:{1:[claim]},
+      prs:operation==='claim'?[]:[savedPR()],hook(name){
+        if(armed&&name==='listForRepo')s.approvals[50].body='Canceled by requester';
+      }});
+    if(operation==='pickup')await handoff(s);
+    const before=s.writes.length;armed=true;
+    // Handoff does not enumerate workers; revoke during its final PR scan instead.
+    if(operation==='handoff') {
+      const original=s.github.rest.pulls.list;
+      s.github.rest.pulls.list=async args=>{const result=await original(args);s.approvals[50].body='Canceled by requester';return result;};
+    }
+    await assert.rejects(runComment(s),/Request comment changed/);
+    assert.equal(s.writes.slice(before).filter(w=>w.body.startsWith('<!-- issue-claim:v1')).length,0);
+  });
+}
+
+test('a revoked claim request cannot auto-release completed work during availability scans',async()=>{
+  const s=commentSetup({operation:'claim',issue:1,owner:'worker-A'}, {
+    issues:[fixture(1),fixture(2,{state:'closed',state_reason:'completed'})],
+    comments:{2:[modernEntry('worker-A','800')]},
+    prs:[{...savedPR(),body:'Refs #2',state:'closed',merged_at:'2026-10-20T00:00:00Z',base:{ref:'main'}}],
+    hook(name,args){if(name==='pulls'&&args.state==='all')s.approvals[50].body='Canceled during completion scan';}
+  });
+  await assert.rejects(runComment(s),/Request comment changed/);
+  assert.equal(s.writes.filter(w=>w.body.startsWith('<!-- issue-claim:v1')).length,0);
+});
+
+test('pickup rejects duplicate checkpoint markers rather than accepting the first offer',async()=>{
+  const s=handoffSetup();await handoff(s);
+  const c=s.comments[1].at(-1);c.body+='\n'+c.body.match(/^<!-- issue-claim-wait:v1 .+ -->$/m)[0];
+  await assert.rejects(pickup(s),/Invalid waiting checkpoint/);assert.equal(s.writes.length,1);
+});
+
+test('ordinary transfer rechecks source actor changed during final PR enumeration',async()=>{
+  let scans=0;
+  const source={status:'completed',conclusion:'success',actor:{login:'oldUser'}};
+  const s=transferSetup({permissions:{oldUser:'write',newUser:'write'},runs:{800:source},hook(name){
+    if(name==='pulls'&&++scans===2)source.actor.login='otherUser';
+  }});
+  s.context.actor='newUser';s.approvals[50].user.login='oldUser';
+  await assert.rejects(transfer(s),/original claim actor/);assert.equal(s.writes.length,0);
+});
+
+test('a deleted offer cannot authorize pickup from an older active reservation',async()=>{
+  const s=handoffSetup();await handoff(s);s.comments[1].pop();
+  await assert.rejects(pickup(s),/No handoff-ready/);assert.equal(s.writes.length,1);
+});
+
+test('a deleted pickup request during the final PR scan leaves the offer intact',async()=>{
+  let scans=0,armed=false;
+  const request={id:55,user:{login:'successor'},issue_url:fixture(1).url,body:'/issue-claim pickup'};
+  const s=handoffSetup({approvals:{55:structuredClone(request)},hook(name){
+    if(armed&&name==='pulls'&&++scans===2)delete s.approvals[55];
+  }});
+  await handoff(s);s.context.verifiedRequest=request;armed=true;
+  await assert.rejects(pickup(s),/Approval not found/);assert.equal(s.writes.length,1);
+});
+
+const mergeHandoffPRs = s => {
+  for (const pr of s.prs) { pr.state='closed';pr.merged_at='2026-10-20T00:00:00Z'; }
+};
+const cancelHandoff = s => {
+  s.context.runId=903;
+  return s.run('resume',1,'worker-A',{CLAIM_RUN:'901'});
+};
+
+test('the original owner cancels an unconsumed handoff after every saved PR merges unchanged',async()=>{
+  const s=handoffSetup({prs:[savedPR(),savedPR(12)]});
+  await handoff(s);mergeHandoffPRs(s);await cancelHandoff(s);
+  assert.equal(s.writes.length,2);
+  assert.match(s.writes.at(-1).body,/state=claimed owner=worker-A/);
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  await s.run('status',1,'worker-A',{CLAIM_RUN:'903'});
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('ordinary review-wait resume still requires an Open PR after its saved PR merges',async()=>{
+  const s=parkingSetup();await park(s);mergeHandoffPRs(s);
+  await assert.rejects(cancelHandoff(s),/requires saved same-repository Open PR/);
+  assert.equal(s.writes.length,1);
+});
+
+for (const mutation of ['missing','closed-unmerged','fork','head','new-pr','actor','failed-handoff','cancelled-source','other-active','consumed']) {
+  test(`merged handoff cancellation refuses unsafe checkpoint: ${mutation}`,async()=>{
+    const s=handoffSetup();await handoff(s);mergeHandoffPRs(s);
+    if(mutation==='missing')s.prs.length=0;
+    if(mutation==='closed-unmerged')s.prs[0].merged_at=null;
+    if(mutation==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(mutation==='head')s.prs[0].head.sha='b'.repeat(40);
+    if(mutation==='new-pr')s.prs.push(savedPR(12));
+    if(mutation==='actor')s.context.actor='successor';
+    if(mutation==='failed-handoff')s.runs[901]={status:'completed',conclusion:'failure'};
+    if(mutation==='cancelled-source')s.runs[800]={status:'completed',conclusion:'cancelled'};
+    if(mutation==='other-active')s.comments[2]=[modernEntry('worker-A','700')];
+    if(mutation==='consumed')await pickup(s);
+    const before=s.writes.length;
+    await assert.rejects(cancelHandoff(s));assert.equal(s.writes.length,before);
+  });
+}
+
+for (const mutation of ['missing','closed-unmerged','fork','head','new-pr','owner','run','offer','issue','failed-handoff','cancelled-source','permission','request']) {
+  test(`merged handoff cancellation rechecks ${mutation} after worker enumeration`,async()=>{
+    let armed=false,scans=0;
+    const permissions={admin:'write',successor:'write'};
+    const request={id:55,user:{login:'admin'},issue_url:fixture(1).url,body:'/issue-claim resume'};
+    const s=handoffSetup({permissions,approvals:{55:structuredClone(request)},hook(name,args,data){
+      if(!armed||name!=='pulls'||++scans!==2)return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='missing')data.prs.length=0;
+      if(mutation==='closed-unmerged')data.prs[0].merged_at=null;
+      if(mutation==='fork')data.prs[0].head.repo.full_name='other/game';
+      if(mutation==='head')data.prs[0].head.sha='b'.repeat(40);
+      if(mutation==='new-pr')data.prs.push(savedPR(12));
+      if(mutation==='owner')c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')c.body=c.body.replace('id=901','id=999');
+      if(mutation==='offer')c.body+='\nOffer withdrawn.';
+      if(mutation==='issue')data.issues[0].state='closed';
+      if(mutation==='failed-handoff')s.runs[901]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='cancelled-source')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission')permissions.admin='read';
+      if(mutation==='request')s.approvals[55].body='Resume canceled';
+    }});
+    await handoff(s);mergeHandoffPRs(s);s.context.verifiedRequest=request;armed=true;
+    await assert.rejects(cancelHandoff(s));assert.equal(s.writes.length,1);assert.equal(scans,2);
+  });
+}
+
+test('a failed cancellation run retains ownership but cannot authorize editing',async()=>{
+  const s=handoffSetup();await handoff(s);mergeHandoffPRs(s);await cancelHandoff(s);
+  s.runs[903]={status:'completed',conclusion:'cancelled'};
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'903'}),/did not succeed/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+  assert.equal(s.writes.length,2);
+});
+
+// #769 is an independent implementation task; it does not transfer #711 here.
+const issue711Target = [711,'codex-711-20261019-588761470c34','39273098251',742,'2224b428b341ee58680caf46dba550c6cb4794b7'];
+function issue711RecoverySetup(options = {}) {
+  const s=ownerRecoverySetup(issue711Target,options);
+  s.h.approval_issue=769;
+  s.h.known_active_observed=false;
+  s.h.consent_evidence='Owner question: 保存済みのPRを保全してAが引き継ぎ、取消CIの原因を解消してマージまで進めていい？ 未保存分は回収できる保証がありません。 Answers: 742は再開したい / すすめてよい';
+  s.approvalBody=()=>{
+    s.approvals[50].body=`<!-- issue-711-owner-recovery:v1 ${JSON.stringify(s.h)} -->\n`+
+      `I authorize ${s.h.to} to resume saved PR #742 for Issue #711 under #769 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
+      s.h.scope+'\n'+s.h.consent_evidence;
+  };
+  s.approvalBody();return s;
+}
+for(const route of ['dispatch','comment']) test(`711 independent recovery succeeds via ${route}, preserves unknowns and rejects replay`,async()=>{
+  const s=issue711RecoverySetup();if(route==='comment') recoveryComment(s);
+  const before=structuredClone({claim:s.comments[711][0],prs:s.prs,approval:s.approvals[50]});
+  await s.recover();
+  const writes=ledgerWrites(s);assert.equal(writes.length,1);
+  const audit=JSON.parse(writes[0].body.match(/<!-- issue-711-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit,{...s.h,approval_comment:50});
+  for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
+  assert.equal(audit.known_active_observed,false);
+  assert.doesNotMatch(writes[0].body,/issue-owner-recovery-audit:|"(?:stopped|pushed)":true|state=released/);
+  assert.deepEqual(s.comments[711][0],before.claim);assert.deepEqual(s.prs,before.prs);
+  assert.deepEqual(s.approvals[50],before.approval);
+  if(route==='comment') await s.recover();else await assert.rejects(s.recover());
+  assert.equal(ledgerWrites(s).length,1);
+  await s.run('status',711,s.h.to,{CLAIM_RUN:'901'});
+});
+
+for(const change of ['673','738','717','769','repo','record-repo','from','run','input-run','head','pr','to','same-worker','approval-issue',
+  'loss','consent','evidence','scope','no-prose','extra','legacy','missing','duplicate','malformed','mixed-745','mixed-handoff',
+  'author','actor-read','actor-write','author-write','permission-error','closed','blocked','source-failed','source-pending',
+  'claim-owner','claim-run','claim-released','fork','extra-pr','no-pr','other-active','other-closed','other-handoff','wrong-thread']) {
+  test(`711 independent recovery refuses ${change} and preserves original claim`,async()=>{
+    const s=issue711RecoverySetup(),h=s.h;
+    const before=structuredClone(s.comments[711][0]);
+    if(['673','738','717','769'].includes(change)) {
+      s.input.ISSUE=change;s.issues[0].number=Number(change);h.issue=Number(change);
+    }
+    if(change==='repo') s.context.repo.repo='other';
+    if(change==='record-repo') h.repo='other/repo';
+    if(change==='from') h.from='other-worker';
+    if(change==='run') h.claim_run='800';
+    if(change==='input-run') s.input.CLAIM_RUN='800';
+    if(change==='head') h.prs[0].head='b'.repeat(40);
+    if(change==='pr') h.prs[0].number=743;
+    if(change==='to') h.to='other-worker';
+    if(change==='same-worker') h.to=s.input.OWNER=h.from;
+    if(change==='approval-issue') h.approval_issue=745;
+    if(change==='loss') h.accept_loss=false;
+    if(change==='consent') h.consent='approved';
+    if(change==='evidence') h.consent_evidence='An admin said that recovery was authorized.';
+    if(change==='scope') h.scope='Only saved work is in scope, without any loss statement.';
+    if(change==='extra') h.extra=true;
+    if(change==='legacy') h.recovery={claim_comment:1,released_comment:2};
+    s.approvalBody();
+    if(change==='no-prose') s.approvals[50].body=s.approvals[50].body.split('\n')[0];
+    if(change==='missing') s.approvals[50].body='Approved';
+    if(change==='duplicate') s.approvals[50].body+='\n'+s.approvals[50].body.split('\n')[0];
+    if(change==='malformed') s.approvals[50].body+='\n<!-- issue-711-owner-recovery:v1 broken';
+    if(change==='mixed-745') s.approvals[50].body+='\n<!-- issue-owner-recovery:v1 {} -->';
+    if(change==='mixed-handoff') s.approvals[50].body+='\n<!-- issue-handoff:v1 {} -->';
+    if(change==='author') s.approvals[50].user.login='otherAdmin';
+    if(change==='actor-read') s.permissions.admin='read';
+    if(change==='actor-write') s.permissions.admin='write';
+    if(change==='author-write') s.permissions['haseatsu114514-dot']='write';
+    if(change==='permission-error') s.github.rest.repos.getCollaboratorPermissionLevel=async()=>{throw Error('permission unknown');};
+    if(change==='closed') s.issues[0].state='closed';
+    if(change==='blocked') s.issues[0].labels=['blocked'];
+    if(change==='source-failed') s.runs[h.claim_run]={status:'completed',conclusion:'failure'};
+    if(change==='source-pending') s.runs[h.claim_run]={status:'in_progress',conclusion:null};
+    if(change==='claim-owner') s.comments[711][0].body=before.body.replace(h.from,'other-worker');
+    if(change==='claim-run') s.comments[711][0].body=before.body.replace(h.claim_run,'800');
+    if(change==='claim-released') s.comments[711][0].body=before.body.replace('state=claimed','state=released');
+    if(change==='fork') s.prs[0].head.repo.full_name='other/repo';
+    if(change==='extra-pr') s.prs.push({...s.prs[0],number:999});
+    if(change==='no-pr') s.prs.length=0;
+    if(['other-active','other-closed','other-handoff'].includes(change)) {
+      s.comments[999]=[entry('claimed',h.to)];
+      if(change==='other-closed') s.issues[1].state='closed';
+      if(change==='other-handoff') s.comments[999][0].body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:999,head:'a'.repeat(40)}],handoff:{version:1,from:h.to,actor:'admin',source_run:'800',stopped:true,pushed:true,summary:'Saved work.'}})+' -->';
+    }
+    if(change==='wrong-thread') s.approvals[50].issue_url=fixture(999).url;
+    const current=structuredClone(s.comments);
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,current);
+  });
+}
+for(const key of ['stopped','pushed','unsaved_work','known_active_observed']) {
+  const values=key==='known_active_observed'?[true,'false','unknown',null,undefined]:[true,false,null,undefined];
+  for(const value of values) test(`711 strictly rejects ${key}=${String(value)}`,async()=>{
+    const s=issue711RecoverySetup();s.h[key]=value;s.approvalBody();
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+    assert.equal(s.comments[711].length,1);
+  });
+}
+
+for(const stage of ['last-worker-scan','final-pr-scan']) for(const change of ['approval','author','timestamp','permission','owner','run','claim-comment','source','closed','known-active']) {
+  test(`711 revalidates ${change} changed during ${stage}`,async()=>{
+    let scans=0;
+    const s=issue711RecoverySetup({hook(name,args,data){
+      if(name!==(stage==='last-worker-scan'?'listForRepo':'pulls')||++scans!==2) return;
+      if(change==='approval') s.approvals[50].body+='\nConsent revoked';
+      if(change==='author') s.approvals[50].user.login='otherAdmin';
+      if(change==='timestamp') s.approvals[50].updated_at='later';
+      if(change==='permission') s.permissions.admin='write';
+      if(change==='owner') data.comments[711][0].body=data.comments[711][0].body.replace(s.h.from,'other-worker');
+      if(change==='run') data.comments[711][0].body=data.comments[711][0].body.replace(s.h.claim_run,'800');
+      if(change==='claim-comment') data.comments[711].push({...data.comments[711][0],id:99});
+      if(change==='source') s.runs[s.h.claim_run]={status:'completed',conclusion:'cancelled'};
+      if(change==='closed') data.issues[0].state='closed';
+      if(change==='known-active') {s.h.known_active_observed=true;s.approvalBody();}
+    }});
+    await assert.rejects(s.recover());assert.equal(scans,2);assert.equal(s.writes.length,0);
+  });
+}
+for(const change of ['head','pr-set','availability']) test(`711 refuses changed ${change} during last worker scan`,async()=>{
+  let scans=0;
+  const s=issue711RecoverySetup({hook(name,args,data){
+    if(name!=='listForRepo'||++scans!==2) return;
+    if(change==='head') data.prs[0].head.sha='b'.repeat(40);
+    if(change==='pr-set') data.prs.push({...data.prs[0],number:999});
+    if(change==='availability') data.comments[999]=[entry('claimed',s.h.to)];
+  }});
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+test('711 completes all enumeration before final target evidence reads',async()=>{
+  const s=issue711RecoverySetup();await s.recover();
+  const names=s.calls.map(c=>c.name),last=Math.max(names.lastIndexOf('pulls'),names.lastIndexOf('listForRepo'));
+  const final=names.slice(last+1,names.indexOf('createComment'));
+  for(const name of ['get','permission','getComment','listComments','run']) assert.ok(final.includes(name),name);
+  assert.equal(final.filter(n=>n==='permission').length,2);
+  assert.equal(ledgerWrites(s).length,1);
+});
+test('711 write failure leaves original reservation intact',async()=>{
+  const s=issue711RecoverySetup({hook(name){if(name==='createComment') throw Error('write denied');}});
+  const before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/write denied/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const failure of ['cancelled','failure','summary']) test(`711 post-write ${failure} retains protected reservation without authorizing editing`,async()=>{
+  const s=issue711RecoverySetup();
+  if(failure==='summary') {
+    s.core.summary.write=async()=>{throw Error('summary failed');};
+    await assert.rejects(s.recover(),/summary failed/);
+  } else await s.recover();
+  s.runs[901]={status:'completed',conclusion:failure==='summary'?'failure':failure};
+  await assert.rejects(s.run('status',711,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.run('claim',711,'third-worker'),/Already claimed/);
+  await assert.rejects(s.recover());assert.equal(ledgerWrites(s).length,1);
+});
+test('711 mutating comment rerun is refused without ledger write',async()=>{
+  const s=issue711RecoverySetup();recoveryComment(s);s.context.runAttempt=2;
+  await assert.rejects(s.recover(),/Do not rerun/);assert.equal(s.writes.length,0);
+});
+test('711 comment permission refusal only adds a request receipt',async()=>{
+  const s=issue711RecoverySetup();recoveryComment(s);s.permissions.admin='write';
+  await assert.rejects(s.recover(),/admin/);assert.equal(ledgerWrites(s).length,0);
+  assert.equal(s.writes.length,1);assert.match(s.writes[0].body,/Request refused/);
+  assert.equal(s.comments[711][0].body.includes(issue711Target[1]),true);
+});
+test('745 marker cannot authorize 711 and mixed 711 marker cannot authorize 745 targets',async()=>{
+  const s=ownerRecoverySetup(issue711Target);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  const t=ownerRecoverySetup();t.approvals[50].body+='\n<!-- issue-711-owner-recovery:v1 {} -->';
+  await assert.rejects(t.recover());assert.equal(t.writes.length,0);
+});
+for(const valid of [true,false]) test(`711 ${valid?'accepts valid':'rejects stale'} parked worker checkpoint`,async()=>{
+  const s=issue711RecoverySetup();
+  const waiting=modernEntry(s.h.to,700);
+  waiting.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:998,head:savedHead}]})+' -->';
+  s.comments[999]=[waiting];
+  s.prs.push(savedPR(998,999,{head:{sha:valid?savedHead:'b'.repeat(40),repo:{full_name:recoveryRepo}}}));
+  if(valid) {await s.recover();assert.equal(ledgerWrites(s).length,1);}
+  else {await assert.rejects(s.recover(),/Waiting PR checkpoint changed/);assert.equal(s.writes.length,0);}
+  assert.deepEqual(s.comments[999],[waiting]);
+});
+test('711 rechecks comment request immutability immediately before writing',async()=>{
+  let scans=0;
+  const s=issue711RecoverySetup({hook(name){
+    if(name==='pulls'&&++scans===2) s.approvals[60].body+=' ';
+  }});
+  recoveryComment(s);
+  await assert.rejects(s.recover(),/Request comment changed/);
+  assert.equal(ledgerWrites(s).length,0);assert.equal(s.comments[711][0].body.includes(s.h.from),true);
+});
+
+// #798 implements only this procedure. All #673 state below is mocked.
+const issue673Target = [673,'codex-577-limited-20261018-3a8c921e','39271009573',738,'426f78b331abba79653b8499117f818f152914ca'];
+const issue673Preserved = [
+  {number:776,head:'a0c8932d4a4ffafe161b64fa0a1d4fff5264d365'},
+  {number:794,head:'c0cd15adf50f6f2b673cf5d1a49575dad3153edc'},
+  {number:795,head:'ff4d1eb26d879f17aa03f61a8782777e971718df'},
+];
+const issue673PreservationStatement = 'PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.';
+const issue673Question = '#738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。';
+function issue673RecoverySetup(options = {}) {
+  const s=ownerRecoverySetup(issue673Target,options);
+  Object.assign(s.h,{approval_issue:798,known_active_observed:false,
+    consent_evidence:`Question: ${issue673Question} Answer: 1はAに引き継いで`});
+  s.h.preserved_prs=structuredClone(issue673Preserved);
+  s.h.scope+=' '+issue673PreservationStatement;
+  for(const saved of issue673Preserved) {
+    s.prs.push({number:saved.number,body:'Preservation boundary: #673 is outside this work.',
+      head:{sha:saved.head,repo:{full_name:recoveryRepo}}});
+    const otherIssue=saved.number+1000;
+    s.issues.push(fixture(otherIssue));
+    s.comments[otherIssue]=[modernEntry('other-worker-'+saved.number,700)];
+  }
+  s.approvalBody=()=>{
+    s.approvals[50].body=`<!-- issue-673-owner-recovery:v1 ${JSON.stringify(s.h)} -->\n`+
+      `I authorize ${s.h.to} to resume saved PR #738 for Issue #673 under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
+      s.h.scope+'\n'+s.h.consent_evidence;
+  };
+  s.approvalBody();return s;
+}
+for(const route of ['dispatch','comment']) test(`673 recovery ${route}: exact independent audit, preservation and replay refusal`,async()=>{
+  const s=issue673RecoverySetup();if(route==='comment') recoveryComment(s);
+  const before=structuredClone({claim:s.comments[673][0],prs:s.prs,approval:s.approvals[50]});
+  const otherClaims=structuredClone(issue673Preserved.map(p=>s.comments[p.number+1000]));
+  await s.recover();const writes=ledgerWrites(s);assert.equal(writes.length,1);
+  assert.deepEqual(issue673Preserved.map(p=>s.comments[p.number+1000]),otherClaims);
+  assert.ok(s.writes.every(w=>w.issue_number===673));
+  assert.deepEqual(s.h.prs,[{number:issue673Target[3],head:issue673Target[4]}]);
+  assert.deepEqual(s.h.preserved_prs,issue673Preserved);
+  const audit=JSON.parse(writes[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit,{...s.h,approval_comment:50});
+  for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
+  assert.equal(audit.known_active_observed,false);
+  assert.doesNotMatch(writes[0].body,/issue-(?:711-)?owner-recovery-audit:|"(?:stopped|pushed)":true|state=released/);
+  assert.deepEqual(s.comments[673][0],before.claim);assert.deepEqual(s.prs,before.prs);assert.deepEqual(s.approvals[50],before.approval);
+  if(route==='comment') await s.recover();else await assert.rejects(s.recover());
+  assert.equal(ledgerWrites(s).length,1);await s.run('status',673,s.h.to,{CLAIM_RUN:'901'});
+});
+const invalid673 = {
+  'wrong-target-733':s=>{s.issues[0].number=733;s.input.ISSUE='733';s.h.issue=733;},
+  'wrong-repo':s=>{s.context.repo.repo='other';},
+  'record-repo':s=>{s.h.repo='other/repo';},
+  'old-owner':s=>{s.h.from='other-worker';},
+  'old-run':s=>{s.h.claim_run='800';},
+  'input-run':s=>{s.input.CLAIM_RUN='800';},
+  'head':s=>{s.h.prs[0].head='b'.repeat(40);},
+  'pr':s=>{s.h.prs[0].number=739;},
+  'approval-issue':s=>{s.h.approval_issue=769;},
+  'new-owner':s=>{s.h.to='other-worker';},
+  'same-worker':s=>{s.h.to=s.input.OWNER=s.h.from;},
+  'loss-not-accepted':s=>{s.h.accept_loss=false;},
+  'wrong-consent':s=>{s.h.consent='approved';},
+  '711-evidence':s=>{s.h.consent_evidence='742は再開したい / すすめてよい (separate authorization)';},
+  'missing-answer':s=>{s.h.consent_evidence=issue673Question;},
+  'short-scope':s=>{s.h.scope='unknown';},
+  'unknown-key':s=>{s.h.extra=true;},
+  'legacy-recovery':s=>{s.h.recovery={claim_comment:1,released_comment:2};},
+  'nonowner-admin':s=>{s.approvals[50].user.login='otherAdmin';},
+  'actor-write':s=>{s.permissions.admin='write';},
+  'author-write':s=>{s.permissions['haseatsu114514-dot']='write';},
+  'permissions-unavailable':s=>{s.github.rest.repos.getCollaboratorPermissionLevel=async()=>{throw Error('permission unknown');};},
+  'closed':s=>{s.issues[0].state='closed';},
+  'blocked':s=>{s.issues[0].labels=['blocked'];},
+  'failed-source':s=>{s.runs[s.h.claim_run]={status:'completed',conclusion:'failure'};},
+  'pending-source':s=>{s.runs[s.h.claim_run]={status:'in_progress',conclusion:null};},
+  'changed-claim-owner':s=>{s.comments[673][0].body=s.comments[673][0].body.replace(s.h.from,'different-worker');},
+  'changed-claim-run':s=>{s.comments[673][0].body=s.comments[673][0].body.replace(s.h.claim_run,'800');},
+  'released':s=>{s.comments[673][0].body=s.comments[673][0].body.replace('state=claimed','state=released');},
+  'fork':s=>{s.prs[0].head.repo.full_name='other/repo';},
+  'extra-open-pr':s=>{s.prs.push({...s.prs[0],number:999});},
+  'missing-open-pr':s=>{s.prs[0].state='closed';},
+  'existing-worker':s=>{s.comments[999]=[entry('claimed',s.h.to)];},
+  'existing-worker-closed':s=>{s.comments[999]=[entry('claimed',s.h.to)];s.issues[1].state='closed';},
+  'wrong-thread':s=>{s.approvals[50].issue_url=fixture(999).url;},
+};
+for(const [reason,change] of Object.entries(invalid673)) test(`673 recovery refuses ${reason} without changing any reservation`,async()=>{
+  const s=issue673RecoverySetup();change(s);s.approvalBody();const before=structuredClone(s.comments);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const key of ['stopped','pushed','unsaved_work','known_active_observed']) {
+  for(const value of key==='known_active_observed'?[true,'false',undefined]:[true,null,undefined]) {
+    test(`673 recovery strictly rejects ${key}=${String(value)}`,async()=>{
+      const s=issue673RecoverySetup();s.h[key]=value;s.approvalBody();
+      await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.equal(s.comments[673].length,1);
+    });
+  }
+}
+for(const marker of ['issue-owner-recovery','issue-711-owner-recovery','issue-handoff','issue-673-owner-recovery']) {
+  test(`673 refuses mixed/duplicate ${marker} record`,async()=>{
+    const s=issue673RecoverySetup();s.approvals[50].body+=`\n<!-- ${marker}:v1 {} -->`;
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  });
+}
+for(const reason of ['no-prose','scope-not-in-prose','evidence-not-in-prose','malformed-marker']) test(`673 refuses ${reason}`,async()=>{
+  const s=issue673RecoverySetup();
+  if(reason==='no-prose') s.approvals[50].body=s.approvals[50].body.split('\n')[0];
+  if(reason==='scope-not-in-prose') s.approvals[50].body=s.approvals[50].body.split('\n').filter(line=>line!==s.h.scope).join('\n');
+  if(reason==='evidence-not-in-prose') s.approvals[50].body=s.approvals[50].body.split('\n').filter(line=>line!==s.h.consent_evidence).join('\n');
+  if(reason==='malformed-marker') s.approvals[50].body='<!-- issue-673-owner-recovery:v1 broken';
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+for(const setupExisting of [ownerRecoverySetup,issue711RecoverySetup,transferSetup]) test(`existing ${setupExisting.name} refuses a mixed 673 marker`,async()=>{
+  const s=setupExisting();s.approvals[50].body+='\n<!-- issue-673-owner-recovery:v1 {} -->';
+  await assert.rejects(s.recover?s.recover():transfer(s));assert.equal(s.writes.length,0);
+});
+for(const setupExisting of [ownerRecoverySetup,issue711RecoverySetup]) test(`673 cannot reuse ${setupExisting.name} authorization`,async()=>{
+  const s=setupExisting();s.issues[0].number=673;s.input.ISSUE='673';s.h.issue=673;s.approvalBody();
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+
+for(const change of ['approval','author','timestamp','permission','owner','run','claim-comment','source','closed','known-active']) {
+  test(`673 refuses ${change} changed during final PR enumeration`,async()=>{
+    let scans=0;
+    const s=issue673RecoverySetup({hook(name,args,data){
+      if(name!=='pulls'||++scans!==2) return;
+      if(change==='approval') s.approvals[50].body+='\nConsent revoked';
+      if(change==='author') s.approvals[50].user.login='otherAdmin';
+      if(change==='timestamp') s.approvals[50].updated_at='later';
+      if(change==='permission') s.permissions.admin='write';
+      if(change==='owner') data.comments[673][0].body=data.comments[673][0].body.replace(s.h.from,'other-worker');
+      if(change==='run') data.comments[673][0].body=data.comments[673][0].body.replace(s.h.claim_run,'800');
+      if(change==='claim-comment') data.comments[673].push({...data.comments[673][0],id:99});
+      if(change==='source') s.runs[s.h.claim_run]={status:'completed',conclusion:'cancelled'};
+      if(change==='closed') data.issues[0].state='closed';
+      if(change==='known-active') {s.h.known_active_observed=true;s.approvalBody();}
+    }});
+    await assert.rejects(s.recover());assert.equal(scans,2);assert.equal(s.writes.length,0);
+  });
+}
+for(const change of ['head','pr-set','worker']) test(`673 refuses changed ${change} during final worker scan`,async()=>{
+  let scans=0;
+  const s=issue673RecoverySetup({hook(name,args,data){
+    if(name!=='listForRepo'||++scans!==2) return;
+    if(change==='head') data.prs[0].head.sha='b'.repeat(40);
+    if(change==='pr-set') data.prs.push({...data.prs[0],number:999});
+    if(change==='worker') data.comments[999]=[entry('claimed',s.h.to)];
+  }});
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+for(const valid of [true,false]) test(`673 ${valid?'accepts valid':'rejects stale'} parked worker checkpoint`,async()=>{
+  const s=issue673RecoverySetup(),waiting=modernEntry(s.h.to,700);
+  waiting.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:998,head:savedHead}]})+' -->';
+  s.comments[999]=[waiting];s.prs.push(savedPR(998,999,{head:{sha:valid?savedHead:'b'.repeat(40),repo:{full_name:recoveryRepo}}}));
+  if(valid) {await s.recover();assert.equal(ledgerWrites(s).length,1);}
+  else {await assert.rejects(s.recover());assert.equal(s.writes.length,0);}
+  assert.deepEqual(s.comments[999],[waiting]);
+});
+test('673 all enumerations precede final evidence reads',async()=>{
+  const s=issue673RecoverySetup();await s.recover();const names=s.calls.map(c=>c.name);
+  const last=Math.max(names.lastIndexOf('pulls'),names.lastIndexOf('listForRepo'));
+  const final=names.slice(last+1,names.indexOf('createComment'));
+  for(const name of ['get','permission','getComment','listComments','run']) assert.ok(final.includes(name),name);
+  assert.equal(final.filter(n=>n==='permission').length,2);assert.equal(ledgerWrites(s).length,1);
+});
+test('673 write failure preserves original reservation',async()=>{
+  const s=issue673RecoverySetup({hook(name){if(name==='createComment') throw Error('write denied');}}),before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/write denied/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const failure of ['cancelled','failure','summary']) test(`673 post-write ${failure} protects reservation without edit authorization`,async()=>{
+  const s=issue673RecoverySetup();
+  if(failure==='summary') {s.core.summary.write=async()=>{throw Error('summary failed');};await assert.rejects(s.recover(),/summary failed/);}
+  else await s.recover();
+  s.runs[901]={status:'completed',conclusion:failure==='summary'?'failure':failure};
+  await assert.rejects(s.run('status',673,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.run('claim',673,'third-worker'),/Already claimed/);await assert.rejects(s.recover());assert.equal(ledgerWrites(s).length,1);
+});
+test('673 comment refuses rerun and preserves original reservation',async()=>{
+  const s=issue673RecoverySetup();recoveryComment(s);s.context.runAttempt=2;
+  await assert.rejects(s.recover(),/Do not rerun/);assert.equal(s.writes.length,0);
+});
+test('673 comment request mutation refuses before claim write',async()=>{
+  let scans=0;const s=issue673RecoverySetup({hook(name){if(name==='pulls'&&++scans===2) s.approvals[60].body+=' ';}});
+  recoveryComment(s);await assert.rejects(s.recover(),/Request comment changed/);assert.equal(ledgerWrites(s).length,0);
+});
+
+const invalid673Preservation = {
+  'old-marker-missing-preserved':s=>{delete s.h.preserved_prs;},
+  'missing-entry':s=>{s.h.preserved_prs.pop();},
+  'extra-entry':s=>{s.h.preserved_prs.push({number:999,head:savedHead});},
+  'duplicate-entry':s=>{s.h.preserved_prs[1]={...s.h.preserved_prs[0]};},
+  'editable-target-in-preserved':s=>{s.h.preserved_prs[0]={...s.h.prs[0]};},
+  'changed-head':s=>{s.h.preserved_prs[0].head=savedHead;},
+  'unknown-entry-field':s=>{s.h.preserved_prs[0].editable=false;},
+  'string-number':s=>{s.h.preserved_prs[0].number='776';},
+  'null-list':s=>{s.h.preserved_prs=null;},
+  'object-list':s=>{s.h.preserved_prs={...s.h.preserved_prs};},
+  'null-entry':s=>{s.h.preserved_prs[0]=null;},
+  'scope-omits-boundary':s=>{s.h.scope=s.h.scope.replace(issue673PreservationStatement,'');},
+};
+for(const [reason,mutate] of Object.entries(invalid673Preservation)) test(`673 preserved declaration refuses ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate(s);s.approvalBody();const before=structuredClone(s.comments);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+test('673 preservation boundary must appear in prose, not just JSON',async()=>{
+  const s=issue673RecoverySetup();
+  s.approvals[50].body=s.approvals[50].body.split('\n').map((line,i)=>i?line.replace(issue673PreservationStatement,''):line).join('\n');
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+const mutate673PreservedPR = (s,reason) => {
+  const index=s.prs.findIndex(pr=>pr.number===776);
+  if(reason==='missing') s.prs.splice(index,1);
+  if(reason==='extra') s.prs.push({...s.prs[index],number:999});
+  if(reason==='duplicate') s.prs.push(structuredClone(s.prs[index]));
+  if(reason==='head') s.prs[index].head.sha=savedHead;
+  if(reason==='foreignrepo') s.prs[index].head.repo.full_name='other/repo';
+  if(reason==='not-referencing') s.prs[index].body='Preserved work with no target reference.';
+};
+for(const reason of ['missing','extra','duplicate','head','foreignrepo','not-referencing']) test(`673 exact full reference set refuses initial preserved ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate673PreservedPR(s,reason);const before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const [stage,reason] of [['listForRepo','head'],['listForRepo','missing'],['pulls','head'],['pulls','extra'],['pulls','foreignrepo']]) {
+  test(`673 final ${stage} refuses preserved ${reason}`,async()=>{
+    let scans=0;
+    const s=issue673RecoverySetup({hook(name){if(name===stage&&++scans===2) mutate673PreservedPR(s,reason);}});
+    const before=structuredClone(s.comments);
+    await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(scans,2);
+    assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+  });
+}
+test('673 full reference-set comparison is order-independent and audit keeps edit authority on PR738',async()=>{
+  const s=issue673RecoverySetup();s.prs.reverse();s.h.preserved_prs.reverse();s.approvalBody();
+  const before=structuredClone(s.prs);await s.recover();assert.deepEqual(s.prs,before);
+  const audit=JSON.parse(ledgerWrites(s)[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit.prs,[{number:738,head:issue673Target[4]}]);
+  assert.deepEqual(audit.preserved_prs,[...issue673Preserved].reverse());
+  assert.ok(audit.scope.includes(issue673PreservationStatement));assert.ok(s.writes.every(w=>w.issue_number===673));
 });

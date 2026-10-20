@@ -37,8 +37,7 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
       dataset: { test: "coal-" + i, position: label },
       "aria-label": label + "の炭を取り出す",
       style: { left: x * 100 + "%", top: y * 100 + "%", zIndex: String(Math.round(y * 100)) },
-    }, [visual, el("i.coal-corners", { "aria-hidden": "true" }),
-      el("span.coal-now", { text: "今", "aria-hidden": "true" })]);
+    }, [visual, el("i.coal-corners", { "aria-hidden": "true" })]);
     stove.append(node);
     return { node, visual, label, width: coalWidth };
   });

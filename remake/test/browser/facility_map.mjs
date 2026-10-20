@@ -12,6 +12,21 @@ const browser = await chromium.launch({ headless: true,
 const results = [];
 const expected = { kannon: 'kannondo', rest: 'home', cafe: 'kohaku', choizap: 'choizap', axe_bar: 'axe_bar', fortune: 'fortune' };
 const protectedLogos = ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station'];
+async function selectVisiblePin(page, pin, touch) {
+  await pin.scrollIntoViewIfNeeded();
+  const point = await pin.evaluate(pin => {
+    for (const node of [pin, pin.querySelector('.ico')].filter(Boolean)) {
+      const r = node.getBoundingClientRect();
+      for (const dy of [0.5, 0.2, 0.8]) for (const dx of [0.5, 0.2, 0.8]) {
+        const x = r.left + r.width * dx, y = r.top + r.height * dy;
+        if (document.elementFromPoint(x, y)?.closest('.spot-pin') === pin) return { x, y };
+      }
+    }
+    return null;
+  });
+  assert(point, `${await pin.getAttribute('data-spot')}: no visible, clickable part of the pin`);
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+}
 try {
   for (const [device, viewport, touch] of [
     ['pc', { width: 1280, height: 900 }, false],
@@ -43,6 +58,7 @@ try {
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
         if (scenario !== 'locked') {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
+          s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }
@@ -76,7 +92,16 @@ try {
           target: { x: r.x, y: r.y, width: r.width, height: r.height },
           anchorDelta, logicalTarget: [pin.offsetWidth, pin.offsetHeight], people: [...pin.querySelectorAll('.pin-person')].map(p => p.getAttribute('alt') || p.getAttribute('aria-label')) };
       }));
+      if (scenario === 'locked') {
+        for (const id of ['kannon', 'cafe', 'choizap', 'c_station']) {
+          assert(!pins.some(p => p.id === id), `${id}: undiscovered facility must be absent`);
+        }
+      }
       for (const id of protectedLogos) {
+        if (scenario === 'locked' && id === 'c_station') {
+          assert.equal(pins.find(p => p.id === id), undefined, `${id} must be hidden while locked`);
+          continue;
+        }
         const pin = pins.find(p => p.id === id);
         assert.equal(pin?.logo, pin?.locked ? null : id, `${id} logo changed`);
       }
@@ -90,7 +115,10 @@ try {
       const wanted = { ...expected, ...(scenario === 'chapter2' ? { trpg_bar: 'trpg_bar' } : {}) };
       for (const [id, facility] of Object.entries(wanted)) {
         const pin = pins.find(p => p.id === id);
-        if (!pin) { assert(id === 'fortune' && scenario === 'chapter2'); continue; }
+        if (!pin) {
+          assert((id === 'fortune' && scenario === 'chapter2') || (scenario === 'locked' && ['kannon', 'cafe', 'choizap'].includes(id)));
+          continue;
+        }
         const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
@@ -119,16 +147,28 @@ try {
         for (const id of Object.keys(expected)) {
           const pin = page.locator(`[data-test="pin-${id}"]`);
           await pin.scrollIntoViewIfNeeded();
-          if (touch) await pin.tap(); else await pin.click();
-          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true);
+          await selectVisiblePin(page, pin, touch);
+          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/${scenario}/${id} failed to get sel class`);
         }
         assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved, 'pin selection changes save');
+        for (const id of ['rest', 'fortune']) {
+          const pin = page.locator(`[data-test="pin-${id}"]`);
+          await pin.scrollIntoViewIfNeeded();
+          await selectVisiblePin(page, pin, touch);
+          assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/${scenario}/${id} failed to select via user interaction`);
+          assert.equal(await page.locator('[data-test="map-go"]').isVisible(), true, `${device}/${layout}/${scenario}/${id} map-go not visible`);
+        }
       }
       cases.push({ scenario, pins, stateUnchanged: true, rotateHint: rotates });
     }
     if (!(device === 'portrait' && layout === 'normal')) {
+      const restPin = page.locator('[data-test="pin-rest"]'); await restPin.scrollIntoViewIfNeeded();
+      await selectVisiblePin(page, restPin, touch);
+      assert.equal(await restPin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/rest failed to select via user interaction`);
+      assert.equal(await page.locator('[data-test="map-go"]').isVisible(), true, `${device}/${layout}/rest map-go not visible`);
       const pin = page.locator('[data-test="pin-axe_bar"]'); await pin.scrollIntoViewIfNeeded();
-      if (touch) await pin.tap(); else await pin.click();
+      await selectVisiblePin(page, pin, touch);
+      assert.equal(await pin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/axe_bar failed to select via user interaction`);
       const go = page.locator('[data-test="map-go"]'); await go.scrollIntoViewIfNeeded();
       if (touch) await go.tap(); else await go.click();
       assert.equal(await page.evaluate(() => window.mapFlow), 'axe_bar', 'legacy axe destination changed');

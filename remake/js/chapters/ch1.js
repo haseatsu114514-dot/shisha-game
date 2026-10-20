@@ -32,6 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -133,7 +134,8 @@ async function openingPart() {
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
-    await scene.ready;
+    // Decorative images keep loading alongside narration; decoding them must not
+    // hold the first dialogue window (the cold-open lines need no portraits/bg).
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
@@ -443,12 +445,12 @@ async function tournamentDay() {
     const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
     if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
-    state.tournament.stockSnap = { ...state.flavorStock }; // 再挑戦は大会の頭から＝持ち込み在庫も会場入り前に戻す
+    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
   showHud(false);
-  if (state.tournament.stockSnap) state.flavorStock = { ...state.tournament.stockSnap };
+  restoreEntryResources(state);
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
@@ -598,6 +600,7 @@ async function victory(cs) {
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
+  delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
   // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
@@ -658,7 +661,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
@@ -701,24 +704,25 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  const owner = state;
   if (state?.phase === "tournament") {
     recordTournamentLoss(state.tournament);
     save();
   }
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
+  if (state !== owner) return; // 準備待ち中にLOADした旧画面を、新しい保存の上へ出さない。
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
     onRetry: async () => {
-      const owner = state;
       if (!owner) { location.reload(); return; }
       await chooseRetryAssist(owner.tournament);
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
-      smokeWipe(() => { tournamentDay(); }, { color: "dark" });
+      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
     },
     onTitle: () => location.reload(),
   });

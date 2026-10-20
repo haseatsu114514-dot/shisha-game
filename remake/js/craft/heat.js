@@ -1,6 +1,6 @@
 // 炭焼き（master_spec 第2部 §2）
 // ゲージ停止ではなく、炭の見た目（黒→赤→赤熱→ピカン→白熱→灰かぶり）を観察して取る。
-// ジャストの瞬間だけ、炭の芯そのものが一瞬光る。
+// ジャストの判定帯だけ、炭の芯と輪郭が明るく光り続ける。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -11,10 +11,12 @@ import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeC
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
+import { state } from "../core/state.js";
+import { coalJustSeconds } from "./heat_logic.js";
 
 export async function runHeat(cs) {
   await waitBenchReady(cs, "heat");
-  const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
+  const panel = stepPanel("heat", "炭焼き", "芯と輪郭が明るく光っている間に、その炭をタップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
   cs.heat = res;
@@ -56,7 +58,7 @@ function heatAdvice(res) {
 export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
-  const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const justSec = coalJustSeconds(skill.window(cs), tutorial, state?.goods || []);
   const clarity = skill.clarity(cs);
 
   await waitBenchReady(cs, "heat", { count });
