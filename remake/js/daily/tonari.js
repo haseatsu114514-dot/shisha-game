@@ -14,6 +14,7 @@ import { shiftClose } from "../core/scene-motions.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable } from "./hiyori-axe.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -32,7 +33,8 @@ export function tonariMenu() {
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
-        opt("お客さんとして一服", tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
+          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力10・行動1回。3投を一緒に楽しむ"
@@ -47,7 +49,7 @@ export async function tonariCustomer() {
   addStamina(-10);
   await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
   await meetHiyoriAtTonari();
-  await visitChar("tsumugi");
+  if (tsumugiAtTonari(state)) await visitChar("tsumugi");
 }
 
 // ---------------------------------------------------------------- バイト
@@ -120,6 +122,8 @@ async function afterShiftErrand() {
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */
 function customerEligible(event, rainy) {
   if (event.chapter && event.chapter !== state.chapter) return false;
+  if ((customerFamilies(event).includes("tsumugi") || event.id.startsWith("baito_tsumugi_"))
+    && !tsumugiAtTonari(state)) return false;
   const flagKnown = (flag) => flag === "ch1_tsumugi_regular"
     ? !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0)
     : !!state.flags[flag];
