@@ -329,12 +329,10 @@
 .c-hot { opacity: var(--hot, 0); filter: brightness(1.14) saturate(.9); }
 .c-ash { opacity: var(--ash, 0); filter: grayscale(.95) brightness(.8); }
 .coal-corners { position: absolute; inset: 0; border: 2px solid #ddd7c077; border-radius: 5px; pointer-events: none; mask-image: linear-gradient(#000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)), linear-gradient(90deg, #000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)); mask-composite: intersect; }
-.coal-now { position: absolute; top: calc(100% + 3px); left: 50%; transform: translateX(-50%); color: #ffe29a; font-family: "Craft Mincho", var(--font); font-size: 20px; line-height: 1.2; opacity: 0; text-shadow: 0 0 8px #ffab46aa; pointer-events: none; }
-.c-core { position: absolute; left: 50%; top: 44%; width: 18px; height: 18px; margin: -9px; border-radius: 50%; opacity: 0; background: #fff9df; box-shadow: 0 0 12px 6px #ffe3aadd, 0 0 26px 10px #ff8a45aa; pointer-events: none; }
+.c-core { position: absolute; left: 50%; top: 44%; width: 32px; height: 32px; margin: -16px; border-radius: 50%; opacity: 0; background: radial-gradient(circle, #fff 0 35%, #fff9d9 55%, #ffe6a600 100%); box-shadow: 0 0 6px 5px #fffde7, 0 0 18px 12px #ffe3aaee, 0 0 34px 18px #ff8a45bb; pointer-events: none; }
 .coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
-.coal.pikan .coal-now { opacity: 1; }
 .coal.pikan .c-core { opacity: 1; }
-.coal.pikan .c-hot { opacity: 1; filter: brightness(1.65) saturate(.85) drop-shadow(0 0 7px #ffc477); }
+.coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .coal:focus-visible { outline: 2px solid #fff0bf; outline-offset: 4px; border-radius: 5px; }
 .coal.picked { opacity: 0; pointer-events: none; }
@@ -361,7 +359,6 @@
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 56px; }
 .heat-compact .coal { width: 84px; height: 72px; }
-.heat-compact .coal-now { font-size: 17px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
 .heat-compact .heat-collected-count { font-size: 20px; }

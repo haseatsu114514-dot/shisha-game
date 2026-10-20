@@ -173,7 +173,8 @@ try {
       width: getComputedStyle(n).width, opacity: getComputedStyle(n).opacity,
       animation: getComputedStyle(n).animationName, boxShadow: getComputedStyle(n).boxShadow,
     }));
-    assert.equal(glow.width, "18px"); assert.equal(glow.opacity, "1"); assert.equal(glow.animation, "none");
+    assert.equal(glow.width, "32px"); assert.equal(glow.opacity, "1"); assert.equal(glow.animation, "none");
+    assert.equal(await page.locator(".coal-now").count(), 0, "炭の取り頃に文字ラベルを表示しない");
     assert.equal(await page.locator(".coal .c-hot").first().evaluate(n => getComputedStyle(n).opacity), "1");
 
     // Shared production burnCoals: actual pointer/touch, exchange counts 1..4, keyboard access and window edge.
@@ -189,10 +190,20 @@ try {
         Q.burn = Q.heat.burnCoals(Q.cs, panel, { count, compact: count !== 3 });
       }, count);
       await page.waitForFunction(() => document.querySelector('.heat[aria-busy="false"]'));
+      // The core is dark before the real timing band, then stays lit without a flashing animation.
+      await page.evaluate(() => { Q.now += 5799; });
+      await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]').dataset.phase === "pre");
+      assert.equal(await page.locator(".coal.pikan").count(), 0);
+      assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), "0");
+      await page.evaluate(() => { Q.now += 2; });
+      await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]').dataset.phase === "just");
+      assert.equal(await page.locator(".coal.pikan").count(), count);
+      assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), "1");
       // .525 seconds into the ordinary just window: without tongs it has ended; with tongs it remains lit.
-      await page.evaluate(() => { Q.now += 6325; });
+      await page.evaluate(() => { Q.now += 524; });
       await page.waitForFunction(expected => document.querySelector('[data-test="coal-0"]').dataset.phase === expected, count === 1 ? "hot" : "just");
       assert.equal(await page.locator(".coal.pikan").count(), count === 1 ? 0 : count);
+      assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), count === 1 ? "0" : "1");
       for (let i = 0; i < count; i++) {
         const node = page.locator(`[data-test="coal-${i}"]`);
         if (count === 4 && i === 3) { await node.focus(); await page.keyboard.press("Enter"); }

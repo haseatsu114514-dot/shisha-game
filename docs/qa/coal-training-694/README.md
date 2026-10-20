@@ -1,5 +1,22 @@
 # #694: 炭の習得・取り頃・序盤の熱
 
+## 2026-10-20 A: 発光強化とタイミング文字の撤去
+
+WORKER: `codex-a-694-transfer-20261020-01a15877` / transfer run `39396201748`。
+比較元の保存HEADは `87b3cf023cdd25c1a4b416a49d17c72e6928ca86`。以下のBの画像・結果は履歴として保持し、今回の検証結果に流用しない。
+
+- 保存済みPRには18pxの芯と判定帯中の常時発光があったが、`heat_view.js`に漢字「今」の表示が残っていた。今回の本人試遊要望に合わせ、芯32px・白い中心と外周光・炭面の明るさを強化し、タイミング文字要素と専用CSSを削除した。
+- 時刻・判定幅・上物トング・速度・採点・熱モデルは変更しない。発光は既存の`.pikan`だけで有効になり、点滅アニメーションは追加しない。
+- PC/touch/reduced-motion共通browserで、判定開始直前の消灯、開始直後の点灯、通常幅終了後/トング延長中の点灯状態、文字要素不在を検証。既存の実入力・採点assertionも保持した。
+- Aの今回実行: `node remake/test/coal_training.mjs` PASS、`heat_view.js`とbrowserの`node --check` PASS、`git diff --check` PASS。調整側の静的差分確認では本番変更が表示2ファイルに限られ、判定/熱処理への差分がないことを確認した。
+- Aの初回browserはsandboxの`listen EPERM 127.0.0.1`で未実行。その後、調整側が同じ既存Chrome/Playwright・同じbrowserスクリプトのlocalhost限定実行を正規承認で実施し、PC/touch/reduced-motion全3条件PASS、missing=[]を確認した。外部取得・依存/ブラウザ追加なし。実授業SKIP/AUTO/中断・保存復帰、旧くじ箱・実25g付与、炭1〜4個のpointer/touch/keyboardもPASS。
+- [今回のbrowser結果](glow-browser-results.json) / [PC](pc-glow-20261020.png) / [touch](touch-glow-20261020.png) / [低減motion](reduced-glow-20261020.png)。新しいafter3枚は実画像を目視確認し、従前の18px画像はそのまま保持した。画像・JSONの追加は合計1MiB未満。
+- 再現: 既存Playwrightを`PLAYWRIGHT_MODULE`、既存Chromeを`CHROME_EXECUTABLE_PATH`へ指定し、`COAL_ARTIFACTS`を別出力先として `node remake/test/browser/coal_training.mjs`。無関係mediaを遮断する専用検証であり、本番全素材表示の検証ではない。
+- 旧HEADのCI25件成功・独立レビューは今回差分を覆わない。この追加差分の正確な保存HEADのCI/レビューはPRに記録する。最新mainのローカル取得/統合は未実施。実機iPhone/Safari・全章通し・長期バランスも未検証。
+- マージ・公開・Issue終了・予約解除は行わない。通常の個別実行承認で成果を保存し、新HEADのCIを追跡する。
+
+## 以下はBの保存済み検証履歴
+
 Worker: `codex-b-694-handoff-20261019-16adcc966e`。Claim run: `39213455496`。
 ゲーム変更の比較元は `5b2b7818ff2596239ca5dd6dbf1e2a2a82af92fb`。
 旧担当のbootstrap・未確認成果は変更せず、ローカルの取得済みGit objectsとSHA照合済みcacheから独立したsparse checkoutを準備した。フルクローン・素材/LFS/依存/ブラウザのダウンロードなし。
