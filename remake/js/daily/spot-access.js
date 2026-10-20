@@ -6,7 +6,7 @@ import { openingStatus } from "./spot-hours.js";
 
 export const freeGuide = (s, guide) => !!guide?.free && guide.pin === s.id;
 
-export function spotAvailability(s, { guide = null } = {}) {
+export function spotAvailability(s, { guide = null, visitKind = "normal" } = {}) {
   if (!isUnlocked(s)) return { ok: false, why: "locked" };
   if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
   if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
@@ -16,6 +16,9 @@ export function spotAvailability(s, { guide = null } = {}) {
   if (isClosed(s)) {
     const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
     return { ok: false, why: tag, tag };
+  }
+  if (visitKind === "normal" && state.flags[`_invitation_visit_${s.id}`] === `${state.chapter}:${state.day}`) {
+    return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
   }
   if (!["shop", "rest", "tonari", "trpg", "axe"].includes(s.kind) && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
   if (s.cost && !freeGuide(s, guide) && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
