@@ -1,0 +1,77 @@
+{
+  "approval": {
+    "total_budget_bytes": 20971520,
+    "source_limit_bytes": 8388608,
+    "generation_calls": 1
+  },
+  "builtin_input_image_file_bytes": 355788,
+  "builtin_output_image_file_bytes": 2423241,
+  "parent_additional_read_only_response_body_bytes": 239988,
+  "conservative_stored_evidence_bytes": 5877570,
+  "stored_evidence_caveat": "Includes local saved/reserialized API evidence and repeated records as a conservative accounting proxy; these are not exact wire bytes. Some earlier text responses were not separately measured.",
+  "save_api_calls_completed_so_far": [
+    {
+      "endpoint": "git/ref/heads/main",
+      "request_body_bytes": 0,
+      "response_body_bytes": 358,
+      "success": true
+    },
+    {
+      "endpoint": "issues/750",
+      "request_body_bytes": 0,
+      "response_body_bytes": 4746,
+      "success": true
+    },
+    {
+      "endpoint": "issues/750/comments?per_page=100",
+      "request_body_bytes": 0,
+      "response_body_bytes": 12459,
+      "success": true
+    },
+    {
+      "endpoint": "actions/runs/39399838135",
+      "request_body_bytes": 0,
+      "response_body_bytes": 13585,
+      "success": true
+    },
+    {
+      "endpoint": "git/commits/df3d9897b94a9f4d8e5a628ebb85b890ba7255a9",
+      "request_body_bytes": 0,
+      "response_body_bytes": 2851,
+      "success": true
+    },
+    {
+      "endpoint": "git/blobs",
+      "request_body_bytes": 3014,
+      "response_body_bytes": 169,
+      "success": true
+    },
+    {
+      "endpoint": "git/blobs",
+      "request_body_bytes": 5142,
+      "response_body_bytes": 169,
+      "success": true
+    },
+    {
+      "endpoint": "git/blobs",
+      "request_body_bytes": 138686,
+      "response_body_bytes": 169,
+      "success": true
+    },
+    {
+      "endpoint": "git/blobs",
+      "request_body_bytes": 3046,
+      "response_body_bytes": 169,
+      "success": true
+    },
+    {
+      "endpoint": "git/blobs",
+      "request_body_bytes": 3231022,
+      "response_body_bytes": 169,
+      "success": true
+    }
+  ],
+  "save_api_body_bytes_so_far": 3415754,
+  "remaining_save_api_body_reserve_bytes": 50000,
+  "unknown": "Built-in image-generation transport, TLS/HTTP headers/compression/protocol overhead and earlier unmeasured stdout are unknown. This does not certify total wire bytes under20MiB. No full clone, original PNG redownload or large CI was used."
+}
