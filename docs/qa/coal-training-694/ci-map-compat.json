@@ -37,6 +37,16 @@
       "script": "street_selection.mjs",
       "case": "",
       "exit_code": 0
+    },
+    {
+      "script": "../store_logos.mjs",
+      "case": "",
+      "exit_code": 0
+    },
+    {
+      "script": "facility_map.mjs",
+      "case": "",
+      "exit_code": 0
     }
   ],
   "street_checks": 35,
@@ -170,5 +180,77 @@
     "Local checkout remains on the saved PR branch; unchanged files from the CI merge were overlaid only by the local validation server.",
     "Earlier local street attempts were not counted as full PASS while assets were missing.",
     "Full remote CI must be checked on the final pushed head."
-  ]
+  ],
+  "store_logo_ui_cases": 18,
+  "facility_layouts": [
+    {
+      "device": "pc",
+      "layout": "normal",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "device": "pc",
+      "layout": "ds",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "device": "landscape",
+      "layout": "normal",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "device": "landscape",
+      "layout": "ds",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "device": "portrait",
+      "layout": "normal",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "device": "portrait",
+      "layout": "ds",
+      "scenarios": 5,
+      "event_mark_cases": 7,
+      "page_errors": [],
+      "failed_resources": []
+    }
+  ],
+  "click_validation": "Visible point verified with document.elementFromPoint; real mouse/touch input; fail if fully covered; no force clicks.",
+  "other_open_pr_overlap_checked_files": [
+    "remake/test/browser/action_context.mjs",
+    "remake/test/browser/axe_bar_discovery.mjs",
+    "remake/test/browser/street_selection.mjs",
+    "remake/test/store_logos.mjs",
+    "remake/test/browser/facility_map.mjs"
+  ],
+  "overlap_recheck": {
+    "pr": 683,
+    "observed_head": "322a4c66f28b7ba21c5516dbd799ef41025b46e0",
+    "later_merged_head": "5da9e12833e1aa3afbc3f084f6a46de57147562d",
+    "main_merge": "7ce32bd83481d76ab1591709e71843907692558e",
+    "overlapping_files": [
+      "remake/test/browser/action_context.mjs",
+      "remake/test/browser/street_selection.mjs",
+      "remake/test/store_logos.mjs",
+      "remake/test/browser/facility_map.mjs"
+    ],
+    "status": "main integration and revalidation pending; saved PASS is against d636a1a"
+  }
 }
