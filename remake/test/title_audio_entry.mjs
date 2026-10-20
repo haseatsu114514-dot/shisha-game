@@ -90,7 +90,8 @@ for (const action of ["start", "stop", "replace", "repeat", "reject-resume"]) {
 console.log("PASS: first gesture, deferred/rejected resume, stop/replacement races, deduplication, mute/volume and autoplay retry");
 
 // Title LOAD is an in-page transition; cancellations must retain title music.
-let buttons = new Map(), screen, selectedSlot = null, confirm = false, returnFromBookshelf;
+let buttons = new Map(), screen, selectedSlot = null, confirm = false;
+let galleryOpens = 0, configOpens = 0;
 const events = [], hudClasses = new Set(["show"]);
 function el(selector, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
@@ -110,10 +111,10 @@ const title = await load(await read("../js/scenes/title.js"), {
   el, bgUrl: () => "title-bg", layers: { hud: { classList: { remove: k => hudClasses.delete(k) } } },
   showScreen: name => { screen = name; }, peekSave: () => ({}), anySlotSaved: () => true,
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
-  SE: { select() {} }, smokeWipe: fn => fn(), modal: async () => confirm,
+  SE: { select() {} }, smokeWipe: fn => fn(), modal: async options => { if (options.title === "設定") configOpens++; return confirm; },
   loadFlow: async () => selectedSlot, loadFromSlot: () => true,
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
-  openTrpgRoom: cb => { returnFromBookshelf = cb; },
+  openGallery: () => galleryOpens++,
   config: {},
 }, { document: { querySelector: () => null } });
 const art = { ready: true, file: "test", character: "test", url: "test" };
@@ -124,9 +125,13 @@ selectedSlot = "slot1";
 buttons.get("title-load").onclick(); await flush(); assert.deepEqual(events.slice(-2), ["stop:0", "resume"]);
 show(); buttons.get("title-new").onclick(); await flush(); assert.equal(events.at(-1), "title");
 confirm = true; buttons.get("title-new").onclick(); await flush(); assert.deepEqual(events.slice(-2), ["stop:0", "new"]);
-show(); buttons.get("title-trpg").onclick(); hudClasses.add("show"); returnFromBookshelf();
+show();
+assert.deepEqual([...buttons.keys()], ["title-new", "title-load", "title-gallery", "title-config"], "only the four retained title routes are exposed");
+buttons.get("title-gallery").onclick(); buttons.get("title-config").onclick();
+assert.equal(galleryOpens, 1); assert.equal(configOpens, 1);
+hudClasses.add("show"); show();
 assert.equal(hudClasses.has("show"), false); assert.equal(events.at(-1), "title");
-console.log("PASS: title HUD reset, LOAD/new cancellation and accepted exits, same-page title return");
+console.log("PASS: title HUD reset, LOAD/new cancellation and accepted exits, retained menus and title re-entry");
 // Display behavior still requires an actual browser; this assertion only protects the guard's presence.
 const css = await read("../css/daily.css");
 assert.match(css, /body\[data-screen="boot"\] #hud, body\[data-screen="title"\] #hud \{ display: none; \}/);
