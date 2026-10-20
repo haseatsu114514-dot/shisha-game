@@ -54,7 +54,7 @@ function setup({issues = [fixture(1), fixture(2)], prs = [], comments = {}, runs
   const core = {info() {}, notice: text => notices.push(text),
     summary: {addRaw() { return this; }, async write() {}}};
   async function run(op, number = 1, owner = 'worker-A', input = {}) {
-    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', HANDOFF_COMMENT: '', ...input};
+    const values = {OPERATION: op, ISSUE: String(number), OWNER: owner, AGENT: 'codex', REQUEST_ID: '', CLAIM_RUN: '', HANDOFF_COMMENT: '', SUMMARY: '', ...input};
     const original = Object.fromEntries(Object.keys(values).map(k => [k, process.env[k]]));
     Object.assign(process.env, values);
     try { return await execute(github, context, core); }
@@ -465,6 +465,161 @@ const modernEntry = (owner = 'worker-A', run = 800) => entry('claimed', owner,
 const parkingSetup = options => setup({prs:[savedPR()], comments:{1:[modernEntry()]}, ...options});
 const park = s => s.run('park', 1, 'worker-A', {CLAIM_RUN:'800'});
 
+const handoffSummary = 'DONE: pushed the draft\nTODO: finish the remaining scene\nTEST: focused regression passed\nNEXT: continue on the saved branch';
+const handoffEntry = () => {
+  const c = modernEntry();c.body += '\n<!-- issue-claim-actor:v1 login=admin -->';return c;
+};
+const handoffSetup = options => setup({prs:[savedPR()], comments:{1:[handoffEntry()]},
+  permissions:{admin:'write',successor:'write'},...options});
+const handoff = (s, summary=handoffSummary) => s.run('handoff',1,'worker-A',{CLAIM_RUN:'800',SUMMARY:summary});
+const pickup = (s,input={}) => {
+  s.context.actor='successor';s.context.runId=902;
+  return s.run('pickup',1,'worker-B',input);
+};
+
+test('handoff saves one exclusive checkpoint and a future unknown worker picks it up without release', async () => {
+  const s=handoffSetup();await handoff(s);
+  assert.equal(s.writes.length,1);
+  assert.match(s.writes[0].body,/state=claimed owner=worker-A/);
+  assert.match(s.writes[0].body,/issue-claim-wait:v1/);
+  assert.match(s.writes[0].body,/"stopped":true,"pushed":true/);
+  assert.match(s.writes[0].body,/> NEXT: continue on the saved branch/);
+  await assert.rejects(s.run('claim',1,'worker-B'),/Already claimed/);
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'901'}),/handed off/);
+  s.context.runId=903;await s.run('claim',2);
+  await pickup(s);
+  assert.match(s.writes.at(-1).body,/state=claimed owner=worker-B/);
+  assert.match(s.writes.at(-1).body,/login=successor/);
+  assert.match(s.writes.at(-1).body,/checkpoint comment 101, run 901/);
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  assert(!s.writes.some(w=>w.body.startsWith('<!-- issue-claim:v1 state=released')));
+  await s.run('status',1,'worker-B',{CLAIM_RUN:'902'});
+  await assert.rejects(s.run('resume',1,'worker-A',{CLAIM_RUN:'901'}),/no longer matches/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('the original worker can cancel its handoff with resume before another worker consumes it', async () => {
+  const s=handoffSetup();await handoff(s);
+  await assert.rejects(s.run('pickup',1,'worker-A'),/must use resume/);
+  s.context.runId=903;await s.run('resume',1,'worker-A',{CLAIM_RUN:'901'});
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+for(const change of ['missing-summary','long-summary','ledger-in-summary','no-pr','fork','bad-head','unknown-actor','wrong-actor','read-only','failed-source']) {
+  test(`handoff refuses an unverified or incomplete checkpoint: ${change}`,async()=>{
+    const s=handoffSetup();let summary=handoffSummary;
+    if(change==='missing-summary')summary=' ';
+    if(change==='long-summary')summary='x'.repeat(1201);
+    if(change==='ledger-in-summary')summary='TODO\n<!-- issue-claim-wait:v1 {} -->';
+    if(change==='no-pr')s.prs.length=0;
+    if(change==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(change==='bad-head')s.prs[0].head.sha='short';
+    if(change==='unknown-actor')s.comments[1]=[modernEntry()];
+    if(change==='wrong-actor')s.context.actor='successor';
+    if(change==='read-only')s.context.actor='reader';
+    if(change==='failed-source')s.runs[800]={status:'completed',conclusion:'failure'};
+    await assert.rejects(handoff(s,summary));assert.equal(s.writes.length,0);
+  });
+}
+
+test('handoff validates the original requester permission for both dispatch and comment entrypoints', async()=>{
+  const s=handoffSetup({permissions:{admin:'read'}});
+  await assert.rejects(handoff(s),/write permission/);assert.equal(s.writes.length,0);
+});
+
+test('a parked PR may be explicitly offered for handoff, but a changed parked head must resume first', async()=>{
+  const s=handoffSetup();await park(s);s.context.runId=903;
+  s.runs[901]={status:'completed',conclusion:'success',actor:{login:'admin'}};
+  await s.run('handoff',1,'worker-A',{CLAIM_RUN:'901',SUMMARY:handoffSummary});
+  assert.match(s.writes.at(-1).body,/"handoff"/);
+  const changed=handoffSetup();await park(changed);changed.prs[0].head.sha='b'.repeat(40);
+  changed.runs[901]={status:'completed',conclusion:'success',actor:{login:'admin'}};
+  await assert.rejects(changed.run('handoff',1,'worker-A',{CLAIM_RUN:'901',SUMMARY:handoffSummary}),/changed/);
+});
+
+for(const change of ['active','review-wait','head','new-pr','missing-pr','closed-unmerged','fork','cancelled-handoff','failed-handoff','wrong-run','old-permission','new-permission','actor','malformed','other-active-issue']) {
+  test(`pickup preserves the reservation when unsafe: ${change}`,async()=>{
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions});
+    if(change==='active'){}else if(change==='review-wait')await park(s);else await handoff(s);
+    const before=s.writes.length;
+    if(change==='head')s.prs[0].head.sha='b'.repeat(40);
+    if(change==='new-pr')s.prs.push(savedPR(12));
+    if(change==='missing-pr')s.prs.length=0;
+    if(change==='closed-unmerged')s.prs[0].state='closed';
+    if(change==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(change==='cancelled-handoff')s.runs[901]={status:'completed',conclusion:'cancelled'};
+    if(change==='failed-handoff')s.runs[901]={status:'completed',conclusion:'failure'};
+    if(change==='old-permission')permissions.admin='read';
+    if(change==='new-permission')permissions.successor='read';
+    if(change==='actor')s.comments[1].at(-1).body=s.comments[1].at(-1).body.replace('login=admin','login=other');
+    if(change==='malformed')s.comments[1].at(-1).body=s.comments[1].at(-1).body.replace('"pushed":true','"pushed":false');
+    if(change==='other-active-issue')s.comments[2]=[modernEntry('worker-B',700)];
+    await assert.rejects(pickup(s,change==='wrong-run'?{CLAIM_RUN:'700'}:{}));
+    assert.equal(s.writes.length,before);
+  });
+}
+
+for(const change of ['head','cancelled-offer','resumed','new-checkpoint','closed']) {
+  test(`pickup rechecks after other worker reservations are inspected: ${change}`,async()=>{
+    const s=handoffSetup({hook(name,args,data){
+      if(name!=='listForRepo')return;
+      if(change==='head')data.prs[0].head.sha='b'.repeat(40);
+      if(change==='cancelled-offer')s.runs[901]={status:'completed',conclusion:'cancelled'};
+      if(change==='resumed')data.comments[1].push({...modernEntry('worker-A',903),id:500});
+      if(change==='new-checkpoint')data.comments[1].push({...data.comments[1].at(-1),id:500});
+      if(change==='closed')data.issues[0].state='closed';
+    }});
+    await handoff(s);await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+test('dispatch cannot cancel or release another requester handoff by copying the public worker ID',async()=>{
+  for(const op of ['resume','release','park']){
+    const s=handoffSetup();await handoff(s);s.context.actor='successor';
+    await assert.rejects(s.run(op,1,'worker-A',op==='release'?{}:{CLAIM_RUN:'901'}),/original reservation requester/);
+    assert.equal(s.writes.length,1);
+  }
+});
+
+test('a canceled pickup keeps the new reservation but never authorizes editing or a silent retry',async()=>{
+  const s=handoffSetup();await handoff(s);await pickup(s);
+  s.runs[902]={status:'completed',conclusion:'cancelled'};
+  await assert.rejects(s.run('status',1,'worker-B',{CLAIM_RUN:'902'}),/did not succeed/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+  await assert.rejects(s.run('resume',1,'worker-A',{CLAIM_RUN:'901'}),/no longer matches/);
+});
+
+for(const change of ['version','actor-type','run-type','empty-prs','summary','stopped']) {
+  test(`pickup rejects malformed handoff metadata: ${change}`,async()=>{
+    const s=handoffSetup();await handoff(s);
+    const c=s.comments[1].at(-1),line=c.body.match(/^<!-- issue-claim-wait:v1 (.+) -->$/m);
+    const checkpoint=JSON.parse(line[1]);
+    if(change==='version')checkpoint.handoff.version=2;
+    if(change==='actor-type')checkpoint.handoff.actor=['admin'];
+    if(change==='run-type')checkpoint.handoff.source_run=800;
+    if(change==='empty-prs')checkpoint.prs=[];
+    if(change==='summary')checkpoint.handoff.summary='';
+    if(change==='stopped')checkpoint.handoff.stopped=false;
+    c.body=c.body.replace(line[0],'<!-- issue-claim-wait:v1 '+JSON.stringify(checkpoint)+' -->');
+    await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+test('a human-written ready marker cannot turn an active bot reservation into a handoff',async()=>{
+  const s=handoffSetup();await handoff(s);
+  const forged={...s.comments[1].pop(),user:{login:'admin'}};
+  s.comments[1].push(forged);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('a merged saved head is still a valid checkpoint while the Issue has remaining work',async()=>{
+  const s=handoffSetup();await handoff(s);
+  s.prs[0].state='closed';s.prs[0].merged_at='2026-10-19T07:00:00Z';
+  await pickup(s);assert.match(s.writes.at(-1).body,/state=claimed owner=worker-B/);
+});
+
 test('park keeps the Issue exclusive and allows a separate active task, then resume after release', async () => {
   const s = parkingSetup();
   await park(s);
@@ -622,6 +777,64 @@ function commentSetup(request={operation:'claim',owner:'worker-A',agent:'codex'}
   return s;
 }
 const runComment=s=>runEvent(s.github,s.context,s.core,{});
+
+test('comment handoff and pickup work through the real Context getter without a named successor or approval comment',async()=>{
+  const claim=modernEntry();claim.body+='\n<!-- issue-claim-actor:v1 login=writer -->';
+  const s=commentSetup({operation:'handoff',owner:'worker-A',claim_run:'800',summary:handoffSummary},
+    {comments:{1:[claim]},prs:[savedPR()],permissions:{writer:'write',successor:'write'}});
+  const repository=s.context.repo;delete s.context.repo;
+  Object.setPrototypeOf(s.context,{get repo(){return repository}});
+  s.context.actor='eventActor';
+  await runComment(s);
+  assert.match(s.writes[0].body,/"actor":"writer"/);
+  const request={id:51,user:{login:'successor',type:'User'},issue_url:fixture(1).url,
+    body:'/issue-claim {"operation":"pickup","owner":"worker-B","agent":"claude"}'};
+  s.approvals[51]=request;s.context.payload.comment=structuredClone(request);s.context.runId=902;
+  await runComment(s);
+  assert.match(s.writes[2].body,/state=claimed owner=worker-B/);
+  assert.match(s.writes[2].body,/login=successor/);
+  assert.equal(s.context.actor,'eventActor');
+});
+
+test('an edited handoff request cannot be saved after the initial comment verification',async()=>{
+  let reads=0;
+  const claim=modernEntry();claim.body+='\n<!-- issue-claim-actor:v1 login=writer -->';
+  const s=commentSetup({operation:'handoff',owner:'worker-A',claim_run:'800',summary:handoffSummary},
+    {comments:{1:[claim]},prs:[savedPR()],hook(name){
+      if(name==='pulls'&&++reads===2)s.approvals[50].body='canceled by writer';
+    }});
+  await assert.rejects(runComment(s),/Request comment changed/);
+  assert.equal(s.writes.length,1);assert.match(s.writes[0].body,/Request refused/);
+});
+
+test('an edited pickup request cannot consume a checkpoint after inspecting other reservations',async()=>{
+  const request={id:55,user:{login:'successor'},issue_url:fixture(1).url,body:'/issue-claim pickup'};
+  const s=handoffSetup({approvals:{55:structuredClone(request)},hook(name){
+    if(name==='listForRepo')s.approvals[55].body='cancel pickup';
+  }});
+  await handoff(s);s.context.verifiedRequest=request;
+  await assert.rejects(pickup(s),/Request comment changed/);assert.equal(s.writes.length,1);
+});
+
+for(const operation of ['handoff','pickup']) {
+  test(`a rerun cannot replay a reservation-changing ${operation} comment`,async()=>{
+    const s=commentSetup({operation,owner:'worker-A',claim_run:'800',...(operation==='handoff'?{summary:handoffSummary}:{})});
+    s.context.runAttempt=2;
+    await assert.rejects(runComment(s),/Do not rerun/);assert.equal(s.writes.length,0);
+  });
+}
+
+for(const request of [
+  {operation:'handoff',owner:'worker-A',claim_run:'800',summary:42},
+  {operation:'pickup',owner:'worker-B',summary:handoffSummary},
+  {operation:'maintain',owner:'worker-A',summary:handoffSummary},
+]) {
+  test(`comment summary is accepted only as handoff text: ${request.operation}/${typeof request.summary}`,async()=>{
+    const s=commentSetup(request);
+    await assert.rejects(runComment(s),/Summary is text for handoff only/);
+    assert.equal(s.writes.length,0);
+  });
+}
 
 test('comment reservations preserve the GitHub Context prototype and original actor', async () => {
   const s = commentSetup();
@@ -1057,4 +1270,230 @@ test('owner recovery performs no repository-wide enumeration after final point r
   assert.equal(final.filter(name=>name==='permission').length,2);
   assert.ok(!final.some(name=>['pulls','listForRepo'].includes(name)));
   assert.equal(ledgerWrites(s).length,1);
+});
+
+// Integration guards: repository-wide scans must precede final target reads.
+for (const mutation of ['owner','run','offer-body','offer-edited-at','source-run','permission','issue','head']) {
+  test(`pickup refuses ${mutation} changed during final PR enumeration`, async () => {
+    let scans=0, armed=false;
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions,hook(name,args,data) {
+      if (!armed || name!=='pulls' || ++scans!==2) return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='owner') c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run') c.body=c.body.replace('id=901','id=999');
+      if(mutation==='offer-body') c.body+='\nOffer withdrawn.';
+      if(mutation==='offer-edited-at') c.updated_at='2026-10-20T12:00:00Z';
+      if(mutation==='source-run') s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission') permissions.admin='read';
+      if(mutation==='issue') data.issues[0].state='closed';
+      if(mutation==='head') data.prs[0].head.sha='b'.repeat(40);
+    }});
+    await handoff(s);armed=true;
+    await assert.rejects(pickup(s));assert.equal(s.writes.length,1);
+  });
+}
+
+for (const mutation of ['owner','run','actor','source-run','permission','issue','head']) {
+  test(`handoff refuses ${mutation} changed during final PR enumeration`, async () => {
+    let scans=0;
+    const permissions={admin:'write',successor:'write'};
+    const s=handoffSetup({permissions,hook(name,args,data) {
+      if(name!=='pulls'||++scans!==2)return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='owner')c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')c.body=c.body.replace('id=800','id=999');
+      if(mutation==='actor')c.body=c.body.replace('login=admin','login=other');
+      if(mutation==='source-run')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission')permissions.admin='read';
+      if(mutation==='issue')data.issues[0].state='closed';
+      if(mutation==='head')data.prs[0].head.sha='b'.repeat(40);
+    }});
+    await assert.rejects(handoff(s));assert.equal(s.writes.length,0);
+  });
+}
+
+for (const operation of ['claim','park','resume','release','transfer']) {
+  for (const mutation of ['body','edited-at','permission']) {
+    test(`${operation} refuses a revoked comment request before ledger write: ${mutation}`,async()=>{
+      const request={id:55,user:{login:'admin'},issue_url:fixture(1).url,body:'/issue-claim original',updated_at:'before'};
+      const s=operation==='transfer'?transferSetup():parkingSetup();
+      s.approvals[55]=structuredClone(request);s.context.verifiedRequest=request;
+      // This models an accepted request that is revoked before the mutation.
+      if(mutation==='body')s.approvals[55].body='canceled';
+      if(mutation==='edited-at')s.approvals[55].updated_at='after';
+      if(mutation==='permission') {
+        const original=s.github.rest.repos.getCollaboratorPermissionLevel;
+        s.github.rest.repos.getCollaboratorPermissionLevel=async a=>a.username==='admin'?{data:{permission:'read'}}:original(a);
+      }
+      if(operation==='claim')s.comments[1]=[];
+      if(operation==='resume') {
+        const c=s.comments[1][0];
+        c.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:s.prs[0].number,head:s.prs[0].head.sha}]})+' -->';
+      }
+      const action=operation==='transfer'?()=>transfer(s):()=>s.run(operation,1,'worker-A',
+        ['park','resume'].includes(operation)?{CLAIM_RUN:'800'}:{});
+      await assert.rejects(action);assert.equal(s.writes.length,0);
+    });
+  }
+}
+
+for (const mutation of ['owner','run','source-run','actor-permission','author-permission']) {
+  test(`transfer refuses ${mutation} changed during final PR enumeration`,async()=>{
+    let scans=0;
+    const permissions={admin:'admin',oldUser:'admin'};
+    const s=transferSetup({permissions,hook(name,args,data){
+      if(name!=='pulls'||++scans!==2)return;
+      if(mutation==='owner')data.comments[1][0].body=data.comments[1][0].body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')data.comments[1][0].body=data.comments[1][0].body.replace('id=800','id=999');
+      if(mutation==='source-run')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='actor-permission')permissions.admin='read';
+      if(mutation==='author-permission')permissions.oldUser='read';
+    }});
+    s.approvals[50].user.login='oldUser';
+    await assert.rejects(transfer(s));assert.equal(s.writes.length,0);
+  });
+}
+
+for (const operation of ['claim','handoff','pickup']) {
+  test(`comment ${operation} canceled during worker enumeration cannot write a claim`,async()=>{
+    let armed=false;
+    const permissions={writer:'write',admin:'write',successor:'write'};
+    const request={operation,owner:operation==='pickup'?'worker-B':'worker-A',
+      ...(operation==='handoff'?{claim_run:'800',summary:handoffSummary}:{})};
+    const claim=handoffEntry();
+    if(operation==='handoff')claim.body=claim.body.replace('login=admin','login=writer');
+    const s=commentSetup(request,{permissions,comments:operation==='claim'?{}:{1:[claim]},
+      prs:operation==='claim'?[]:[savedPR()],hook(name){
+        if(armed&&name==='listForRepo')s.approvals[50].body='Canceled by requester';
+      }});
+    if(operation==='pickup')await handoff(s);
+    const before=s.writes.length;armed=true;
+    // Handoff does not enumerate workers; revoke during its final PR scan instead.
+    if(operation==='handoff') {
+      const original=s.github.rest.pulls.list;
+      s.github.rest.pulls.list=async args=>{const result=await original(args);s.approvals[50].body='Canceled by requester';return result;};
+    }
+    await assert.rejects(runComment(s),/Request comment changed/);
+    assert.equal(s.writes.slice(before).filter(w=>w.body.startsWith('<!-- issue-claim:v1')).length,0);
+  });
+}
+
+test('a revoked claim request cannot auto-release completed work during availability scans',async()=>{
+  const s=commentSetup({operation:'claim',issue:1,owner:'worker-A'}, {
+    issues:[fixture(1),fixture(2,{state:'closed',state_reason:'completed'})],
+    comments:{2:[modernEntry('worker-A','800')]},
+    prs:[{...savedPR(),body:'Refs #2',state:'closed',merged_at:'2026-10-20T00:00:00Z',base:{ref:'main'}}],
+    hook(name,args){if(name==='pulls'&&args.state==='all')s.approvals[50].body='Canceled during completion scan';}
+  });
+  await assert.rejects(runComment(s),/Request comment changed/);
+  assert.equal(s.writes.filter(w=>w.body.startsWith('<!-- issue-claim:v1')).length,0);
+});
+
+test('pickup rejects duplicate checkpoint markers rather than accepting the first offer',async()=>{
+  const s=handoffSetup();await handoff(s);
+  const c=s.comments[1].at(-1);c.body+='\n'+c.body.match(/^<!-- issue-claim-wait:v1 .+ -->$/m)[0];
+  await assert.rejects(pickup(s),/Invalid waiting checkpoint/);assert.equal(s.writes.length,1);
+});
+
+test('ordinary transfer rechecks source actor changed during final PR enumeration',async()=>{
+  let scans=0;
+  const source={status:'completed',conclusion:'success',actor:{login:'oldUser'}};
+  const s=transferSetup({permissions:{oldUser:'write',newUser:'write'},runs:{800:source},hook(name){
+    if(name==='pulls'&&++scans===2)source.actor.login='otherUser';
+  }});
+  s.context.actor='newUser';s.approvals[50].user.login='oldUser';
+  await assert.rejects(transfer(s),/original claim actor/);assert.equal(s.writes.length,0);
+});
+
+test('a deleted offer cannot authorize pickup from an older active reservation',async()=>{
+  const s=handoffSetup();await handoff(s);s.comments[1].pop();
+  await assert.rejects(pickup(s),/No handoff-ready/);assert.equal(s.writes.length,1);
+});
+
+test('a deleted pickup request during the final PR scan leaves the offer intact',async()=>{
+  let scans=0,armed=false;
+  const request={id:55,user:{login:'successor'},issue_url:fixture(1).url,body:'/issue-claim pickup'};
+  const s=handoffSetup({approvals:{55:structuredClone(request)},hook(name){
+    if(armed&&name==='pulls'&&++scans===2)delete s.approvals[55];
+  }});
+  await handoff(s);s.context.verifiedRequest=request;armed=true;
+  await assert.rejects(pickup(s),/Approval not found/);assert.equal(s.writes.length,1);
+});
+
+const mergeHandoffPRs = s => {
+  for (const pr of s.prs) { pr.state='closed';pr.merged_at='2026-10-20T00:00:00Z'; }
+};
+const cancelHandoff = s => {
+  s.context.runId=903;
+  return s.run('resume',1,'worker-A',{CLAIM_RUN:'901'});
+};
+
+test('the original owner cancels an unconsumed handoff after every saved PR merges unchanged',async()=>{
+  const s=handoffSetup({prs:[savedPR(),savedPR(12)]});
+  await handoff(s);mergeHandoffPRs(s);await cancelHandoff(s);
+  assert.equal(s.writes.length,2);
+  assert.match(s.writes.at(-1).body,/state=claimed owner=worker-A/);
+  assert.doesNotMatch(s.writes.at(-1).body,/issue-claim-wait/);
+  await s.run('status',1,'worker-A',{CLAIM_RUN:'903'});
+  await assert.rejects(pickup(s),/No handoff-ready/);
+});
+
+test('ordinary review-wait resume still requires an Open PR after its saved PR merges',async()=>{
+  const s=parkingSetup();await park(s);mergeHandoffPRs(s);
+  await assert.rejects(cancelHandoff(s),/requires saved same-repository Open PR/);
+  assert.equal(s.writes.length,1);
+});
+
+for (const mutation of ['missing','closed-unmerged','fork','head','new-pr','actor','failed-handoff','cancelled-source','other-active','consumed']) {
+  test(`merged handoff cancellation refuses unsafe checkpoint: ${mutation}`,async()=>{
+    const s=handoffSetup();await handoff(s);mergeHandoffPRs(s);
+    if(mutation==='missing')s.prs.length=0;
+    if(mutation==='closed-unmerged')s.prs[0].merged_at=null;
+    if(mutation==='fork')s.prs[0].head.repo.full_name='other/game';
+    if(mutation==='head')s.prs[0].head.sha='b'.repeat(40);
+    if(mutation==='new-pr')s.prs.push(savedPR(12));
+    if(mutation==='actor')s.context.actor='successor';
+    if(mutation==='failed-handoff')s.runs[901]={status:'completed',conclusion:'failure'};
+    if(mutation==='cancelled-source')s.runs[800]={status:'completed',conclusion:'cancelled'};
+    if(mutation==='other-active')s.comments[2]=[modernEntry('worker-A','700')];
+    if(mutation==='consumed')await pickup(s);
+    const before=s.writes.length;
+    await assert.rejects(cancelHandoff(s));assert.equal(s.writes.length,before);
+  });
+}
+
+for (const mutation of ['missing','closed-unmerged','fork','head','new-pr','owner','run','offer','issue','failed-handoff','cancelled-source','permission','request']) {
+  test(`merged handoff cancellation rechecks ${mutation} after worker enumeration`,async()=>{
+    let armed=false,scans=0;
+    const permissions={admin:'write',successor:'write'};
+    const request={id:55,user:{login:'admin'},issue_url:fixture(1).url,body:'/issue-claim resume'};
+    const s=handoffSetup({permissions,approvals:{55:structuredClone(request)},hook(name,args,data){
+      if(!armed||name!=='pulls'||++scans!==2)return;
+      const c=data.comments[1].at(-1);
+      if(mutation==='missing')data.prs.length=0;
+      if(mutation==='closed-unmerged')data.prs[0].merged_at=null;
+      if(mutation==='fork')data.prs[0].head.repo.full_name='other/game';
+      if(mutation==='head')data.prs[0].head.sha='b'.repeat(40);
+      if(mutation==='new-pr')data.prs.push(savedPR(12));
+      if(mutation==='owner')c.body=c.body.replace('owner=worker-A','owner=other-worker');
+      if(mutation==='run')c.body=c.body.replace('id=901','id=999');
+      if(mutation==='offer')c.body+='\nOffer withdrawn.';
+      if(mutation==='issue')data.issues[0].state='closed';
+      if(mutation==='failed-handoff')s.runs[901]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='cancelled-source')s.runs[800]={status:'completed',conclusion:'cancelled'};
+      if(mutation==='permission')permissions.admin='read';
+      if(mutation==='request')s.approvals[55].body='Resume canceled';
+    }});
+    await handoff(s);mergeHandoffPRs(s);s.context.verifiedRequest=request;armed=true;
+    await assert.rejects(cancelHandoff(s));assert.equal(s.writes.length,1);assert.equal(scans,2);
+  });
+}
+
+test('a failed cancellation run retains ownership but cannot authorize editing',async()=>{
+  const s=handoffSetup();await handoff(s);mergeHandoffPRs(s);await cancelHandoff(s);
+  s.runs[903]={status:'completed',conclusion:'cancelled'};
+  await assert.rejects(s.run('status',1,'worker-A',{CLAIM_RUN:'903'}),/did not succeed/);
+  await assert.rejects(pickup(s),/No handoff-ready/);
+  assert.equal(s.writes.length,2);
 });
