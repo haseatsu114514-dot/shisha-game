@@ -1684,3 +1684,241 @@ test('711 rechecks comment request immutability immediately before writing',asyn
   await assert.rejects(s.recover(),/Request comment changed/);
   assert.equal(ledgerWrites(s).length,0);assert.equal(s.comments[711][0].body.includes(s.h.from),true);
 });
+
+// #798 implements only this procedure. All #673 state below is mocked.
+const issue673Target = [673,'codex-577-limited-20261018-3a8c921e','39271009573',738,'426f78b331abba79653b8499117f818f152914ca'];
+const issue673Preserved = [
+  {number:776,head:'a0c8932d4a4ffafe161b64fa0a1d4fff5264d365'},
+  {number:794,head:'c0cd15adf50f6f2b673cf5d1a49575dad3153edc'},
+  {number:795,head:'ff4d1eb26d879f17aa03f61a8782777e971718df'},
+];
+const issue673PreservationStatement = 'PRs #776, #794 and #795 are for reference-set audit and preservation only; they grant no editing or transfer authority.';
+const issue673Question = '#738（LIME二重返信）旧担当が見つからず、未保存変更の有無が不明です。それを回収できない可能性を了承して、GitHubに保存済みの修正からAへ正式に引き継いでよいか。';
+function issue673RecoverySetup(options = {}) {
+  const s=ownerRecoverySetup(issue673Target,options);
+  Object.assign(s.h,{approval_issue:798,known_active_observed:false,
+    consent_evidence:`Question: ${issue673Question} Answer: 1はAに引き継いで`});
+  s.h.preserved_prs=structuredClone(issue673Preserved);
+  s.h.scope+=' '+issue673PreservationStatement;
+  for(const saved of issue673Preserved) {
+    s.prs.push({number:saved.number,body:'Preservation boundary: #673 is outside this work.',
+      head:{sha:saved.head,repo:{full_name:recoveryRepo}}});
+    const otherIssue=saved.number+1000;
+    s.issues.push(fixture(otherIssue));
+    s.comments[otherIssue]=[modernEntry('other-worker-'+saved.number,700)];
+  }
+  s.approvalBody=()=>{
+    s.approvals[50].body=`<!-- issue-673-owner-recovery:v1 ${JSON.stringify(s.h)} -->\n`+
+      `I authorize ${s.h.to} to resume saved PR #738 for Issue #673 under #798 and accept loss of unknown/unrecoverable uncommitted and unpushed work; stopped and pushed remain unknown.\n`+
+      s.h.scope+'\n'+s.h.consent_evidence;
+  };
+  s.approvalBody();return s;
+}
+for(const route of ['dispatch','comment']) test(`673 recovery ${route}: exact independent audit, preservation and replay refusal`,async()=>{
+  const s=issue673RecoverySetup();if(route==='comment') recoveryComment(s);
+  const before=structuredClone({claim:s.comments[673][0],prs:s.prs,approval:s.approvals[50]});
+  const otherClaims=structuredClone(issue673Preserved.map(p=>s.comments[p.number+1000]));
+  await s.recover();const writes=ledgerWrites(s);assert.equal(writes.length,1);
+  assert.deepEqual(issue673Preserved.map(p=>s.comments[p.number+1000]),otherClaims);
+  assert.ok(s.writes.every(w=>w.issue_number===673));
+  assert.deepEqual(s.h.prs,[{number:issue673Target[3],head:issue673Target[4]}]);
+  assert.deepEqual(s.h.preserved_prs,issue673Preserved);
+  const audit=JSON.parse(writes[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit,{...s.h,approval_comment:50});
+  for(const key of ['stopped','pushed','unsaved_work']) assert.equal(audit[key],'unknown');
+  assert.equal(audit.known_active_observed,false);
+  assert.doesNotMatch(writes[0].body,/issue-(?:711-)?owner-recovery-audit:|"(?:stopped|pushed)":true|state=released/);
+  assert.deepEqual(s.comments[673][0],before.claim);assert.deepEqual(s.prs,before.prs);assert.deepEqual(s.approvals[50],before.approval);
+  if(route==='comment') await s.recover();else await assert.rejects(s.recover());
+  assert.equal(ledgerWrites(s).length,1);await s.run('status',673,s.h.to,{CLAIM_RUN:'901'});
+});
+const invalid673 = {
+  'wrong-target-733':s=>{s.issues[0].number=733;s.input.ISSUE='733';s.h.issue=733;},
+  'wrong-repo':s=>{s.context.repo.repo='other';},
+  'record-repo':s=>{s.h.repo='other/repo';},
+  'old-owner':s=>{s.h.from='other-worker';},
+  'old-run':s=>{s.h.claim_run='800';},
+  'input-run':s=>{s.input.CLAIM_RUN='800';},
+  'head':s=>{s.h.prs[0].head='b'.repeat(40);},
+  'pr':s=>{s.h.prs[0].number=739;},
+  'approval-issue':s=>{s.h.approval_issue=769;},
+  'new-owner':s=>{s.h.to='other-worker';},
+  'same-worker':s=>{s.h.to=s.input.OWNER=s.h.from;},
+  'loss-not-accepted':s=>{s.h.accept_loss=false;},
+  'wrong-consent':s=>{s.h.consent='approved';},
+  '711-evidence':s=>{s.h.consent_evidence='742は再開したい / すすめてよい (separate authorization)';},
+  'missing-answer':s=>{s.h.consent_evidence=issue673Question;},
+  'short-scope':s=>{s.h.scope='unknown';},
+  'unknown-key':s=>{s.h.extra=true;},
+  'legacy-recovery':s=>{s.h.recovery={claim_comment:1,released_comment:2};},
+  'nonowner-admin':s=>{s.approvals[50].user.login='otherAdmin';},
+  'actor-write':s=>{s.permissions.admin='write';},
+  'author-write':s=>{s.permissions['haseatsu114514-dot']='write';},
+  'permissions-unavailable':s=>{s.github.rest.repos.getCollaboratorPermissionLevel=async()=>{throw Error('permission unknown');};},
+  'closed':s=>{s.issues[0].state='closed';},
+  'blocked':s=>{s.issues[0].labels=['blocked'];},
+  'failed-source':s=>{s.runs[s.h.claim_run]={status:'completed',conclusion:'failure'};},
+  'pending-source':s=>{s.runs[s.h.claim_run]={status:'in_progress',conclusion:null};},
+  'changed-claim-owner':s=>{s.comments[673][0].body=s.comments[673][0].body.replace(s.h.from,'different-worker');},
+  'changed-claim-run':s=>{s.comments[673][0].body=s.comments[673][0].body.replace(s.h.claim_run,'800');},
+  'released':s=>{s.comments[673][0].body=s.comments[673][0].body.replace('state=claimed','state=released');},
+  'fork':s=>{s.prs[0].head.repo.full_name='other/repo';},
+  'extra-open-pr':s=>{s.prs.push({...s.prs[0],number:999});},
+  'missing-open-pr':s=>{s.prs[0].state='closed';},
+  'existing-worker':s=>{s.comments[999]=[entry('claimed',s.h.to)];},
+  'existing-worker-closed':s=>{s.comments[999]=[entry('claimed',s.h.to)];s.issues[1].state='closed';},
+  'wrong-thread':s=>{s.approvals[50].issue_url=fixture(999).url;},
+};
+for(const [reason,change] of Object.entries(invalid673)) test(`673 recovery refuses ${reason} without changing any reservation`,async()=>{
+  const s=issue673RecoverySetup();change(s);s.approvalBody();const before=structuredClone(s.comments);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const key of ['stopped','pushed','unsaved_work','known_active_observed']) {
+  for(const value of key==='known_active_observed'?[true,'false',undefined]:[true,null,undefined]) {
+    test(`673 recovery strictly rejects ${key}=${String(value)}`,async()=>{
+      const s=issue673RecoverySetup();s.h[key]=value;s.approvalBody();
+      await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.equal(s.comments[673].length,1);
+    });
+  }
+}
+for(const marker of ['issue-owner-recovery','issue-711-owner-recovery','issue-handoff','issue-673-owner-recovery']) {
+  test(`673 refuses mixed/duplicate ${marker} record`,async()=>{
+    const s=issue673RecoverySetup();s.approvals[50].body+=`\n<!-- ${marker}:v1 {} -->`;
+    await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+  });
+}
+for(const reason of ['no-prose','scope-not-in-prose','evidence-not-in-prose','malformed-marker']) test(`673 refuses ${reason}`,async()=>{
+  const s=issue673RecoverySetup();
+  if(reason==='no-prose') s.approvals[50].body=s.approvals[50].body.split('\n')[0];
+  if(reason==='scope-not-in-prose') s.approvals[50].body=s.approvals[50].body.split('\n').filter(line=>line!==s.h.scope).join('\n');
+  if(reason==='evidence-not-in-prose') s.approvals[50].body=s.approvals[50].body.split('\n').filter(line=>line!==s.h.consent_evidence).join('\n');
+  if(reason==='malformed-marker') s.approvals[50].body='<!-- issue-673-owner-recovery:v1 broken';
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+for(const setupExisting of [ownerRecoverySetup,issue711RecoverySetup,transferSetup]) test(`existing ${setupExisting.name} refuses a mixed 673 marker`,async()=>{
+  const s=setupExisting();s.approvals[50].body+='\n<!-- issue-673-owner-recovery:v1 {} -->';
+  await assert.rejects(s.recover?s.recover():transfer(s));assert.equal(s.writes.length,0);
+});
+for(const setupExisting of [ownerRecoverySetup,issue711RecoverySetup]) test(`673 cannot reuse ${setupExisting.name} authorization`,async()=>{
+  const s=setupExisting();s.issues[0].number=673;s.input.ISSUE='673';s.h.issue=673;s.approvalBody();
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+
+for(const change of ['approval','author','timestamp','permission','owner','run','claim-comment','source','closed','known-active']) {
+  test(`673 refuses ${change} changed during final PR enumeration`,async()=>{
+    let scans=0;
+    const s=issue673RecoverySetup({hook(name,args,data){
+      if(name!=='pulls'||++scans!==2) return;
+      if(change==='approval') s.approvals[50].body+='\nConsent revoked';
+      if(change==='author') s.approvals[50].user.login='otherAdmin';
+      if(change==='timestamp') s.approvals[50].updated_at='later';
+      if(change==='permission') s.permissions.admin='write';
+      if(change==='owner') data.comments[673][0].body=data.comments[673][0].body.replace(s.h.from,'other-worker');
+      if(change==='run') data.comments[673][0].body=data.comments[673][0].body.replace(s.h.claim_run,'800');
+      if(change==='claim-comment') data.comments[673].push({...data.comments[673][0],id:99});
+      if(change==='source') s.runs[s.h.claim_run]={status:'completed',conclusion:'cancelled'};
+      if(change==='closed') data.issues[0].state='closed';
+      if(change==='known-active') {s.h.known_active_observed=true;s.approvalBody();}
+    }});
+    await assert.rejects(s.recover());assert.equal(scans,2);assert.equal(s.writes.length,0);
+  });
+}
+for(const change of ['head','pr-set','worker']) test(`673 refuses changed ${change} during final worker scan`,async()=>{
+  let scans=0;
+  const s=issue673RecoverySetup({hook(name,args,data){
+    if(name!=='listForRepo'||++scans!==2) return;
+    if(change==='head') data.prs[0].head.sha='b'.repeat(40);
+    if(change==='pr-set') data.prs.push({...data.prs[0],number:999});
+    if(change==='worker') data.comments[999]=[entry('claimed',s.h.to)];
+  }});
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+for(const valid of [true,false]) test(`673 ${valid?'accepts valid':'rejects stale'} parked worker checkpoint`,async()=>{
+  const s=issue673RecoverySetup(),waiting=modernEntry(s.h.to,700);
+  waiting.body+='\n<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:998,head:savedHead}]})+' -->';
+  s.comments[999]=[waiting];s.prs.push(savedPR(998,999,{head:{sha:valid?savedHead:'b'.repeat(40),repo:{full_name:recoveryRepo}}}));
+  if(valid) {await s.recover();assert.equal(ledgerWrites(s).length,1);}
+  else {await assert.rejects(s.recover());assert.equal(s.writes.length,0);}
+  assert.deepEqual(s.comments[999],[waiting]);
+});
+test('673 all enumerations precede final evidence reads',async()=>{
+  const s=issue673RecoverySetup();await s.recover();const names=s.calls.map(c=>c.name);
+  const last=Math.max(names.lastIndexOf('pulls'),names.lastIndexOf('listForRepo'));
+  const final=names.slice(last+1,names.indexOf('createComment'));
+  for(const name of ['get','permission','getComment','listComments','run']) assert.ok(final.includes(name),name);
+  assert.equal(final.filter(n=>n==='permission').length,2);assert.equal(ledgerWrites(s).length,1);
+});
+test('673 write failure preserves original reservation',async()=>{
+  const s=issue673RecoverySetup({hook(name){if(name==='createComment') throw Error('write denied');}}),before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/write denied/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const failure of ['cancelled','failure','summary']) test(`673 post-write ${failure} protects reservation without edit authorization`,async()=>{
+  const s=issue673RecoverySetup();
+  if(failure==='summary') {s.core.summary.write=async()=>{throw Error('summary failed');};await assert.rejects(s.recover(),/summary failed/);}
+  else await s.recover();
+  s.runs[901]={status:'completed',conclusion:failure==='summary'?'failure':failure};
+  await assert.rejects(s.run('status',673,s.h.to,{CLAIM_RUN:'901'}),/did not succeed/);
+  await assert.rejects(s.run('claim',673,'third-worker'),/Already claimed/);await assert.rejects(s.recover());assert.equal(ledgerWrites(s).length,1);
+});
+test('673 comment refuses rerun and preserves original reservation',async()=>{
+  const s=issue673RecoverySetup();recoveryComment(s);s.context.runAttempt=2;
+  await assert.rejects(s.recover(),/Do not rerun/);assert.equal(s.writes.length,0);
+});
+test('673 comment request mutation refuses before claim write',async()=>{
+  let scans=0;const s=issue673RecoverySetup({hook(name){if(name==='pulls'&&++scans===2) s.approvals[60].body+=' ';}});
+  recoveryComment(s);await assert.rejects(s.recover(),/Request comment changed/);assert.equal(ledgerWrites(s).length,0);
+});
+
+const invalid673Preservation = {
+  'old-marker-missing-preserved':s=>{delete s.h.preserved_prs;},
+  'missing-entry':s=>{s.h.preserved_prs.pop();},
+  'extra-entry':s=>{s.h.preserved_prs.push({number:999,head:savedHead});},
+  'duplicate-entry':s=>{s.h.preserved_prs[1]={...s.h.preserved_prs[0]};},
+  'editable-target-in-preserved':s=>{s.h.preserved_prs[0]={...s.h.prs[0]};},
+  'changed-head':s=>{s.h.preserved_prs[0].head=savedHead;},
+  'unknown-entry-field':s=>{s.h.preserved_prs[0].editable=false;},
+  'string-number':s=>{s.h.preserved_prs[0].number='776';},
+  'null-list':s=>{s.h.preserved_prs=null;},
+  'object-list':s=>{s.h.preserved_prs={...s.h.preserved_prs};},
+  'null-entry':s=>{s.h.preserved_prs[0]=null;},
+  'scope-omits-boundary':s=>{s.h.scope=s.h.scope.replace(issue673PreservationStatement,'');},
+};
+for(const [reason,mutate] of Object.entries(invalid673Preservation)) test(`673 preserved declaration refuses ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate(s);s.approvalBody();const before=structuredClone(s.comments);
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+test('673 preservation boundary must appear in prose, not just JSON',async()=>{
+  const s=issue673RecoverySetup();
+  s.approvals[50].body=s.approvals[50].body.split('\n').map((line,i)=>i?line.replace(issue673PreservationStatement,''):line).join('\n');
+  await assert.rejects(s.recover());assert.equal(s.writes.length,0);
+});
+const mutate673PreservedPR = (s,reason) => {
+  const index=s.prs.findIndex(pr=>pr.number===776);
+  if(reason==='missing') s.prs.splice(index,1);
+  if(reason==='extra') s.prs.push({...s.prs[index],number:999});
+  if(reason==='duplicate') s.prs.push(structuredClone(s.prs[index]));
+  if(reason==='head') s.prs[index].head.sha=savedHead;
+  if(reason==='foreignrepo') s.prs[index].head.repo.full_name='other/repo';
+  if(reason==='not-referencing') s.prs[index].body='Preserved work with no target reference.';
+};
+for(const reason of ['missing','extra','duplicate','head','foreignrepo','not-referencing']) test(`673 exact full reference set refuses initial preserved ${reason}`,async()=>{
+  const s=issue673RecoverySetup();mutate673PreservedPR(s,reason);const before=structuredClone(s.comments);
+  await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+});
+for(const [stage,reason] of [['listForRepo','head'],['listForRepo','missing'],['pulls','head'],['pulls','extra'],['pulls','foreignrepo']]) {
+  test(`673 final ${stage} refuses preserved ${reason}`,async()=>{
+    let scans=0;
+    const s=issue673RecoverySetup({hook(name){if(name===stage&&++scans===2) mutate673PreservedPR(s,reason);}});
+    const before=structuredClone(s.comments);
+    await assert.rejects(s.recover(),/exact PR set\/head changed/);assert.equal(scans,2);
+    assert.equal(s.writes.length,0);assert.deepEqual(s.comments,before);
+  });
+}
+test('673 full reference-set comparison is order-independent and audit keeps edit authority on PR738',async()=>{
+  const s=issue673RecoverySetup();s.prs.reverse();s.h.preserved_prs.reverse();s.approvalBody();
+  const before=structuredClone(s.prs);await s.recover();assert.deepEqual(s.prs,before);
+  const audit=JSON.parse(ledgerWrites(s)[0].body.match(/<!-- issue-673-owner-recovery-audit:v1 (.+) -->/)[1]);
+  assert.deepEqual(audit.prs,[{number:738,head:issue673Target[4]}]);
+  assert.deepEqual(audit.preserved_prs,[...issue673Preserved].reverse());
+  assert.ok(audit.scope.includes(issue673PreservationStatement));assert.ok(s.writes.every(w=>w.issue_number===673));
+});
