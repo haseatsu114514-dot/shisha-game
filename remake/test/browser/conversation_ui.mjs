@@ -15,9 +15,9 @@ await suite("conversation-ui", async check => {
           nameTop: parseFloat(getComputedStyle(name).top),
           buttons: [...document.querySelectorAll(".vn-ctl")].map(el => parseFloat(getComputedStyle(el).minHeight)) };
       });
-      assert(Math.abs(geometry.gap - 6) < .1, "Control frame must have a 6px gap above dialogue");
+      assert(Math.abs(geometry.gap - 5) < .1, "Control frame must have a 5px gap above dialogue");
       assert(geometry.font.includes("Suien Name"));
-      assert.equal(geometry.nameTop, -31);
+      assert.equal(geometry.nameTop, -30);
       assert(geometry.buttons.every(height => height >= 44));
       await page.locator('[data-test="vn-auto"]').click();
       assert(await page.locator('[data-test="vn-auto"]').evaluate(el => el.classList.contains("on")));
