@@ -80,7 +80,11 @@ await suite("shop-ui", async check => {
       }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
         const button = page.locator(`[data-test="detail-${id}"]`);
-        const expectedName = await page.evaluate(id => S.data.DB.flavorById[id].short_name || S.data.DB.flavorById[id].name, id);
+        // Old saves retain their data; AF is displayed with the catalog's full maker name.
+        const expectedName = await page.evaluate(id => {
+          const item = S.data.DB.flavorById[id];
+          return item.maker === 'af' ? item.name : item.short_name || item.name;
+        }, id);
         assert.equal(await button.locator('b').innerText(), `${expectedName} 1箱（50g）`);
         await button.scrollIntoViewIfNeeded();
         // Every carton is recorded in its real list and detail context.

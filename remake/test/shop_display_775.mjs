@@ -25,8 +25,8 @@ for (const category of ['all', 'fruit', 'sweet']) {
       if (previous !== undefined) completed.add(previous);
       previous = f.maker;
     }
-    assert(!/\bAF\b|アルファーヘブン/.test(shopProductName(f)));
-    if (f.maker === 'af') assert(shopProductName(f).startsWith('アルファヘブン '));
+    assert(!/\bAF\b|アルファヘブン/.test(shopProductName(f)));
+    if (f.maker === 'af') assert(shopProductName(f).startsWith('アルファーヘブン '));
   }
   const makers = [...new Set(output.map(f => f.maker))];
   assert.deepEqual(makers, [...new Set(input.map(f => f.maker))], 'maker first-appearance order');
@@ -34,8 +34,10 @@ for (const category of ['all', 'fruit', 'sweet']) {
   results.push({ category, ids: output.map(f => f.id), names: output.map(shopProductName) });
 }
 assert.deepEqual(groupShopFlavors([]), []);
-assert.equal(shopText('AFのミント。アルファーヘブン。'), 'アルファヘブンのミント。アルファヘブン。');
-assert.equal(shopProductName({name:'AF ミント'}), 'アルファヘブン ミント');
+assert.equal(shopText('AFのミント。アルファヘブン。アルファーヘブン。'), 'アルファーヘブンのミント。アルファーヘブン。アルファーヘブン。');
+assert.equal(shopProductName({name:'AF ミント'}), 'アルファーヘブン ミント');
+assert.equal(shopProductName({short_name:'アルファヘブン ミント'}), 'アルファーヘブン ミント');
+assert.equal(shopText('アルファーヘブン'), 'アルファーヘブン');
 assert.equal(shopProductName({name:'ドバジ バニラ'}), 'ドバジ バニラ');
 assert.equal(JSON.stringify(catalog), before, 'all ID/maker/price/performance fields unchanged');
 console.log(JSON.stringify({status:'PASS', checks:['all/fruit/sweet grouping','maker and product stability','original references','display labels','catalog unchanged','production syntax'], results}, null, 2));
