@@ -4,7 +4,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const source=await fs.readFile(new URL('../js/daily/calendar.js',import.meta.url),'utf8');
-const state={}, calls=[], saves=[], closed=new Set(), locked=new Set();
+let state={};
+const calls=[], saves=[], closed=new Set(), locked=new Set();
+let installProbe=async()=>{}, displayProbe=async()=>{};
 let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
 const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
@@ -26,7 +28,7 @@ const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
  visitSpot:async spot=>{assert.equal(spot.cost,0);assert.equal(spot.stamina,0);state.flags._c_station_registered=true;calls.push({type:'register',day:state.day,slot:state.slot})},
  visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot})},
  storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),isUnlocked:spot=>!locked.has(spot.id),markMet:id=>state.met[id]=true,
- onAction:()=>actionEnds++,presentNow:asyncNoop,
+ onAction:()=>actionEnds++,presentNow:(...args)=>displayProbe(...args),installReel:()=>installProbe(),
  restingToday:()=>!!state.restDay?.fullDay,
  runNightPlan:async()=>0,nightPlan:()=>[],nightOccupied:()=>false,
  runHomeShisha:async()=>false,maybeConfession:async()=>false,unreadCount:()=>0,
@@ -96,3 +98,92 @@ for(const unavailable of [locked,closed]) {
  assert.equal(state.money,14000);
 }
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');
+
+// Entry integration (#749): real runDaily, mocked installer/display only.
+// Their own payout/animation lifecycle is covered by reel_lifecycle and production LOAD.
+const entryFailures=[];
+async function entryCheck(name, run) {
+ try { await run(); console.log(`calendar entry: ${name} PASS`); }
+ catch(error) { entryFailures.push(name); console.error(`calendar entry: ${name} FAIL: ${error.message}`); }
+ finally { installProbe=async()=>{}; displayProbe=async()=>{}; }
+}
+const replaceState=next=>{state=next;modules.get('../core/state.js').setExport('state',next)};
+for(const registered of [true,false]) for(const recordedDay of [undefined,1]) {
+ await entryCheck(`pending registered=${registered} visited=${recordedDay}`,async()=>{
+  reset({flags:{_pakki_first_spin_pending:true,_c_station_registered:registered}});
+  if(recordedDay!==undefined)state.visitedDay.c_station=recordedDay;
+  state.spotVisits={c_station:1};
+  const before=structuredClone(state), trace=[];
+  let release;const gate=new Promise(resolve=>release=resolve);
+  installProbe=async()=>{trace.push('install');await gate;delete state.flags._pakki_first_spin_pending};
+  displayProbe=async()=>trace.push('display');
+  const task=c.runDaily({untilDay:2,nightEvents:{}});
+  // No daily loop is needed to prove the entry waits and completes bookkeeping.
+  const waiting=trace.slice();release();await task;
+  assert.deepEqual(waiting,['install'],'entry did not await explicit first-spin resume');
+  assert.deepEqual(trace,['install','display']);
+  assert.deepEqual(calls,[]);
+  assert.equal(state.flags._pakki_first_spin_pending,undefined);
+  assert.equal(state.visitedDay.c_station,recordedDay??(registered?2:undefined));
+  for(const key of ['day','slot','stamina','money','stats','spotVisits'])assert.deepEqual(state[key],before[key],key);
+  if(registered&&recordedDay===undefined)assert.equal(saves.at(-1).visitedDay.c_station,2);
+ });
+}
+await entryCheck('legacy without explicit flag displays existing results only',async()=>{
+ reset();state.reel={installed:true,count:0,pending:[]};
+ let installs=0,displays=0;
+ installProbe=async()=>installs++;displayProbe=async()=>displays++;
+ await c.runDaily({untilDay:3,nightEvents:{}});
+ assert.equal(installs,0);assert(displays>0);
+ assert.equal(calls.find(x=>x.type==='map').pin,'minto');
+ assert.equal(state.visitedDay.c_station,undefined);
+ assert.equal(state.money,14000);assert.equal(actionEnds,2);
+});
+await entryCheck('resume precedes result display and delivery actions',async()=>{
+ reset({flags:{_pakki_first_spin_pending:true}});const trace=[];
+ installProbe=async()=>{assert.equal(calls.length,0);trace.push('install');delete state.flags._pakki_first_spin_pending};
+ displayProbe=async()=>{if(!trace.includes('display'))assert.equal(calls.length,0);trace.push('display')};
+ await c.runDaily({untilDay:3,nightEvents:{}});
+ assert.deepEqual(trace.slice(0,2),['install','display']);
+ assert.equal(calls.find(x=>x.type==='map').pin,'minto');
+ assert.equal(state.money,14000);assert.equal(actionEnds,2);
+});
+await entryCheck('registration day survives reload during resumed first-spin presentation',async()=>{
+ reset({flags:{_pakki_first_spin_pending:true}});
+ state.spotVisits={c_station:1};state.reel={count:0,pending:[]};state.stats={technique:10};
+ let installs=0;
+ installProbe=async()=>{
+  installs++;
+  assert.equal(saves.at(-1)?.visitedDay.c_station,2,'Registration day must be saved before installer commitment');
+  assert.equal(saves.at(-1).flags._pakki_first_spin_pending,true);
+  // Model installReel's commit/save followed by document replacement during presentation.
+  delete state.flags._pakki_first_spin_pending;
+  state.reel.count=1;state.stats.technique++;
+  overrides.save();replaceState(structuredClone(saves.at(-1)));
+ };
+ await c.runDaily({untilDay:2,nightEvents:{}});
+ assert.equal(installs,1,'Explicit pending resume was skipped');
+ const committed=structuredClone(state);
+ await c.runDaily({untilDay:2,nightEvents:{}});
+ assert.equal(installs,1,'Committed first spin was installed again');
+ assert.equal(state.visitedDay.c_station,2);
+ assert.deepEqual(state,committed,'Second LOAD changed payout/count/registration');
+ assert.deepEqual(calls,[]);
+});
+for(const wait of ['installer','display'])await entryCheck(`state replaced during ${wait}`,async()=>{
+ reset({flags:{_pakki_first_spin_pending:wait==='installer'}});
+ const old=state;const replacement=structuredClone(state);replacement.money=4321;
+ let displays=0;
+ installProbe=async()=>{replaceState(replacement)};
+ displayProbe=async()=>{displays++;if(wait==='display')replaceState(replacement)};
+ await c.runDaily({untilDay:3,nightEvents:{}});
+ assert.equal(state,replacement);assert.equal(state.money,4321);
+ assert.equal(state.day,2);assert.equal(state.slot,0);
+ assert.equal(old.visitedDay.c_station,wait==='installer'?2:undefined);
+ assert.equal(state.visitedDay.c_station,undefined,'Old run mutated replacement state');
+ assert.equal(displays,wait==='installer'?0:1);
+ assert.deepEqual(calls,[]);
+ assert.equal(saves.length,wait==='installer'?1:0);
+ if(wait==='installer')assert.equal(saves[0].visitedDay.c_station,2);
+});
+assert.deepEqual(entryFailures,[],'calendar entry regressions');
