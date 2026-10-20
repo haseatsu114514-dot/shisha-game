@@ -43,7 +43,11 @@ await page.addInitScript(() => {
   });
 });
 const errors = [];
-page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+page.on("pageerror", (e) => {
+  const text = e.stack || e.message;
+  console.error("[pageerror]", text);
+  errors.push(`pageerror: ${text}`);
+});
 page.on("console", (m) => {
   // Webフォント（外部）の読み込み失敗はサンドボックス都合なので無視
   if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`);

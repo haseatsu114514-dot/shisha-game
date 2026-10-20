@@ -43,3 +43,7 @@ NEW GAMEから第1章クリアまでPASS。DAY1/2の案内、初回登録、配�
 - Open #683の通常来店変更と本件の変更行は重ならない。最新mainを再確認してCI/レビュー/未完了を解消するまでマージしない。独立した第三者のAPPROVEを得たという記録ではない。
 
 旧head6962e5ddのCIは25成功/6失敗。selection/ch2_daily/rest/contexts/chromium/venuesの失敗ログを確認。最新main7ce32bdには#683のfixture/アクセス/リール修正が統合済み。main統合後の新headで再検証するまでマージしない。
+
+## 最新mainの統合
+
+main `7ce32bd83481d76ab1591709e71843907692558e` のtreeを親に、保存head `b88cc2804274b96e6827e8107bfc42c9884951a6` の#709ファイル28件を重ねるAPI統合。重複するcalendarの通常来店gateとplaythroughのpageerror記録はmain側を保持。画像等の無関係なmainのtreeは変更せず、新しい画像downloadなし。両headを親にしたmerge commitを同じ作業branchへ期待旧SHA付きFF更新する。ローカルの統合後ゲームテストは未実施で、統合headのCIを別途確認する。元の実装/証跡は先行headの検証として維持する。

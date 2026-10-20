@@ -24,6 +24,7 @@ async function setup(page) {
       Object.assign(s.flags, { _errand_scout_done: true, _delivery_adam_done: true,
         _delivery_minto_done: true, _lime_tut: true, _morning_4: true });
       s.met.naru = s.met.adam = s.met.minto = s.met.rin = s.met.sumi = true;
+      s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
       H.core.config.textSpeed = 4; H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
       return s;
     };

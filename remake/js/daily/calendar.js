@@ -452,9 +452,9 @@ async function performSpotAction(spot) {
     used = await visitSamechan(spot);
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rival") {
-    if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
-    await visitRival(spot);
-    exerted = true;
+    if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
+    used = (await visitRival(spot)) !== false;
+    exerted = used;
   } else if (spot.kind === "shop") {
     const r = await openShop();
     if (r !== "rin") used = false;

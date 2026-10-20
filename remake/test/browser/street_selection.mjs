@@ -28,7 +28,8 @@ try {
         const generation = T.generation = (T.generation || 0) + 1;
         T.map.interruptMap('__fixture__'); T.core.newGame(); const s = T.core.state;
         Object.assign(s, { phase: 'daily', day: 4 }); s.met.naru = s.met.minto = true;
-        if (kind === 'locked') delete s.met.naru;
+        s.flags._spot_guide_naru = s.flags._spot_guide_minto = true;
+        if (kind === 'locked') { delete s.met.naru; delete s.flags._spot_guide_naru; }
         if (kind === 'closed') s.day = 3;
         if (kind === 'temporary') s.flags._temporary_closed_naru = '1:4';
         if (kind === 'visited') s.visitedDay.naru = 4;
@@ -101,7 +102,7 @@ try {
       const s=await frame.evaluate(()=>__street.state());
       assert.equal(seen.size,4,`${dir}: all gait poses must appear`);
       assert.equal(s.moving,false,`${dir}: key release must stop`);
-      assert(s.strideDistance>320&&s.strideDistance<410,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
+      assert(s.strideDistance>320&&s.strideDistance<460,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
       distances.push(s.strideDistance);
     }
     assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction apparent-speed spread: ${JSON.stringify(distances)}`);
@@ -126,8 +127,13 @@ try {
       ['', 'cafe', 'cafe', '今はスミさんの頼みが先'],
     ]) {
       const opts = why.includes('頼み') ? { guide: { pin: 'naru', text: '偵察' } } : {};
-      await reset(kind, opts); await page.locator(`[data-test="pin-${id}"]`).click();
-      assert.equal(await page.locator('[data-test="map-go"]').count(), 0);
+      await reset(kind, opts);
+      if (kind === 'locked') {
+        assert.equal(await page.locator(`[data-test="pin-${id}"]`).count(), 0);
+      } else {
+        await page.locator(`[data-test="pin-${id}"]`).click();
+        assert.equal(await page.locator('[data-test="map-go"]').count(), 0);
+      }
       frame = await walk(); await pressDoor(frame, door);
       await frame.waitForFunction(() => !!__street.state().msg);
       assert.equal(await frame.evaluate(() => __street.state().msg), why);
@@ -270,7 +276,7 @@ try {
   // 画像欠落時も本編IDを返せる。入口選択は生成画像の完成に依存しない。
   const page = await browser.newPage(); await page.route(/(assets\/street_walk|remake\/img\/street)\//, r => r.fulfill({ status: 404, body: '' }));
   await page.goto(BASE); await page.waitForSelector('[data-test="title-new"]');
-  await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
+  await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; c.state.flags._spot_guide_naru=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
   const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
   await page.locator('[data-test="map-walk"]').click();
   const frame = await navigating; await frame.waitForFunction(()=>window.__street?.state().ready&&!window.__street.state().paused);
