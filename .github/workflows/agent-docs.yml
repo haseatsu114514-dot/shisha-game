@@ -48,6 +48,7 @@ jobs:
           # checkout@v4 uses blob:none automatically for sparse checkout.
           # No directory-wide checkout or bitmap/audio materialization.
           sparse-checkout: |
+            /.agents/skills/portrait-unify
             *.md
             *.json
             *.js
