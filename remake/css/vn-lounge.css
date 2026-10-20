@@ -46,7 +46,7 @@
   background: none;
   clip-path: none;
   font-family: "Suien Name", var(--font);
-  font-size: clamp(14px, calc(192px / var(--vn-name-length, 4)), 30px);
+  font-size: var(--vn-name-fit-size, clamp(14px, calc(192px / var(--vn-name-length, 4)), 30px));
   font-weight: 700;
   line-height: 37px;
   letter-spacing: .1em;
