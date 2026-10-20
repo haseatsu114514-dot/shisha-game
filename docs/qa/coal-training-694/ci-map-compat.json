@@ -52,12 +52,6 @@
   "street_checks": 35,
   "axe_discovery_cases": 12,
   "test_counts_or_timeouts_reduced": false,
-  "other_open_pr_overlap": {
-    "683": [],
-    "731": [],
-    "736": [],
-    "550": []
-  },
   "validation": {
     "browser": "existing Google Chrome; touch emulation",
     "server": "localhost; external resource requests blocked",
@@ -252,5 +246,117 @@
       "remake/test/browser/facility_map.mjs"
     ],
     "status": "main integration and revalidation pending; saved PASS is against d636a1a"
+  },
+  "snapshot_stage": "Initial investigation against d636a1a; final_integration records current main validation.",
+  "initial_other_open_pr_overlap": {
+    "683": [],
+    "731": [],
+    "736": [],
+    "550": []
+  },
+  "final_integration": {
+    "main": "7ce32bd83481d76ab1591709e71843907692558e",
+    "merge_commit": "de937aaa0018bb808ead2c21c22678976f15f0ab",
+    "tested_index_tree": "766ea312af4b6054043c34595780ea5e5d22eb30",
+    "effective_cases": [
+      {
+        "script": "action_context.mjs",
+        "case": "day4-visit",
+        "exit_code": 0
+      },
+      {
+        "script": "action_context.mjs",
+        "case": "day5-visit",
+        "exit_code": 0
+      },
+      {
+        "script": "axe_bar_discovery.mjs",
+        "case": "",
+        "exit_code": 0
+      },
+      {
+        "script": "street_selection.mjs",
+        "case": "",
+        "exit_code": 0
+      },
+      {
+        "script": "../store_logos.mjs",
+        "case": "",
+        "exit_code": 0
+      },
+      {
+        "script": "facility_map.mjs",
+        "case": "",
+        "exit_code": 0
+      },
+      {
+        "script": "coal_training.mjs",
+        "case": "",
+        "exit_code": 0
+      }
+    ],
+    "street_checks": 35,
+    "axe_discovery_cases": 12,
+    "store_logo_ui_cases": 18,
+    "facility_layouts": 6,
+    "coal_browser_cases": [
+      {
+        "label": "pc",
+        "status": "passed"
+      },
+      {
+        "label": "touch",
+        "status": "passed"
+      },
+      {
+        "label": "reduced",
+        "status": "passed"
+      }
+    ],
+    "missing_local_in_final_cases": [],
+    "initial_local_attempt": "Street failed before execution because its existing source cache was not hydrated. Final retry used SHA-verified cached files, with no new downloads.",
+    "reused_main_files": [
+      "remake/test/browser/action_context.mjs",
+      "remake/test/browser/axe_bar_discovery.mjs",
+      "remake/test/store_logos.mjs"
+    ],
+    "protected_main_files_unchanged": [
+      "remake/js/daily/map.js",
+      "remake/js/daily/hud.js",
+      "remake/js/daily/fortune.js",
+      "remake/js/daily/spot-access.js",
+      "remake/js/daily/spot-hours.js",
+      "remake/js/daily/kuji.js",
+      "remake/js/craft/temperature-model.js",
+      "remake/js/craft/score.js",
+      "remake/js/craft/thermometer.js"
+    ],
+    "own_map_test_changes": [
+      "Real hit-tested mouse/touch input instead of DOM click; fail when no point is exposed.",
+      "Explicit absence assertions for unrevealed ordinary facilities.",
+      "Met-only but not voluntarily visited cases on PC/touch.",
+      "Retain stride bound 320..410 rather than main widened 320..460."
+    ],
+    "metadata_pack_peak_bytes": 360447,
+    "text_delta_bytes": 1582560,
+    "tree_metadata_locally_reconstructed_bytes": 406680,
+    "image_or_lfs_downloads_for_main_integration": 0,
+    "source_git_blobs": {
+      "data/dialogue/ch1_sumi.json": "1fc8811f3410e0f7f50a3f77bc78500272ef53e1",
+      "data/kuji.json": "8f7aeae7dbfaa6b8b003b22bf14122bb960a8401",
+      "remake/css/craft.css": "15404b2853a240c5a9d7307fdbb0b481c5aa6198",
+      "remake/js/craft/coals.js": "c99a5e5eb08e4af2f31bef9fec4c144aaf6cf016",
+      "remake/js/craft/conditions.js": "3eb53ddaac25dcc2cfde1d7464880aaa6e5d99c7",
+      "remake/js/craft/heat.js": "2f3c03e44b31e84c21ea143cc951def189acd96b",
+      "remake/js/craft/heat_logic.js": "1f94b6f8eb0106c02095120cfc5e6afe0e5056ad",
+      "remake/js/craft/session.js": "55036296333fd1b0d253863bb5650fe3fac94367",
+      "remake/js/craft/steps.js": "ae7c5d4182525ae61c17c8fc3b8b2496aa769a99",
+      "remake/js/daily/coal-lesson.js": "cd58ace25c4bdcb76784558560b5310d993f6108",
+      "remake/js/daily/tonari.js": "fe97cb31410188ed547032c95cefee9e8b25b3a8",
+      "remake/test/browser/coal_training.mjs": "0908cce0d99b3fbd7c35a34e5fd67cb4ea18a697",
+      "remake/test/browser/facility_map.mjs": "3c6d7696869b87bc73d97c71c4b2768051b67a6f",
+      "remake/test/browser/street_selection.mjs": "e6ebfc552b72c9d6919e1711708ed8a7c76e4a30"
+    },
+    "remote_ci": "pending final pushed head"
   }
 }
