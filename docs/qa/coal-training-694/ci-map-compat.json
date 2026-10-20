@@ -357,6 +357,27 @@
       "remake/test/browser/facility_map.mjs": "3c6d7696869b87bc73d97c71c4b2768051b67a6f",
       "remake/test/browser/street_selection.mjs": "e6ebfc552b72c9d6919e1711708ed8a7c76e4a30"
     },
-    "remote_ci": "pending final pushed head"
+    "remote_ci": "Refer to current PR Checks; this JSON records local evidence.",
+    "readiness_regression": {
+      "runtime_commit": "741f416af12b3774e73198d5fc1e76c6fdd378df",
+      "test_git_blob": "641e71ba3fe6af2a4da7c67fcce1c2765f65d210",
+      "cases": 3,
+      "exit_code": 0,
+      "metrics": [
+        {
+          "case": "scoped-and-cached",
+          "beforeCount": 105,
+          "currentCount": 27,
+          "preparationMs": 1274,
+          "cachedMs": 5,
+          "unrelatedAtStart": 0,
+          "laterBackgroundRequests": [],
+          "repeatedRequests": 0,
+          "cachedLoadingScreens": 0
+        }
+      ],
+      "cause": "Startup warmUp may request stove_coil after title readiness; wait for its final hookah_base resource before measuring bench requests.",
+      "guard": "Assert legacy stove is excluded from current heat asset list; keep unrelated-request, cached-request and loading-screen assertions; keep original timeouts."
+    }
   }
 }

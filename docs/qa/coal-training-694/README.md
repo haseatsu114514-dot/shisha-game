@@ -109,3 +109,5 @@ CI後半の`store_logos`と`facility_map`にも同じ解放条件の不足があ
 実際の統合済みindex（tree `766ea312af4b6054043c34595780ea5e5d22eb30`）を配信し、訪問2件、斧投げBar全12件、街全35項目、ロゴ全18 UIケース、施設全6画面条件、炭のPC/タッチ/低減motion全3件がPASS。炭専用ユニットと日常VM回帰、mainとの差分の構文/whitespaceもPASS。最初の街実行は既存ソース未配置で失敗し、SHA一致cacheを配置した再実行だけを最終PASSに数える。
 
 main取り込みはcommit情報のみの限定fetch（新規pack最大360,447 bytes）、取得済みAPI差分からのtree復元（406,680 bytes）、必要なテキスト差分（1,582,560 bytes）で行い、画像/LFSは追加取得していない。検証と最終ソースblobは`ci-map-compat.json`の`final_integration`を参照。初期の前後画像と`source-hashes.json`は初回保存時のsnapshotとして保持し、統合後の全ソースhashとは区別する。
+
+`craft_readiness`の旧CI失敗では、タイトル表示後に続く`main.warmUp()`の`stove_coil`通信を、炭焼きの準備通信として拾っていた。起動先読みの最後の`hookah_base`が記録されてから計測を開始し、現在の炭焼き素材に旧コンロ画像が入らないことを追加assertする。Performance記録枠だけ起動前に2048へ確保し、本番の起動処理やtimeoutは変更しない。全3ケースがPASS、開始時の無関係通信0、再通信0、キャッシュ再表示の待機幕0。測定値はJSONの`readiness_regression`を参照。

@@ -16,6 +16,10 @@ async function init(page) {
 
 await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
+    // main.warmUp() ends with this image. Do not attribute its background
+    // stove_coil request to the bench that this case has not opened yet.
+    await page.waitForFunction(() => performance.getEntriesByType("resource")
+      .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
     await init(page);
     const scope = await page.evaluate(() => {
       const { DB, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;
@@ -30,8 +34,10 @@ await suite("craft-readiness", async check => {
         ...people.flatMap(id => [faceIconUrl(id), ...DB.manifest.portraits[id].faces.map(face => portraitInfo(id, face)?.src)]),
       ].filter(Boolean))];
       return { beforeCount: previous.length, currentCount: current.length,
+        includesLegacyStove: current.includes(makingUrl("stove_coil.png")),
         unrelated: previous.filter(url => !allowed.has(url)).map(url => new URL(url, document.baseURI).href) };
     });
+    assert.equal(scope.includesLegacyStove, false, "現在の炭焼き準備が無関係なコンロ画像に依存した");
     let release;
     const held = new Promise(resolve => { release = resolve; });
     const blocked = [];
@@ -154,6 +160,9 @@ await suite("craft-readiness", async check => {
     assert.equal(await page.locator('[data-test="coal-count"]').textContent(), "3 / 3");
     assert.equal(await page.evaluate(() => JSON.stringify(T.core.state)), await page.evaluate(() => before));
   });
+}, {
+  // Observe the final boot resource even when startup exceeds the default 250 entries.
+  initScript: () => performance.setResourceTimingBufferSize(2048),
 });
 
 if (metrics.length) {
