@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const source=await fs.readFile(new URL('../js/daily/calendar.js',import.meta.url),'utf8');
-const state={}, calls=[], saves=[], closed=new Set();
+const state={}, calls=[], saves=[], closed=new Set(), locked=new Set();
 let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
 const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
@@ -19,13 +19,13 @@ const overrides={state, DB:{flavorById:{mint:{}},dialogues:{}},
  catchesCold:()=>false,conditionForRatio:()=>({health:'green'}),
  paidAction:async fn=>({value:await fn(),spent:0}),
  play:async(id,opts)=>calls.push({type:'scene',id,opts,day:state.day,slot:state.slot}),
- chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,day:state.day,slot:state.slot});return opts.guide?.pin||'rest'},
+ chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,free:opts.guide?.free,day:state.day,slot:state.slot});return opts.guide?.pin||'rest'},
  spotById:id=>spots[id]||{id,kind:'rest',stamina:0},ownsFlavor:()=>false,
  openShop:async()=>calls.push({type:'shop'}),
  visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story.naru=1;calls.push({type:'scout',day:state.day})},
  visitSpot:async spot=>{assert.equal(spot.cost,0);assert.equal(spot.stamina,0);state.flags._c_station_registered=true;calls.push({type:'register',day:state.day,slot:state.slot})},
  visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot})},
- storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),markMet:id=>state.met[id]=true,
+ storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),isUnlocked:spot=>!locked.has(spot.id),markMet:id=>state.met[id]=true,
  onAction:()=>actionEnds++,presentNow:asyncNoop,
  restingToday:()=>!!state.restDay?.fullDay,
  runNightPlan:async()=>0,nightPlan:()=>[],nightOccupied:()=>false,
@@ -44,7 +44,7 @@ await calendar.link(async spec=>{
 });
 await calendar.evaluate();const c=calendar.namespace;
 function reset({day=2,slot=0,flags={},story={}}={}){
- Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();
+ Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();
 }
 reset();assert.equal(c.dueDelivery().charId,'minto');await c.deliver(c.dueDelivery());assert.equal(c.dueDelivery().charId,'adam');await c.deliver(c.dueDelivery());
 assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(state.slot,2);assert.equal(actionEnds,2);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);
@@ -84,4 +84,15 @@ reset({day:2,flags:{_c_station_registered:false,_delivery_adam_done:true,_delive
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert(!calls.some(x=>x.type==='register'));assert.equal(state.flags._c_station_registered,false);
 assert.equal(state.money,10000);
+// Registration remains free and cannot strand old saves at a locked/closed venue.
+for(const unavailable of [locked,closed]) {
+ reset({day:2,flags:{_c_station_registered:false}});unavailable.add('c_station');
+ await c.runDaily({untilDay:3,nightEvents:{}});
+ assert(!calls.some(x=>x.type==='register'));assert.equal(state.money,14000);
+ assert.equal(state.flags._c_station_registered,false);
+ unavailable.clear();await c.runDaily({untilDay:4,nightEvents:{}});
+ assert.equal(calls.find(x=>x.type==='register').day,3);
+ assert.equal(calls.find(x=>x.pin==='c_station').free,'参加登録（代金なし）');
+ assert.equal(state.money,14000);
+}
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');

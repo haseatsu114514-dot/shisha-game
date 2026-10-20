@@ -17,7 +17,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { runHomePractice } from "./home-practice.js";
@@ -84,7 +84,7 @@ export async function runDaily(def) {
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
       && state.flags._errand_scout_done
-      && !(state.flags._delivery_adam_done && state.flags._delivery_minto_done)) {
+      && (state.flags._delivery_schedule_v2 || !(state.flags._delivery_adam_done && state.flags._delivery_minto_done))) {
       state.flags._delivery_schedule_v2 = true;
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
     }
@@ -249,8 +249,10 @@ async function day1Errands() {
 }
 
 async function registerTournament() {
-  await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！" } });
   const venue = spotById("c_station");
+  // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
+  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
+  await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
