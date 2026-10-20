@@ -22,7 +22,7 @@ const values={state,DB,el,layers,SE:{cancel:noop,click:noop,select:noop},hooks:{
  play:async()=>{trace.push('play');return {cancelled:state.cancelled};},
  bgUrl:x=>x,setBg:async()=>trace.push('background'),setPhoneBadge:noop,unreadCount:()=>0,syncSamechanKnowledge:noop,
  interruptMap:()=>{trace.push('interrupt');return true;},dropRetired:()=>trace.push('drop-map'),fadeBlack:async()=>trace.push('empty-fade'),
- isFriendEvent:()=>false,isFinaleEvent:()=>false,
+ isFriendEvent:()=>false,isFinaleEvent:()=>false,visitRival:async()=>true,
 };
 async function load(file, extras='', overrides={}){
  const code=await fs.readFile(new URL(`../js/daily/${file}`,import.meta.url),'utf8');
@@ -39,13 +39,13 @@ const source={id:invite.originId,sender:'minto',type:'invitation',accept_event:i
 assert.equal(invitations.invitationVisitSpot(invite,source),'minto');assert.equal(invitations.invitationVisitSpot({event:'unknown',sender:'minto'},null),null,'never guess venue from sender');
 assert.equal(invitations.visitReminderSpot({...source,private_schedule:'holiday_or_after_close'}),null);
 reset();DB.lime=[source];let target=invite;
-const calendar=await load('calendar.js','\nexport { meetInvitation, readLime };',{
+const calendar=await load('calendar.js','\nexport { meetInvitation, readLime, performSpotAction }; export const configure = () => { chapterDef = {nightEvents:{}}; };',{
  openLime:async opts=>{trace.push('phone-open');state.pendingInvite=target;await opts.beforeClose();trace.push('phone-close');},
 });
 await calendar.readLime('minto');assert.deepEqual(trace.slice(0,5),['phone-open','background','interrupt','drop-map','phone-close'],'prepare destination and retire map before phone closes');
 trace.length=0;assert.equal(await calendar.meetInvitation(invite),true);assert(!trace.includes('empty-fade'),'no black-to-map roundtrip');assert.equal(state.visitedDay.minto,4);assert.equal(state.flags._invitation_visit_minto,'1:4');assert.equal(state.money,7000);assert.equal(trace.filter(x=>x==='completed').length,1);
 const access=await load('spot-access.js');assert.equal(access.spotAvailability({id:'minto',kind:'rival'}).ok,false);assert.equal(access.spotAvailability({id:'shop',kind:'shop'}).ok,true,'unrelated visit unchanged');
-state.flags._invitation_visit_shop='1:4';assert.equal(access.spotAvailability({id:'shop',kind:'shop'}).ok,false);assert.equal(access.spotAvailability({id:'shop',kind:'shop'},{visitKind:'forced'}).ok,true,'forced event exemption');state.day++;assert.equal(access.spotAvailability({id:'minto',kind:'rival'}).ok,true,'next day');
+state.flags._invitation_visit_shop='1:4';assert.equal(access.spotAvailability({id:'shop',kind:'shop'}).ok,false);calendar.configure();assert.equal((await calendar.performSpotAction({id:'minto',kind:'rival',charId:'minto',stamina:0})).used,true,'forced/direct event entry keeps its existing exemption');state.day++;assert.equal(access.spotAvailability({id:'minto',kind:'rival'}).ok,true,'next day');
 reset();state.cancelled=true;DB.lime=[source];assert.equal(await calendar.meetInvitation(invite),false);assert.equal(state.visitedDay.minto,undefined);assert.equal(state.flags._invitation_visit_minto,undefined);assert(!trace.includes('completed'));
 reset();target={...invite,slot:1};DB.lime=[source];await calendar.readLime('minto');assert(!trace.includes('background'),'future promise does not move');assert.equal(state.pendingInvite,target);assert(!trace.includes('empty-fade'));
 const calendarCode=await fs.readFile(new URL('../js/daily/calendar.js',import.meta.url),'utf8');assert(!calendarCode.includes('notice: inv'),'promise banner absent');
