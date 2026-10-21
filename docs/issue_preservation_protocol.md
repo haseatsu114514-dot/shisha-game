@@ -2,11 +2,14 @@
 
 ## この段階の実装範囲
 
-この実装は、非ownerによる保全操作の契約、APIをmockした検証、読み取り専用の
-`check` を用意する段階である。本番の停止・再書込み防止を検証する実行基盤は
-未接続のため、本番の保全操作は稼働していない。対応する証拠を検証できない
-場合は `UNSUPPORTED_FENCING` で失敗し、branch、commit、PR、予約を書き換えない。
+この実装は、非ownerによる保全操作の契約、署名付きruntime証明の検証adapter、
+APIをmockした保存・再開・transfer記録の生成、読み取り専用の `check` を提供する。
+**本番の停止・資格情報失効を実行するcontrollerと、その証明の取得先は未接続**である。
+署名を検証できても、それだけで実効的な停止・書込み防止が導入されたとは扱わない。
+本番CLIと手動workflowは引き続きread-onlyで、adapter未接続時は
+`UNSUPPORTED_FENCING` で失敗し、branch、commit、PR、予約を書き換えない。
 成功した読取りやテストも、保存・移管・実装再開の許可にはならない。
+本段階のPRは `Refs #614` とし、本番接続が完了したとは扱わない。
 
 この最小実装で表現できる成果は、合計1 MiB以下・10ファイル以下のUTF-8テキストの
 新規追加だけであり、各ファイルは1 byte以上を必要とする。空ファイルは未対応である。
@@ -120,6 +123,62 @@ checkは独立したconcurrency groupを使い、本番予約のpending runを�
 場合は、実際に拒否された操作、HTTP状態・公開可能な理由、上記の正確な入力を
 報告する。未確認の権限不足理由を推測せず、403等を別資格情報や未承認経路で
 回避しない。checkを依頼しても予約・保存が完了したとは扱わない。
+
+## ホスト用runtime adapterと保存再開
+
+`createRuntimeAdapter({publicKey, readEvidence})` は、信頼する実行基盤の署名付き
+証明を検証するlibraryである。`publicKey` はホスト設定で固定したEd25519公開鍵、
+`readEvidence` はその基盤に接続するホストコードに限定する。承認manifest、Issue、
+任意URLや実行者入力から公開鍵・接続先を選ばない。秘密鍵の生成・取得・保存、
+資格情報の探索・変更、workflow権限の拡大は行わない。
+
+各検証で新しい256-bit nonceを発行し、`readEvidence` へ
+`{nonce, manifestDigest, manifest}` を渡す。戻り値は
+`{statement, signature}`（statementのUTF-8原文とそのEd25519署名のBase64）である。
+statementは重複キーのないJSONで、次のフィールドのみを含む。
+
+| フィールド | 必須値 |
+| --- | --- |
+| `schema` | `issue-preservation-runtime/v1` |
+| `repository` | `haseatsu114514-dot/shisha-game` |
+| `manifest_sha256` / `nonce` | 今回の要求のdigest / challengeと完全一致 |
+| `issued_at` / `expires_at` | epochミリ秒の整数。現在有効で有効期間は最大60秒 |
+| `stopped` / `inventoryComplete` / `fenced` | すべて `true` |
+| `scope` | `source-descendants-all-writers` |
+| `restart_denied` / `direct_writes_denied` | すべて `true` |
+
+証明発行側は元実行・子実行・残存writerを停止し、共有資格情報による直接pushと
+再起動後の書込みも実効的に拒否し、全成果をmanifestと照合した上で署名する必要が
+ある。fenceは証明の有効期限で解除せず、正式移管後も旧writerの直接書込みと再起動を
+拒否し続ける。これらの制御を持たないサービスの自己申告署名は本番要件を満たさない。
+nonceは過去の証明の再利用を防ぎ、各書込み境界の新規照会は失効・棚卸し変化を
+検出する。署名の有効期間だけでwriterの停止を代用しない。
+このcontroller・鍵の信頼設定・取得経路の正式導入は残作業であり、任意adapterを
+CLIへ渡す機能や、汎用の書込みworkflowは追加していない。
+
+`preserve(envelope, payload, context)` の保存経路はmock APIで検証する。
+新規ref、期待headを指定した単一commit、Draft PRのみを作成し、予約を変更しない。
+応答不明時に同じ呼出し内で書込みを再試行しない。次回はリモートを読み戻し、
+完全一致の単一commitだけが残っていればcommitを増やさずPR作成から再開する。
+一致するDraft PRまであれば書込みなしで返す。baseだけのrefは作成主体を証明できず、
+`PARTIAL_PRESERVATION` で保留する。既存refの上書き・削除は行わない。
+変更された承認、main、台帳、証明、保存内容は再開時にも拒否する。
+
+## 既存transferへの接続
+
+`prepareTransfer(envelope, payload, context)` はGETとruntime証明の再検証だけを行う。
+保存済みという呼出し元の申告は使わず、完全commit・親・変更・blob・ref・Draft PRと
+最新の承認・台帳・証明を再検証し、既存coordinatorが読む
+`<!-- issue-handoff:v1 {record} -->` の文字列を返す。recordには
+`issue/from/to/claim_run/stopped/pushed/prs[{number,head}]` が入る。
+これは未投稿のレビュー用記録であり、承認コメントの自動追加・転送dispatch・予約更新は
+行わない。`pushed:true` は全manifestのリモート照合に成功した場合にのみ生成する。
+
+実際の接続では元claimの記録された実行者、または現行の管理者復旧条件を満たす者が
+その記録を同じIssueへ投稿し、既存の `transfer` にそのコメントID、旧claim run、
+明示した新workerを渡す。署名付き停止証明はこの投稿者条件を緩和しない。
+transfer成功と最新bot台帳の新owner/run一致を確認してから実装を再開する。
+本実装は既存coordinatorとそのOpen PR必須ガードを変更しない。
 
 ## 将来の保全操作を有効にする条件
 

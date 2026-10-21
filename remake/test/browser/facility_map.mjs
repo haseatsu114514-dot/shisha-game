@@ -59,6 +59,7 @@ try {
         if (scenario !== 'locked') {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
+          s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }
@@ -116,10 +117,11 @@ try {
       for (const [id, facility] of Object.entries(wanted)) {
         const pin = pins.find(p => p.id === id);
         if (!pin) {
-          assert((id === 'fortune' && scenario === 'chapter2') || (scenario === 'locked' && ['kannon', 'cafe', 'choizap'].includes(id)));
+          // #780: 未解放の施設は「？？？」でなく地図から外す。
+          assert((id === 'fortune' && scenario === 'chapter2') || scenario === 'locked', `${scenario}/${id} pin missing; pins=${pins.map(p => p.id).join(',')}`);
           continue;
         }
-        const hidden = pin.locked || (id === 'fortune' && scenario === 'locked');
+        const hidden = pin.locked; // #780: 路上占いは未面識でも「？？？」にせず施設として見せる
         assert.equal(pin.facility, !baseline && !hidden ? facility : null, `${scenario}/${id} facility visibility`);
         if (!baseline && !hidden) {
           if (pin.eventContactDelta) assert(Math.abs(pin.eventContactDelta[0] - 8) < 1 && Math.abs(pin.eventContactDelta[1] + 3) < 1, `${id} event mark must touch its opaque contour anchor`);

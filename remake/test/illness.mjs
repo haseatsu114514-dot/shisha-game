@@ -25,7 +25,7 @@ let rng = .99, route = [], decisions = [], shifts = 0;
 const math = Object.create(Math); math.random = () => rng;
 const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTimeout: () => 0, clearTimeout() {}, document: { querySelector: () => null } });
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
-const db = { dialogues: {}, statusTexts: {} };
+const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
@@ -34,7 +34,7 @@ const values = {
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },

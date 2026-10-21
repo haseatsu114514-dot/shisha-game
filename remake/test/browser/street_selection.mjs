@@ -29,6 +29,7 @@ try {
         T.map.interruptMap('__fixture__'); T.core.newGame(); const s = T.core.state;
         Object.assign(s, { phase: 'daily', day: 4 }); s.met.naru = s.met.minto = true;
         s.flags._spot_guide_naru = s.flags._spot_guide_minto = true;
+        if (kind !== 'locked' && kind !== 'met-only') s.flags._cafe_introduced = true;
         if (kind === 'locked') { delete s.met.naru; delete s.flags._spot_guide_naru; }
         if (kind === 'met-only') delete s.flags._spot_guide_naru;
         if (kind === 'closed') s.day = 3;
@@ -277,7 +278,7 @@ try {
   // 画像欠落時も本編IDを返せる。入口選択は生成画像の完成に依存しない。
   const page = await browser.newPage(); await page.route(/(assets\/street_walk|remake\/img\/street)\//, r => r.fulfill({ status: 404, body: '' }));
   await page.goto(BASE); await page.waitForSelector('[data-test="title-new"]');
-  await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; c.state.flags._spot_guide_naru=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
+  await page.evaluate(async () => { const c = await import('./js/core/state.js'); const m = await import('./js/daily/map.js'); c.newGame(); c.state.phase='daily'; c.state.met.naru=true; c.state.flags._spot_guide_naru=true; c.state.flags._cafe_introduced=true; window.selected='pending'; m.chooseSpot().then(v=>selected=v); });
   const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
   await page.locator('[data-test="map-walk"]').click();
   const frame = await navigating; await frame.waitForFunction(()=>window.__street?.state().ready&&!window.__street.state().paused);
