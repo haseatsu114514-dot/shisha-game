@@ -17,6 +17,7 @@ on:
       - 'remake/js/daily/home-shisha.js'
       - 'remake/js/daily/home-rig.js'
       - 'remake/test/home_shisha.mjs'
+      - 'remake/test/practice_shop_only_783.mjs'
       - 'remake/js/daily/reel.js'
       - 'remake/js/daily/cafe-ideas.js'
       - 'remake/js/chapters/ch2-story-data.js'
@@ -37,6 +38,7 @@ on:
       - 'remake/js/daily/home-shisha.js'
       - 'remake/js/daily/home-rig.js'
       - 'remake/test/home_shisha.mjs'
+      - 'remake/test/practice_shop_only_783.mjs'
       - 'remake/js/daily/reel.js'
       - 'remake/js/daily/cafe-ideas.js'
       - 'remake/js/chapters/ch2-story-data.js'
@@ -80,6 +82,8 @@ jobs:
         run: node remake/test/golden_ratio.mjs
       - name: Validate home shisha bedtime puff (#638)
         run: node remake/test/home_shisha.mjs
+      - name: Validate shop-only practice and old home-practice saves (#783)
+        run: node remake/test/practice_shop_only_783.mjs
       - name: Validate Pakki slot setting hints, guide and history (#634)
         run: node --experimental-vm-modules remake/test/reel_hints.mjs
       - name: Validate cafe recipe ideas (#621)

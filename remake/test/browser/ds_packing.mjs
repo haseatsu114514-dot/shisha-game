@@ -104,7 +104,7 @@ try {
       await p.goto(base); await ready(p);
       result.fixture = await p.evaluate(async () => {
         const core = await import("./js/core/state.js"), s = core.newState();
-        Object.assign(s, {phase:"daily",day:6,slot:1,money:45678,stamina:90,weatherSeed:4});
+        Object.assign(s, {phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
         Object.assign(s.flags, {_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds678:"isolated"});
         s.owned.push("home_rig_set");
         s.flavorStock = {double_apple:20,mint:10};
