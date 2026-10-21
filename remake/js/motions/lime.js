@@ -22,15 +22,31 @@ export async function exchange(charId, context = null) {
     const line = svg("path", { d: "M480 350 C560 310 720 390 800 350", fill: "none", stroke: "#b9e6d4", "stroke-width": 5, pathLength: 1, "stroke-dasharray": 1 });
     const art = stageSvg([line]);
     const title = el("div.mo-lime-title", [el("small", { text: "LIME" }), el("strong", { text: "連絡先がつながった" })]);
-    node.append(backdrop("#171225ee"), art, cards, title);
-    await Promise.all([
-      move(own, [{ transform: "translateX(-180px) rotate(-8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),
-      move(other, [{ transform: "translateX(180px) rotate(8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),
-    ]);
-    SE.phone();
-    await move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 500);
-    await move(title, [{ transform: "translateY(12px)", opacity: 0 }, { transform: "none", opacity: 1 }], 360);
-    await sleep(1100);
-    await move(node, [{ opacity: 1 }, { opacity: 0 }], 380);
+    // 採用済み1280×720の構図を保ち、DSの可変stageでも全体を収める。
+    const scene = el("div.mo-lime-scene", { style: {
+      position: "absolute", left: "50%", top: "50%", width: "1280px", height: "720px",
+      transformOrigin: "center",
+    } }, [art, cards, title]);
+    const fit = () => {
+      const scale = Math.min(node.clientWidth / 1280, node.clientHeight / 720);
+      scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    };
+    node.append(backdrop("#171225ee"), scene);
+    fit();
+    const resize = new ResizeObserver(fit);
+    resize.observe(node);
+    try {
+      await Promise.all([
+        move(own, [{ transform: "translateX(-180px) rotate(-8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),
+        move(other, [{ transform: "translateX(180px) rotate(8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),
+      ]);
+      SE.phone();
+      await move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 500);
+      await move(title, [{ transform: "translateY(12px)", opacity: 0 }, { transform: "none", opacity: 1 }], 360);
+      await sleep(1100);
+      await move(node, [{ opacity: 1 }, { opacity: 0 }], 380);
+    } finally {
+      resize.disconnect();
+    }
   });
 }
