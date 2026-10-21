@@ -6,6 +6,9 @@ import { openingStatus } from "./spot-hours.js";
 
 export const freeGuide = (s, guide) => !!guide?.free && guide.pin === s.id;
 
+// 表示も入店も同じ解放判定へ。定休日等はピンを隠す理由にはしない。
+export const spotVisible = s => isUnlocked(s);
+
 export function spotAvailability(s, { guide = null } = {}) {
   if (!isUnlocked(s)) return { ok: false, why: "locked" };
   if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
