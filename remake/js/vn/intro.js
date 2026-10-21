@@ -10,6 +10,8 @@ import { state } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
+import { mountIntro } from "./intro-fit.js";
+
 import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro } from "./intro-art.js";
 
@@ -82,12 +84,18 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
       document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
     ]);
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
-    layers.fx.append(host);
-    layoutIntro(host, id, variant, intro);
-    const animations = animateIntro(host, id);
-    onAppear?.();
-    SE.select();
-    await holdIntro(host, animations);
+    const unmount = mountIntro(host, layers.fx);
+    const animations = [];
+    try {
+      layoutIntro(host, id, variant, intro);
+      animations.push(...animateIntro(host, id));
+      onAppear?.();
+      SE.select();
+      await holdIntro(host);
+    } finally {
+      animations.forEach((animation) => animation.cancel());
+      unmount();
+    }
     return;
   }
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
@@ -113,13 +121,17 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
-  layers.fx.append(host);
-  onAppear?.();
-  SE.select();
-  await holdIntro(host);
+  const unmount = mountIntro(host, layers.fx);
+  try {
+    onAppear?.();
+    SE.select();
+    await holdIntro(host);
+  } finally {
+    unmount();
+  }
 }
 
-async function holdIntro(host, animations = []) {
+async function holdIntro(host) {
   await sleep(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -135,7 +147,6 @@ async function holdIntro(host, animations = []) {
     await sleep(280);
   } finally {
     window.removeEventListener("keydown", onKey, true);
-    animations.forEach((animation) => animation.cancel());
     host.remove();
   }
 }
