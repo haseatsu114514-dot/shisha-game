@@ -386,7 +386,10 @@ await suite("shop-ui", async check => {
       (await import('./js/chapters/ch1.js')).setupHooks();
       S.error = null; (await import('./js/daily/calendar.js')).runDaily({ nightEvents: {} }).catch(e => S.error = e.stack);
     });
-    const go = async () => { await page.locator('.map:not(.done) [data-test="pin-shop"]').click(); await tap(page, 'map-go'); };
+    const go = async () => {
+      await page.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
+      await page.locator('.map:not(.done) [data-test="pin-shop"]').click(); await tap(page, 'map-go');
+    };
     await go(); await tap(page, 'shop-entry-back');
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
     await go(); await tap(page, 'shop-enter'); await tap(page, 'buy-mint'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');
