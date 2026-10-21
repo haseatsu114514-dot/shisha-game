@@ -74,9 +74,9 @@ export function createContinueView({ script, speaker, character, premium, layout
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
+      ...(!topActions ? [actions] : []),
       dialogue, live,
       el("div.go-playback", [el("div.go-caption-controls", [next, proceed])]),
-      ...(!topActions ? [actions] : []),
     ]),
     el("div.go-effect", { "aria-hidden": "true" }, [effectWord,
       el("img.go-approval", { src: art("approval_stamp"), alt: "可決", draggable: "false" }), el("i.go-pencil"), el("i.go-scan"),
