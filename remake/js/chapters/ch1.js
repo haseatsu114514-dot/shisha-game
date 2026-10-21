@@ -331,7 +331,7 @@ async function earlyPractice() {
   }
   if (!progress.practiceDone && progress.choice !== "review") {
     if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はマップの家から「家で練習する」を選べます。", recommended: recommendedDrill() });
+      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。", recommended: recommendedDrill() });
       save();
     }
     beginEvePractice(progress);
