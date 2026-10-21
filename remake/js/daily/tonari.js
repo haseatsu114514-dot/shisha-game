@@ -13,6 +13,7 @@ import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable } from "./hiyori-axe.js";
+import { canStudyAttack, studyAttack } from "./attack-lesson.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
@@ -197,6 +198,7 @@ function afterShiftMenu() {
       el("p.sub-lead", { text: "シフトの片付けを終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
         opt("スミさんと話す", sumiNew ? "今日は何か教えてもらえそうだ" : "落ち着いた一台を分けてもらう", "sumi", "after-sumi"),
+        canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
@@ -206,6 +208,7 @@ function afterShiftMenu() {
 
 async function afterShift() {
   const pickAfter = await afterShiftMenu();
+  if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "sumi") await visitChar("sumi");
   if (pickAfter === "cube_coals") await studyCubeCoals();
 }
