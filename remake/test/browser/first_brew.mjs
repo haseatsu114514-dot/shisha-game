@@ -25,6 +25,45 @@ async function init(page) {
 const guide = page => page.locator(".bench-guide summary");
 const shot = async (page, name) => { if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/${name}.png` }); };
 
+// 長い支給葉リストはスクロールして操作する。全ボタンの到達性を個別に検査する。
+async function assertFirstMixControlsReachable(page) {
+  const buttons = page.locator('.mix-list .fr-btn');
+  assert.equal(await buttons.count(), 6, '3種類それぞれの増減ボタンがある');
+  const list = await page.locator('.mix-list').evaluate(n => ({
+    overflow: getComputedStyle(n).overflowY, horizontalFits: n.scrollWidth <= n.clientWidth + 1,
+  }));
+  assert.equal(list.overflow, 'auto'); assert(list.horizontalFits, '支給葉リストに横方向のはみ出しがない');
+  const confirm = page.locator('[data-test="mix-ok"]');
+  const assertConfirmReachable = async () => {
+    await assertFits(page, '[data-test="mix-ok"]');
+    assert(await confirm.isEnabled(), '合計12gの配合を確定できる');
+    assert(await confirm.evaluate(n => {
+      const b = n.getBoundingClientRect();
+      const hit = document.elementFromPoint((b.left + b.right) / 2, (b.top + b.bottom) / 2);
+      return hit === n || n.contains(hit);
+    }), '葉をスクロールしても配合の確定ボタンへ到達できる');
+  };
+  const amounts = page.locator('.fr-g, .fr-ratio');
+  const beforeNavigation = await amounts.allTextContents();
+  await assertConfirmReachable();
+  for (let i = 0; i < await buttons.count(); i++) {
+    const button = buttons.nth(i);
+    await button.scrollIntoViewIfNeeded();
+    const test = await button.getAttribute('data-test');
+    await assertFits(page, '[data-test="' + test + '"]');
+    const reachable = await button.evaluate(n => {
+      const b = n.getBoundingClientRect(), list = n.closest('.mix-list').getBoundingClientRect();
+      const hit = document.elementFromPoint((b.left + b.right) / 2, (b.top + b.bottom) / 2);
+      return { inList: b.left >= list.left - 1 && b.top >= list.top - 1
+        && b.right <= list.right + 1 && b.bottom <= list.bottom + 1,
+        hit: hit === n || n.contains(hit) };
+    });
+    assert(reachable.inList && reachable.hit, '支給葉のボタンへ到達できる: ' + test + ' ' + JSON.stringify(reachable));
+    await assertConfirmReachable();
+  }
+  assert.deepEqual(await amounts.allTextContents(), beforeNavigation, 'スクロールで配合を変えない');
+}
+
 await suite("first-brew", async check => {
   for (const touch of [false, true]) await check(`heat-help-${touch ? "touch" : "pc"}`, async page => {
     await init(page);
@@ -117,7 +156,8 @@ await suite("first-brew", async check => {
       assert.deepEqual(await page.locator(".flavor-row").evaluateAll(nodes => nodes.map(n => n.dataset.flavor)), ["lemon", "orange", "mint"]);
       for (let i = 0; i < 12 - mint; i++) await page.locator(`[data-test="mix-plus-${flavor}"]`).click();
       for (let i = 0; i < mint; i++) await page.locator('[data-test="mix-plus-mint"]').click();
-      await assertFits(page, '[data-test="mix-ok"], .fr-btn');
+      if (flavor === "orange") await assertFirstMixControlsReachable(page);
+      else await assertFits(page, '[data-test="mix-ok"], .fr-btn');
       assert.equal(await page.locator(".bench-mode small").evaluate(n => n.getClientRects().length), 1, "注文の表示を1行に収める");
       await shot(page, `first-mix-${flavor}`);
       const stock = await page.evaluate(() => JSON.stringify(T.core.state.flavorStock));
