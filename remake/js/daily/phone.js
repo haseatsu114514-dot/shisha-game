@@ -669,7 +669,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         delete state.flags[`_invited_${originId(item)}`];
       }
       if (m.decline_response) await theirs(m.decline_response.text);
-      gainAffinity(m.sender, 1);
+      gainAffinity(m.sender, 1, { source: "lime" });
     }
     return;
   }
@@ -685,7 +685,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     try {
       // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
       const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
+      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), { source: "lime" });
     } finally {
       bond.private = false;
     }
