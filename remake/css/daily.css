@@ -689,6 +689,9 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .lime-face.blank { background: linear-gradient(160deg, #5d6f86, #394559); }
 .lime-face.sm { width: 28px; height: 28px; border-width: 1px; font-size: 12px; }
 .lime-face.gap { visibility: hidden; }
+/* 左寄りの元絵だけ、円枠を動かさず右側を少し切り詰めて顔を中央へ。 */
+img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3px; object-position: left center; }
+.lcr-face img.lime-face[src$="/face_hiyori.png"] { padding-left: 4px; }
 .lime-chat {
   flex: 1;
   overflow-y: auto;
