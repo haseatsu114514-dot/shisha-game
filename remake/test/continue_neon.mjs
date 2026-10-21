@@ -1,6 +1,7 @@
 // 参照UI専用: 1080p/720p/スマホ、顔の保護、実時計HUD、軽減・停止・キーボード。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/continue_neon.mjs
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -79,6 +80,52 @@ try {
     assert(safe.hudOutsideFace && safe.imagesLoaded);
   }
   console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
+  // #590: measure the actual scaled target, feedback handoff, guard and both callbacks.
+  const saved = await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } }));
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const reducedMotion of [false, true]) for (const choice of ["retry", "quit"]) {
+      await mount({ variant: 0, reducedMotion });
+      await page.evaluate(choice => document.querySelector(`.go-${choice}`).click(), choice);
+      await page.clock.runFor(100);
+      assert(await page.locator(".go-proceed").isHidden(), "keep the selected choice visible for 180ms");
+      assert(await page.locator(".end-actions").isVisible());
+      await page.clock.runFor(100);
+      assert(await page.locator(".end-actions").isHidden());
+      assert(await page.locator(".go-proceed").isVisible());
+      const target = await page.locator(".go-proceed").evaluate(button => {
+        const r = button.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+        const dialogue = document.querySelector(".go-dialogue").getBoundingClientRect();
+        return { width: r.width, height: r.height, centered: Math.abs(r.x + r.width / 2 - (stage.x + stage.width / 2)) < 1,
+          inside: r.left >= stage.left && r.right <= stage.right && r.top >= stage.top && r.bottom <= stage.bottom + .1,
+          separate: r.top >= dialogue.bottom, focused: document.activeElement === button };
+      });
+      assert(target.width >= 44 && target.height >= 44, `scaled target >=44 CSS px: ${JSON.stringify(target)}`);
+      assert(target.centered && target.inside && target.separate && target.focused, JSON.stringify(target));
+      assert.equal(await page.locator(".go-clock").evaluate(n => getComputedStyle(n).visibility), "hidden");
+      const firstLine = await page.locator(".go-speech-text").textContent();
+      await page.clock.runFor(200);
+      await page.evaluate(() => { for (let i = 0; i < 10; i++) document.querySelector(".go-proceed").click(); });
+      assert.equal(await page.locator(".go-speech-text").textContent(), firstLine, "450ms reaction guard survives handoff");
+      assert.deepEqual(await page.evaluate(() => __decisions), []);
+      await page.clock.runFor(100);
+      const revealed = await page.locator(".go-letter").evaluateAll(letters => letters.every(n => n.classList.contains("go-on")));
+      if (!revealed) await page.evaluate(() => document.querySelector(".go-proceed").click()); // reveal all before advancing
+      assert(await page.locator(".go-letter").evaluateAll(letters => letters.every(n => n.classList.contains("go-on"))));
+      if (process.env.SHOTS && choice === "retry" && !reducedMotion) {
+        fs.mkdirSync(process.env.SHOTS, { recursive: true });
+        await page.screenshot({ path: `${process.env.SHOTS}/proceed-${viewport.width}.png` });
+      }
+      await page.evaluate(() => document.querySelector(".go-proceed").click());
+      assert.notEqual(await page.locator(".go-speech-text").textContent(), firstLine, "next press advances the existing reaction");
+      await page.clock.runFor(9000);
+      assert.deepEqual(await page.evaluate(() => __decisions), [choice === "retry" ? "retry" : "title"]);
+      await page.clock.runFor(9000);
+      assert.deepEqual(await page.evaluate(() => __decisions), [choice === "retry" ? "retry" : "title"], "callback fires once");
+    }
+  }
+  assert.equal(await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } })), saved);
+  console.log("PASS: centered proceed >=44 CSS px at 1280/844/667/390 widths; 180ms feedback, 450ms guard, both branches, normal/reduced, save unchanged");
   await page.setViewportSize({ width: 1280, height: 720 }); await mount();
   const initial = await reading(); assert.equal(initial.count, "20"); assert.equal(initial.echo, "20");
   await page.clock.runFor(5200);
