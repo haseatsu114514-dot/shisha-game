@@ -58,7 +58,9 @@ for (let seed = 0; seed < 500; seed++) {
   state.day++; assert.equal(hiyoriShopLocation(), null, "Report must precede relay");
   assert(await meetHiyoriAtTonari());
 }
-assert.deepEqual([...firstLocations].sort(), shops.map(s => s.id).sort());
+const eligibleShops = shops.filter(s => s.id !== "shop");
+assert.deepEqual([...firstLocations].sort(), eligibleShops.map(s => s.id).sort());
+assert(!firstLocations.has("shop"), "Dr.fookah showroom must never be chosen for first meeting");
 let encounters = 0, absent = 0;
 for (let seed = 0; seed < 100; seed++) {
   reset(seed);
@@ -69,6 +71,7 @@ for (let seed = 0; seed < 100; seed++) {
     assert.equal(JSON.stringify(state), before);
     assert(shops.filter(hiyoriShopEncounterDue).length <= 1);
     if (!location) { absent++; continue; }
+    assert.notEqual(location, "shop", "Showroom must never be chosen during relay/cracks/repeat");
     const other = shops.find(s => s.id !== location);
     assert(!await visitHiyoriAtShop(other));
     assert(await visitHiyoriAtShop(shops.find(s => s.id === location)));
@@ -86,13 +89,16 @@ const planned = hiyoriShopLocation();
 shops.find(s => s.id === planned).locked = true;
 assert(await visitHiyoriAtShop(shops.find(s => s.id === planned), { scheduledSpot: planned }));
 delete shops.find(s => s.id === planned).locked;
-// Closure, locks, daytime showroom and accepted invitations override spontaneous appearances.
+// Closure, locks, showroom ineligibility and accepted invitations override spontaneous appearances.
 reset(131, {}); state.slot = 1;
 const scheduled = shops.find(s => s.id === hiyoriShopLocation());
 scheduled.locked = true; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.locked;
 scheduled.closedOn = state.day % 7; assert.notEqual(hiyoriShopLocation(), scheduled.id); delete scheduled.closedOn;
 state.visitedDay = { [scheduled.id]: state.day }; assert.notEqual(hiyoriShopLocation(), scheduled.id); state.visitedDay = {};
 state.slot = 0; assert.notEqual(hiyoriShopLocation(), "shop");
+state.slot = 1; assert.notEqual(hiyoriShopLocation(), "shop");
+assert(!mod.namespace.hiyoriShopEligible({ id: "shop", kind: "shop" }));
+assert(!await visitHiyoriAtShop({ id: "shop", kind: "shop" }, { scheduledSpot: "shop" }));
 state.pendingInvite = { sender: "hiyori", event: "__hiyori_shop__", day: state.day };
 assert.equal(hiyoriShopLocation(), null); delete state.pendingInvite;
 state.chapter = 3; assert.equal(hiyoriShopLocation(), null);

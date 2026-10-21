@@ -1,0 +1,37 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "normal"
+    ],
+    "h": 0.9867,
+    "b": 0.01,
+    "ax": 0.4861,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "maki",
+    "name": "斧崎 マキ（おのざき まき）",
+    "display_name": "斧崎マキ",
+    "role": "venue_host",
+    "age": 34,
+    "nationality": "Japan",
+    "affiliation": "斧投げBar",
+    "play_style": "豪快な職人気質",
+    "description": "夜だけ開く斧投げBarの女性店主。短い赤茶の髪、がっしりした肩、革のエプロン。よく笑う豪快な職人気質で、点数だけでなく投げ方の上達を覚えている。力任せの一投には短く助言し、きれいに刺さると客より喜ぶ。口癖は「斧に仕事をさせな」。客や人に刃を向ける冗談はしない。",
+    "visual_concepts": [
+      "34歳の大柄な女性。短い赤茶の髪に銅色の一房、そばかす、琥珀色の目。錆赤の作業シャツ、濃茶の革エプロン、作業靴。"
+    ],
+    "spriteScale": 1.035
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/maki/chr_maki_normal.png",
+      "sha": "98821db463c3befa092330989d08e2440466b83f",
+      "size": 578450
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

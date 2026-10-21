@@ -3,7 +3,9 @@ import { BULLS, KILLS } from "./axe-model.js";
 // One resolved score drives celebration, never just whether the axe can stick in wood.
 export function impactFeedback(shot) {
   const hit = shot?.score > 0;
-  return { hit, duration: hit ? 1150 : 0, strength: !hit ? 0 : shot.score >= 7 ? 7 : shot.score === 6 ? 5 : 2.5,
+  // Bullseye and killshot get an extra-strong celebration; the flag only reads the resolved outcome.
+  const special = hit && (shot.outcome === "bull" || shot.outcome === "killshot");
+  return { hit, special, duration: hit ? 1150 : 0, strength: !hit ? 0 : shot.score >= 7 ? 7 : shot.score === 6 ? 5 : 2.5,
     color: shot?.outcome === "killshot" ? "#9cecff" : "#ffe0a0" };
 }
 

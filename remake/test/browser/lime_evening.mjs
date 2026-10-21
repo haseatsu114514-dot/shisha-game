@@ -40,7 +40,7 @@ await suite('lime-evening', async check => {
     await page.locator('[data-test="phone-next"]').click(); await page.locator('[data-test="phone-close"]').click();
     await page.waitForFunction(() => QA.core.state.day === 5 && document.querySelector('#screen .map:not(.done)'));
     const result = await page.evaluate(() => {
-      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のPEPPERMINT'));
+      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のぺぱーみんと'));
       const msg = QA.data.DB.dialogues.interaction_minto_noon_01;
       QA.core.save(); const loaded = QA.core.load();
       return { money: s.money, affinity: s.affinity.minto, day: s.day, slot: s.slot, pending: s.pendingInvite,

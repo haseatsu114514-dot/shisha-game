@@ -11,6 +11,7 @@ import { AXE_BAR } from "./axe-bar-data.js";
 import { runAxeThrow } from "../minigames/axe.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
+import { playBgm, currentBgm } from "../core/audio.js";
 
 const modes = { practice: "3投練習", league: "10投スコアアタック" };
 let active = false;
@@ -29,6 +30,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   const host = el("div.sub-menu.axe-bar-menu", { dataset: { test: "axe-bar-menu" } });
   showScreen("axe-bar", host); showHud(false);
+  const bgmBefore = currentBgm() || "kansetsu_shomei_to_black_coffee"; playBgm("bgm_axe"); // #788 入店中は斧投げ曲
   const observer = new MutationObserver(() => { if (!host.isConnected) cancel(); });
   observer.observe(layers.screen, { childList: true });
   const available = () => current() && owner.visitedDay.axe_bar !== day && owner.money >= AXE_BAR.playCost && owner.stamina > 0;
@@ -89,5 +91,6 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);
     signal?.removeEventListener("abort", cancel); abort.abort(); active = false;
     if (state === owner && host.isConnected) showHud(hadHud);
+    if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); // #788 退店・中断で元の曲へ
   }
 }

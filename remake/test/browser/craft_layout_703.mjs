@@ -105,7 +105,17 @@ await suite('craft-layout-703', async check => {
         for(const step of ['mix','timer','steam','pull']) {
           if(step!=='mix')await page.evaluate(()=>{QA.cs.mix={double_apple:9,mint:3};QA.cs.steamSeconds=300;QA.cs.steam={temp:.54,score:100};});
           await run(page,step);
-          assert.equal(await page.locator('.thermo:visible, .mix-temperature-preview:visible').count(),0,step);
+          assert.equal(await page.locator('.mix-temperature-preview:visible').count(),0,step);
+          assert.equal(await page.locator('.thermo:visible').count(),step==='mix'?0:1,step);
+          if(step==='timer') {
+            assert.match(await page.locator('.bench-hint').textContent(),/温度計.*3〜10分/);
+            await test(page,'timer-start').click(); await page.evaluate(()=>QA.run);
+          }
+          if(step==='steam') {
+            // Finish the real game before replacing its DOM with the next step.
+            await test(page,'step-next').waitFor({timeout:30000});
+            await test(page,'step-next').click(); await page.evaluate(()=>QA.run);
+          }
           if(step==='pull') {
             await setGuide(page, true, options.hasTouch);
             assert.doesNotMatch(await page.locator('.bench-guide-tip').textContent(),/温度計|虹色/);
@@ -115,6 +125,39 @@ await suite('craft-layout-703', async check => {
           await overlap(page);
         }
         await page.screenshot({path:path.join(shots,`${name}-lesson-${phase}-pull.png`)});
+      }
+    },options);
+    await check(`timer-minimum-${name}`,async page=>{
+      for(const mode of ['tutorial','drill','rehearsal','tournament']) {
+        await init(page,mode);
+        await page.evaluate(()=>{QA.cs.steamSeconds=1;});
+        await run(page,'timer');
+        assert(await test(page,'timer-start').isDisabled(),`${mode}: legacy one-second timer`);
+        assert(await test(page,'steam-temperature').isVisible());
+        await test(page,'timer-second-up').click();
+        assert.equal(await test(page,'timer-start').isDisabled(),mode==='tutorial',mode);
+        if(mode==='tutorial') {
+          await test(page,'timer-minute-up').click();
+          await test(page,'timer-minute-up').click();
+          for(let i=0;i<4;i++)await test(page,'timer-second-up').click();
+          assert.equal(await test(page,'timer-display').textContent(),'02:50');
+          assert(await test(page,'timer-start').isDisabled());
+          // A dispatched click must also honor the minimum in the handler.
+          await test(page,'timer-start').dispatchEvent('click');
+          assert.equal(await page.evaluate(()=>QA.cs.steamSeconds),1);
+          await test(page,'timer-second-up').click();
+          assert.equal(await test(page,'timer-display').textContent(),'03:00');
+          assert(await test(page,'timer-start').isEnabled());
+          await test(page,'timer-reset').click();
+          assert.equal(await test(page,'timer-display').textContent(),'00:00');
+          assert(await test(page,'timer-start').isDisabled());
+          for(let i=0;i<10;i++)await test(page,'timer-minute-up').click();
+          await test(page,'timer-minute-up').dispatchEvent('click');
+          assert.equal(await test(page,'timer-display').textContent(),'10:00');
+          assert(await test(page,'timer-minute-up').isDisabled());
+        }
+        await test(page,'timer-start').click(); await page.evaluate(()=>QA.run);
+        assert.equal(await page.evaluate(()=>QA.cs.steamSeconds),mode==='tutorial'?600:10);
       }
     },options);
   }
