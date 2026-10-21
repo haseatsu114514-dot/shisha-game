@@ -67,6 +67,8 @@ const adopted = [
   ["bgm_tournament_craft", .67, "fd9856eb18725aff6c91d25f90522d0e9be82ed3f9e09ea5c026e00fe577b050"],
   // #788 ユーザー採用曲（TRPG: Shared Discovery）。倍率は既定1.0。
   ["bgm_trpg", 1, "ebb517047cb706879953610bba7005c944e60274ba9b0e1b228fba022418b4fa"],
+  // #788 斧投げ（Aiming groove）。tonari と同程度の音量にそろえる倍率0.79。
+  ["bgm_axe", .79, "e1ad7a541a099dc363baab666c04109fd0e974190b4a3d901857a9713cbccbac"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));
@@ -106,15 +108,6 @@ assert(fading.volume <= before);
 step(400); await flush();
 assert.equal(fading.volume, 0);
 assert.equal(fading.paused, true);
-// #788 斧投げ曲（Aiming groove）は原本のまま復元できる。倍率0.79と場面接続は audio.js／斧投げ側の合意待ち。
-{
-  audio.stopBgm(0); await flush();
-  assert(await audio.preloadBgm("bgm_axe"));
-  audio.playBgm("bgm_axe"); await flush(); step(1500);
-  const axe = elements.at(-1);
-  assert.equal(createHash("sha256").update(Buffer.from(await blobs.get(axe.src).arrayBuffer())).digest("hex"),
-    "e1ad7a541a099dc363baab666c04109fd0e974190b4a3d901857a9713cbccbac");
-}
 // #788 TRPG入店→同じ曲の再入場→退店でマップ曲へ戻る。二重再生せず、旧曲は止まる。ミュートは0。
 {
   audio.stopBgm(0); await flush();
@@ -134,6 +127,29 @@ assert.equal(fading.paused, true);
   assert.equal(audio.currentBgm(), "kansetsu_shomei_to_black_coffee");
   await flush();
   assert.equal(trpg.volume, 0); assert.equal(trpg.paused, true);
+}
+// #788 マップ→斧投げ→マップ。二重再生せず、実効音量は 0.79×設定値、ミュートは0。
+{
+  audio.stopBgm(0); await flush();
+  audio.playBgm("kansetsu_shomei_to_black_coffee"); step(1500);
+  const map = elements.at(-1);
+  audio.playBgm("bgm_axe"); await flush(); step(1500); await flush();
+  const axe = elements.at(-1);
+  assert.equal(audio.currentBgm(), "bgm_axe");
+  assert.equal(map.volume, 0); assert.equal(map.paused, true);
+  assert.equal(axe.volume, config.bgmVolume * .79);
+  const count = elements.length;
+  audio.playBgm("bgm_axe"); await flush(); step(1500);
+  assert.equal(elements.length, count, "re-entry must not start a second axe track");
+  assert.equal(axe.plays, 1);
+  config.bgmVolume = .8; audio.applyVolumes(); assert.equal(axe.volume, .8 * .79);
+  config.mute = true; audio.applyVolumes(); assert.equal(axe.volume, 0);
+  config.mute = false; audio.applyVolumes(); assert.equal(axe.volume, .8 * .79);
+  config.bgmVolume = .5; audio.applyVolumes();
+  audio.playBgm("kansetsu_shomei_to_black_coffee"); await flush(); step(1500); await flush();
+  assert.equal(audio.currentBgm(), "kansetsu_shomei_to_black_coffee");
+  assert.equal(axe.volume, 0); assert.equal(axe.paused, true);
+  assert.equal(elements.at(-1).volume, config.bgmVolume, "map track returns at its own level");
 }
 // 入店時にTRPG曲、退店時にマップ曲（既存の退店処理）。
 {

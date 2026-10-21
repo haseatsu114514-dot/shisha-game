@@ -8,7 +8,7 @@
 | 曲（ファイル名） | 出典 | 使用先 | 元音源 |
 |---|---|---|---|
 | Shared Discovery（`Shared Discovery.mp3`） | ユーザー添付（配布元・作者は未記入） | `assets/audio/bgm/bgm_trpg.bgm`：ボドゲカフェ（TRPG）の入店から退店まで | MP3・48 kHz・ステレオ・198.16秒・4,528,970 bytes・カバーアート埋込あり |
-| Aiming groove（`Aiming groove.mp3`） | ユーザー添付（配布元・作者は未記入） | `assets/audio/bgm/bgm_axe.bgm`：斧投げ（場面への接続は #573・#489・#540 との合意待ち） | MP3・48 kHz・ステレオ・91.00秒・2,127,635 bytes・カバーアート埋込あり |
+| Aiming groove（`Aiming groove.mp3`） | ユーザー添付（配布元・作者は未記入） | `assets/audio/bgm/bgm_axe.bgm`：斧投げBARの入店から退店まで、ひよりとの斧投げの実プレイ中 | MP3・48 kHz・ステレオ・91.00秒・2,127,635 bytes・カバーアート埋込あり |
 
 byte数は #788 の採用記録と一致。元MP3は公開リポジトリに置かず、[大会BGMと同じ形式](confirmed-tournament-bgm-20261009.md#利用条件と保存形式)（`SUIENBGM1`・AES-256-GCM）に変換した。元音源のバイト列は変更していない（再圧縮・カバーアート除去なし）。
 
@@ -35,7 +35,7 @@ FFmpeg `ebur128` で、設定音量を掛ける前の Integrated LUFS と True P
 | Aiming groove（斧投げ） | −15.3 | **0.79**（オーナー決定） | −17.35 | −6.5 | tonari −17.34 に合わせる。マップ −13.65 から入る場合も大きくならない |
 
 補正後値は入力値に `20 × log10(倍率)` を加えた値。TRPGの倍率は1.0を超えて上げない。`HTMLAudioElement.volume` が1以下になるように、倍率は減衰側だけで使う。
-斧投げの倍率0.79は `remake/js/core/audio.js` の `BGM_GAIN` に入る予定。#573 の担当との編集順の合意を待っている（[#573](https://github.com/haseatsu114514-dot/shisha-game/issues/573)）。
+斧投げの倍率0.79は `remake/js/core/audio.js` の `BGM_GAIN` に1項目だけ追加した（[#573](https://github.com/haseatsu114514-dot/shisha-game/issues/573) に告知）。
 
 ## 検証
 
@@ -43,4 +43,5 @@ FFmpeg `ebur128` で、設定音量を掛ける前の Integrated LUFS と True P
 node --experimental-vm-modules remake/test/bgm_packaged.mjs   # 両曲の復元SHA-256一致、TRPG倍率・切替・再入場・ミュート
 node --experimental-vm-modules remake/test/bgm_gain.mjs
 node remake/test/browser/trpg_main.mjs
+node remake/test/browser/axe_bgm_788.mjs   # 斧投げBAR・ひよりの斧投げで開始・終了・中断・再入場
 ```

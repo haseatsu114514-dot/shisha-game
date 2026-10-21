@@ -1,15 +1,17 @@
-# PLAN.md — Issue #788（2026-10-21 11:44 JST のオーナー決定を反映）
+# PLAN.md — Issue #788（2026-10-21 11:44／12:04 JST のオーナー決定を反映）
 
 ## 現在の状態
 - **反映済み（PR #811）**
   - 採用2曲を `.bgm` で追加（`assets/audio/bgm/bgm_trpg.bgm`、`bgm_axe.bgm`）。`remake/data/manifest.json` を `--audio-only` で更新し、`asset_sources/music/adopted-minigame-bgm-20261020.md` に採用を記録。
   - TRPG: `remake/js/daily/trpg.js` の `openTrpgBar` で、入店時に `stopBgm(.2)` を `playBgm("bgm_trpg")` に置き換えた。退店時にマップ曲へ戻る処理は既存のまま。
 - **倍率（オーナー決定）**: 斧投げ `bgm_axe` は **0.79**（tonari −17.34 LUFS に合わせる）。TRPG は **1.0**（既定値。同じ「前後の曲より大きくしない」基準で、マップ曲 −13.65 より約2 dB小さいため上げない）。§2 の0.95の計算は旧案で、0.79 に置き換えた。
-- **合意待ち（編集していない）**
-  - `remake/js/core/audio.js`：`BGM_GAIN` に `bgm_axe: 0.79` を追加。任意で `SYNTH_FALLBACK` に `bgm_trpg` / `bgm_axe` を追加。→ #573 の予約owner `codex-c-audio573-20261015-d9a204ec` の合意か handoff 待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/573#issuecomment-6306731087）
-  - `remake/js/daily/axe-bar.js` の `visitAxeBar`：§5.3。→ #489（保留中、owner `codex-axe489-20261015-7c92b4e1`）の保留解除と合意待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/489#issuecomment-6306731389）、#540（オーナー判断で保留、owner `codex-finish-541-20261014-8d2191d9`）の合意待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/540#issuecomment-6306731676）
-  - `remake/js/daily/hiyori-axe.js` の `playHiyoriAxeSequence`：§5.4。→ 上の #489 / #540 と同じ
-  - 斧投げの倍率0.79は `audio.js` が入るまで効かない。また斧投げ曲はまだどの場面からも鳴らないため、現時点で音量の問題は起きない。
+- **斧投げ（2026-10-21 12:04 JST のオーナー判断で、#489・#540 保留中でも再生の数行だけ追加可）**
+  - `remake/js/daily/axe-bar.js` の `visitAxeBar`：import 1行、`showScreen("axe-bar", …)` 直後に1行（入店前の曲を保存して `playBgm("bgm_axe")`）、`finally` に1行（同じ所有者で、まだ斧投げ曲なら元の曲へ）。合計3行追加。
+  - `remake/js/daily/hiyori-axe.js` の `playHiyoriAxeSequence`：import 1行、`runAxeThrow` の直前に1行（tonari の曲を保存して `playBgm("bgm_axe")`）、`runAxeThrow(...)` の閉じ行に `.finally(…)` を付けて元の曲へ。3行追加・1行変更。実プレイ中だけ斧投げ曲で、前段・後段の会話は tonari の曲。
+  - 再入場は既存の `active` ガードと `playBgm` の同曲早期returnで二重再生しない。ほかの画面が曲を替えた後は上書きしない。
+  - #489・#540 の保留はこの数行以外はそのまま。告知: #489 / #540 のコメント（PR #811 本文に記載）。
+- **倍率 0.79**: 既存APIに呼び出しごとの音量指定はないため、`remake/js/core/audio.js` の `BGM_GAIN` 1行に `bgm_axe: 0.79` を1項目だけ追加した（#573 に告知）。`SYNTH_FALLBACK` の追加はしない。設定音量とミュートはそのまま効く（`bgmLevel`）。
+- **未対応のまま残すもの**: `SYNTH_FALLBACK` への `bgm_trpg` / `bgm_axe` 追加（任意。#573 の担当 `codex-c-audio573-20261015-d9a204ec` の判断待ち）。読み込みに失敗した場合は無音になる（変更前の入店時の停止と同じ）。
 
 ---
 

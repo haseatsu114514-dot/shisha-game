@@ -12,7 +12,7 @@
 | `assets/audio/bgm/bgm_tournament_edm.bgm` | Overture! | H/MIX GALLERY・作曲 秋山裕和 | 大会開幕の挨拶〜選手入場 |
 | `assets/audio/bgm/bgm_tournament_craft.bgm` | Mind Duel | OpenTracks（旧DOVA-SYNDROME）・作曲 shimtone | 大会のシーシャ制作（ROUND 1〜3） |
 | `assets/audio/bgm/bgm_trpg.bgm` | Shared Discovery | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | ボドゲカフェ（TRPG） |
-| `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | 斧投げ（接続は合意待ち） |
+| `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | 斧投げBAR・ひよりとの斧投げ |
 
 大会の2曲は公式配布元から取得し、単体音源を公開しないゲーム専用形式で保存。
 [出典・利用条件・音量測定・再変換手順](confirmed-tournament-bgm-20261009.md)を参照。
