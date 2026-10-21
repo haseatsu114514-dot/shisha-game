@@ -315,6 +315,21 @@
           "text": "（笑われると思ってたけど、ここだと俺もつい喋ってしまう）"
         },
         {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "そうだ、はじめくん、ジムは行ってる？ チョイザップっていう店が、みんとのおすすめなんだ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ジムですか。あまり考えたことなかったな"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "見た目も武器だよ♡ 煙を吐く姿だって、お客さんはちゃんと見てるからね？"
+        },
+        {
           "type": "remember",
           "memory_id": "minto_welcome"
         },
