@@ -1,0 +1,30 @@
+{
+  "id": "samechan",
+  "name": "サメちゃん",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 2120210,
+  "sha256": "0c056e4bd9ae04c2148106241bd2eb0c897c2d13ecb8d844340a9f4574d86324",
+  "approved_input": {
+    "path": "assets/sprites/characters/samechan/chr_samechan_normal.png",
+    "sha": "22768d83367e0560e4576a1d15f2010008dc2076",
+    "size": 537895
+  },
+  "input_git_blob_verified": "22768d83367e0560e4576a1d15f2010008dc2076",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "青い瞳とギザ歯、黒青の髪、星飾り、サメフード、黒青の衣装、タイツと靴、王冠付きコロちゃん。",
+  "inferred": "フード・ジャケット背面のフィン配置、裾、ぬいぐるみの背面と抱える腕による隠れ方、靴の後ろ。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "samechan-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}
