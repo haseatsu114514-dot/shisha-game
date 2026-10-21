@@ -24,13 +24,36 @@ await suite('play-feedback', async check => {
       await setup(page);
       await page.evaluate(() => {
         F.cs = F.session.newSession('tutorial');
-        F.cs.orderFlavorIds = ['lemon', 'orange', 'mint'];
+        F.cs.orderFlavorIds = ['mint', 'lemon', 'orange'];
         F.session.openBench(F.cs); F.task = F.steps.stepMix(F.cs);
       });
       await page.locator('[data-test="mix-plus-mint"]').waitFor();
       const boxes = () => page.locator('.bench-panel, .flavor-row, .fr-ratio').evaluateAll(ns => ns.map(n => {
         const b = n.getBoundingClientRect(); return [b.x, b.y, b.width, b.height];
       }));
+      // 1g入力そのものの寸法変化を測る。別の葉へ移るためのスクロールは先に済ませる。
+      // 両方の入力を見える位置に置き、基準取得後にはスクロールを補正しない。
+      const inputTargets = await page.locator('.mix-list').evaluate(list => {
+        const stage = document.querySelector('#stage');
+        const ids = ['mint', 'lemon'];
+        const buttons = ids.map(id => list.querySelector('[data-test="mix-plus-' + id + '"]'));
+        const bounds = buttons.map(button => button.getBoundingClientRect());
+        const listBox = list.getBoundingClientRect();
+        const stageBox = stage.getBoundingClientRect();
+        const scale = stageBox.width / stage.offsetWidth;
+        const middle = (Math.min(...bounds.map(b => b.top)) + Math.max(...bounds.map(b => b.bottom))) / 2;
+        list.scrollTop += (middle - (listBox.top + listBox.bottom) / 2) / scale;
+        return buttons.map((button, i) => {
+          const b = button.getBoundingClientRect();
+          return { id: ids[i], contained: b.width > 0 && b.height > 0
+            && b.left >= Math.max(listBox.left, stageBox.left, 0)
+            && b.top >= Math.max(listBox.top, stageBox.top, 0)
+            && b.right <= Math.min(listBox.right, stageBox.right, innerWidth)
+            && b.bottom <= Math.min(listBox.bottom, stageBox.bottom, innerHeight) };
+        });
+      });
+      assert(inputTargets.every(target => target.contained),
+        '配合の寸法検査は両方の入力が見える位置で始める: ' + JSON.stringify(inputTargets));
       const empty = await boxes();
       await press(page, '[data-test="mix-plus-mint"]');
       assert.deepEqual(await boxes(), empty, '1gで行・パネルが移動/拡大した');
