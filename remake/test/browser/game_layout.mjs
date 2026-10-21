@@ -101,8 +101,8 @@ try {
       await check(name,options,async p=>{
         await p.evaluate(async()=>{
           const core=await import("./js/core/state.js"), s=core.newState();
-          Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
-          Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds:"preserved",_hiyori_meeting_done:true});
+          Object.assign(s,{schema:14,phase:"daily",day:6,slot:1,money:45678,stamina:90,weatherSeed:4});
+          Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds:"preserved",_hiyori_meeting_done:true,_home_shisha_day:"1:6"});
           s.owned.push("home_rig_set");
           s.lovers=["hiyori"];s.affinity.hiyori=66;s.relationshipMemories=["actually-read"];
           localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
@@ -116,7 +116,7 @@ try {
         // finish those scenes, using the same bounded budget as practice below.
         await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open"),touch,90000);
         if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
-        const before=await state(p);assert.equal(before.money,45678);assert.equal(before.slot,0);
+        const before=await state(p);assert.equal(before.money,45678);assert.equal(before.slot,1);
         assert.deepEqual(before.lovers,["hiyori"]);assert(before.memory.includes("actually-read"));
         await p.screenshot({path:path.join(dir,`${device}-${mode}-map.png`)});
         if(mode==="ds"){
@@ -146,8 +146,8 @@ try {
         // No state/score/slot/result is synthesized by this test.
         await p.evaluate(()=>{__remake.craftTest.auto="good";});
         await activate(p,"pack-confirm",touch);
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch,90000);
-        const after=await state(p);assert.equal(after.day,6);assert.equal(after.slot,1);assert.equal(after.money,before.money);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.day===7&&__remake.state.slot===0,touch,90000);
+        const after=await state(p);assert.equal(after.day,7);assert.equal(after.slot,0);assert.equal(after.money,before.money);
         assert.equal(after.marker,"preserved");assert.deepEqual(after.lovers,before.lovers);assert.deepEqual(after.memory,before.memory);
         assert.equal(after.runs.length,before.runs.length+1);assert.equal(after.runs.at(-1).served,true);
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
@@ -156,17 +156,17 @@ try {
         await activate(p,"hud-menu",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
         const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
-        assert.equal(saved.slot,1);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
+        assert.equal(saved.slot,0);assert.equal(saved.day,7);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
         await activate(p,"hud-menu",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.day===7&&__remake.state.slot===0,touch);
         assert.deepEqual(await state(p),after);if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
         if(mode==="ds"){
           await activate(p,"game-layout-recover",touch);await ready(p);
           assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),1);
+          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),0);
         }
       });
     }

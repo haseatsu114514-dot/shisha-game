@@ -12,7 +12,7 @@ async function startPractice(page, stock, { auto = "good" } = {}) {
     const core = await import("./js/core/state.js");
     const vn = await import("./js/vn/engine.js"), craft = await import("./js/craft/session.js");
     vn.vnTest.turbo = true; craft.craftTest.auto = auto;
-    core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80, weatherSeed: 4 });
+    core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 1, stamina: 80, weatherSeed: 4 });
     core.state.flavorStock = { ...stock };
     core.state.flavors = Object.keys(stock);
     core.save(); // 行動前のオートセーブ
@@ -56,7 +56,7 @@ async function realPathToMix(page, tap) {
   const act = async (id) => { const t = page.locator(`[data-test="${id}"]`); await t.scrollIntoViewIfNeeded(); if (tap) await t.tap(); else await t.click(); };
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), s = core.newState();
-    Object.assign(s, { phase: "daily", day: 6, slot: 0, money: 45678, stamina: 90, weatherSeed: 4 });
+    Object.assign(s, { phase: "daily", day: 6, slot: 1, money: 45678, stamina: 90, weatherSeed: 4 });
     Object.assign(s.flags, { _morning_6: true, _lime_tut: 1, _lime_opened: true });
     s.owned.push("home_rig_set");
     s.flavorStock = { double_apple: 20, mint: 10 };
@@ -93,7 +93,7 @@ await suite("home-practice-leaves", async (check) => {
         const s = JSON.parse(localStorage.getItem(core.SAVE_KEY));
         return { stock: s.flavorStock, stamina: s.stamina, slot: s.slot, runs: (s.flags._craft_practice_runs || []).length };
       });
-      assert.deepEqual(saved, { stock: { double_apple: 20, mint: 10 }, stamina: 90, slot: 0, runs: 0 },
+      assert.deepEqual(saved, { stock: { double_apple: 20, mint: 10 }, stamina: 90, slot: 1, runs: 0 },
         "途中でタイトルへ戻っても、葉・体力・行動・記録は行動前のまま");
     }, opts);
   }
@@ -116,7 +116,7 @@ await suite("home-practice-leaves", async (check) => {
   await check("stamina-warning-cancel-changes-nothing", async (page) => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
-      core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
+      core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 1, stamina: 80 });
       core.state.flavorStock = { double_apple: 20, mint: 10 };
       window.__before = JSON.stringify(core.state);
       window.__practice = { done: false };
@@ -180,5 +180,20 @@ await suite("home-practice-leaves", async (check) => {
       return { stock: s.flavorStock, stamina: s.stamina, runs: (s.flags._craft_practice_runs || []).length };
     });
     assert.deepEqual(reloaded, { stock: { double_apple: 20, mint: 10 }, stamina: 80, runs: 0 }, "途中の一台は保存に残らない");
+  });
+
+  await check("daytime-slot0-cannot-start-practice", async (page) => {
+    const res = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.newGame();
+      core.state.owned.push("home_rig_set");
+      Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
+      const home = await import("./js/daily/home-practice.js");
+      const pick = await home.chooseHomePractice();
+      const run = await home.runHomePractice({ staminaGuard: async () => true });
+      return { pick, run };
+    });
+    assert.equal(res.pick, null, "昼はchooseHomePracticeがnull");
+    assert.deepEqual(res.run, { used: false, exerted: false }, "昼はrunHomePracticeがused: false");
   });
 });

@@ -15,6 +15,9 @@ export const HOME_PRACTICE_STAMINA = { full: -12, drill: -10 };
 /** 一台を通すのに要る自分の葉（配合の最低量と同じ） */
 export const HOME_PRACTICE_GRAMS = 12;
 
+/** 自宅練習は寝る前（夜・slot 1以上）限定 */
+export const isHomePracticeTime = (s = state) => (s?.slot ?? 0) >= 1;
+
 /** 一台を通せるだけの葉があるか（家の練習は自分の葉を使う・#638） */
 export const homeLeavesEnough = () => ownedFlavorIds().reduce((sum, id) => sum + flavorStock(id), 0) >= HOME_PRACTICE_GRAMS;
 
@@ -29,6 +32,7 @@ export function consumeHomePracticeLeaves(mix) {
 
 /** 何を練習するか（"full" か工程ID）。やめたら null */
 export function chooseHomePractice() {
+  if (!isHomePracticeTime()) return Promise.resolve(null);
   return new Promise((resolve) => {
     setBg(bgUrl("bg_home", timeOfDay()), { fast: true });
     const pick = (value) => { retire(root); resolve(value); };
@@ -50,6 +54,7 @@ export function chooseHomePractice() {
 
 /** 家で練習する（1行動）。staminaGuard は calendar の体力確認。やめたら used: false */
 export async function runHomePractice({ staminaGuard }) {
+  if (!isHomePracticeTime()) return { used: false, exerted: false };
   if (!homeRig()) return { used: false, exerted: false };
   const pick = await chooseHomePractice();
   if (!pick) return { used: false, exerted: false };
