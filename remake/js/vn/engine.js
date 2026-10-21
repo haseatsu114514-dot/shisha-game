@@ -11,6 +11,7 @@ import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } fr
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { playerInner } from "./inner.js";
+import { linePresentation } from "./line-presentation.js";
 import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
@@ -567,19 +568,6 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
-    : speaker ? displayName(speaker, state, { context: r.context }) : "";
-  if (speaker) {
-    dom.name.textContent = name;
-    dom.name.style.setProperty("--vn-name-length", String([...name].length));
-    dom.name.title = name;
-    dom.name.classList.add("show");
-    nameFit.fit();
-  } else {
-    dom.name.classList.remove("show");
-  }
-  dom.box.classList.toggle("narration", !speaker);
-  dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
   // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
@@ -610,6 +598,21 @@ async function showLine(line) {
     text = clauses.length ? `……${clauses.join("。")}。` : "";
     if (!text) return next();
   }
+  const presentation = linePresentation(line, {
+    text, save: state, isReward: !!cue, dialogueId: r.visited.at(-1) || r.id,
+    resolveName: (id) => displayName(id, state, { context: r.context }),
+  });
+  const { name } = presentation;
+  text = presentation.text;
+  dom.name.textContent = name;
+  dom.name.title = name;
+  dom.name.classList.toggle("show", !!name);
+  if (name) {
+    dom.name.style.setProperty("--vn-name-length", String([...name].length));
+    nameFit.fit();
+  }
+  dom.box.classList.toggle("narration", !speaker);
+  dom.box.classList.toggle("thought", presentation.thought);
   let inner = playerInner(line);
   if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });

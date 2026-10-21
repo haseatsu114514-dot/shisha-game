@@ -63,7 +63,8 @@ await suite("conversation-ui", async check => {
       await page.waitForFunction(() => document.querySelector(".vn-name.show")?.textContent === "はじめ");
       await page.selectOption("#preview-scene", "narration");
       await page.locator(".vn-box.narration").waitFor();
-      assert.equal(await page.locator(".vn-name.show").count(), 0);
+      await page.waitForFunction(() => document.querySelector(".vn-name.show")?.textContent === "はじめ");
+      assert.equal(await page.locator(".vn-name.show").getAttribute("title"), "はじめ");
       assert.deepEqual(await storageSnapshot(page), saved, "Preview must not change saved games/config");
       await page.selectOption("#preview-scene", "hiyori");
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……また見つかっちゃった");
