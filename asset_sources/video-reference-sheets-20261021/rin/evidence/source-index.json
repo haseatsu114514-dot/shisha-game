@@ -1,0 +1,79 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "normal",
+      "sad",
+      "serious",
+      "smile",
+      "surprise"
+    ],
+    "h": 0.8383,
+    "b": 0.0225,
+    "ax": 0.4657,
+    "aspect": 0.7467,
+    "anchor": "head"
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "display_name": "凛",
+    "role": "heroine_ch1",
+    "age": 27,
+    "nationality": "Japan",
+    "affiliation": "フレーバー卸『ドクター・フーカ』直営店 Dr.fookah（問屋街）2階／海外メーカーNIGHTSIDE日本代理店デスク",
+    "play_style": "「商材は全部、自分の鼻と肺で確かめる」",
+    "description": "問屋街の卸直営店『Dr.fookah』（1階は機材・フレーバー物販＋一応吸える試飲席、2階がショールーム）で、海外メーカーNIGHTSIDEの日本代理店デスクを仕切る。業界の呼び名は「問屋街の魔女」。気だるげで、からかい上手で、はじめを未発売サンプルの「試香モルモット」として雇う。黒フィルムで塞がれた薄暗いショールーム、日本語表記のない袋、すぐサインさせたがる同意書——ちょっと危険な香りがするが、グレーの線引きは正確で、サンプルは必ず自分が先に吸う筋の通った大人。武見妙ポジションの年上ヒロイン（主人公の5〜6歳上）。みんとと違い、最初から大人であることを一切隠さない。",
+    "background_secret": "業界の上流で商材（コード）を扱い続けてきたのに、自分の卸した香りが店で誰かに吸われる瞬間を見たことがない——客の顔を知らない側の人間。はじめが「あなたのフレーバー、tonariでこう吸われてますよ」と外の世界を持って帰ってくることが関係の軸になる（EN:CODEテーマの恋愛側の変奏）。ch2では香りの専門家として、はじめの味覚の異変に誰より早く気づく（「……君、今日は煙の褒め方が嘘だね」）。",
+    "favorite_flavor": "ブルーベリー（仕事柄、世界中の限定品が吸えるのに結局これに帰ってくる）",
+    "specialty_flavor": "未発売の試作ロット全般",
+    "growth_stats": {
+      "primary": "センス",
+      "secondary": "洞察",
+      "notes": "モルモット相手に商売の説明をするうちに、いつの間にか『誰かに吸わせたい香り』を基準にロットを選ぶようになっていた。"
+    },
+    "visual_concepts": [
+      "27 year old japanese woman, very dark long wolf-cut hair with subtle slate-blue undertones ending below the bust and above the waist, thick sweeping bangs and cheek-hugging layers, mature languid half-lidded blue-gray eyes, a subtle cool smile, curvy adult figure, white shirt with rolled sleeves and a clean collar without paper scent strips, black slacks, silver hoop earrings, holding a clipboard, dim showroom shelves of unlabeled flavor tins, refined high-resolution fine pixel-art style",
+      "same woman at midnight, loose dark slate-blue long wolf-cut hair ending above the waist, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, refined high-resolution fine pixel-art style"
+    ],
+    "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
+    "spriteScale": 0.97,
+    "spriteAnchor": "head",
+    "intro_cutin": {
+      "title": "問屋街の魔女",
+      "line": "ようこそ、夜の側へ",
+      "face": "smile",
+      "color": "#9b6cf2"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "sha": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c",
+      "size": 386848
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_sad.png",
+      "sha": "ca0960f060b2cb9b44015ff1f105d21de13d3040",
+      "size": 388656
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_serious.png",
+      "sha": "3438404745b6842370d085036e08118fde83a37f",
+      "size": 410698
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_smile.png",
+      "sha": "96a9eae539dcc0fccbaf4ec975c15a4a0ca60d15",
+      "size": 392458
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_surprise.png",
+      "sha": "124322542177af16f0e040bc2e4d12ce3d235f7e",
+      "size": 388497
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

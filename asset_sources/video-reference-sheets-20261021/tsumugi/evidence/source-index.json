@@ -1,0 +1,109 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "bow",
+      "evil",
+      "normal",
+      "sad",
+      "serious",
+      "smile",
+      "surprise"
+    ],
+    "h": 0.7275,
+    "b": 0.0208,
+    "ax": 0.501,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "tsumugi",
+    "name": "つむぎ",
+    "role": "sub_character",
+    "age": 21,
+    "nationality": "Japan",
+    "affiliation": "tonari常連",
+    "play_style": "N/A",
+    "description": "tonariの常連でヒロイン候補。はじめは物語開始時から名前を知っている。ひびの入ったタブレットで、植物と動物や煙の混ざった不思議な生き物を描く寡黙な芸大生。大学で絵画・視覚表現を学びながらイラストを描いている。SNSでも発表しているが、初対面では評判を話さず、親しくなると自分から投稿画面を見せる。中心の絵は葉っぱの耳と煙の尾を持つ猫。友達の育てた木、飼っていた猫の寝方、昔好きだった絵の線、tonariの煙が自然と混ざる。自分も作品も、見てきたものや出会った人の集合として素直に受け入れている。耳の葉がない日もそのまま描く。独自性を証明するより、今日描きたいものを描く。ラベンダーを好む。第1章ではイラストコンテストへの応募作を描くためtonariを取材し、はじめの大会準備と並行して下描き・推敲・応募を進める。",
+    "background_secret": "子どもの頃から煙や湯気に色が見える共感覚の持ち主。友達に嘘つきと言われ、色の話をしなくなった。ラベンダーは安心できる色、スミさんの煙は落ち着ける色。色や線は彼女がその時に感じたもので、人格や魂の判定能力にはしない。絵の先輩に「心がない」と評され、机を叩かれてタブレットが落ちた経験は怖かった。それでも、自分の絵は見てきたものが混ざったものとして既に受け入れている。痛みや言葉を話しにくいことと、自分のあり方の肯定は両立する。はじめが彼女に心や個性を与える構成にはしない。主人公は、彼女が絵や自分を当然のように受け入れる様子に触れ、混ざったままでよいと少しずつ感じる。SNSの支持はその肯定の根拠ではない。深い愛情と失う怖さは描くが、独占を正しさにはしない。",
+    "favorite_flavor": "ラベンダー",
+    "specialty_flavor": "フローラル・お茶系",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "根性",
+      "notes": "日々見た煙や、誰かの小さな手つきが、いつの間にかいつもの生き物の線に混ざっている。絵も本人も出会いの集合として受け入れたまま、話せる相手が増えるにつれ、色のことや今日見た景色を言葉にもできるようになる。"
+    },
+    "visual_concepts": [
+      "20s japanese girl, introverted and quiet, bob cut black hair slightly covering her eyes, wearing oversized comfy sweater and headphones, staring intently at a cracked タブレット screen with an stylus pen",
+      "melancholy young female artist, pale complexion, dark hair, wearing a loose cardigan over a simple dress, sitting alone in a dim cafe corner, accompanied by purple lavender-scented smoke"
+    ],
+    "spriteScale": 0.88,
+    "art_sns": {
+      "followers": 50000,
+      "reveal_dialogue_id": "ch1_tsumugi_third",
+      "motifs": [
+        "葉っぱの耳と煙の尾を持つ猫",
+        "苔の羽の鳥",
+        "角に森のある鹿"
+      ],
+      "daily_motif": "耳の葉っぱが落ちた日の猫"
+    },
+    "intro_cutin": {
+      "title": "tonariの常連・芸大生",
+      "line": "……煙って、形がないから",
+      "face": "normal",
+      "color": "#b9a4e8"
+    },
+    "art_contest": {
+      "kind": "若手作家の公募イラストコンテスト",
+      "theme": "記憶と気配の交差",
+      "selected_work": "会場での作品展示",
+      "subject": "tonariで過ごす時間",
+      "submission_dialogue_id": "ch1_tsumugi_sketch",
+      "result": "第1章では応募まで。結果は後続の物語で扱う"
+    },
+    "voice": {
+      "first_person": "私",
+      "hajime_address": "はじめさん"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+      "sha": "e39a30fc9d9cec411513db6c8be62b82f14a6e78",
+      "size": 292579
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+      "sha": "a947d12cc2507fe7d7a3dc454d8d0707a74a941c",
+      "size": 324557
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "sha": "67fff31bea79471dab2b63f89fcd8ea5c94165e0",
+      "size": 310566
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+      "sha": "9e490d929d95aaa0c5da4c4bae0f8b3ae3488815",
+      "size": 298063
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+      "sha": "b8cf149b67271a358bbb8a5f7745205ffc1c8d05",
+      "size": 323334
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+      "sha": "6f5c9653f621f775b4a9d3f44dfe25cd1e415d4b",
+      "size": 331339
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+      "sha": "e1a2883119932cf34e80d4b92a96ae609822da8b",
+      "size": 312368
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

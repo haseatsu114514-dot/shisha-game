@@ -1,0 +1,75 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "normal",
+      "sad",
+      "serious",
+      "smile",
+      "surprise"
+    ],
+    "h": 0.8642,
+    "b": 0.0233,
+    "ax": 0.5441,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "role": "rival_ch1",
+    "age": 23,
+    "nationality": "Japan",
+    "affiliation": "ケムリクサ",
+    "play_style": "「甘さ（お菓子系）の追求」と「誠実な理論」",
+    "description": "実力・人格ともに地元最強格の好敵手。料理の専門学校で学んだ元料理畑の作り手。実際の菓子や料理の味・香り・後味をイメージし、フレーバーでミックスを組み立てる。シーシャ歴が長く、理論派だが知識をひけらかさない。聞かれれば惜しみなく教える面倒見の良さがあり、口癖は「うまくなりたいなら全部見てけ」。負けると人目もはばからず本気で悔しがるが、相手を称えることを絶対に忘れない。はじめにとって最初の壁であり、最初の目標であり、のちに最も痛いことを言ってくれる友人になる。第2章でははじめの慢心に正面から苦言を呈する唯一の人物。 得意な味の軸はバニラと甘いお菓子系。チョコ、クリーム、パンや焼き菓子の香りを追求し、試作会でも世界大会でもその軸は変わらない。",
+    "background_secret": "実家は商店街の喫茶店だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、ケムリクサで働くのは「潰れない店の作り方」を学ぶためでもある。 全国大会前には店の試作会で教える仕事も任される。はじめとの和解後に出るラストチャンスは、推薦や救済ではなく本人が勝ち取る枠。 はじめとの「勝った方が作る」という約束は、スミと南雲の昔の競争に重なる。話を聞き直す電話を経て、帰国後は互いの一台を作る。南雲と同じ引退を辿るのではなく、現役の好敵手として自分の甘さを磨く。",
+    "favorite_flavor": "バニラ",
+    "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
+    "growth_stats": {
+      "primary": "技術",
+      "secondary": "根性",
+      "notes": "前年に県大会で敗退。今季は地元大会ではじめに敗れ、県・全国には出場しない。全国後の独立シリーズ、ラストチャンス予選へ地域大会から挑み、代表決定大会で優勝して日本第二代表になる。各大会は一試合。"
+    },
+    "visual_concepts": [
+      "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
+      "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
+    ],
+    "spriteScale": 1.02,
+    "intro_cutin": {
+      "title": "地元最強の好敵手",
+      "line": "うまくなりたいなら全部見てけ",
+      "face": "smile",
+      "color": "#f0d8a0"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "sha": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787",
+      "size": 501246
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_sad.png",
+      "sha": "2b11533871fc5fcac31598e265154a1efb626a62",
+      "size": 484545
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_serious.png",
+      "sha": "4999cd6b685065e796bd84627a34945b77e3c653",
+      "size": 503449
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_smile.png",
+      "sha": "cd4f7f4c90eff5b15d0c42a532b5943bcd13170c",
+      "size": 499528
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_surprise.png",
+      "sha": "6bf8c7aab3163eb6c4a99c71c7f8a73d70b6645a",
+      "size": 498997
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

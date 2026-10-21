@@ -1,0 +1,30 @@
+{
+  "id": "salaryman",
+  "name": "サラリーマン",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1841564,
+  "sha256": "8e76d779b2a9f67d9714bda0d4bd7e7d4ddee6a8b7433e0474c53f56600e2f7f",
+  "approved_input": {
+    "path": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+    "sha": "72606b580a08cd91d5642ccf70f293f7dc38de9e",
+    "size": 448824
+  },
+  "input_git_blob_verified": "72606b580a08cd91d5642ccf70f293f7dc38de9e",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "採用画像の疲れた細身の顔、黒髪、チャコール色の二つ揃いスーツ、白シャツ、緩めた紺ネクタイ、黒い革靴。",
+  "inferred": "ジャケット背面の縫い目とベント、パンツ後ろ、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "salaryman-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}
