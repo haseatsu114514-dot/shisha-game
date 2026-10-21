@@ -73,6 +73,9 @@ class GitHub:
     def issue(self, number):
         return self.get(f"issues/{number}")
 
+    def comments(self, number):
+        return self.get(f"issues/{number}/comments?per_page=100", paginated=True)
+
 
 def positive_number(value):
     return type(value) is int and value > 0
@@ -125,6 +128,76 @@ def unique_keys(pairs):
             raise ValueError("duplicate JSON key")
         result[key] = value
     return result
+
+
+def plan_lines(body):
+    """Only unquoted, unfenced, column-zero declaration lines are operative."""
+    fields = {}
+    fence = None
+    for line in body.splitlines():
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+        if fence:
+            if re.fullmatch(r" {0,3}" + re.escape(fence[0]) + "{" + str(len(fence)) + r",}\s*", line):
+                fence = None
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        match = re.match(r"^(WORKER|PLANNED_FILES|DEPENDS)\s*:(.*)$", line)
+        if match:
+            fields.setdefault(match[1], []).append(match[2].strip())
+    return fields
+
+
+def check_issue(number, client):
+    """Read the newest human declaration, never fall back from an invalid plan."""
+    try:
+        issue = client.issue(number)
+        if (not isinstance(issue, dict) or issue.get("number") != number
+                or "pull_request" in issue or type(issue.get("comments")) is not int
+                or issue["comments"] < 0):
+            raise FetchError(f"Issue #{number}: incomplete/malformed metadata")
+        comments = client.comments(number)
+        if (not isinstance(comments, list) or len(comments) != issue["comments"]
+                or any(not isinstance(c, dict) or not positive_number(c.get("id"))
+                       or not isinstance(c.get("body"), str)
+                       or not isinstance(c.get("user"), dict)
+                       or c["user"].get("type") not in ("User", "Bot")
+                       or not isinstance(c["user"].get("login"), str)
+                       or not c["user"]["login"] for c in comments)
+                or len({c["id"] for c in comments}) != len(comments)):
+            raise FetchError(f"Issue #{number}: comment list incomplete/malformed or changed; rerun")
+    except FetchError as exc:
+        report = check(None, None)
+        report["missing_information"] = []
+        report["fetch_failures"] = [str(exc)]
+        return report
+    candidates = [(c, plan_lines(c["body"])) for c in comments if c["user"]["type"] == "User"]
+    candidates = [(c, fields) for c, fields in candidates
+                  if "PLANNED_FILES" in fields or "DEPENDS" in fields]
+    if not candidates:
+        report = check(None, None)
+        report["missing_information"] = [f"Issue #{number}: no explicit human comment plan"]
+        return report
+    comment, fields = max(candidates, key=lambda item: item[0]["id"])
+    source = {"issue": number, "comment_id": comment["id"], "author": comment["user"]["login"]}
+    errors = [f"{key} must appear exactly once in the latest plan comment"
+              for key in ("WORKER", "PLANNED_FILES", "DEPENDS") if len(fields.get(key, [])) != 1]
+    plan = {"version": 1, "issue": number}
+    if not errors:
+        plan["worker"] = fields["WORKER"][0]
+        try:
+            plan["files"] = json.loads(fields["PLANNED_FILES"][0], object_pairs_hook=unique_keys)
+            plan["dependencies"] = json.loads(fields["DEPENDS"][0], object_pairs_hook=unique_keys)
+        except ValueError:
+            errors.append("PLANNED_FILES / DEPENDS must be single-line JSON without duplicate keys")
+    if errors:
+        report = check(None, None)
+        report["missing_information"] = errors
+    else:
+        report = check(plan, client)
+    report["plan_source"] = source
+    return report
 
 
 def pull_identity(pull, number):
@@ -222,6 +295,9 @@ def check(plan, client):
 
 def render_text(report):
     lines = [f"STATUS: {report['status']}", f"OBSERVED: {report['observed_at']}"]
+    if "plan_source" in report:
+        source = report["plan_source"]
+        lines.append(f"PLAN_SOURCE: Issue #{source['issue']} comment={source['comment_id']} author={source['author']}")
     for item in report["file_overlaps"]:
         lines.append(f"FILE_OVERLAP: PR #{item['pr']} draft={item['draft']}: {', '.join(item['files'])}")
     for item in report["unmerged_dependencies"]:
@@ -236,19 +312,26 @@ def render_text(report):
 
 def main(argv=None, client=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--plan", required=True, type=Path)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--plan", type=Path)
+    inputs.add_argument("--issue", type=int)
     parser.add_argument("--repo", default="haseatsu114514-dot/shisha-game")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args(argv)
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", args.repo):
         parser.error("--repo must be owner/name")
-    try:
-        plan = json.loads(args.plan.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
-    except (OSError, ValueError) as exc:
-        report = check(None, client)
-        report["missing_information"] = [f"plan file unavailable/invalid: {type(exc).__name__}"]
+    if args.issue is not None:
+        if not positive_number(args.issue):
+            parser.error("--issue must be a positive number")
+        report = check_issue(args.issue, client or GitHub(args.repo))
     else:
-        report = check(plan, client or GitHub(args.repo))
+        try:
+            plan = json.loads(args.plan.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
+        except (OSError, ValueError) as exc:
+            report = check(None, client)
+            report["missing_information"] = [f"plan file unavailable/invalid: {type(exc).__name__}"]
+        else:
+            report = check(plan, client or GitHub(args.repo))
     print(json.dumps(report, ensure_ascii=False, indent=2) if args.format == "json" else render_text(report))
     return {"no_detected_overlap": 0, "requires_review": 1, "incomplete": 2}[report["status"]]
 

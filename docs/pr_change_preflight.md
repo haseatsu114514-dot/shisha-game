@@ -1,4 +1,4 @@
-# 読み取り専用の変更予定・PR事前チェック（#422 第一段階）
+# 読み取り専用の変更予定・PR事前チェック（#422 第二段階）
 
 `tools/pr_change_preflight.py` は、明示した計画とOpen/Draft PRの**実変更ファイル**を比較する独立した補助ツールです。
 予約ワークフローとの連携、予約・移管・PR編集・マージ・権限変更は行いません。
@@ -7,7 +7,7 @@
 
 ## 計画と実行
 
-Issue/worker引き継ぎに添付できるJSONを用意します。PR本文や既存の予約記録の書式は変更しません。
+ローカルの計画JSON、またはIssueの人間コメントを入力にできます。PR本文や既存の予約記録の書式は変更しません。
 
 ```json
 {
@@ -48,6 +48,47 @@ GitHubのPRファイルAPIは最大3000件のため、それを超えるPRや部
 PR依存は `merged=true` かつclosedでのみ完了扱いです。closedだけの未マージPRは未完です。
 Issue依存はclosedかつ `state_reason=completed` で解決扱いですが、実装の実地検証済みとは意味しません。
 `not_planned` や理由不明のclosed Issueは依存未完に残します。
+
+## Issue／handoffコメントの明示形式
+
+IssueのConversationコメントに、次の3行を**同じコメント内**で明示します。
+通常の進捗／handoff記録の `WORKER / ISSUE / BRANCH / PR / DONE / TODO / TEST / NEXT` と併記できます。
+この宣言自体は予約・移管・handoff操作を実行せず、既存の手順やbot台帳を変更しません。
+
+```text
+WORKER: your-session-specific-worker
+PLANNED_FILES: ["tools/pr_change_preflight.py", "tools/test_pr_change_preflight.py", "docs/pr_change_preflight.md"]
+DEPENDS: {"issues": [], "prs": [557]}
+```
+
+`WORKER` は空でないworker ID、残る2行の値はそれぞれ1行のJSON配列／オブジェクトです。
+`PLANNED_FILES: []` と `DEPENDS: {"issues": [], "prs": []}` は「なしと明示済み」です。
+未記載、空欄、自然文の `none`、同じ行名の複数記載、JSONの重複キーや配列の重複値は計画不足とします。
+従来のカンマ区切り自然文や `DEPENDENCIES:` はこの形式への自動変換・推測を行いません。
+パスと依存番号の検証・依存の完了条件は計画JSONと共通です。
+
+```sh
+python3 tools/pr_change_preflight.py --issue 422
+python3 tools/pr_change_preflight.py --issue 422 --format json
+```
+
+`--issue` は正のIssue番号で、`--plan` と同時指定できません。
+Issue情報とコメント全ページをGETし、コメント数の不一致・重複ID・不正メタ情報・取得失敗は
+`fetch_failures` に記録して `incomplete` とします。PR番号はIssue入力として受け付けません。
+人間コメントはGitHubの `user.type=User` に限定し、Botコメントを除外します。
+これは人間アカウントを使用するAIのコメントを含み、書いた人の権限や現在のclaim所有者の認証には使いません。
+
+行頭（インデントなし）の `PLANNED_FILES:` または `DEPENDS:` を含む人間コメントのうち、
+**作成順で最新（最大comment ID）**を選びます。ブロック引用、バッククォート／チルダのコードフェンス内の例は読みません。
+上のコード例を実際に投稿するときはコードフェンスを外してください。
+Issue本文、PR本文、自然文、別コメントの項目は補完元にしません。
+通常の進捗コメントやBotコメントは計画を置き換えません。
+古いコメントを編集しても新しいコメントより優先されないため、計画更新は3行をそろえた新規コメントで行ってください。
+最新宣言が部分的・不正でも、古い有効な計画へ戻りません。宣言がない場合も `missing_information` として終了コード2です。
+
+Issueモードだけ、選択したコメントの `issue / comment_id / author` をJSONの `plan_source` に追加し、
+textでは `PLAN_SOURCE` 行で示します。既存の `--plan` の出力・終了コードは変わりません。
+コメントは現在のスナップショットであり、同数の編集・削除と追加や取得後の更新まで排他・保証するものではありません。
 
 ## 判定・出力例
 
@@ -95,4 +136,7 @@ GitHubレスポンスは時点の情報であり、取得後の新PR・pushを�
 fixtureでは非衝突、Open/Draft重複、rename旧パス、未完Issue、closed未マージPR、merged PR、
 closed-as-not-planned、計画未記載と明示空、型・パス不正、取得失敗、部分取得・3000件超、head変化、
 不正メタ情報、CLIの3終了コード、GET-only・ページング・タイムアウトを検証します。通信やGitHub書込みはありません。
+Issueモードは最新の人間宣言、未記載・明示空・不正な最新宣言、重複記載、依存未マージ、
+引用／コード例／Botの除外、コメント取得失敗・部分取得、JSONモードとの判定互換もfixtureで検証します。
+実リポジトリへのツール確認はGET-onlyの読み取り実行です。一時Issue/PRを作る実地検証は未実施です。
 既存予約ワークフロー・UI・ゲーム・台本・画像・PR本文・権限は変更しません。
