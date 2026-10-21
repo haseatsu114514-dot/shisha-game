@@ -262,9 +262,12 @@ jobs:
           retention-days: 7
 
   # Keep the historical "chromium" check name: it passes only when every shard
-  # succeeded (a failed, cancelled or skipped shard fails this job).
+  # succeeded (a failed, cancelled or skipped shard fails this job). Use
+  # !cancelled() rather than always(): an always() job still runs after the
+  # workflow is cancelled, which kept superseded PR runs alive and blocked the
+  # next run in the same concurrency group.
   chromium:
-    if: always()
+    if: ${{ !cancelled() }}
     needs: chromium-shard
     runs-on: ubuntu-latest
     timeout-minutes: 2
