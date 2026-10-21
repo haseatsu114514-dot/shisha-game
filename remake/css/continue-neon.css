@@ -88,7 +88,20 @@
 .gameover[data-layout="neon"] .go-next { opacity: 0; }
 .gameover[data-layout="neon"] .go-right:hover .go-next:not(:disabled),
 .gameover[data-layout="neon"] .go-next:focus-visible { opacity: 1; }
-.gameover[data-layout="neon"] .go-proceed { font-size: 17px; }
+.gameover[data-layout="neon"][data-choice] .go-playback {
+  top: auto; bottom: 21px; left: 50%; right: auto; width: 432px; transform: translateX(-50%);
+}
+.gameover[data-layout="neon"][data-choice] .go-dialogue {
+  /* 狭い表示で44pxへ広げても、反応テロップと送りボタンを重ねない。 */
+  top: min(-2px, calc(106px - max(106px, calc(44.1px / var(--k, 1)))));
+}
+.gameover[data-layout="neon"] .go-proceed {
+  width: 100%; min-height: max(106px, calc(44.1px / var(--k, 1)));
+  border: 2px solid #ffd36b; border-radius: 10px; background: #251933f2;
+  color: #fff1c8; font-size: 32px; box-shadow: 0 0 18px #f6cb4b33;
+}
+.gameover[data-layout="neon"] .end-actions[hidden] { display: none; }
+.gameover[data-layout="neon"][data-choice] :is(.go-clock,.go-count-back) { visibility: hidden; }
 .gameover .go-atmosphere { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .gameover .go-spotlight {
   position: absolute; inset: -10% 14% 10%; transform-origin: 50% 0;

@@ -116,10 +116,11 @@ await suite('play-feedback', async check => {
       F.core.save(); F.core.load();
       return { tutorial, legacyVisited, unlocked, restored: ['kannon', 'cafe', 'c_station', 'choizap'].map(can) };
     });
-    assert.equal(result.tutorial, false); assert.equal(result.legacyVisited, true); assert.deepEqual(result.unlocked, [true, true, true, true]);
+    assert.equal(result.tutorial, false); assert.equal(result.legacyVisited, true); // #780: 喫茶店は紹介の完読（_cafe_introduced）か訪問後に出る。ライバル訪問だけでは解放しない。
+    assert.deepEqual(result.unlocked, [true, false, true, true]);
     assert.deepEqual(result.restored, result.unlocked);
     await page.evaluate(() => F.openMap()); await page.locator('[data-spot="kannon"]').waitFor();
-    assert.equal(await page.locator('[data-spot="cafe"]').count(), 1);
+    assert.equal(await page.locator('[data-spot="cafe"]').count(), 0); // #780: 未紹介の喫茶店は地図に出さない
   });
   await check('saved-night-pending-finishes-before-morning-without-new-reward', async page => {
     await setup(page);
