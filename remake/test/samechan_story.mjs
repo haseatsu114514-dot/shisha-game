@@ -21,7 +21,7 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
     return {dialogues:[]};
   }})});
 const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context});
-await dataModule.link(()=>{throw new Error('unexpected data import');});await dataModule.evaluate();
+await dataModule.link(spec=>{assert.equal(spec,'./fortune-effects.js','unexpected data import');return new vm.SyntheticModule(['registerFortuneReadings'],function(){this.setExport('registerFortuneReadings',()=>{});},{context});});await dataModule.evaluate();
 const data=dataModule.namespace;await data.loadAll();
 assert.equal(data.DB.samechan.spot.label,'SHISHARK');assert.equal(data.DB.characters.samechan.id,'samechan');
 assert.equal(data.DB.lime.length,3);assert(data.DB.dialogues.samechan_first_encounter);
@@ -40,6 +40,7 @@ const deps={
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
+ './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };
 const samechanModule=new vm.SourceTextModule(await read('js/daily/samechan.js'),{context});
 await samechanModule.link(spec=>{const d=deps[spec];assert(d);return new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});});await samechanModule.evaluate();
