@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
+import {createHash, generateKeyPairSync, sign} from 'node:crypto';
 import test from 'node:test';
 import {createRequire} from 'node:module';
 
 const require = createRequire(import.meta.url);
-const {REPO, makePlan, parseJson, preserve, runCli, verifyState} = require('./issue_preservation.cjs');
+const {REPO, makePlan, parseJson, preserve, runCli, verifyState, prepareTransfer, createRuntimeAdapter} = require('./issue_preservation.cjs');
 const digest = value => createHash('sha256').update(value).digest('hex');
 const copy = value => structuredClone(value);
 const base = 'a'.repeat(40), head = 'b'.repeat(40);
@@ -522,7 +522,7 @@ test('write permission denial stops at the denied operation with no alternative 
   assert.equal(s.state.prs.length, 0);
 });
 
-test('an unknown commit result is held as partial on the next attempt', async () => {
+test('an unknown commit result resumes from verified remote bytes without a second commit', async () => {
   const s = setup({hook(call, state) {
     if (call.method === 'POST' && call.path === '/graphql') {
       state.ref = head;
@@ -532,9 +532,11 @@ test('an unknown commit result is held as partial on the next attempt', async ()
   await assert.rejects(s.execute(), {code: 'WRITE_OUTCOME_UNKNOWN'});
   assert.equal(s.calls.filter(c => c.path === '/graphql').length, 1);
   s.writes.length = 0;
-  await assert.rejects(s.execute(), {code: 'PARTIAL_PRESERVATION'});
-  assert.deepEqual(s.writes, []);
-  assert.equal(s.state.prs.length, 0);
+  const result = await s.execute();
+  assert.equal(result.reused, true);
+  assert.deepEqual(s.writes.map(c => c.path), [`${prefix}/pulls`]);
+  assert.equal(s.calls.filter(c => c.path === '/graphql').length, 1);
+  assert.equal(s.state.prs.length, 1);
 });
 
 test('an unknown Draft creation result is reconciled without creating another Draft', async () => {
@@ -578,4 +580,152 @@ test('CLI cannot accept a publish verb or override its repository', async () => 
     await assert.rejects(runCli(args, {api: s.api, actor: 'oldUser', runtime: s.runtime}), {code: 'USAGE'});
     assert.deepEqual(s.calls, []);
   }
+});
+
+function signedRuntime(s, mutate = () => {}) {
+  const {publicKey, privateKey} = generateKeyPairSync('ed25519');
+  const exportedKey = publicKey.export({type:'spki', format:'pem'});
+  return createRuntimeAdapter({publicKey:exportedKey, async readEvidence(challenge) {
+    const statement = {schema:'issue-preservation-runtime/v1', repository:REPO,
+      nonce:challenge.nonce, manifest_sha256:challenge.manifestDigest,
+      issued_at:Date.now() - 1000, expires_at:Date.now() + 30000,
+      stopped:true, inventoryComplete:true, fenced:true,
+      scope:'source-descendants-all-writers', restart_denied:true, direct_writes_denied:true};
+    mutate(statement, challenge);
+    const text = JSON.stringify(statement);
+    return {statement:text, signature:sign(null, Buffer.from(text), privateKey).toString('base64')};
+  }});
+}
+
+test('signed runtime verifies a fresh host challenge at every boundary', async () => {
+  const s = setup(), nonces = [];
+  await s.execute({runtime:signedRuntime(s, (statement, challenge) => {
+    nonces.push(challenge.nonce);
+    assert.equal(challenge.manifestDigest, s.plan().manifestDigest);
+    assert.deepEqual(challenge.manifest.files, s.plan().manifest.files);
+  })});
+  assert.ok(nonces.length >= 4);
+  assert.equal(new Set(nonces).size, nonces.length);
+});
+
+for (const change of ['nonce','repository','manifest_sha256','stopped','inventoryComplete','fenced',
+  'scope','restart_denied','direct_writes_denied','issued_at','expires_at','lifetime','extra']) {
+  test('signed but insufficient runtime evidence refuses: ' + change, async () => {
+    const s = setup();
+    const runtime = signedRuntime(s, statement => {
+      if (change === 'nonce' || change === 'manifest_sha256') statement[change] = '0'.repeat(64);
+      else if (change === 'repository' || change === 'scope') statement[change] = 'other';
+      else if (change === 'issued_at') statement.issued_at = Date.now() + 60000;
+      else if (change === 'expires_at') statement.expires_at = Date.now() - 1;
+      else if (change === 'lifetime') statement.expires_at = Date.now() + 120000;
+      else if (change === 'extra') statement.extra = true;
+      else statement[change] = false;
+    });
+    await assert.rejects(s.execute({runtime}), {code:'EVIDENCE_UNVERIFIED'});
+    assert.deepEqual(s.writes, []);
+  });
+}
+
+test('a correctly shaped response signed by an untrusted key is rejected', async () => {
+  const {publicKey} = generateKeyPairSync('ed25519');
+  const s = setup();
+  const {privateKey} = generateKeyPairSync('ed25519');
+  const runtime = createRuntimeAdapter({publicKey:publicKey.export({type:'spki',format:'pem'}),
+    async readEvidence(challenge) {
+      const statement = JSON.stringify({schema:'issue-preservation-runtime/v1', repository:REPO,
+        nonce:challenge.nonce, manifest_sha256:challenge.manifestDigest,
+        issued_at:Date.now() - 1000, expires_at:Date.now() + 30000,
+        stopped:true, inventoryComplete:true, fenced:true, scope:'source-descendants-all-writers',
+        restart_denied:true, direct_writes_denied:true});
+      return {statement, signature:sign(null, Buffer.from(statement), privateKey).toString('base64')};
+    }});
+  await assert.rejects(s.execute({runtime}), {code:'EVIDENCE_UNVERIFIED'});
+  assert.deepEqual(s.writes, []);
+});
+
+test('a previously signed challenge response cannot be replayed', async () => {
+  const s = setup();
+  let previousNonce;
+  const runtime = signedRuntime(s, (statement, challenge) => {
+    if (previousNonce) statement.nonce = previousNonce;
+    previousNonce = challenge.nonce;
+  });
+  await assert.rejects(s.execute({runtime}), {code:'EVIDENCE_UNVERIFIED'});
+  assert.deepEqual(s.writes, []);
+});
+
+test('runtime losing its fence after ref creation prevents commit and transfer', async () => {
+  const s = setup();
+  const runtime = signedRuntime(s, statement => { if (s.state.ref) statement.fenced = false; });
+  await assert.rejects(s.execute({runtime}), {code:'EVIDENCE_UNVERIFIED'});
+  assert.equal(s.state.ref, base);
+  assert.equal(s.writes.length, 1);
+  await assert.rejects(prepareTransfer(s.input.envelope, s.input.payload,
+    {api:s.api, actor:'oldUser', runtime}), {code:'EVIDENCE_UNVERIFIED'});
+});
+
+test('transfer record is prepared only from freshly verified remote preservation', async () => {
+  const s = setup();
+  await s.execute();
+  s.writes.length = 0;
+  const result = await prepareTransfer(s.input.envelope, s.input.payload,
+    {api:s.api, actor:'oldUser', runtime:s.runtime});
+  assert.deepEqual(result.record, {issue:42, from:'old-worker', to:'new-worker', claim_run:'800',
+    stopped:true, pushed:true, prs:[{number:43, head}]});
+  assert.equal(result.marker, '<!-- issue-handoff:v1 ' + JSON.stringify(result.record) + ' -->');
+  assert.equal(result.state, 'transfer-review-required');
+  assert.ok(Object.isFrozen(result.record.prs));
+  assert.deepEqual(s.writes, []);
+  assert.match(s.state.comments[0].body, /owner=old-worker/);
+});
+
+for (const changed of ['missing-pr','head','approval','bytes','runtime']) {
+  test('transfer preparation refuses stale or missing ' + changed, async () => {
+    const s = setup();
+    await s.execute();
+    s.writes.length = 0;
+    if (changed === 'missing-pr') s.state.prs.length = 0;
+    if (changed === 'head') s.state.ref = base;
+    if (changed === 'approval') s.state.approval.body += 'changed';
+    if (changed === 'bytes') s.state.savedBlob.content = 'eA==';
+    await assert.rejects(prepareTransfer(s.input.envelope, s.input.payload,
+      {api:s.api, actor:'oldUser', runtime:changed === 'runtime' ? undefined : s.runtime}));
+    assert.deepEqual(s.writes, []);
+  });
+}
+
+test('comment-origin claim uses the verified requester recorded by the coordinator', async () => {
+  const s = setup();
+  s.state.run.event = 'issue_comment';
+  s.state.run.actor.login = 'anotherAdmin';
+  s.state.comments[0].body += '\n<!-- issue-claim-actor:v1 login=oldUser -->';
+  await s.execute();
+});
+
+for (const changed of ['head','pr','approval','main','fence']) {
+  test('verified commit without a PR cannot resume after changed ' + changed, async () => {
+    const s = setup();
+    await s.execute();
+    s.state.prs.length = 0;
+    s.writes.length = 0;
+    if (changed === 'head') s.state.ref = 'f'.repeat(40);
+    if (changed === 'pr') s.state.prs.push({number:99, title:'Refs #42', draft:false});
+    if (changed === 'approval') s.state.approval.body += 'changed';
+    if (changed === 'main') s.state.main = 'f'.repeat(40);
+    await assert.rejects(s.execute(changed === 'fence' ? {runtime:undefined} : {}));
+    assert.deepEqual(s.writes, []);
+  });
+}
+
+test('transfer preparation rechecks PR identity after the blob read', async () => {
+  let transfer = false;
+  const s = setup({hook(call, state) {
+    if (transfer && call.path.startsWith(prefix + '/git/blobs/')) state.prs[0].number = 99;
+  }});
+  await s.execute();
+  s.writes.length = 0;
+  transfer = true;
+  await assert.rejects(prepareTransfer(s.input.envelope, s.input.payload,
+    {api:s.api, actor:'oldUser', runtime:s.runtime}), {code:'SAVED_CONTENT_MISMATCH'});
+  assert.deepEqual(s.writes, []);
 });
