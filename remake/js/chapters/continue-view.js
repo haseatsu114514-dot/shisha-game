@@ -145,6 +145,11 @@ export function createContinueView({ script, speaker, character, premium, layout
       ? ({ cheer: "っしゃあ！", shark: "ジャバーン！", scan: "再計測" }[data.effect] || "") : "";
     [retry, quit, next, dialogue].forEach(button => { button.disabled = true; });
     next.hidden = true;
+    if (!neon) showProceed();
+  }
+  function showProceed() {
+    if (!proceed.hidden) return;
+    if (neon) actions.hidden = true;
     proceed.hidden = false;
     proceed.focus({ preventScroll: true });
   }
@@ -163,5 +168,5 @@ export function createContinueView({ script, speaker, character, premium, layout
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    setCaption, reveal, face, reaction, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
+    setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }
