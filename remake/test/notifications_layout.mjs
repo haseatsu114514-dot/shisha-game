@@ -22,6 +22,8 @@ try {
       QA.core.newGame();
       const s = QA.core.state;
       s.phase = "daily"; s.met.naru = true; s.affinity.naru = 17;
+      // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
+      s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。
       s.inbox = [{ id: "qa_layout", day: s.day, read: true, done: false, log: [],
         msg: { id: "qa_layout", sender: "naru", type: "chat", messages: ["今日もいい煙だったな"],
