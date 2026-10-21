@@ -39,6 +39,15 @@ async function stageIsOriginal(p) {
   const size = await p.locator("#stage").evaluate(n => [n.offsetWidth, n.offsetHeight]);
   assert.deepEqual(size, [1280, 720], "normal/unsupported screen must retain original sizing");
 }
+async function stageMatchesTitleLayout(p, mode) {
+  assert.equal(await p.locator("body").getAttribute("data-screen"), "title");
+  assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
+  if (mode === "normal") return stageIsOriginal(p);
+  const viewport = p.viewportSize();
+  assert(viewport, "DS title check requires a fixed browser viewport");
+  const size = await p.locator("#stage").evaluate(n => [n.offsetWidth, n.offsetHeight]);
+  assert.deepEqual(size, [viewport.width, viewport.height], "DS title must fill the current viewport");
+}
 async function gameIsDS(p) {
   await p.locator("body.game-ds").waitFor();
   const panels = await p.locator(".game-ds-panel").evaluateAll(ns => ns.map(n => {
@@ -100,7 +109,7 @@ try {
         await button(p, "title-new").click(); await button(p, "cancel-new").click();
         assert.deepEqual(await snapshot(p), before, "opening/cancelling menus changed save");
         assert.equal(await button(p, "title-trpg").count(), 0);
-        await stageIsOriginal(p);
+        await stageMatchesTitleLayout(p, mode);
         await p.setViewportSize({ width: 1280, height: 720 });
         await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
         await layout(p, "normal"); await stageIsOriginal(p);
