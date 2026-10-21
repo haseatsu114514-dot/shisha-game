@@ -24,7 +24,8 @@ try {
     window.T = { core, ui, map, spots, data, hud, transitions, logos, util, shop, tonari };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 0, money: 30000 });
     for (const id of ["naru", "adam", "minto", "rin", "tsumugi"]) core.state.met[id] = true;
-    Object.assign(core.state.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
+    Object.assign(core.state.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true,
+      _tsumugi_contest_research: true, _tsumugi_contest_progress: true, _cafe_introduced: true }); // #782: 固定回を見終えた日だけつむぎが在店 / #780: 喫茶店は紹介後に出る
     // 顔画像を持つ既知の店主の小バッジを、空のmanifestでも実物素材で検証する。
     data.DB.manifest.faceIcons = ["sumi", "naru", "adam", "minto", "tsumugi", "hiyori"].map(id => `face_${id}.png`);
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
@@ -115,6 +116,7 @@ try {
     delete T.core.state.flags._spot_guide_naru;
     delete T.core.state.flags._spot_guide_adam;
     delete T.core.state.flags._spot_guide_minto;
+    delete T.core.state.flags._cafe_introduced;
     await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');

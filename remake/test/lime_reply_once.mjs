@@ -19,7 +19,7 @@ async function fixture({ lover = false, reply = response } = {}) {
   const imports = {
     'util.js': { el: noop, sleep: async () => {}, fitOneLine: noop, yen: String },
     'data.js': { DB: {}, displayName: String, faceIconUrl: noop },
-    'ui.js': { layers: {} }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'ui.js': { layers: {} }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'stats.js': { gainAffinity: (id, pts) => current.gains.push({ id, pts, private: bond.private }),
       affinityLevel: () => 1, applyStats: noop, bond },
@@ -28,7 +28,7 @@ async function fixture({ lover = false, reply = response } = {}) {
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
     'bonds.js': { bondInvites: noop, friendMessages: noop },
     'story-knowledge.js': { syncMintoKnowledge: noop }, 'hiyori-route.js': { hiyoriEventStatus: noop },
-    'invitations.js': { invitationCost: noop, storeInvitationSpot: noop, visitReminderSpot: noop },
+    'invitations.js': { invitationCost: noop, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
   const context = vm.createContext({ console, setTimeout, requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
   const modules = new Map();

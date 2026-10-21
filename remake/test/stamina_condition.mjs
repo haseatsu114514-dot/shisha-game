@@ -53,6 +53,7 @@ async function frame(time) { now = time; const waiting = [...frames.values()]; f
 const mocks = {
   "core/util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo, hi) => (lo + hi) / 2, pick: (pool) => pool[0] },
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
+  "core/state.js": { state: { flags: {} } },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
   "craft/session.js": { waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
@@ -63,7 +64,7 @@ const mocks = {
 };
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },
   window: { addEventListener() {}, removeEventListener() {} },
-  requestAnimationFrame: (fn) => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: (id) => frames.delete(id), setTimeout() {} });
+  navigator: { getGamepads: () => [] }, requestAnimationFrame: (fn) => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: (id) => frames.delete(id), setTimeout() {} });
 const mods = new Map(), pending = new Map();
 function load(url) {
   if (!pending.has(url.href)) pending.set(url.href, (async () => {

@@ -12,6 +12,8 @@ await suite("map-guests", async check => {
           spots: await import("./js/daily/spots.js"), hiyori: await import("./js/daily/hiyori.js") };
         const s = G.core.newGame(); Object.assign(s, { phase: "daily", day: 4, slot: 0, seed: 131, money: 90000 });
         s.flags._axe_bar_legacy_access = true; // #577: 旧未対面保存の表示・予定一致を保つ
+        // #782: つむぎは序盤の固定回を既読にした日だけ在店する（DAY4は昼）。
+        Object.assign(s.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
         s.met.naru = s.met.adam = s.met.minto = true;
         window.flow = G.map.chooseSpot();
       });
@@ -50,8 +52,10 @@ await suite("map-guests", async check => {
       const result = await page.evaluate(async () => {
         const core = await import("./js/core/state.js"), map = await import("./js/daily/map.js"),
           people = await import("./js/daily/spot-people.js"), spots = await import("./js/daily/spots.js");
-        const s = core.newGame(); Object.assign(s, { phase: "daily", day: 8, slot: 1, money: 90000 });
+        // #782: DAY8はつむぎの在店が昼（slot0）。固定回の既読も立てる。
+        const s = core.newGame(); Object.assign(s, { phase: "daily", day: 8, slot: 0, money: 90000 });
         s.met.tsumugi = s.met.hiyori = true;
+        Object.assign(s.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
         Object.assign(s.flags, { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
           _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_tonari_return_done: true });
         const tonari = spots.spotById("tonari");
