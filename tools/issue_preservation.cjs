@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-// The CLI is read-only. A production runtime verifier/publisher is deliberately
-// not installed. Injected adapters below are trusted host code, never request data.
+// The CLI remains read-only until the host runtime is formally connected.
+// Adapter configuration is trusted host code, never approval/request data.
 const crypto = require('node:crypto');
 const {execFileSync} = require('node:child_process');
 const {TextDecoder} = require('node:util');
@@ -186,6 +186,9 @@ function preservationBody(plan) {
     '\nManifest SHA-256: ' + plan.manifestDigest +
     '\nApproval: https://github.com/' + REPO + '/issues/' + m.issue + '#issuecomment-' + plan.envelope.approval_comment +
     '\n\nFiles:\n' + files +
+    '\nPreservation base: ' + m.base +
+    '\nPast test SHA: unknown; no previous results are certified by this operation.' +
+    '\nUnsaved changes: none within the runtime-certified complete manifest.' +
     '\n\nTests and integration must be verified after formal transfer.';
 }
 function matchesPreservationPr(pr, plan, branch, head) {
@@ -230,8 +233,9 @@ async function verifyState(plan, context) {
   }
   const source = await call(context, 'GET', ROOT + '/actions/runs/' + m.claim_run);
   if (String(source?.id) !== m.claim_run || source.status !== 'completed' || source.conclusion !== 'success' ||
-      source.path !== '.github/workflows/issue-claim.yml' || source.event !== 'workflow_dispatch' || source.head_branch !== 'main') fail('SOURCE_RUN_INVALID');
-  if (source.actor?.login !== approval.user?.login && !(actorPermission === 'admin' && authorPermission === 'admin')) fail('APPROVAL_ACTOR_MISMATCH');
+      source.path !== '.github/workflows/issue-claim.yml' || !['workflow_dispatch','issue_comment'].includes(source.event) || source.head_branch !== 'main') fail('SOURCE_RUN_INVALID');
+  const claimActor = ledger.body.match(/^<!-- issue-claim-actor:v1 login=([a-zA-Z0-9-]+) -->$/m)?.[1] || source.actor?.login;
+  if (claimActor !== approval.user?.login && !(actorPermission === 'admin' && authorPermission === 'admin')) fail('APPROVAL_ACTOR_MISMATCH');
   const main = await call(context, 'GET', ROOT + '/git/ref/heads/main');
   if (main?.object?.sha !== m.base) fail('MAIN_CHANGED');
   for (const f of m.files) {
@@ -301,29 +305,35 @@ async function preserve(envelope, payload, context) {
   const plan = makePlan(envelope, payload); // Detached bytes before the first await.
   let state = await verifyState(plan, context);
   const existing = await call(context, 'GET', ROOT + '/git/ref/heads/' + plan.branch);
+  let head, reused = Boolean(existing);
   if (existing) {
-    if (state.prs.length !== 1 || existing.object?.sha === plan.manifest.base) fail('PARTIAL_PRESERVATION');
-    const sha = existing.object?.sha;
-    await verifySaved(plan, context, sha);
+    head = existing.object?.sha;
+    // A bare ref at base cannot prove who created it: retain it for inspection.
+    if (head === plan.manifest.base) fail('PARTIAL_PRESERVATION');
+    await verifySaved(plan, context, head);
     state = await verifyState(plan, context);
-    await assertHead(plan, context, sha);
-    if (state.prs.length !== 1 || !matchesPreservationPr(state.prs[0], plan, plan.branch, sha)) fail('SAVED_CONTENT_MISMATCH');
-    return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head:sha, pr:state.prs[0].number, reused:true};
+    await assertHead(plan, context, head);
+    if (state.prs.length) {
+      if (state.prs.length !== 1 || !matchesPreservationPr(state.prs[0], plan, plan.branch, head)) fail('SAVED_CONTENT_MISMATCH');
+      return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head, pr:state.prs[0].number, reused:true};
+    }
+    // A verified single commit without a PR can resume at PR creation only.
+  } else {
+    if (state.prs.length) fail('RECOVERY_HEAD_CHANGED');
+    await verifyState(plan, context);
+    await call(context, 'POST', ROOT + '/git/refs', {ref:'refs/heads/' + plan.branch, sha:plan.manifest.base}, 'create-ref');
+    await verifyState(plan, context);
+    await assertHead(plan, context, plan.manifest.base);
+    const result = await call(context, 'POST', '/graphql', {
+      query:'mutation($input:CreateCommitOnBranchInput!){createCommitOnBranch(input:$input){commit{oid}}}',
+      variables:{input:{branch:{repositoryNameWithOwner:REPO, branchName:plan.branch}, expectedHeadOid:plan.manifest.base,
+        message:{headline:'Preserve issue ' + plan.manifest.issue + ' request ' + plan.manifest.request_id},
+        fileChanges:{additions:plan.files.map(f => ({path:f.path, contents:f.content}))}}}
+    }, 'create-commit');
+    if (result?.errors) fail('WRITE_OUTCOME_UNKNOWN', 'create-commit');
+    head = result?.data?.createCommitOnBranch?.commit?.oid;
+    await verifySaved(plan, context, head);
   }
-  if (state.prs.length) fail('RECOVERY_HEAD_CHANGED');
-  await verifyState(plan, context);
-  await call(context, 'POST', ROOT + '/git/refs', {ref:'refs/heads/' + plan.branch, sha:plan.manifest.base}, 'create-ref');
-  await verifyState(plan, context);
-  await assertHead(plan, context, plan.manifest.base);
-  const result = await call(context, 'POST', '/graphql', {
-    query:'mutation($input:CreateCommitOnBranchInput!){createCommitOnBranch(input:$input){commit{oid}}}',
-    variables:{input:{branch:{repositoryNameWithOwner:REPO, branchName:plan.branch}, expectedHeadOid:plan.manifest.base,
-      message:{headline:'Preserve issue ' + plan.manifest.issue + ' request ' + plan.manifest.request_id},
-      fileChanges:{additions:plan.files.map(f => ({path:f.path, contents:f.content}))}}}
-  }, 'create-commit');
-  if (result?.errors) fail('WRITE_OUTCOME_UNKNOWN', 'create-commit');
-  const head = result?.data?.createCommitOnBranch?.commit?.oid;
-  await verifySaved(plan, context, head);
   state = await verifyState(plan, context);
   if (state.prs.length) fail('OPEN_PR_CONFLICT');
   await assertHead(plan, context, head);
@@ -339,7 +349,58 @@ async function preserve(envelope, payload, context) {
   if (state.prs.length !== 1 || state.prs[0].number !== pr.number ||
       !matchesPreservationPr(state.prs[0], plan, plan.branch, head) ||
       !matchesPreservationPr(pr, plan, plan.branch, head)) fail('SAVED_CONTENT_MISMATCH');
-  return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head, pr:pr.number, reused:false};
+  return {state:'preserved', issue:plan.manifest.issue, branch:plan.branch, head, pr:pr.number, reused};
+}
+
+// Prepare the existing coordinator's record, but never post it or transfer claims.
+// A caller-supplied "preserved" result is not evidence: reread everything.
+async function prepareTransfer(envelope, payload, context) {
+  const plan = makePlan(envelope, payload);
+  let state = await verifyState(plan, context);
+  if (state.prs.length !== 1) fail('PARTIAL_PRESERVATION');
+  const pr = state.prs[0], head = pr.head?.sha;
+  if (!matchesPreservationPr(pr, plan, plan.branch, head)) fail('SAVED_CONTENT_MISMATCH');
+  await verifySaved(plan, context, head);
+  state = await verifyState(plan, context);
+  await assertHead(plan, context, head);
+  if (state.prs.length !== 1 || !matchesPreservationPr(state.prs[0], plan, plan.branch, head) ||
+      state.prs[0].number !== pr.number) fail('SAVED_CONTENT_MISMATCH');
+  const m = plan.manifest;
+  const record = {issue:m.issue, from:m.from, to:m.to, claim_run:m.claim_run,
+    stopped:true, pushed:true, prs:[{number:pr.number, head}]};
+  return freeze({state:'transfer-review-required', record,
+    marker:'<!-- issue-handoff:v1 ' + JSON.stringify(record) + ' -->',
+    approval_comment:plan.envelope.approval_comment, manifest_sha256:plan.manifestDigest,
+    branch:plan.branch, head, pr:pr.number});
+}
+
+// Challenge/response verifier for a host-controlled stop/fence authority. Its
+// pinned public key and transport must come from reviewed host configuration.
+// This verifies enforcement evidence; it cannot itself revoke shared credentials.
+function createRuntimeAdapter({publicKey, readEvidence, now = Date.now}) {
+  let key;
+  try { key = crypto.createPublicKey(publicKey); } catch { fail('UNSUPPORTED_FENCING'); }
+  if (key.asymmetricKeyType !== 'ed25519' || typeof readEvidence !== 'function') fail('UNSUPPORTED_FENCING');
+  return Object.freeze({async verify(manifest, manifestDigest) {
+    const nonce = crypto.randomBytes(32).toString('hex');
+    const response = await readEvidence(freeze({nonce, manifestDigest, manifest}));
+    keys(response, ['statement','signature']);
+    const statement = parseJson(response.statement);
+    keys(statement, ['schema','repository','manifest_sha256','nonce','issued_at','expires_at',
+      'stopped','inventoryComplete','fenced','scope','restart_denied','direct_writes_denied']);
+    if (typeof response.signature !== 'string' || !/^[A-Za-z0-9+/]{86}==$/.test(response.signature) ||
+        !crypto.verify(null, Buffer.from(response.statement), key, Buffer.from(response.signature, 'base64'))) fail('EVIDENCE_UNVERIFIED');
+    const time = now();
+    if (statement.schema !== 'issue-preservation-runtime/v1' || statement.repository !== REPO ||
+        statement.manifest_sha256 !== manifestDigest || statement.nonce !== nonce ||
+        !Number.isSafeInteger(statement.issued_at) || !Number.isSafeInteger(statement.expires_at) ||
+        statement.issued_at > time || statement.expires_at <= time ||
+        statement.expires_at - statement.issued_at > 60000 ||
+        statement.stopped !== true || statement.inventoryComplete !== true || statement.fenced !== true ||
+        statement.scope !== 'source-descendants-all-writers' ||
+        statement.restart_denied !== true || statement.direct_writes_denied !== true) fail('EVIDENCE_UNVERIFIED');
+    return freeze(statement);
+  }});
 }
 
 function ghApi(method, path, body) {
@@ -377,7 +438,7 @@ async function runCli(argv, context = {}) {
   await verifyState(plan, ctx);
   return {state:'preflight-only', issue:manifest.issue, request_id:manifest.request_id, writable:false};
 }
-module.exports = {REPO, PreservationError, canonical, sha256, parseJson, makePlan, verifyState, preserve, runCli};
+module.exports = {REPO, PreservationError, canonical, sha256, parseJson, makePlan, verifyState, preserve, prepareTransfer, createRuntimeAdapter, runCli};
 if (require.main === module) {
   runCli(process.argv.slice(2)).then(result => process.stdout.write(JSON.stringify(result) + '\n')).catch(error => {
     process.stderr.write(JSON.stringify({state:'blocked',code:error instanceof PreservationError ? error.code : 'INTERNAL_ERROR',
