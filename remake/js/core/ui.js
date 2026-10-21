@@ -321,7 +321,8 @@ function pumpBanners() {
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
+          o.kind === "stat" && o.points > 0 ? el("span.gc-earned", { text: "今回" }) : null,
+          o.points > 0 ? el("span.gc-points", { "aria-label": o.kind === "stat" ? `今回の増加 +${o.points}P` : null }, o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
