@@ -11,6 +11,9 @@ import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 import { RIN_AWAY_DAY } from "../core/rules.js";
 
+// 全等級で購入を共有ロック。表示・セーブには保存しない。
+let purchaseLock = null, currentRows = null;
+
 const grades = () => Object.entries(DB.kuji?.grades || {})
   .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
   .map(([id, g]) => ({ id, ...g }));
@@ -59,6 +62,13 @@ function grant(prize) {
 
 /** ショップの「くじ」タブの中身 */
 export function kujiRows(rerender) {
+  const view = currentRows = {};
+  const session = state, boxes = state.kuji;
+  const { chapter, day, slot, phase } = state;
+  const buttons = [];
+  const live = button => currentRows === view && state === session && state.kuji === boxes
+    && state.chapter === chapter && state.day === day && state.slot === slot && state.phase === phase
+    && button.isConnected && !button.closest(".done");
   const list = grades();
   if (!list.length) return [el("p.shop-empty", { text: "くじはまだ入荷していない" })];
   const rows = [];
@@ -76,6 +86,31 @@ export function kujiRows(rerender) {
     const left = size - box.drawn;
     const empty = left <= 0;
     const top = box.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
+    const drawn = box.drawn, order = box.order;
+    const button = el("button.btn.small", {
+      text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
+      disabled: empty || state.money < g.price || null,
+      dataset: { test: `kuji-${g.id}` },
+      onclick: async () => {
+        if (!live(button) || boxes[g.id] !== box || box.order !== order || box.drawn !== drawn
+          || empty || state.money < g.price || layers.modal.classList.contains("show")) return;
+        if (purchaseLock?.session === session
+          && (purchaseLock.committing || purchaseLock.overlay?.isConnected)) return;
+        const lock = purchaseLock = { session, committing: true, overlay: null };
+        // Enterのrepeatも含め、演出中は背後の購入ボタンへ再入力させない。
+        buttons.forEach(b => { b.disabled = true; });
+        try {
+          const pending = draw(g, box);
+          lock.overlay = layers.modal.firstElementChild;
+          lock.committing = false;
+          await pending;
+        } finally {
+          if (purchaseLock === lock) purchaseLock = null;
+          if (live(button)) rerender();
+        }
+      },
+    });
+    buttons.push(button);
     rows.push(el("div.shop-row.kuji-row", [
       el("span.shop-cat.kuji-cat", { text: "くじ" }),
       el("div.shop-main", [
@@ -85,19 +120,13 @@ export function kujiRows(rerender) {
           : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? "（旧箱・次回は50枚）" : ""}` }),
         el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
       ]),
-      el("button.btn.small", {
-        text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
-        disabled: empty || state.money < g.price || null,
-        dataset: { test: `kuji-${g.id}` },
-        onclick: async () => { await draw(g); rerender(); },
-      }),
+      button,
     ]));
   }
   return rows;
 }
 
-async function draw(g) {
-  const box = boxOf(g);
+async function draw(g, box) {
   if (box.drawn >= box.order.length || state.money < g.price) return;
   addMoney(-g.price);
   const prize = box.prizes[box.order[box.drawn]];
