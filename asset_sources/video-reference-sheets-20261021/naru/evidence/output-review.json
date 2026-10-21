@@ -1,0 +1,30 @@
+{
+  "id": "naru",
+  "name": "なる",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 2011583,
+  "sha256": "da91916ae72c61f073b41ade8e25a4ad295b8024850f3654c4d2a3bc8e084ac8",
+  "approved_input": {
+    "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+    "sha": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787",
+    "size": 501246
+  },
+  "input_git_blob_verified": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "銀髪、琥珀色の目、白黒のジャケット、黒Tシャツとカーゴパンツ、銀のチェーン・指輪、白いスニーカー。",
+  "inferred": "ジャケット背面の白黒パネル、髪の後ろ、ポケットの不可視部分、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "naru-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}
