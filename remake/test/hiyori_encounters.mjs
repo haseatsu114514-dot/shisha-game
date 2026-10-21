@@ -57,7 +57,7 @@ await suite("hiyori-encounters", async (check) => {
     await setup(page);
     const result = await page.evaluate(async () => {
       const shops = [];
-      for (const id of ["naru", "adam", "minto", "shop", "c_station"]) {
+      for (const id of ["naru", "adam", "minto", "c_station"]) {
         const s = H.fresh(); s.slot = 1;
         while (H.daily.hiyoriShopLocation() !== id && s.seed < 10000) s.seed++;
         if (s.seed >= 10000) throw Error(`No schedule for ${id}`);
@@ -70,7 +70,7 @@ await suite("hiyori-encounters", async (check) => {
           shop: s.flags._hiyori_meeting_shop, contact: s.contacts.includes("hiyori") });
       }
       H.fresh();
-      const excluded = ["tonari", "rest", "cafe", "kannon", "choizap", "fortune"].map((id) => H.daily.hiyoriShopEligible(H.spots.spotById(id)));
+      const excluded = ["tonari", "rest", "cafe", "kannon", "choizap", "fortune", "shop"].map((id) => H.daily.hiyoriShopEligible(H.spots.spotById(id)));
       H.core.state.chapter = 2;
       const futureShop = H.daily.hiyoriShopEligible(H.data.DB.samechan.spot);
       return { shops, excluded, futureShop };
