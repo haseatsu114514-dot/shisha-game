@@ -282,6 +282,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     document.removeEventListener("visibilitychange", availabilityChanged);
     for (const event of ["resize", "orientationchange", "display-layout-change"]) window.removeEventListener(event, availabilityChanged);
     window.removeEventListener("pagehide", cleanup);
+    root.removeEventListener("keydown", keyboardDown, true);
+    root.removeEventListener("keyup", keyboardUp, true);
     motion?.removeEventListener?.("change", setMotion);
     audio.cleanup();
   }
@@ -364,6 +366,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     }
     started = true;
     start = speechStart = performance.now();
+    view.retry.focus({ preventScroll: true });
     observer.disconnect();
     observer.observe(root.parentNode, { childList: true });
     audio.start();
@@ -376,6 +379,28 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   }
   view.retry.addEventListener("click", () => decide("retry"));
   view.quit.addEventListener("click", () => decide("quit"));
+  // ネイティブbuttonのEnter/Space確定は残し、前画面からの長押しと
+  // retry→反応送りへfocusが移った後の同じ押下だけを止める。
+  let spaceTarget = null;
+  function blockKey(event) { event.preventDefault(); event.stopPropagation(); }
+  function keyboardDown(event) {
+    if (event.key === "Enter" || event.key === " ") {
+      if (event.repeat || !available()) { blockKey(event); return; }
+      if (event.key === " ") spaceTarget = event.target;
+    } else if ((event.key === "ArrowLeft" || event.key === "ArrowRight")
+      && !choice && available() && [view.retry, view.quit].includes(event.target)) {
+      blockKey(event);
+      (event.key === "ArrowLeft" ? view.retry : view.quit).focus({ preventScroll: true });
+    }
+  }
+  function keyboardUp(event) {
+    if (event.key !== " ") return;
+    // Spaceはkeyupでclickになる。前画面で押し始めたSpaceの解放も確定にしない。
+    if (event.target !== spaceTarget || !available()) blockKey(event);
+    spaceTarget = null;
+  }
+  root.addEventListener("keydown", keyboardDown, true);
+  root.addEventListener("keyup", keyboardUp, true);
   function advanceSpeech() {
     if (!available() || choice) return;
     if (!started) begin();

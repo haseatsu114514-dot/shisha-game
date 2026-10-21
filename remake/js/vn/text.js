@@ -102,7 +102,7 @@ function phraseStarts(tokens) {
  * sentenceFirst なら手前の文末（。！？）を優先し、そうでなければ読点などの直後か文節の頭のうち
  * 一番後ろで折る。どちらも語の途中は避けて少しだけ早める。
  */
-function wrapSegment(segment, limit, layout, sentenceFirst) {
+function legacyWrapSegment(segment, limit, layout, sentenceFirst) {
   const tokens = tokensOf(segment), lines = [];
   const phrases = phraseStarts(tokens);
   let start = 0;
@@ -151,15 +151,141 @@ function wrapSegment(segment, limit, layout, sentenceFirst) {
   return lines;
 }
 
-/** 文末優先で折る。それで改ページが増えるときだけ、一番後ろの区切りで折って文の途中の改ページを避ける。 */
+// 接続規則は語句辞書ではない。Intlは品詞を返さないので、意味の保証ではなく保守的な推定。
+// 「語＋の＋語」の連鎖を一まとまりにする。句読点・空白・手動改行は越えない。
+function boundaryInfo(tokens, limit, layout) {
+  let plain = "";
+  const offsets = tokens.map(t => { const at = plain.length; if (!t.tag) plain += t.value; return at; });
+  const segments = words ? [...words.segment(plain)] : [];
+  const wordRanges = segments.filter(s => s.isWordLike).map(s => [s.index, s.index + s.segment.length]);
+  const chunks = [];
+  for (let i = 1; i + 1 < segments.length; i++) {
+    if (segments[i].segment !== "の" || !segments[i - 1].isWordLike || !segments[i + 1].isWordLike) continue;
+    const range = [segments[i - 1].index, segments[i + 1].index + segments[i + 1].segment.length];
+    if (chunks.length && chunks.at(-1)[1] >= range[0]) chunks.at(-1)[1] = range[1];
+    else chunks.push(range);
+  }
+  const fits = value => widthOf(value) <= limit &&
+    !(layout.measure && layout.maxWidth > 0 && layout.measure(value) > layout.maxWidth);
+  const ranges = [...wordRanges.map(r => [...r, "inside-word"]), ...chunks.map(r => [...r, "connected-chunk"])];
+  const protectedAt = new Map();
+  // 一度だけ測定。各境界から全文や全範囲を再走査しない。
+  const byOffset = new Map();
+  offsets.forEach((at, k) => { if (!tokens[k].tag) byOffset.set(at, k); });
+  for (const [from, to, reason] of ranges) {
+    const wholeFits = fits(plain.slice(from, to));
+    for (let at = from + 1; at < to; at++) {
+      const k = byOffset.get(at);
+      if (k === undefined) continue;
+      const prior = protectedAt.get(k);
+      const selected = !prior || wholeFits || !prior.fits ? { reason, fits: wholeFits } : prior;
+      protectedAt.set(k, { ...selected,
+        wordFits: !!prior?.wordFits || (reason === "inside-word" && wholeFits),
+        insideWord: !!prior?.insideWord || reason === "inside-word" });
+    }
+  }
+  return { fits, protectedAt, phrases: phraseStarts(tokens) };
+}
+
+function boundaryPenalty(tokens, k, info) {
+  if (k === tokens.length) return 0;
+  if (!safeBoundary(tokens, k)) return Infinity;
+  const protectedPart = info.protectedAt.get(nextVisible(tokens, k));
+  if (protectedPart?.fits) return Infinity;
+  if (protectedPart?.insideWord) return 2;
+  const before = tokens[previousVisible(tokens, k)]?.value || "";
+  const after = tokens[nextVisible(tokens, k)]?.value || "";
+  if (CLOSERS.includes(before) && HIRAGANA.test(after)) return 1;
+  if (BREAK_AFTER.includes(before) || info.phrases.strong.has(nextVisible(tokens, k))) return 0;
+  return info.phrases.weak.has(nextVisible(tokens, k)) ? 1 : 2;
+}
+
+function naturalWrap(segment, limit, layout) {
+  const tokens = tokensOf(segment);
+  if (!tokens.length) return [];
+  const info = boundaryInfo(tokens, limit, layout), n = tokens.length;
+  const best = new Array(n + 1);
+  best[n] = { kinsoku: 0, words: 0, chunks: 0, penalty: 0, count: 0, cost: 0 };
+  // 後続行の最良結果を保存する反復DP。再帰・組合せの全列挙はしない。
+  for (let start = n - 1; start >= 0; start--) {
+    let visible = "", units = 0, visibleCount = 0;
+    const choices = [];
+    for (let end = start + 1; end <= n; end++) {
+      const t = tokens[end - 1];
+      if (!t.tag) { visible += t.value; units += t.width; visibleCount++; }
+      if (!units) continue;
+      const fits = units <= limit && !(layout.measure && layout.maxWidth > 0 && layout.measure(visible) > layout.maxWidth);
+      // 単一書記素も収まらない幅では、その1字だけを出して必ず前進。
+      if (!fits && visibleCount > 1) break;
+      if (end < n && tokens[end].tag) continue;
+      let next = end;
+      while (next < n && SPACES.includes(tokens[next].value)) next++;
+      const tail = best[next];
+      if (!tail) continue;
+      const penalty = boundaryPenalty(tokens, end, info);
+      const part = end < n ? info.protectedAt.get(nextVisible(tokens, end)) : null;
+      const before = tokens[previousVisible(tokens, end)]?.value || "";
+      choices.push({ end, next,
+        kinsoku: tail.kinsoku + (end < n && !safeBoundary(tokens, end) ? 1 : 0),
+        words: tail.words + (part?.wordFits ? 1 : 0),
+        chunks: tail.chunks + (part?.fits ? 1 : 0),
+        penalty: tail.penalty + (Number.isFinite(penalty) ? penalty : 0), count: 1 + tail.count,
+        cost: tail.cost + (end === n ? 0 : (BREAK_AFTER.includes(before) ? 0 : 1) + (1 - units / limit) ** 2) });
+      if (!fits) break;
+    }
+    // 全経路で禁則を最優先。両立不能なら接続句、次に単語の保護を緩める。
+    // 後続行の違反も比較するので、局所的に安全でも句点を次行へ追い出す案を避ける。
+    const compare = (a, b) => a.kinsoku - b.kinsoku || a.words - b.words || a.chunks - b.chunks ||
+      a.penalty - b.penalty || a.count - b.count || a.cost - b.cost || b.end - a.end;
+    best[start] = choices.reduce((best, c) => !best || compare(c, best) < 0 ? c : best, null);
+  }
+  const lines = [];
+  for (let start = 0; start < n;) {
+    const step = best[start];
+    if (!step) { lines.push(tokens.slice(start).map(t => t.value).join("")); break; } // タグのみの末尾
+    lines.push(tokens.slice(start, step.end).map(t => t.value).join(""));
+    start = step.next;
+  }
+  // 同じページ数で自然な既存の文末優先案は維持する。
+  const legacy = legacyWrapSegment(segment, limit, layout, true);
+  const pages = rows => Math.ceil(rows.length / (layout.maxLines ?? MAX_PAGE_LINES));
+  let at = 0, legacyPenalty = 0;
+  for (const line of legacy) {
+    at += tokensOf(line).length;
+    legacyPenalty += boundaryPenalty(tokens, at, info);
+    while (at < n && SPACES.includes(tokens[at].value)) at++;
+  }
+  return legacyPenalty === 0 && pages(legacy) <= pages(lines) ? legacy : lines;
+}
+
+/** 手動改行は固定。単語・接続を保ち、前後両行を評価する。 */
 export function autoWrap(raw, limit = WRAP_LIMIT, layout = {}) {
-  const pagesOf = (lines) => Math.ceil(lines.length / MAX_PAGE_LINES);
-  return String(raw).split("\n").map((segment) => {
-    const sentenceFirst = wrapSegment(segment, limit, layout, true);
-    if (sentenceFirst.length <= MAX_PAGE_LINES) return sentenceFirst.join("\n");
-    const latest = wrapSegment(segment, limit, layout, false);
-    return (pagesOf(latest) < pagesOf(sentenceFirst) ? latest : sentenceFirst).join("\n");
-  }).join("\n");
+  if (!Number.isFinite(limit) || limit <= 0) throw new RangeError("wrap limit must be positive");
+  return String(raw).split("\n").map(segment => naturalWrap(segment, limit, layout).join("\n")).join("\n");
+}
+
+/** 共有組版の境界情報による診断。検査側に別の語句辞書・折返し器を持たせない。 */
+export function wrapDiagnostics(raw, limit = WRAP_LIMIT, layout = {}) {
+  const diagnostics = [];
+  String(raw).split("\n").forEach((segment, paragraph) => {
+    const tokens = tokensOf(segment), info = boundaryInfo(tokens, limit, layout);
+    const rows = naturalWrap(segment, limit, layout);
+    let at = 0;
+    rows.forEach((line, row) => {
+      at += tokensOf(line).length;
+      if (!info.fits(stripTags(line))) diagnostics.push({ paragraph, row, reason: "width-overflow", line });
+      if (at < tokens.length) {
+        const part = info.protectedAt.get(nextVisible(tokens, at));
+        const penalty = boundaryPenalty(tokens, at, info);
+        const safe = safeBoundary(tokens, at);
+        if (part || penalty > 0) diagnostics.push({ paragraph, row,
+          reason: !safe ? "kinsoku" : part?.insideWord ? "inside-word" : part?.reason || "weak-boundary",
+          line, next: rows[row + 1], forced: !!part || !safe, protectionRelaxed: !!part?.fits });
+      }
+      while (at < tokens.length && SPACES.includes(tokens[at].value)) at++;
+    });
+  });
+  return diagnostics;
 }
 
 /** 各ページ内で装飾を閉じ、続くページでは同じ装飾を開き直す。 */

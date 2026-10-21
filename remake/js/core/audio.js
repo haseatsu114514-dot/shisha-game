@@ -511,7 +511,7 @@ const SYNTH_FALLBACK = {
 export const currentBgm = () => currentKey;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
-const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
