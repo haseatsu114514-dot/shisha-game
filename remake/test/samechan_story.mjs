@@ -37,7 +37,7 @@ const deps={
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true,timeOfDay:()=> 'night'},
  '../core/ui.js':{setBg:async()=>{}},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
