@@ -1,5 +1,7 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
 // 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉と物体）を心(♥)で避け続ける。被弾が少ないほど良い。
+import { state } from "../core/state.js";
+import { hasAttackTraining, ATTACK_LOCK_REASON } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
@@ -67,7 +69,8 @@ export async function runSteamDodge(cs) {
     el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
-  const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
+  const slashLock = el("span.slash-lock", { text: ATTACK_LOCK_REASON, dataset: { test: "slash-lock" } });
+  const slashControl = el("div.slash-control", [slashBtn, slashFeedback, slashLock]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
@@ -172,6 +175,14 @@ export async function runSteamDodge(cs) {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+    const learned = hasAttackTraining(state.flags);
+    slashBtn.dataset.locked = String(!learned);
+    slashLock.hidden = learned;
+    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : ATTACK_LOCK_REASON;
+    if (!learned) {
+      slashBtn.disabled = true;
+      slashBtn.setAttribute("aria-label", `アタック。${ATTACK_LOCK_REASON}`);
+    }
     slashBtn.dataset.cutWords = String(wordsCut);
     slashBtn.dataset.totalWordsCut = String(totalWordsCut);
     slashBtn.dataset.maxCombo = String(maxCombo);
@@ -199,7 +210,7 @@ export async function runSteamDodge(cs) {
   // キーボードや支援技術による click でも使える（pointerdown と重ねて消費しない）。
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
   const slash = () => {
-    if (!running || time < slashReadyAt) return;
+    if (!running || !hasAttackTraining(state.flags) || time < slashReadyAt) return;
     const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
@@ -284,9 +295,21 @@ export async function runSteamDodge(cs) {
     else await new Promise((resolve) => {
       const gameClock = createCraftClock(panel);
       let last = gameClock.now();
+      const pressedPads = new Set();
+      const pollAttackPad = enabled => {
+        const pads = navigator.getGamepads?.() || [];
+        for (let i = 0; i < pads.length; i++) {
+          const pressed = pads[i]?.mapping === "standard" && pads[i].buttons[0]?.pressed;
+          if (pressed && !pressedPads.has(i) && enabled) slash();
+          if (pressed) pressedPads.add(i); else pressedPads.delete(i);
+        }
+      };
+      pollAttackPad(false);
+
       const loop = (now) => {
         const current = gameClock.now();
         const dt = Math.min(0.05, (current - last) / 1000); last = current;
+        pollAttackPad(!gameClock.paused);
         if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
         time += dt;
         if (!refreshes && time >= refreshReadyAt) refreshes = stock;
