@@ -11,7 +11,6 @@ import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
 import { allSpots, isClosed, isUnlocked } from "./spots.js";
-import { rinUnavailable } from "./spot-hours.js";
 import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarRumor } from "./axe-bar-discovery.js";
 
@@ -68,9 +67,9 @@ export async function playHiyoriEvent(id, options = {}) {
   }
 }
 
-/** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする。 */
+/** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
-  || spot.kind === "shop" || spot.id === "c_station");
+  || spot.id === "c_station");
 
 // 同じ訪問をロードしても再抽選しない。店主・施設側の来店テーブルはそのまま使う。
 function encounterRoll(spot) {
@@ -98,8 +97,7 @@ export function hiyoriShopLocation() {
     || !!DB.dialogues[`hiyori_shop_repeat_${Number(state.flags._hiyori_repeat_count || 0) % 4}`]?.lines?.length;
   if (!ready) return null;
   const candidates = allSpots().filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
-    && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day
-    && (spot.kind !== "shop" || !rinUnavailable(state)))
+    && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day)
     .map(spot => ({ id: spot.id, roll: encounterRoll(spot) }))
     .filter(spot => first || spot.roll < 0.2)
     .sort((a, b) => a.roll - b.roll || a.id.localeCompare(b.id));
