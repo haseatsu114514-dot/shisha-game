@@ -122,7 +122,8 @@ for (const fixture of cases) {
       relationshipMemories: ["actually-read"], flags: { _test_read: true } });
     const relationKeys = ["lovers", "affinity", "story", "romance", "romanceChoices", "relationshipMemories", "flags"];
     const relationships = Object.fromEntries(relationKeys.map(k => [k, copy(source[k])]));
-    relationships.flags._axe_bar_legacy_access = true; // schema14のBAR互換許可だけを追加。既読・関係のassertは維持。
+    relationships.flags._axe_bar_legacy_access = true; // schema14のBAR互換許可。既読・関係のassertは維持。
+    relationships.flags._sumi_double_apple_received = true; // schema19より前は冒頭の葉を受取済み。
     storage.clear();
     const serialized = JSON.stringify(source);
     storage.set(key, serialized);
