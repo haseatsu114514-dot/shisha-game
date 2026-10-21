@@ -18,6 +18,7 @@ import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
+import { tsumugiMessages } from "./tsumugi-schedule.js";
 
 import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
 
@@ -241,7 +242,7 @@ export function morningMessages(opts = {}) {
     senders.add("sumi");
   }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
-  const messages = [...DB.lime].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
   for (const template of messages) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || !eligible(template, opts)) continue;

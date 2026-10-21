@@ -5,9 +5,10 @@ import { isUnlocked, isClosed } from "./spots.js";
 import { rinUnavailable } from "./spot-hours.js";
 import { hiyoriShopEncounterDue, hiyoriAtTonari } from "./hiyori.js";
 import { hiyoriFirstMeetingReady } from "../core/axe-bar-discovery.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 // 今後のゲストはここへ独立した登場条件を追加する。好感度の変化は表示側で起こさない。
 const GUESTS = [
-  { id: "tsumugi", present: spot => spot.id === "tonari" },
+  { id: "tsumugi", present: spot => spot.id === "tonari" && tsumugiAtTonari(state) },
   { id: "hiyori", present: spot => {
     if (!hiyoriFirstMeetingReady(state)) return false;
     const invite = state.pendingInvite;

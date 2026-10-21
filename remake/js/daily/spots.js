@@ -13,7 +13,8 @@ import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
 import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
-import { meetHiyoriAtTonari } from "./hiyori.js";
+import { meetHiyoriAtTonari, hiyoriShopEncounterDue } from "./hiyori.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
@@ -132,7 +133,7 @@ export function hasNewStory(charId) {
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
-    || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
+    || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
   if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
   if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
@@ -266,7 +267,9 @@ export async function visitRival(spot) {
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
-  const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
+  const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
+    ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
   const owner = state;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
