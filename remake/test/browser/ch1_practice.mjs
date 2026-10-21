@@ -16,7 +16,7 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     if (fresh) {
       const s = P.core.newGame();
       Object.assign(s, { phase: "daily", day, slot: 2, stamina: 80, weatherSeed: 4 });
-      s.flavors.push("blueberry", "mint"); s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50 };
+      s.flavors.push("double_apple", "blueberry", "mint"); s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50 };
       Object.assign(s.flags, { _tsumugi_contest_progress: true, _hiyori_meeting_done: true, _prep_flavor: "blueberry" });
       for (const id of ["sumi", "tsumugi", "hiyori"]) P.intro.markIntroSeen(id);
     } else P.core.load();
@@ -55,8 +55,12 @@ async function until(page, predicate, touch = false) {
 }
 const finish = (page, touch) => until(page, () => P.done, touch);
 const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches }));
-function resourcesUnchanged(s) {
-  assert.deepEqual(s.flavorStock, { double_apple: 50, blueberry: 50, mint: 50 });
+function resourcesUnchanged(s, giftGrams = 0) {
+  assert.deepEqual(s.flavorStock, { double_apple: 50 + giftGrams, blueberry: 50, mint: 50 });
+  if (giftGrams) {
+    assert.equal(s.flags._sumi_double_apple_received, true);
+    assert.equal(s.owned.filter(id => id === "home_rig_set").length, 1);
+  }
   assert.deepEqual(s.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
   assert.equal(s.slot, 2); assert.equal(s.reel.count, 0); assert.equal(s.rehearsal, null);
 }
@@ -114,7 +118,7 @@ await suite("ch1-practice", async run => {
       assert.deepEqual(r.steps, ["care"]); assert.equal(r.benches, 1);
       assert.equal(record.scope, "care"); assert.equal(record.served, false); assert.equal(record.adjustments, 2);
       assert.deepEqual(record.scores, {}); assert(record.success); assert(r.state.flags._ev_midcheck);
-      resourcesUnchanged(r.state); await assertFits(page, ".vn-box");
+      resourcesUnchanged(r.state, 50); await assertFits(page, ".vn-box");
     }, options);
     await check(`${device}-mid-experienced-skip`, async page => {
       await setup(page, { day: 7, manual: true });
@@ -123,7 +127,7 @@ await suite("ch1-practice", async run => {
       assert.equal(await page.evaluate(() => P.benches), 0); await assertFits(page, ".vn-choice");
       await select(page, '[data-test="choice-1"]', touch); await finish(page, touch);
       const r = await snapshot(page); assert.equal(r.benches, 0); assert.equal(r.state.flags._craft_practice_runs.length, 1);
-      assert.equal(r.state.flags._ch1_mid.choice, "stock"); resourcesUnchanged(r.state);
+      assert.equal(r.state.flags._ch1_mid.choice, "stock"); resourcesUnchanged(r.state, 50);
     }, options);
     await check(`${device}-supplied-care-controls`, async page => {
       await setup(page, { day: 7, auto: null });
@@ -165,7 +169,7 @@ await suite("ch1-practice", async run => {
     const r = await snapshot(page), record = r.state.flags._craft_practice_runs.at(-1);
     assert.equal(record.success, false); assert.equal(record.served, false); assert.equal(record.adjustments, 1);
     assert(r.state.flags._ev_midcheck); assert(r.entries.includes("remake_preparation_failed"));
-    resourcesUnchanged(r.state);
+    resourcesUnchanged(r.state, 50);
   });
   await check("mid-interrupted-save-restarts-only-care", async page => {
     await setup(page, { day: 7, auto: null }); await page.evaluate(() => P.run());
@@ -177,7 +181,7 @@ await suite("ch1-practice", async run => {
     await page.evaluate(() => P.run()); await finish(page);
     const r = await snapshot(page); assert.deepEqual(r.steps, ["care"]); assert.equal(r.state.flags._craft_practice_runs.length, 1);
     assert(!r.entries.includes("remake_midcheck_intro")); assert.equal(r.state.flags._ch1_mid.choice, "care");
-    resourcesUnchanged(r.state);
+    resourcesUnchanged(r.state, 50);
   });
   await check("completed-practice-unread-feedback-does-not-repeat", async page => {
     await setup(page, { day: 7 });
