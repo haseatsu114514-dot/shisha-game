@@ -5,7 +5,7 @@ import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
@@ -326,7 +326,6 @@ export async function stepMix(cs) {
   // 家で練習: 自分の葉として使った分（課題の支給分は除く）。減らすのは作り終えたとき（home-practice.js）
   if (cs.venue === "home") cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)));
   cs.mixInfo = evaluateMix(cs);
-  scoreStep(cs, "mix", cs.mixInfo.score, "配合");
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
