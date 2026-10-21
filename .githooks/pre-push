@@ -6,12 +6,15 @@ repo_root="$(git rev-parse --show-toplevel)"
 
 "$repo_root/tools/check_git_safety.sh" >/dev/null
 
+# Keep the ref list: Git LFS also reads it from stdin below.
+push_refs="$(cat)"
+
 while read -r local_ref local_sha remote_ref remote_sha; do
   if [ "$remote_ref" = "refs/heads/main" ]; then
     printf 'ERROR: direct push to main is blocked. Use a feature branch and PR.\n' >&2
     exit 1
   fi
-done
+done <<< "$push_refs"
 
 if git show-ref --verify --quiet "refs/remotes/origin/main"; then
   if ! git merge-base HEAD "refs/remotes/origin/main" >/dev/null; then
@@ -19,4 +22,13 @@ if git show-ref --verify --quiet "refs/remotes/origin/main"; then
     printf 'ERROR: refusing push to avoid unrelated-history accidents.\n' >&2
     exit 1
   fi
+fi
+
+# Upload Git LFS objects for new images (core.hooksPath=.githooks replaces the
+# hook that `git lfs install` would normally write into .git/hooks).
+if command -v git-lfs >/dev/null 2>&1; then
+  printf '%s\n' "$push_refs" | git lfs pre-push "$@"
+elif grep -q 'filter=lfs' "$repo_root/.gitattributes" 2>/dev/null; then
+  printf 'WARN: git-lfs is not installed; new images matching .gitattributes are pushed as normal Git files.\n' >&2
+  printf 'WARN: install it and run `git lfs install --skip-repo` (see AGENTS.md).\n' >&2
 fi

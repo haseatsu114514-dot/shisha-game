@@ -382,4 +382,34 @@ reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["m
 db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
 assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
 
-console.log("[remake LIME] notification thread, defer, automatic conflict history/retry, six rumor replies, unread/read retry, small affinity, holiday/after-close schedules, queued closing appointment, legacy name introduction, Adam arcade, confession gate, morning copy: PASS");
+// #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
+db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
+for (const day of [5, 10]) {
+  reset({ day, lastBaitoDay: day, contacts: ["tsumugi"] }); db.lime = [];
+  const original = JSON.stringify(db.friends);
+  assert.equal(phone.deliverMorning(), 1);
+  assert.equal(state.inbox[0].id, `lime_tsumugi_note_day${day}`);
+  assert.equal(phone.deliverMorning(), 0);
+  state.inbox[0].read = true; state.inbox[0].done = true;
+  assert.equal(phone.deliverMorning(), 0);
+  state.day++;
+  assert.equal(phone.deliverMorning(), 0);
+  assert.equal(JSON.stringify(db.friends), original);
+  assert.equal(gains.length, 0, "配信だけで好感度を変更した");
+}
+reset({ day: 5, contacts: [] }); db.lime = []; assert.equal(phone.deliverMorning(), 0);
+reset({ day: 5, contacts: ["tsumugi"], inbox: [{ id: "older", day: 1, chapter: 1, read: false, msg: { sender: "tsumugi", type: "chat" } }] });
+db.lime = []; assert.equal(phone.deliverMorning(), 0);
+reset({ day: 5, contacts: ["tsumugi"], inbox: [{ id: "recent", day: 4, chapter: 1, read: true, done: true, msg: { sender: "tsumugi", type: "chat" } }] });
+db.lime = []; assert.equal(phone.deliverMorning(), 0);
+reset({ day: 5, contacts: ["tsumugi"] });
+db.lime = [{ id: "priority_tsumugi", sender: "tsumugi", priority: 1, type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }];
+assert.equal(phone.deliverMorning(), 1); assert.equal(state.inbox[0].id, "priority_tsumugi");
+reset({ chapter: 2, day: 5, contacts: ["tsumugi"] }); db.lime = []; assert.equal(phone.deliverMorning(), 0);
+reset({ day: 5, contacts: ["tsumugi"] }); db.lime = []; assert.equal(phone.deliverMorning({ tournamentDay: true }), 0);
+reset({ day: 5, contacts: ["naru", "adam", "minto", "tsumugi"] });
+db.lime = ["naru", "adam", "minto"].map(sender => ({ id: `cap_${sender}`, sender, priority: 1,
+  type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }));
+assert.equal(phone.deliverMorning(), 3);
+assert(!state.inbox.some(item => item.msg.sender === "tsumugi"));
+console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority: PASS");

@@ -3,13 +3,8 @@ import { state, save } from "../core/state.js";
 import { ensureAffinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { hasContact } from "../daily/spots.js";
-
-export const TSUMUGI_STORY = [
-  { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
-  { day: 3, dialogue: "ch1_tsumugi_work_in_progress", flag: "_tsumugi_contest_progress" },
-  { day: 11, dialogue: "ch1_tsumugi_sketch", flag: "_tsumugi_contest_submitted", level: 2 },
-  { day: 13, dialogue: "ch1_tsumugi_eve", flag: "_tsumugi_contest_eve" },
-];
+import { TSUMUGI_STORY } from "../daily/tsumugi-schedule.js";
+export { TSUMUGI_STORY } from "../daily/tsumugi-schedule.js";
 
 /** 途中の旧セーブでも、未読の場面を実際に読んでから進める。訪問回数から既読を作らない。 */
 export async function playTsumugiStory(untilDay, { sketch = null, deferFlags = [] } = {}) {
@@ -26,6 +21,7 @@ export async function playTsumugiStory(untilDay, { sketch = null, deferFlags = [
       if (step.dialogue === "ch1_tsumugi_sketch" && sketch) await sketch();
       else await play(step.dialogue);
       state.flags[step.flag] = true;
+      state.flags._tsumugi_story_day = `${state.chapter}:${state.day}`;
     }
     const gained = step.level ? ensureAffinityLevel("tsumugi", step.level) : 0;
     hasContact("tsumugi");

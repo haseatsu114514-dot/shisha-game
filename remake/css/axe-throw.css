@@ -129,7 +129,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 /* Bullseye and killshot: a stamp-like pop plus a warm glow; reduced-motion keeps only the static glow. */
 .axe-game[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 34px rgba(255,205,120,.35); }
 .axe-game[data-phase="result"][data-special="true"] .axe-result-label { color: #ffe7a6; letter-spacing: .3em; }
-.axe-game[data-phase="result"][data-special="true"] .axe-result-value { color: #fff1c8; text-shadow: 0 0 22px rgba(255,214,130,.85), 0 3px 20px rgba(235,173,78,.3); animation: axe-stamp .42s cubic-bezier(.2,.8,.2,1) both; }
+.axe-game[data-phase="result"][data-special="true"] .axe-result-value { width: fit-content; transform-origin: left center; color: #fff1c8; text-shadow: 0 0 22px rgba(255,214,130,.85), 0 3px 20px rgba(235,173,78,.3); animation: axe-stamp .42s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes axe-stamp { 0% { transform: scale(.6); opacity: 0; } 55% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 .axe-game:is([data-phase="result"],[data-phase="summary"]) :is(.axe-steps,.axe-timing,.axe-feedback,.axe-steadiness,.axe-stability-meter,.axe-call-status,.axe-note) { display: none; }
 .axe-game[data-phase="summary"] .axe-match-records { grid-template-columns: 1fr 1fr; gap: 12px; }

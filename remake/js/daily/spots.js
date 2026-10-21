@@ -13,7 +13,8 @@ import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
 import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
-import { meetHiyoriAtTonari } from "./hiyori.js";
+import { meetHiyoriAtTonari, hiyoriShopEncounterDue } from "./hiyori.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
@@ -83,8 +84,8 @@ export const SPOTS = [
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
-  // 会うまでは正体の分からない「？」の出店
-  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占", unknownGlyph: "？",
+  // 出店日に正式な施設名で表示する。未対面の人物情報は引き続き伏せる。
+  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占",
     desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）。",
     unknownDesc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
@@ -132,7 +133,7 @@ export function hasNewStory(charId) {
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
-    || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
+    || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
   if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
   if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
@@ -168,6 +169,7 @@ export function visitedToday(spotId) {
 
 export function isUnlocked(spot) {
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
+  if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
   // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。
   return !spot.requiresMet || !!state.flags[`_spot_guide_${spot.requiresMet}`] || (state.spotVisits?.[spot.id] || 0) > 0;
 }
@@ -175,6 +177,13 @@ export function isUnlocked(spot) {
 /** マップに出す名前（店主に会う前は店名の看板だけ） */
 export function spotLabel(spot) {
   return spot.label;
+}
+
+/** 店種は詳細カードだけに添える。ピン名・ID・保存値は変えない。 */
+export function spotDetailLabel(spot) {
+  const category = ["tonari", "rival", "samechan"].includes(spot.kind) || spot.id === "c_station"
+    ? "シーシャ屋" : spot.kind === "shop" ? "ショップ" : null;
+  return category ? `${spot.label}（${category}）` : spot.label;
 }
 
 export function hasContact(id) {
@@ -252,6 +261,13 @@ export async function visitChar(charId, { welcome = null } = {}) {
     gainAffinity(charId, 5);
   }
   if (state !== owner || cancelled) return false;
+  // 回数は紹介を出す条件だけ。実際の紹介を完読するまで喫茶店を解放しない。
+  if (charId === "naru" && storyCount("naru") >= 2 && !state.flags._cafe_introduced
+    && DB.dialogues.ch1_naru_cafe_intro) {
+    const result = await read("ch1_naru_cafe_intro", { bg });
+    if (state !== owner || result?.cancelled) return false;
+    state.flags._cafe_introduced = true;
+  }
   // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
   earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
@@ -266,7 +282,9 @@ export async function visitRival(spot) {
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
-  const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
+  const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
+    ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
   const owner = state;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
