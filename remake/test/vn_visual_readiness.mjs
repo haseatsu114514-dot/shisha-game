@@ -19,7 +19,59 @@ async function prepare(page) {
   });
 }
 
-async function expectNameLine(page, { text, name, speaker, thought = false }) {
+async function assertNameFits(page, sample = null) {
+  const measured = await page.locator(".vn-name.show").evaluate(async element => {
+    await document.fonts.ready;
+    const bounds = rect => ({ left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom,
+      width: rect.width, height: rect.height });
+    const style = getComputedStyle(element);
+    const box = element.getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const text = range.getBoundingClientRect();
+    // Font ascent/descent can make scrollHeight exceed the 37px label even when
+    // the painted glyphs fit. Measure their real baseline and ink, not that box.
+    const probe = document.createElement("span");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText = "display:inline-block;width:0;height:0;padding:0;border:0;margin:0;line-height:0;vertical-align:baseline;visibility:hidden";
+    let baseline;
+    element.append(probe);
+    try { baseline = probe.getBoundingClientRect().top; }
+    finally { probe.remove(); }
+    const context = document.createElement("canvas").getContext("2d");
+    context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    context.textBaseline = "alphabetic";
+    const ink = context.measureText(element.textContent);
+    const scale = box.width / element.clientWidth;
+    return { text: element.textContent, box: bounds(box), range: bounds(text),
+      stage: bounds(document.getElementById("stage").getBoundingClientRect()),
+      viewport: { width: innerWidth, height: innerHeight },
+      client: { width: element.clientWidth, height: element.clientHeight },
+      scroll: { width: element.scrollWidth, height: element.scrollHeight },
+      font: context.font, lineHeight: style.lineHeight,
+      visibility: style.visibility, opacity: Number(style.opacity),
+      overflow: { x: style.overflowX, y: style.overflowY },
+      ink: { baseline, ascent: ink.actualBoundingBoxAscent, descent: ink.actualBoundingBoxDescent,
+        top: baseline - ink.actualBoundingBoxAscent * scale,
+        bottom: baseline + ink.actualBoundingBoxDescent * scale } };
+  });
+  if (sample) console.log(`[vn-visual-readiness] Name geometry ${sample}: ${JSON.stringify(measured)}`);
+  const { box, range, stage, viewport, ink } = measured;
+  const diagnostic = JSON.stringify(measured);
+  assert(box.width > 0 && box.height > 0 && measured.visibility === "visible" && measured.opacity > 0,
+    `Invisible name: ${diagnostic}`);
+  assert(box.left >= stage.left - 1 && box.top >= stage.top - 1
+    && box.right <= stage.right + 1 && box.bottom <= stage.bottom + 1
+    && box.left >= -1 && box.top >= -1 && box.right <= viewport.width + 1 && box.bottom <= viewport.height + 1,
+  `Name outside stage/viewport: ${diagnostic}`);
+  assert(range.width > 0 && range.left >= box.left - 1 && range.right <= box.right + 1,
+    `Name text exceeds label width: ${diagnostic}`);
+  assert(Number.isFinite(ink.top) && Number.isFinite(ink.bottom) && ink.bottom > ink.top
+    && ink.top >= box.top - 1 && ink.bottom <= box.bottom + 1,
+  `Name glyphs exceed label height: ${diagnostic}`);
+}
+
+async function expectNameLine(page, { text, name, speaker, thought = false }, sample = null) {
   await page.waitForFunction(text => document.querySelector(".vn-text")?.textContent === text, text);
   await page.locator(".vn-next.show").waitFor();
   const actual = await page.evaluate(() => {
@@ -37,7 +89,7 @@ async function expectNameLine(page, { text, name, speaker, thought = false }) {
   assert.deepEqual(actual.last, { name, text }, "The screen and backlog must use the same presentation");
   assert(actual.blips.length > 0, "This normal-typing line must exercise the production voice path");
   assert(actual.blips.every(id => id === speaker), `Display name changed the blip speaker: ${JSON.stringify(actual.blips)}`);
-  if (name) await assertFits(page, ".vn-name.show");
+  if (name) await assertNameFits(page, sample);
   await assertFits(page, ".vn-text");
 }
 
@@ -94,7 +146,7 @@ await suite("vn-visual-readiness", async (check) => {
         { speaker: "", text: "……【好感度】が少し上がった。", name: "" },
       ];
       for (const [index, line] of before.entries()) {
-        await expectNameLine(page, line);
+        await expectNameLine(page, line, index === 0 ? "unknown-name-pc" : null);
         assert.equal(await page.evaluate(() => !!V.core.state.flags._intro_hajime), false);
         if (index === 0) {
           assert.equal(await page.evaluate(() => {
@@ -187,7 +239,7 @@ await suite("vn-visual-readiness", async (check) => {
       { name: "はじめ", text: "名乗った後。" },
     ]);
     assert.equal(await page.evaluate(() => V.engine.isPlaying()), true, "SKIP answered a choice");
-    await assertFits(page, ".vn-name.show");
+    await assertNameFits(page, "known-name-touch");
     await assertFits(page, ".vn-text");
     assert.equal(await page.locator('.vn-portraits [data-speaker="hajime"], .vn-portraits [data-speaker="hazime"]').count(), 0);
     await page.locator('[data-test="choice-0"]').tap();
