@@ -8,10 +8,14 @@ import { move, svg, stageSvg } from "../core/transition-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
 export async function exchange(charId, context = null) {
+  const owner = state;
   const name = displayName(charId, state, { context });
   const face = faceIconUrl(charId, state, { context });
   const ready = face && await imageReady(face, 3000);
+  if (state !== owner) return;
   await stagePlay("lime", async (node) => {
+    // stagePlayも最初のフレームを待つため、画面を組む直前にLOADを再確認する。
+    if (state !== owner) return;
     const card = (label, picture) => el("div.mo-lime-card", [
       picture ? el("img", { src: picture, alt: "" }) : el("span.mo-lime-avatar", { text: "始" }),
       el("b", { text: label }),
