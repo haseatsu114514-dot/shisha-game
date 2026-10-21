@@ -1,6 +1,7 @@
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { el, yen } from "../core/util.js";
+import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
 import { state, save } from "../core/state.js";
@@ -165,7 +166,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const money = el("div.shop-money");
     const summary = el("button.shop-summary", { dataset: { test: "shop-summary" }, onclick: () => showOrder() });
     const checkout = el("button.shop-checkout", { dataset: { test: "shop-checkout" }, onclick: () => purchase() });
-    const errandName = errand ? DB.flavorById[errand]?.short_name || DB.flavorById[errand]?.name : "";
+    const errandName = errand ? shopProductName(DB.flavorById[errand] || {}) : "";
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
     const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
@@ -207,7 +208,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       SE.click(); render(`${delta < 0 && n ? "minus" : "buy"}-${id}`);
     };
     const quantityPicker = (item, flavor) => {
-      const n = cart.get(item.id) || 0, name = item.short_name || item.name;
+      const n = cart.get(item.id) || 0, name = shopProductName(item);
       return el("div.shop-quantity", [
         el("button.shop-step", { text: "−", disabled: !n, "aria-label": `${name}を1つ減らす`, dataset: { test: `minus-${item.id}` }, onclick: () => change(item.id, -1) }),
         el("output", { text: n, "aria-label": `${name}の購入数`, dataset: { test: `quantity-${item.id}` } }),
@@ -220,9 +221,9 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const current = !flavor && DB.equipById[state.equip[item.type]];
       const cmp = !flavor ? compareEquipment(item.id, current?.id) : null;
       const fGuide = flavor ? flavorThermalGuide(item) : null;
-      modal({ title: item.short_name || item.name, className: "shop-dialog", body: el("div.shop-detail", [
+      modal({ title: shopProductName(item), className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
-        el("p", { text: item.description }),
+        el("p", { text: flavor ? shopText(item.description) : item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
         cmp ? el("small.shop-compare", {
@@ -233,14 +234,14 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         fGuide ? el("small.shop-flavor-guide", {
           dataset: { test: "shop-flavor-guide" },
           style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
-          text: `${fGuide.makerLabel}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
+          text: `${shopText(fGuide.makerLabel)}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
         }) : null,
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {
       const owned = !flavor && state.owned.includes(item.id), selected = cart.has(item.id);
       const needed = flavor && errand === item.id && flavorStock(item.id) < minStock;
-      const name = `${item.short_name || item.name}${flavor ? ` 1箱（${FLAVOR_BOX_GRAMS}g）` : ""}`;
+      const name = `${shopProductName(item)}${flavor ? ` 1箱（${FLAVOR_BOX_GRAMS}g）` : ""}`;
       return el(`div.shop-row.product${selected ? ".selected" : ""}${needed ? ".errand" : ""}`, [
         el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${name}の詳細`, onclick: () => detail(item, flavor) }, [
           productArt(item, flavor), el("span.shop-main", [el("b", { text: name })]),
@@ -298,7 +299,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       filters.hidden = tab !== "flavor";
       filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
         pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
-      body.replaceChildren(...(tab === "flavor" ? SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)).map((f) => productRow(f, true))
+      body.replaceChildren(...(tab === "flavor" ? groupShopFlavors(SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category))).map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(forSale).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
       summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: state.money >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - state.money)}` }));
@@ -333,7 +334,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const rows = order(); if (!rows.length) return;
       confirming = true;
       const clear = await modal({ title: "選択した商品", className: "shop-dialog", body: el("div.shop-order", rows.map((r) => el("p", [
-        el("span", { text: `${r.item.short_name || r.item.name} × ${r.quantity}` }), el("b", { text: priceText(r.cost) }),
+        el("span", { text: `${shopProductName(r.item)} × ${r.quantity}` }), el("b", { text: priceText(r.cost) }),
       ]))), options: [{ label: "選択をクリア", value: true, test: "shop-clear" }, { label: "一覧に戻る", value: false, primary: true }] });
       confirming = false;
       if (!live()) return;
