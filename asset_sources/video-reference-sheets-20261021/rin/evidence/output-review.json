@@ -1,0 +1,30 @@
+{
+  "id": "rin",
+  "name": "凛",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1833700,
+  "sha256": "e2ad397e0d21b612d558ec68936527a5a16987107194cd20dfdd815a040cc4ad",
+  "approved_input": {
+    "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+    "sha": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c",
+    "size": 386848
+  },
+  "input_git_blob_verified": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "青灰色の半目、暗いロングウルフ髪、銀のイヤリングとペンダント、袖をまくった白シャツ、黒系スラックス、パンプス、左手のクリップボード。",
+  "inferred": "後ろ髪とシャツ背面の構造、パンツ後ろ、クリップボード裏面、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "rin-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}

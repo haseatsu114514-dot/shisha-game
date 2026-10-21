@@ -1,0 +1,30 @@
+{
+  "id": "maezono",
+  "name": "上園",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1873936,
+  "sha256": "44f267cfa7a8f22885694285b10fc13fe266394178b479bc5f89bfcc0097acfe",
+  "approved_input": {
+    "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+    "sha": "a6edd59479a9d683cfcce4933f041777091ef2de",
+    "size": 615222
+  },
+  "input_git_blob_verified": "a6edd59479a9d683cfcce4933f041777091ef2de",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "丸い顔と体型、茶髪、丸眼鏡、紺ブレザー、水色シャツ、胸の小さな手帳とペン、ベージュのパンツと茶色のローファー。",
+  "inferred": "ブレザー背面とベント、後ろ髪、パンツ後ろ、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "maezono-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}

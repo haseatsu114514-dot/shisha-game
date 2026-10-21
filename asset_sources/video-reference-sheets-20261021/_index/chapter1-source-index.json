@@ -1,0 +1,53 @@
+{
+  "main": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "verified_text_cache": [
+    {
+      "path": "data/dialogue/ch1_main.json",
+      "blob": "d668a119d818950bfabe60faaab7093b03a1b41d"
+    },
+    {
+      "path": "data/dialogue/remake_ch1.json",
+      "blob": "a22be737551939fe1fa8e705a4ad8f8eae50f54b"
+    }
+  ],
+  "samechan_first_encounter": "第1章DAY8以降の固定イベント・当夜予約・告白・在宅がない帰り道。重なった時は次の空いた帰り道へ繰り越す。",
+  "hiyori_evidence": [
+    "  if (!hiyoriRoute().enabled || ![1, 2].includes(state.chapter) || state.slot > 1 || hiyoriAtTonari()) return null;"
+  ],
+  "dialogue_speakers": {
+    "data/dialogue/ch1_spots.json": [
+      "hajime",
+      "dr_kemuri",
+      "nagumo",
+      "staff_choizap",
+      "old_man",
+      "adam",
+      "naru",
+      "master_cafe",
+      "minto",
+      "maezono",
+      "pakki"
+    ],
+    "data/dialogue/ch1_tournament.json": [
+      "hajime",
+      "naru",
+      "minto",
+      "pakki",
+      "nagumo",
+      "dr_kemuri",
+      "maezono",
+      "adam",
+      "sumi",
+      "tsumugi"
+    ],
+    "data/dialogue/ch1_bonds.json": [
+      "tsumugi",
+      "hajime",
+      "rin",
+      "minto",
+      "sumi",
+      "naru",
+      "adam"
+    ]
+  }
+}

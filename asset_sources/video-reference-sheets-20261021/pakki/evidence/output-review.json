@@ -1,0 +1,30 @@
+{
+  "id": "pakki",
+  "name": "パッキー",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1716672,
+  "sha256": "1e2b945a8c57042cf11169e9faabaf628628ef834b6a4820e5acf251dd0b1b8b",
+  "approved_input": {
+    "path": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+    "sha": "05561f4ddc66fef241210bc6e23263742a0a29fe",
+    "size": 521132
+  },
+  "input_git_blob_verified": "05561f4ddc66fef241210bc6e23263742a0a29fe",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "白い煙型マスコットの輪郭、黒い楕円の目、ピンクの頬、赤い蝶ネクタイ、金色のハンドピースと青いホース。",
+  "inferred": "煙の立体形状と背面、ホースの回り込み。側面に生成された尻尾状の突起は1回の整合修正で除去。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 2,
+  "file": "pakki-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}
