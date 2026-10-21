@@ -53,7 +53,8 @@ try {
         QA.stats.gainStat("charm", amount);
       }, { from, amount });
       await page.waitForSelector(".gain-card.st-charm.show");
-      assert.equal(await page.locator(".gc-earned").count(), 0, "能力通知に『今回』を表示しない");
+      assert.equal(await page.locator(".gc-earned").count(), 1, "能力通知に今回の増分ラベルを1つ表示する");
+      assert.equal(await page.locator(".gc-earned").textContent(), "今回");
       assert.equal(await page.locator(".gc-points").textContent(), `+${amount}P`);
       assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
       const after = await page.evaluate(() => JSON.stringify(QA.core.state));
