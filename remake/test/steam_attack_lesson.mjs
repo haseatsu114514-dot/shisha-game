@@ -90,6 +90,7 @@ await suite('attack-lesson', async check => {
       A.vn.vnTest.turbo=true; await A.lesson.studyAttack(); A.core.load(); A.start('tournament');
     });
     const button=page.locator('[data-test="dodge-slash"]');
+    await button.waitFor();
     await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
     assert(await page.locator('[data-test="slash-lock"]').isHidden());
     await page.evaluate(()=>A.padPressed=true); await page.waitForTimeout(150);
