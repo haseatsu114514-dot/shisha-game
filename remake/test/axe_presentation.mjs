@@ -1,7 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { BULLS, KILLS, resolveThrow } from "../js/minigames/axe-model.js";
-import { shotFeedback, sessionStats, impactFeedback } from "../js/minigames/axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, declarationCue } from "../js/minigames/axe-presentation.js";
+
+test("declaring a new killshot blue gives one cue; same blue, normal, or non-killshot gives none", () => {
+  const [first, second] = KILLS;
+  assert.deepEqual(declarationCue(null, first.id), { label: "KILL SHOT 宣言", target: first.id, place: "左上" });
+  assert.equal(declarationCue(first.id, first.id), null);
+  assert.equal(declarationCue(first.id, null), null);
+  assert.equal(declarationCue(null, null), null);
+  assert.equal(declarationCue(null, "not-a-target"), null);
+  assert.equal(declarationCue(first.id, second.id).target, second.id);
+});
 
 const shot = (x = 0, y = 0, power = .62, called = null) => resolveThrow({ x, y, power, called });
 
