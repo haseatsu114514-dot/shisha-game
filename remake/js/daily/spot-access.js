@@ -17,7 +17,15 @@ export function spotAvailability(s, { guide = null } = {}) {
     const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
     return { ok: false, why: tag, tag };
   }
+  if (invitationRevisitBlocked(s)) {
+    return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
+  }
   if (!["shop", "rest", "tonari", "trpg", "axe"].includes(s.kind) && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
   if (s.cost && !freeGuide(s, guide) && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
   return { ok: true };
+}
+
+/** 強制イベントは通常の入店選択とは別。誘い完了記録だけを判定する。 */
+function invitationRevisitBlocked(spot) {
+  return state.flags[`_invitation_visit_${spot.id}`] === `${state.chapter}:${state.day}`;
 }

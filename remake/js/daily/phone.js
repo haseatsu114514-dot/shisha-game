@@ -19,7 +19,7 @@ import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 
-import { invitationCost, storeInvitationSpot, visitReminderSpot } from "./invitations.js";
+import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -596,6 +596,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   }
   if (!alive()) return;
   if (item.done) {
+    const missed = missedInvitationNote(item);
+    if (missed) { ui.note(missed); return; }
     for (const entry of item.log || []) {
       if (entry.note) ui.note(entry.note);
       else await ui.bubble(entry.text, entry.me, from, false);
@@ -609,7 +611,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.done = true;
       item.result = "expired";
       item.replyState = "expired";
-      const note = importantInvite(m) ? "返事をしそびれた……。また都合の合う日に誘ってくれるそうだ" : "返事をしそびれた……";
+      const note = missedInvitationNote(item);
       item.log.push({ note });
       ui.note(note);
       return;
@@ -703,6 +705,8 @@ function drawHistory(items, ui) {
     if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
     if (!it.read) continue;
     for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
+    const missed = missedInvitationNote(it);
+    if (missed) { ui.note(missed); continue; }
     for (const l of it.log || []) {
       if (l.note) ui.note(l.note);
       else ui.bubble(l.text, l.me, accountOf(it), false);
@@ -716,7 +720,7 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null, fixedNight = () => false } = {}) {
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
@@ -765,7 +769,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last.day) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : null,
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
     }
@@ -809,7 +813,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   if (sender && thread(sender).length) showThread(sender);
   else showList();
   await closed;
-  await ui.close();
+  // 準備が失敗した場合もスマホの操作ロックを残さない。
+  try { await beforeClose?.(); } finally { await ui.close(); }
   return accepted;
 }
 
