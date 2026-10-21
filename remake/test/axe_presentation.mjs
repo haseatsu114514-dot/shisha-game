@@ -5,6 +5,14 @@ import { shotFeedback, sessionStats, impactFeedback } from "../js/minigames/axe-
 
 const shot = (x = 0, y = 0, power = .62, called = null) => resolveThrow({ x, y, power, called });
 
+test("bullseye and killshot hits get the special celebration, ordinary hits do not", () => {
+  const killTarget = KILLS[0];
+  assert.equal(impactFeedback(shot()).special, true);
+  assert.equal(impactFeedback(shot(killTarget.x, killTarget.y, .62, killTarget.id)).special, true);
+  assert.equal(impactFeedback(shot(.7, 0)).special, false);
+  assert.equal(impactFeedback(shot(.9, .9)).special, false);
+});
+
 test("misses never celebrate a valid-power axe stuck outside the scoring circle or called blue", () => {
   for (const failed of [shot(.9, .9), shot(1.08, 1.08), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
     assert.equal(failed.score, 0);
