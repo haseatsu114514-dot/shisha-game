@@ -45,6 +45,8 @@ try {
     ]) {
       reset(); core.state.stamina = 80;
       if (name === "cafe") core.state.slot = 0; // 喫茶こはくの営業時間内で回復を検証。
+      // つむぎは固定回(day1/3)の読了後、day8の昼枠(slot 0)で在店する（tsumugi-schedule.js の tsumugiAtTonari）。
+      if (name === "tsumugi") { core.state.slot = 0; core.state.flags._tsumugi_contest_research = true; core.state.flags._tsumugi_contest_progress = true; }
       const previous = { ...core.state.stats };
       const { spent } = await stats.paidAction(run);
       const perStat = Object.fromEntries(core.STAT_KEYS.map(k => [k, core.state.stats[k] - previous[k]]));
