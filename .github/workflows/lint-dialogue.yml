@@ -40,6 +40,11 @@ on:
       - ".github/workflows/lint-dialogue.yml"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest

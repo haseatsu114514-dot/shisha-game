@@ -7,6 +7,12 @@ on:
     paths: ['remake/js/craft/steam*.js', 'remake/css/steam.css', 'remake/test/steam_heart.mjs', '.github/workflows/steam-heart.yml']
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   geometry:
     runs-on: ubuntu-latest
