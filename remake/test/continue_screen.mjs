@@ -131,7 +131,14 @@ try {
         await page.evaluate(() => document.querySelector('[data-test="continue-next"]').click());
       }
       assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true", "reached the final cue");
-      assert(seen.size >= 8, `most one-line cues were displayed: ${[...seen]}`);
+      const cueCount = await page.evaluate(async variant => {
+        const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
+        const { PREMIUM_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-premium.js");
+        return (typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant]
+          : PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)]).cues.length;
+      }, variant);
+      assert.deepEqual([...seen].map(Number).sort((a, b) => a - b),
+        Array.from({ length: cueCount }, (_, i) => i), "every cue was displayed");
       await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
       assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
       const expected = await page.evaluate(async ({ variant, choice }) => {

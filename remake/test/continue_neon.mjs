@@ -40,6 +40,30 @@ try {
   });
   await page.clock.install({ time: new Date("2026-10-11T09:00:00Z") });
   await page.clock.pauseAt(new Date("2026-10-11T09:00:01Z"));
+  // 敗因はdatasetだけでなく、実際の最初の2テロップへ接続する。
+  for (const [reason, first, second] of [
+    ["burnt", "……熱が入りすぎたな", "次は『下げ吸い』で逃がすぞ"],
+    ["cold", "……冷え切っちまったか", "次は冷える前に、炭を替えよう"],
+    ["leaf", "……香りが抜けちまったな", "次は吸う前に、葉の残りを見ろ"],
+    ["rank", "……届かなかったか", "なら、次は一つだけ変えてみよう"],
+  ]) {
+    await mount({ variant: 0, reason, reducedMotion: true });
+    assert.equal(await page.locator(".go-speech-text").textContent(), first);
+    await page.locator('[data-test="continue-next"]').click();
+    assert.equal(await page.locator(".go-speech-text").textContent(), second);
+    assert.equal((await reading()).count, "20", "caption advance preserves the decision deadline");
+  }
+  await mount({ variant: 0, reducedMotion: true, context: {
+    reason: "rank", rank: 3, parts: { holes: 0, heat: 40, care2: 40 }, completedParts: ["care2", "heat"],
+  } });
+  assert.equal(await page.locator(".go-speech-text").textContent(), "……3位か。悔しいな");
+  await page.locator('[data-test="continue-next"]').click();
+  assert.equal(await page.locator(".go-speech-text").textContent(), "次は、炭の芯が光る瞬間を見ろ");
+  assert.deepEqual(await page.evaluate(async () => {
+    const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
+    return SUMI_CONTINUE_SCRIPTS.map(s => ({ duration: s.duration, times: s.cues.map(c => c.at) }));
+  }), Array.from({ length: 3 }, () => ({ duration: 20, times: [0, 1.8, 4.2, 7, 10.3, 13.6, 16.5] })));
+  console.log("PASS: actual reason/context captions, completed-only tie advice, seven cues / 20-second deadline");
   for (const viewport of [{ width: 1920, height: 1080 }, { width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport); await mount();
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
@@ -142,6 +166,7 @@ try {
   assert(advance.scale <= (advance.ms + 70) / 20000 * 1.05 + .00001, "captions cannot accelerate backdrop beyond real elapsed time");
   assert(advance.progress <= (advance.ms + 70) / 20000 + .00001, "captions cannot accelerate HUD beyond real elapsed time");
   assert.equal((await reading()).count, "15");
+  await page.keyboard.press("Tab"); // pointerで送った前ケースから、実際にキーボード入力へ戻す。
   const hover = await page.locator(".go-retry").evaluate(button => {
     button.focus(); return { shine: getComputedStyle(button, "::after").opacity, outline: getComputedStyle(button).outlineStyle };
   });

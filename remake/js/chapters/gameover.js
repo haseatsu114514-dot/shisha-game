@@ -7,6 +7,7 @@ import { createContinueAudio, preloadBgm } from "../core/audio.js";
 import { DB, img, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 import { createContinueView } from "./continue-view.js";
+import { continueContext, continueOpening } from "./continue-context.js";
 
 export const GAME_OVER_TEXT = {
   burnt: { title: "シーシャが焦げてしまった", sub: "まだ、ここで終わる必要はない。" },
@@ -27,20 +28,12 @@ export const SUMI_CONTINUE_SCRIPTS = [
       quit: { text: ["……わかった。今日はここまでだ。", "悔しさは捨てんなよ。", "……お疲れ。"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ" },
     },
     cues: [
-      { at: 0, face: "surprise", text: "おいおいおいおい！ ちょっと待て！" },
-      { at: 1.6, face: "surprise", text: "お前いま諦めようとしたな！？" },
-      { at: 3, face: "surprise", text: "なあ！？" },
-      { at: 3.8, face: "serious", text: "まだ終わってねえだろ！" },
-      { at: 5, face: "serious", text: "俺も終わらせた覚えはねえぞ！" },
-      { at: 6.4, face: "serious", text: "大会の途中で勝手に帰るな！" },
-      { at: 7.8, face: "serious", text: "お前がここで降りたらな" },
-      { at: 9, face: "serious", text: "お前だけじゃねえ！ 俺も！ tonariも！" },
-      { at: 10.7, face: "serious", text: "俺たち全員まとめて負けなんだよ！" },
-      { at: 12.2, face: "surprise", text: "俺はまだ負けたくねえ！" },
-      { at: 13.4, face: "surprise", text: "お前と勝ちてえんだよ！" },
-      { at: 14.6, face: "surprise", text: "だから勝手に幕を下ろすんじゃねえ！" },
-      { at: 16.2, face: "normal", text: "……で、どうする？" },
-      { at: 17.3, face: "normal", text: "俺はまだ、トングを置いてねえぞ。" },
+      ...continueOpening(continueContext()),
+      { at: 4.2, face: "surprise", text: "ちょっと待て！ 俺もまだ帰らねえぞ！" },
+      { at: 7, face: "serious", text: "お前だけの負けにすんな" },
+      { at: 10.3, face: "normal", text: "俺は、お前と勝ちてえんだよ" },
+      { at: 13.6, face: "normal", text: "トングはまだ、ここにある" },
+      { at: 16.5, face: "normal", text: "……どうする、はじめ？" },
     ],
   },
   {
@@ -50,20 +43,12 @@ export const SUMI_CONTINUE_SCRIPTS = [
       quit: { text: ["……おう。新聞の一面は白紙にしとく。", "……よく頑張ったな。"], faces: ["surprise", "normal"], effect: "farewell", word: "よく頑張ったな" },
     },
     cues: [
-      { at: 0, face: "surprise", text: "待て待て待て待て！！" },
-      { at: 1.1, face: "surprise", text: "お前！ その『諦める』が" },
-      { at: 2.4, face: "surprise", text: "何を意味するか分かってんのか！？" },
-      { at: 3.8, face: "serious", text: "俺たちの夢が終わる！ 店の看板が泣く！" },
-      { at: 5.4, face: "serious", text: "炭が冷める！ カルダモンが絶滅する！！" },
-      { at: 7, face: "surprise", text: "明日の新聞の一面は決まりだ！" },
-      { at: 8.4, face: "surprise", text: "『若き職人、まさかの自主撤退！』" },
-      { at: 9.9, face: "surprise", text: "『師匠、号泣！』だぞ！！" },
-      { at: 11.1, face: "serious", text: "ふざけるな！" },
-      { at: 12.1, face: "serious", text: "俺はまだ泣く準備なんかしてねえ！" },
-      { at: 13.5, face: "serious", text: "勝てるかどうかは知らん！" },
-      { at: 14.8, face: "serious", text: "だが俺たちはまだやれる！" },
-      { at: 16, face: "normal", text: "ほら、戻るぞ。大会に。" },
-      { at: 17.2, face: "normal", text: "……カルダモンは絶滅しねえけどな。" },
+      ...continueOpening(continueContext()),
+      { at: 4.2, face: "surprise", text: "このままじゃ、カルダモンが絶滅だ！" },
+      { at: 7, face: "normal", text: "……するわけねえだろ" },
+      { at: 10.3, face: "normal", text: "だが、悔しいのは本当だ" },
+      { at: 13.6, face: "normal", text: "次の一台も、俺に見せてくれ" },
+      { at: 16.5, face: "normal", text: "……もう一度、やるか？" },
     ],
   },
   {
@@ -73,20 +58,12 @@ export const SUMI_CONTINUE_SCRIPTS = [
       quit: { text: ["……反対一票、撤回。今日は閉会だ。", "お疲れ、はじめ。"], faces: ["surprise", "normal"], effect: "farewell", word: "お疲れ、はじめ" },
     },
     cues: [
-      { at: 0, face: "surprise", text: "おい！ ちょっと待て！" },
-      { at: 1.2, face: "surprise", text: "なんで一人で諦めようとしてんだ！？" },
-      { at: 2.7, face: "surprise", text: "そんな議題聞いてねえぞ！" },
-      { at: 4, face: "serious", text: "お前が大会に出た！ 俺が教えた！" },
-      { at: 5.5, face: "serious", text: "ならこれは二人の戦いだろ！" },
-      { at: 6.8, face: "serious", text: "勝手に一人で議決すんな！" },
-      { at: 8.1, face: "surprise", text: "お前が諦めるということは" },
-      { at: 9.3, face: "surprise", text: "俺も諦めたことになる！" },
-      { at: 10.5, face: "surprise", text: "俺は反対だ！ 断固反対！！" },
-      { at: 11.8, face: "serious", text: "敗北届は受理しねえ！ 印鑑も押さねえ！" },
-      { at: 13.5, face: "serious", text: "そもそもそんな書類" },
-      { at: 14.6, face: "serious", text: "この店には存在しねえ！！" },
-      { at: 15.8, face: "normal", text: "全会一致じゃねえ。よって廃案だ。" },
-      { at: 17.3, face: "normal", text: "……さ、俺たちの大会に戻ろうぜ。" },
+      ...continueOpening(continueContext()),
+      { at: 4.2, face: "surprise", text: "では、緊急会議を始める！" },
+      { at: 7, face: "serious", text: "議題は『俺たちは、まだやれるか』" },
+      { at: 10.3, face: "normal", text: "俺は賛成だ。お前はどうだ？" },
+      { at: 13.6, face: "normal", text: "勝手に一人で、終わらせんな" },
+      { at: 16.5, face: "normal", text: "……返事、聞かせろ" },
     ],
   },
 ];
@@ -115,14 +92,17 @@ const DECISION_SECONDS = 20;
 let nextScript = 0;
 let previousContinueSpeaker = null;
 // 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
-export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
+export function buildGameOver({ reason = "rank", rank = 0, context = null, variant = null, onRetry, onTitle,
   soundEffects = true, reducedMotion = false, layout = "neon", background = "stage" } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")
     ? PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)] : null;
-  const script = forced || (variant == null
+  const selected = forced || (variant == null
     ? choosePremiumContinue(state?.lovers || [], state?.chapter || 1, Math.random, previousContinueSpeaker) : null) || standard;
+  const loss = continueContext(context, { reason, rank });
+  const script = selected.speaker ? selected : { ...selected,
+    cues: [...continueOpening(loss), ...selected.cues.slice(2)] };
   const speaker = script.speaker || "sumi";
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
@@ -133,7 +113,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     onType: () => { if (active && started && !pauseReasons.size) audio.voice(speaker); } });
   const { root } = view;
   const owner = state;
-  root.dataset.reason = reason;
+  root.dataset.reason = loss.reason;
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   let reduce = reducedMotion || !!motion?.matches;
   let start = 0, speechStart = 0, cueIndex = -1, ticker = 0, entry = 0, frame = 0, deadline = 0;
