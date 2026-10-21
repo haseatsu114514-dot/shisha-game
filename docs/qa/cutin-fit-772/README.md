@@ -18,3 +18,11 @@ node docs/qa/cutin-fit-772/browser-check.mjs /tmp/cutin772-after.json /tmp/cutin
 最後の引数は通常2条件の修正前矩形を持つbaseline JSON（`results.json` のbeforeをdriverが読む）。ブラウザの導入や全素材の取得は不要。
 
 旧A成果は `~/Documents/Codex/2026-10-20/task-9/work/cutin772` にGit管理外で残っていた。原本は無変更、製品3ファイルとfixture/driverを再利用しこのPRでGitHubへ保存した。QA記録は現mainでの測定に更新。停止確認とrelease→claimの経路はIssueコメント6307318184に記録。空PRのtransferはcoordinatorが拒否するため使用していない。
+
+クラウド再検証（main `16d5b0494dcede6f3da0bbc95c584434c598e706` 統合後）:
+
+- resume run `39613734966` 成功、最新bot owner/runと保存PR headを照合して通常merge。製品3ファイルの変更はそのまま。
+- 既存Linux Chromeで旧Mac baselineを使うと代替フォント幅の差で失敗（名前幅411.826px対382.188px）。assertionは変更せず、同じLinux環境の修正前矩形と比較して全項目PASS（修正後1.023秒）。
+- 修正前baselineは同じfixtureから `host.classList.add("intro-fitted");` のみ除去して測定。背面の計測用siblingは残るが、hostは元のstage全面配置となる。通常2条件の全矩形不変とDS下端16px未被覆を再確認。
+- 3条件、resize、art/fallback、入力遮断、直接子observer、cleanup、初期化例外rollbackがPASS。結果は `cloud-results.json`。実素材/本編/実時間animationと報告画像の帯との同一性は引き続き未確認。新依存・ブラウザ・素材の取得なし。
+- driverはLinuxの既存 `/usr/bin/google-chrome` も使用でき、`CHROME_BIN` で実行ファイル指定が可能。上の再現コマンドのbaseline引数に `docs/qa/cutin-fit-772/cloud-results.json` を指定する。Macでは従来の `results.json` を使う。
