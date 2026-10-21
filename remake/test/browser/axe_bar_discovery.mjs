@@ -63,7 +63,8 @@ await suite("axe-bar-discovery", async check => {
           direct: await A.bar.visitAxeBar(), location: A.daily.hiyoriShopLocation() };
       });
       assert.deepEqual(locked, { unlocked: false, why: "locked", direct: false, location: null });
-      assert.match(await page.locator(t("pin-axe_bar")).innerText(), /？/);
+      // #780: 未発見の施設は「？？？」でも出さず、地図にピンを作らない。
+      assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
       await page.evaluate(() => { A.map.interruptMap("__lime__"); A.result = null; A.flow = A.daily.meetHiyoriAtTonari().then(r => A.result = r); });
       await finishScene(page, mode);
       assert.equal(await page.evaluate(() => A.result), true);
@@ -71,6 +72,7 @@ await suite("axe-bar-discovery", async check => {
       assert.equal(await page.evaluate(() => A.core.state.flags._axe_bar_rumor_done), true);
       // 地図の実ボタンから、無料のBAR入口へ接続。
       await page.evaluate(() => { A.result = null; A.flow = A.map.chooseSpot().then(id => id === "axe_bar" && A.bar.visitAxeBar()).then(r => A.result = r); });
+      await page.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 新ピンの解錠演出中は選択を受け付けない
       await page.locator(t("pin-axe_bar")).click(); await page.locator(t("map-go")).click();
       await finishScene(page, mode);
       await page.locator(t("axe-bar-back")).waitFor();

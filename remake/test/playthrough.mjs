@@ -314,6 +314,8 @@ for (;;) {
   // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     fortuneTried = true;
+    // #780: 新ピンの解錠演出中は選択を受け付けないので、演出の終わりを待つ。
+    await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'), null, { timeout: 10000 }).catch(() => {});
     await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
     continue;
   }
