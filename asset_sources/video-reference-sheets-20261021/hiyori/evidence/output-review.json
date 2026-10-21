@@ -1,0 +1,30 @@
+{
+  "id": "hiyori",
+  "name": "ひより",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 2063797,
+  "sha256": "b576aa0766edb5a42574fc5bfd0dbda7276c0814851a10e3e5c16285258d437c",
+  "approved_input": {
+    "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+    "sha": "f53dc53f8e628701e1b207c2a1c7a0e2da895f46",
+    "size": 366723
+  },
+  "input_git_blob_verified": "f53dc53f8e628701e1b207c2a1c7a0e2da895f46",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "赤みのあるピンクブラウンの高いポニーテール、茶色い目、半袖レースブラウス、黒スラックス、右手バッグ、左腕時計、黒ローファー。",
+  "inferred": "ポニーテール後ろ、ブラウス背面のレース配置、バッグ裏面、パンツ後ろと靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "hiyori-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}

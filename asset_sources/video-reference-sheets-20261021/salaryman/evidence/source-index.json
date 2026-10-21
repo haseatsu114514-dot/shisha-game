@@ -1,0 +1,50 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "normal",
+      "smile"
+    ],
+    "h": 0.915,
+    "b": 0.0208,
+    "ax": 0.5318,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "salaryman",
+    "name": "サラリーマン",
+    "role": "story_character",
+    "age": 41,
+    "nationality": "Japan",
+    "affiliation": "tonari常連",
+    "play_style": "N/A",
+    "description": "第1章やエンディングなど、ストーリーの要所で登場する象徴的な客。通常のランダム接客（日常営業）には一切登場しないストーリー限定キャラクター。\n感情を全く顔に出さない手強い客だが、本当に上手いシーシャを出すと心が動き、主人公の成長を測る指標となる。",
+    "background_secret": "社内政治や家族との軋轢で完全に心が摩耗しきっている。tonariの煙だけが彼にとって唯一「何者でもない自分」に戻れる呼吸の場所となっている。",
+    "favorite_flavor": "アールグレイ（仮）",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": "常に張り詰めた顔をしていたが、はじめの出す優しいシーシャを日々吸ううちに、いつの間にか退店時の『ごちそうさん』の声色が少しだけ温かく、穏やかに変わっていた。"
+    },
+    "visual_concepts": [
+      "41s japanese salaryman, tired and expressionless face, wearing a slightly loosened necktie and a wrinkled grey suit, sitting alone looking at his smartphone, office worker relaxing after hours",
+      "middle-aged corporate worker, short neat but exhausted hair, wearing a business suit without the jacket, blowing a slow cloud of smoke with a heavy sigh, realistic dim moody cafe lighting"
+    ]
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+      "sha": "72606b580a08cd91d5642ccf70f293f7dc38de9e",
+      "size": 448824
+    },
+    {
+      "path": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+      "sha": "b75e12ae0b20fd8310264799f3e35f59a2fa6e13",
+      "size": 450991
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}
