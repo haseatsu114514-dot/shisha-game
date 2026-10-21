@@ -1,4 +1,19 @@
-# PLAN.md — Issue #788 TRPG・斧投げ専用BGM接続 実施設計書
+# PLAN.md — Issue #788（2026-10-21 11:44 JST のオーナー決定を反映）
+
+## 現在の状態
+- **反映済み（PR #811）**
+  - 採用2曲を `.bgm` で追加（`assets/audio/bgm/bgm_trpg.bgm`、`bgm_axe.bgm`）。`remake/data/manifest.json` を `--audio-only` で更新し、`asset_sources/music/adopted-minigame-bgm-20261020.md` に採用を記録。
+  - TRPG: `remake/js/daily/trpg.js` の `openTrpgBar` で、入店時に `stopBgm(.2)` を `playBgm("bgm_trpg")` に置き換えた。退店時にマップ曲へ戻る処理は既存のまま。
+- **倍率（オーナー決定）**: 斧投げ `bgm_axe` は **0.79**（tonari −17.34 LUFS に合わせる）。TRPG は **1.0**（既定値。同じ「前後の曲より大きくしない」基準で、マップ曲 −13.65 より約2 dB小さいため上げない）。§2 の0.95の計算は旧案で、0.79 に置き換えた。
+- **合意待ち（編集していない）**
+  - `remake/js/core/audio.js`：`BGM_GAIN` に `bgm_axe: 0.79` を追加。任意で `SYNTH_FALLBACK` に `bgm_trpg` / `bgm_axe` を追加。→ #573 の予約owner `codex-c-audio573-20261015-d9a204ec` の合意か handoff 待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/573#issuecomment-6306731087）
+  - `remake/js/daily/axe-bar.js` の `visitAxeBar`：§5.3。→ #489（保留中、owner `codex-axe489-20261015-7c92b4e1`）の保留解除と合意待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/489#issuecomment-6306731389）、#540（オーナー判断で保留、owner `codex-finish-541-20261014-8d2191d9`）の合意待ち（https://github.com/haseatsu114514-dot/shisha-game/issues/540#issuecomment-6306731676）
+  - `remake/js/daily/hiyori-axe.js` の `playHiyoriAxeSequence`：§5.4。→ 上の #489 / #540 と同じ
+  - 斧投げの倍率0.79は `audio.js` が入るまで効かない。また斧投げ曲はまだどの場面からも鳴らないため、現時点で音量の問題は起きない。
+
+---
+
+# 当初の設計（agy 作成、§5.1 の倍率のみ上記決定に更新）
 
 本ドキュメントは、Issue #788「TRPG・斧投げの採用済み専用BGMを接続（OP曲は追加しない）」における音量計算根拠、復帰BGM決定根拠、ファイル・関数ごとの最小パッチ案、およびテスト観点をまとめた設計書です。
 指定された編集禁止ファイル（`audio.js`, `axe-bar.js`, `hiyori-axe.js`, `trpg.js`）は直接編集せず、本設計書のパッチ案として提示します。
@@ -118,7 +133,7 @@
  
  // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
 -const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
-+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.95, bgm_trpg: 1.0 };
++const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
 ```
 
 ---

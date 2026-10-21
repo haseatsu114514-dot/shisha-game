@@ -32,7 +32,8 @@ const context = vm.createContext({ Audio, window: { AudioContext }, document: { 
   performance: { now: () => now }, requestAnimationFrame: (fn) => frames.push(fn),
 });
 const module = new vm.SourceTextModule(await fs.readFile(new URL("../js/core/audio.js", import.meta.url), "utf8"), { context });
-const urlFor = (key) => `/assets/audio/bgm/${key}.${key.startsWith("bgm_tournament_") ? "bgm" : "mp3"}`;
+const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe"]);
+const urlFor = (key) => `/assets/audio/bgm/${key}.${PACKED.has(key) ? "bgm" : "mp3"}`;
 await module.link((s) => {
   const exports = s.endsWith("state.js") ? { config } : { bgmUrl: urlFor };
   return new vm.SyntheticModule(Object.keys(exports), function () {
@@ -64,6 +65,8 @@ assert.equal(audio.currentBgm(), null);
 const adopted = [
   ["bgm_tournament_edm", .51, "3ed10a23e30bada9814d9401371ac9643cce6825d66cb626997f4b14398920d1"],
   ["bgm_tournament_craft", .67, "fd9856eb18725aff6c91d25f90522d0e9be82ed3f9e09ea5c026e00fe577b050"],
+  // #788 ユーザー採用曲（TRPG: Shared Discovery）。倍率は既定1.0。
+  ["bgm_trpg", 1, "ebb517047cb706879953610bba7005c944e60274ba9b0e1b228fba022418b4fa"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));
@@ -103,4 +106,39 @@ assert(fading.volume <= before);
 step(400); await flush();
 assert.equal(fading.volume, 0);
 assert.equal(fading.paused, true);
+// #788 斧投げ曲（Aiming groove）は原本のまま復元できる。倍率0.79と場面接続は audio.js／斧投げ側の合意待ち。
+{
+  audio.stopBgm(0); await flush();
+  assert(await audio.preloadBgm("bgm_axe"));
+  audio.playBgm("bgm_axe"); await flush(); step(1500);
+  const axe = elements.at(-1);
+  assert.equal(createHash("sha256").update(Buffer.from(await blobs.get(axe.src).arrayBuffer())).digest("hex"),
+    "e1ad7a541a099dc363baab666c04109fd0e974190b4a3d901857a9713cbccbac");
+}
+// #788 TRPG入店→同じ曲の再入場→退店でマップ曲へ戻る。二重再生せず、旧曲は止まる。ミュートは0。
+{
+  audio.stopBgm(0); await flush();
+  audio.playBgm("kansetsu_shomei_to_black_coffee"); step(1500);
+  const map = elements.at(-1);
+  audio.playBgm("bgm_trpg"); await flush(); step(1500);
+  const trpg = elements.at(-1);
+  assert.equal(audio.currentBgm(), "bgm_trpg");
+  await flush();
+  assert.equal(map.volume, 0); assert.equal(map.paused, true);
+  const count = elements.length;
+  audio.playBgm("bgm_trpg"); await flush(); step(1500);
+  assert.equal(elements.length, count, "re-entry must not start a second TRPG track");
+  config.mute = true; audio.applyVolumes(); assert.equal(trpg.volume, 0);
+  config.mute = false; audio.applyVolumes(); assert.equal(trpg.volume, config.bgmVolume);
+  audio.playBgm("kansetsu_shomei_to_black_coffee"); await flush(); step(1500);
+  assert.equal(audio.currentBgm(), "kansetsu_shomei_to_black_coffee");
+  await flush();
+  assert.equal(trpg.volume, 0); assert.equal(trpg.paused, true);
+}
+// 入店時にTRPG曲、退店時にマップ曲（既存の退店処理）。
+{
+  const trpgSource = await fs.readFile(new URL("../js/daily/trpg.js", import.meta.url), "utf8");
+  assert.match(trpgSource, /showScreen\("trpg", host\); playBgm\("bgm_trpg"\)/);
+  assert.match(trpgSource, /playBgm\("kansetsu_shomei_to_black_coffee"\)/);
+}
 console.log("[packaged BGM] PASS: official audio hashes, caching, gains, cancellation and playback races");
