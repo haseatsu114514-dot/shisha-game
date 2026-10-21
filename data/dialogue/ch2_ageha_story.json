@@ -833,7 +833,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "──うん。ちゃんとおいしいじゃん"
+          "text": "うん。ちゃんとおいしいじゃん"
         },
         {
           "speaker": "hajime",
@@ -858,7 +858,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "当たり前じゃん。でもさ──"
+          "text": "当たり前じゃん。でもさ……"
         },
         {
           "type": "condition",
@@ -889,7 +889,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──けれど、舌の奥の遠さは、消えなかった。"
+          "text": "けれど、舌の奥の遠さは、消えなかった。"
         }
       ],
       "branches": {

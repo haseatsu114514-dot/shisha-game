@@ -26,7 +26,7 @@ export function mountColdOpen() {
     // 反応は暗く静まる煙と声で受ける。ここで未来の人物を特定しない。
     if (/誰かが呟いた/.test(text)) scene.dataset.shot = "reaction";
     if (/会場を満たして/.test(text)) scene.dataset.shot = "fill";
-    if (/1年前/.test(text)) scene.classList.add("out");
+    if (/あの頃、tonariで/.test(text)) scene.classList.add("out");
   };
   hooks.onLine = onLine;
   return { ready, stop() {
