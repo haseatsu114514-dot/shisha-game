@@ -1,0 +1,11 @@
+{
+  "generation_reference_source": "approved normal sprites from repository main; blob hashes in per-character source-index.json",
+  "generation_tool": "image_gen.imagegen built-in",
+  "designs": 10,
+  "consistency_corrections": 1,
+  "reference_png_download_bytes": 4374641,
+  "cached_reference_reuse_bytes": 386848,
+  "total_network_wire_bytes": "not measured",
+  "library_status": "all ten final PNGs saved by commander",
+  "archive_method": "Git feature branch and pull request; source sprites and initial drafts excluded"
+}

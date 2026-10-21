@@ -1,0 +1,75 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "normal",
+      "serious",
+      "smile",
+      "surprise",
+      "thinking"
+    ],
+    "h": 0.9267,
+    "b": 0.0233,
+    "ax": 0.5065,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "role": "judge",
+    "age": 45,
+    "nationality": "Japan",
+    "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
+    "play_style": "N/A",
+    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。C.STATIONを一代で築き、大会運営を支える。SMOKE CROWN CUPは、自社店舗と同じビルのイベントホールを借りて大規模に開催している。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては味や技術の正確さではなく「作り手の生き様が煙ににじみ出ているか」──つまりその人間がどんな人生を歩み、何を背負い、誰のために煙を作っているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
+    "background_secret": "かつてスミさんと同じ大会を戦った元選手（勝てないまま選手を退き、経営の道へ・2026-07-19確定）。根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。 スミと「勝った方が作る」と約束したが、店を増やす話をした晩、次の大会の点ばかり数えられた。「勝ち負けの話はしてない」と言った先を互いに待ちすぎ、今もその晩の話だけ避けてきた。第4章の競技後、はじめとなるの同じ約束を聞いて過去を話す。経営は競技で勝てなかった代わりではなく、自分で選んだ仕事。友情を審査の便宜にはしない。",
+    "favorite_flavor": "シーガ（葉巻系）",
+    "specialty_flavor": "N/A（審査のため作らない）",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": "効率的なチェーン展開を至上としていたが、はじめの個人店ならではの密な接客に心を打たれ、いつの間にか自社マニュアルに『スタッフ個人の判断による会話の余白時間』を設ける改訂を行っていた。"
+    },
+    "visual_concepts": [
+      "45s japanese business man, sharp and authoritative, short cleanly cut hair, wearing a very expensive tailored three-piece navy suit, examining a shisha with a critical and intimidating eye",
+      "corporate executive judge, mature alpha male, silver tie and luxury watch, sitting imposingly at a judge's table, looking analytical but with a hidden passionate glint in his eyes, upscale lounge aesthetic"
+    ],
+    "spriteScale": 1.03,
+    "intro_cutin": {
+      "title": "C.STATION会長・審査員長",
+      "line": "吸えば分かる",
+      "face": "serious",
+      "color": "#cfd6e6"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+      "sha": "37be28dcaf26b22dc17a43c55b983ef2382eece9",
+      "size": 494583
+    },
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+      "sha": "b2a0723822230d00cfc2eaf8c42e8b5f1903a52d",
+      "size": 513753
+    },
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+      "sha": "cc0ceeff91a9ac0fe3782654b173891d223afc33",
+      "size": 500782
+    },
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+      "sha": "890d2976e0a0dac92cb43d57eb13ce8be22e99eb",
+      "size": 488815
+    },
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+      "sha": "851cee91652f99cdc0fa56ac64e8e78241aae507",
+      "size": 458368
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}
