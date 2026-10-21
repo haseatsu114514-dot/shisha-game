@@ -17,7 +17,7 @@ export const storeInvitationSpot = (message) => message?.accept_event === "inter
 export function storeInvitationDialogue(dialogue, slot) {
   if (!dialogue || slot !== 1) return dialogue;
   return { ...dialogue, lines: (dialogue.lines || []).map((line, i) => i === 0
-    ? { ...line, text: line.text.replace("昼下がりのPEPPERMINT", "夜のPEPPERMINT") } : line) };
+    ? { ...line, text: line.text.replace("昼下がりのぺぱーみんと", "夜のぺぱーみんと") } : line) };
 }
 
 /**
