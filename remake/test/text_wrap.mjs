@@ -49,7 +49,7 @@ assert.equal(paginate(compact).length, 1, paginate(compact).join(" ‖ "));
 
 // 4) 全台詞の不変条件: 1行は上限以内、行頭禁則・行頭の空白なし、1ページは2行まで
 const NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
-const files = fs.readdirSync(path.join(root, "data/dialogue")).filter((f) => f.endsWith(".json"));
+const files = process.argv.includes("--fixed-only") ? [] : fs.readdirSync(path.join(root, "data/dialogue")).filter((f) => f.endsWith(".json"));
 const texts = [];
 function walk(node, file, id) {
   if (Array.isArray(node)) return node.forEach((x) => walk(x, file, id));
@@ -83,4 +83,4 @@ assert(singleLinePages.every(page => !page.includes("\n")));
 assert.equal(singleLinePages.map(strip).join(""), strip(singleLineText));
 assert(singleLinePages.every(page => page.startsWith("[imp]") && page.endsWith("[/imp]")));
 
-console.log(`text_wrap OK: ${texts.length} texts`);
+console.log(process.argv.includes("--fixed-only") ? "text_wrap OK: fixed cases; corpus skipped" : `text_wrap OK: ${texts.length} texts`);
