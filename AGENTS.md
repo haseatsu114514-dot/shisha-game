@@ -45,6 +45,13 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - 大容量通信が見込まれる取得・更新・テスト・アップロードは、実行前に目的・推定通信量（不明なら不明）・節約案を提示し、承認を得る。
 - shallow/filtered fetchでも少量通信は保証されない。想定外に転送量が増えたら中断し、取得量（計測できなければ不明）と状況を報告する。
 
+### 画像と Git LFS
+
+- `assets/`・`remake/img/`・`asset_sources/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS で保存する。既存画像は同ファイル末尾の生成ブロックで通常のGitファイルに固定する（`tools/gen_lfs_legacy_attributes.sh` で生成。手で消さない）。既存履歴の移行（`git lfs migrate` 等）や一括変換はしない。
+- 作業前に一度 `git lfs install --skip-repo` を実行する（`.git/hooks` は使わない。LFSのアップロードは `.githooks/pre-push` が行う）。git-lfs が無い環境では画像が通常のGitファイルとして入るため、追加前に導入する。
+- 既定ではLFS実体を一括取得しない。`GIT_LFS_SKIP_SMUDGE=1` で worktree を作り、必要な画像だけ `git lfs pull --include="<パス>"` で取得する。LFSの転送量は所有者の無料枠（帯域・容量）を消費するため、上の通信量ルールに従う。
+- `git add` 後に `git lfs ls-files` で新しい画像がLFS管理になったことを確認する。
+
 ## 実行経路: CLI / GitHub連携
 
 - ローカルCLIと、認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・ローカルcheckoutの有無を実装許可の条件にせず、利用可能な経路で同じ予約・差分・保存・検証条件を満たす。CLIの未導入とGitHub権限不足は区別する。

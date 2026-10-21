@@ -877,6 +877,41 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_sumi_attack",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、待ってる間も肩に力が入ってるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "失敗したらって考えると、落ち着かなくて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "雑念を全部追うな。目の前の一つだけ、切ってみろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんと呼吸を合わせ、前へ手を振る。浮かんだ言葉を一つ切って、また炭を見る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "そうだ。切ったら少し待て。焦って振り回すなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アタックを習得した。蒸らし中にZキーやボタンで、上側の雑念を切れる。"
+        }
+      ]
     }
   ]
 }

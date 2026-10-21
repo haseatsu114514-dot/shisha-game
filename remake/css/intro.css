@@ -27,3 +27,8 @@
 @media(prefers-reduced-motion:reduce) {
  .cutin.art-intro .ci-name { transform:skewX(-10deg) scaleX(.86)!important; }
 }
+
+/* Cutin only: contain the entire authored composition; never crop faces or type. */
+.intro-fit-surface { position:absolute; inset:0; overflow:hidden; pointer-events:auto; }
+.cutin.intro-fitted { inset:auto; left:50%; top:50%; width:1280px; height:720px;
+  transform:translate(-50%,-50%) scale(var(--intro-fit-scale,1)); transform-origin:center; }

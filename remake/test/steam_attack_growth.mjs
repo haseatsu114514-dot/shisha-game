@@ -35,7 +35,7 @@ try {
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.waitForSelector('[data-test="title-new"]');
     await page.evaluate(async()=>{
-      const core=await import('./js/core/state.js');core.newGame();core.state.stamina=80;
+      const core=await import('./js/core/state.js');core.newGame();core.state.flags._sumi_attack_learned=true;core.state.stamina=80;
       window.session=await import('./js/craft/session.js');window.steam=await import('./js/craft/steam.js');
       window.geometry=await import('./js/craft/steam-slash.js');
       __remake.craftTest.auto=null;Math.random=()=>.5;

@@ -53,7 +53,8 @@ try {
       await page.screenshot({ path: `${out}/unlock-pop.jpg`, type: 'jpeg', quality: 80 });
       await page.evaluate(() => document.querySelectorAll('.newly-revealed').forEach(pin => pin.getAnimations({ subtree: true }).forEach(a => a.play())));
     }
-    // The pop never blocks destination selection.
+    // Reveal holds all destination controls until its timer completes.
+    await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
     const gym = page.locator('[data-test="pin-choizap"]'); await gym.scrollIntoViewIfNeeded(); await gym.click();
     assert(await gym.evaluate(n => n.classList.contains('sel')));
     await page.waitForFunction(() => !document.querySelector('.newly-revealed'));
@@ -61,7 +62,7 @@ try {
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'opening map repeats animation');
     await page.evaluate(async () => { R.core.state.met.uranaishi = true; await reopen(); });
-    await page.locator('[data-test="pin-fortune"].newly-revealed').waitFor();
+    assert.equal(await page.locator('[data-test="pin-fortune"].newly-revealed').count(), 0, 'meeting is not a second facility unlock');
     await page.evaluate(async () => { R.core.state.day = 4; await reopen(); });
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('[data-test="pin-fortune"]').count(), 0);
@@ -78,7 +79,7 @@ try {
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'history leaked to a new game');
     assert.deepEqual(errors, []);
-    results.push({ name, firstMapQuiet: true, unlocks: ['choizap', 'kannon', 'fortune', 'axe_bar', 'shishark', 'trpg_bar'], selectionDuringAnimation: true, noRepeat: true, stateUnchanged: true, reducedMotion });
+    results.push({ name, firstMapQuiet: true, unlocks: ['choizap', 'kannon', 'fortune', 'axe_bar', 'shishark', 'trpg_bar'], selectionAfterAnimation: true, noRepeat: true, stateUnchanged: true, reducedMotion });
     console.log(`PASS unlock: ${name}`);
     await context.close();
   }
