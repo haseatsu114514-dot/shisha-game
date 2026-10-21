@@ -51,6 +51,7 @@ async function atMap(page, day, slot) {
     && !document.querySelector('#modal.show'), [day, slot]);
 }
 async function rest(page, touch = false) {
+  await page.locator(`${map}:not([data-revealing="true"])`).waitFor(); // #796: 新ピンの解錠演出中は選択を受け付けない
   const before = await state(page);
   const click = sel => touch ? page.locator(sel).tap() : page.locator(sel).click();
   await click(t('pin-rest')); await click(t('map-go'));

@@ -43,6 +43,7 @@ async function wide(page, touch = false) {
   await page.locator(`${map}[data-region="widehanga"]`).waitFor();
 }
 async function go(page, id, touch = false) {
+  await page.locator(`${map}:not([data-revealing="true"])`).waitFor(); // #796: 新ピンの解錠演出中は選択を受け付けない
   const pin = page.locator(t(`pin-${id}`));
   if(touch) await pin.tap(); else await pin.click();
   const button=page.locator(t('map-go'));
