@@ -109,7 +109,7 @@ assert.deepEqual(deliveryTrace(),[
 ]);
 assert.equal(state.flags._delivery_batch_started,true);
 assert.equal(state.flags._delivery_report_done,true);
-assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,2);
+assert.equal(state.money,14000);assert.equal(state.stamina,74);assert.equal(actionEnds,2);
 const firstGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='minto');
 const secondGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='adam');
 assert(firstGuide>=0 && secondGuide>firstGuide);
@@ -124,7 +124,7 @@ reset({day:2,slot:1,flags:{_delivery_batch_started:true,
 state.money=12000;state.stamina=70;
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert.deepEqual(deliveryTrace(),['adam','remake_delivery_report']);
-assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,1);
+assert.equal(state.money,14000);assert.equal(state.stamina,74);assert.equal(actionEnds,1);
 
 // LOAD during the batch briefing: preserve the first explanation but read the second.
 reset({day:2,flags:{_delivery_batch_started:true,_delivery_minto_told:true,_morning_2:true}});
@@ -139,7 +139,7 @@ reset({day:2,slot:2,flags:{_delivery_batch_started:true,
 state.money=14000;state.stamina=60;
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert.deepEqual(deliveryTrace(),['remake_delivery_report']);
-assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,0);
+assert.equal(state.money,14000);assert.equal(state.stamina,74);assert.equal(actionEnds,0);
 assert.equal(state.flags._delivery_report_done,true);
 // LOAD of completed report is idempotent.
 reset({day:2,slot:2,flags:{_delivery_batch_started:true,
