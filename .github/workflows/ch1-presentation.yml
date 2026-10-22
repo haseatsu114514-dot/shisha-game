@@ -17,7 +17,8 @@ jobs:
   presentation:
     runs-on: ubuntu-latest
     # Allow existing stages plus ten production LOAD cases; assertion timeouts stay unchanged.
-    timeout-minutes: 20
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 30
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/presentation
@@ -39,11 +40,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install browser dependencies
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Actual-result and taste boundaries
         run: |
           node remake/test/mix_recognition.mjs

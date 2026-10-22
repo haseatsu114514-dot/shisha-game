@@ -38,7 +38,8 @@ jobs:
   ds-layout:
     name: Reversible game display on PC and touch
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -46,11 +47,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned browser dependencies
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Start production preview server
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ds-preview.log" 2>&1 &

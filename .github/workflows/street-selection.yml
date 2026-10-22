@@ -32,7 +32,8 @@ jobs:
       matrix:
         route: [selection, direct, street]
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 25
     env:
       NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
       BASE_URL: http://127.0.0.1:8123/remake/
@@ -56,11 +57,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install browser dependency
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Start current preview server
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/street-server.log" 2>&1 &
