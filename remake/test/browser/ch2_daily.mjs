@@ -37,14 +37,18 @@ async function setup(page, { money = 36000, unknown = false, reel = false } = {}
 }
 async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(map).waitFor(); }
 async function value(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
+async function settled(page) { await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); } // #780: 新ピンの解錠演出中は選択を受け付けない
 async function wide(page, touch = false) {
+  await settled(page);
   const button = page.locator(t('map-region-widehanga'));
   if(touch) await button.tap(); else await button.click();
   await page.locator(`${map}[data-region="widehanga"]`).waitFor();
 }
 async function go(page, id, touch = false) {
+  await settled(page);
   const pin = page.locator(t(`pin-${id}`));
   if(touch) await pin.tap(); else await pin.click();
+  await settled(page);
   const button=page.locator(t('map-go'));
   if(touch) await button.tap(); else await button.click();
 }
@@ -80,7 +84,7 @@ await suite('ch2-daily',async check=>{
     assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),3);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
       ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
-    await page.locator(t('pin-ch2_rei')).click();
+    await settled(page);await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{
       const src=node.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1];
@@ -160,7 +164,7 @@ await suite('ch2-daily',async check=>{
     await act(page,'ch2_kumicho');assert.equal((await value(page)).money,33000);
   });
   await check('unaffordable-city-visit-spends-nothing',async page=>{
-    await setup(page,{money:2000});await begin(page);await wide(page);await page.locator(t('pin-ch2_rei')).click();
+    await setup(page,{money:2000});await begin(page);await wide(page);await settled(page);await page.locator(t('pin-ch2_rei')).click();
     assert.match(await page.locator('.mi-no').textContent(),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
     const v=await value(page);assert.equal(v.money,2000);assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
   });
