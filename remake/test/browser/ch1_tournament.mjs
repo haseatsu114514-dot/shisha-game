@@ -7,6 +7,8 @@ if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 
 async function init(page) {
+  // 外部BGMは環境により遮断される。成否に関係しないため空の音声で応答する。
+  await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "" }));
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core,
