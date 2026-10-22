@@ -111,8 +111,9 @@ export async function runDaily(def) {
       save();
     }
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
-    if (state.chapter === 1 && !(await reportDeliveryBatch())) return;
-    await endDay();
+    const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
+    if (reported === false) return;
+    await endDay({ returnedToTonari: reported === true });
     save();
   }
 }
@@ -329,11 +330,13 @@ async function briefDeliveryBatch() {
   return true;
 }
 
-/** 報酬・体力・枠を二重計上せず、最後の勤務報告のみ一度再生。 */
+/** 報酬・体力・枠を二重計上せず、最後の勤務報告のみ一度再生。
+ * true: 今回帰店した / null: 報告不要 / false: 会話中断・別セーブへの切替。
+ */
 async function reportDeliveryBatch() {
   const f = state.flags;
   if (!f._delivery_batch_started || f._delivery_report_done
-    || !DELIVERIES.every(d => f[`_delivery_${d.charId}_done`])) return true;
+    || !DELIVERIES.every(d => f[`_delivery_${d.charId}_done`])) return null;
   const owner = state;
   const result = await play("remake_delivery_report", { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return false;
@@ -679,14 +682,17 @@ async function beat(text) {
   b.remove();
 }
 
-async function endDay() {
+async function endDay({ returnedToTonari = false } = {}) {
   syncNightQueue(chapterDef.nightEvents);
   const rested = restingToday();
   const nightCount = await runNightPlan(chapterDef.nightEvents, async (ev) => {
     await bannersIdle();
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
+    // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
+    const sameVisit = returnedToTonari && ev.pin === "tonari";
+    returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
-    if (ev.beat) await beat(ev.beat);
+    if (ev.beat && !sameVisit) await beat(ev.beat);
   });
   save();
   await bannersIdle();
