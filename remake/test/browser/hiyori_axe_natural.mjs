@@ -59,7 +59,8 @@ try {
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
         const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
-        window.Q = { core, vn, spots, hiyori, events: [], current: null };
+        const { spotAvailability } = await import('./js/daily/spot-access.js');
+        window.Q = { core, vn, spots, hiyori, spotAvailability, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
@@ -192,24 +193,39 @@ try {
           const selected = await page.evaluate(({ workGoal, giftGoal }) => {
             const s = Q.core.state, f = s.flags, sp = Q.spots;
             const tonari = sp.spotById('tonari');
+            // 候補の入店可否は本番の spotAvailability で確かめる。不可なら既存の優先順位のまま次の候補へ進む。
+            // 最初の不可だけ診断を console に出す（テストの失敗調査用）。
+            let reported = window.__hiyoriRejectReported === true;
+            const ok = id => {
+              const x = sp.spotById(id);
+              const r = x ? Q.spotAvailability(x) : { ok: false, why: 'missing spot' };
+              if (!r.ok && !reported) {
+                reported = window.__hiyoriRejectReported = true;
+                console.log('hiyori-candidate-rejected ' + JSON.stringify({ candidate: id, why: r.why, day: s.day, slot: s.slot,
+                  stamina: s.stamina,                   visitedDay: s.visitedDay, invitationStamp: f._invitation_visit_tonari ?? null,
+                  flags: { return: !!f._hiyori_tonari_return_done, followup: !!f._hiyori_tonari_followup_done, afterwork: !!f._hiyori_tonari_afterwork_done } }));
+              }
+              return r.ok;
+            };
             if (s.stamina < 35) return 'rest';
             // 新規の噂→実来店で目撃→翌日以降の初対面を、既存の実UIだけで通る。
-            if (!f._axe_bar_rumor_done && !sp.isClosed(tonari)) return 'tonari';
-            if (!f._axe_bar_sighting_done) return s.slot === 1 ? 'axe_bar' : 'rest';
+            if (!f._axe_bar_rumor_done && !sp.isClosed(tonari) && ok('tonari')) return 'tonari';
+            if (!f._axe_bar_sighting_done) return s.slot === 1 && ok('axe_bar') ? 'axe_bar' : 'rest';
             // Once the paid axe outing is finished, wait for the free night talks.
             // A daytime detour would change the fee invariant for work/gift.
-            if (f._hiyori_real_self_known && workGoal) return s.slot === 1 ? 'tonari' : 'rest';
+            if (f._hiyori_real_self_known && workGoal) return s.slot === 1 && ok('tonari') ? 'tonari' : 'rest';
             // Earn through the actual shift UI before either a paid visit or axe event.
             // A disabled axe button must never send us back into a used customer seat.
-            if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day) return 'tonari';
+            if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day && ok('tonari')) return 'tonari';
             const needsTonari = f._hiyori_meeting_done && !f._hiyori_sumi_message_done
               || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done;
-            if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day) return 'tonari';
+            if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day && ok('tonari')) return 'tonari';
             if (f._hiyori_tonari_afterwork_done && s.slot === 1 && !sp.isClosed(tonari)
-              && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done)) return 'tonari';
+              && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done) && ok('tonari')) return 'tonari';
             const location = Q.hiyori.hiyoriShopLocation();
             const spot = location && sp.spotById(location);
-            if (spot && !sp.visitedToday(spot.id) && s.money >= (spot.cost || 0)) return spot.id;
+            if (spot && !sp.visitedToday(spot.id) && s.money >= (spot.cost || 0) && ok(spot.id)) return spot.id;
+            ok('rest');
             return 'rest';
           }, { workGoal, giftGoal });
           await click(`[data-test="pin-${selected}"]`); await click('[data-test="map-go"]');
