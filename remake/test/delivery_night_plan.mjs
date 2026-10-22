@@ -21,11 +21,17 @@ let actionEnds = 0, reportMode = 'normal';
 const noop = () => {}, asyncNoop = async () => {};
 const unexpected = async () => { throw new Error('Unexpected unrelated chapter event'); };
 const spots = { minto: { id: 'minto' }, adam: { id: 'adam' }, c_station: { id: 'c_station' } };
-const DB = { flavorById: {}, lime: [], dialogues: { ch1_salaryman_regular: { lines: [{ speaker: 'sumi' }] } } };
+const chapterDialogues = JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch1_main.json', import.meta.url), 'utf8')).dialogues;
+const DB = { flavorById: {}, lime: [], dialogues: Object.fromEntries(chapterDialogues.map(d => [d.dialogue_id, d])) };
+const originalSalary = structuredClone(DB.dialogues.ch1_salaryman_regular);
+assert(originalSalary?.lines.length > 1 && originalSalary.branches, 'Use the full production customer dialogue');
 let stateModule;
 function replaceState(next) { state = next; stateModule.setExport('state', next); }
-const play = async (id, opts) => {
-  calls.push({ type: 'scene', id, opts, day: state.day, slot: state.slot });
+const play = async (value, opts) => {
+  const id = typeof value === 'string' ? value : value.dialogue_id;
+  const dialogue = typeof value === 'string' ? DB.dialogues[value] : value;
+  calls.push({ type: 'scene', id, opts, day: state.day, slot: state.slot,
+    dialogue: dialogue ? structuredClone(dialogue) : null });
   if (id === 'remake_delivery_report' && reportMode === 'cancel') return { cancelled: true };
   if (id === 'remake_delivery_report' && reportMode === 'load') {
     const next = structuredClone(state); next.money = 4321; replaceState(next);
@@ -108,6 +114,21 @@ function reset({ day = 2, slot = 0, flags = {}, money = 10000, stamina = 80 } = 
 }
 const countScene = id => calls.filter(x => x.type === 'scene' && x.id === id).length;
 const countArrival = () => calls.filter(x => x.type === 'beat' && x.text === salary.beat).length;
+function assertSalaryOpening(sameVisit) {
+  const actual = calls.find(x => x.type === 'scene' && x.id === salaryId)?.dialogue;
+  assert(actual, 'Production customer dialogue was not passed to playback');
+  const expected = structuredClone(originalSalary);
+  if (sameVisit) {
+    expected.lines[0].text = expected.lines[0].text.replace(/^夜のtonari。顔を出すと、/, '夜のtonari。');
+    assert.notEqual(expected.lines[0].text, originalSalary.lines[0].text,
+      'The production arrival changed; review the same-visit adaptation');
+    assert.match(actual.lines[0].text, /カウンター頼めるか/, 'Counter request must remain');
+    assert(!actual.lines[0].text.includes('顔を出すと'), 'Dialogue narrates a second arrival');
+  }
+  assert.deepEqual(actual, expected, 'Keep dialogue ID, all remaining lines and every choice branch');
+  assert.deepEqual(DB.dialogues.ch1_salaryman_regular, originalSalary, 'Do not mutate shared dialogue data');
+}
+
 const completed = { _delivery_batch_started: true, _delivery_minto_told: true, _delivery_adam_told: true,
   _delivery_minto_done: true, _delivery_adam_done: true };
 const run = (nightEvents = events) => calendar.namespace.runDaily({ untilDay: state.day + 1, nightEvents });
@@ -121,7 +142,9 @@ assert(calls.findIndex(x => x.id === reportId) < calls.findIndex(x => x.id === s
 assert.equal(state.flags._ev_salaryman, true);
 assert.equal(state.flags._night_event_day, '1:2');
 assert.equal(state.deferredNightEvents.length, 0);
-assert.equal(calls.filter(x => x.type === 'hiyori').length, 1);
+assert.equal(calls.filter(x => x.type === 'hiyori').length,
+  Number(originalSalary.lines.some(line => line.speaker === 'sumi')));
+assertSalaryOpening(true);
 assert.equal(state.money, 14000); assert.equal(state.stamina, 74); assert.equal(actionEnds, 2);
 assert.equal(state.day, 3); assert.equal(state.slot, 0);
 const reportCheckpoint = structuredClone(saves.find(s => s.flags._delivery_report_done && !s.flags._ev_salaryman));
@@ -132,12 +155,14 @@ reset({ flags: { _delivery_minto_told: true, _delivery_adam_told: true } });
 await run();
 assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
 assert.equal(state.money, 14000); assert.equal(actionEnds, 2);
+assertSalaryOpening(false);
 console.log('delivery night: legacy non-batch arrival retained PASS');
 
 reset(); replaceState(structuredClone(reportCheckpoint));
 await run();
 assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
 assert.equal(state.money, 14000); assert.equal(actionEnds, 0);
+assertSalaryOpening(false);
 const finished = structuredClone(state);
 replaceState(structuredClone(finished)); calls.length = 0;
 await calendar.namespace.runDaily({ untilDay: finished.day, nightEvents: events });
@@ -150,6 +175,7 @@ state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferr
 await run();
 assert.equal(countScene(reportId), 1); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 0);
 assert.equal(state.money, 14000); assert.equal(actionEnds, 0); assert.equal(state.flags._night_event_day, '1:3');
+assertSalaryOpening(true);
 console.log('delivery night: delayed report joins the actual deferred night plan PASS');
 
 reset({ slot: 2, flags: { ...completed, _private_night_day: 2 }, money: 14000, stamina: 60 });
@@ -159,11 +185,13 @@ assert.equal(state.deferredNightEvents.length, 1, 'Booked night must preserve th
 state.slot = 2; state.flags._morning_3 = true; calls.length = 0;
 await run();
 assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
+assertSalaryOpening(false);
 console.log('delivery night: same-visit cue never persists into the following day PASS');
 
 reset({ slot: 2, flags: completed, money: 14000, stamina: 60 });
 await run({ 2: { ...salary, pin: 'c_station' } });
 assert.equal(countScene(reportId), 1); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
+assertSalaryOpening(false);
 console.log('delivery night: a different destination keeps its arrival PASS');
 
 for (const mode of ['cancel', 'load']) {

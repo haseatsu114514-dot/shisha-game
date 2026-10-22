@@ -240,10 +240,18 @@ async function tutorial(progress = null) {
 // ---------------------------------------------------------------- 夜の固定イベント
 // pin=マップの「!」印／teaser=前日の就寝時の予感／beat=イベント前のつなぎ一行
 
-const nightScene = (id, bg) => async () => {
+const nightScene = (id, bg) => async (context) => {
   const dialogue = DB.dialogues[id];
   if ((bg || dialogue?.metadata?.bg || "").includes("tonari") && dialogue?.lines?.some((line) => line.speaker === "sumi")) await meetHiyoriAtTonari();
-  await play(id, bg ? { bg } : {});
+  // 配達報告から同じ来店で続く場合だけ、正本の冒頭から再入店の節を除く。
+  // DB本体・残りの台詞・分岐・dialogue_idは変更せず、通常訪問には元の台本を使う。
+  const opening = dialogue?.lines?.[0];
+  const sameVisit = context?.returnedToTonari && id === "ch1_salaryman_regular" && typeof opening?.text === "string";
+  const scene = sameVisit ? { ...dialogue, lines: [
+    { ...opening, text: opening.text.replace(/^夜のtonari。顔を出すと、/, "夜のtonari。") },
+    ...dialogue.lines.slice(1),
+  ] } : id;
+  await play(scene, bg ? { bg } : {});
 };
 // つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
 const sketchScene = (id, bg) => async () => {
@@ -251,7 +259,7 @@ const sketchScene = (id, bg) => async () => {
   await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
   await play(id, { bg });
 };
-const once = (key, fn) => ({ id: key, doneKeys: [key], run: async () => { await fn(); setFlag(key); }, done: () => flag(key) });
+const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
   2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },

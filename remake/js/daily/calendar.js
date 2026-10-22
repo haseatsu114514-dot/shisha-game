@@ -1,4 +1,4 @@
-// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
+// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
@@ -693,6 +693,7 @@ async function endDay({ returnedToTonari = false } = {}) {
     returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
     if (ev.beat && !sameVisit) await beat(ev.beat);
+    return sameVisit ? { returnedToTonari: true } : undefined;
   });
   save();
   await bannersIdle();
