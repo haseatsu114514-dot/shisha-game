@@ -1457,7 +1457,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "おう、戻ったか。……悪いが、もうひとつ届け物を頼む"
+          "text": "それと、もうひとつ届け物を頼む"
         },
         {
           "speaker": "",
@@ -1589,7 +1589,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "今日は配達だけでいい。受け取りを確かめたら、戻ってこい"
+          "text": "今日はまず配達だけでいい。受け取りのサインを忘れるな"
         },
         {
           "speaker": "sumi",
@@ -2699,6 +2699,39 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "葉は詰め直してやる。吸い出しから、もう１回だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_delivery_report",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二軒への配達を終え、tonariへ戻ってきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、お帰り。二軒とも無事に届けられたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。PEPPERMINTもEDENも、ちゃんと受け取ってもらえました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ご苦労さん。配達の手当は今日のバイト代に上乗せしてある。これで上がっていいぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。お疲れさまでした"
         }
       ]
     }
