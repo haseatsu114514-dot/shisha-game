@@ -97,6 +97,72 @@ for(const unavailable of [locked,closed]) {
  assert.equal(calls.find(x=>x.pin==='c_station').free,'参加登録（代金なし）');
  assert.equal(state.money,14000);
 }
+// DAY2 batch handoff: both requests are read in tonari before visiting either shop.
+const deliveryTrace=()=>calls.filter(x=>x.type==='scene'
+  && ['remake_delivery_minto','remake_delivery_eden','remake_delivery_report'].includes(x.id)
+  || x.type==='map' && ['minto','adam'].includes(x.pin))
+  .map(x=>x.type==='scene'?x.id:x.pin);
+reset({day:2});
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),[
+ 'remake_delivery_minto','remake_delivery_eden','minto','adam','remake_delivery_report'
+]);
+assert.equal(state.flags._delivery_batch_started,true);
+assert.equal(state.flags._delivery_report_done,true);
+assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,2);
+const firstGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='minto');
+const secondGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='adam');
+assert(firstGuide>=0 && secondGuide>firstGuide);
+assert(!calls.slice(firstGuide+1,secondGuide).some(x=>x.type==='scene'
+  && x.opts?.bg==='res://assets/backgrounds/bg_tonari_inside.png'),
+  'An interim tonari return was inserted between the deliveries');
+assert.equal(calls.filter(x=>x.id==='remake_delivery_report').length,1);
+
+// LOAD after just the first delivery: already-read briefs, flags, reward and slot survive.
+reset({day:2,slot:1,flags:{_delivery_batch_started:true,
+ _delivery_minto_told:true,_delivery_adam_told:true,_delivery_minto_done:true,_morning_2:true}});
+state.money=12000;state.stamina=70;
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),['adam','remake_delivery_report']);
+assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,1);
+
+// LOAD during the batch briefing: preserve the first explanation but read the second.
+reset({day:2,flags:{_delivery_batch_started:true,_delivery_minto_told:true,_morning_2:true}});
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),['remake_delivery_eden','minto','adam','remake_delivery_report']);
+assert.equal(state.money,14000);assert.equal(actionEnds,2);
+
+// LOAD after both deliveries but before the final report: no second delivery or payout.
+reset({day:2,slot:2,flags:{_delivery_batch_started:true,
+ _delivery_minto_told:true,_delivery_adam_told:true,_delivery_minto_done:true,
+ _delivery_adam_done:true,_morning_2:true}});
+state.money=14000;state.stamina=60;
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),['remake_delivery_report']);
+assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(actionEnds,0);
+assert.equal(state.flags._delivery_report_done,true);
+// LOAD of completed report is idempotent.
+reset({day:2,slot:2,flags:{_delivery_batch_started:true,
+ _delivery_minto_done:true,_delivery_adam_done:true,
+ _delivery_report_done:true,_morning_2:true}});
+state.money=14000;state.stamina=60;
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),[]);
+
+// A preexisting partial DAY2 save is not upgraded to a fresh morning batch.
+reset({day:2,slot:1,flags:{_delivery_minto_told:true,_delivery_minto_done:true,_morning_2:true}});
+state.money=12000;state.stamina=70;
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(deliveryTrace(),['remake_delivery_eden','adam']);
+assert.equal(state.flags._delivery_batch_started,undefined);
+assert.equal(state.money,14000);assert.equal(actionEnds,1);
+const dialogueList=JSON.parse(await fs.readFile(new URL('../../data/dialogue/remake_ch1.json',import.meta.url),'utf8')).dialogues;
+const dialogue=id=>dialogueList.find(item=>item.dialogue_id===id);
+assert(dialogue('remake_delivery_report')?.lines.length>=3);
+assert(!dialogue('remake_delivery_eden').lines[0].text.includes('戻ったか'));
+assert(!dialogue('remake_delivery_minto').lines.some(line=>line.text?.includes('戻ってこい')));
+console.log('delivery batch: morning briefing, no interim return, one report, SAVE/LOAD and old checkpoint PASS');
+
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');
 
 // Entry integration (#749): real runDaily, mocked installer/display only.
