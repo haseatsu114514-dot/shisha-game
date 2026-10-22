@@ -29,6 +29,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   window.addEventListener("pagehide", cancel, { once: true });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   const host = el("div.sub-menu.axe-bar-menu", { dataset: { test: "axe-bar-menu" } });
+  host.hidden = true; // 目撃VNの間は空の枠を見せない。メニュー構築時に表示する。
   showScreen("axe-bar", host); showHud(false);
   const bgmBefore = currentBgm() || "kansetsu_shomei_to_black_coffee"; playBgm("bgm_axe"); // #788 入店中は斧投げ曲
   const observer = new MutationObserver(() => { if (!host.isConnected) cancel(); });
@@ -42,6 +43,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       if (!await playAxeBarSighting({ signal: abort.signal }) || !current()) return false;
     }
     const mode = await new Promise(resolve => {
+      host.hidden = false;
       let lessonOpen = false, picked = false;
       const pick = value => { if (!lessonOpen && !picked) { picked = true; resolve(value); } };
       abort.signal.addEventListener("abort", () => { picked = true; resolve(null); }, { once: true });
