@@ -8,7 +8,7 @@ import { COMPANIONS, reaction, matchReaction } from "./axe-companions.js";
 import { axeRules } from "./axe-rules.js";
 import { TARGET, FLIGHT, flightPose, impactPose } from "./axe-flight.js";
 import { createAxe, renderAxe } from "./axe-geometry.js";
-import { shotFeedback, sessionStats, impactFeedback } from "./axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, declarationCue } from "./axe-presentation.js";
 import { coachDialog } from "./axe-coach.js";
 const active = new WeakMap(), artReady = new Map();
 function decodeArt(url) {
@@ -51,6 +51,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null;
   let portraitKey = null;
+  let declareTimer = 0, declareNode = null, declareMarker = null;
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null;
   const taught = new Set();
   const isPaused = () => document.hidden || Boolean(helpPanel || coachPanel);
@@ -252,9 +253,28 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function selectCall(id) {
     if (actor !== "player" || phase !== "choice" || isPaused() || performance.now() - lastAction < 250 || id && !canCall(id, shots)) return;
+    const cue = declarationCue(called, id);
     called = id; render();
+    if (cue) showDeclareCue(cue);
+  }
+  function showDeclareCue(cue) {
+    clearDeclareCue();
+    declareMarker = markers.get(cue.target) || null;
+    declareMarker?.classList.add("axe-declare-flash");
+    declareNode = el("div.axe-declare", { "aria-hidden": "true", dataset: { test: "axe-declare" } }, [
+      el("strong", { text: cue.label }), el("span", { text: cue.place }),
+    ]);
+    root.append(declareNode);
+    SE.good();
+    declareTimer = setTimeout(clearDeclareCue, 950);
+  }
+  function clearDeclareCue() {
+    clearTimeout(declareTimer); declareTimer = 0;
+    declareNode?.remove(); declareNode = null;
+    declareMarker?.classList.remove("axe-declare-flash"); declareMarker = null;
   }
   function setPhase(next) {
+    clearDeclareCue();
     phase = next; elapsed = 0; stamp = null;
     if (next === "flight") {
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
@@ -552,7 +572,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function cleanup(completed) {
     if (phase === "closed") return;
-    phase = "closed"; cancelAnimationFrame(frame); lifetime.abort(); root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
+    clearDeclareCue(); phase = "closed"; cancelAnimationFrame(frame); lifetime.abort(); root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
     root.remove(); active.delete(host); if (previousFocus?.isConnected) previousFocus.focus(); finish(result(completed, shots));
   }
 }

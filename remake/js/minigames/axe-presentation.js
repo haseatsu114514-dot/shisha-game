@@ -9,6 +9,14 @@ export function impactFeedback(shot) {
     color: shot?.outcome === "killshot" ? "#9cecff" : "#ffe0a0" };
 }
 
+const killPlaces = { "upper-left": "左上", "upper-right": "右上", "lower-left": "左下", "lower-right": "右下" };
+/** Shown only when a new killshot blue is declared; declaring the same blue, or going back to normal, gives no cue. */
+export function declarationCue(prevCalled, nextCalled) {
+  if (!nextCalled || nextCalled === prevCalled) return null;
+  if (!KILLS.some(target => target.id === nextCalled)) return null;
+  return { label: "KILL SHOT 宣言", target: nextCalled, place: killPlaces[nextCalled] };
+}
+
 const redCenters = [{ x: 0, y: 0 }, ...BULLS];
 function direction(landing, targets) {
   const nearest = targets.reduce((best, target) =>
