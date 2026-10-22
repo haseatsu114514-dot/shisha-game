@@ -95,7 +95,6 @@ export async function runDaily(def) {
     }
     // DAY2の出発前に二軒分をtonariでまとめて受注する（登録より先）。
     if (state.chapter === 1 && !(await briefDeliveryBatch())) return;
-    if (state !== owner) return;
     // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
@@ -113,7 +112,6 @@ export async function runDaily(def) {
     }
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
     if (state.chapter === 1 && !(await reportDeliveryBatch())) return;
-    if (state !== owner) return;
     await endDay();
     save();
   }
