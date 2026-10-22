@@ -93,6 +93,9 @@ export async function runDaily(def) {
       state.slot = 2;
       save();
     }
+    // DAY2の出発前に二軒分をtonariでまとめて受注する（登録より先）。
+    if (state.chapter === 1 && !(await briefDeliveryBatch())) return;
+    if (state !== owner) return;
     // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
@@ -108,6 +111,9 @@ export async function runDaily(def) {
       updateHud();
       save();
     }
+    // 2件の納品後、最終報告のため一度だけ職場へ戻る。
+    if (state.chapter === 1 && !(await reportDeliveryBatch())) return;
+    if (state !== owner) return;
     await endDay();
     save();
   }
@@ -289,17 +295,54 @@ async function registerTournament() {
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY2 昼に PEPPERMINT、夜に EDEN。配達先までは案内し、完了後に自由行動へ戻す（DL02更新）。
+ * DAY2朝に二軒分をまとめて受注し、昼にPEPPERMINT、夜にEDEN。納品後にtonariへ一度だけ報告する。
  * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
   { charId: "minto", day: 2, slot: 0, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
-  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "古いダブルアップルの缶を EDEN へ。EDEN をタップ！" },
+  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;
 const DELIVERY_STAMINA = -10;
+
+/** DAY2朝の一括受注。旧途中セーブの既読・訪問済み状態を新規受注に戻さない。 */
+async function briefDeliveryBatch() {
+  const f = state.flags;
+  if (state.chapter !== 1 || state.day < 2 || state.slot >= 2
+    || !f._errand_scout_done || restingToday()) return true;
+  if (!f._delivery_batch_started) {
+    if (state.day !== 2 || state.slot !== 0
+      || DELIVERIES.some(d => f[`_delivery_${d.charId}_told`]
+        || f[`_delivery_${d.charId}_done`] || f[`_delivery_${d.charId}`]
+        || storyCount(d.charId) > 0)) return true;
+    f._delivery_batch_started = true;
+    save();
+  }
+  const owner = state;
+  for (const d of DELIVERIES) {
+    if (f[`_delivery_${d.charId}_told`] || f[`_delivery_${d.charId}_done`]) continue;
+    const result = await play(d.scene, { bg: TONARI_BG });
+    if (state !== owner || result?.cancelled) return false;
+    f[`_delivery_${d.charId}_told`] = true;
+    save(); // 1件目の依頼説明後に中断しても再度読まない。
+  }
+  return true;
+}
+
+/** 報酬・体力・枠を二重計上せず、最後の勤務報告のみ一度再生。 */
+async function reportDeliveryBatch() {
+  const f = state.flags;
+  if (!f._delivery_batch_started || f._delivery_report_done
+    || !DELIVERIES.every(d => f[`_delivery_${d.charId}_done`])) return true;
+  const owner = state;
+  const result = await play("remake_delivery_report", { bg: TONARI_BG });
+  if (state !== owner || result?.cancelled) return false;
+  f._delivery_report_done = true;
+  save();
+  return true;
+}
 
 function dueDelivery() {
   if (state.chapter !== 1 || state.day < 2 || !state.flags._errand_scout_done
