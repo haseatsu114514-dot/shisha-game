@@ -289,7 +289,8 @@ jobs:
   eve:
     name: Chapter 1 eve choices and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/eve
@@ -311,11 +312,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Choices, actual steps, legacy flags and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/eve-preview.log" 2>&1 &
@@ -337,7 +339,8 @@ jobs:
   practice:
     name: Chapter 1 focused practice and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/practice
@@ -359,11 +362,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: DAY3 review, DAY7 care, legacy history and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/practice-preview.log" 2>&1 &
