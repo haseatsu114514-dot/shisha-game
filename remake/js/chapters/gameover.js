@@ -316,6 +316,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
         if (elapsed >= 1600) finish();
         return;
       }
+      // 選択した枠を180ms残してから、同じ下段領域を反応送りへ渡す。
+      if (elapsed >= 180) view.showProceed();
       const reaction = script.reactions[choice];
       if (!secondFace && elapsed >= 480) {
         secondFace = true;

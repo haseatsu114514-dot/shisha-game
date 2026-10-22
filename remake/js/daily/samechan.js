@@ -3,7 +3,7 @@ import { DB, sceneBg } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
-import { gainAffinity, affinityLevel, releaseAffinity, earnStat, addMoney, addStamina } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
@@ -83,6 +83,8 @@ export async function playSamechanEncounter() {
   await sharkSwim(async () => { if (front.url) await setBg(front.url, { tint: front.tint }); });
   await play("samechan_first_encounter");
   state.flags._samechan_first_encounter = true;
+  // 初対面を読み終えた一度きりの境界で♥1を保証する（中断・LOADでは到達しない）。
+  ensureAffinityLevel("samechan", 1);
   state.flags._lime_contact_samechan = true;
   // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
   syncSamechanKnowledge();

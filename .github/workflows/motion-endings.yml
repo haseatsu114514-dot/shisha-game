@@ -25,6 +25,9 @@ on:
       - "remake/test/stat_rewards.mjs"
       - "remake/test/text_wrap.mjs"
       - "remake/test/motion_endings.mjs"
+      - "remake/test/lime_lifecycle_833.mjs"
+      - "remake/test/lime_fit_774.mjs"
+      - "remake/test/lime_save_774.mjs"
       - "remake/test/navigation_transitions.mjs"
       - "remake/test/load_recorder.mjs"
       - "remake/tools/load-recorder.mjs"
@@ -65,6 +68,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - name: Check LIME exchange LOAD boundaries and saved contact semantics
+        run: |
+          node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs
+          node --experimental-vm-modules remake/test/lime_fit_774.mjs
+          node --experimental-vm-modules remake/test/lime_save_774.mjs
       - name: Install browser test dependencies outside the game
         run: |
           npm install --prefix "$RUNNER_TEMP/motion-test" playwright@1.62.1
