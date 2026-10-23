@@ -7,6 +7,7 @@ on:
       - 'remake/test/browser/appearance_setup.mjs'
       - 'remake/test/browser/water_setup.mjs'
       - 'remake/test/water_setup_helper.mjs'
+      - 'remake/test/water_setup_lifetime.mjs'
       - '.github/workflows/water-setup-callsites.yml'
   push:
     branches: [main]
@@ -16,6 +17,7 @@ on:
       - 'remake/test/browser/appearance_setup.mjs'
       - 'remake/test/browser/water_setup.mjs'
       - 'remake/test/water_setup_helper.mjs'
+      - 'remake/test/water_setup_lifetime.mjs'
       - '.github/workflows/water-setup-callsites.yml'
 permissions:
   contents: read
@@ -33,5 +35,7 @@ jobs:
             /remake/test/browser/appearance_setup.mjs
             /remake/test/browser/water_setup.mjs
             /remake/test/water_setup_helper.mjs
+            /remake/test/water_setup_lifetime.mjs
             /remake/js/appearance/model.js
       - run: node --experimental-vm-modules remake/test/water_setup_helper.mjs
+      - run: node remake/test/water_setup_lifetime.mjs

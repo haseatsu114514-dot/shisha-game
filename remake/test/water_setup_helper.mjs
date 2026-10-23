@@ -35,6 +35,7 @@ function fakePage({ touch, waterError = null } = {}) {
     if (selector.includes("water-confirm")) { assert.equal(phase, "water"); phase = "mix"; calls.push(`water:${method}`); }
   };
   return {
+    async waitForSelector(selector, options) { const control = this.locator(selector); await control.waitFor(options); return { ...control, dispose: async () => {} }; },
     reachedMix, calls, get auto() { return observedAuto; }, get mixWaits() { return mixWaits; },
     evaluate: async (_fn, args) => { if (args && Object.hasOwn(args, "auto")) observedAuto = args.auto; return true; },
     reload: async () => {}, waitForTimeout: async () => {},

@@ -13,7 +13,6 @@ const catalogPath = "asset_sources/shisha-hardware-reference/skin-candidates-iss
 // already in this checkout's HEAD; never download artwork or invent a fixture catalog.
 export function prepareAppearanceCatalog(root = repositoryRoot) {
   const target = path.join(root, catalogPath);
-  if (fs.existsSync(target)) return; // Preserve existing source bytes, including local work.
   const git = args => execFileSync("git", ["--no-replace-objects", "-C", root, ...args], {
     encoding: "utf8", maxBuffer: 256 * 1024,
     env: { ...process.env, GIT_NO_LAZY_FETCH: "1" },
@@ -21,7 +20,10 @@ export function prepareAppearanceCatalog(root = repositoryRoot) {
   if (fs.realpathSync(root) !== fs.realpathSync(git(["rev-parse", "--show-toplevel"]).trim())) {
     throw new Error("Appearance catalog must come from this checkout, not a parent repository");
   }
-  const text = git(["show", `HEAD:${catalogPath}`]);
+  if (fs.existsSync(target)) return; // Preserve existing source bytes, including local work.
+  // An explicit Git option fails closed on older Git before object access.
+  // Do not rely on GIT_NO_LAZY_FETCH, which older Git may silently ignore.
+  const text = git(["--no-lazy-fetch", "show", `HEAD:${catalogPath}`]);
   appearanceOptions(JSON.parse(text)); // Missing/invalid real source is still a failure.
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, text, { flag: "wx" });
