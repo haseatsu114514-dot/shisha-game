@@ -1,0 +1,28 @@
+name: Local checkpoint file CAS
+on:
+  pull_request:
+    paths:
+      - 'tools/*job_checkpoint*.py'
+      - 'tools/job_checkpoint_schema.json'
+      - 'docs/local_job_checkpoint_store.md'
+      - '.github/workflows/local-checkpoint-store.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/*job_checkpoint*.py'
+      - 'tools/job_checkpoint_schema.json'
+      - '.github/workflows/local-checkpoint-store.yml'
+permissions:
+  contents: read
+jobs:
+  local-file-cas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            tools/*job_checkpoint*.py
+            tools/job_checkpoint_schema.json
+      - run: python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py' -v
