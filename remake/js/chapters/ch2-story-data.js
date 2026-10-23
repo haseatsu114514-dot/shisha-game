@@ -15,6 +15,8 @@ export const CH2_NIGHTS = [
     { id: "ch2_abyss_baito", file: "ch2_main" },
   ] },
   { day: 5, pin: "tonari", label: "遠くなった味", steps: [
+    // #929: 閉店前に神崎が挨拶に来て、前夜の事故を聞く。味の不調を先に読んだ保存では順序を戻さない
+    { id: "ch2_kumicho_greeting", file: "ch2_main", when: ({ flags }) => !flags._ch2_read_ch2_slump_taste },
     { id: "ch2_slump_taste", file: "ch2_main", flag: "_ch2_taste_distant" },
   ] },
   { day: 6, pin: "tonari", label: "残る匂い", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
@@ -35,10 +37,16 @@ export const CH2_NIGHTS = [
   ] },
   { day: 12, pin: "minto", label: "みんとの心配", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
+    // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
+    { id: "ch2_naru_window", file: "ch2_isolation", when: ({ flags }) =>
+      !flags._ch2_read_ch2_tsumugi_color && !!(flags._ch2_naru_listened || flags._ch2_naru_hurt) },
   ] },
   { day: 13, pin: "tonari", label: "大会前夜", steps: [
     { id: "ch2_tsumugi_color", file: "ch2_isolation" },
     { id: "remake_ch2_eve_arrival", file: "remake_ch2" },
+    // #929: あげはが搬入の確認へ行った間に、REIと一曲。前夜を読み終えた保存には足さない
+    { id: "remake_ch2_eve_rei", file: "remake_ch2", when: ({ flags }) =>
+      !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done },
     { id: "remake_ch2_eve_choices", file: "ch2_choice_echoes", when: ({ flags }) =>
       !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done
       && !!(flags._ch2_rest_taken || flags._ch2_naru_listened || flags._ch2_naru_hurt) },
