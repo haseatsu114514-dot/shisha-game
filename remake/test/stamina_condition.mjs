@@ -56,7 +56,7 @@ const mocks = {
   "core/state.js": { state: { flags: {} } },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
-  "craft/session.js": { waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
+  "craft/session.js": { explainTutorialStep: async () => true, waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
   "craft/art.js": { artImg: () => el("img"), artHeight: () => 80 },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
   "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
