@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
 prepareAppearanceCatalog();
 
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
@@ -77,6 +78,7 @@ async function realPathToMix(page, tap) {
   }
   await act("pin-rest"); await act("map-home-practice"); await act("home-practice-full");
   await confirmAppearanceSetup(page, { touch: tap });
+  await confirmWaterSetup(page, { touch: tap });
   await page.locator('[data-test="mix-ok"]').waitFor();
 }
 
@@ -143,6 +145,7 @@ await suite("home-practice-leaves", async (check) => {
     });
     await page.locator('[data-test="home-practice-full"]').click();
     await confirmAppearanceSetup(page, { touch: true });
+    await confirmWaterSetup(page, { touch: true });
     await page.locator('[data-test="mix-ok"]').waitFor();
     // 作業台では見えないHUDのMENUを押せない（タイトルへ戻る＝途中保存をさせない）
     const hit = await page.evaluate(() => {
@@ -159,6 +162,7 @@ await suite("home-practice-leaves", async (check) => {
     await startPractice(page, { double_apple: 8, mint: 6 }, { auto: null });
     await page.locator('[data-test="home-practice-full"]').click();
     await confirmAppearanceSetup(page);
+    await confirmWaterSetup(page);
     await page.locator('[data-test="mix-ok"]').waitFor();
     assert.match(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-stock').innerText(), /手持ち 残り8g/);
     for (let n = 0; n < 10; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
@@ -169,6 +173,7 @@ await suite("home-practice-leaves", async (check) => {
     await startPractice(page, { double_apple: 20, mint: 10 }, { auto: null });
     await page.locator('[data-test="home-practice-full"]').click();
     await confirmAppearanceSetup(page);
+    await confirmWaterSetup(page);
     await page.locator('[data-test="mix-ok"]').waitFor();
     for (let n = 0; n < 9; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
     // 課題（支給）の葉を、決定できるまで足す
@@ -188,3 +193,4 @@ await suite("home-practice-leaves", async (check) => {
     assert.deepEqual(reloaded, { stock: { double_apple: 20, mint: 10 }, stamina: 80, runs: 0 }, "途中の一台は保存に残らない");
   });
 });
+

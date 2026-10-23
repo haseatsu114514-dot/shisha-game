@@ -1,0 +1,41 @@
+name: Manual water setup callsites
+on:
+  pull_request:
+    paths:
+      - 'remake/test/browser/home_practice_leaves.mjs'
+      - 'remake/test/browser/ds_packing.mjs'
+      - 'remake/test/browser/appearance_setup.mjs'
+      - 'remake/test/browser/water_setup.mjs'
+      - 'remake/test/water_setup_helper.mjs'
+      - 'remake/test/water_setup_lifetime.mjs'
+      - '.github/workflows/water-setup-callsites.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/test/browser/home_practice_leaves.mjs'
+      - 'remake/test/browser/ds_packing.mjs'
+      - 'remake/test/browser/appearance_setup.mjs'
+      - 'remake/test/browser/water_setup.mjs'
+      - 'remake/test/water_setup_helper.mjs'
+      - 'remake/test/water_setup_lifetime.mjs'
+      - '.github/workflows/water-setup-callsites.yml'
+permissions:
+  contents: read
+jobs:
+  manual-water-callsites:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /remake/test/browser/home_practice_leaves.mjs
+            /remake/test/browser/ds_packing.mjs
+            /remake/test/browser/appearance_setup.mjs
+            /remake/test/browser/water_setup.mjs
+            /remake/test/water_setup_helper.mjs
+            /remake/test/water_setup_lifetime.mjs
+            /remake/js/appearance/model.js
+      - run: node --experimental-vm-modules remake/test/water_setup_helper.mjs
+      - run: node remake/test/water_setup_lifetime.mjs

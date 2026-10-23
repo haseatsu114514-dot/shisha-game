@@ -7,6 +7,7 @@ import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./browser/appearance_setup.mjs";
+import { confirmWaterSetup } from "./browser/water_setup.mjs";
 
 for (const touch of [false, true]) {
   const calls = [];
@@ -88,6 +89,7 @@ const leaves = new vm.SourceTextModule(fs.readFileSync(new URL("./browser/home_p
 await leaves.link(name => {
   const exports = name === "node:assert/strict" ? { default: assert }
     : name === "./support.mjs" ? { suite: async (_name, register) => register(async (name, fn, opts) => tests.set(name, { fn, opts })) }
+    : name === "./water_setup.mjs" ? { confirmWaterSetup }
     : { confirmAppearanceSetup, prepareAppearanceCatalog: () => {} };
   return new vm.SyntheticModule(Object.keys(exports), function () {
     for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
@@ -99,19 +101,22 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix
   const inputs = [], reachedMix = new Error("mix boundary reached");
   const page = {
     evaluate: async (_fn, args) => { if (args) observedAuto = args.auto; },
+    async waitForSelector(selector, options) { const control = this.locator(selector); await control.waitFor(options); return { ...control, dispose: async () => {} }; },
     locator: selector => ({
       waitFor: async () => {
         if (selector.includes("appearance-confirm")) assert.equal(phase, "chooser");
+        if (selector.includes("water-confirm")) assert.equal(phase, "appearance-confirmed", name);
         if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
       },
       scrollIntoViewIfNeeded: async () => {},
-      click: async () => { if (selector.includes("home-practice-full")) phase = "chooser"; else { phase = "confirmed"; inputs.push("click"); } },
-      tap: async () => { assert(selector.includes("appearance-confirm")); phase = "confirmed"; inputs.push("tap"); },
+      click: async () => { if (selector.includes("home-practice-full")) phase = "chooser"; else { phase = selector.includes("appearance-confirm") ? "appearance-confirmed" : "confirmed"; inputs.push("click"); } },
+      tap: async () => { assert(selector.includes("appearance-confirm") || selector.includes("water-confirm")); phase = selector.includes("appearance-confirm") ? "appearance-confirmed" : "confirmed"; inputs.push("tap"); },
     }),
   };
   await assert.rejects(tests.get(name).fn(page), error => error === reachedMix);
   assert.equal(observedAuto, null, "manual path must remain manual");
-  assert.deepEqual(inputs, [touch ? "tap" : "click"]);
+  assert.deepEqual(inputs, [touch ? "tap" : "click", touch ? "tap" : "click"]);
   assert.equal(Boolean(tests.get(name).opts?.hasTouch), touch);
 }
-console.log("PASS: all three actual manual browser-test callbacks confirm appearance before mix (touch/mouse/mouse)");
+console.log("PASS: all three actual manual browser-test callbacks confirm appearance and water before mix (touch/mouse/mouse)");
+
