@@ -36,6 +36,9 @@ export const CH2_NIGHTS = [
   { day: 13, pin: "tonari", label: "大会前夜", steps: [
     { id: "ch2_tsumugi_color", file: "ch2_isolation" },
     { id: "remake_ch2_eve_arrival", file: "remake_ch2" },
+    { id: "remake_ch2_eve_choices", file: "ch2_choice_echoes", when: ({ flags }) =>
+      !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done
+      && !!(flags._ch2_rest_taken || flags._ch2_naru_listened || flags._ch2_naru_hurt) },
     { id: "ch2_pre_tournament_realisation", file: "ch2_main", flag: "_ch2_eve_done" },
   ] },
 ];

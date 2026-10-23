@@ -9,7 +9,7 @@ import { CH2_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
 async function readStep(step) {
   const owner = state;
   const flag = `_ch2_read_${step.id}`;
-  if (owner.flags[flag]) return;
+  if (owner.flags[flag] || (step.when && !step.when(owner))) return;
   if (!DB.dialogues[step.id]) throw new Error(`台本がありません: ${step.id}`);
   if (["remake_ch2_eve_arrival", "ch2_pre_tournament_realisation"].includes(step.id)) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
