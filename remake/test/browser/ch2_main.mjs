@@ -311,4 +311,23 @@ await suite('ch2-main', async check => {
     assert.deepEqual(await page.evaluate(() => __unknownPhotoGuests), [], 'Unacquainted guests are excluded');
   });
 
+  await check('ds-small-city-map-and-stop-controls', async page => {
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.locator('[data-test="title-layout-ds"]').tap();
+    await setup(page, { knownTrpg: false });
+    await begin(page);
+    await page.setViewportSize({ width: 320, height: 568 });
+    await assertFits(page, '[data-test="ch2-main-pin-ageha"], [data-test="ch2-main-pin-kumicho"], [data-test="ch2-main-pin-rei"]');
+    await page.locator(test('pin-c_station')).tap();
+    await page.locator(test('go')).scrollIntoViewIfNeeded();
+    await assertFits(page, '[data-test="ch2-main-go"]');
+    await page.locator(test('go')).tap();
+    await page.locator(test('stop')).waitFor();
+    await page.locator(test('back-map')).scrollIntoViewIfNeeded();
+    await assertFits(page, '[data-test="ch2-main-back-map"]');
+    await page.locator(test('back-map')).tap();
+    await page.locator(test('map')).waitFor();
+    await page.screenshot({ path: path.join(evidence, 'ds-small-city-map.png') });
+  }, { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true });
+
 });

@@ -1,3 +1,4 @@
+import { CH2_CITY_EN } from "../core/city-locations.js";
 // 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・ステータス）。
 // 見た目は旧版の墨×金を踏襲: 左上に DAY カード、右上に体力・ステータスの五角形・LIME・MENU。
 import { el, yen, sleep } from "../core/util.js";
@@ -121,9 +122,9 @@ export function updateHud() {
   if (!dom || !state) return;
   const widehanga = state.chapter === 2 && state.flags._ch2_region === "widehanga";
   dom.area.dataset.region = widehanga ? "widehanga" : "sakae";
-  dom.area.setAttribute("aria-label", widehanga ? "WIDEHANGA" : "SAKAE");
+  dom.area.setAttribute("aria-label", widehanga ? CH2_CITY_EN : "SAKAE");
   dom.area.replaceChildren(
-    el("span.dc-area-full", { text: widehanga ? "WIDEHANGA" : "SAKAE" }),
+    el("span.dc-area-full", { text: widehanga ? CH2_CITY_EN : "SAKAE" }),
     el("span.dc-area-short", { text: widehanga ? "ワイド" : "SAKAE" }),
   );
   dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));

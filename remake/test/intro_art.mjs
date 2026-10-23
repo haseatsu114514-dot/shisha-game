@@ -134,6 +134,7 @@ try {
   const workerFaces = await page.evaluate(async () => {
     const w = T.worker.buildWorkerScene({ mode: "practice" });
     document.querySelector("#screen").replaceChildren(w.root);
+    await w.ready; // 表情の事前読み込みによるsrc変更が終わってからdecodeする。
     const result = [];
     for (const level of ["steady", "unsteady", "shaken"]) {
       w.setMental(level);
@@ -152,6 +153,7 @@ try {
     await page.evaluate((slot) => {
       T.core.state.phase = "daily"; T.core.state.day = 6; T.core.state.slot = slot;
       T.core.state.weatherSeed = 0;
+      T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
       T.mapTask = T.map.chooseSpot();
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
