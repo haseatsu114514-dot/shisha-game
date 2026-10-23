@@ -24,6 +24,8 @@ export const BASE_SPARSE = [
   "!/docs/qa/*/",
   "/asset_sources/",
   "!/asset_sources/*/",
+  // Read by the appearance setup helper with lazy fetch disabled (most craft tests).
+  "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json",
 ];
 
 export function loadManifest(path = MANIFEST) {
