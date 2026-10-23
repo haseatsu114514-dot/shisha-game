@@ -124,7 +124,7 @@ for (const id of ids) {
 fixture = structuredClone(preparation); fixture.dialogues.find(d => d.dialogue_id.endsWith("_followup")).lines = [{}];
 await assert.rejects(loader.namespace.loadPreparationDialogues(), /続編台本の形式/);
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-assert.equal(Object.keys(loaderDB.dialogues).length, 26);
+assert.equal(Object.keys(loaderDB.dialogues).length, 29);
 assert(loaderDB.dialogues.remake_ch2_rei_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);

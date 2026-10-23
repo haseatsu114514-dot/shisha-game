@@ -17,7 +17,7 @@ export const STOPS = [
 export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, id === "kumicho" ? CITY_BACKGROUNDS.kumicho : `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
-const OUTING_IDS = ["aquarium", "sento"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_city_${id}`);
 
 export async function readDialogues(name, required) {

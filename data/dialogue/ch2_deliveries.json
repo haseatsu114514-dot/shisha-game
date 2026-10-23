@@ -785,6 +785,86 @@
           "type": "hide_cg"
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_look",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "県大会ホールと同じビルに、C.STATION 柚ヶ谷店の入口があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、地元にもあったチェーンだ。こっちにも支店があるんだな"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "青緑のソファと暖かな照明は見覚えがある。窓の向こうには駅前の高架が見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ホールとは入口が違うんだ。配達が終わったら、今度は客として来てみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_visit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "C.STATION 柚ヶ谷店。青緑のボックス席に通されると、通路の先に曲線のカウンターが見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じチェーンでも、席の並びはけっこう違うんだな"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "注文から台が届くまでが早い。隣の席では、初めてらしい客にスタッフが吸い方を説明していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "初めてでも入りやすいのは、こっちも同じか。……ちゃんと、街に合わせてる"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "明るい窓際で一杯を味わい、客席の流れと声の掛け方を見比べた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "C.STATION 柚ヶ谷店の、前とは違うボックス席に腰を下ろした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ一杯でも、座る場所で店の見え方が変わるな"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "スタッフは忙しく行き来しながらも、初めて来た客の手元へ一度目を配っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手軽さと、雑にしないこと。両方できてるか、俺も気をつけよう"
+        }
+      ]
     }
   ]
 }

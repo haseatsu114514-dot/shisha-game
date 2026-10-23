@@ -136,5 +136,12 @@
     "bytes": 3036726,
     "sha256": "7f9f4e92fd1582a936cb67c2d67051802bc49553ca64e4b53fcb51312d24902f",
     "status": "selected-runtime-cg"
+  },
+  {
+    "id": "c-station",
+    "file": "selected/c-station.png",
+    "bytes": 2577465,
+    "sha256": "10fec44b7697fdb97b5d17b4b1d31202f090be3f8566316a6b9b9329d14f5f01",
+    "status": "selected-runtime-background"
   }
 ]

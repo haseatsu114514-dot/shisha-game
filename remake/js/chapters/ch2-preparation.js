@@ -51,8 +51,9 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     addMoney(-outing.cost); addStamina(outing.stamina);
+    if (outing.stat) earnStat(outing.stat, 2);
     state.flags[`_ch2_visited_${outing.id}`] = true;
-    return { used: true, exerted: false };
+    return { used: true, exerted: outing.stamina < 0 };
   }
   if (spot.kind === "trpg") return null;
   const first = !state.flags._ch2_talks?.[id];

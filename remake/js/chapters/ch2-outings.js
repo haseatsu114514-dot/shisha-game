@@ -18,6 +18,11 @@ export const CITY_OUTINGS = [
 export const CITY_SHOP = { id: "ch2_shop", kind: "shop", label: `Dr.fookah ${CH2_CITY_NAME}店`, name: `Dr.fookah ${CH2_CITY_NAME}店`, region: "widehanga", area: "駅前のシーシャ用品店", x: 61, y: 38,
   previewUrl: CITY_BACKGROUNDS.shop, theme: "shop", glyph: "卸", desc: "隣町の支店。ストロベリーなど県大会向けの仕入れができる。地元店とは異なる品揃え。買い物は時間を使わない。", shop: true };
 
+export const CITY_CHAIN = { id: "ch2_c_station", label: `C.STATION ${CH2_CITY_NAME}店`, kind: "outing", region: "widehanga", area: "シーステーション支店", theme: "stadium", glyph: "C", x: 23, y: 23,
+  previewUrl: CITY_BACKGROUNDS.c_station, look: "remake_ch2_chain_look", first: "remake_ch2_chain_visit", repeat: "remake_ch2_chain_repeat", cost: 2500, stamina: -10, stat: "insight",
+  dayOneDesc: "地元でも見た大手シーシャチェーンの支店。県大会ホールと同じビルだが、客席は別のフロアにある。",
+  desc: "慣れた雰囲気に少し違う席配置。チェーンの一杯と柚ヶ谷の接客を確かめる（1行動・2,500円）。" };
+
 export function introduceCitySpot(value, character) {
   const spot = CITY_OUTINGS.find(item => item.introducedBy === character);
   if (!spot || value.chapter !== 2 || value.flags[spot.flag]) return false;
@@ -27,6 +32,6 @@ export function introduceCitySpot(value, character) {
 
 export function knownCityOutings(value) {
   if (value?.chapter !== 2) return [];
-  return CITY_OUTINGS.filter(spot => value.flags?.[spot.flag] || spot.id === "trpg_bar" && knowsTrpgBar(value))
-    .map(spot => ({ ...spot, region: "widehanga", area: "隣町の遊び場", theme: "cafe" }));
+  return [CITY_CHAIN, ...CITY_OUTINGS.filter(spot => value.flags?.[spot.flag] || spot.id === "trpg_bar" && knowsTrpgBar(value))
+    ].map(spot => ({ ...spot, region: "widehanga", area: "隣町の遊び場", theme: "cafe" }));
 }

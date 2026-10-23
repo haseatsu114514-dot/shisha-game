@@ -252,6 +252,12 @@ await suite('ch2-main', async check => {
     assert.equal(after.money, initial.money - 1550); assert.equal(after.flavorStock.strawberry, 50);
     assert.equal(after.day, initial.day); assert.equal(after.slot, initial.slot);
     await page.locator('[data-test="shop-leave"]').click(); await page.locator(test('map')).waitFor();
+    await page.locator(test('pin-ch2_c_station')).click(); await page.locator(test('go')).click();
+    await page.locator(test('map')).waitFor();
+    const branch = await page.evaluate(() => structuredClone(__remake.state));
+    assert(branch.flags._ch2_looked_ch2_c_station);
+    assert.equal(branch.flags._ch2_city_visit_c_station, undefined, 'The branch is distinct from checking the tournament hall');
+    assert.equal(branch.money, after.money); assert.equal(branch.slot, after.slot);
     await visit(page, 'rei');
     assert.equal(await page.locator(test('pin-trpg_bar')).count(), 1);
     await page.reload(); await page.locator('[data-test="title-load"]').click(); await page.locator('[data-test="slot-0"]').click();
@@ -317,7 +323,10 @@ await suite('ch2-main', async check => {
     await setup(page, { knownTrpg: false });
     await begin(page);
     await page.setViewportSize({ width: 320, height: 568 });
-    await assertFits(page, '[data-test="ch2-main-pin-ageha"], [data-test="ch2-main-pin-kumicho"], [data-test="ch2-main-pin-rei"]');
+    for (const id of ['ageha', 'kumicho', 'rei']) {
+      await page.locator(test(`pin-${id}`)).scrollIntoViewIfNeeded();
+      await assertFits(page, test(`pin-${id}`));
+    }
     await page.locator(test('pin-c_station')).tap();
     await page.locator(test('go')).scrollIntoViewIfNeeded();
     await assertFits(page, '[data-test="ch2-main-go"]');

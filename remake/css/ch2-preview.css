@@ -156,7 +156,6 @@
 .ch2-main .ch2-stop-card p:not(.ch2-kicker), .ch2-main .ch2-end-description { font-size: 20px; }
 .ch2-main .ch2-loading { background: #100b18; }
 body.game-ds.ch2-main .ch2-map-main .map-info { width: calc(var(--ds-cw) - 16px); padding: 12px 18px; }
-body.game-ds.ch2-main .ch2-map-main .map-pins { inset: auto; }
 body.game-ds.ch2-main .ch2-route-note { left: calc(var(--ds-vx) + 8px); top: calc(var(--ds-vy) + var(--ds-vh) - 106px); bottom: auto; width: calc(var(--ds-vw) - 16px); max-height: 100px; padding: 9px 16px; gap: 3px; }
 body.game-ds.ch2-main .ch2-route-note strong { display: none; }
 body.game-ds.ch2-main .ch2-route-note .btn { min-height: 36px; font-size: 16px; }
