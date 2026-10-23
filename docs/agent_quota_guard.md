@@ -37,10 +37,10 @@ Only observations newer than 15 minutes are actionable; stale/missing readings a
 ## Switching to another AI
 
 At a task boundary, commit/push the work and create a Draft PR for unfinished
-changes. Use [`handoff`](issue_claim_protocol.md) with the saved PR/branch and
-DONE / TODO / TEST / NEXT, then stop editing. This frees the Issue. The next AI
-uses `claim` with a new worker ID and checks its successful run and current bot
-owner/run before continuing the saved branch. This does not launch the next AI
-or detect quotas automatically.
+changes. Write the saved PR/branch and DONE / TODO / TEST / NEXT in the PR or
+Issue, then stop editing. The next AI continues the saved branch. Issue
+reservations (claim / release / handoff) were removed on 2026-10-23, so no
+reservation transfer is needed. This does not launch the next AI or detect
+quotas automatically.
 
 For automatic live quota collection or event-triggered stopping, an official supported machine-readable usage source and an agent runtime integration must first be verified on the actual Mac. Do not present this helper as fully automatic monitoring.

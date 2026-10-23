@@ -63,8 +63,8 @@ BASE_URL=http://127.0.0.1:8124/remake/ node remake/test/browser/dev_tools.mjs
 
 ## CIと結果
 
-[ブラウザ用workflow](../.github/workflows/remake-browser.yml)はNode 22・固定バージョンのPlaywright・Chromiumを使い、ブラウザ検証を直列に実行する。開発者ツールのテストはチェックアウトにある実装を選択し、実装がなければ未実行と明記する。このworkflowは既存PRへ遡って適用されない。
+CIは[1本のworkflow](../.github/workflows/ci.yml)で、テストの一覧は[`tools/ci/suites.json`](../tools/ci/suites.json)にある。Node 22・固定バージョンのPlaywright・Chromiumを使い、各グループ内でブラウザ検証を直列に実行する。開発者ツールのテスト（`dev-tools`）はチェックアウトにある実装を選択し、実装がなければ未実行と明記する。
 
-JSON結果と各ケースの画面は `.codex/artifacts/remake-browser/`へ保存する。`ARTIFACT_DIR`で保存先を変えられる。GitHub Actionsでは`remake-browser-results`にサーバーログも含めて7日間保存する。失敗したケースは成功として集計せず、終了コードを非0にする。
+JSON結果と各ケースの画面は `.codex/artifacts/remake-browser/`へ保存する。`ARTIFACT_DIR`で保存先を変えられる。GitHub Actionsでは各グループの`browser-<番号>`にサーバーログも含めて7日間保存する。失敗したケースは成功として集計せず、終了コードを非0にする。
 
 再開時のPR／Issue／CIの照合結果と追加の軽量化候補は、この変更のPR本文に記録する。日時付きの状態一覧を複数の正本へ複製しない。

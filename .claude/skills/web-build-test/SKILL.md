@@ -24,6 +24,8 @@ Playwrightが必要。`BASE_URL`でURL、`CHROME_EXECUTABLE_PATH`でChromeを指
 通しテストは `CHROME_BIN`。VMテストは `node --experimental-vm-modules` を付ける。
 重いブラウザテストは直列で実行する。環境要因と本物の失敗を分け、失敗したまま完了扱いにしない。
 
+CIは `.github/workflows/ci.yml` の1本だけ。テストを追加するときは workflow を増やさず、`tools/ci/suites.json` に1件足す（ブラウザ不要なら `kind: "quick"`、必要なら `kind: "browser"` と `paths`・`weight`・`timeout`）。PRで待つのは `CI / result` 1つ。手元で同じ組を動かすには `node tools/ci/run.mjs --kind browser --suites <id>`（プレビューサーバーを先に起動）。
+
 | 変更 | 検証 |
 |---|---|
 | BGMの追加・音量・切替 | 変更場面の再生確認。必要に応じ `bgm_gain.mjs`・`bgm_packaged.mjs`・`bgm_browser.mjs` |

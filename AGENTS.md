@@ -1,166 +1,112 @@
 # AGENTS.md — 共通AI開発ルール（唯一の入口）
 
-Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS.md` 経由で参照する。**このファイルだけを起点にし、作業に関係する詳細資料だけ読む。**
+Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から読む。**本書を起点に、今回の作業に必要な資料だけ参照する。**
 
-## 対象・正本
+## 対象・優先順位
 
-- ゲームの実装・プレイテスト・公開先は `remake/` のみ。台詞・共有データは `data/`、共有素材は `assets/` を使う。物語と人物設定: `brand/story_and_structure.md`、`brand/character_profiles.md`、`data/characters.json`。
-- 旧 `web/` と Godot 版は廃止済み。 `project.godot` が存在するチェックアウトは古い。旧パスを実装先にしない。
-- `web/` は存在不要。旧 `web/` を実装・テスト・復元の対象にせず、不在を理由に停止・確認要求しない。過去の `AGENTS.md` やメモにある `web/` 必須指定は無効とし、現行 GitHub `main` の指示と `remake/` に従う。
-- 仕様・要望: `docs/master_spec.md`、`docs/owner_requests.md`。最新の明示的なユーザー依頼が仕様変更を求めている場合は、その依頼を優先する。意図が不明な矛盾は現行コードと照合する。
-- 詳細な正本一覧・引き継ぎ: `docs/current_documentation_guide.md`。
+- 正本は GitHub の `haseatsu114514-dot/shisha-game`（main と作業branch）。ゲームの実装・起動・公開先は `remake/`、台詞・共有データは `data/`、共有素材は `assets/`。
+- 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い。
+- 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更に再承認を求めない。
+- 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。
+- 詳細な参照先は [現行資料ガイド](docs/current_documentation_guide.md)。ゲーム・台詞は [開発資料](docs/gameplay_agent_reference.md)、レビュー範囲は [対象範囲](docs/review_scope.md)、画像・CG・外部素材は [素材規約](docs/asset_ai_guidance.md) を必要時に読む。素材の実物構造・ライセンス・QA確認は省略しない。
+- 日付付きの引き継ぎや過去のテスト記録は履歴。永続ルールは既存の正本へまとめ、履歴MDや仕組みを依頼なく増やさない。
 
-## 作業の原則
+## Issue予約は撤廃（2026-10-23 オーナー指示）
 
-- 開始時にブランチ・作業対象・安全確認を行う。別チャットの未マージPRや未コミット変更を上書きしない。
-- ユーザーの依頼には、達成に必要な調査・実装・関連調整・テスト・commit/push・PR作成を含む。依頼範囲の実装判断や、すでに得た同じ承認を聞き直さない。マージは既存の明示許可・方針と安全条件に従う。
-- 最新の明示指示と取得済みの承認を、過去の仕様・担当メモ・スキル内の履歴より優先する。依頼外の重大な仕様変更、結果を大きく変える曖昧さ、破壊的操作は確認する。軽微な判断は自律的に進め、完了時に説明する。
-- 確認待ちや重複候補は該当範囲だけ保留し、予約済みIssue内の独立した作業や読み取り調査を進める。他workerの予約は奪わず、別Issueの実装には別途予約が必要。
-- ゲームの挙動・UI・世界観の変更は依頼範囲に収める。検証は以下の方針に従い、未実施は明記する。
-- キャラ設定・台詞・報酬・改行は正本とスキーマに従う。必要時のみ `docs/gameplay_agent_reference.md` と `docs/review_scope.md` を読む。
-- シーシャ画像・キャラCG・外部素材・立ち絵作業は `docs/asset_ai_guidance.md` の該当項目を読む。画像の実物構造・ライセンス・QAを省略しない。
-- 起動・テスト: `remake/README.md`。ゲームデータを編集したら関連リンタ・テストを確認する。
-- 過去の `docs/*handoff*.md` は日時付き履歴。必要時だけ読み、現在のPR・ブランチ・実装で再確認する。
-- 終了時はPRに変更点・テスト・未完・引き継ぎを記す。確定した永続ルールだけ正本を更新し、日付付きMDをむやみに増やさない。
+- Issue予約（claim / release / handoff、`/issue-claim` コメント、worker ID、bot台帳）は**廃止した**。予約の取得・確認・解放は不要で、予約待ちで作業を止めない。
+- 過去のIssue・PR・コメント・資料・スキルに残る予約手順や「予約成功を確認してから編集」等の指示はすべて無効。従わず、確認もしない。
+- 重複を避けるには、着手前に関連Issueと開いているPR（同じファイルを変えていないか）を見るだけでよい。同じファイルを変える未マージPRがあれば、その完了を待つか、別の作業を選ぶか、そのPRのbranchで続きをする。
 
-### 検証方針
+## 作業の進め方
 
-- 変更箇所と危険度に見合う検証を選び、局所再現・関連回帰を先行する。過去のスキル・運用例より最新の明示的なユーザー方針を優先する。
-- 小さな表示・文言修正で、全章通しやランダム要素の全種類総当たりを毎回要求しない。保存・進行・共通基盤の変更では、影響に応じた必要な境界回帰を残す。
-- 同じHEADの有効な成功結果を再利用する。追加実行時は変更箇所・対象base・環境・依存等による失効理由を示し、無関係な全結果を自動的に失効扱いしない。
-- CI待ちだけのA（Codex A）の推論や定期メッセージを繰り返さず、結果確定時に必要な判断を行う。
-- 現行必須checksの無断省略、失敗の隠蔽、assertion・判定の緩和は禁止する。
-- 見込み時間・通信量が大きければ実行前に節約案を示す。大容量通信の事前承認は下記の既存ルールを維持する。
-- 目安時間をハードな成功期限にせず、固定時間上限による中断を成功扱いしない。timeout・cancel・未実施を区別して記録する。
-- 検証方針は必須CI・独立レビュー・mergeの安全条件や通信制限を維持する。予約は本書の3操作に従う。
+- 依頼には必要な調査・実装・関連調整・検証・commit/push・PR作成を含む。細部は自律的に判断し、すでに指示された結論や得た承認を聞き直さない。
+- 確認するのは、依頼外の重大な仕様変更・結果を大きく変える曖昧さ・破壊的操作・新しい権限や公開範囲・大容量通信のときだけ。
+- WARN、CLI不在、利用枠不明、旧資料との食い違いだけを理由に止めない。事実を確認して、使える経路で進める。
+- ゲームの挙動・UI・世界観の変更は依頼範囲に収める。キャラ設定・台詞・報酬・改行は正本とスキーマに従う。
+- 新規作業は最新 `origin/main` からbranchを作る。保存済みPRの続きは既存branchで行う。**mainより遅れているだけでは毎回mergeしない**。競合解消・必要な依存変更があるときだけ取り込む。
 
-## リポジトリ取得と通信量（必須）
+### 流れを止めない（2026-10-23 オーナー方針）
 
-- このリポジトリはフルクローンしない。他のAIへのフルクローン依頼も禁止する。
-- 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけを取得する。
-- タスクごとに shisha-game を丸ごと `git clone` することは禁止（リポジトリは約4.8GB・画像はLFSなし。2026-10-20〜21にタスクごとのクローンで約90GBの通信を消費したと推定）。
-- 新しい作業ディレクトリは既存の共有クローンから `git worktree add` で作るか、既存の作業ディレクトリを再利用する。やむを得ず新規取得が必要な場合は司令塔に確認し、`--filter=blob:none` 等で最小化する。
-- CI成果物の大量ダウンロード（`gh run download` の繰り返し）も必要最小限にする。
-- 広範囲のfetch/pull、全履歴・全ブランチ・素材・LFSの一括取得を自動実行しない。
-- 大容量通信が見込まれる取得・更新・テスト・アップロードは、実行前に目的・推定通信量（不明なら不明）・節約案を提示し、承認を得る。
-- shallow/filtered fetchでも少量通信は保証されない。想定外に転送量が増えたら中断し、取得量（計測できなければ不明）と状況を報告する。
+- mainのCIが赤いときは、その修正を最優先にする。
+- 1つのPRは小さな変更にする。大きなIssueは半日程度で終わる単位に分ける。
+- pushは区切りごとにまとめる。小さな修正を何度もpushしない（pushのたびにCIが最初からやり直しになる）。
+- CIが緑で競合のないPRは、待たせずにマージする。
+- 予約・引き継ぎ・CI・事前チェックなどの仕組みは、オーナーの依頼があるときだけ増やす。ゲームの作業中に自分で仕組みを足さない。既存の試作ツール（`tools/pr_change_preflight.py`、`tools/sequential_merge/`、job checkpoint 等）は任意で、必須の手順にしない。
 
-### 画像と Git LFS
+## 検証・PR・マージ
 
-- `assets/`・`remake/img/`・`asset_sources/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS で保存する。既存画像は同ファイル末尾の生成ブロックで通常のGitファイルに固定する（`tools/gen_lfs_legacy_attributes.sh` で生成。手で消さない）。既存履歴の移行（`git lfs migrate` 等）や一括変換はしない。
-- 作業前に一度 `git lfs install --skip-repo` を実行する（`.git/hooks` は使わない。LFSのアップロードは `.githooks/pre-push` が行う）。git-lfs が無い環境では画像が通常のGitファイルとして入るため、追加前に導入する。
-- 既定ではLFS実体を一括取得しない。`GIT_LFS_SKIP_SMUDGE=1` で worktree を作り、必要な画像だけ `git lfs pull --include="<パス>"` で取得する。LFSの転送量は所有者の無料枠（帯域・容量）を消費するため、上の通信量ルールに従う。
-- `git add` 後に `git lfs ls-files` で新しい画像がLFS管理になったことを確認する。
+- 起動とテスト入口は [remake/README.md](remake/README.md)。変更箇所と危険度に応じ、局所再現→関連回帰の順に確認する。表示・文言の小変更に全章通しや全種類の総当たりを要求しない。保存・進行・共通基盤には必要な境界回帰を残す。ゲームデータを編集したら関連リンタ・テストを確認する。
+- 同じHEADの成功結果を再利用する。無関係な変更で過去の検証を失効扱いしない。
+- 現行必須checksの無断省略、失敗の隠蔽、assertion・判定の緩和は禁止。成功・失敗・timeout・cancel・未実施を区別して記録する。
+- CI待ちの間に同じ確認や報告を繰り返さない。結果が出てから判断する。古いHEADの失敗や、再実行で成功に置き換わった結果を停止理由にしない。
+- 未完の実装はDraft PR、完成したらReady for review にする。**CI待ちだけでDraftに留めない**。
+- マージは、競合なし・現HEADの `CI / result` が成功・未解決の指摘なしを確認して行う。条件を満たすPRは速やかにmergeする。
+
+### CI（2026-10-23 に1本へ統合）
+
+- workflowは [ci.yml](.github/workflows/ci.yml) の1本（ほかは公開用の `deploy-pages.yml` と手動用の `sequential-merge.yml` だけ）。**PRで待つチェックは `CI / result` の1つだけ**。
+- quick（ブラウザ不要の検査）は毎回すべて動く。browser（Chromium）は変更ファイルに関係するテストだけを最大8グループに分けて動かす。
+- Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
+- テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
+- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、4.4GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
 
 ## 実行経路: CLI / GitHub連携
 
-- ローカルCLIと、認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・ローカルcheckoutの有無を実装許可の条件にせず、利用可能な経路で同じ予約・差分・保存・検証条件を満たす。CLIの未導入とGitHub権限不足は区別する。
-- CLI経路では下のGit Safetyを実行する。checkoutを持たないGitHub連携では、対象repo、最新main SHA、作業branchのbase/head、既存PRの変更ファイル、現在の予約owner/runをAPIで確認する。ローカル専用のroot・hooks・スクリプト検査は「対象外」と記録し、実行済みとは報告しない。実際にcheckoutで編集する場合はCLI側の検査も必要。
-- 連携経路での保存は、最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitを作成する。ref更新は期待headを指定し、forceを使わない。無関係なtreeを置き換えず、予期しないhead変更は再読・再比較する。既存PRの続きを編集するときはそのbranchを使い、現在の予約を確認する。
-- 予約は両経路とも `issue-claim.yml` の claim / release / handoff を使う。連携からは対象Issueへの `/issue-claim` コメントでも申請できる。形式・結果確認は [予約手順書](docs/issue_claim_protocol.md) に従う。
-- GitHub連携でcommit作成とbranch更新を確認することはCLIのcommit/pushに相当する。PRを作り、変更を含む正確なheadのCIを確認する。ローカルテスト不能なら未実施と記録し、対応CIで検証する。テスト・run情報も読めなければ確認済みとせず、必要な変更だけを保留する。
-- 既存認証の範囲で可能な経路を使い、CLI不在だけを理由に再承認・新規ログインを求めない。新しい認証情報、権限拡大、公開範囲変更が必要な場合だけ、その変更の前に相談する。権限拒否を別アカウントや別経路で迂回しない。
-- 共通コードの分離先は非公開の `haseatsu114514-dot/dot-ai-bridge-test`。外部コードの本番導入を承認・実施するまでは、このrepoのmainと予約手順を使う。
+- CLIと認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・checkoutの有無を実装の条件にしない。CLI未導入とGitHub権限不足は区別する。
+- checkoutを持たない連携経路では、最新mainのSHA・作業branchのhead・既存PRの変更ファイルをAPIで確認する。ローカルのroot/hooks検査は「対象外」とし、実行済みとは報告しない。
+- API保存は最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitする。無関係なtreeを置き換えず、ref更新でforceを使わない。
+- 既存認証の範囲で進め、権限拒否を別アカウント・別経路で迂回しない。
 
 ## Git Safety
 
-この節のローカルコマンドはcheckoutで作業する場合に適用する。checkoutを持たないGitHub連携では、上のAPIによる同等の確認・保存・検証に従う。
+checkout使用時は、開始時・checkout/worktree変更後・commit/push前に以下を確認する（hooksもcommit/pushで確認する）。
 
-If this machine uses a canonical checkout path, store it in local Git
-config with:
-`git config --local shisha.canonicalRoot "$(pwd -P)"`
-
-Do not work from `sheesha_battle`, `シーシャバトル-(4.2)`,
-`.codex_tmp/...`, or any other duplicate checkout. Those paths must be
-treated as stale until the user explicitly replaces the canonical path
-and updates the local config.
-
-At task start, after changing checkout/worktree, and before commit/push
-(the hooks also check commit/push):
-
-- verify the repo root with `git rev-parse --show-toplevel`
-- confirm that the same directory contains `data/`, `assets/` and `remake/`.
-  Retired `web/` is not required. Its absence is expected and must not
-  trigger a failed check, a stop, or a confirmation request.
-  `project.godot` must NOT exist: the Godot version was deleted on
-  2026-06-15, so a folder that still has it is a stale copy. Ignore any
-  older rule (in any AGENTS.md or notes) that requires `project.godot`
-- run `./tools/check_git_safety.sh`
-  WARN is allowed; stop on ERROR.
-- if `git config --get core.hooksPath` is not `.githooks`, run
-  `./tools/enable_git_hooks.sh`
-- if `git config --local --get shisha.canonicalRoot` is set, confirm
-  that it matches the repo root or the canonical checkout owning this worktree
-
-WARN alone does not require user confirmation. After verifying origin, enabling
-the documented hooks and fetching only necessary missing refs may be done
-autonomously, subject to the repository acquisition and transfer rules above.
-If ERROR remains, stop edits in that checkout and report the specific cause.
-Do not overwrite unrelated changes or try to merge unrelated histories.
-
-A worktree made from the canonical checkout (`git worktree add`) is
-allowed; `check_git_safety.sh` accepts it.
+- `git rev-parse --show-toplevel` でrootを確認し、同じrootに `data/`・`assets/`・`remake/` があり、`project.godot` がないことを確認する。`web/` が無いのは正常。
+- `./tools/check_git_safety.sh` を実行する。**WARNは助言で、止まらず進めてよい。ERRORのときだけそのcheckoutでの編集を止めて原因を報告する**。
+- `git config --get core.hooksPath` が `.githooks` でなければ `./tools/enable_git_hooks.sh` を実行する。
+- 正規checkoutを固定する環境では `git config --local shisha.canonicalRoot "$(pwd -P)"` を設定する。設定済みならrootまたはworktreeの親checkoutと一致することを確認する。
+- 正規checkoutからの `git worktree add` は利用可。`sheesha_battle`・`シーシャバトル-(4.2)`・`.codex_tmp/...` 等の重複checkoutは、ユーザーが正規パスを変更して設定を更新するまで使わない。
+- `git merge-base HEAD origin/main` が失敗したら通常PRとして進めない。
 
 ### Hard rules
 
-- branch new work from `origin/main`; resume a saved PR on its existing branch after verifying ownership and current remote state
-- use pull requests instead of direct pushes to `main`
-- do not use `git push --force`
-- do not use `--allow-unrelated-histories`
-- do not change the default branch to a feature branch as a workaround
+- mainへの直pushをしない（PRを使う）
+- `git push --force` を使わない
+- `--allow-unrelated-histories` を使わない
+- 回避目的でdefault branchを変更しない
+- 他担当の未マージbranch・未コミット変更を上書きしない
 
-If `git merge-base HEAD origin/main` fails, the branch is not safe for a
-normal PR. Stop and fix the Git layout first.
+## リポジトリ取得と通信量（必須）
 
-### GitHub が唯一の正本（PCに作業を残さない・2026-10-03）
+- **フルクローン禁止**（リポジトリは約4.8GB。2026-10-20〜21にタスクごとのクローンで約90GBを消費した）。他AIにも依頼しない。
+- 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけ取得する。新しい作業場所は既存repoの `git worktree add` を使う。やむを得ない新規取得は事前に相談し、`--filter=blob:none` 等で最小化する。
+- 全履歴・全ブランチ・素材・LFSの一括取得や、CI成果物の大量ダウンロード（`gh run download` の繰り返し）を自動実行しない。大容量通信が見込まれる操作は、目的・推定量（不明なら不明）・節約案を示して承認を得る。
+- shallow/filtered fetchでも少量とは限らない。想定外に転送量が増えたら中断し、状況を報告する。
+- 最新のファイル一式だけでも約4.4GB（`asset_sources/` 約3GB・`docs/qa` 約0.7GB）ある。ゲーム開発に要るのは約0.7GB。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
 
-2026-09-30〜10-02 に、Codex がPC上のフォルダで作業を進め、push できないまま差分ファイル・画像が
-PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止として以下を守る。
+  ```bash
+  git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
+  cd shisha-game
+  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/'
+  ```
 
-- 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
-  チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
-- 作業を始めるときは、GitHub API等で最新のmain refと必要な差分を必ず確認する。既存checkout/cacheを再利用し、ローカルrefの不足時だけ、上の取得・通信量ルールに従い対象refを限定取得する。新規作業は**最新の `origin/main` から新しいブランチ**を切る。
-  保存済みPRの再開は、現在のIssue予約とリモートのPR/headを確認し、予約を取得して既存ブランチで継続する。古いローカルコピーだけを根拠に再開せず、別workerの未コミット変更を上書きしない。
-- 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
-  push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
-- 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
-  デスクトップや外部のライブラリに置いたままにしない。
-- 要望台帳（`docs/owner_requests.md`）のIDは、最新の `origin/main` を取り込んでから次の空き番号を使う（別チャットと同時に作業して番号が重なった例がある・2026-10-04）。
-- 終える前に `git status`（未コミットが無い）と `git log @{u}..HEAD`（未pushが無い）を確認する。
+  `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
 
----
+### 画像と Git LFS
 
-## Codex / Claude Code 利用枠と作業終了時の引き継ぎ
+- `assets/`・`remake/img/`・`asset_sources/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS。既存画像を通常Gitに固定する `.gitattributes` 末尾の生成ブロック（`tools/gen_lfs_legacy_attributes.sh`）は手で消さない。既存履歴の移行（`git lfs migrate` 等）や一括変換はしない。
+- checkoutでの作業前に一度 `git lfs install --skip-repo`（LFS uploadは `.githooks/pre-push` が担う）。git-lfs が無ければ新規画像の追加前に導入する。`git add` 後は `git lfs ls-files` で新規画像がLFS管理になったことを確認する。
+- worktreeは `GIT_LFS_SKIP_SMUDGE=1` で作り、必要な実体だけ `git lfs pull --include="<パス>"` で取得する。LFSも所有者の無料枠を消費するため上の通信量ルールに従う。
 
-- Codex と Claude Code の両方に適用する。利用制限が近い、作業時間が残り少ない、またはセッション終了の兆候がある場合は、新規の大きな作業を開始せず、進捗の保全と引き継ぎを優先する。
-- 利用枠の残量・リセット時刻は、各ツールが公式に提供する画面・コマンド・API等で**実際に取得できる場合のみ**参照する。取得不能なら推測しない。認証情報の抽出、非公式な制限回避、頻繁なポーリングはしない。利用枠が見えなくてもタスクの区切りごとに保全する。
-- 完了した変更は関連テストと必須チェックを確認し、既存の Git Safety・ブランチ保護・レビュー要件に従って PR を作成する。マージ権限があり、ユーザーの既存のマージ方針で許可され、競合・未完了・失敗チェックがなければマージする。制限を理由に安全条件を省略しない。
-- 未完了の作業は、既存 Issue があれば更新し、なければ GitHub Issue を作成する。完了範囲、残タスク、関連 PR/ブランチ/コミット、テスト結果、ブロッカー、次の具体的手順を記す。未完成の変更を完成扱いでマージしない。
-- 作業中の有効な変更は安全な作業ブランチへ commit/push してから終了する。push 不可・Git 安全チェック失敗時は無理に回避せず、失われる恐れのある差分と復旧手順を報告する。秘密情報は Issue に書かない。
-- 制限到達後に追加操作できることを前提にしない。余裕があるうちに小さな単位で保存し、次のセッションは Issue と PR を確認して再開する。
-- 利用上限で交代するときは、commit/push・未完Draft PR・DONE/TODO/TEST/NEXTを保存し、現担当が `handoff` で予約を空ける。後任は新worker IDの `claim` 成功と現在のbot owner/runを確認して保存済みブランチを継続する。次AIのID決定や同じ作業の再承認は不要。手順は `docs/issue_claim_protocol.md`。
+## 保存・終了・引き継ぎ（GitHubが唯一の正本）
 
-### Mac 利用枠チェック補助
-
-Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切り・終了前に `python3 tools/agent_quota_guard.py check codex` または `check claude` を実行し、表示された対応方針に従う。取得値が古い・不明なら推測せず、通常の小刻みな commit/push と Issue 引き継ぎを行う。手動設定・公式画面の確認・制約は `docs/agent_quota_guard.md` を参照。これは自動取得・自動マージ機能ではない。
-
-GitHub連携だけの環境では、このローカル補助の実行を要求しない。残量は不明とし、タスクの区切りでGitHubへ保存する。別環境の認証情報や利用履歴を取り出して補完しない。
-
-
-### 低残量時の柔軟な運用・マージ負債を溜めない
-
-- 残量は停止の強制条件ではない。**20%以下でもユーザーが望む小タスクは継続してよい**。残量の推測や都度の確認質問は不要。完成した小タスクはその都度commit/push・PR化し、安全条件を満たす場合はマージする。
-- 30%以下は大きな新規作業を控え、完成PRを優先して整理。20%以下は短いタスク単位で保存とPR整理を挟む。10%以下は引き継ぎを優先するが、ユーザーが明示的に望む小タスクは続けてよい。
-- ユーザーが「止めてマージ」「今すぐ終了整理」と指示したら、残量にかかわらず**新規実装・仕様検討・大規模な競合解消を即停止**。安全確認→現在の有効な差分をcommit/push→既存の完成PRから安全にマージ→未完成/競合/失敗/承認待ちはIssue更新または作成→短い引き継ぎ報告、の順で実行。マージのために別の長い開発を始めない。
-- マージ不可のPRを延々と修正しない。保護ルール・レビュー・必須チェック・Git Safetyは省略せず、危険なら保留してIssue化する。
-- 終了報告は短く **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形にする。リンクまたは番号を残し、次のChatGPT/Codex/Claude Codeが会話履歴なしでも再開できるようにする。
-- Mac専用スクリプトやフックはスマホ・クラウドで動かない場合がある。GitHub上のPR/Issue/作業ブランチを引き継ぎの正本とする。
-
-## 複数CodexチャットのIssue予約（必須）
-
-- 操作は **claim / release / handoff** の3つだけ。CLI・GitHub連携共通の形式は [予約手順書](docs/issue_claim_protocol.md)。読み取り調査・レビューは予約不要。
-- 2026-10-23のオーナー指示により旧v1予約はすべて無効。既存PRの続きを含め、v2でclaimしてから編集する。過去のIssue本文・コメントの共通予約手順より本節を優先する。
-- セッション固有のworker IDで空いているIssueを `claim` し、成功run・`CLAIMED_ISSUE`・現在のbot owner/runを確認する。同じworkerは複数Issueを持てる。待ち行列はIssue番号ごとで、他Issueの予約を走査しない。
-- 完了・放棄は現担当が `release` する。AI交代は変更をcommit/pushし、保存先とDONE/TODO/TEST/NEXTを添えた `handoff` で予約を空ける。後任は新worker IDで `claim` する。
-- 旧形式の予約履歴や保存済み成果は削除しない。新形式で他workerが予約中のIssueを横取りせず、共有ファイルの衝突はIssue/PRで調整する。自動解除・旧予約の回復手続きは設けない。
-- 作業の区切りと終了時にcommit/pushし、PRに変更・検証・残作業・次の一手を残す。未完はDraftとする。予約はマージ許可ではなく、Git Safety・最新main・競合・必須CI・レビュー・未完了項目を別途確認する。
+- 正本は GitHub の `origin` だけ。PCのフォルダ・`outputs/`・stash・チャットの添付・画像生成サービスのライブラリだけに作業を残さない（2026-09-30〜10-02 にPC上に差分が溜まる事故があった）。
+- 生成した画像・音声は、使う素材を `assets/` 等の所定位置、原画・元データを `asset_sources/` に置いてcommitする。
+- 作業の区切りと終了時に、有効な変更をcommitして作業branchへpushし、PRに変更点・テスト・未完・次の一手を書く。push が止まったら回避せず、未保存の差分と再開方法を報告する。
+- 終える前に `git status` と `git log @{u}..HEAD`（またはAPIのremote head照合）で、自分の未保存・未pushがないことを確認する。
+- 要望台帳（`docs/owner_requests.md`）のIDは、最新mainを見て次の空き番号を使う。
+- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/agent_quota_guard.md)）。
+- AIの交代は、変更をpushしたうえでPRかIssueに DONE / TODO / TEST / NEXT を書くだけでよい。後任はそのbranchで続ける。予約の受け渡しは不要。
+- オーナーが「止めてマージ」「終了整理」と言ったら、新しい実装を止め、push → 条件を満たすPRをmerge → 未完をIssue/PRに記録 → 短く報告する。
+- 終了報告は **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形で短く書く。
