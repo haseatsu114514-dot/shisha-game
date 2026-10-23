@@ -42,7 +42,7 @@ jobs:
       - name: Install browser test dependencies outside the game
         run: |
           npm install --prefix "$RUNNER_TEMP/heat-test" playwright@1.62.1
-          node "$RUNNER_TEMP/heat-test/node_modules/playwright/cli.js" install --with-deps chromium
+          node "$RUNNER_TEMP/heat-test/node_modules/playwright/cli.js" install chromium
       - name: Check real coal inputs, ratings and panel bounds on PC and touch screens
         env:
           NODE_PATH: ${{ runner.temp }}/heat-test/node_modules

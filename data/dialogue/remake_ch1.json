@@ -863,7 +863,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "本番までの{daysLeft}日間、手順を覚えておけ。台が用意できたら、家でも練習できる"
+          "text": "本番までの{daysLeft}日間、手順を覚えておけ。店で練習するときは、ここの葉を使っていい"
         },
         {
           "speaker": "sumi",
@@ -1456,7 +1456,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "おう、戻ったか。もうひとつ、届け物を頼む"
+          "text": "それと、もうひとつ届け物を頼む"
         },
         {
           "speaker": "",
@@ -1506,9 +1506,24 @@
           "text": "届けたら一服していけ。配達の手当は、バイト代につけとく"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "配達の前に、C.STATIONの受付で大会の参加登録を済ませてこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさんに教えてもらった受付ですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。登録が済んだらPEPPERMINT、それからEDENだ"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
-          "text": "了解です。……落とさないように、行ってきます"
+          "text": "先に大会の登録、そのあと二軒ですね。行ってきます"
         }
       ],
       "branches": {
@@ -1588,7 +1603,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "今日は配達だけでいい。受け取りを確かめたら、戻ってこい"
+          "text": "今日はまず配達だけでいい。受け取りのサインを忘れるな"
         },
         {
           "speaker": "sumi",
@@ -2309,7 +2324,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "１つずつ手を動かして覚えろ。家での練習は、台が用意できてからだ"
+          "text": "１つずつ手を動かして覚えろ。練習は店でやる。ここの葉を使っていい"
         }
       ]
     },
@@ -2698,6 +2713,39 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "葉は詰め直してやる。吸い出しから、もう１回だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_delivery_report",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二軒への配達を終え、tonariへ戻ってきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、お帰り。二軒とも無事に届けられたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。PEPPERMINTもEDENも、ちゃんと受け取ってもらえました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ご苦労さん。配達の手当は今日のバイト代に上乗せしてある。これで上がっていいぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。お疲れさまでした"
         }
       ]
     }

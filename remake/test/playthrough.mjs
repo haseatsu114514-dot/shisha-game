@@ -171,6 +171,7 @@ for (;;) {
       sub: document.querySelector(".sub-title")?.textContent || "",
       // 選択済み（.done）の画面は次の画面待ち。触らない
       live: !!document.querySelector("#screen > *:not(.done)"),
+      revealing: !!document.querySelector('#screen .map:not(.done)[data-revealing="true"]'),
       step: document.querySelector(".bench-panel")?.dataset.step || "",
       mode: document.querySelector(".bench")?.dataset.mode || "",
     };
@@ -223,7 +224,8 @@ for (;;) {
   // 画面の種類ごとに最初の1枚だけ記録（SHOTS 指定時）
   const tag = `${snap.screen}${snap.step ? "-" + snap.mode + "-" + snap.step : ""}${snap.vn ? "-vn" : ""}`;
   if (SHOTS && !seenShots.has(tag)) { seenShots.add(tag); await page.waitForTimeout(snap.step ? 700 : 250); await page.screenshot({ path: `${SHOTS}/${String(seenShots.size).padStart(2, "0")}_${tag}.png` }); }
-  if (snap.vn || !snap.live) continue; // 会話はターボで自動送り／選択済みの画面は次を待つ
+  // 解禁後にLIME案内等が現れるため、待機後は画面全体を読み直してから操作する。
+  if (snap.vn || !snap.live || snap.revealing) continue; // 会話・画面切替・解禁の終了を待つ
 
   if (snap.screen === "end") {
     if (/GAME OVER/.test(snap.endTitle)) {
@@ -313,10 +315,9 @@ for (;;) {
   if (snap.screen === "map" && snap.rain) rainMaps++;
   // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
+    if (!await click('[data-test="pin-fortune"]') || !await click('[data-test="map-go"]'))
+      throw new Error("Fortune input failed before visiting");
     fortuneTried = true;
-    // #780: 新ピンの解錠演出中は選択を受け付けないので、演出の終わりを待つ。
-    await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'), null, { timeout: 10000 }).catch(() => {});
-    await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
     continue;
   }
   if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }

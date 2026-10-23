@@ -15,6 +15,7 @@ import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
+import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
@@ -90,7 +91,7 @@ export function flavorPackageArt(id, size = 54) {
   const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
     el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
   ]);
-  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id];
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id];
   return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
 }
 function productArt(item, flavor, size = 66) {

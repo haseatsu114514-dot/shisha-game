@@ -10,7 +10,8 @@
 .bench-worker[data-scene]:not([data-scene="fallback"]):not([data-scene="focus"]) .worker-actor { visibility: hidden; }
 .bench-worker:is([data-scene="mix"], [data-scene="pack"], [data-scene="holes"], [data-scene="heat"]) .worker-equipment { visibility: hidden; }
 .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .worker-actions { inset: 20px 0 0; }
-.bench-worker[data-scene="heat"] .worker-actions { inset: 22px 0 0; }
+/* 背景を含む一枚絵は窓全体を覆う。上の余白から別背景の帯を露出させない。 */
+.bench-worker[data-scene="heat"] .worker-actions { inset: 0; }
 .bench-worker[data-scene="heat"] .worker-action { object-fit: cover; object-position: center; }
 /* 一口の間だけ吸う姿へ切り替える。泡の長さは既存 setDraw の期間を使う。 */
 .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .worker-actions { right: 72px; }

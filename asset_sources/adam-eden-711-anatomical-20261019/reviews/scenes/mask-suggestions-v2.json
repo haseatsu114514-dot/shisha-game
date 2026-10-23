@@ -1,0 +1,527 @@
+{
+  "coordinate_system": "Native image pixels, origin upper-left. Polygons are bounded ROIs; intersect them with source-color gates. Do not fill/repaint every pixel inside a polygon.",
+  "orientation": "Adam anatomical LEFT green / RIGHT red. For the front-facing tournament pose and EDEN paired motifs: screen LEFT red / RIGHT green.",
+  "intro": {
+    "source": "/workspace/scratch/588761470c34/issue711-audit/assets/ui/character_intros/adam.png",
+    "size": [
+      1672,
+      941
+    ],
+    "left_green_to_red": {
+      "polygon": [
+        [
+          820,
+          0
+        ],
+        [
+          1280,
+          0
+        ],
+        [
+          1280,
+          410
+        ],
+        [
+          820,
+          410
+        ]
+      ],
+      "source_hue_degrees": [
+        70,
+        145
+      ],
+      "minimum_saturation": 0.2,
+      "minimum_value": 0.08,
+      "target_main_hue_degrees": 0,
+      "note": "Use from ORIGINAL. H58–66 selects clipped cream/gold, including RGB255,255,194. H>=70 protects these. The brighter green body is H82–84; darker backing is about H99. V>=.08 reduces changes to near-black ink."
+    },
+    "right_red_to_green": {
+      "polygon": [
+        [
+          1190,
+          174
+        ],
+        [
+          1220,
+          124
+        ],
+        [
+          1280,
+          90
+        ],
+        [
+          1326,
+          61
+        ],
+        [
+          1340,
+          50
+        ],
+        [
+          1363,
+          39
+        ],
+        [
+          1381,
+          33
+        ],
+        [
+          1408,
+          30
+        ],
+        [
+          1435,
+          34
+        ],
+        [
+          1451,
+          39
+        ],
+        [
+          1475,
+          49
+        ],
+        [
+          1492,
+          59
+        ],
+        [
+          1505,
+          69
+        ],
+        [
+          1517,
+          79
+        ],
+        [
+          1534,
+          99
+        ],
+        [
+          1548,
+          119
+        ],
+        [
+          1559,
+          139
+        ],
+        [
+          1565,
+          159
+        ],
+        [
+          1570,
+          180
+        ],
+        [
+          1575,
+          218
+        ],
+        [
+          1578,
+          265
+        ],
+        [
+          1578,
+          329
+        ],
+        [
+          1554,
+          384
+        ],
+        [
+          1497,
+          415
+        ],
+        [
+          1360,
+          414
+        ],
+        [
+          1284,
+          383
+        ],
+        [
+          1223,
+          331
+        ],
+        [
+          1190,
+          256
+        ]
+      ],
+      "source_hue_degrees_wrap": [
+        330,
+        20
+      ],
+      "minimum_saturation": 0.2,
+      "minimum_value": 0.025,
+      "target_main_hue_degrees": 83
+    },
+    "protected_scopes": [
+      "All pixels outside these two inner-lobe polygons",
+      "Gold/cream snake, stems, arches, and ornaments through hue exclusions (usually H around 35–50 degrees)",
+      "Large diagonal green foreground/book field crossing screen left and lower center",
+      "Ornate red outer border and lower page/body framing"
+    ],
+    "scope_reason": "Recolor each apple and the green/red patterned backing immediately behind it. The large diagonal green overlay is a separate graphic field and should remain unchanged. Leave exterior page framing unchanged for the smallest scope; a separate pair-colored lower page-edge treatment can be considered only if the parent chooses a broader motif color correction."
+  },
+  "cg": {
+    "source": "/workspace/scratch/588761470c34/issue711-audit/assets/cgs/cg_ch1_tournament_battle.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "front_green_to_red": {
+      "polygon": [
+        [
+          1164,
+          80
+        ],
+        [
+          1315,
+          80
+        ],
+        [
+          1315,
+          231
+        ],
+        [
+          1164,
+          231
+        ]
+      ],
+      "source_hue_degrees": [
+        58,
+        165
+      ],
+      "minimum_saturation": 0.15,
+      "minimum_value": 0.045,
+      "target_main_hue_degrees": 1,
+      "exclusions": {
+        "screen_left_eyebrow": [
+          [
+            1255,
+            208
+          ],
+          [
+            1267,
+            214
+          ],
+          [
+            1272,
+            220
+          ],
+          [
+            1272,
+            225
+          ],
+          [
+            1263,
+            222
+          ],
+          [
+            1254,
+            216
+          ]
+        ],
+        "screen_right_eyebrow": [
+          [
+            1300,
+            224
+          ],
+          [
+            1311,
+            219
+          ],
+          [
+            1324,
+            215
+          ],
+          [
+            1323,
+            226
+          ],
+          [
+            1310,
+            230
+          ],
+          [
+            1300,
+            232
+          ]
+        ],
+        "tiny_brow_pixel_next_to_middle_lock": [
+          [
+            1279,
+            220
+          ],
+          [
+            1282,
+            220
+          ],
+          [
+            1282,
+            225
+          ],
+          [
+            1279,
+            225
+          ]
+        ]
+      },
+      "note": "A bounded head ROI plus source-green gate is robust here; stage, skin, and already-red nape are outside the hue family. The three eyebrow exclusions are essential. This adds omitted green strips at x1281–1290/y177–192, x1200–1216/y182–185, x1226–1227/y203–213, and a few thin hair edges. Apply all color tests to ORIGINAL pixels."
+    },
+    "screen_right_red_to_green": {
+      "polygon": [
+        [
+          1285,
+          81
+        ],
+        [
+          1305,
+          86
+        ],
+        [
+          1318,
+          92
+        ],
+        [
+          1343,
+          102
+        ],
+        [
+          1358,
+          132
+        ],
+        [
+          1365,
+          145
+        ],
+        [
+          1380,
+          147
+        ],
+        [
+          1380,
+          197
+        ],
+        [
+          1376,
+          217
+        ],
+        [
+          1356,
+          240
+        ],
+        [
+          1347,
+          243
+        ],
+        [
+          1332,
+          254
+        ],
+        [
+          1318,
+          258
+        ],
+        [
+          1307,
+          257
+        ],
+        [
+          1307,
+          252
+        ],
+        [
+          1310,
+          242
+        ],
+        [
+          1318,
+          230
+        ],
+        [
+          1325,
+          217
+        ],
+        [
+          1328,
+          206
+        ],
+        [
+          1329,
+          192
+        ],
+        [
+          1323,
+          189
+        ],
+        [
+          1310,
+          189
+        ],
+        [
+          1301,
+          188
+        ],
+        [
+          1291,
+          188
+        ],
+        [
+          1302,
+          176
+        ],
+        [
+          1308,
+          156
+        ],
+        [
+          1311,
+          133
+        ],
+        [
+          1307,
+          110
+        ],
+        [
+          1300,
+          97
+        ],
+        [
+          1285,
+          87
+        ]
+      ],
+      "source_hue_degrees_wrap": [
+        330,
+        22
+      ],
+      "minimum_saturation": 0.18,
+      "minimum_value": 0.045,
+      "target_main_hue_degrees": 96,
+      "exclusions": {
+        "forehead_and_face": [
+          [
+            1283,
+            182
+          ],
+          [
+            1288,
+            183
+          ],
+          [
+            1294,
+            185
+          ],
+          [
+            1299,
+            187
+          ],
+          [
+            1304,
+            189
+          ],
+          [
+            1327,
+            189
+          ],
+          [
+            1327,
+            206
+          ],
+          [
+            1322,
+            218
+          ],
+          [
+            1313,
+            230
+          ],
+          [
+            1304,
+            244
+          ],
+          [
+            1296,
+            256
+          ],
+          [
+            1280,
+            269
+          ],
+          [
+            1260,
+            259
+          ],
+          [
+            1238,
+            234
+          ],
+          [
+            1244,
+            222
+          ],
+          [
+            1267,
+            233
+          ],
+          [
+            1279,
+            240
+          ],
+          [
+            1284,
+            221
+          ],
+          [
+            1284,
+            190
+          ]
+        ],
+        "already_correct_screen_left_nape": [
+          [
+            1160,
+            168
+          ],
+          [
+            1221,
+            168
+          ],
+          [
+            1230,
+            189
+          ],
+          [
+            1221,
+            210
+          ],
+          [
+            1230,
+            240
+          ],
+          [
+            1213,
+            259
+          ],
+          [
+            1160,
+            259
+          ]
+        ]
+      },
+      "note": "Expanded outer silhouette to include red tips around x1364–1377/y189–194, x1355–1366/y198–216, x1342–1344/y234–238, x1327–1329/y244–250. Inner forehead/face boundary remains unchanged. Right boundary stops short of stage lamp pixels, whose red mask begins at x1381. Final face audit tightened the upper skin exclusion to protect peach skin pixels around x1292–1297/y186–188 and the forehead edge at y189. This is a protection expansion only; outer hair coverage is unchanged."
+    },
+    "pitfalls": [
+      "Do not use a global red/green swap: screen-left red nape and rear strands are already correct and the other characters and stage must remain identical.",
+      "The green frontal hair connects to a few green eyebrow pixels, so connected-component selection alone does not protect the face.",
+      "Use the traced concave fringe boundary plus color gate; skin hue overlaps warm red highlights.",
+      "Do not blur masks across the hair/skin edge. Prefer color-gate falloff or at most a subpixel inset feather.",
+      "Gold/orange rim light on the left crown can stay warm, preserving the original stage light.",
+      "Native hair source colors are very asymmetric in saturation: green about 0.38–0.44, red about 0.78–0.93. Hue-only recolor reverses those saturations and should be visually reviewed."
+    ]
+  },
+  "revision": "v2: post-candidate boundary and clipped-cream review"
+}

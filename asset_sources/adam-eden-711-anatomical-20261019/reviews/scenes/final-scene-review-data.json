@@ -1,0 +1,105 @@
+{
+  "intro": {
+    "source": "/workspace/scratch/588761470c34/issue711-audit/assets/ui/character_intros/adam.png",
+    "candidate": "/workspace/scratch/588761470c34/issue711-work/assets/ui/character_intros/adam.png",
+    "source_sha256": "f80e8e102f034765f428a4e45626fafe61120e20db6ac32ac378bebe827bd08b",
+    "candidate_sha256": "e373cd560a82a6cf7416a47cd48eb1fe6de6bce18e2c94ffdd484522ec23a8c6",
+    "candidate_bytes": 3077020,
+    "dimensions": [
+      1672,
+      941
+    ],
+    "changed_pixels": 117050,
+    "changed_bbox_inclusive": [
+      824,
+      2,
+      1578,
+      414
+    ],
+    "protected": {
+      "gold_H30_57": {
+        "pixels": 119212,
+        "changed": 0
+      },
+      "clipped_cream_H58_66": {
+        "pixels": 2603,
+        "changed": 0
+      },
+      "gold_cream_H30_69": {
+        "pixels": 125255,
+        "changed": 0,
+        "hue_method": "exact float RGB hue, range 30 <= H < 70"
+      },
+      "diagonal_foreground": {
+        "bounds_xyxy_exclusive": [
+          0,
+          0,
+          730,
+          941
+        ],
+        "changed": 0
+      },
+      "lower_page": {
+        "bounds_xyxy_exclusive": [
+          800,
+          420,
+          1672,
+          941
+        ],
+        "changed": 0
+      },
+      "outer_right_frame": {
+        "bounds_xyxy_exclusive": [
+          1590,
+          0,
+          1672,
+          600
+        ],
+        "changed": 0
+      },
+      "outside_lobe_rois_changed": 0
+    },
+    "verification_note": "Pixel color-class checks are qualified by the masks and hue ranges stated; they are not semantic segmentation of every ink/antialiasing pixel."
+  },
+  "cg": {
+    "source": "/workspace/scratch/588761470c34/issue711-audit/assets/cgs/cg_ch1_tournament_battle.png",
+    "candidate": "/workspace/scratch/588761470c34/issue711-work/assets/cgs/cg_ch1_tournament_battle.png",
+    "source_sha256": "694eb554d9f8e302b4047f0fbd5812ca38bfcc9814d6d92c3050234ec8691974",
+    "candidate_sha256": "cf59f7021f45f51c005d4ff84a8f05b35fbdf4d6e65eca1a21bedefb7f785d53",
+    "candidate_bytes": 2798440,
+    "dimensions": [
+      1920,
+      1080
+    ],
+    "changed_pixels": 15323,
+    "changed_bbox_inclusive": [
+      1182,
+      84,
+      1377,
+      257
+    ],
+    "protected": {
+      "outside_bounded_hair_rois_changed": 0,
+      "face_guard_non_green_source_changed": 0,
+      "nape_core_xyxy_1168_216_1215_256_changed": 0,
+      "blue_purple_source_H180_280_within_head_region_changed": 0,
+      "outside_head_inspection_box_changed": 0,
+      "eyebrow_exclusions": {
+        "screen_left_eyebrow": {
+          "all_pixels_changed": 0,
+          "source_green_eyebrow_pixels_changed": 0
+        },
+        "screen_right_eyebrow": {
+          "all_pixels_changed": 11,
+          "source_green_eyebrow_pixels_changed": 0
+        },
+        "tiny_brow_pixel_next_to_middle_lock": {
+          "all_pixels_changed": 0,
+          "source_green_eyebrow_pixels_changed": 0
+        }
+      }
+    },
+    "unrecolored_green_pixels_in_eligible_hair_mask": 0,
+    "verification_note": "Pixel color-class checks are qualified by the masks and hue ranges stated; they are not semantic segmentation of every ink/antialiasing pixel."
+  }
+}

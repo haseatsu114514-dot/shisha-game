@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const state = {}, DB = { dialogues: {} }, played = [];
+let prompts = 0, reels = 0;
 let cancelled = false, shown, timers = new Map(), clock = 0, nextTimer = 0;
 const schedule = (fn, ms) => { const id = ++nextTimer; timers.set(id, { fn, at: clock + ms }); return id; };
 const cancel = id => timers.delete(id);
@@ -26,6 +27,8 @@ class Node {
 const el=(spec, attrs={}, children=[]) => new Node(spec,attrs,children);
 const noop=()=>{};
 const overrides = {
+ 'station-travel.js': { stationDestinations:()=>[] },
+ 'reel.js': { mountReel:()=>{reels++;} },
  'state.js': { state, timeOfDay:()=>state.slot ? 'night':'day', markMet:id=>{state.met[id]=true;} },
  'data.js': { DB, bgUrl:x=>x, sceneBg:()=>({}), displayName:id=>id, faceIconUrl:()=>null },
  'util.js': { el, yen:String }, 'ui.js': { layers:{fx:el('div')}, uiArtReady:noop, imageReady:async()=>true, setBg:async()=>{}, showScreen:(_name,root)=>{shown=root;}, retire:root=>root.classList.add('done') },
@@ -71,12 +74,23 @@ reset({spotVisits:{cafe:1}});assert(spots.isUnlocked(cafe),'legacy actual visit 
 reset();assert(!access.spotVisible(axe));state.flags._axe_bar_rumor_done=true;assert(access.spotVisible(axe));
 assert.equal(spots.spotDetailLabel(spots.spotById('minto')),'PEPPERMINT（シーシャ屋）');assert.equal(spots.spotDetailLabel(spots.spotById('shop')),'Dr.fookah（ショップ）');
 const history={};assert.equal(reveals.newlyRevealedSpots(history,'osu',[]).length,0);assert.equal(reveals.newlyRevealedSpots(history,'osu',[{id:'cafe',revealed:true}])[0],'cafe');assert.equal(reveals.newlyRevealedSpots(history,'osu',[{id:'cafe',revealed:true}]).length,0);assert.equal(reveals.newlyRevealedSpots({},'osu',[{id:'cafe',revealed:true}]).length,0,'loaded save baseline');
-reset();const options={regions:[{id:'test',spots:()=>[cafe,axe,spots.spotById('rest')]}]};
-const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve();};
+reset();const options={regions:[{id:'test',spots:()=>[cafe,axe,spots.spotById('rest')]}],onShown:()=>{prompts++;}};
+const flush=async()=>{await new Promise(setImmediate);};
 let flow=map.chooseSpot(options);await flush();assert(shown);assert(!shown.querySelectorAll('.spot-pin').some(n=>n.dataset.spot==='axe_bar'));map.interruptMap(null);await flow;
+assert.equal(prompts,1);assert.equal(reels,1,'ordinary maps show prompts immediately');
 state.flags._cafe_introduced=true;const saved=JSON.stringify(state);flow=map.chooseSpot(options);await flush();
 assert.equal(shown.dataset.revealing,'true');let pin=shown.querySelectorAll('.spot-pin').find(n=>n.dataset.spot==='cafe');assert.equal(pin.style.visibility,'hidden');pin.onclick();assert(!pin.classList.contains('sel'));
+assert.equal(prompts,1);assert.equal(reels,1,'defer follow-up presentation before unlock');
 tick(649);assert.equal(pin.style.visibility,'hidden');tick(1);assert(pin.classList.contains('newly-revealed'));assert(shown.children.some(n=>n.textContent?.includes('なるから聞いた喫茶こはく')));pin.onclick();assert(!pin.classList.contains('sel'));
-tick(1800);assert.equal(shown.dataset.revealing,undefined);pin.onclick();assert(pin.classList.contains('sel'));assert.equal(JSON.stringify(state),saved);map.interruptMap(null);await flow;
+tick(1800);assert.equal(shown.dataset.revealing,'true');assert.equal(shown.dataset.revealPhase,'pause');assert(!pin.classList.contains('newly-revealed'));assert.equal(shown.querySelector('.map-unlock-notice').textContent,'');
+tick(449);assert.equal(prompts,1);assert.equal(reels,1);pin.onclick();assert(!pin.classList.contains('sel'),'hold input during the quiet pause');
+tick(1);assert.equal(shown.dataset.revealing,undefined);assert.equal(shown.dataset.revealPhase,undefined);assert.equal(prompts,2);assert.equal(reels,2);pin.onclick();assert(pin.classList.contains('sel'));assert.equal(JSON.stringify(state),saved);map.interruptMap(null);await flow;
 state.flags._axe_bar_rumor_done=true;flow=map.chooseSpot(options);await flush();assert.equal(shown.dataset.revealing,'true');map.interruptMap('__lime__');assert.equal(await flow,'__lime__');assert.equal(shown.dataset.revealing,undefined);tick(5000);assert.equal(shown.querySelectorAll('.newly-revealed').length,0,'interrupt removes timers/art');
+assert.equal(prompts,2);assert.equal(reels,2,'cancel before pop does not start follow-up presentation');
+// Closing during the quiet pause must also discard the queued prompts.
+reset();const pauseOptions={...options,regions:[{id:'pause-cancel',spots:()=>[cafe]}]};
+flow=map.chooseSpot(pauseOptions);await flush();map.interruptMap(null);await flow;
+state.flags._cafe_introduced=true;flow=map.chooseSpot(pauseOptions);await flush();tick(2450);
+assert.equal(shown.dataset.revealPhase,'pause');map.interruptMap('__load__');assert.equal(await flow,'__load__');
+const beforePrompts=prompts,beforeReels=reels;tick(5000);assert.equal(prompts,beforePrompts);assert.equal(reels,beforeReels);assert.equal(shown.dataset.revealing,undefined);
 console.log('PASS #780: production intro/legacy/access/detail/history/delayed pop/input lock/normal and interrupt cleanup; synthetic state only');

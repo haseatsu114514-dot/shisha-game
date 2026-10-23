@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-21 02:46 UTC",
+ "generated": "2026-10-23 13:45 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -316,6 +316,7 @@
   "bg_street_overcast_night.png",
   "bg_title.png",
   "bg_tonari_customer_hands.png",
+  "bg_tonari_opening_coal.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
   "bg_tonari_inside_night.png",
@@ -335,8 +336,11 @@
   "cg_ch1_tsumugi_heart_art.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
+  "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
   "cg_oneesan_first_smoke.png",
+  "cg_rin_confession.png",
+  "cg_tsumugi_confession.png",
   "cg_tsumugi_smoke_color.png"
  ],
  "faceIcons": [
@@ -1741,6 +1745,7 @@
  },
  "bgm": [
   "bgm_axe.bgm",
+  "bgm_continue_urgent.mp3",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_trpg.bgm",
@@ -1785,6 +1790,7 @@
   "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
   "backgrounds/bg_tonari_customer_hands.png",
+  "backgrounds/bg_tonari_opening_coal.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
   "backgrounds/bg_tonari_inside_night.png",
@@ -2014,6 +2020,9 @@
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "sprites/characters/uranaishi/chr_uranaishi_normal.png"
+  "sprites/characters/uranaishi/chr_uranaishi_normal.png",
+  "cgs/cg_minto_confession.png",
+  "cgs/cg_rin_confession.png",
+  "cgs/cg_tsumugi_confession.png"
  ]
 }

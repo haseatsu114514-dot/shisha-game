@@ -1352,6 +1352,31 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "さすがに明日は、tonariには来ないよね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……終わったら、来ます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "evil",
+          "text": "……ここに帰ってくるまでが、いつもの一日なので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そっか。俺も、終わったら店に寄るつもり"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "じゃあ、終わったら感想、聞かせて"
         },
         {
@@ -1468,6 +1493,26 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "はい。顔は描かずに、手元や座ってるところを"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、うちでいいの？ もっと広い店もあるのに"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……ここがいいです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……私、この店を愛してるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そっか。じゃあ、いい絵にしてもらわないとな"
         },
         {
           "speaker": "hajime",
@@ -1651,6 +1696,31 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……煙だけだと、ここの絵にならなかったんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の手なんて、なくても同じだと思うけどな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……同じじゃないです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんがいないと、私の知ってるtonariじゃないです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そう言ってもらえると、明日も頑張れるな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。明日も、います"
         },
         {
           "speaker": "",

@@ -58,4 +58,14 @@ assert(steps.includes("if (consumes) for (const [id, g] of Object.entries(cs.mix
 // 第1章の案内に家の練習を残さない
 assert(!src("../js/chapters/ch1.js").includes("家で練習する"), "第1章の案内から「家で練習する」を外す");
 
+
+assert(!fs.existsSync(new URL("../js/daily/home-practice.js", import.meta.url)));
+assert(!src("../js/daily/map.js").includes("map-home-practice"));
+assert(!src("../js/daily/calendar.js").includes("runHomePractice"));
+assert(!steps.includes('cs.venue === "home"'));
+assert(!steps.includes('ownLeavesUsed'));
+
+const openingDialogue = src("../../data/dialogue/remake_ch1.json");
+assert(!/家でも練習|家での練習/.test(openingDialogue), "廃止した家練習へ案内しない");
+
 console.log("practice shop only 783: ok");

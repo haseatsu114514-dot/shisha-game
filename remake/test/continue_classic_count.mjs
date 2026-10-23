@@ -10,7 +10,7 @@ const errors = [], missing = [];
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", route => route.abort());
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort());
 async function mount(variant = 0, options = {}) {
   await page.evaluate(async ({ variant, options }) => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");

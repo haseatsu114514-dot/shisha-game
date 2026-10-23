@@ -3,10 +3,29 @@ import assert from "node:assert/strict";
 import { suite } from "./browser/support.mjs";
 
 await suite("continue-readiness", async check => {
+  await check("bundled-bgm", async page => {
+    const requests = [];
+    page.on("request", request => requests.push(request.url()));
+    const decoded = await page.evaluate(async () => {
+      const { bgmUrl } = await import("./js/core/data.js");
+      const url = new URL(bgmUrl("bgm_continue_urgent"), location.href);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`BGM HTTP ${response.status}`);
+      const context = new AudioContext();
+      try {
+        const buffer = await context.decodeAudioData(await response.arrayBuffer());
+        return { url: url.href, origin: url.origin, duration: buffer.duration };
+      } finally { await context.close(); }
+    });
+    assert.equal(decoded.origin, new URL(page.url()).origin);
+    assert(decoded.url.endsWith("/assets/audio/bgm/bgm_continue_urgent.mp3"));
+    assert(decoded.duration > 106 && decoded.duration < 107, "Complete EMGコール must decode");
+    assert.equal(requests.some(url => new URL(url).hostname === "bgmer.net"), false);
+  });
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
-      // 外部曲の取得失敗でも専用合成BGMで始め、期限や入力を固めない。
-      await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
+      // 同梱曲のデコード失敗でも専用合成BGMで始め、期限や入力を固めない。
+      await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
       await page.route("**/ui/continue/neon_title.webp", async route => {
         await new Promise(resolve => setTimeout(resolve, 1200));
         await route.continue();
@@ -27,7 +46,7 @@ await suite("continue-readiness", async check => {
   }
 
   await check("warm-premium", async page => {
-    await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
+    await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.fulfill({ status: 200, contentType: "audio/mpeg", body: "invalid-audio" }));
     await page.evaluate(async () => {
       // 新しい本編モジュールで既定250件を超える。先読みを欠落した計測で判定しない。
       performance.setResourceTimingBufferSize(2000);

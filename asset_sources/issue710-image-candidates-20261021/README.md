@@ -1,4 +1,30 @@
-# #710 採用確認用の画像候補（未採用・未組み込み）
+# #710 採用済み炭カット・会社員2表情と旧候補
+
+## 2026-10-23 炭v3の採用・本編接続
+
+オーナーの「それここでできない？」を受け、冒頭の炭カットもこのチャットで制作。組み込みimage_genで一枚絵を1回生成し、表示後に「この案を採用して進める」と回答を受けた。[原画](opening-coal-v3.png)・[実プロンプト](coal-v3-prompt.txt)・[参照hash/構成/採用/検品/局所QA](coal-v3-adoption.json)を保存。旧v1/v2はそのまま保持し採用しない。
+
+手・トング・小さな角炭・店内が一体の原画を、そのまま `assets/backgrounds/bg_tonari_opening_coal.png` へ複製し、lossless WebPを `remake/img/backgrounds/bg_tonari_opening_coal.webp` へ保存。PNG/WebPの復号後RGB完全一致を確認した。炭をつかむ2本の顎の接点、灰/赤熱、手との縮尺、UIを重ねる前の文字/ロゴ不在を原寸・本編PC/横タッチで目視確認。新規PNG/WebPはLFS管理。Pages・冒頭の該当CIにはこの2配信パスだけの実体取得を追加した。
+
+`playTonariOpening()`の炭カットを専用CG1枚へ変更。旧hand/emberの合成を除去し、共有制作画像は変更していない。画像失敗時のroom復帰、カット順・本文・保存/報酬、LOG/AUTO/SKIP/低モーション/中断の責務は維持。
+
+`CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/tonari_opening.mjs` の6ケース成功。PC/横タッチの通常送りと一枚絵復号、旧合成要素なし、LOG停止/復帰、SKIP/低モーション/中断、既存接客カット欠損、新CG欠損、プレビューの再開・AUTOと保存不変を確認。画像の見た目採用と局所確認であり、実機Safari・全章・公開版確認は未実施。CI/マージの最終状態はIssue #710／今回のPRを参照。
+
+参照写真は既存の縮小H2一覧のみがローカルにあり、元の `IMG_1188.jpeg` を原寸で確認したとは報告しない。HMDを描かない手元カットに必要な粗い縮尺の参照として使い、写真の転載や製品/人物の模写はしていない。
+
+## 2026-10-23 会社員の採用・配信仕上げ
+
+オーナーがこのチャットで通常・笑顔の原画を確認し、「会社員2枚を採用して進める」と決定。予約手順の今回限りの省略も明示許可済み（[Issue記録](https://github.com/haseatsu114514-dot/shisha-game/issues/710#issuecomment-6362993662)）。炭v1/v2は引き続き保留。
+
+`salaryman-normal-v1.png` と `salaryman-smile-v1.png` の原画はそのまま保持し、低alpha（1〜15）の残留を除き、共通crop・倍率・位置で896×1200へ縮小配置した。旧2表情の人物高1098px・足元1175pxに合わせ、normal/smileのPNGとlossless/exact-alpha WebPの4点を置換。共通のmanifest geometryは維持する。
+
+再現・検査: `python3 tools/build_salaryman_710.py --check`。原画SHA、出力4点の再現性、PNG/WebPの復号後RGBA完全一致、四辺の透過余白を確認する。[採用・変換記録](salaryman-adoption.json)にパラメータとhashを保存。新規生成・描き直し・炭の接続は行っていない。
+
+局所表示検証の実行結果は本ブランチの [salaryman-qa.json](salaryman-qa.json) を参照。PC1280×720／横持ちタッチ844×390の実VN・4立ち絵場面で通常→笑顔の枠位置不変、SKIP時の選択保持、退場を確認。画像の寸法・URL・復号、pageerror/resource errorも既存テストで検査。冒頭の顔なしカットも両画面で確認済み（計4ケース成功）。実機Safari・全章通し・公開配信は未検証。
+
+以下は候補保存時の記録。会社員の未採用表記は上の採用決定で更新され、炭の保留と生成履歴は維持する。
+
+## 候補保存時の記録
 
 炭2枚、会社員通常・笑顔各1枚。原画は生成出力をそのまま保存し、切貼り・描画・透過加工をしていない。ゲーム素材・manifest・コードは無変更。候補の採用はユーザー確認後の別作業。
 

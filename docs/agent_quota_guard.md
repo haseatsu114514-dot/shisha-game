@@ -36,19 +36,11 @@ Only observations newer than 15 minutes are actionable; stale/missing readings a
 
 ## Switching to another AI
 
-Keep this workflow available when Codex or Claude reaches its limit. At a task
-boundary, commit and push the work, create a Draft PR for unfinished changes,
-then use [`handoff`](issue_claim_protocol.md#frequent-ai-changes-handoff-then-pickup)
-with DONE / TODO / TEST / NEXT. The current AI declares that editing has stopped;
-the coordinator records exact remote PR heads and keeps the Issue reserved.
-The successor does not have to be known yet.
-
-The next AI uses `pickup` with a new worker ID, waits for its successful run and
-checks the current owner/run before continuing the saved branch. The owner need
-not manually release and reclaim each task. This does not launch the next AI or
-detect quota automatically. If no valid handoff exists after an abrupt limit,
-use the existing verified stopped-session recovery path; never infer that a
-silent worker has stopped. See the linked protocol for exact comment commands,
-cancellation with `resume`, legacy `transfer`, and failure recovery.
+At a task boundary, commit/push the work and create a Draft PR for unfinished
+changes. Write the saved PR/branch and DONE / TODO / TEST / NEXT in the PR or
+Issue, then stop editing. The next AI continues the saved branch. Issue
+reservations (claim / release / handoff) were removed on 2026-10-23, so no
+reservation transfer is needed. This does not launch the next AI or detect
+quotas automatically.
 
 For automatic live quota collection or event-triggered stopping, an official supported machine-readable usage source and an agent runtime integration must first be verified on the actual Mac. Do not present this helper as fully automatic monitoring.

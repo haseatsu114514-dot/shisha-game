@@ -7,7 +7,7 @@ async function setup(page) {
     core.config.bgmVolume = core.config.seVolume = 0;
     window.F = { core, ui: await import('./js/core/ui.js'), map: await import('./js/daily/map.js'),
       spots: await import('./js/daily/spots.js'), rig: await import('./js/daily/home-rig.js'),
-      practice: await import('./js/daily/home-practice.js'), vn: await import('./js/vn/engine.js'),
+      vn: await import('./js/vn/engine.js'),
       chapter: await import('./js/chapters/ch1.js'), steps: await import('./js/craft/steps.js'),
       session: await import('./js/craft/session.js'), data: await import('./js/core/data.js'),
       stats: await import('./js/core/stats.js'), calendar: await import('./js/daily/calendar.js') };
@@ -78,7 +78,6 @@ await suite('play-feedback', async check => {
       for (const id of ['cafe', 'kannon', 'choizap', 'c_station']) assert.equal(await page.locator(`[data-spot="${id}"]`).count(), 0);
       await press(page, '[data-spot="rest"]');
       assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0);
-      assert.deepEqual(await page.evaluate(() => F.practice.runHomePractice({ staminaGuard: () => { throw Error('台なしで消耗確認'); } })), { used: false, exerted: false });
       const geometry = await page.locator('.map-info').evaluate(n => {
         const p = document.querySelector('.map-pins');
         const b = n.getBoundingClientRect();
@@ -96,7 +95,7 @@ await suite('play-feedback', async check => {
       }));
       await page.evaluate(() => { F.map.interruptMap(null); F.core.state.owned.push(F.rig.SUMI_RIG); F.openMap(); });
       await page.locator('.map:not(.done)').waitFor(); await press(page, '[data-spot="rest"]');
-      await page.locator('[data-test="map-home-practice"]').waitFor();
+      assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0, '台を持っていても家練習はない');
     }, options);
   }
   await check('voluntary-conversations-unlock-and-save', async page => {

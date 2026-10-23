@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { suite, assertFits } from "./support.mjs";
+import { confirmAppearanceSetup } from "./appearance_setup.mjs";
 const shots = path.resolve(process.env.SHOTS || fileURLToPath(new URL("../../../.codex/artifacts/remake-browser", import.meta.url)));
 fs.mkdirSync(shots, { recursive: true });
 
@@ -218,7 +219,13 @@ await suite("ch1-eve", async check => {
         await page.locator('[data-test="drill-heat"]').waitFor();
         if (stage !== "drill-menu") await page.locator('[data-test="drill-heat"]').click();
       }
-      if (stage === "during-practice") await advanceTo(page, '[data-test="mix-ok"]');
+      if (stage === "during-practice") {
+        await advanceTo(page, '[data-test="appearance-confirm"]');
+        await confirmAppearanceSetup(page);
+        await advanceTo(page, '[data-test="water-confirm"]');
+        await page.locator('[data-test="water-confirm"]').click();
+        await advanceTo(page, '[data-test="mix-ok"]');
+      }
       if (stage === "during-drill") await page.locator('[data-test="coal-0"]').waitFor();
       if (stage === "during-talk") await page.waitForFunction(() => E.entries.includes("ch1_day7_last_night_talk_sumi"));
       if (stage.startsWith("after-") || stage === "during-feedback") {
