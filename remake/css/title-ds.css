@@ -2,10 +2,13 @@
 :root { --title-layout-ready: 1; }
 .title-layout-toolbar {
   position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right));
-  z-index: 110; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
+  z-index: 110;
   max-width: calc(100% - 20px); padding: 4px; border: 1px solid #b68d53; border-radius: 5px;
   background: #1b1023f2; color: #f6dfaf; font-size: 14px;
 }
+.title-layout-toolbar summary { font-size: 13px; }
+.title-layout-options { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 300px; }
+body[data-screen="title"]:has(#modal.show) .title-layout-toolbar { visibility: hidden; }
 .title-layout-toolbar button, .title-layout-toolbar a { padding: 10px 12px; min-height: 40px; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
 .title-layout-toolbar button[aria-pressed="true"] { background: #67422d; border-radius: 3px; }
 .title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
@@ -71,18 +74,6 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { min-height: 0; }
 @media (max-width: 500px) {
   body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-/* 通常表示の短い横画面では、表示切替バーをギャラリーの閉じるボタンから離す。 */
-@media (max-height: 500px) and (orientation: landscape) {
-  body[data-screen="title"]:has(.title[data-layout="normal"]):has(#modal .gal-overlay) .title-layout-toolbar {
-    left: 4px !important; right: auto !important;
-    width: 72px; max-width: 72px !important;
-    flex-direction: column; flex-wrap: nowrap; align-items: stretch;
-    gap: 2px; font-size: 10px; text-align: center;
-  }
-  body[data-screen="title"]:has(.title[data-layout="normal"]):has(#modal .gal-overlay) .title-layout-toolbar :is(button, a) {
-    padding: 3px 1px; line-height: 1.25;
-  }
 }
 @media (max-width: 760px) and (orientation: portrait) {
   .title[data-layout="ds"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(300px, 1fr)); padding-top: 66px; }
