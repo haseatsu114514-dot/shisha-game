@@ -1,0 +1,33 @@
+{
+  "base": "f74fef59094f949075392d0a6312fbb20d2a9687",
+  "suite": "remake/test/browser/issue508_theme.mjs",
+  "browser": "existing /usr/bin/chromium; Playwright",
+  "profiles": [
+    "1280x720 PC",
+    "844x390 touch emulation"
+  ],
+  "results": [
+    {
+      "label": "pc-four-portrait-scenes-and-skip",
+      "status": "passed"
+    },
+    {
+      "label": "pc-opening-keeps-faceless-cuts",
+      "status": "passed"
+    },
+    {
+      "label": "touch-four-portrait-scenes-and-skip",
+      "status": "passed"
+    },
+    {
+      "label": "touch-opening-keeps-faceless-cuts",
+      "status": "passed"
+    }
+  ],
+  "limits": [
+    "Physical Safari/gamepad not tested",
+    "No full chapter run",
+    "No public deployment verification"
+  ],
+  "delivery_hashes": "salaryman-adoption.json"
+}
