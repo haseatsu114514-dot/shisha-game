@@ -1,0 +1,155 @@
+[
+  {
+    "platform": "pc",
+    "character": "minto",
+    "id": "cg_minto_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_minto_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      0,
+      0,
+      1280,
+      720
+    ],
+    "errors": []
+  },
+  {
+    "platform": "pc",
+    "character": "tsumugi",
+    "id": "cg_tsumugi_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_tsumugi_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      0,
+      0,
+      1280,
+      720
+    ],
+    "errors": []
+  },
+  {
+    "platform": "pc",
+    "character": "rin",
+    "id": "cg_rin_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_rin_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      0,
+      0,
+      1280,
+      720
+    ],
+    "errors": []
+  },
+  {
+    "platform": "touch",
+    "character": "minto",
+    "id": "cg_minto_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_minto_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      75.33331298828125,
+      0,
+      693.3333740234375,
+      390
+    ],
+    "errors": []
+  },
+  {
+    "platform": "touch",
+    "character": "tsumugi",
+    "id": "cg_tsumugi_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_tsumugi_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      75.33331298828125,
+      0,
+      693.3333740234375,
+      390
+    ],
+    "errors": []
+  },
+  {
+    "platform": "touch",
+    "character": "rin",
+    "id": "cg_rin_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_rin_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      75.33331298828125,
+      0,
+      693.3333740234375,
+      390
+    ],
+    "errors": []
+  },
+  {
+    "platform": "ds",
+    "character": "minto",
+    "id": "cg_minto_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_minto_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      12,
+      64,
+      623,
+      644
+    ],
+    "errors": []
+  },
+  {
+    "platform": "ds",
+    "character": "tsumugi",
+    "id": "cg_tsumugi_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_tsumugi_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      12,
+      64,
+      623,
+      644
+    ],
+    "errors": []
+  },
+  {
+    "platform": "ds",
+    "character": "rin",
+    "id": "cg_rin_confession",
+    "url": "http://127.0.0.1:8123/remake/img/cgs/cg_rin_confession.webp",
+    "size": [
+      1672,
+      941
+    ],
+    "rect": [
+      12,
+      64,
+      623,
+      644
+    ],
+    "errors": []
+  }
+]
