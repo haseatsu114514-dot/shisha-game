@@ -27,20 +27,22 @@
         1672,
         941
       ],
-      "sha256": "0e0b105243c8a4ec38ed92b3cf7045d1d6d094ad338ad182bc6f2e579ab1ac9e",
+      "sha256": "c7671704ff7f2a2e726dcf8cfb052a0e5a02a035d01a658c04c361b6f6ab9233",
       "delivery": "remake/img/cgs/cg_tsumugi_confession.webp",
-      "deliveryBytes": 307696,
+      "deliveryBytes": 344406,
       "prompt": "tsumugi.prompt.txt",
       "generator": "image_gen.imagegen",
       "transparent_background": false,
       "references": [
         "assets/ui/title_arts/title_art_keyvisual_01.png",
         "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-        "assets/sprites/characters/hajime/chr_hajime_normal.png"
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "remake/img/backgrounds/bg_street_night.webp"
       ],
       "revisionPrompts": [
         "tsumugi-reframe.prompt.txt",
-        "tsumugi-socks.prompt.txt"
+        "tsumugi-socks.prompt.txt",
+        "tsumugi-location.prompt.txt"
       ]
     },
     {
@@ -70,6 +72,10 @@
     {
       "source": "asset_sources/confession-cgs-issue896/rejected/tsumugi-v2-short-socks.png",
       "sha256": "c68bcfe467ae33bf75af81843e8d02c53bede2135b2f72db375b1221dedae8d0"
+    },
+    {
+      "source": "asset_sources/confession-cgs-issue896/rejected/tsumugi-v3-wrong-location.png",
+      "sha256": "0e0b105243c8a4ec38ed92b3cf7045d1d6d094ad338ad182bc6f2e579ab1ac9e"
     }
   ]
 }
