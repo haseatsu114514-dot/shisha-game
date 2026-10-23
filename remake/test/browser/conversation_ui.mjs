@@ -67,12 +67,12 @@ await suite("conversation-ui", async check => {
       const frameStyle = () => page.locator(".vn-box").evaluate(box => ({
         frame: getComputedStyle(box, "::before").backgroundImage,
         top: getComputedStyle(box, "::before").top,
+        paintedHeight: parseFloat(getComputedStyle(box, "::before").height),
         nameHidden: getComputedStyle(box.querySelector(".vn-name")).display === "none",
         height: box.offsetHeight,
       }));
       const narration = await frameStyle();
       assert(narration.frame.includes("narration.svg"), "Narration must use the flat, nameless frame");
-      assert.equal(narration.top, "0px");
       assert(narration.nameHidden);
       await page.locator(".vn-next.show").waitFor();
       // A newly opened scene rejects input for 320ms, even if its text is ready.
@@ -88,6 +88,10 @@ await suite("conversation-ui", async check => {
       assert(dialogue.frame.includes("dialogue.svg"), "Speech must restore the named frame");
       assert.equal(dialogue.nameHidden, false);
       assert.equal(dialogue.height, narration.height, "Switching frames must preserve text layout");
+      assert(Math.abs(dialogue.paintedHeight / 451 - narration.paintedHeight / 370) < .001,
+        "Named and nameless artwork must use the same vertical scale");
+      assert(Math.abs(parseFloat(dialogue.top) + dialogue.paintedHeight - parseFloat(narration.top) - narration.paintedHeight) < .02,
+        "Named and nameless artwork must share the bottom edge");
     }, { viewport });
   }
 }, { entry: new URL("conversation-preview.html", baseURL).href, readySelector: ".vn-box" });
