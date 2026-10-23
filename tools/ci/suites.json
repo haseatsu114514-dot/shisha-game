@@ -834,7 +834,10 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/ch1-tournament"
       },
-      "chrome": "playwright"
+      "chrome": "playwright",
+      "sparse": [
+        "/docs/qa/issue508-theme/"
+      ]
     },
     {
       "id": "steam-forecast",
@@ -1101,7 +1104,9 @@
         "BASE_URL=http://127.0.0.1:8123/remake/ ARTIFACT_DIR=.codex/artifacts/title-candidates-375 node asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/preview.mjs"
       ],
       "sparse": [
-        "/asset_sources/heroine-title-candidates-20261009/review-issue375/"
+        "/asset_sources/heroine-title-candidates-20261009/review-issue375/",
+        "/asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png",
+        "/asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png"
       ],
       "pillow": true
     },

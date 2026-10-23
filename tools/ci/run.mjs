@@ -73,9 +73,14 @@ async function waitFor(url, seconds = 30) {
   return false;
 }
 
+const changedFiles = () => (spawnSync("git", ["diff", "--name-only"], { cwd: ROOT, encoding: "utf8" }).stdout || "")
+  .split("\n").filter(Boolean);
+// Files already changed before the run (local work in progress) are never touched.
+const changedBeforeRun = new Set(changedFiles());
+if (changedBeforeRun.size) console.log(`Local changes are left as they are: ${[...changedBeforeRun].slice(0, 10).join(", ")}`);
+
 function restoreTrackedFiles(suiteId) {
-  const diff = spawnSync("git", ["diff", "--name-only"], { cwd: ROOT, encoding: "utf8" });
-  const files = (diff.stdout || "").split("\n").filter(Boolean);
+  const files = changedFiles().filter((f) => !changedBeforeRun.has(f));
   if (!files.length) return;
   console.log(`::warning::${suiteId} changed tracked files; restoring them so later suites start clean: ${files.slice(0, 10).join(", ")}`);
   spawnSync("git", ["checkout", "--", ...files], { cwd: ROOT, stdio: "inherit" });
