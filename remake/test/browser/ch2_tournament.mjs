@@ -58,6 +58,8 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     await click(t('continue'));
   }
   await page.locator(t('result')).waitFor();
+  const remnants=await page.locator('#vn .vn-box, #vn .vn-controls').evaluateAll(nodes=>nodes.map(node=>getComputedStyle(node).visibility));
+  assert(remnants.length===2 && remnants.every(value=>value==='hidden'),'Finished dialogue remains visible over tournament result');
   await capture(page,touch?'touch-result':'pc-result');
   const s=await get(page),p=s.flags._ch2_tournament;
   assert.equal(p.craft.careHistory.length,2);assert.equal(p.result.careHistory.length,2);assert.equal(p.history.length,1);
