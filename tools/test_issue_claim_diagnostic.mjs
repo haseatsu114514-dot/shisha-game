@@ -24,7 +24,10 @@ function fixture({comments=[], issues={}, prs=[], files={}, runs={}} = {}) {
   };
   const github = {paginate, rest:{issues:{listCommentsForRepo:'comments',
     get:async ({issue_number}) => ({data:issues[issue_number] || {number:issue_number, title:`Issue ${issue_number}`,state:'open'}})},
-    pulls:{list:'prs', listFiles:'files', get:async ({pull_number}) => ({data:prs.find(pr => pr.number === pull_number)})},
+    pulls:{list:'prs', listFiles:'files', get:async ({pull_number}) => {
+      const pr=prs.find(item => item.number === pull_number);
+      return {data:pr && {changed_files:(files[pull_number] || []).length, ...pr}};
+    }},
     actions:{getWorkflowRun:async ({run_id}) => ({data:runs[run_id] ||
       {status:'completed', conclusion:'success', path:'.github/workflows/issue-claim.yml',repository:{full_name:'example/game'}}})}}};
   return {github,calls};
@@ -93,4 +96,13 @@ test('API failure cannot produce an apparently complete report', async () => {
   const {github}=fixture();
   github.paginate=async () => {throw Error('page fetch failed')};
   await assert.rejects(diagnose(github,context,[]),/page fetch failed/);
+});
+
+test('a truncated PR file list fails the diagnostic instead of reporting disjoint paths', async () => {
+  const prs=[{number:20,title:'Work #10',body:'',state:'open',changed_files:3001,
+    head:{sha,repo:{full_name:'example/game'}}}];
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,
+    files:{20:[{filename:'data/a.json'}]}});
+  await assert.rejects(diagnose(github,context,['remake/js/new.js']),
+    /Incomplete changed-file list for PR #20/);
 });

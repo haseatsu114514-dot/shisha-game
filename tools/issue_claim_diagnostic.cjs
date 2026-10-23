@@ -88,8 +88,14 @@ async function diagnose(github, context, candidatePaths = []) {
   const fileCache = new Map();
   async function filesFor(number) {
     if (!fileCache.has(number)) {
+      const {data:pr} = await github.rest.pulls.get({...repo, pull_number:number});
       const files = await github.paginate(github.rest.pulls.listFiles,
         {...repo, pull_number:number, per_page:100});
+      // GitHub caps this endpoint at 3,000 files. An incomplete list must not
+      // appear to prove that a candidate path is disjoint from a saved PR.
+      if (!Number.isSafeInteger(pr.changed_files) || pr.changed_files !== files.length) {
+        throw Error('Incomplete changed-file list for PR #' + number);
+      }
       fileCache.set(number, changedPaths(files));
     }
     return fileCache.get(number);
