@@ -17,7 +17,7 @@ assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
 assert.equal(night(9).pin, "ch2_c_station");
 assert.equal(night(9).steps[0].room, undefined);
 assert.equal(night(9).steps[0].bg, C_STATION_TASTING_BG);
-assert(fs.existsSync(new URL(`../../${C_STATION_TASTING_BG.replace("../", "")}`, import.meta.url)), C_STATION_TASTING_BG);
+assert.match(C_STATION_TASTING_BG, /^\.\.\/assets\/backgrounds\/bg_c_station_night\.png$/, "C.STATIONの客席（画像の読み込みはブラウザの ch2_story で確認）");
 assert.doesNotMatch(night(9).label, /試飲|店長同士/);
 assert.deepEqual(night(10).steps.map((s) => s.id), ["ch2_sumi_silence", "remake_ch2_ageha_slump"]);
 assert(!night(8), "8日目はサメのTRPG参加日");
