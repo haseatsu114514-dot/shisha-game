@@ -1,0 +1,58 @@
+[
+  {
+    "id": "trpg",
+    "file": "candidates/trpg.png",
+    "bytes": 2729245,
+    "sha256": "85aba60eae0b4842c0d225f287c4a447939194716f6dccc1503f0949e88b079e",
+    "status": "candidate"
+  },
+  {
+    "id": "arcade-withdrawn",
+    "file": "candidates/arcade-withdrawn.png",
+    "bytes": 2800330,
+    "sha256": "85436a371136136e1a5c55e978d52b36ba4b8aef4b17a3ec8f13da5703681105",
+    "status": "withdrawn"
+  },
+  {
+    "id": "sento",
+    "file": "candidates/sento.png",
+    "bytes": 3072460,
+    "sha256": "b746db2a1e87723abe1c79a8c92baffba5ad1ba2eae162133873cada25feda93",
+    "status": "candidate"
+  },
+  {
+    "id": "kumicho-room",
+    "file": "candidates/kumicho-room.png",
+    "bytes": 2522122,
+    "sha256": "2f160aaf8aa13530113dd8538474d2e565ca05118e67da28d07df9764462f8bd",
+    "status": "candidate"
+  },
+  {
+    "id": "shop",
+    "file": "candidates/shop.png",
+    "bytes": 2848685,
+    "sha256": "9b92c20e575e9d7db8ba6f30d280ff1c809f33e74033e9e235a8115223d73bf3",
+    "status": "candidate"
+  },
+  {
+    "id": "aquarium",
+    "file": "candidates/aquarium.png",
+    "bytes": 2972986,
+    "sha256": "3c439882e52e90d372c95e3afd69c22b067c27c867bf05eec59100b3b779c9c7",
+    "status": "candidate"
+  },
+  {
+    "id": "cutin-kumicho",
+    "file": "candidates/cutin-kumicho.png",
+    "bytes": 3257758,
+    "sha256": "1d7e7225601c2692f3044e8ce3e230c367626e53026d113b2021252cf25dd92f",
+    "status": "candidate"
+  },
+  {
+    "id": "cutin-rei",
+    "file": "candidates/cutin-rei.png",
+    "bytes": 3459823,
+    "sha256": "320e03a3ce1fb1a8ba44356c09651d9eee233b02b19ca56fa78ceba2a2a68284",
+    "status": "candidate"
+  }
+]
