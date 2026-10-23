@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
 prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -121,6 +122,7 @@ try {
       await hit(p,"pin-rest",device.touch); await hit(p,"map-home-practice",device.touch);
       await hit(p,"home-practice-full",device.touch);
       await confirmAppearanceSetup(p, { touch: device.touch });
+      await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();
       if (device.mode === "ds") assert.equal(await p.locator(".bench-panel").evaluate(n=>n.getBoundingClientRect().width),760,"non-pack fixed panel was shrunk");
       for (let n=0;n<10;n++) await hit(p,"mix-plus-double_apple",device.touch);
@@ -183,3 +185,4 @@ try {
 } catch(e) { report.launchError=e.stack; console.error(e.stack); }
 finally { await browser?.close(); write("results.json",report); }
 if (report.launchError || report.cases.length!==4 || report.cases.some(r=>r.status!=="passed")) process.exitCode=1;
+
