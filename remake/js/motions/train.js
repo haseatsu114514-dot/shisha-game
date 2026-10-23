@@ -16,7 +16,8 @@ const MONO_TRAIN = { bg: MONO.deep, win: "#3a2a6e", glow: MONO.light, back: "#3e
 const SPAN = 4180; // 車内の絵の横幅（手前の乗客の絵4枚ぶん）
 const SLANT = 150; // 先頭と最後尾の斜めの切り口
 const RAIL_Y = 46, STRAP_Y = 128; // 吊り革の棒と輪の位置
-const HALF = 1350; // 入ってくる半分・出ていく半分の長さ（ms）
+const TOTAL = 2800; // 全体の長さ（ms）
+const FEATHER = 380; // 先頭・最後尾を暗がりへ溶かす幅
 
 /** 吊り革1本（上端 (x, RAIL_Y) を軸に揺らす） */
 function strap(P, x) {
@@ -77,6 +78,11 @@ function carriage(P, id) {
       svg("stop", { offset: 1, "stop-color": P.bg, "stop-opacity": 0.7 }),
     ]),
     tint(`${id}-front`, P.ink, P.front, P.rim),
+    ...["L", "R"].map((side) => svg("linearGradient", { id: `${id}-edge${side}`, x1: side === "L" ? 0 : 1, y1: 0, x2: side === "L" ? 1 : 0, y2: 0 }, [
+      svg("stop", { offset: 0, "stop-color": P.bg, "stop-opacity": 1 }),
+      svg("stop", { offset: 0.45, "stop-color": P.bg, "stop-opacity": 0.85 }),
+      svg("stop", { offset: 1, "stop-color": P.bg, "stop-opacity": 0 }),
+    ])),
     tint(`${id}-back`, P.bg, P.back, P.mid), // 奥は暗がりに沈める
   ]));
   body.push(svg("polygon", { points: edge, fill: P.bg }));
@@ -97,26 +103,21 @@ function carriage(P, id) {
   body.push(...panels.map((p) => p.g));
   // 足元へ向かって暗く
   body.push(svg("rect", { x: 0, y: 0, width: SPAN, height: H + 80, fill: `url(#${id}-fade)` }));
+  // 先頭と最後尾: 人の切れ目を見せないよう暗がりへ溶かし、斜めの切り口に光の線を2本
+  body.push(svg("rect", { x: -40, y: -60, width: FEATHER + 40, height: H + 140, fill: `url(#${id}-edgeL)` }));
+  body.push(svg("rect", { x: SPAN - FEATHER, y: -60, width: FEATHER + 40, height: H + 140, fill: `url(#${id}-edgeR)` }));
+  for (const [x0, w, o] of [[0, 7, 0.75], [26, 3, 0.4]]) {
+    body.push(svg("line", { x1: SLANT + x0, y1: -60, x2: x0, y2: H + 80, stroke: P.rim, "stroke-width": w, opacity: o }));
+    body.push(svg("line", { x1: SPAN - x0, y1: -60, x2: SPAN - SLANT - x0, y2: H + 80, stroke: P.rim, "stroke-width": w, opacity: o }));
+  }
   const people = panels.map((p, i) => ({ bob: p.bob, phase: i * 1.7, amp: 2 + (i % 3) }));
   return { g: svg("g", { "clip-path": `url(#${id}-car)` }, body), straps, people, lights };
 }
 
 let serial = 0;
-/** 入りは加速、出は減速（つなぎ目で速さがそろう） */
-const easeIn = (p) => 0.5 * p + 0.5 * p * p;
-const easeOut = (p) => 1.5 * p - 0.5 * p * p;
-function tween(ms, f) {
-  return new Promise((done) => {
-    const t0 = performance.now();
-    const tick = (now) => {
-      const p = Math.min(1, (now - t0) / ms);
-      f(p);
-      if (p < 1) requestAnimationFrame(tick);
-      else done();
-    };
-    requestAnimationFrame(tick);
-  });
-}
+/** 進み方: 入りと出は速く、真ん中（画面を覆っている間）はゆっくり揺れる。速さは 1+K·cos(2πu) */
+const K = 0.82;
+const travel = (u) => u + (K * Math.sin(2 * Math.PI * u)) / (2 * Math.PI);
 
 /** ガタン（継ぎ目）の小さな縦の跳ね: t 秒のあと短く沈んで戻る */
 const JOLTS = [0.15, 0.27, 1.05, 1.17, 1.95, 2.07];
@@ -131,7 +132,7 @@ export async function a(mid, { tone } = {}) {
     const pan = svg("g", {}, [car.g]);
     const rock = svg("g", {}, [pan]);
     node.append(stageSvg([rock]));
-    const start = W + 20, end = -SPAN - 20, center = (W - SPAN) / 2;
+    const start = W + 20, end = -SPAN - 20;
     let x = start;
     const t0 = performance.now();
     // 毎フレーム: 車体の揺れ・吊り革の振れ・人の小さな上下・窓の光の流れ
@@ -150,14 +151,24 @@ export async function a(mid, { tone } = {}) {
     };
     let done = false;
     requestAnimationFrame(frame);
-    SE.train?.(HALF * 2 / 1000);
+    SE.train?.(TOTAL / 1000);
+    // 真ん中で次の背景へ替え始め、見え始める前に替わっていなければ、そこで車内の流れを少し待つ
+    let swap = null, swapped = !mid;
     try {
-      // 1. 右から車内が入ってきて、画面を覆う
-      await tween(HALF, (p) => { x = start + (center - start) * easeIn(p); });
-      // 2. 覆っている間に次の背景へ（ふつうは一瞬）
-      await mid?.();
-      // 3. そのまま左へ通り過ぎ、新しい場面が見える
-      await tween(HALF, (p) => { x = center + (end - center) * easeOut(p); });
+      await new Promise((finish) => {
+        let last = performance.now(), clock = 0;
+        const tick = (now) => {
+          const dt = now - last; last = now;
+          const u0 = clock / TOTAL;
+          if (u0 >= 0.5 && !swap && mid) swap = Promise.resolve(mid()).catch((e) => console.error(e)).then(() => { swapped = true; });
+          if (u0 < 0.7 || swapped) clock += dt;
+          const u = Math.min(1, clock / TOTAL);
+          x = start + (end - start) * travel(u);
+          if (u < 1) requestAnimationFrame(tick); else finish();
+        };
+        requestAnimationFrame(tick);
+      });
+      if (swap) await swap;
     } finally {
       done = true;
     }
