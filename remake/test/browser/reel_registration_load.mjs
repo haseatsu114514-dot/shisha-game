@@ -31,7 +31,24 @@ async function advanceDialogue(page, touch) {
   }
 }
 async function receiptToIntro(page, touch) {
-  await page.locator('[data-test="pin-c_station"]').waitFor();
+  // #834: the fresh DAY2 now reads both real delivery requests before registration.
+  // Advance the VN through the UI; do not fabricate told/done flags to reach the map.
+  const receiptPin = page.locator('[data-test="pin-c_station"]');
+  for (let n = 0; n < 400 && !(await receiptPin.isVisible()); n++) {
+    await advanceDialogue(page, touch);
+    await page.waitForTimeout(80);
+  }
+  await receiptPin.waitFor();
+  const briefing = await page.evaluate(async () => {
+    const s = (await import('./js/core/state.js')).state;
+    return { started: !!s.flags._delivery_batch_started,
+      mintoTold: !!s.flags._delivery_minto_told, adamTold: !!s.flags._delivery_adam_told,
+      mintoDone: !!s.flags._delivery_minto_done, adamDone: !!s.flags._delivery_adam_done,
+      day: s.day, slot: s.slot, money: s.money, stamina: s.stamina };
+  });
+  assert.deepEqual(briefing, { started: true, mintoTold: true, adamTold: true,
+    mintoDone: false, adamDone: false, day: 2, slot: 0, money: 10000, stamina: 80 },
+  'Both requests must be read before the free registration, without delivering or paying');
   await tap(page, '[data-test="pin-c_station"]', touch);
   await tap(page, '[data-test="map-go"]', touch);
   for (let n = 0; n < 200; n++) {

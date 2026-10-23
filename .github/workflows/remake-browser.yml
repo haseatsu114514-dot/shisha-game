@@ -38,7 +38,8 @@ jobs:
   ds-layout:
     name: Reversible game display on PC and touch
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -46,11 +47,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned browser dependencies
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Start production preview server
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ds-preview.log" 2>&1 &
@@ -93,7 +95,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /asset_sources/
+            !/asset_sources/*/
+            /assets/
+            !/assets/*/
+            /docs/
+            !/docs/*/
+            /docs/qa/
+            !/docs/qa/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             asset_sources/fortune-teller-682
             docs/qa/hud-fortune-682
             tools
@@ -126,6 +140,20 @@ jobs:
           done
           cat "$RUNNER_TEMP/remake-preview.log"
           exit 1
+      - name: Adam and EDEN adopted art on PC and touch
+        if: matrix.shard == 1
+        timeout-minutes: 3
+        env:
+          ARTIFACT_DIR: .codex/artifacts/adam-eden-711
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node remake/test/browser/adam_eden_711.mjs
+      - name: Preserve Adam and EDEN review images
+        if: always() && matrix.shard == 1
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: adam-eden-711-results
+          path: .codex/artifacts/adam-eden-711/
+          retention-days: 7
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Pakki reel lifecycle and introduction read-through
         if: matrix.shard == 2
@@ -287,7 +315,8 @@ jobs:
   eve:
     name: Chapter 1 eve choices and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/eve
@@ -295,7 +324,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /assets/
+            !/assets/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             remake
             data
             assets/audio
@@ -309,11 +344,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Choices, actual steps, legacy flags and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/eve-preview.log" 2>&1 &
@@ -335,7 +371,8 @@ jobs:
   practice:
     name: Chapter 1 focused practice and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/practice
@@ -343,7 +380,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /assets/
+            !/assets/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             remake
             data
             assets/audio
@@ -357,11 +400,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: DAY3 review, DAY7 care, legacy history and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/practice-preview.log" 2>&1 &
@@ -391,7 +435,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /asset_sources/
+            !/asset_sources/*/
+            /assets/
+            !/assets/*/
+            /docs/
+            !/docs/*/
+            /docs/qa/
+            !/docs/qa/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             asset_sources/fortune-teller-682
             docs/qa/hud-fortune-682
             tools

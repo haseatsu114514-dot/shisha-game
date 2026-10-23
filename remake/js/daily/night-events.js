@@ -80,8 +80,8 @@ export async function runNightPlan(events, before = async () => {}) {
   for (const ev of plan) {
     if (ev.done?.()) continue;
     if (!ready(ev)) throw new Error(`Night event prerequisites missing: ${ev.id}`);
-    await before(ev);
-    await ev.run();
+    const context = await before(ev);
+    await ev.run(context);
     state.flags._night_event_day = `${state.chapter}:${state.day}`;
     count++;
     syncNightQueue(events, { resting: false });

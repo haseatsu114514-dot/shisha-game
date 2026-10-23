@@ -182,6 +182,61 @@ export function benchRoot(cs) {
   return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
 }
 
+/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
+export async function explainTutorialStep(cs, id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
+  if (!current()) return false;
+  if (cs.mode !== "tutorial") return true;
+  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
+  b.explainedLessons ??= new Set();
+  if (!lesson || b.explainedLessons.has(id)) return true;
+  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+  const guide = b.guide.root, note = b.guide.note, fullNote = note.textContent;
+  const tip = guide.querySelector(".bench-guide-tip"), summary = guide.querySelector("summary");
+  // 固定作業台の縮小後も、初回説明は読める文字と押せる閉じ口を保つ。
+  const styles = [
+    [tip, { width: "min(760px, calc(92vw / var(--k, 1)))" }],
+    [note, { fontSize: "calc(16px / var(--k, 1))", lineHeight: "1.5" }],
+    [tip.querySelector("b"), { fontSize: "calc(16px / var(--k, 1))" }],
+    [tip.querySelector("small"), { fontSize: "calc(14px / var(--k, 1))" }],
+    [summary, { width: "calc(44px / var(--k, 1))", height: "calc(44px / var(--k, 1))" }],
+  ].map(([node, values]) => ({ node, values, previous: Object.fromEntries(Object.keys(values).map(key => [key, node.style[key]])) }));
+  styles.forEach(({ node, values }) => Object.assign(node.style, values));
+  // 最初はスミの既存説明だけ。詳しい操作は従来の「?」に残す。
+  note.textContent = lesson.detail;
+  const pending = new Promise(resolve => {
+    const finish = ok => {
+      guide.removeEventListener("toggle", closed);
+      observer.disconnect();
+      styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
+      if (current() || note.textContent === lesson.detail) note.textContent = fullNote;
+      if (b.panel.dataset.step === id) {
+        guide.open = false;
+        b.panel.inert = false;
+        b.root.dataset.helpPaused = "false";
+      }
+      resolve(ok);
+    };
+    const closed = () => { if (!guide.open) finish(current()); };
+    const observer = new MutationObserver(() => { if (!current()) finish(false); });
+    guide.addEventListener("toggle", closed);
+    observer.observe(b.root.ownerDocument.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-step"] });
+    guide.open = true;
+    // toggleの配送を待たず、この描画から操作を止める。
+    b.panel.inert = true;
+    b.root.dataset.helpPaused = "true";
+    // 既存の自動操作フックも、表示してからガイドを閉じて進む。
+    if (craftTest.auto) sleep(120).then(() => { if (current()) guide.open = false; });
+  });
+  b.pendingHelp = { id, promise: pending };
+  const acknowledged = await pending;
+  b.pendingHelp = null;
+  if (!acknowledged || !current()) return false;
+  b.explainedLessons.add(id);
+  return true;
+}
+
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;

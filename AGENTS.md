@@ -57,7 +57,7 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - ローカルCLIと、認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・ローカルcheckoutの有無を実装許可の条件にせず、利用可能な経路で同じ予約・差分・保存・検証条件を満たす。CLIの未導入とGitHub権限不足は区別する。
 - CLI経路では下のGit Safetyを実行する。checkoutを持たないGitHub連携では、対象repo、最新main SHA、作業branchのbase/head、既存PRの変更ファイル、現在の予約owner/runをAPIで確認する。ローカル専用のroot・hooks・スクリプト検査は「対象外」と記録し、実行済みとは報告しない。実際にcheckoutで編集する場合はCLI側の検査も必要。
 - 連携経路での保存は、最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitを作成する。ref更新は期待headを指定し、forceを使わない。無関係なtreeを置き換えず、予期しないhead変更は再読・再比較する。既存PRの再開にはそのbranchと、別workerなら正式な移管を使う。
-- 予約は両経路ともゲームrepoの同じ `issue-claim.yml` を使う。dispatchがない連携はIssue/PR Conversationへの `/issue-claim` コメントを使い、コメントIDに対応した成功runと最新bot owner/runを照合する。`next`が使えなくても、候補を読み取り選定して `claim` できる。詳細と両経路の例: [予約手順書](docs/issue_claim_protocol.md)。
+- 予約は両経路ともゲームrepoの同じ `issue-claim.yml` を使う。dispatchがない連携はIssue/PR Conversationへの `/issue-claim` コメントを使い、コメントIDに対応した成功runと最新bot owner/runを照合する。連携が自動で付ける既知の署名1つは受理され、不正な要求には拒否理由が返る（形式・結果の読み方は予約手順書）。`next`が使えなくても、候補を読み取り選定して `claim` できる。詳細と両経路の例: [予約手順書](docs/issue_claim_protocol.md)。
 - GitHub連携でcommit作成とbranch更新を確認することはCLIのcommit/pushに相当する。PRを作り、変更を含む正確なheadのCIを確認する。ローカルテスト不能なら未実施と記録し、対応CIで検証する。テスト・run情報も読めなければ確認済みとせず、必要な変更だけを保留する。
 - 既存認証の範囲で可能な経路を使い、CLI不在だけを理由に再承認・新規ログインを求めない。新しい認証情報、権限拡大、公開範囲変更が必要な場合だけ、その変更の前に相談する。権限拒否を別アカウントや別経路で迂回しない。
 - 共通コードの分離先は非公開の `haseatsu114514-dot/dot-ai-bridge-test`。分離先のPRをゲームmainへの外部コード導入済みとは扱わない。handoff/pickupはこのrepo内の実装を使う。外部コードの取得・本番切替が承認・導入されるまでは、このrepoのmainと予約台帳を使う。非公開repoの参照権限がなくても、このrepo内の手順で既存作業を継続できる。既存予約をコピー・初期化・再取得しない。

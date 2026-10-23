@@ -9,6 +9,7 @@ import { openPhone, openLime } from "../daily/phone.js";
 import { playBgm } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
+import { stepWater } from "../craft/water-view.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
@@ -23,7 +24,9 @@ import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "rules", "farewell", "tasteless"].map(id => `ch2_tournament_${id}`);
-const STEPS = [stepSetup, stepMix, stepPack, runHoles, stepPlace, runHeat,
+// SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
+const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
+const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
@@ -275,3 +278,4 @@ async function drive(owner) {
     else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
   }
 }
+

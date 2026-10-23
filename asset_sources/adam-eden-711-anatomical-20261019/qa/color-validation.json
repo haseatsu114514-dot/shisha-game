@@ -1,0 +1,298 @@
+[
+  {
+    "source": "issue711-audit/assets/backgrounds/bg_eden_shop.png",
+    "output": "issue711-work/assets/backgrounds/bg_eden_shop.png",
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "RGB",
+    "before": {
+      "bytes": 395780,
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+      "git_blob_sha": "7ca4d97d95181cf0279ce3099877a512e2b3cde2"
+    },
+    "after": {
+      "bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "git_blob_sha": "933de5ce0b9b992156f5907d1ae6db3db28b52c1"
+    },
+    "mask": {
+      "bytes": 1159,
+      "sha256": "cdf0a6933f85c0afedcb8fbaae9546b472f3b829c955064dfd5e473b461b44bc",
+      "git_blob_sha": "d3c5e85368e38102c5cf0620e69af079040f033e"
+    },
+    "operations": [
+      {
+        "name": "left_foreground_apple",
+        "selected_pixels": 735
+      },
+      {
+        "name": "right_foreground_apple",
+        "selected_pixels": 734
+      }
+    ],
+    "changed_pixels": 1468,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/ui/character_intros/adam.png",
+    "output": "issue711-work/assets/ui/character_intros/adam.png",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "before": {
+      "bytes": 3336242,
+      "sha256": "f80e8e102f034765f428a4e45626fafe61120e20db6ac32ac378bebe827bd08b",
+      "git_blob_sha": "f8bccfc15dadeb47a1a281597706d9b966fed09f"
+    },
+    "after": {
+      "bytes": 3077020,
+      "sha256": "e373cd560a82a6cf7416a47cd48eb1fe6de6bce18e2c94ffdd484522ec23a8c6",
+      "git_blob_sha": "7b1c4743717d92e660409878ff3ba65c4bf29db0"
+    },
+    "mask": {
+      "bytes": 24168,
+      "sha256": "a00d8757d7dccd79046b228daa03ab2ad6af3b9d74315c1608dced4332cce672",
+      "git_blob_sha": "ca87adcd49ff32181378da5e9b83bb83d11a0166"
+    },
+    "operations": [
+      {
+        "name": "left_green_to_red",
+        "selected_pixels": 53120
+      },
+      {
+        "name": "right_red_to_green",
+        "selected_pixels": 63930
+      }
+    ],
+    "changed_pixels": 117050,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/cgs/cg_ch1_tournament_battle.png",
+    "output": "issue711-work/assets/cgs/cg_ch1_tournament_battle.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "mode": "RGB",
+    "before": {
+      "bytes": 2797659,
+      "sha256": "694eb554d9f8e302b4047f0fbd5812ca38bfcc9814d6d92c3050234ec8691974",
+      "git_blob_sha": "079edba78a47487b203bc6c2ab9b4e65ac0595dd"
+    },
+    "after": {
+      "bytes": 2798440,
+      "sha256": "cf59f7021f45f51c005d4ff84a8f05b35fbdf4d6e65eca1a21bedefb7f785d53",
+      "git_blob_sha": "799fac1a563b009cb309592decc09b6fd36068ac"
+    },
+    "mask": {
+      "bytes": 3550,
+      "sha256": "36cc16fbd3ffee44e324e2cbdbe7fa7db9de2d4de604d9cad021d025012f0087",
+      "git_blob_sha": "4178924e2b891405eeb4e99816aedd7190aa2df1"
+    },
+    "operations": [
+      {
+        "name": "front_green_to_red",
+        "selected_pixels": 10068
+      },
+      {
+        "name": "screen_right_red_to_green",
+        "selected_pixels": 5255
+      }
+    ],
+    "changed_pixels": 15323,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/sprites/characters/adam/chr_adam_normal.png",
+    "output": "issue711-work/assets/sprites/characters/adam/chr_adam_normal.png",
+    "size": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "before": {
+      "bytes": 455958,
+      "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+      "git_blob_sha": "a6eb1b7f8883e4e3d3b03144cc55c72fb5c0f31c"
+    },
+    "after": {
+      "bytes": 450844,
+      "sha256": "b1200dd85c3949eeb534f28ba90f4219a1fe3b1bc442f35cd24ec581023c5baf",
+      "git_blob_sha": "9ee76e3d2713b15022dfb78b4528a416ec64a6da"
+    },
+    "mask": {
+      "bytes": 2519,
+      "sha256": "0538541460212875a2c1c9e462f82c9a6267dabf6a55c6fdfee9c86573b54f35",
+      "git_blob_sha": "c4bd265f752c582bf8109c172dd36dcac3f361f3"
+    },
+    "operations": [
+      {
+        "name": "hair_green_to_red",
+        "selected_pixels": 4976
+      },
+      {
+        "name": "hair_red_to_green",
+        "selected_pixels": 6260
+      }
+    ],
+    "changed_pixels": 11236,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/sprites/characters/adam/chr_adam_smile.png",
+    "output": "issue711-work/assets/sprites/characters/adam/chr_adam_smile.png",
+    "size": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "before": {
+      "bytes": 445809,
+      "sha256": "a66fef386a04e8d61938c90924a13b6e70265b608ff1c0e03b5b185484aec27f",
+      "git_blob_sha": "022c836d6bcc4658d791bedb5a6a378aefd21dfb"
+    },
+    "after": {
+      "bytes": 441084,
+      "sha256": "a9663ef76a2b8efdd3fa4362a6519c97302d0a3a5068098b55c7d576d1e711c9",
+      "git_blob_sha": "388b9f7594d9878deb969d8d209086fea9011019"
+    },
+    "mask": {
+      "bytes": 2517,
+      "sha256": "0400d9ae6e8cd507bef15c049c9ec0111ec159c7d9b13c2dfeec92e9f0dc5b1c",
+      "git_blob_sha": "113f7730733623a70f9aae3bbd1ae465d886234c"
+    },
+    "operations": [
+      {
+        "name": "hair_green_to_red",
+        "selected_pixels": 4750
+      },
+      {
+        "name": "hair_red_to_green",
+        "selected_pixels": 6499
+      }
+    ],
+    "changed_pixels": 11249,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/sprites/characters/adam/chr_adam_serious.png",
+    "output": "issue711-work/assets/sprites/characters/adam/chr_adam_serious.png",
+    "size": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "before": {
+      "bytes": 453657,
+      "sha256": "8123f694c34837e2c605a1d119aadd62afa262f5b7dee1f32b0fa18abb14d1fd",
+      "git_blob_sha": "1a224b963280ea0db201bedb6fcbd8d04e9cf342"
+    },
+    "after": {
+      "bytes": 449258,
+      "sha256": "c8efbed43ecf0ad88338e14c23b9cf5db4238130e5f55a82e1147e1439329b3b",
+      "git_blob_sha": "873064ac9238a4494fa8393a7e18ae93e225d06e"
+    },
+    "mask": {
+      "bytes": 2563,
+      "sha256": "02ed73faa1b41338e2383590234112a96eda330b82cb47c1b3c741e125b72ad5",
+      "git_blob_sha": "7060287e3a58161cadd87ea8aef19c31b3d76643"
+    },
+    "operations": [
+      {
+        "name": "hair_green_to_red",
+        "selected_pixels": 5175
+      },
+      {
+        "name": "hair_red_to_green",
+        "selected_pixels": 6254
+      }
+    ],
+    "changed_pixels": 11429,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/sprites/characters/adam/chr_adam_surprise.png",
+    "output": "issue711-work/assets/sprites/characters/adam/chr_adam_surprise.png",
+    "size": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "before": {
+      "bytes": 460197,
+      "sha256": "338341ad64a9b9d2561d3bb82ff1730139afedd8a12e3e15fbd37013c3240577",
+      "git_blob_sha": "371e3be16e1f87bc034877e45393d2f92f0f19d6"
+    },
+    "after": {
+      "bytes": 452763,
+      "sha256": "b9d11d4bc616b37fd114f304cffcf3838b7d53744780af31280e4dbce7b9ccad",
+      "git_blob_sha": "a069c3c8a07fe0dcd19c6dded5644e729a6fcd90"
+    },
+    "mask": {
+      "bytes": 2592,
+      "sha256": "4b8b2bf2dab18dfe40946f38d45577f05c57643adc5a9f8bab9db30b1157c23b",
+      "git_blob_sha": "fb460d8ff3c04c5a554637c4ab57a0ce9d0d6664"
+    },
+    "operations": [
+      {
+        "name": "hair_green_to_red",
+        "selected_pixels": 4944
+      },
+      {
+        "name": "hair_red_to_green",
+        "selected_pixels": 6250
+      }
+    ],
+    "changed_pixels": 11194,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  },
+  {
+    "source": "issue711-audit/assets/sprites/characters/adam/chr_adam_intense.png",
+    "output": "issue711-work/assets/sprites/characters/adam/chr_adam_intense.png",
+    "size": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "before": {
+      "bytes": 423200,
+      "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc",
+      "git_blob_sha": "6a3d8ef31be2a49a722d2c8be4fe314f00f22a22"
+    },
+    "after": {
+      "bytes": 418820,
+      "sha256": "79bf60369bc7a6eee4b3fbc5d16464b3d9a4b2e89a60c0c534c4adc74d8a4399",
+      "git_blob_sha": "b8e940dbab2f9d7cbf66a39f2268a5cbf1798604"
+    },
+    "mask": {
+      "bytes": 2520,
+      "sha256": "ad9263a29816fde28eb1b636074662a30fbddf9c455684781b8a2faa19bdcce3",
+      "git_blob_sha": "0e5dc06184d6e1674860b454dcf48b213f50c3e9"
+    },
+    "operations": [
+      {
+        "name": "hair_green_to_red",
+        "selected_pixels": 5310
+      },
+      {
+        "name": "hair_red_to_green",
+        "selected_pixels": 6304
+      }
+    ],
+    "changed_pixels": 11614,
+    "outside_mask_changed_pixels": 0,
+    "alpha_changed_pixels": 0
+  }
+]
