@@ -74,6 +74,29 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          # These checks read source and JSON, including manifest art references,
+          # not image/audio bytes. Basename globs retain text at every depth;
+          # checkout@v4 uses blob:none automatically for sparse checkout.
+          sparse-checkout: |
+            *.md
+            *.json
+            *.js
+            *.mjs
+            *.cjs
+            *.py
+            *.txt
+            *.csv
+            *.sh
+            *.html
+            *.css
+            *.yml
+            *.yaml
+            *.svg
+            *.xml
+            *.toml
+            *.lock
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
