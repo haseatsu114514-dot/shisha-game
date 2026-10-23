@@ -1,4 +1,4 @@
-// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
+// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
@@ -93,6 +93,8 @@ export async function runDaily(def) {
       state.slot = 2;
       save();
     }
+    // DAY2の出発前に二軒分をtonariでまとめて受注する（登録より先）。
+    if (state.chapter === 1 && !(await briefDeliveryBatch())) return;
     // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
@@ -108,7 +110,10 @@ export async function runDaily(def) {
       updateHud();
       save();
     }
-    await endDay();
+    // 2件の納品後、最終報告のため一度だけ職場へ戻る。
+    const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
+    if (reported === false) return;
+    await endDay({ returnedToTonari: reported === true });
     save();
   }
 }
@@ -289,17 +294,56 @@ async function registerTournament() {
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY2 昼に PEPPERMINT、夜に EDEN。配達先までは案内し、完了後に自由行動へ戻す（DL02更新）。
+ * DAY2朝に二軒分をまとめて受注し、昼にPEPPERMINT、夜にEDEN。納品後にtonariへ一度だけ報告する。
  * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
   { charId: "minto", day: 2, slot: 0, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
-  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "古いダブルアップルの缶を EDEN へ。EDEN をタップ！" },
+  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;
 const DELIVERY_STAMINA = -10;
+
+/** DAY2朝の一括受注。旧途中セーブの既読・訪問済み状態を新規受注に戻さない。 */
+async function briefDeliveryBatch() {
+  const f = state.flags;
+  if (state.chapter !== 1 || state.day < 2 || state.slot >= 2
+    || !f._errand_scout_done || restingToday()) return true;
+  if (!f._delivery_batch_started) {
+    if (state.day !== 2 || state.slot !== 0
+      || DELIVERIES.some(d => f[`_delivery_${d.charId}_told`]
+        || f[`_delivery_${d.charId}_done`] || f[`_delivery_${d.charId}`]
+        || storyCount(d.charId) > 0)) return true;
+    f._delivery_batch_started = true;
+    save();
+  }
+  const owner = state;
+  for (const d of DELIVERIES) {
+    if (f[`_delivery_${d.charId}_told`] || f[`_delivery_${d.charId}_done`]) continue;
+    const result = await play(d.scene, { bg: TONARI_BG });
+    if (state !== owner || result?.cancelled) return false;
+    f[`_delivery_${d.charId}_told`] = true;
+    save(); // 1件目の依頼説明後に中断しても再度読まない。
+  }
+  return true;
+}
+
+/** 報酬・体力・枠を二重計上せず、最後の勤務報告のみ一度再生。
+ * true: 今回帰店した / null: 報告不要 / false: 会話中断・別セーブへの切替。
+ */
+async function reportDeliveryBatch() {
+  const f = state.flags;
+  if (!f._delivery_batch_started || f._delivery_report_done
+    || !DELIVERIES.every(d => f[`_delivery_${d.charId}_done`])) return null;
+  const owner = state;
+  const result = await play("remake_delivery_report", { bg: TONARI_BG });
+  if (state !== owner || result?.cancelled) return false;
+  f._delivery_report_done = true;
+  save();
+  return true;
+}
 
 function dueDelivery() {
   if (state.chapter !== 1 || state.day < 2 || !state.flags._errand_scout_done
@@ -638,14 +682,18 @@ async function beat(text) {
   b.remove();
 }
 
-async function endDay() {
+async function endDay({ returnedToTonari = false } = {}) {
   syncNightQueue(chapterDef.nightEvents);
   const rested = restingToday();
   const nightCount = await runNightPlan(chapterDef.nightEvents, async (ev) => {
     await bannersIdle();
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
+    // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
+    const sameVisit = returnedToTonari && ev.pin === "tonari";
+    returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
-    if (ev.beat) await beat(ev.beat);
+    if (ev.beat && !sameVisit) await beat(ev.beat);
+    return sameVisit ? { returnedToTonari: true } : undefined;
   });
   save();
   await bannersIdle();
