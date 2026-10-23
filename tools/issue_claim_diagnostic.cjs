@@ -86,19 +86,35 @@ async function diagnose(github, context, candidatePaths = []) {
   }
   const openPRs = await github.paginate(github.rest.pulls.list, {...repo, state:'open', per_page:100});
   const fileCache = new Map();
-  async function filesFor(number) {
+  async function filesFor(number, expectedHead) {
     if (!fileCache.has(number)) {
       const {data:pr} = await github.rest.pulls.get({...repo, pull_number:number});
+      const head = pr.head?.sha, base = pr.base?.sha;
+      if (!/^[a-f0-9]{40}$/.test(head || '') || !/^[a-f0-9]{40}$/.test(base || '')) {
+        throw Error('Missing diff identity for PR #' + number);
+      }
       const files = await github.paginate(github.rest.pulls.listFiles,
         {...repo, pull_number:number, per_page:100});
       // GitHub caps this endpoint at 3,000 files. An incomplete list must not
       // appear to prove that a candidate path is disjoint from a saved PR.
-      if (!Number.isSafeInteger(pr.changed_files) || pr.changed_files !== files.length) {
+      if (!Number.isSafeInteger(pr.changed_files) || pr.changed_files < 0 ||
+          !Array.isArray(files) || pr.changed_files !== files.length ||
+          files.some(file => typeof file?.filename !== 'string' || !file.filename.trim()) ||
+          new Set(files.map(file => file.filename)).size !== files.length) {
         throw Error('Incomplete changed-file list for PR #' + number);
       }
-      fileCache.set(number, changedPaths(files));
+      const {data:after} = await github.rest.pulls.get({...repo, pull_number:number});
+      if (after.head?.sha !== head || after.base?.sha !== base ||
+          after.changed_files !== pr.changed_files) {
+        throw Error('Changed PR diff while listing files for PR #' + number);
+      }
+      fileCache.set(number, {head, paths:changedPaths(files)});
     }
-    return fileCache.get(number);
+    const snapshot = fileCache.get(number);
+    if (snapshot.head !== expectedHead) {
+      throw Error('Changed PR head before listing files for PR #' + number);
+    }
+    return snapshot.paths;
   }
   const rows = [];
   for (const [number, comment] of [...latest].sort((a,b) => a[0]-b[0])) {
@@ -115,7 +131,7 @@ async function diagnose(github, context, candidatePaths = []) {
     const prs = openPRs.filter(pr => referencesIssue(pr, number, context));
     const observed = [];
     for (const pr of prs) observed.push({number:pr.number, head:pr.head?.sha || null,
-      paths:await filesFor(pr.number), source:'open-reference'});
+      paths:await filesFor(pr.number, pr.head?.sha), source:'open-reference'});
     let checkpointVerified = null;
     if (claim.phase === 'waiting' || claim.phase === 'handoff') {
       checkpointVerified = true;
@@ -124,7 +140,7 @@ async function diagnose(github, context, candidatePaths = []) {
         if (pr.head?.sha !== saved.head || pr.head?.repo?.full_name !== fullName ||
             !(pr.state === 'open' || pr.merged_at)) checkpointVerified = false;
         if (!observed.some(entry => entry.number === saved.number)) observed.push({number:saved.number,
-          head:pr.head?.sha || null, paths:await filesFor(saved.number), source:'saved-checkpoint'});
+          head:pr.head?.sha || null, paths:await filesFor(saved.number, pr.head?.sha), source:'saved-checkpoint'});
       }
       if (prs.some(pr => !claim.checkpoint.prs.some(saved => saved.number === pr.number))) checkpointVerified = false;
     }

@@ -26,7 +26,7 @@ function fixture({comments=[], issues={}, prs=[], files={}, runs={}} = {}) {
     get:async ({issue_number}) => ({data:issues[issue_number] || {number:issue_number, title:`Issue ${issue_number}`,state:'open'}})},
     pulls:{list:'prs', listFiles:'files', get:async ({pull_number}) => {
       const pr=prs.find(item => item.number === pull_number);
-      return {data:pr && {changed_files:(files[pull_number] || []).length, ...pr}};
+      return {data:pr && {changed_files:(files[pull_number] || []).length, base:{sha:'b'.repeat(40)}, ...pr}};
     }},
     actions:{getWorkflowRun:async ({run_id}) => ({data:runs[run_id] ||
       {status:'completed', conclusion:'success', path:'.github/workflows/issue-claim.yml',repository:{full_name:'example/game'}}})}}};
@@ -105,4 +105,89 @@ test('a truncated PR file list fails the diagnostic instead of reporting disjoin
     files:{20:[{filename:'data/a.json'}]}});
   await assert.rejects(diagnose(github,context,['remake/js/new.js']),
     /Incomplete changed-file list for PR #20/);
+});
+
+test('duplicate pagination entries cannot hide a missing candidate path in a parked PR', async () => {
+  const wait='<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:20,head:sha}]})+' -->';
+  const prs=[{number:20,title:'Work #10',state:'open',changed_files:101,
+    head:{sha,repo:{full_name:'example/game'}}}];
+  const firstPage=Array.from({length:100},(_,i)=>({filename:`other/${i}.json`}));
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1,wait))],prs,
+    files:{20:[...firstPage,firstPage[99]]}});
+  await assert.rejects(diagnose(github,context,['data/a.json']),
+    /Incomplete changed-file list for PR #20/);
+});
+
+test('missing, empty and non-text filenames fail instead of disappearing from the report', async () => {
+  for (const file of [null,{}, {filename:''}, {filename:'   '}, {filename:12}]) {
+    const prs=[{number:20,title:'Work #10',state:'open',head:{sha}}];
+    const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,files:{20:[file]}});
+    await assert.rejects(diagnose(github,context,['data/a.json']),
+      /Incomplete changed-file list for PR #20/);
+  }
+});
+
+test('head or base changes during pagination fail even when file count stays equal', async () => {
+  for (const side of ['head','base']) {
+    const prs=[{number:20,title:'Work #10',state:'open',head:{sha},base:{sha:'b'.repeat(40)}}];
+    const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,
+      files:{20:[{filename:'other/a.json'}]}});
+    const get=github.rest.pulls.get;
+    let reads=0;
+    github.rest.pulls.get=async args=>{
+      const {data}=await get(args);
+      if (++reads === 2) return {data:{...data,[side]:{...data[side],sha:'c'.repeat(40)}}};
+      return {data};
+    };
+    await assert.rejects(diagnose(github,context,['data/a.json']),
+      /Changed PR diff while listing files for PR #20/);
+    assert.equal(reads,2);
+  }
+});
+
+test('a changed file count after pagination invalidates the snapshot', async () => {
+  const prs=[{number:20,title:'Work #10',state:'open',head:{sha}}];
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,
+    files:{20:[{filename:'other/a.json'}]}});
+  const get=github.rest.pulls.get;
+  let reads=0;
+  github.rest.pulls.get=async args=>{
+    const {data}=await get(args);
+    return {data:++reads === 2 ? {...data,changed_files:2} : data};
+  };
+  await assert.rejects(diagnose(github,context,['data/a.json']),
+    /Changed PR diff while listing files for PR #20/);
+});
+
+test('missing head or base SHA cannot establish a complete diff snapshot', async () => {
+  for (const side of ['head','base']) {
+    const prs=[{number:20,title:'Work #10',state:'open',head:{sha},[side]:{}}];
+    const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs});
+    await assert.rejects(diagnose(github,context,['data/a.json']),
+      /Missing diff identity for PR #20/);
+  }
+});
+
+test('a newer head than the open PR inventory cannot be attributed to the old head', async () => {
+  const prs=[{number:20,title:'Work #10',state:'open',head:{sha}}];
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,
+    files:{20:[{filename:'other/a.json'}]}});
+  const get=github.rest.pulls.get;
+  github.rest.pulls.get=async args=>{
+    const {data}=await get(args);
+    return {data:{...data,head:{sha:'c'.repeat(40)}}};
+  };
+  await assert.rejects(diagnose(github,context,['data/a.json']),
+    /Changed PR head before listing files for PR #20/);
+});
+
+test('a stable complete multi-page-sized file list retains overlap detection', async () => {
+  const prs=[{number:20,title:'Work #10',state:'open',head:{sha}}];
+  const files=Array.from({length:100},(_,i)=>({filename:`other/${i}.json`}));
+  files.push({filename:'data/a.json'});
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1))],prs,files:{20:files}});
+  const report=await diagnose(github,context,['data/a.json']);
+  assert.equal(report.rows[0].observed_overlap,true);
+  assert.equal(report.rows[0].relation,'observed_overlap');
+  assert.equal(report.rows[0].prs[0].paths.length,101);
 });
