@@ -14,10 +14,20 @@ on:
       - "remake/css/vn.css"
       - "remake/js/vn/engine.js"
       - "remake/js/vn/text.js"
+      - "remake/js/vn/layout.js"
+      - "remake/js/vn/inner.js"
+      - "tools/browser/text_editor*.html"
+      - "tools/text_editor_server.py"
+      - "tools/test_text_editor_server.py"
+      - "remake/test/browser/text_editor.mjs"
+      - "remake/test/text_editor_cases.json"
       - "remake/test/notifications_layout.mjs"
       - "remake/test/stat_rewards.mjs"
       - "remake/test/text_wrap.mjs"
       - "remake/test/motion_endings.mjs"
+      - "remake/test/lime_lifecycle_833.mjs"
+      - "remake/test/lime_fit_774.mjs"
+      - "remake/test/lime_save_774.mjs"
       - "remake/test/navigation_transitions.mjs"
       - "remake/test/load_recorder.mjs"
       - "remake/tools/load-recorder.mjs"
@@ -28,18 +38,41 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   motion-endings:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Leave room for repository checkout, browser setup and the full VN/editor suite.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Runtime inputs only; skip source-art archives and unrelated history.
+          sparse-checkout: |
+            remake
+            data
+            assets/audio
+            assets/fonts
+            assets/backgrounds
+            assets/sprites
+            assets/cgs
+            assets/ui
+            tools
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - name: Check LIME exchange LOAD boundaries and saved contact semantics
+        run: |
+          node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs
+          node --experimental-vm-modules remake/test/lime_fit_774.mjs
+          node --experimental-vm-modules remake/test/lime_save_774.mjs
       - name: Install browser test dependencies outside the game
         run: |
           npm install --prefix "$RUNNER_TEMP/motion-test" playwright@1.62.1
@@ -67,6 +100,20 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/motion-test/node_modules
         run: |
+          python3 tools/test_text_editor_server.py
+          python3 tools/text_editor_server.py > "$RUNNER_TEMP/text-editor.log" 2>&1 &
+          python3 - <<'PYREADY'
+          import time, urllib.request
+          for attempt in range(50):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:8321/", timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.1)
+          else:
+              raise SystemExit("Text editor did not start")
+          PYREADY
+          node remake/test/browser/text_editor.mjs
           node remake/test/text_wrap.mjs
           node remake/test/notifications_layout.mjs
           node remake/test/stat_rewards.mjs

@@ -34,4 +34,13 @@ Only observations newer than 15 minutes are actionable; stale/missing readings a
 
 **Important:** This script only reports an action. It cannot directly instruct an already-running Codex/Claude session, create Issues, merge PRs, or access actual quotas automatically. The agent must run `python3 tools/agent_quota_guard.py check <provider>` at startup, between tasks, and before ending, and then follow `AGENTS.md`. Quota exhaustion can happen before cleanup; frequent commits and pushes remain essential.
 
+## Switching to another AI
+
+At a task boundary, commit/push the work and create a Draft PR for unfinished
+changes. Use [`handoff`](issue_claim_protocol.md) with the saved PR/branch and
+DONE / TODO / TEST / NEXT, then stop editing. This frees the Issue. The next AI
+uses `claim` with a new worker ID and checks its successful run and current bot
+owner/run before continuing the saved branch. This does not launch the next AI
+or detect quotas automatically.
+
 For automatic live quota collection or event-triggered stopping, an official supported machine-readable usage source and an agent runtime integration must first be verified on the actual Mac. Do not present this helper as fully automatic monitoring.

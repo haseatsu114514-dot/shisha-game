@@ -15,9 +15,11 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,
       _lime_opened: true, _lime_tut: 1, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+    if (opts.day <= 3) delete s.flags._ch2_naru_warm_done;
+    s.owned.push('home_rig_set'); // 第1章DAY7で受け取り済みの現行保存
     s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true };
     for (const id of Object.keys(s.met)) s.flags[`_intro_${id}`] = true;
-    s.contacts = []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
+    s.contacts = opts.day <= 3 ? ['sumi'] : []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     s.relationshipMemories = ['tsumugi_creature']; s.keepsakes = ['qa_old_keepsake'];
     s.flavorStock = { mint: 21.5 }; s.affinity = { tsumugi: 15, minto: 20, naru: 30, adam: 25 };
     s.lovers = ['minto']; s.loverSince = { minto: 10 }; s.lastDate = { minto: 16 };
@@ -46,11 +48,12 @@ async function state(page) { return page.evaluate(() => structuredClone(window._
 async function atMap(page, day, slot) {
   await page.waitForFunction(([day, slot]) => window.__remake.state.day === day + 14
     && window.__remake.state.slot === slot && document.querySelector('[data-destination-selection]:not(.done)')
-    && !document.querySelector('#modal.show'), [day, slot]);
+    && !document.querySelector('#modal.show') && !document.querySelector('.map[data-revealing="true"]'), [day, slot]); // #780: 新ピンの解錠演出中は選択を受け付けない
 }
 async function rest(page, touch = false) {
   const before = await state(page);
   const click = sel => touch ? page.locator(sel).tap() : page.locator(sel).click();
+  await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #780: 新ピンの解錠演出中は選択を受け付けない
   await click(t('pin-rest')); await click(t('map-go'));
   await page.waitForFunction(v => window.__remake.state.day > v.day || window.__remake.state.slot > v.slot, before);
   await page.locator(`${map}, ${end}`).first().waitFor();
@@ -65,6 +68,23 @@ async function reload(page) {
   await page.locator(t('slot-0')).click();
 }
 await suite('ch2-story', async check => {
+  await check('day2-free-night-then-day3-naru-and-ageha-once', async page => {
+    await seed(page, { day: 2 }); await atMap(page, 2, 0);
+    const before = await state(page);
+    await rest(page); await atMap(page, 2, 1); await rest(page); await atMap(page, 3, 0);
+    assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_scout')), 'DAY2 must remain a free night');
+    await rest(page); await atMap(page, 3, 1); await rest(page); await atMap(page, 4, 0);
+    const after = await state(page);
+    assert(after.flags._ch2_read_ch2_naru_warm && after.flags._ch2_read_remake_ch2_ageha_scout);
+    assert(after.contacts.includes('ageha'));
+    const scenes = await page.evaluate(() => __storyTrace.filter(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id)));
+    assert.deepEqual(scenes, ['ch2_naru_warm', 'remake_ch2_ageha_scout']);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock']) assert.deepEqual(after[key], before[key], key);
+    await reload(page); await atMap(page, 4, 0);
+    const loaded = await state(page);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock', 'contacts']) assert.deepEqual(loaded[key], after[key], key);
+    assert(!await page.evaluate(() => __storyTrace.some(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id))), 'LOAD must not replay completed DAY3 scenes');
+  }, { reducedMotion: 'reduce' });
   await check('day4-through-eve-actual-calendar-and-preserved-relationships', async page => {
     await seed(page); await atMap(page, 4, 0);
     const before = await state(page);

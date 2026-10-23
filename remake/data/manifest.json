@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-14 18:24 UTC",
+ "generated": "2026-10-21 02:46 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -59,8 +59,10 @@
     "axe_laugh",
     "axe_normal",
     "axe_shout",
+    "axe_throw",
     "love_blush",
     "normal",
+    "office_mukii",
     "sad",
     "serious",
     "smile",
@@ -68,9 +70,9 @@
     "surprise",
     "tears"
    ],
-   "h": 0.9625,
-   "b": 0.0208,
-   "ax": 0.4685,
+   "h": 0.8333,
+   "b": 0.0225,
+   "ax": 0.4572,
    "aspect": 0.7467
   },
   "samechan": {
@@ -267,6 +269,15 @@
    "b": 0.0208,
    "ax": 0.5318,
    "aspect": 0.7467
+  },
+  "uranaishi": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9752,
+   "b": 0.0165,
+   "ax": 0.5476,
+   "aspect": 0.7471
   }
  },
  "backgrounds": [
@@ -405,7 +416,10 @@
   "ui_refresh_button.png",
   "ui_temperature_frame.png"
  ],
- "sceneProps": [],
+ "sceneProps": [
+  "shisha_home_pro.png",
+  "shisha_home_tabletop.png"
+ ],
  "continueUI": [
   "approval_stamp.png",
   "backdrop.png",
@@ -1162,35 +1176,70 @@
    "shadow": "#e9dde3",
    "background": "ui/character_intros/hiyori.png",
    "frames": {
-    "sad": {
-     "width": 885.13,
-     "left": -175.079,
-     "top": 18.243
+    "axe_laugh": {
+     "width": 1021.44,
+     "left": -154.733,
+     "top": -159.22
     },
-    "surprise": {
-     "width": 885.13,
-     "left": -173.538,
-     "top": 17.255
+    "axe_normal": {
+     "width": 1021.44,
+     "left": -231.142,
+     "top": -159.22
     },
-    "smile": {
-     "width": 886.667,
-     "left": -173.667,
-     "top": 16.229
+    "axe_shout": {
+     "width": 1021.44,
+     "left": -176.052,
+     "top": -159.22
     },
-    "student_smile": {
-     "width": 891.309,
-     "left": -136.451,
-     "top": 12.136
-    },
-    "tears": {
-     "width": 885.13,
-     "left": -173.141,
-     "top": 18.243
+    "love_blush": {
+     "width": 1021.44,
+     "left": -218.299,
+     "top": -159.22
     },
     "normal": {
-     "width": 886.667,
-     "left": -172.358,
-     "top": 17.219
+     "width": 1021.44,
+     "left": -219.274,
+     "top": -159.22
+    },
+    "sad": {
+     "width": 1021.44,
+     "left": -217.038,
+     "top": -159.22
+    },
+    "serious": {
+     "width": 1021.44,
+     "left": -217.232,
+     "top": -159.22
+    },
+    "smile": {
+     "width": 1021.44,
+     "left": -218.647,
+     "top": -159.22
+    },
+    "student_smile": {
+     "width": 1021.44,
+     "left": -176.234,
+     "top": -159.22
+    },
+    "surprise": {
+     "width": 1021.44,
+     "left": -216.36,
+     "top": -159.22
+    },
+    "tears": {
+     "width": 1021.44,
+     "left": -217.808,
+     "top": -159.22
+    },
+    "axe_throw": {
+     "width": 1021.44,
+     "left": -248.571,
+     "top": -159.22
+    },
+    "office_mukii": {
+     "width": 1021.44,
+     "left": -204.722,
+     "top": -159.22
     }
    }
   }
@@ -1691,8 +1740,10 @@
   ]
  },
  "bgm": [
+  "bgm_axe.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
+  "bgm_trpg.bgm",
   "kansetsu_shomei_to_black_coffee.mp3",
   "sweets_or_sweets.mp3",
   "title.mp3",
@@ -1779,8 +1830,10 @@
   "sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
   "sprites/characters/hiyori/chr_hiyori_axe_normal.png",
   "sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+  "sprites/characters/hiyori/chr_hiyori_axe_throw.png",
   "sprites/characters/hiyori/chr_hiyori_love_blush.png",
   "sprites/characters/hiyori/chr_hiyori_normal.png",
+  "sprites/characters/hiyori/chr_hiyori_office_mukii.png",
   "sprites/characters/hiyori/chr_hiyori_sad.png",
   "sprites/characters/hiyori/chr_hiyori_serious.png",
   "sprites/characters/hiyori/chr_hiyori_smile.png",
@@ -1935,6 +1988,8 @@
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
+  "ui/scene_props/shisha_home_pro.png",
+  "ui/scene_props/shisha_home_tabletop.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
   "ui/title_arts/title_art_ageha_02_grocery_smile.png",
   "ui/title_arts/title_art_ageha_03_model_moment.png",
@@ -1958,6 +2013,7 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "sprites/characters/uranaishi/chr_uranaishi_normal.png"
  ]
 }

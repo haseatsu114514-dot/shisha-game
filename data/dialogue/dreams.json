@@ -20,7 +20,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "smile",
-          "text": "「すべての煙には最適解がある。感情なんて──ノイズだよ」"
+          "text": "すべての煙には最適解がある。感情なんて──ノイズだよ"
         },
         {
           "speaker": "",
@@ -54,7 +54,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "「……お前の煙は、まだ何も語っていない」"
+          "text": "……お前の煙は、まだ何も語っていない"
         },
         {
           "speaker": "",
@@ -114,62 +114,31 @@
     },
     {
       "dialogue_id": "ch2_dream",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "effect": "dream_distortion"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "ステージの上に立っている。客席は真っ暗だ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "「お前は……お前の答え、見つけに行けよ」"
+          "text": "夢の中で、採点表が増えていく。めくっても、また同じ欄だった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "なるが背を向けて歩いていく。追いかけようとするけど、足が動かない。"
+          "text": "スマホが鳴った。返事をしようとすると、手の中がトングに変わる。"
         },
         {
-          "speaker": "minto",
-          "face": "sad",
-          "text": "「私のこと、営業してるだけで、実力じゃないって思ってるでしょ」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとの目が、一瞬だけ、29歳の目をしていた。"
-        },
-        {
-          "speaker": "ageha",
+          "speaker": "hajime",
           "face": "normal",
-          "text": "「ワンチャンいつか当たらなくなるんじゃないかってガチで病むんだよね、……こわ」"
+          "text": "……待って。今、返すから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "色とりどりの煙が混ざり合い、渦を巻いて消えていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "自分の中にある焦りや、羨望や、誰かへの想いが、全部煙に溶けていくような夢だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……何も持っていない。本当に、何もないんじゃないか。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "目が覚めても、その言葉だけがずっと胸の底に沈んでいた。"
+          "text": "誰の名前だったか、目を覚ますと思い出せなかった。枕元のスマホを手に取った。"
         }
-      ]
+      ],
+      "metadata": {
+        "effect": "dream_distortion"
+      }
     },
     {
       "dialogue_id": "ch3_dream_early",
@@ -201,7 +170,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "smile",
-          "text": "「ああ、君のデータは実に面白い。揺らぎが美しいんだ」"
+          "text": "ああ、君のデータは実に面白い。揺らぎが美しいんだ"
         },
         {
           "speaker": "",
@@ -217,150 +186,74 @@
     },
     {
       "dialogue_id": "ch3_dream",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "effect": "dream_foreign"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "どこか異国の市場。強い日差しとスパイスの香り。"
+          "text": "知らない店で、椅子を並べている夢を見た。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "石畳の路地を歩いている。空気が乾いていて、でもどこからかシーシャの煙が漂ってくる。"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "「お前の煙には……あの男と同じものが流れている」"
+          "text": "一つ足りない。奥から持ってくると、今度は通路が狭かった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "痩せた老人が、古びたナルギレを磨いている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "『あの男』って、誰のことだ？スミさん？ それとも──"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "老人は答えない。ただ煙を吐いた。その煙が、見たこともないほど美しかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "目が覚めるまでずっと、その煙の残像が瞼の裏に焼きついていた。"
+          "text": "誰かと一緒に持ち直す。その顔を見る前に、朝の音が聞こえた。"
         }
-      ]
+      ],
+      "metadata": {
+        "effect": "dream_foreign"
+      }
     },
     {
       "dialogue_id": "ch4_dream",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "effect": "dream_clarity"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "tonariのカウンター。誰もいない夜明け前。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "「これは理論じゃない。体で覚えろ」"
+          "text": "夢の中で、道具箱を開いた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんの声が、いつもより近い。まるで、隣にいるみたいだ。"
+          "text": "同じトングの柄を、俺とは違う手が握る。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "不思議と怖くない。むしろ、今まで積み上げたもの全部が、手のひらの中にある気がする。"
+          "text": "閉店後のカウンターで、椅子を上げる音がした。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "なるの背中。アダムの沈黙。みんとの策略。組長の涙。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "アゲハのバイブス。ましろの煙。ナンディの祈り。スティーブの繊細さ。ヴォルクの凍てつく完璧。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "全部が、煙になって、静かに立ち上がる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "一本の、まっすぐな煙。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "目が覚めた時、不思議なほど穏やかだった。いよいよだ。世界大会が始まる。"
+          "text": "目が覚めた。枕元には、明日の道具を確かめたメモがあった。"
         }
       ]
     },
     {
       "dialogue_id": "ch5_dream",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "effect": "dream_digital"
-      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "真っ白な空間。どこまでも続く、無機質な白。"
+          "text": "モニターの中で、大会の日の自分が炭を置く。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "目の前に何かが立っている。人の形をしているが、顔がない。"
-        },
-        {
-          "speaker": "shisha_9000",
-          "face": "",
-          "text": "「あなたのデータは、すべて記録済みです」"
+          "text": "画面の外から、お茶が差し出された。受け取ろうとして、手が空を切る。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "声は優しい。完璧に優しい。だからこそ、ぞっとした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──煙が立ち上がる。完璧な煙。一切のブレがない。人間には不可能な精度。"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "smile",
-          "text": "「ほら、見たかい？ これが僕の最高傑作だ。感情も、揺らぎも、全部データで再現できるんだよ」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……本当に？本当に、そうなのか？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "答えが出ないまま、目が覚めた。枕が冷たかった。"
+          "text": "目を覚ますと、机の上に昨日のカップがあった。まず、それを洗った。"
         }
-      ]
+      ],
+      "metadata": {
+        "effect": "dream_digital"
+      }
     }
   ]
 }

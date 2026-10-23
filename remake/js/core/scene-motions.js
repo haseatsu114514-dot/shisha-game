@@ -19,7 +19,9 @@ const train = () => import("../motions/train.js");
 
 export async function limeExchange(charId, context = null) {
   if (skipMotion()) return;
+  const owner = state;
   const mod = await lime().catch((e) => { console.error(e); return null; });
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブの交換を始めない。
   await mod?.exchange(charId, context);
 }
 

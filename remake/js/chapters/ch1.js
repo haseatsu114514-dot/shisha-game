@@ -24,6 +24,7 @@ import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
+import { playTournamentEvent } from "../craft/tournament-story.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -31,6 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -43,6 +45,9 @@ import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } f
 import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
+import { giveSumiRig } from "../daily/home-rig.js";
+import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
+import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -71,12 +76,18 @@ export function setupHooks() {
       state.flags._tsumugi_contest_draft_hands = branch === "draft_hands";
       save();
     }
+    // 後日の反応は、実際に選んだ接し方とDAY2の読了だけを根拠にする。
+    if (dialogueId === "ch1_salaryman_regular" && choiceId === "salaryman_first_serve"
+      && ["regular_order", "regular_water"].includes(branch)) {
+      state.flags._salaryman_service_order = branch === "regular_order";
+      state.flags._salaryman_service_water = branch === "regular_water";
+      save();
+    }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
-    if (dialogueId === "remake_tutorial_offer" && ["practice", "skip"].includes(branch)) {
+    if (dialogueId === "remake_tutorial_offer" && branch === "practice") {
       const progress = openingProgress();
       progress.tutorialChoice = branch;
-      if (branch === "practice") setFlag("_tutorial_requested");
-      else delete state.flags._tutorial_requested;
+      setFlag("_tutorial_requested");
       save();
     }
     // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
@@ -123,7 +134,8 @@ async function openingPart() {
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
-    await scene.ready;
+    // Decorative images keep loading alongside narration; decoding them must not
+    // hold the first dialogue window (the cold-open lines need no portraits/bg).
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
@@ -142,24 +154,26 @@ async function openingPart() {
     progress.departureDone = true;
     save();
   }
-  // 旧フラグに残る選択を維持し、保存済みの選択枝の台詞から続ける。
-  progress.tutorialChoice ||= flag("_tutorial_requested") || flag("_tutorial_done") ? "practice"
-    : flag("_tutorial_skipped") ? "skip" : null;
+  // 旧版で一台を完成済み・新しい注文記録なしなら、接客だけ従来どおり続ける。
+  const legacyLesson = flag("_tutorial_done") && !progress.firstOrderDone && !progress.firstBrew;
+  if (!legacyLesson && await firstBrewOrder(progress) === false) return false;
+  // 冒頭の一台は必修。未完了の旧「skip」保存も、注文済みの配合を使ってレッスンへ戻す。
+  // 既に日常へ進んだ保存は openingPart を通らないので、完了した冒頭を繰り返さない。
+  if (progress.tutorialChoice === "skip" && !flag("_tutorial_done")) progress.offerDone = false;
+  const resumeChoice = progress.tutorialChoice === "practice" || flag("_tutorial_done");
+  progress.tutorialChoice = "practice";
+  setFlag("_tutorial_requested");
+  delete state.flags._tutorial_skipped;
   if (!progress.offerDone) {
     const offer = DB.dialogues.remake_tutorial_offer;
-    await play(progress.tutorialChoice
-      ? { ...offer, lines: offer.branches[progress.tutorialChoice], branches: {} }
-      : "remake_tutorial_offer", { bg: TONARI });
+    await play(resumeChoice ? { ...offer, lines: offer.branches.practice, branches: {} } : offer, { bg: TONARI });
     progress.offerDone = true;
     save();
   }
-  if (progress.tutorialChoice === "practice") await tutorial(progress);
-  else {
-    setFlag("_tutorial_skipped");
-    save();
-  }
+  await tutorial(progress);
   if (!progress.oneesanDone) {
-    await play("ch1_tutorial_oneesan", { bg: TONARI });
+    if (legacyLesson) await play("ch1_tutorial_oneesan", { bg: TONARI });
+    else if (await serveFirstBrew(progress) === false) return false;
     progress.oneesanDone = true;
     save();
   }
@@ -192,6 +206,7 @@ async function tutorial(progress = null) {
   if (!progress || !flag("_tutorial_done")) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
+    if (progress?.firstOrderDone) configureFirstBrew(cs);
     openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
     await stepMix(cs);
     await stepPack(cs);
@@ -203,12 +218,13 @@ async function tutorial(progress = null) {
     await runPull(cs);
     // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
     while (cs.failed) {
-      await play("remake_tutorial_burnt", { bg: TONARI });
+      await play(cs.failed === "burnt" ? "remake_tutorial_burnt" : "remake_tutorial_retry", { bg: TONARI });
       Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
       openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
       await runPull(cs);
     }
     recordPractice(cs, "tutorial");
+    if (progress?.firstOrderDone) rememberFirstBrew(progress, cs);
     state.flags._tutorial_done = true;
     delete state.flags._tutorial_skipped;
     save();
@@ -224,10 +240,18 @@ async function tutorial(progress = null) {
 // ---------------------------------------------------------------- 夜の固定イベント
 // pin=マップの「!」印／teaser=前日の就寝時の予感／beat=イベント前のつなぎ一行
 
-const nightScene = (id, bg) => async () => {
+const nightScene = (id, bg) => async (context) => {
   const dialogue = DB.dialogues[id];
   if ((bg || dialogue?.metadata?.bg || "").includes("tonari") && dialogue?.lines?.some((line) => line.speaker === "sumi")) await meetHiyoriAtTonari();
-  await play(id, bg ? { bg } : {});
+  // 配達報告から同じ来店で続く場合だけ、正本の冒頭から再入店の節を除く。
+  // DB本体・残りの台詞・分岐・dialogue_idは変更せず、通常訪問には元の台本を使う。
+  const opening = dialogue?.lines?.[0];
+  const sameVisit = context?.returnedToTonari && id === "ch1_salaryman_regular" && typeof opening?.text === "string";
+  const scene = sameVisit ? { ...dialogue, lines: [
+    { ...opening, text: opening.text.replace(/^夜のtonari。顔を出すと、/, "夜のtonari。") },
+    ...dialogue.lines.slice(1),
+  ] } : id;
+  await play(scene, bg ? { bg } : {});
 };
 // つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
 const sketchScene = (id, bg) => async () => {
@@ -235,7 +259,7 @@ const sketchScene = (id, bg) => async () => {
   await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
   await play(id, { bg });
 };
-const once = (key, fn) => ({ id: key, doneKeys: [key], run: async () => { await fn(); setFlag(key); }, done: () => flag(key) });
+const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
   2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
@@ -315,7 +339,7 @@ async function earlyPractice() {
   }
   if (!progress.practiceDone && progress.choice !== "review") {
     if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はtonariでいつでもできます。", recommended: recommendedDrill() });
+      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。", recommended: recommendedDrill() });
       save();
     }
     beginEvePractice(progress);
@@ -356,11 +380,14 @@ async function midPreparation() {
     progress.practiceDone = true;
     save();
   }
-  if (progress.feedbackRead) return;
-  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-  await play("remake_midcheck", { bg: TONARI_N });
-  progress.feedbackRead = true;
-  save();
+  if (!progress.feedbackRead) {
+    if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
+    await play("remake_midcheck", { bg: TONARI_N });
+    progress.feedbackRead = true;
+    save();
+  }
+  // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
+  await giveSumiRig({ bg: TONARI_N });
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
@@ -426,12 +453,12 @@ async function tournamentDay() {
     const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
     if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
-    state.tournament.stockSnap = { ...state.flavorStock }; // 再挑戦は大会の頭から＝持ち込み在庫も会場入り前に戻す
+    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
   showHud(false);
-  if (state.tournament.stockSnap) state.flavorStock = { ...state.tournament.stockSnap };
+  restoreEntryResources(state);
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
@@ -448,8 +475,10 @@ async function tournamentDay() {
   // ROUND 1 ── 組み立て
   playBgm("bgm_tournament_craft");
   const cs = newSession("tournament");
+  cs.retryAssist = state.tournament.retryAssist === true;
   await roundCut("ROUND 1", "組み立て");
   await play("remake_round1_intro", { bg: STAGE });
+  await playTournamentEvent(cs, "opening", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
@@ -460,6 +489,7 @@ async function tournamentDay() {
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
   bc.block(cs, "pack");
   await stepPack(cs);
+  await playTournamentEvent(cs, "packed", { bg: STAGE });
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
@@ -469,6 +499,7 @@ async function tournamentDay() {
   await runHeat(cs);
   bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepSteamTime(cs);
+  await playTournamentEvent(cs, "waiting", { bg: STAGE });
   bc.block(cs, "steam");
   await runSteamDodge(cs);
   bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
@@ -485,6 +516,7 @@ async function tournamentDay() {
   bc.block(cs, "pull");
   await runPull(cs);
   if (cs.failed) return failedOut(cs.failed);
+  cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
@@ -513,6 +545,7 @@ async function tournamentDay() {
   playBgm("bgm_tournament_wait");
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
+  await playTournamentEvent(cs, "tasting", { bg: STAGE });
   const out = outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
@@ -545,7 +578,7 @@ async function entrance() {
     { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
     { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
     { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。お前の煙を見せてやれ" },
+    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
   ];
   const host = el("div.entrance");
   layers.fx.append(host);
@@ -571,21 +604,20 @@ async function entrance() {
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
+  state.tournament.retryAssist = false;
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
+  delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
-  // 優勝の夜: 師匠の採点表 → 未知の送信者
+  // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
         "おう。優勝、見事だった",
         ...(recognition?.comment ? [recognition.comment] : []),
-        "……で、だ。開示された採点表、もう見たか",
-        "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
-        "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
-        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが、これで覚えることがなくなったとは思うな",
-        "あの一票が何だったのか。次の舞台までに、自分で答えを出せ",
+        "最後の調整まで、よく作りきったな",
+        "今日は喜べ。帰ったら、一緒に一服しよう",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },
     {
@@ -637,7 +669,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ジェラシー・ヘイズ / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
@@ -680,13 +712,26 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  const owner = state;
+  if (state?.phase === "tournament") {
+    recordTournamentLoss(state.tournament);
+    save();
+  }
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
+  if (state !== owner) return; // 準備待ち中にLOADした旧画面を、新しい保存の上へ出さない。
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
-    onRetry: () => { retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
+    onRetry: async () => {
+      if (!owner) { location.reload(); return; }
+      await chooseRetryAssist(owner.tournament);
+      if (state !== owner || !root.isConnected) return;
+      save();
+      retire(root);
+      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
+    },
     onTitle: () => location.reload(),
   });
   showScreen("end", root);

@@ -1,12 +1,76 @@
 // 実ブラウザで、回転中のマップ再表示と夜の行動の演出を検証する。
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import fs from "node:fs";
+if (process.env.SHOTS) fs.mkdirSync(process.env.SHOTS, { recursive: true });
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const browser = await chromium.launch({
   headless: true,
+  chromiumSandbox: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
 });
+
+async function waitForSpin(task, label) {
+  let timer;
+  try {
+    await Promise.race([
+      task,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} did not finish within 20 seconds`)), 20000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function checkInstallation(label, run, touch = false) {
+  const context = await browser.newContext({
+    viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch,
+  });
+  const page = await context.newPage(), errors = [];
+  page.on("pageerror", e => errors.push(e.message));
+  const boot = async (resume = false) => {
+    await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
+    await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.evaluate(async resume => {
+      const core = await import("./js/core/state.js"), reel = await import("./js/daily/reel.js");
+      resume ? core.load() : core.newGame();
+      core.state.phase = "daily";
+      if (!resume) core.state.reel.seed = 1;
+      core.config.bgmVolume = core.config.seVolume = 0;
+      const ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js");
+      ui.showScreen("reel-install-test", document.createElement("div"));
+      await ui.setBg(data.bgUrl("bg_c_station"), { fast: true });
+      window.installProbe = { core, reel };
+      window.startInstall = () => { window.installTask = reel.installReel(); };
+      window.installSnapshot = () => ({
+        count: core.state.reel.count, stats: { ...core.state.stats },
+        pending: core.state.reel.pending.length, flags: { ...core.state.flags },
+        day: core.state.day, slot: core.state.slot, stamina: core.state.stamina, money: core.state.money,
+      });
+    }, resume);
+  };
+  const tap = async () => {
+    const intro = page.locator('[data-test="reel-intro"]');
+    touch ? await intro.tap() : await intro.click();
+  };
+  const readIntro = async () => {
+    for (let i = 0; i < 5; i++) await tap();
+    await page.locator('[data-test="reel-guide-card"]').waitFor();
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 0, "説明中に先に抽選した");
+    await tap();
+  };
+  const finish = () => waitForSpin(page.evaluate(() => window.installTask), label);
+  try {
+    await boot();
+    await run({ page, boot, tap, readIntro, finish });
+    assert.deepEqual(errors, [], `${label}: browser errors`);
+    console.log(`[reel install] PASS: ${label}`);
+  } finally { await context.close(); }
+}
 
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -42,7 +106,7 @@ try {
   assert(remount.sameWidget, "回転中の筐体が、前回の停止出目の筐体に置き換わった");
   assert(remount.spinning > 0, "マップを戻したら回転済みの出目が表示された");
   assert(remount.sameTask, "再表示で回転の待機処理が分かれた");
-  await page.evaluate(() => window.daySpin);
+  await waitForSpin(page.evaluate(() => window.daySpin), "day spin");
   const final = await page.evaluate(() => {
     const { core, reel } = window.reelProbe;
     return [...document.querySelectorAll('.rw-strip')].map((node, i) => ({
@@ -71,7 +135,7 @@ try {
   });
   await page.waitForSelector('.reel-night.show .rw-strip.spinning');
   assert.equal(await page.evaluate(() => window.nightFirstFrame), 3, "夜の表示開始時に前回の停止出目が見えた");
-  await page.evaluate(() => window.nightSpin);
+  await waitForSpin(page.evaluate(() => window.nightSpin), "night spin");
   const night = await page.evaluate(() => {
     const { core } = window.reelProbe;
     return {
@@ -100,11 +164,131 @@ try {
   });
   assert(await page.evaluate(() => window.introBox === document.querySelector('.reel-intro')), "再表示で初回説明が作り直された");
   assert(await page.evaluate(() => window.introSpin === window.introRemount), "初回説明中に回転処理が重複した");
-  for (let i = 0; i < 4; i++) await page.click('[data-test="reel-intro"]');
-  await page.evaluate(() => window.introSpin);
+  // Read all five dialogue pages, then the guide card added to the introduction.
+  for (let i = 0; i < 5; i++) await page.click('[data-test="reel-intro"]');
+  await page.locator('[data-test="reel-guide-card"]').waitFor({ timeout: 10000 });
+  await page.click('[data-test="reel-intro"]');
+  await waitForSpin(page.evaluate(() => window.introSpin), "intro spin");
   assert.equal(await page.locator('.reel-intro').count(), 0);
   assert.deepEqual(errors, []);
   console.log('[reel lifecycle] remount while spinning, correct stops, night spin once, no repeated rewards, intro remount: PASS');
+
+  for (const touch of [false, true]) await checkInstallation(`first-spin-${touch ? "touch" : "pc"}`, async ({ page, readIntro, finish }) => {
+    const expected = await page.evaluate(() => {
+      const { core, reel } = installProbe;
+      const before = installSnapshot();
+      const copy = structuredClone(core.state.reel);
+      const results = reel.core.spinSeries(copy, { chapterFirst: true, reset: true });
+      startInstall();
+      const sameTask = installTask === reel.installReel();
+      return { count: copy.count, exp: results.reduce((n, r) => n + r.exp, 0), before, sameTask };
+    });
+    assert(expected.sameTask, "二重導入が別の説明を作った");
+    await readIntro();
+    await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
+    assert.equal(await page.locator('.rn-label').innerText(), "はじめてのスロット");
+    await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.reel-night.show')).opacity) >= .99);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/first-spin-${touch ? "touch" : "pc"}.png` });
+    await finish();
+    const after = await page.evaluate(() => installSnapshot());
+    assert.equal(after.count, expected.count, "通常抽選と回転数が違う");
+    assert.equal(Object.values(after.stats).reduce((a, b) => a + b, 0) - Object.values(expected.before.stats).reduce((a, b) => a + b, 0), expected.exp);
+    for (const key of ["day", "slot", "stamina", "money"]) assert.equal(after[key], expected.before[key], key);
+    assert.equal(after.pending, 0);
+    assert(!after.flags._pakki_first_spin_pending);
+    await page.evaluate(() => installProbe.reel.installReel());
+    assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "再訪で体験を繰り返した");
+    assert.equal(await page.locator('.reel-night, .reel-intro').count(), 0);
+  }, touch);
+
+  await checkInstallation("first-spin-keeps-normal-replay-chain", async ({ page, readIntro, finish }) => {
+    const expected = await page.evaluate(() => {
+      const { core, reel } = installProbe;
+      for (let seed = 1; seed <= 1000; seed++) {
+        const copy = { ...structuredClone(core.state.reel), seed };
+        const results = reel.core.spinSeries(copy, {});
+        if (results[0].role === "replay" && results.every(r => !reel.core.PEKA.includes(r.role) && !r.overlap)) {
+          core.state.reel.seed = seed; startInstall();
+          return { seed, count: copy.count };
+        }
+      }
+      throw new Error("No replay seed found");
+    });
+    assert(expected.count > 1);
+    await readIntro(); await finish();
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), expected.count);
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.pending.length), 0);
+  });
+
+  await checkInstallation("reload-during-explanation", async ({ page, boot, tap, readIntro, finish }) => {
+    await page.evaluate(() => startInstall());
+    await tap(); await tap();
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem(installProbe.core.SAVE_KEY)).flags._pakki_first_spin_pending), true);
+    await boot(true);
+    await page.evaluate(() => startInstall());
+    await readIntro(); await finish();
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 1);
+  });
+
+  await checkInstallation("reload-after-explanation-before-draw", async ({ page, boot, finish }) => {
+    // 説明完了のsaveと抽選確定の間で中断した、到達可能な保存境界。
+    await page.evaluate(() => {
+      const { core } = installProbe;
+      core.state.reel.installed = core.state.reel.introDone = core.state.reel.settingGuideDone = true;
+      core.state.flags._pakki_first_spin_pending = true; core.save();
+    });
+    await boot(true);
+    await page.evaluate(() => startInstall());
+    await finish();
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 1);
+    assert.equal(await page.locator('.reel-intro').count(), 0);
+  });
+
+  await checkInstallation("reload-during-first-spin", async ({ page, boot, readIntro }) => {
+    await page.evaluate(() => startInstall()); await readIntro();
+    await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
+    const committed = await page.evaluate(() => JSON.parse(localStorage.getItem(installProbe.core.SAVE_KEY)));
+    assert.equal(committed.reel.count, 1);
+    assert(!committed.flags._pakki_first_spin_pending);
+    await boot(true);
+    await page.evaluate(() => installProbe.reel.installReel());
+    const after = await page.evaluate(() => installSnapshot());
+    assert.equal(after.count, committed.reel.count);
+    assert.deepEqual(after.stats, committed.stats, "途中再開で再抽選・二重報酬");
+    assert.equal(await page.locator('.reel-night, .reel-intro').count(), 0);
+  });
+
+  for (const introDone of [false, true]) await checkInstallation(`legacy-installed-${introDone ? "read" : "unread"}`, async ({ page, readIntro, finish }) => {
+    await page.evaluate(introDone => {
+      const { core } = installProbe;
+      core.state.reel.installed = true; core.state.reel.introDone = introDone;
+      startInstall();
+    }, introDone);
+    if (!introDone) await readIntro();
+    await finish();
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 0, "旧導入済み保存へ体験を追加した");
+  });
+
+  await checkInstallation("existing-action-result-is-not-drawn-again", async ({ page, tap, finish }) => {
+    await page.evaluate(() => { startInstall(); installProbe.reel.onAction({ spent: 10 }); });
+    const before = await page.evaluate(() => installSnapshot());
+    for (let i = 0; i < 6; i++) await tap();
+    await finish();
+    const after = await page.evaluate(() => installSnapshot());
+    assert.equal(after.count, before.count); assert.deepEqual(after.stats, before.stats);
+    assert.equal(after.pending, 0);
+  });
+
+  await checkInstallation("new-game-during-explanation", async ({ page }) => {
+    await page.evaluate(() => {
+      startInstall(); installProbe.core.newGame();
+    });
+    await waitForSpin(page.evaluate(() => installTask), "cancel old explanation");
+    assert.equal(await page.locator('.reel-intro').count(), 0);
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 0);
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.introDone), false);
+    assert.equal(await page.evaluate(() => installProbe.core.state.reel.installed), false);
+  });
 } finally {
   await browser.close();
 }

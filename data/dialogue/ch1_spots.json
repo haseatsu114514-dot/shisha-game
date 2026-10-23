@@ -341,7 +341,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "——今回の評価軸ですが、僕は例によってデータ収集を兼ねます"
+          "text": "——今回の評価軸ですが、私は例によってデータ収集を兼ねます"
         },
         {
           "speaker": "dr_kemuri",
@@ -411,7 +411,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "蒸野はじめです。今日は、なるさんに教えてもらって"
+          "text": "蒸野はじめです。なるさんに教えてもらって来ました"
         },
         {
           "speaker": "nagumo",
@@ -663,7 +663,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（『もう一口吸いたい』──あの人にそう思わせる煙って、どんな１台だ？）"
+          "text": "（『もう一口吸いたい』──あの人にそう思わせる煙って、どんな一台だ？）"
         },
         {
           "speaker": "",
@@ -789,7 +789,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……焦らず、１台ずつ）"
+          "text": "（……焦らず、一台ずつ）"
         },
         {
           "speaker": "",
@@ -1079,6 +1079,58 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "kannon_adam_pakki",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "境内のベンチで、アダムがスマホを見つめていた。画面の中でパッキーが跳ねている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アダムさんも、パッキーのアプリ入れてたんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "大会の連絡が来るからな。……だが、これがなかなか光らん"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ところが、渋い日にここで手を合わせると、しばらくよく回る気がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お参りで、スロットの調子が変わるんですか？"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "知らん。だが運も原点に返れば、巡り直す。それだけだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "もっとも、一週間もすれば元の木阿弥だがな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは画面を消すと、賽銭箱に深く頭を下げた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_adam_pakki"
+        }
+      ]
     },
     {
       "dialogue_id": "kannon_oldman",
@@ -1617,7 +1669,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸う人の顔まで含めて１台なんだと、なんとなく分かった気がした。"
+          "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
         }
       ]
     },
@@ -1697,7 +1749,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（揃える強さと、揃えない強さ。……tonariの１台は、どっちだ）"
+          "text": "（揃える強さと、揃えない強さ。……tonariの一台は、どっちだ）"
         },
         {
           "speaker": "",

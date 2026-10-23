@@ -47,6 +47,42 @@ try {
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
   await page.evaluate(() => T.ui.bannersIdle());
 
+  // 累計16を+16と表示しない。20刻みの境界前後と連続加算も、今回の実増分だけ。
+  for (const [before, gains, level, width, height] of [
+    [15, [1], 1, 1280, 720], [19, [1], 1, 844, 390],
+    [20, [1], 2, 591, 1280], [39, [1, 1], 3, 1280, 720],
+  ]) {
+    await page.setViewportSize({ width, height });
+    const expected = gains.reduce((sum, gain) => sum + gain, 0);
+    const committed = await page.evaluate(({ before, gains }) => {
+      T.core.state.stats.technique = before; T.core.state.statXp = {}; T.events = [];
+      const returned = gains.map(gain => T.stats.gainStat("technique", gain));
+      return { returned, stats: { ...T.core.state.stats }, xp: { ...T.core.state.statXp } };
+    }, { before, gains });
+    assert.deepEqual(committed.returned, gains);
+    assert.equal(committed.stats.technique, before + expected);
+    await page.waitForSelector(".gain-card.st-technique.show");
+    assert.equal(await page.locator(".gc-earned").textContent(), "今回");
+    assert.equal(await page.locator(".gc-points").textContent(), `+${expected}P`);
+    assert.equal(await page.locator(".gc-points").getAttribute("aria-label"), `今回の増加 +${expected}P`);
+    assert(await page.locator(".gain-card.st-technique").evaluate(card => {
+      const name = card.querySelector(".gc-main").getBoundingClientRect();
+      const label = card.querySelector(".gc-earned").getBoundingClientRect();
+      const points = card.querySelector(".gc-points").getBoundingClientRect();
+      return name.right <= label.left && label.right <= points.left
+        && points.right <= card.getBoundingClientRect().right
+        && card.scrollWidth <= card.clientWidth;
+    }), "今回の表示と名前・増分が重なるか、カードからはみ出した");
+    const levelUp = level > Math.max(1, Math.ceil(before / 20));
+    assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "LEVEL UP" : "STATUS UP");
+    assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`Lv.${level}に到達`] : []);
+    assert.deepEqual(await page.evaluate(() => T.events.map(({ total, starUp, star }) => ({ total, starUp, star }))),
+      [{ total: expected, starUp: levelUp, star: level }]);
+    await page.evaluate(() => T.ui.bannersIdle());
+    assert.deepEqual(await page.evaluate(() => ({ stats: { ...T.core.state.stats }, xp: { ...T.core.state.statXp } })),
+      { stats: committed.stats, xp: committed.xp }, "通知の表示で累計や端数が変わった");
+  }
+
   // 上限の技術に経験値12を足しても、空いているセンスの実増加2だけを表示する。
   await page.evaluate(() => {
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 48;

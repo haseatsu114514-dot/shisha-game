@@ -19,8 +19,8 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
-// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
+// （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -43,7 +43,11 @@ await page.addInitScript(() => {
   });
 });
 const errors = [];
-page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+page.on("pageerror", (e) => {
+  const text = e.stack || e.message;
+  console.error("[pageerror]", text);
+  errors.push(`pageerror: ${text}`);
+});
 page.on("console", (m) => {
   // Webフォント（外部）の読み込み失敗はサンドボックス都合なので無視
   if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`);
@@ -65,6 +69,7 @@ let pendingShopBuy = null;
 let lemonPurchased = false;
 let lastPlanTrace = "";
 let kujiDrawn = false;
+let firstKujiBlocked = false;
 let tournamentAttempt = 0;
 let lastProgress = Date.now();
 let lastKey = "";
@@ -286,9 +291,12 @@ for (;;) {
 
   // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
-    if (!snap.errandDone) guided++; else deliveryGuided++;
     const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
-    if (id === "c_station" && snap.slot !== 0) throw new Error("DAY1 scout consumed the action before registration");
+    if (!snap.errandDone || id === "c_station") guided++; else deliveryGuided++;
+    if (snap.day === 1 && !["shop", "naru"].includes(id)) throw new Error("DAY1 must end after scouting");
+    if (id === "minto" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Minto must be the first DAY2 delivery");
+    if (id === "adam" && (snap.day !== 2 || snap.slot !== 1)) throw new Error("Adam must be the second DAY2 delivery");
+    if (id === "c_station" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Registration must happen before DAY2 deliveries");
     await chooseDestination(id);
     continue;
   }
@@ -298,7 +306,7 @@ for (;;) {
     const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
     if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
     checkedDeliveryBoundary = true;
-    log("DAY2 minto storefront delivery preserves normal first visit");
+    log("DAY2 minto indoor delivery preserves normal first visit");
   }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
@@ -306,6 +314,8 @@ for (;;) {
   // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     fortuneTried = true;
+    // #780: 新ピンの解錠演出中は選択を受け付けないので、演出の終わりを待つ。
+    await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'), null, { timeout: 10000 }).catch(() => {});
     await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
     continue;
   }
@@ -349,6 +359,8 @@ for (;;) {
     continue;
   }
   if (snap.screen === "shop") {
+    const firstErrandVisit = await page.evaluate(() => !window.__remake.state.flags._errand_shop_done
+      && !!document.querySelector(".shop-errand"));
     // スミさんの頼み（ミント）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
@@ -364,18 +376,24 @@ for (;;) {
         consume: () => { lemonPurchased = true; pendingShopBuy = null; },
       });
     }
-    // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
+    // 初回買い出しでは拒否され、後日の通常営業で1回引ける。
     if (!kujiDrawn) {
       await shoppingRequired('.shop-tab[data-tab="kuji"]');
       const before = await shoppingSnapshot();
       await shoppingRequired('[data-test="kuji-g500"]');
       const after = await shoppingSnapshot();
       log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
-      if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
-        throw new Error("Kuji input did not produce expected draw/payment");
-      kujiDrawn = true;
-      await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
-      await click('[data-test="kuji-reveal"]');
+      if (firstErrandVisit) {
+        if (JSON.stringify(after) !== JSON.stringify(before) || await page.$('.kuji-card.reveal'))
+          throw new Error("First mint errand allowed a kuji purchase");
+        firstKujiBlocked = true;
+      } else {
+        if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+          throw new Error("Kuji input did not produce expected draw/payment");
+        kujiDrawn = true;
+        await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
+        await click('[data-test="kuji-reveal"]');
+      }
     }
     await shoppingRequired('[data-test="shop-leave"]');
     continue;
@@ -384,9 +402,10 @@ for (;;) {
     if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
-      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : a ? '[data-test="after-drill"]' : '[data-test="after-none"]');
+      // シフト後の自主練は家へ移した（#638）。計画の "baito:holes" などはシフトだけを行い、そのまま上がる。
+      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : '[data-test="after-none"]');
       // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
-      if (selected) { pendingDrill = a && a !== "sumi" ? a : null; pendingAfter = null; }
+      if (selected) { pendingDrill = null; pendingAfter = null; }
       continue;
     }
     if (snap.sub === "自主練" && pendingDrill) {
@@ -442,7 +461,7 @@ if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pe
 // 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
 if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
-// スミさんの配達（DAY1 夜 EDEN・DAY2 昼 PEPPERMINT）: 初来店を配達の場面で通す
+// スミさんの配達（DAY2 昼 PEPPERMINT・夜 EDEN）: 初来店を配達の場面で通す
 log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
 if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
   throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");
@@ -475,6 +494,7 @@ if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("supplied 
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
+if (!firstKujiBlocked) throw new Error("First mint errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);

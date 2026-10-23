@@ -50,7 +50,16 @@ await suite("issue439", async (check) => {
           font: parseFloat(getComputedStyle(document.querySelector(".ri-text")).fontSize) };
       });
       assert(layout.centered && layout.inside && layout.font >= 26, JSON.stringify(layout));
-      for (let i = 0; i < 5; i++) await page.locator(".reel-intro").click();
+      // パッキーの説明5ページのあとに、設定のシステム説明（#634）。どのページも画面内に収まる
+      for (let i = 0; i < 12 && await page.locator(".reel-intro").count(); i++) {
+        const fits = await page.evaluate(() => {
+          const s = document.querySelector("#stage").getBoundingClientRect(), b = document.querySelector(".ri-panel").getBoundingClientRect();
+          return b.top >= s.top && b.bottom <= s.bottom;
+        });
+        assert(fits, `intro page ${i + 1} overflows`);
+        await page.locator(".reel-intro").click();
+      }
+      assert.equal(await page.locator(".reel-intro").count(), 0);
       await page.evaluate(() => I.install);
     }, options);
 
@@ -58,6 +67,7 @@ await suite("issue439", async (check) => {
       await setup(page);
       await page.evaluate(async () => {
         for (const id of Object.keys(I.data.DB.characters)) { I.core.state.met[id] = true; I.core.state.flags[`_intro_${id}`] = true; }
+        Object.assign(I.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
         I.core.state.flags._gym_member = true; I.core.state.flags._morning_8 = true; I.core.state.flags._lime_opened = true;
         I.core.state.reel.installed = false;
         I.run = (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
@@ -97,7 +107,7 @@ await suite("issue439", async (check) => {
     await setup(page);
     await page.route("**/backgrounds/bg_kannon*.webp", async route => { await new Promise(resolve => setTimeout(resolve, 1200)); await route.continue(); });
     await page.evaluate(async () => {
-      I.core.state.met.adam = true;
+      I.core.state.met.adam = true; I.core.state.flags._spot_guide_adam = true;
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();
@@ -110,16 +120,18 @@ await suite("issue439", async (check) => {
     await setup(page, false);
     await page.evaluate(() => {
       I.core.markMet("hiyori"); I.core.state.flags._intro_hiyori = true;
+      I.talkDone = false;
       I.talk = I.vn.play({ dialogue_id: "__439_flashback", lines: [
         { type: "fx", id: "flashback" }, { speaker: "hiyori", face: "student_smile", text: "学生の頃" },
         { type: "fx", id: "flashback_off" }, { speaker: "hiyori", face: "normal", text: "今の話" },
-      ] });
+      ] }).then(result => { I.talkDone = true; return result; });
     });
     await page.locator("#vn.flashback .vn-next.show").waitFor();
     assert.match(await page.locator(".vn-portraits").evaluate(node => getComputedStyle(node).filter), /grayscale\(1\)/);
     await page.keyboard.press("Enter"); await page.waitForSelector("#vn:not(.flashback) .vn-next.show");
+    assert.equal(await page.locator(".vn-text").innerText(), "今の話", "Next must belong to the displayed line");
     assert.equal(await page.locator(".vn-portraits").evaluate(node => getComputedStyle(node).filter.includes("grayscale")), false);
-    await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);
+    await page.keyboard.press("Enter"); await page.waitForFunction(() => I.talkDone);
   });
 
   await check("cheki-earned-after-photo", async page => {

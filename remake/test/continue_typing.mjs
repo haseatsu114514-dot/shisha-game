@@ -107,9 +107,12 @@ try {
       .find(c => c.next && [...c.text].length >= 14 && [...c.text].length / 26 < c.slot * .6));
     assert(target, "Production scripts need an uncapped timing sample");
     await mount(page);
+    await page.clock.runFor(20);
+    assert(await page.locator('[data-test="retry"]').evaluate(b => b === document.activeElement), "Ready screen focuses retry");
+    await page.locator('[data-test="retry"]').evaluate(b => b.blur());
     await page.mouse.move(0, 0);
     let buttons = (await read(page)).buttons;
-    assert.deepEqual(buttons.map(b => b.selected), [false, false], "Both choices start neutral");
+    assert.deepEqual(buttons.map(b => b.selected), [false, false], "Unfocused choices stay neutral");
     assert.equal(buttons[0].color, buttons[1].color, "Neither choice is privileged before selection");
     assert(buttons.every(b => b.frame.includes("neon_retry_frame")), "Both choices have the same prepared gold frame");
     if (!touch) {

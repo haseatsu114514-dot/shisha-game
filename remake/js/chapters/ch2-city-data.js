@@ -1,6 +1,6 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
-import { CH2_NIGHTS } from "./ch2-story-data.js";
+import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY } from "./ch2-story-data.js";
 
 export const MAP = {
   day: "../assets/backgrounds/bg_widehanga_map_day.webp",
@@ -50,6 +50,8 @@ export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   const files = { ch2_preparation: required };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
+  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
+  if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);

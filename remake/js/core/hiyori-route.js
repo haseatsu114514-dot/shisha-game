@@ -3,6 +3,7 @@
 import { DB } from "./data.js";
 import { state } from "./state.js";
 import { affinityLevel } from "./stats.js";
+import { hiyoriFirstMeetingReady } from "./axe-bar-discovery.js";
 
 export const hiyoriRoute = () => DB.hiyori?.route || {};
 export const hiyoriHasContact = () => !!state && (state.contacts.includes("hiyori") || !!state.flags._lime_contact_hiyori);
@@ -28,6 +29,7 @@ export function hiyoriEventStatus(id) {
   if (scripts.some(script => !script?.lines?.length || script.metadata?.preview_only)) return "missing_script";
   if (state.flags[event.flag]) return "seen";
   if (!event.chapters.includes(state.chapter)) return "chapter";
+  if (id === "meeting" && !hiyoriFirstMeetingReady(state)) return "prerequisites";
   if (event.slot !== undefined && state.slot !== event.slot) return "time";
   if (event.requires.some((flag) => !state.flags[flag]) || event.met && !state.met.hiyori
     || event.contact && !hiyoriHasContact() || affinityLevel("hiyori") < (event.minAffinity || 0)) return "prerequisites";

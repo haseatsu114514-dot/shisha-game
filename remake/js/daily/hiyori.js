@@ -5,11 +5,14 @@ import { seeded } from "../core/util.js";
 import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { afterStory, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
+import { afterStory, hiyoriQuestionReady, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
 import { on } from "../core/bus.js";
 import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
+import { allSpots, isClosed, isUnlocked } from "./spots.js";
+import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discovery.js";
+import { playAxeBarRumor } from "./axe-bar-discovery.js";
 
 let active = false;
 
@@ -64,9 +67,9 @@ export async function playHiyoriEvent(id, options = {}) {
   }
 }
 
-/** 買い物だけでは会わない。実際に一服する他店なら、初対面の店は固定しない。 */
+/** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
-  || spot.kind === "shop" || spot.id === "c_station");
+  || spot.id === "c_station");
 
 // 同じ訪問をロードしても再抽選しない。店主・施設側の来店テーブルはそのまま使う。
 function encounterRoll(spot) {
@@ -76,13 +79,41 @@ function encounterRoll(spot) {
   return seeded(state.seed, salt);
 }
 
+/** tonariの次の対面で実際にひより本人が登場する場合。スミさんへの伝言だけの日は除く。 */
+export function hiyoriAtTonari() {
+  if (["tonari_followup", "tonari_afterwork", "work_talk"].some(id => hiyoriEventStatus(id) === "ready")) return true;
+  return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori");
+}
+
+/** 時間帯ごとに一つの滞在先を選ぶ。既存のseedを使い、ロードや地図再描画で再抽選しない。 */
+export function hiyoriShopLocation() {
+  if (!hiyoriRoute().enabled || ![1, 2].includes(state.chapter) || state.slot > 1 || hiyoriAtTonari()) return null;
+  if (state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day
+    && (state.pendingInvite.sender === "hiyori" || state.pendingInvite.event === "hiyori_tonari_return")) return null;
+  if (state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`) return null;
+  const first = hiyoriEventStatus("meeting") === "ready";
+  if (!first && !state.flags._hiyori_sumi_message_done) return null;
+  const ready = first || hiyoriEventStatus("relay") === "ready" || hiyoriEventStatus("cracks") === "ready"
+    || !!DB.dialogues[`hiyori_shop_repeat_${Number(state.flags._hiyori_repeat_count || 0) % 4}`]?.lines?.length;
+  if (!ready) return null;
+  const candidates = allSpots().filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
+    && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day)
+    .map(spot => ({ id: spot.id, roll: encounterRoll(spot) }))
+    .filter(spot => first || spot.roll < 0.2)
+    .sort((a, b) => a.roll - b.roll || a.id.localeCompare(b.id));
+  return candidates[0]?.id || null;
+}
+
+/** 地図も実来店も同じ予定を読む。報酬・既読・抽選状態は更新しない。 */
+export const hiyoriShopEncounterDue = spot => !!spot && hiyoriShopLocation() === spot.id;
+
 /** 既存の訪問に相席を添える。同じ日の多重遭遇・無料の買い物による好感度稼ぎを防ぐ。 */
-export async function visitHiyoriAtShop(spot, { bg } = {}) {
-  if (!hiyoriShopEligible(spot) || !hiyoriRoute().enabled || ![1, 2].includes(state.chapter)) return false;
+export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLocation() } = {}) {
+  // 来店中の面識・訪問済みの更新で、入店前に示した滞在先を再抽選しない。
+  if (!hiyoriShopEligible(spot) || !scheduledSpot || scheduledSpot !== spot.id
+    || state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`) return false;
   const owner = state;
   const stamp = `${state.chapter}:${state.day}`;
-  if (state.pendingInvite?.event === "__hiyori_shop__" && state.pendingInvite.day === state.day) return false;
-  if (state.flags._hiyori_encounter_day === stamp) return false;
   const options = { bg };
   if (hiyoriEventStatus("meeting") === "ready") {
     if (!await playHiyoriEvent("meeting", options)) return false;
@@ -90,7 +121,6 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
   } else {
     // 次のスミさんとの会話を先に読む。好感度から伝言の既読を推測しない。
     if (!state.flags._hiyori_sumi_message_done || active || isPlaying()) return false;
-    if (encounterRoll(spot) >= 0.2) return false;
     if (hiyoriEventStatus("relay") === "ready") {
       if (!await playHiyoriEvent("relay", options)) return false;
     } else if (hiyoriEventStatus("cracks") === "ready") {
@@ -119,6 +149,7 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
 
 /** 返信で予約した店で既存の短い交流を読む。予約なしの確定出現は増やさない。 */
 export async function playHiyoriHangout(options = {}) {
+  if (!hiyoriFirstMeetingReady(state)) return false;
   const stamp = `${state.chapter}:${state.day}`;
   if (active || isPlaying() || state.flags._hiyori_encounter_day === stamp) return false;
   const n = Number(state.flags._hiyori_repeat_count || 0);
@@ -141,11 +172,12 @@ export async function playHiyoriHangout(options = {}) {
 
 /** バイト・客席・スミさんとの会話、いずれも次の実際の対面で一度だけ進める。 */
 export async function meetHiyoriAtTonari() {
+  if (axeBarRumorDue(state)) return playAxeBarRumor();
   if (hiyoriEventStatus("sumi_message") === "ready") return playHiyoriEvent("sumi_message");
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
   if (hiyoriEventStatus("tonari_afterwork") === "ready") return playHiyoriEvent("tonari_afterwork");
   if (hiyoriEventStatus("work_talk") === "ready") return playHiyoriEvent("work_talk");
-  if (!active && !isPlaying() && state.flags._hiyori_work_talk_done && !state.flags._hiyori_bond_question_done) {
+  if (!active && !isPlaying() && hiyoriQuestionReady()) {
     const lifetime = ownedConversation(); active = true;
     try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }

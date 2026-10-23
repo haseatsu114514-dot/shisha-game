@@ -126,7 +126,7 @@ async function continueDayOne() {
     if (stage === "departure") {
       if (!progress().titleSeen) {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
-        await chapterTitle({ no: "第二章", name: "才能の壁", read: "ジェラシー・ヘイズ ── Jealousy Haze", sub: "HAZE: OPEN CLOUD 編" });
+        await chapterTitle({ no: "第二章", name: "才能の壁", read: "ホロウ・クラウン ── Hollow Crown", sub: "HAZE: OPEN CLOUD 編" });
         if (!current(owner)) return;
         progress().titleSeen = true;
         save();

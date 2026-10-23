@@ -1,0 +1,95 @@
+{
+  "issue": 586,
+  "status": "authorized; image edit starting",
+  "request": "メーカー名は箱にどれもかかなくていいや",
+  "scope": {
+    "edit_ids": [
+      "vanilla",
+      "coconut",
+      "mango",
+      "peach",
+      "melon",
+      "banana",
+      "rose",
+      "lychee"
+    ],
+    "reuse_heaven10": true,
+    "remove": "manufacturer name文字 only on front and right faces",
+    "retain": [
+      "pictorial logo",
+      "flavor names",
+      "approved geometry and colors",
+      "existing archive"
+    ],
+    "runtime_change": false
+  },
+  "budget": {
+    "additional_approved_MB": 40,
+    "approval": "追加40MBまで許可し、修正・マージまで進める"
+  },
+  "preservation": {
+    "old_art_unchanged": true,
+    "old_issue_claim_unchanged": true,
+    "no_formal_transfer_asserted": true
+  },
+  "master_source_commit": "3526421fb71b4fe84d4e733854d0ef2dc2785ee0",
+  "specs": [
+    {
+      "id": "vanilla",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-vanilla.png",
+      "reference": "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word VANILLA in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "coconut",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-coconut.png",
+      "reference": "/workspace/generated_images/exec-c67b5a14-cc29-43dd-8d11-dc3d99086072.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word COCONUT in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "mango",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-mango.png",
+      "reference": "/workspace/generated_images/exec-bc3f2591-62ae-40ca-843a-636bb06f46de.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word MANGO in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "peach",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-peach.png",
+      "reference": "/workspace/generated_images/exec-63d3fa3e-cd32-43ac-b04a-ee4cb40ba8a4.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word PEACH in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "melon",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-melon.png",
+      "reference": "/workspace/generated_images/exec-76dd82a2-c273-406b-b8f9-c4c0c8ab7513.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word MELON in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "banana",
+      "maker": "dobaj",
+      "filename": "outputs/dobaj-banana.png",
+      "reference": "/workspace/generated_images/exec-0e60ca57-ad4b-4868-8f6b-532b459832cb.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word DOBAJ from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word BANANA in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "rose",
+      "maker": "afsaal",
+      "filename": "outputs/afsaal-rose.png",
+      "reference": "/workspace/generated_images/exec-77968241-d56d-40a6-adab-03799b78bf4f.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word AFSAAL from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word ROSE in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    },
+    {
+      "id": "lychee",
+      "maker": "afsaal",
+      "filename": "outputs/afsaal-lychee.png",
+      "reference": "/workspace/generated_images/exec-d734bd64-168f-430d-b981-9e3cc417f0de.png",
+      "prompt": "Perform a strictly localized text-removal edit on this exact approved game flavor carton. Remove ONLY the manufacturer word AFSAAL from EVERY visible printed location, including the large front word and the small right-side word. Reconstruct just the vacated letter strokes using the immediately surrounding paper/ink background color and fine texture, with no replacement lettering, no placeholder, and no redesign. KEEP the maker's pictorial logo mark (paired arches or sunrise-in-arch) exactly where it is. KEEP the flavor word LYCHEE in all its current front and side locations unchanged. Preserve all other image pixels as closely as possible: exact paper carton width, height, depth, outer alpha silhouette, camera angle, front/top/right face edge slopes and fold positions, print placement, colors, shading, texture, fruit/flower graphic, ribbon, transparency and frame scale. Do not rotate, zoom, resize or recompose the carton. Do not move or enlarge the logo or flavor name to fill the vacated space. No additional objects, no common grass ornament, no HMD or top protrusion. This should look like the same source PNG with only those manufacturer-name letter strokes erased, not a new product render. Output one carton with transparent background."
+    }
+  ],
+  "base_commit": "f04f08b71e41a73949fd3323551fe192f532360a"
+}

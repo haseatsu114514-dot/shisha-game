@@ -33,11 +33,46 @@ on:
       - 'data/dialogue/**'
       - 'brand/character_profiles.md'
       - '.github/workflows/agent-docs.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          # Noncone basename patterns include matching text at EVERY depth,
+          # including asset source text. Keep the full identity scan extension
+          # set from check_legacy_terms.py; the Git index still lists all paths.
+          # checkout@v4 uses blob:none automatically for sparse checkout.
+          # No directory-wide checkout or bitmap/audio materialization.
+          sparse-checkout: |
+            /.agents/skills/portrait-unify
+            *.md
+            *.json
+            *.js
+            *.mjs
+            *.cjs
+            *.py
+            *.gd
+            *.txt
+            *.csv
+            *.sh
+            *.html
+            *.css
+            *.yml
+            *.yaml
+            *.svg
+            *.xml
+            *.toml
+            *.lock
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

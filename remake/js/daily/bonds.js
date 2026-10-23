@@ -119,24 +119,31 @@ export async function afterStory(dialogueId, { bg = null, signal = null, deferSa
 
 /** 保存済みの実回答から反応へ戻す。友人のvalue:0も回答で、再選択・再加算しない。 */
 function resumeChoice(scene, key, answer) {
-  if (!answer) return scene;
+  if (!answer || !scene) return scene;
   const rows = lines => (lines || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== key) return [line];
     const selected = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
-    return selected ? scene.branches[selected.next] : [line];
+    return selected ? scene.branches?.[selected.next] || [] : [line];
   });
   return { ...scene, lines: rows(scene.lines), branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([k,v]) => [k,rows(v)])) };
 }
 
-/** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
-export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
+/** 質問を実際に再生できるか。地図の在店表示も同じ条件を読む。 */
+export function hiyoriQuestionReady() {
   const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
     || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
-    || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori || signal?.aborted) return false;
+    || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori) return false;
   const answer = state.romanceChoices[q.choice];
-  if (answer && (answer.char !== "hiyori" || !Number.isFinite(answer.value) || answer.value < 0)) return false;
+  return !answer || answer.char === "hiyori" && Number.isFinite(answer.value) && answer.value >= 0;
+}
+
+/** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
+export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
+  if (!hiyoriQuestionReady() || signal?.aborted) return false;
+  const q = hiyoriRoute().question, scene = DB.dialogues[q.dialogue];
+  const answer = state.romanceChoices[q.choice];
   const owner = state;
   const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
   if (state !== owner || signal?.aborted || result?.cancelled || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
@@ -211,10 +218,11 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   const answer = ["samechan", "hiyori"].includes(id) && state.romanceChoices?.[def.question];
   if (id === "hiyori" && answer && (answer.char !== id || !Number.isFinite(answer.value) || answer.value < 0)) return false;
   const scene = DB.dialogues[def.dialogue];
-  const resumeRows = rows => rows.flatMap(line => {
+  if (!scene) return false;
+  const resumeRows = rows => (rows || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== def.question) return [line];
     const choice = line.choices.find(c => (c.romance > 0) === (answer.value > 0));
-    return scene.branches[choice.next];
+    return scene.branches?.[choice.next] || [];
   });
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
     branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;

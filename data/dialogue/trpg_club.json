@@ -1,7 +1,7 @@
 {
   "dialogue_id": "trpg_club",
   "metadata": {
-    "description": "ボドゲカフェの部活設立と対面勧誘"
+    "description": "ボドゲカフェの部活設立（サイの笑顔に流されて部長になる）と対面勧誘"
   },
   "lines": [
     {
@@ -10,21 +10,57 @@
       "text": "よければ、この店でTRPGの部活を作りませんか"
     },
     {
-      "speaker": "sai",
+      "speaker": "hajime",
       "face": "normal",
-      "text": "仲のいい人を誘って、仕事のない夜に集まるんです"
+      "text": "いや、仕事もあるし、今日はちょっと……"
     },
     {
       "speaker": "sai",
       "face": "normal",
-      "text": "皆さんの好みに合う本を、こちらで仕入れておきます"
+      "text": "ええ、無理にとは言いません。……作りませんか"
+    },
+    {
+      "speaker": "",
+      "text": "糸目の笑顔は、一ミリも動かない。なぜか、次の言葉が出てこない。"
+    },
+    {
+      "speaker": "sai",
+      "face": "normal",
+      "text": "仕事のない夜に、仲のいい人と集まるだけです。本はこちらで仕入れますね"
     }
   ],
   "branches": {
     "invite": [
       {
         "speaker": "hajime",
-        "text": "ボドゲカフェでTRPGの部活を作ったんだ。一緒にどう？"
+        "face": "normal",
+        "text": "なぜか部長にされてて……TRPGの部活、一緒にどう？"
+      }
+    ],
+    "founded": [
+      {
+        "speaker": "",
+        "text": "……気づけば、入部届に自分の名前を書いていた。"
+      },
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "（あれ……？　手が、勝手に……）"
+      },
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "では、その選択で。部長、よろしくお願いしますね"
+      },
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "（部長……！？）"
+      },
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "部員集めもお任せします。皆さん、きっと来てくれますよ"
       }
     ],
     "hiyori": [

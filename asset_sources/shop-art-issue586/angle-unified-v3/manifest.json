@@ -1,0 +1,926 @@
+{
+  "schema_version": 1,
+  "issue": 586,
+  "status": "source-art complete; approved baseline expanded to 18; runtime not changed",
+  "user_authorizations": {
+    "master_approval": "これでOK 引き続き頼む",
+    "scope": "全18種を修正し、追加110MBまで許可する",
+    "merge": "再生成してマージ"
+  },
+  "baseline": {
+    "file": "dobaj-vanilla-baseline-preview.png",
+    "selected_file": "outputs/dobaj-vanilla.png",
+    "sha256": "03d3c926c8598d32a7ce1c5376bc9029556037f2f2f82c85fcc7d13eea9b0f10",
+    "bbox128": [
+      271,
+      114,
+      985,
+      1155
+    ],
+    "original_requested_width_change": "-3%",
+    "actual_original_width_change": "approximately -8%; shown and explicitly accepted by user; do not describe as exact -3%"
+  },
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "new_calls_since_baseline_acceptance": 19,
+    "selected_new": 17,
+    "retained_approved_baseline": 1,
+    "held_wide_trials": 2,
+    "external_services_login_or_charge": false,
+    "code_pixel_retouch": false
+  },
+  "reservation": {
+    "existing_owner": "codex-c-shop-art-20261016-8e7fb2cb0e",
+    "claim_run": "38786636524",
+    "ledger_comment": "6199462633",
+    "unchanged": true,
+    "formal_transfer_verified": false,
+    "authorization": "User explicitly permitted new source-art work here after original chat could not be found. No claim takeover, formal handoff assertion or old worker ID reuse. Existing game-code/mapping preserved."
+  },
+  "scope": {
+    "allowed_paths": [
+      "asset_sources/shop-art-issue586/angle-unified-v3/"
+    ],
+    "game_code_changed": false,
+    "data_changed": false,
+    "delivery_mapping_changed": false,
+    "old_art_preserved": true,
+    "issue_closed_or_claim_released": false
+  },
+  "geometry": {
+    "same_height_view": "alpha>16 window plus 2px; common 88% fit; no per-flavor CSS distortion",
+    "baseline_aspect": 0.6858789625360231,
+    "min_aspect_delta_percent": -2.5831857406639736,
+    "max_aspect_delta_percent": 2.249944921788938,
+    "qa": "Front/top/right facing and folds visually inspected in 180px and 66px comparison. Generative images have small per-image variations; not calibrated identical camera matrices."
+  },
+  "network": {
+    "authorized_additional_MB": 110,
+    "generated_png_MB": 29.422822,
+    "github_base64_image_upload_MB": 39.230456,
+    "references_MB_if_retransmitted_every_call": 45.317961,
+    "reference_cache": "All references reused local cached sources; per-call transport and cache accounting not exposed",
+    "arithmetic_not_measured_total": true,
+    "conservative_payload_sum_excluding_comparison_MB": 113.971239,
+    "further_large_download_or_generation": false
+  },
+  "validation": {
+    "scope": "local source comparison; no game/runtime/browser purchase regression performed",
+    "cases": [
+      {
+        "size": 180,
+        "images": 18,
+        "min_height": 158.390625,
+        "max_height": 158.390625,
+        "min_width": 105.96875,
+        "max_width": 111.203125
+      },
+      {
+        "size": 112,
+        "images": 18,
+        "min_height": 98.546875,
+        "max_height": 98.546875,
+        "min_width": 65.9375,
+        "max_width": 69.1875
+      },
+      {
+        "size": 66,
+        "images": 18,
+        "min_height": 58.078125,
+        "max_height": 58.078125,
+        "min_width": 38.84375,
+        "max_width": 40.765625
+      },
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "size": 112,
+        "horizontal_overflow": false
+      }
+    ],
+    "page_errors": [],
+    "screenshots": [
+      {
+        "file": "comparison-112.png",
+        "bytes": 280478,
+        "sha256": "a8a858f9989361ac6a980a7210a686b829756ceb38fc42db41d16417a086442f"
+      },
+      {
+        "file": "comparison-18.png",
+        "bytes": 559932,
+        "sha256": "21d51e1182431db0e2db1cd30709e653a2cf214a126cc8068f2b51681a5944d4"
+      },
+      {
+        "file": "comparison-180.png",
+        "bytes": 559932,
+        "sha256": "21d51e1182431db0e2db1cd30709e653a2cf214a126cc8068f2b51681a5944d4"
+      },
+      {
+        "file": "comparison-66-dark.png",
+        "bytes": 160267,
+        "sha256": "776b09699eb43030897c98a4c66b5f4dd1d2576f962b56335fc01f0103622b68"
+      },
+      {
+        "file": "comparison-66.png",
+        "bytes": 162170,
+        "sha256": "36813b79025db906d22903054c4ffae80a26359939246e901738cb7db18b89b5"
+      }
+    ]
+  },
+  "products": [
+    {
+      "id": "mint",
+      "maker": "heaven",
+      "name": "ミント",
+      "filename": "outputs/heaven-mint.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/mint-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: mint-green brush swash and a small mint-leaf flavor cluster. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-fdc63317-d3fe-4e28-ae49-a5512b72d426.png",
+      "bytes": 1251303,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        119,
+        988,
+        1165
+      ],
+      "window": [
+        266,
+        116,
+        724,
+        1052
+      ],
+      "aspect128": 0.6873804971319312,
+      "ratio_delta_percent": 0.21892122049584906,
+      "width_at_112": 67.83026615969582,
+      "sha256": "849089fb2a9039d09ea929011d47edb14390a47b8bbc7e38496ec4c9bf407be8",
+      "git_blob_sha": "72b69727b354039e23b1448114e74c35b0535885",
+      "selected": true
+    },
+    {
+      "id": "double_apple",
+      "maker": "heaven",
+      "name": "ダブルアップル",
+      "filename": "outputs/heaven-double_apple.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/double_apple-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: red and golden-green brush swash and one red apple plus one green apple. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-fb821f10-f21f-49be-99b4-221901409a41.png",
+      "bytes": 1198937,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        265,
+        121,
+        991,
+        1193
+      ],
+      "window": [
+        263,
+        118,
+        731,
+        1077
+      ],
+      "aspect128": 0.6772388059701493,
+      "ratio_delta_percent": -1.2597203060328632,
+      "width_at_112": 66.89634168987929,
+      "sha256": "a5ccbb11ac20c404c55bcaca3ad0c3c50060736940737a8e0df460f937003c24",
+      "git_blob_sha": "8079c493ea576d02c089c6cb7db9fac1ddb52857",
+      "selected": true
+    },
+    {
+      "id": "blueberry",
+      "maker": "heaven",
+      "name": "ブルーベリー",
+      "filename": "outputs/heaven-blueberry.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/blueberry-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: deep electric-blue brush swash and a small cluster of blueberries. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-2c0bbd2a-ce59-4082-83ac-110989f704df.png",
+      "bytes": 1228458,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        110,
+        988,
+        1162
+      ],
+      "window": [
+        267,
+        107,
+        724,
+        1058
+      ],
+      "aspect128": 0.6825095057034221,
+      "ratio_delta_percent": -0.49126114324057335,
+      "width_at_112": 67.445595463138,
+      "sha256": "fb151cd955ee58167093f245209a8ce5360c5380a3f3d96e9f98d9a07a421b28",
+      "git_blob_sha": "37ead34aabcb00f83cf00674942f285a6dd3ccdf",
+      "selected": true
+    },
+    {
+      "id": "strawberry",
+      "maker": "heaven",
+      "name": "ストロベリー",
+      "filename": "outputs/heaven-strawberry.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/strawberry-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: red-pink brush swash and one whole strawberry plus a cut half. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-111d8b46-952c-4efc-84a9-e67344f98291.png",
+      "bytes": 1262414,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        272,
+        110,
+        1021,
+        1178
+      ],
+      "window": [
+        269,
+        107,
+        754,
+        1074
+      ],
+      "aspect128": 0.701310861423221,
+      "ratio_delta_percent": 2.249944921788938,
+      "width_at_112": 69.19389199255122,
+      "sha256": "eb00132afe5060113a5338ec8bf18be777d6e48fa8f895c0676c945ee0ab5926",
+      "git_blob_sha": "4f4d5e6b737b971df4e0909acf1116b41a84442d",
+      "selected": true
+    },
+    {
+      "id": "vanilla",
+      "maker": "dobaj",
+      "name": "バニラ",
+      "filename": "outputs/dobaj-vanilla.png",
+      "path": "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+      "references": [],
+      "prompt": "Exact byte reuse of user-approved narrower baseline.",
+      "bytes": 1114416,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        271,
+        114,
+        985,
+        1155
+      ],
+      "window": [
+        268,
+        112,
+        720,
+        1046
+      ],
+      "aspect128": 0.6858789625360231,
+      "ratio_delta_percent": 0,
+      "width_at_112": 67.84244741873805,
+      "sha256": "03d3c926c8598d32a7ce1c5376bc9029556037f2f2f82c85fcc7d13eea9b0f10",
+      "git_blob_sha": "f653df22fd2b27826502b1601233caef34fe0d90",
+      "selected": true
+    },
+    {
+      "id": "pineapple",
+      "maker": "heaven",
+      "name": "パイナップル",
+      "filename": "outputs/heaven-pineapple.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/pineapple-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: yellow brush swash and pineapple with one cut wedge. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-f5a382c6-20ba-4dd9-9a2d-a9e633873cd2.png",
+      "bytes": 1372261,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        261,
+        93,
+        1017,
+        1199
+      ],
+      "window": [
+        259,
+        91,
+        760,
+        1110
+      ],
+      "aspect128": 0.6835443037974683,
+      "ratio_delta_percent": -0.34038932028508384,
+      "width_at_112": 67.48252252252253,
+      "sha256": "e80dd494ac03ae3260d829409defcdd65d08153fac568ac1dc5d1db765574578",
+      "git_blob_sha": "0c9acae36e5304fa4d76b80f399b9e3189ac47c9",
+      "selected": true
+    },
+    {
+      "id": "coconut",
+      "maker": "dobaj",
+      "name": "ココナッツ",
+      "filename": "outputs/dobaj-coconut.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. This is DOBAJ COCONUT. Retain reference1's exact ivory paper, charcoal left vertical panel, paired-arch DOBAJ maker mark, spaced DOBAJ lettering, black flavor word on ivory right, and sweeping ribbon composition. Replace ONLY the vanilla printed flower/pods and ribbon pigment with this independently drawn flat screen-print flavor graphic: warm taupe and cocoa ribbon; flat geometric coconut halves with ivory flesh and brown shell; word COCONUT. No vanilla flower/pod carryover. On right face keep DOBAJ maker label and matching flavor word, same maker hierarchy.",
+      "path": "/workspace/generated_images/exec-c67b5a14-cc29-43dd-8d11-dc3d99086072.png",
+      "bytes": 1365397,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        249,
+        74,
+        1049,
+        1237
+      ],
+      "window": [
+        246,
+        71,
+        805,
+        1168
+      ],
+      "aspect128": 0.6878761822871883,
+      "ratio_delta_percent": 0.2911912830480423,
+      "width_at_112": 67.92876712328767,
+      "sha256": "62824596318ec600f51fc6fe81d06ad0c3ea24df2420ffa2914a9265d9f43098",
+      "git_blob_sha": "dbac1cf71a7d6c253a33f43a6d4be07b4fd6ea58",
+      "selected": true
+    },
+    {
+      "id": "mango",
+      "maker": "dobaj",
+      "name": "マンゴー",
+      "filename": "outputs/dobaj-mango.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. This is DOBAJ MANGO. Retain reference1's exact ivory paper, charcoal left vertical panel, paired-arch DOBAJ maker mark, spaced DOBAJ lettering, black flavor word on ivory right, and sweeping ribbon composition. Replace ONLY the vanilla printed flower/pods and ribbon pigment with this independently drawn flat screen-print flavor graphic: bright ochre/orange ribbon; flat sweeping orange mango shape with golden flesh; word MANGO. No vanilla flower/pod carryover. On right face keep DOBAJ maker label and matching flavor word, same maker hierarchy.",
+      "path": "/workspace/generated_images/exec-bc3f2591-62ae-40ca-843a-636bb06f46de.png",
+      "bytes": 1069861,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        271,
+        113,
+        986,
+        1157
+      ],
+      "window": [
+        268,
+        110,
+        720,
+        1050
+      ],
+      "aspect128": 0.6848659003831418,
+      "ratio_delta_percent": -0.14770275926463405,
+      "width_at_112": 67.584,
+      "sha256": "b8868820ba19dcc66a2069568d623d66c67b0488677a969ee9e771ec4aca9b57",
+      "git_blob_sha": "8f2c5b2fec30cffc61ddf0bb6c49307098d09ddd",
+      "selected": true
+    },
+    {
+      "id": "lemon",
+      "maker": "heaven",
+      "name": "レモン",
+      "filename": "outputs/heaven-lemon.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/lemon-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: yellow brush swash and whole lemon with a round cut half. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-7926380c-1f96-49d2-9a2b-f5f7a4d82a60.png",
+      "bytes": 1188783,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        267,
+        108,
+        994,
+        1160
+      ],
+      "window": [
+        265,
+        105,
+        732,
+        1058
+      ],
+      "aspect128": 0.69106463878327,
+      "ratio_delta_percent": 0.7560628814263337,
+      "width_at_112": 68.1908506616257,
+      "sha256": "6f44abab071256b398da074a42750fd0333f88f92c71c02e0c7b71915f6cfb47",
+      "git_blob_sha": "61a7b8ef4d8ba51235eddcbf8d41735b20317d82",
+      "selected": true
+    },
+    {
+      "id": "peach",
+      "maker": "dobaj",
+      "name": "ピーチ",
+      "filename": "outputs/dobaj-peach.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. This is DOBAJ PEACH. Retain reference1's exact ivory paper, charcoal left vertical panel, paired-arch DOBAJ maker mark, spaced DOBAJ lettering, black flavor word on ivory right, and sweeping ribbon composition. Replace ONLY the vanilla printed flower/pods and ribbon pigment with this independently drawn flat screen-print flavor graphic: muted coral and terracotta ribbon; flat round peach and cut half with brown pit; word PEACH. No vanilla flower/pod carryover. On right face keep DOBAJ maker label and matching flavor word, same maker hierarchy.",
+      "path": "/workspace/generated_images/exec-63d3fa3e-cd32-43ac-b04a-ee4cb40ba8a4.png",
+      "bytes": 1376324,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        239,
+        69,
+        1042,
+        1231
+      ],
+      "window": [
+        237,
+        67,
+        808,
+        1166
+      ],
+      "aspect128": 0.6910499139414802,
+      "ratio_delta_percent": 0.7539160242410192,
+      "width_at_112": 68.2988679245283,
+      "sha256": "9d683fbaae1ea973a253dd0126fda071a3e73e6eb6f69235f4448bd699780a4a",
+      "git_blob_sha": "b3bb5d83587556696e7109fb673b3921ba3e83db",
+      "selected": true
+    },
+    {
+      "id": "orange",
+      "maker": "heaven",
+      "name": "オレンジ",
+      "filename": "outputs/heaven-orange.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/orange-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: orange brush swash and whole orange with cut half. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-85faf588-52a9-4213-b41d-48941904312f.png",
+      "bytes": 1208889,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        272,
+        113,
+        997,
+        1184
+      ],
+      "window": [
+        270,
+        110,
+        730,
+        1077
+      ],
+      "aspect128": 0.676937441643324,
+      "ratio_delta_percent": -1.3036587183893222,
+      "width_at_112": 66.80482822655524,
+      "sha256": "a169a583c306e1535aa56ad87450b3fd0bf506a5c9addaa2a0df96246c8e911e",
+      "git_blob_sha": "293a42da8d06ac77fcf8a5ca195c482ff2f7ea24",
+      "selected": true
+    },
+    {
+      "id": "grape",
+      "maker": "heaven",
+      "name": "グレープ",
+      "filename": "outputs/heaven-grape.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/grape-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: purple brush swash and purple grape bunch. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-9d33073f-f14a-4994-91e5-a447a38398de.png",
+      "bytes": 1282661,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        270,
+        114,
+        988,
+        1160
+      ],
+      "window": [
+        267,
+        111,
+        724,
+        1052
+      ],
+      "aspect128": 0.6864244741873805,
+      "ratio_delta_percent": 0.07953468194159541,
+      "width_at_112": 67.83026615969582,
+      "sha256": "b224445ec338ae997736ee94712e329a1ed662bbc3a6948217fa7f7fba386d54",
+      "git_blob_sha": "11c33da678c637eb339ba53c0d6c951bd28aaa7e",
+      "selected": true
+    },
+    {
+      "id": "melon",
+      "maker": "dobaj",
+      "name": "メロン",
+      "filename": "outputs/dobaj-melon.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. This is DOBAJ MELON. Retain reference1's exact ivory paper, charcoal left vertical panel, paired-arch DOBAJ maker mark, spaced DOBAJ lettering, black flavor word on ivory right, and sweeping ribbon composition. Replace ONLY the vanilla printed flower/pods and ribbon pigment with this independently drawn flat screen-print flavor graphic: soft olive and sage ribbon; flat round net-pattern melon with pale crescent slice; word MELON. No vanilla flower/pod carryover. On right face keep DOBAJ maker label and matching flavor word, same maker hierarchy.",
+      "path": "/workspace/generated_images/exec-76dd82a2-c273-406b-b8f9-c4c0c8ab7513.png",
+      "bytes": 1116352,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        271,
+        114,
+        987,
+        1157
+      ],
+      "window": [
+        268,
+        111,
+        722,
+        1049
+      ],
+      "aspect128": 0.6864813039309684,
+      "ratio_delta_percent": 0.0878203630445551,
+      "width_at_112": 67.83633937082936,
+      "sha256": "65283b95df777ca976b0d1c82d6267375caa115639cac02c37d0bb387e4b8a88",
+      "git_blob_sha": "7e934cd67ba55a354a28bc2a49a94b95aa598fab",
+      "selected": true
+    },
+    {
+      "id": "watermelon",
+      "maker": "heaven",
+      "name": "スイカ",
+      "filename": "outputs/heaven-watermelon.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/watermelon-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: red and green brush swash and watermelon wedge. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-38197482-dc5f-4c97-8371-9d50a052f0d4.png",
+      "bytes": 1226227,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        273,
+        114,
+        988,
+        1160
+      ],
+      "window": [
+        271,
+        111,
+        720,
+        1051
+      ],
+      "aspect128": 0.6835564053537285,
+      "ratio_delta_percent": -0.3386249337210989,
+      "width_at_112": 67.51969552806851,
+      "sha256": "a9a2ccc93c3db87884ed64059988b5c074b1a4813609a5df8b87283401a9c28a",
+      "git_blob_sha": "d29799ae9d01b73038e815122b97e969d08fcdf3",
+      "selected": true
+    },
+    {
+      "id": "banana",
+      "maker": "dobaj",
+      "name": "バナナ",
+      "filename": "outputs/dobaj-banana.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. This is DOBAJ BANANA. Retain reference1's exact ivory paper, charcoal left vertical panel, paired-arch DOBAJ maker mark, spaced DOBAJ lettering, black flavor word on ivory right, and sweeping ribbon composition. Replace ONLY the vanilla printed flower/pods and ribbon pigment with this independently drawn flat screen-print flavor graphic: warm golden yellow ribbon; flat curved yellow banana shapes with dark tip accents; word BANANA. No vanilla flower/pod carryover. On right face keep DOBAJ maker label and matching flavor word, same maker hierarchy.",
+      "path": "/workspace/generated_images/exec-0e60ca57-ad4b-4868-8f6b-532b459832cb.png",
+      "bytes": 1064283,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        272,
+        113,
+        985,
+        1157
+      ],
+      "window": [
+        269,
+        110,
+        719,
+        1050
+      ],
+      "aspect128": 0.6829501915708812,
+      "ratio_delta_percent": -0.4270098844135428,
+      "width_at_112": 67.49013333333333,
+      "sha256": "17ff4724ac8acaad554650cb7d8898a2d7ec209e5d80c5479986095b1757f847",
+      "git_blob_sha": "777964326a13d40d76586b420dab1fc49ada2a1d",
+      "selected": true
+    },
+    {
+      "id": "cinnamon",
+      "maker": "heaven",
+      "name": "シナモン",
+      "filename": "outputs/heaven-cinnamon.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/shisha-game/asset_sources/shop-art-issue586/wing-only-heaven10-v6/outputs/cinnamon-wings-composite.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 supplies this HEAVEN product's PRINTED ART ONLY; do not keep reference2's old straighter camera or wider geometry. All faces must be deep matte BLACK, with its original WHITE WINGS AND HALO emblem on upper front, the colored paint-brush swash across middle, and printed flavor illustration below: warm burnt-orange/brown brush swash and small cinnamon stick cluster. Keep reference2's recognizable composition, color and ingredient identity, with no additional text/DOBAJ logo/ivory panel/vanilla design. Reproject that maker's print onto REFERENCE1's exact camera and narrower physical box. Preserve ingredient illustration style of reference2 but do not introduce any photographic pack-copy layout. Ingredient leaves that identify mint, strawberry or pineapple may remain as part of that specific illustration; do not add common decorative grass. No brand text anywhere.",
+      "path": "/workspace/generated_images/exec-70d9981f-6417-4a73-be94-3b81a177062f.png",
+      "bytes": 1287574,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        266,
+        117,
+        1000,
+        1168
+      ],
+      "window": [
+        263,
+        114,
+        740,
+        1056
+      ],
+      "aspect128": 0.698382492863939,
+      "ratio_delta_percent": 1.8229937074734526,
+      "width_at_112": 69.06666666666668,
+      "sha256": "9bbfd2f8b2c95a9d7b82a24b3b90c9088cdc4611c91456985c7a8ce026e41ae5",
+      "git_blob_sha": "870692163417ea80df7bb5000c05e20b0327792d",
+      "selected": true
+    },
+    {
+      "id": "rose",
+      "maker": "afsaal",
+      "name": "ローズ",
+      "filename": "outputs/afsaal-rose.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "RESKIN THE EXACT CLOSED PAPER CARTON IN THE ONLY REFERENCE IMAGE. The camera, narrow box proportions, front/top/right face outlines and full silhouette MUST remain exactly as reference. Do not make any face wider or taller and do not zoom. Same1254 canvas, exact outline x271..985 y114..1155, overall714w1041h. Keep the physical box silhouette FIXED; this is a printed-surface replacement ONLY. Same narrow right face (seam aboutx880), shallow top and slopes of front top and bottom, same paper texture, folds and light. Replace ALL the DOBAJ/vanilla printing and ivory/black paper color with this AFSAAL ROSE ORIGINAL print design: whole carton front, top, right is muted dusty rose-pink (#B05B75 family); top/right shading consistent. Upper front has a fine ivory sunrise-in-arch logo (an arch outline encloses a semicircle sun with straight rays above two simple curved horizon lines). Below it around upper-middle is maker name exactly AFSAAL in large elegantly spaced ROMAN UPPERCASE serif type in ivory. A single thin warm apricot diagonal ribbon crosses the lower half from upper-left toward lower-right, behind large original angular rose formed from interlocking cream, deep pink and muted burgundy petal ribbons, inside a pale pink off-center circular field. Place spaced serif word ROSE at lower front left in ivory. Right face has a small maker logo, AFSAAL and ROSE. No Japanese, no DOBAJ logo, no vanilla, no leaves. Flat independently designed geometric screen-print flavor graphics on the paper surface; not a real commercial packaging copy, no ingredient photographs. Only change INK AND PAPER COLOR; keep original reference physical geometry unchanged. No grass, HMD, top protrusion, handle, loose fruit/flowers outside carton. One isolated whole carton with true transparent background, no captions or extra objects.",
+      "path": "/workspace/generated_images/exec-77968241-d56d-40a6-adab-03799b78bf4f.png",
+      "bytes": 1180968,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        271,
+        114,
+        988,
+        1157
+      ],
+      "window": [
+        268,
+        111,
+        722,
+        1049
+      ],
+      "aspect128": 0.6874400767018217,
+      "ratio_delta_percent": 0.22760782165214266,
+      "width_at_112": 67.83633937082936,
+      "sha256": "f90facbd37f0e197a10306b94738037ddc6d107d476e31f2558df2e8c119bca9",
+      "git_blob_sha": "a4a2632ded2471632d2a5d790adefd91d5964f17",
+      "selected": true
+    },
+    {
+      "id": "lychee",
+      "maker": "afsaal",
+      "name": "ライチ",
+      "filename": "outputs/afsaal-lychee.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png"
+      ],
+      "prompt": "RESKIN THE EXACT CLOSED PAPER CARTON IN THE ONLY REFERENCE IMAGE. The camera, narrow box proportions, front/top/right face outlines and full silhouette MUST remain exactly as reference. Do not make any face wider or taller and do not zoom. Same1254 canvas, exact outline x271..985 y114..1155, overall714w1041h. Keep the physical box silhouette FIXED; this is a printed-surface replacement ONLY. Same narrow right face (seam aboutx880), shallow top and slopes of front top and bottom, same paper texture, folds and light. Replace ALL the DOBAJ/vanilla printing and ivory/black paper color with this AFSAAL LYCHEE ORIGINAL print design: whole carton front, top, right is light muted sage / lychee green (#C9D6A0 family); top/right shading consistent. Upper front has a fine dark charcoal-plum sunrise-in-arch logo (an arch outline encloses a semicircle sun with straight rays above two simple curved horizon lines). Below it around upper-middle is maker name exactly AFSAAL in large elegantly spaced ROMAN UPPERCASE serif type in dark charcoal-plum. A single thin warm apricot diagonal ribbon crosses the lower half from upper-left toward lower-right, behind large flat angular red/coral lychee shell plus cut half with ivory flesh and brown seed, inside an ivory off-center circular field. Place spaced serif word LYCHEE at lower front left in dark charcoal-plum. Right face has a small maker logo, AFSAAL and LYCHEE. No Japanese, no DOBAJ logo, no vanilla, no leaves. Flat independently designed geometric screen-print flavor graphics on the paper surface; not a real commercial packaging copy, no ingredient photographs. Only change INK AND PAPER COLOR; keep original reference physical geometry unchanged. No grass, HMD, top protrusion, handle, loose fruit/flowers outside carton. One isolated whole carton with true transparent background, no captions or extra objects.",
+      "path": "/workspace/generated_images/exec-d734bd64-168f-430d-b981-9e3cc417f0de.png",
+      "bytes": 1316078,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        269,
+        84,
+        1014,
+        1199
+      ],
+      "window": [
+        266,
+        81,
+        750,
+        1121
+      ],
+      "aspect128": 0.6681614349775785,
+      "ratio_delta_percent": -2.5831857406639736,
+      "width_at_112": 65.94112399643176,
+      "sha256": "57fa8e00ccd07babe67bac6b2643cd200f6331bacf294ef505edca4540c50afd",
+      "git_blob_sha": "3f261a0e5572b70e89ef441cc8b05cf953b48296",
+      "selected": true
+    },
+    {
+      "id": "rose",
+      "maker": "afsaal",
+      "name": "ローズ",
+      "filename": "trials/afsaal-rose-too-wide.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/generated_images/exec-8447e051-4f53-4f77-ae32-39b2a683c021.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 provides ONLY the AFSAAL maker PRINT DESIGN and colors, not geometry. Use its sunrise-in-arch logo with refined uppercase ROMAN maker lettering exactly AFSAAL on front and right face. No Japanese characters or DOBAJ identity. Preserve original flat geometric circle / diagonal apricot ribbon / flavor glyph composition. Entire front/top/right paper body must be muted DUSTY ROSE PINK (#B05B75 family), with ivory maker mark and lettering, cream/darker-pink flat angular rose petals; flavor word ROSE. The two AFSAAL flavors have different FULL-BOX COLORS. No leaves or real ingredient photos. Match REFERENCE1's exact narrower box camera and silhouette.",
+      "path": "/workspace/generated_images/exec-17b129c6-36c1-4eeb-a3cf-cbb17efe3d4a.png",
+      "bytes": 1195887,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        253,
+        111,
+        1020,
+        1166
+      ],
+      "window": [
+        251,
+        108,
+        772,
+        1061
+      ],
+      "aspect128": 0.7270142180094786,
+      "ratio_delta_percent": 5.997451113146668,
+      "width_at_112": 71.71377945334591,
+      "sha256": "b081bdf6d25e3f798ed706839c3c92ad6d5b7cc8383e40c97b4ad6364e142f7f",
+      "git_blob_sha": "967237f1169aec59b92c34f94f8b07eb762d41c5",
+      "selected": false
+    },
+    {
+      "id": "lychee",
+      "maker": "afsaal",
+      "name": "ライチ",
+      "filename": "trials/afsaal-lychee-too-wide.png",
+      "references": [
+        "/workspace/generated_images/exec-6a943620-5aed-4ed8-bf82-6f931134bc4f.png",
+        "/workspace/generated_images/exec-e8eb0809-7c07-4912-8fd7-b60bf08f2ee2.png"
+      ],
+      "prompt": "Create ONE original game flavor carton. REFERENCE1 is the approved LOCKED physical box, camera and framing master. Match its silhouette and exact projected front/top/right face edges, not a new view. On1254-square transparent canvas target bbox x271..985 y114..1155, width714 height1041; front-right seam at x880, left front edge x271, right outer edge x985. Top polygon approximately (271,174),(395,114),(985,174),(880,238). Front lower edge slopes down toward right from (271,1024) to (880,1155). Same top visibility and narrow right-face visibility, no rotation/zoom or additional narrowing. Preserve matte realistic PAPERBOARD, slight paper grain, closed flush folds and gently shaded top/right, modest retail depth. Graphics are printed on carton surfaces only. For different manufacturers only PRINT DESIGN changes; carton size, angle and lighting stay fixed. One isolated complete closed carton, clean transparent background. No loose fruit or flowers outside carton, generic grass/foliage decorations, pedestal, HMD, bowl, metal, chimney, knob, handle or upper protrusion. No comparison caption/background/checkerboard. Do not copy real commercial package or ingredient-photo layout. REFERENCE2 provides ONLY the AFSAAL maker PRINT DESIGN and colors, not geometry. Use its sunrise-in-arch logo with refined uppercase ROMAN maker lettering exactly AFSAAL on front and right face. No Japanese characters or DOBAJ identity. Preserve original flat geometric circle / diagonal apricot ribbon / flavor glyph composition. Entire front/top/right paper body must be LIGHT SAGE / LYCHEE GREEN (#C9D6A0 family), with dark charcoal-plum maker mark and lettering, red/coral angular lychee-shell/ivory flesh/brown seed glyph; flavor word LYCHEE. The two AFSAAL flavors have different FULL-BOX COLORS. No leaves or real ingredient photos. Match REFERENCE1's exact narrower box camera and silhouette.",
+      "path": "/workspace/generated_images/exec-8da7b3e9-dcd5-43d6-9947-c5baf860c557.png",
+      "bytes": 1202355,
+      "size": [
+        1244,
+        1265
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "bbox128": [
+        256,
+        113,
+        1021,
+        1194
+      ],
+      "window": [
+        253,
+        110,
+        771,
+        1086
+      ],
+      "aspect128": 0.7076780758556892,
+      "ratio_delta_percent": 3.178274084842081,
+      "width_at_112": 69.97215469613259,
+      "sha256": "36ca8b6cde9dd18d91bbdc43e8d844e7731c5bde7b9656920b810767694ead64",
+      "git_blob_sha": "12e4b8bfc67e86a07ee02156ddc757accb008b59",
+      "selected": false
+    }
+  ],
+  "references": "Existing generated repository art only, locally cached. No new external commercial packaging or ingredient photos downloaded. Independent graphic motifs retained or redrawn via generation.",
+  "notes": "AFSAAL rose pink / lychee sage with ROMAN letters. Flavor-specific mint/strawberry/pineapple foliage and limited mango/peach leaf illustration are part of flavor artwork; no uniform grass decoration. No HMD or structural top protrusions."
+}

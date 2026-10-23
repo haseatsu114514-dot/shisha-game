@@ -1,5 +1,6 @@
 // 固定レッスンの解決と、プレイヤーが実際に触った工程を区別する。
 import { state } from "../core/state.js";
+import { waterQuantity } from "./water.js";
 
 export const practiceRecords = () => Array.isArray(state.flags._craft_practice_runs) ? state.flags._craft_practice_runs : [];
 const fullRuns = () => practiceRecords().filter(run => (run.scope || "full") === "full");
@@ -17,6 +18,7 @@ export function recordPractice(cs, kind = "practice") {
     day: state.day, kind, scope,
     success: !cs.failed && (scope === "full" || care.length === 2),
     served: scope === "full" && !!cs.pullDone && !cs.pull?.failed,
+    ...(scope === "full" && Number.isFinite(cs.water) ? { water: waterQuantity(cs.water) } : {}),
     mix: { ...cs.mix }, adjustments: care.length, scores,
     careScores: care.map(result => result.score),
   }];
@@ -39,3 +41,4 @@ export function recommendedDrill() {
   const entries = Object.entries(scores).filter(([id, score]) => ["holes", "heat", "steam", "pull"].includes(id) && Number.isFinite(score));
   return entries.sort((a, b) => a[1] - b[1])[0]?.[0] || "pull";
 }
+

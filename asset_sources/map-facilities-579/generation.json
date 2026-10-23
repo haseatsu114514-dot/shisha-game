@@ -1,0 +1,43 @@
+{
+  "kind": "generated supplemental facility art",
+  "date": "2026-10-18",
+  "output": "asset_sources/map-facilities-579/generated.png",
+  "tool": "image_gen.imagegen",
+  "transparent_background": true,
+  "prompt": "Create ONE transparent PNG supplemental game-map facility illustration sprite sheet, 2 by 2 grid, four fully separated artworks with generous clear padding and absolutely no overlap. Reference image 1 is the existing adopted map-facilities illustration sheet: MATCH its softly painted warm Japanese game miniature/diorama illustration style, clean detailed silhouettes and materials. Do NOT reproduce any of the three existing artworks in reference 1; they are being reused separately. References 2 through 5 are already adopted location backgrounds and determine recognizable interior cues. Four NEW isolated miniature place illustrations, reading clearly at 64px: TOP LEFT axe throwing lounge: a cutaway wooden target lane with one circular bullseye wooden target, dark black wire-mesh safety side panel, warm amber lamp, small burgundy lounge seat at front, a small safe axe resting in a rack; faithfully evoke reference 2, no people. TOP RIGHT compact gym: cutaway lime-green-and-white interior corner with one treadmill and compact weight station/dumbbells, dark floor tiles, evoke reference 3, no people. BOTTOM LEFT sidewalk tarot stand: little dark wood street-side table with deep indigo cloth, three tiny tarot cards bearing only simple star/moon pictograms, warm small lamp, small fragment of warm wood arcade facade from reference 5, no people. BOTTOM RIGHT board-game cafe: miniature warm wooden cafe corner, round wooden table with a small board game and polyhedral dice and a closed book, wicker chairs and burgundy seat, black-framed window, matching reference 4, no people. Each artwork is one cohesive object/place vignette with a single clear perimeter, like the bedroom vignette in reference 1, NOT a photographic rectangular crop. Fully TRANSPARENT empty space surrounding each irregular silhouette, including outer canvas; no square tiles, no card panels, no checkerboard, no background, no cast shadow outside silhouettes. No white border in this source, because a consistent white contour will be applied by the game to both new and reused artwork. No text, letters, numbers, logos, captions, watermarks, labels, UI, buildings unrelated to that location. High quality painterly game art, not flat pictograms, no pixelation. Output landscape canvas, four equal cells, each image entirely inside its own quadrant with at least 8% empty gap between all art.",
+  "references": [
+    "assets/ui/map-facilities-579.png",
+    "assets/backgrounds/bg_axe_lounge_night.png",
+    "assets/backgrounds/bg_choizap.png",
+    "assets/backgrounds/bg_cafe_day.png",
+    "assets/backgrounds/bg_street_day.png"
+  ],
+  "cells": [
+    "axe_bar",
+    "choizap",
+    "fortune",
+    "trpg_bar"
+  ],
+  "original_reuse": [
+    "kannondo",
+    "home",
+    "kohaku"
+  ],
+  "notes": [
+    "Original map-facilities-579.png remains byte-identical.",
+    "Source output copied without pixel edits; white contour is applied by SVG filter at display time.",
+    "Bot claim transfer unavailable; owner explicitly requested takeover from unknown prior worker; recorded on #579."
+  ],
+  "runtime": "assets/ui/map-facilities-extra-579.webp",
+  "encoding": {
+    "format": "WebP",
+    "quality": 90,
+    "method": 6,
+    "alpha": "byte-exact to source"
+  },
+  "sha256": {
+    "asset_sources/map-facilities-579/generated.png": "016914422a0ca1272f1ba4680835e9884ef3ff120162bc4f07a12b0869ea029b",
+    "assets/ui/map-facilities-extra-579.webp": "eb6adc900b3cf961debc83ab073c51c77043107f6dd0a525b115ba9eaf286eb5",
+    "assets/ui/map-facilities-579.png": "7289b74ffe67290a444f2e6e95dee7be209ec31ae33d31cd26b39903ed51a284"
+  }
+}

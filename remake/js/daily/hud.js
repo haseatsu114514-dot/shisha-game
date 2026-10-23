@@ -94,9 +94,9 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left])]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina]),
     ]),
-    el("div.hud-right", [dom.stamina, dom.status, dom.phone, dom.menu]),
+    el("div.hud-right", [dom.status, dom.phone, dom.menu]),
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
@@ -148,7 +148,10 @@ export function setPhoneBadge(unread) {
   const count = typeof unread === "number" ? unread : unread ? 1 : 0;
   const name = count ? `LIME（未読${count}件）` : "LIME";
   dom.phone.classList.toggle("has", count > 0);
-  dom.phone.querySelector(".badge").textContent = count > 9 ? "9+" : String(count || "");
+  const badge = dom.phone.querySelector(".badge");
+  badge.classList.toggle("single", count > 0 && count < 10);
+  badge.replaceChildren(el("b.badge-number", { text: count > 99 ? "99" : String(count || "") }));
+  if (count > 99) badge.append(el("small.badge-plus", { text: "+" }));
   dom.phone.title = name;
   dom.phone.setAttribute("aria-label", name);
 }

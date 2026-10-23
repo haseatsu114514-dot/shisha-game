@@ -1,0 +1,139 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_nandi_breath",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京のナンディの店。入口で、煮出したスパイスの湯気を浴びた。"
+        },
+        {
+          "speaker": "nandi",
+          "face": "normal",
+          "text": "ナマステ。急いで来たね。最初はお茶にしよう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "練習を見せてもらいたくて"
+        },
+        {
+          "speaker": "nandi",
+          "face": "normal",
+          "text": "もちろん。僕も日本の全国大会に出る。今日は同じ挑戦者だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ナンディは吸う前に、ゆっくり息を吐いた。肩を上げず、短く一口吸う。"
+        },
+        {
+          "speaker": "nandi",
+          "face": "normal",
+          "text": "香りを追いかける前に、息を戻す。客にも、作る側にも必要だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……吸うことばっかり考えてました"
+        },
+        {
+          "speaker": "nandi",
+          "face": "normal",
+          "text": "カレーの味見でも、口いっぱいじゃ次は分からないだろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは笑って、置きっぱなしだった水を飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_low_heat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは大きな手で、炭を数ミリずつ外へずらした。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ロウ・アンド・スロー。うちのバーベキューと同じ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待ってる間、足したくならないんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "なるよ。だからタイマーを置く。俺のせっかち対策"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "注文のピザが届く。スティーブは先に、客席のホースが置かれたのを確かめた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "急ぐ用事がある客には、この作り方を勧めない。待つ時間も注文のうちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は、もう少し吸っていたいです"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "なら成功。ピザ、食べる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された皿を受け取り、タイマーが鳴るまで、二人で待った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_emil_workshop",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エミルの体験会。古いナルギレの横に、新しいパッキンが並んでいた。"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "古い道具でも、継ぎ目は直す。この職人の仕事がいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一人で全部作ってるんじゃないんですね"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "家の店で教わった。修理の仕方は別の職人に。日本では南雲に場所を借りた"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "どこから来たかは大事だ。だから、変えたところも記録する"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは部品の名前と、作った人の名前を同じページに書いた。"
+        }
+      ]
+    }
+  ]
+}

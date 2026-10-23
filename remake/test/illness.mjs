@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
-import { coldRisk, catchesCold } from "../js/core/illness.js";
+import { coldRisk, catchesCold, fitActive, FIT_DAYS, FIT_RISK } from "../js/core/illness.js";
 const risks = [0.25, 0.2, 0.1, 0.01, 0].map(coldRisk);
 assert(risks.every((value, i) => !i || value > risks[i - 1]));
 assert.equal(risks[0], .04); assert(Math.abs(risks.at(-1) - .85) < 1e-9);
@@ -13,22 +13,28 @@ for (const ratio of [.250001, .5, 1]) {
 for (const ratio of [.25, .1, 0]) {
   assert(catchesCold(ratio, () => 0)); assert(!catchesCold(ratio, () => .99));
 }
+// チョコザップの数日は同じ無理でも風邪をひきにくい。健康なときは抽選しない
+for (const ratio of [.25, .1, 0]) assert(Math.abs(coldRisk(ratio, { fit: true }) - coldRisk(ratio) * FIT_RISK) < 1e-12);
+assert.equal(coldRisk(.5, { fit: true }), 0);
+const fitSave = (day, chapter = 1) => ({ chapter, day, flags: { _fit_since: { chapter: 1, day: 3 } } });
+assert(fitActive(fitSave(3)) && fitActive(fitSave(3 + FIT_DAYS - 1)));
+assert(!fitActive(fitSave(3 + FIT_DAYS)) && !fitActive(fitSave(2)) && !fitActive(fitSave(4, 2)) && !fitActive({ chapter: 1, day: 3, flags: {} }));
 
 const state = {}, played = [], saves = [], guards = [], homecomingChecks = [];
 let rng = .99, route = [], decisions = [], shifts = 0;
 const math = Object.create(Math); math.random = () => rng;
 const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTimeout: () => 0, clearTimeout() {}, document: { querySelector: () => null } });
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
-const db = { dialogues: {}, statusTexts: {} };
+const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
-  "hiyori.js": { visitHiyoriAtShop: async () => false, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
+  "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
@@ -38,19 +44,22 @@ const values = {
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
+  // 家シーシャ（#638）: 寝る前の一服と家の練習はこのテストの対象外（home_shisha.mjs で確かめる）
+  "home-shisha.js": { runHomeShisha: async () => false },
+  "home-practice.js": { runHomePractice: async () => ({ used: false, exerted: false }) },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
     rescheduleInvitation: noop, completeInvitation: noop },
-  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop },
+  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "samechan-date.js": { samechanDateReady: () => false, playSamechanDate: async () => ({ done: false, spent: 0 }) },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null },
 };
-const files = { "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 const modules = new Map(), pending = new Map();
 function load(name) {
   if (!pending.has(name)) pending.set(name, (async () => {

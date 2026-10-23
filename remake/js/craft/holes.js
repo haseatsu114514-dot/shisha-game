@@ -2,6 +2,7 @@
 // テンプレートの配置を選び、円周を回るカーソルが目印に重なった瞬間に打つ。
 // メイン評価は均等度。実際の穴数・リング配置を後工程の熱へ渡す。
 import { el, sleep, clamp, rand } from "../core/util.js";
+import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
@@ -10,15 +11,16 @@ import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
-import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
+import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
 const foilSurface = () => artImg("foil_interactive_top.png", 430, "foil-surface", { h: 430 });
 
 async function chooseTemplate(panel, cs) {
-  const templates = HOLE_TEMPLATES.filter((template) => cs.availableHoleTemplateIds
-    ? cs.availableHoleTemplateIds.includes(template.id) : !template.unlockFlag);
+  // Saved sessions keep their captured choices and selected legacy layout.
+  const available = cs.availableHoleTemplateIds || availableHoleTemplates().map(template => template.id);
+  const templates = HOLE_TEMPLATES.filter(template => available.includes(template.id) || template.id === cs.holeTemplateId);
   let selected = templates.find((template) => template.id === cs.holeTemplateId)
     || templates.find((template) => template.id === DEFAULT_HOLE_TEMPLATE) || templates[0];
   const preview = el("div.foil.ht-preview", { role: "img", dataset: { test: "hole-preview" } });
@@ -46,15 +48,16 @@ async function chooseTemplate(panel, cs) {
     ]),
   ]));
   function draw() {
-    preview.replaceChildren(foilSurface());
+    const plane = el("div.foil-target-plane");
+    preview.replaceChildren(foilSurface(), plane);
     preview.setAttribute("aria-label", `${selected.label}：${templateCountsLabel(selected)}`);
-    RINGS.forEach((ring) => preview.append(el("div.foil-ring", {
+    RINGS.forEach((ring) => plane.append(el("div.foil-ring", {
       style: { width: `${ring.r * 100}%`, height: `${ring.r * 100}%`, opacity: selected.counts[ring.id] ? "1" : ".2" },
     })));
     for (const ring of ringsForTemplate(selected)) {
       for (let k = 0; k < ring.targets; k++) {
         const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
-        preview.append(el("i.foil-marker.planned", { style: {
+        plane.append(el("i.foil-marker.planned", { style: {
           left: `${50 + Math.cos(a) * ring.r * 50}%`, top: `${50 + Math.sin(a) * ring.r * 50}%`,
         }, dataset: { ring: ring.id } }));
       }
@@ -83,7 +86,7 @@ export async function runHoles(cs) {
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
-  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1);
+  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
   // ---- 画面
@@ -93,7 +96,7 @@ export async function runHoles(cs) {
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
   const cursor = el("div.foil-cursor");
-  disc.append(foilSurface(), ...ringEls, markers, holesLayer, cursor);
+  disc.append(foilSurface(), el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]));
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const scoreEl = el("div.hr-score");
@@ -108,7 +111,7 @@ export async function runHoles(cs) {
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
   const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = el("button.btn.small.ghost", { text: "この配置で仕上げる", dataset: { test: "hole-done" } });
+  const doneBtn = el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
     el("div.hr-stage", [disc, el("div.foil-legend", { "aria-label": "穴あけの目印" }, [
       el("span", [el("i.foil-marker.cur.next", { "aria-hidden": "true" }), "次の目標"]),
@@ -127,6 +130,7 @@ export async function runHoles(cs) {
     extra: 0,
   }));
   let ri = 0;
+  const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
   let combo = 0;
@@ -198,9 +202,10 @@ export async function runHoles(cs) {
     punchBtn.disabled = finished || ringComplete();
     nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
     doneBtn.disabled = finished || !ready;
-    plan.textContent = `${elapsed >= limit ? "時間0｜" : ""}${ready ? "選んだ配置が完成。仕上げて次へ進める"
+    plan.textContent = ready ? "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
-      : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`}`;
+      : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
+      : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`;
   };
 
   const closeRing = (ring) => {
@@ -218,7 +223,7 @@ export async function runHoles(cs) {
   };
 
   const punch = () => {
-    if (finished || t0 === null) return;
+    if (finished || t0 === null || gameClock.paused) return;
     const ring = state[ri];
     if (ring.closed || ring.taken.every(Boolean)) return;
     const a = cursorAngle();
@@ -263,17 +268,27 @@ export async function runHoles(cs) {
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
     }
     drawMarkers();
+    if (complete()) {
+      // Freeze at the final real punch, including the time score. Finishing and
+      // the result confirmation remain explicit even after the time limit.
+      elapsed = (gameClock.now() - t0) / 1000;
+      cancelAnimationFrame(raf);
+      drawTime();
+    }
     hud();
   };
 
+  const drawTime = () => {
+    timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
+  };
   const loop = (now) => {
-    if (finished) return;
-    elapsed = (now - t0) / 1000;
+    if (finished || complete()) return;
+    elapsed = (gameClock.now() - t0) / 1000;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
     highlightNext();
-    timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
-    if (elapsed >= limit && complete()) return finish();
+    drawTime();
     hud();
     raf = requestAnimationFrame(loop);
   };
@@ -284,6 +299,7 @@ export async function runHoles(cs) {
     if (finished || !complete()) return;
     finished = true;
     cancelAnimationFrame(raf);
+    gameClock.dispose();
     unkey();
     state.forEach(closeRing);
     done();
@@ -300,7 +316,7 @@ export async function runHoles(cs) {
   hud();
   place(cursor, state[0].phase, state[0].r);
   await countdown();
-  t0 = performance.now();
+  t0 = gameClock.now();
   raf = requestAnimationFrame(loop);
 
   const auto = autoSkill();
@@ -318,6 +334,7 @@ export async function runHoles(cs) {
   await sleep(300);
   await resultCard(panel, {
     title: "穴あけ 結果",
+    button: "確認して次の工程へ",
     grade: res.grade,
     lines: [
       `テンプレート：${template.label}`,

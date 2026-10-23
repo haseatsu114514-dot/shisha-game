@@ -1,6 +1,7 @@
 // 日常で一台を通して作り、提供後の調整も実際に練習する。
 import { newSession, openBench, waitBenchReady } from "./session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, evaluateMix } from "./steps.js";
+import { stepWater } from "./water-view.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
@@ -14,11 +15,13 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice" } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", venue = null } = {}) {
   const cs = newSession(coached ? "tutorial" : "rehearsal");
+  if (venue) cs.venue = venue; // "home": 家の作業台で練習（#638）
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
   await waitBenchReady(cs);
   await stepSetup(cs);
+  await stepWater(cs);
   await stepMix(cs);
   await stepPack(cs);
   await runHoles(cs);
@@ -66,3 +69,4 @@ export async function runCarePractice({ kind = "care" } = {}) {
   retireScreen();
   return cs;
 }
+

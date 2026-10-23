@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "size": 180,
+      "images_loaded": 18,
+      "min_window_height": 158.390625,
+      "max_window_height": 158.390625,
+      "min_window_width": 115.609375,
+      "max_window_width": 120.15625
+    },
+    {
+      "size": 112,
+      "images_loaded": 18,
+      "min_window_height": 98.546875,
+      "max_window_height": 98.546875,
+      "min_window_width": 71.921875,
+      "max_window_width": 74.765625
+    },
+    {
+      "size": 66,
+      "images_loaded": 18,
+      "min_window_height": 58.078125,
+      "max_window_height": 58.078125,
+      "min_window_width": 42.390625,
+      "max_window_width": 44.046875
+    }
+  ],
+  "page_errors": [],
+  "screenshot_sha256": "e6989178d5a5c6f80f77d928e207d0acb0ef31f5c0415a7524efa381a37a6ba2",
+  "screenshot_bytes": 596686,
+  "scope": "local source rendering comparison, not runtime/gameplay QA"
+}

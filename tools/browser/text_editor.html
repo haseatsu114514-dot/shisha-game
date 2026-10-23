@@ -63,12 +63,6 @@
   .stat .warn { color:var(--warn); }
   .dirtyflag { color:var(--accent); font-size:12px; }
   h3 { font-size:12px; color:var(--dim); margin:16px 0 6px; letter-spacing:0.1em; }
-  .vnbox { background:linear-gradient(180deg,rgba(8,4,14,0.92),rgba(14,8,22,0.97)); border:1px solid var(--line);
-    border-radius:6px; padding:16px 20px; max-width:720px; }
-  .vntext { font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif; font-size:19px;
-    line-height:1.85; white-space:pre-wrap; }
-  .page-sep { border-top:1px dashed #6a5a8a; margin:8px 0; font-size:10px; color:#6a5a8a;
-    text-align:center; letter-spacing:0.2em; }
   .grid { line-height:2.0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:17px;
     user-select:none; max-width:720px; margin-top:6px; }
   .grid .ch { display:inline-block; cursor:pointer; border-radius:3px; padding:0 1px; }
@@ -179,15 +173,15 @@ const $ = (s) => document.querySelector(s);
 let lines = [], sel = -1, curFile = "", dirty = new Set(), draft = "";
 
 /* ---- 警告判定（editor 側の目安。正本は lint_dialogue.py / text-style スキル）---- */
-const width = (s) => { let n = 0; for (const ch of s) n += ch.charCodeAt(0) <= 0xff ? 0.5 : 1; return n; };
+const width = textWidth;
 function warnsOf(t, sp) {
   const w = [];
-  if (width(t) > 48) w.push("全角48字超（自動改ページで文が割れる）");
+  if (width(t) > 48) w.push("全角48字超（ページ区切り・読みやすさを確認）");
   if (/。(……|…)(?![^。]*。)(?=[^。」』）]{1,8}[」』）]?$)/.test(t)) w.push("「。……＋短い続き」→「、……」を検討");
   if (/^[「（]?(え|あ|お|わ|うわ|ん)。/.test(t)) w.push("冒頭の間投詞のあとは「、」");
   if (sp && /。[」』）]?$/.test(t)) w.push("台詞の末尾「。」は取る");
   if (sp && (t.match(/。/g) || []).length >= 3) w.push("台詞に「。」3個以上（分割を検討）");
-  if (t.includes("\n")) w.push("手動改行を含む（崩れ報告が出たら撤去方針）");
+  if (t.includes("\n")) w.push("手動改行を含む（画面合わせには使わず、演出意図と語中分割を確認）");
   return w;
 }
 
@@ -274,9 +268,16 @@ function renderEdit() {
       <span class="dirtyflag" id="dirtyflag"></span>
       <span class="stat" id="stat"></span>
     </div>
-    <h3>本編プレビュー（autoWrap 実物・点線＝改ページ）</h3>
-    <div class="vnbox"><div class="vntext" id="pv"></div></div>
-    <h3>文字をクリックで手動改行を挿入／⏎をクリックで解除</h3>
+    <h3>本編プレビュー（同じ書体・枠・改ページ計算）</h3>
+    <div class="controls">
+      <label>表示条件 <select id="preview-size"><option value="pc">PC 1280×720</option><option value="mobile">通常スマホ横 844×390</option></select></label>
+      <button class="act" id="prev-page">前ページ</button><span id="page-count" class="stat">準備中…</span><button class="act" id="next-page">次ページ</button>
+    </div>
+    <div id="preview-host" style="position:relative;overflow:hidden;width:100%;background:#000">
+      <iframe id="pv" title="本編の台詞枠" src="/preview.html" style="border:0;transform-origin:top left;display:block"></iframe>
+    </div>
+    <p class="stat">枠内に収まるかの検査と、区切りが自然かの目視確認は別です。補間変数・報酬演出は本編でも確認してください。</p>
+    <h3>演出用の手動改行（画面合わせには使わない）／⏎をクリックで解除</h3>
     <div class="grid" id="grid"></div>`;
   const src = $("#src");
   src.value = ln.text; draft = ln.text;
@@ -285,27 +286,54 @@ function renderEdit() {
   $("#save").onclick = () => save(false);
   $("#savenext").onclick = () => save(true);
   $("#reset").onclick = () => { src.value = lines[sel].text; refresh(); };
+  previewReady = false; previewPages = []; previewIndex = 0;
+  $("#preview-size").onchange = fitPreview;
+  $("#prev-page").onclick = () => turnPreview(-1);
+  $("#next-page").onclick = () => turnPreview(1);
+  fitPreview();
   refresh();
 }
+let previewReady = false, previewPages = [], previewIndex = 0, previewRevision = 0;
+function fitPreview() {
+  const frame = $("#pv"), host = $("#preview-host");
+  if (!frame) return;
+  const [w, h] = $("#preview-size").value === "mobile" ? [844, 390] : [1280, 720];
+  frame.style.width = w + "px"; frame.style.height = h + "px";
+  const scale = Math.min(1, host.clientWidth / w);
+  frame.style.transform = `scale(${scale})`; host.style.height = h * scale + "px";
+}
+new ResizeObserver(fitPreview).observe($("#edit"));
+function turnPreview(delta) {
+  previewIndex = Math.max(0, Math.min(previewPages.length - 1, previewIndex + delta));
+  $("#pv").contentWindow.postMessage({type:"preview-page", index:previewIndex}, location.origin);
+  pageCount();
+}
+function pageCount() {
+  $("#page-count").textContent = `${previewIndex + 1} / ${previewPages.length} ページ`;
+  $("#prev-page").disabled = previewIndex <= 0;
+  $("#next-page").disabled = previewIndex >= previewPages.length - 1;
+}
+addEventListener("message", e => {
+  if (e.origin !== location.origin || e.source !== $("#pv")?.contentWindow) return;
+  if (e.data.type === "preview-ready") { previewReady = true; refresh(); }
+  if (e.data.type === "preview-result" && e.data.revision === previewRevision) {
+    previewPages = e.data.pages; previewIndex = 0; pageCount();
+  }
+});
 function refresh() {
   const t = $("#src").value; draft = t;
-  const rows = autoWrap(t).split("\n");
-  const pv = $("#pv"); pv.innerHTML = "";
-  rows.forEach((r, i) => {
-    if (i > 0 && i % 2 === 0) {
-      const sep = document.createElement("div"); sep.className = "page-sep"; sep.textContent = "▼ 改ページ";
-      pv.appendChild(sep);
-    }
-    pv.appendChild(document.createTextNode(r + "\n"));
-  });
+  previewRevision++;
+  if (previewReady) $("#pv").contentWindow.postMessage({type:"preview-text", revision:previewRevision, line:{...lines[sel], text:t}}, location.origin);
   const w = warnsOf(t, lines[sel].speaker);
-  $("#stat").innerHTML = `全角 <b>${width(t)}</b> 字 / ${rows.length} 行` +
+  $("#stat").innerHTML = `全角 <b>${width(t)}</b> 字（装飾を除く・目安）` +
     (w.length ? `<span class="warn"> ⚠ ${w.join(" ／ ")}</span>` : " ✓");
   const changed = t !== lines[sel].text;
   $("#dirtyflag").textContent = changed ? "● 未保存" : "";
   // クリック改行グリッド
   const grid = $("#grid"); grid.innerHTML = "";
-  [...t].forEach((ch, i) => {
+  let offset = 0;
+  [...t].forEach((ch) => {
+    const i = offset; offset += ch.length;
     if (ch === "\n") {
       const br = document.createElement("span");
       br.className = "br"; br.textContent = "⏎"; br.title = "クリックで手動改行を解除";
@@ -331,7 +359,7 @@ async function save(goNext) {
   if (res.ok) {
     ln.text = text; draft = text; dirty.add(sel);
     renderList(); refresh();
-    toast("保存しました（反映するには「台詞の検査」）");
+    toast("保存しました（ゲームを再読み込みで反映）");
     if (goNext) gotoNext();
   } else { toast("保存に失敗: " + (res.error || "")); }
 }
@@ -360,7 +388,7 @@ $("#build-run").onclick = async () => {
   busy.textContent = res.ok ? "完了 ✓" : "失敗 ✗";
   const log = $("#build-log"); log.style.display = "block";
   log.className = "log" + (res.ok ? "" : " err"); log.textContent = res.log || res.error || "";
-  toast(res.ok ? "ビルド完了（ゲームに反映されました）" : "ビルド失敗（ログ参照）");
+  toast(res.ok ? "台詞の検査完了（ゲームを再読み込みで反映）" : "台詞の検査失敗（ログ参照）");
 };
 
 /* ---- コミット ---- */
@@ -374,7 +402,7 @@ $("#btn-commit").onclick = async () => {
   $("#commit-run").disabled = !!g.protected || !g.dialogueDirty;
 };
 $("#commit-run").onclick = async () => {
-  const busy = $("#commit-busy"); busy.textContent = "実行中…（ビルド→コミット）";
+  const busy = $("#commit-busy"); busy.textContent = "実行中…（検査→コミット）";
   const res = await (await fetch("/api/git/commit", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

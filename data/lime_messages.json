@@ -946,7 +946,7 @@
           "affinity": 2
         },
         {
-          "text": "今日もいい色が見えますように",
+          "text": "今日もいい絵が描けますように",
           "response": "……！ ……はい。はじめさんも、いい煙を",
           "affinity": 1
         }
@@ -1253,6 +1253,74 @@
           "text": "教えてもらったこと、試してみます",
           "response": "うん、ハジメっちの店でやってみて！",
           "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ageha_ch2_goodday",
+      "sender": "ageha",
+      "chapter": 2,
+      "trigger_day": 4,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "おはよ、ハジメっち！"
+        },
+        {
+          "sender": "ageha",
+          "text": "今日は感覚ある日〜！ 指も元気"
+        },
+        {
+          "sender": "ageha",
+          "text": "……って、なんでもない笑 今日もお店開けてるよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "感覚ある日？",
+          "response": "あ、えーと……バイブスの調子いい日ってこと！ 気にしないで〜",
+          "affinity": 1
+        },
+        {
+          "text": "今日も顔出します",
+          "response": "マジ？ 白いクマの席、あけとくね",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ageha_ch2_badday",
+      "sender": "ageha",
+      "chapter": 2,
+      "trigger_day": 7,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "おはよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "……今日、ダメな日かも"
+        },
+        {
+          "sender": "ageha",
+          "text": "お店は開けるけどね。いつもよりポンコツかも笑"
+        }
+      ],
+      "replies": [
+        {
+          "text": "大丈夫ですか？",
+          "response": "だいじょぶ！ ……たぶん。ありがと",
+          "affinity": 2
+        },
+        {
+          "text": "顔、見に行きます",
+          "response": "……うん。待ってる",
+          "affinity": 3
         }
       ]
     }

@@ -10,10 +10,14 @@ import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { samechanSpot } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
+import { toast } from "../core/ui.js";
+import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
-import { meetHiyoriAtTonari } from "./hiyori.js";
+import { meetHiyoriAtTonari, hiyoriShopEncounterDue } from "./hiyori.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
+import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -46,8 +50,8 @@ export const VISIT_BG = {
 };
 
 /**
- * マップのスポット。x/y はマップ（bg_osu_map）上の位置（%）で、看板ピンのしっぽの先が指す地点。
- * 配置は旧版の SPOT_LAYOUT（O19/F4 で押しやすさと情報パネルとの被りを調整済み）を踏襲する。
+ * マップのスポット。x/y はマップ（bg_osu_map）上の位置（%）。店舗は看板のしっぽ、施設は絵の中心が指す地点。
+ * 施設絵は絵の中心を地点へ合わせる。観音堂は背景のお堂、家は右側の住宅、占いはアーケード脇。
  * kind: tonari（サブメニュー）/ rival（店主に会う）/ shop / spot（施設）/ rest
  * theme: 看板の色 / glyph: 顔ドット絵が無いときの一文字 / face: 看板に出す顔（面識があれば）
  * label: 看板の下の店名・施設名（店は「へ行く」を足す）
@@ -65,14 +69,14 @@ export const SPOTS = [
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "1階の買い物は昼夜とも時間消費なし。2階のショールームで相談できるのは夜だけ。" },
-  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+  { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 45, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     openSlots: [0], desc: "昼だけ開く、なる行きつけの喫茶。ラテと焼き菓子でひと息。常連の小話も聞こえる。" },
-  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
+  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: 12,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
     nightPool: ["venue_kannon_night", "venue_kannon_night_b"],
     desc: "街の小さなお堂。昼は猫や街の人と会い、夜は静かな境内で今日を振り返る。" },
-  { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
+  { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
     desc: "昼夜とも使える無人ジム。入会はアプリから。動画でフォームを確かめ、自分のペースで汗を流す。" },
@@ -80,11 +84,11 @@ export const SPOTS = [
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
-  // 会うまでは正体の分からない「？」の出店
-  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 78, theme: "park", glyph: "占", unknownGlyph: "？",
+  // 出店日に正式な施設名で表示する。未対面の人物情報は引き続き伏せる。
+  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占",
     desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）。",
     unknownDesc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？" },
-  { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 52, theme: "rest", glyph: "休", stamina: 55,
+  { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
     desc: "1行動使って体を休める。体力が大きく戻る。" },
 ];
 /** 行き先の中の様子（マップ右下のプレビュー）。入ったときの背景と同じ絵を指す */
@@ -129,7 +133,7 @@ export function hasNewStory(charId) {
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
-    || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
+    || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
   if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
   if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
@@ -141,9 +145,22 @@ export function isClosed(spot) {
   return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
 }
 
-/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。 */
+export function naruRiftActive(save = state) {
+  const flags = save?.flags;
+  return (save?.chapter || 1) >= 2 && !!(
+    flags?._ch2_read_ch2_naru_confrontation
+    || flags?._ch2_night_11_done
+    || flags?._ch2_naru_listened
+    || flags?._ch2_naru_hurt
+  );
+}
+
+/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるとの決裂後は継続して臨時休業にする。 */
 export function isTemporaryClosed(spot) {
-  return !!spot.charId && state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`;
+  return !!spot.charId && (
+    state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`
+    || spot.charId === "naru" && naruRiftActive(state)
+  );
 }
 
 export function visitedToday(spotId) {
@@ -151,12 +168,22 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
-  return !spot.requiresMet || !!state.met[spot.requiresMet];
+  if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
+  if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
+  // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。
+  return !spot.requiresMet || !!state.flags[`_spot_guide_${spot.requiresMet}`] || (state.spotVisits?.[spot.id] || 0) > 0;
 }
 
 /** マップに出す名前（店主に会う前は店名の看板だけ） */
 export function spotLabel(spot) {
   return spot.label;
+}
+
+/** 店種は詳細カードだけに添える。ピン名・ID・保存値は変えない。 */
+export function spotDetailLabel(spot) {
+  const category = ["tonari", "rival", "samechan"].includes(spot.kind) || spot.id === "c_station"
+    ? "シーシャ屋" : spot.kind === "shop" ? "ショップ" : null;
+  return category ? `${spot.label}（${category}）` : spot.label;
 }
 
 export function hasContact(id) {
@@ -178,23 +205,36 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
 export async function visitChar(charId, { welcome = null } = {}) {
+  if (charId === "naru" && naruRiftActive(state)) return false;
   const owner = state;
+  let cancelled = false;
+  const read = async (...args) => {
+    const result = await play(...args);
+    cancelled ||= !!result?.cancelled;
+    return result;
+  };
   if (charId === "sumi") await meetHiyoriAtTonari();
+  if (state !== owner) return;
   syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
+  // Keep already-connected legacy saves from repeating the newly early exchange.
+  // The original story-count thresholds remain a compatibility path only.
+  if (["naru", "adam"].includes(charId) && hasContact(charId)) {
+    state.flags[`_lime_contact_${charId}`] = true;
+  }
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
   const followup = spotFollowupDue(charId, state, DB.dialogues);
-  if (followup) await play(followup, { bg });
+  if (followup) await read(followup, { bg });
   // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
   if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
-    const result = await play(welcome, { bg });
+    const result = await read(welcome, { bg });
     if (state !== owner || result?.cancelled) return;
   }
   if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
-    await play("ch1_minto_identity_reveal");
+    await read("ch1_minto_identity_reveal");
     gainAffinity(charId, 10);
   } else if (questionVisitDue(charId)) {
     // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
@@ -202,7 +242,7 @@ export async function visitChar(charId, { welcome = null } = {}) {
     gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
-    await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
+    await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
   } else if (finaleAtVisit(charId)) {
@@ -217,23 +257,39 @@ export async function visitChar(charId, { welcome = null } = {}) {
     const id = rainTalk || pool[n % pool.length];
     const dlg = DB.dialogues[id];
     const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
-    await play(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
+    await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg });
     gainAffinity(charId, 5);
+  }
+  if (state !== owner || cancelled) return false;
+  // 回数は紹介を出す条件だけ。実際の紹介を完読するまで喫茶店を解放しない。
+  if (charId === "naru" && storyCount("naru") >= 2 && !state.flags._cafe_introduced
+    && DB.dialogues.ch1_naru_cafe_intro) {
+    const result = await read("ch1_naru_cafe_intro", { bg });
+    if (state !== owner || result?.cancelled) return false;
+    state.flags._cafe_introduced = true;
   }
   // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
   earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
   await maybeRecruitTrpgMember(charId);
+  return state === owner;
 }
 
 export async function visitRival(spot) {
+  if (!spot || isClosed(spot)) return false;
   refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
   playBgm("tonari");
-  const welcome = `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
-  await visitChar(spot.charId, { welcome });
+  // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
+  const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
+    ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  const owner = state;
+  const completed = await visitChar(spot.charId, { welcome });
+  // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
+  if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;
+  return completed;
 }
 
 /** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
@@ -269,7 +325,20 @@ export async function visitSpot(spot) {
     state.flags._c_station_registered = true;
     await installReel();
   }
+  // キャラとの会話があった来店には重ねない（くつろいだ静かな来店だけ）
+  if (spot.id === "cafe" && !encounter) await maybeCafeIdea(spot, n);
   earnStat(spot.stat, 4);
+}
+
+/** 喫茶こはくのおまけ: くつろいでいると、たまに配合を思いつく（ライバルの話の想起／自分のひらめき） */
+async function maybeCafeIdea(spot, visit) {
+  const pick = pickCafeIdea(state, DB.recipes || [], { rainy: isRainy() });
+  if (!pick || !cafeIdeaDue(state, visit)) return;
+  const owner = state;
+  await play(ideaDialogue(pick), { bg: bgRef(spot.bg) });
+  if (state !== owner) return;
+  const combo = markCafeIdea(state, pick, DB.flavors || []);
+  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });
 }
 
 export async function restAtHome(spot, { fullDay = false } = {}) {

@@ -1,6 +1,6 @@
 // 炭焼き（master_spec 第2部 §2）
 // ゲージ停止ではなく、炭の見た目（黒→赤→赤熱→ピカン→白熱→灰かぶり）を観察して取る。
-// ジャストの瞬間だけ、炭の芯そのものが一瞬光る。
+// ジャストの判定帯だけ、炭の芯と輪郭が明るく光り続ける。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -10,10 +10,13 @@ import { buildHeatView, coalSpots } from "./heat_view.js";
 import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
+import { createCraftClock } from "./clock.js";
+import { state } from "../core/state.js";
+import { coalJustSeconds } from "./heat_logic.js";
 
 export async function runHeat(cs) {
   await waitBenchReady(cs, "heat");
-  const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
+  const panel = stepPanel("heat", "炭焼き", "芯と輪郭が明るく光っている間に、その炭をタップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
   cs.heat = res;
@@ -28,6 +31,7 @@ export async function runHeat(cs) {
   info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
+    advice: heatAdvice(res),
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
@@ -41,11 +45,20 @@ export async function runHeat(cs) {
   });
 }
 
+function heatAdvice(res) {
+  const early = res.picks.some(p => ["raw", "early", "pre"].includes(p));
+  const late = res.picks.some(p => ["hot", "over"].includes(p));
+  if (early && late) return "早い炭と遅い炭がある。一つずつ芯の光を目印に取り出そう";
+  if (late) return res.over ? "焼きすぎた炭がある。次は芯が光ったら、待たずに取り出そう"
+    : "少し遅れた炭がある。次は芯が光る瞬間に取り出そう";
+  return early ? "早く取り出した炭がある。次は芯が光るまで待とう" : "";
+}
+
 // 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
 export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
-  const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const justSec = coalJustSeconds(skill.window(cs), tutorial, state?.goods || []);
   const clarity = skill.clarity(cs);
 
   await waitBenchReady(cs, "heat", { count });
@@ -57,14 +70,15 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   }));
   panel.append(view.root);
 
-  let t0 = 0;
+  const gameClock = createCraftClock(panel);
+  let t0 = null;
   let raf = 0;
   let finished = false;
   let done;
   const finishedP = new Promise((r) => { done = r; });
 
-  const pick = (c, elapsedSeconds = (performance.now() - t0) / 1000, automatic = false) => {
-    if (c.picked || finished || !t0) return;
+  const pick = (c, elapsedSeconds = (gameClock.now() - t0) / 1000, automatic = false) => {
+    if (c.picked || finished || t0 === null || gameClock.paused) return;
     const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec);
     const g = timing.phase;
     c.p = elapsedSeconds / c.tj;
@@ -97,7 +111,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
 
   const loop = (now) => {
     if (finished) return;
-    const t = (now - t0) / 1000;
+    const t = (gameClock.now() - t0) / 1000;
+    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
     for (const c of coals) {
       if (c.picked) continue;
       c.p = t / c.tj;
@@ -119,6 +134,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (finished) return;
     finished = true;
     cancelAnimationFrame(raf);
+    gameClock.dispose();
     done();
   };
 
@@ -129,7 +145,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
 
   await countdown();
   SE.crackle();
-  t0 = performance.now();
+  t0 = gameClock.now();
   view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 

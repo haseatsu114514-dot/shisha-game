@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { suite, assertFits } from "./support.mjs";
+import { confirmAppearanceSetup } from "./appearance_setup.mjs";
 const shots = path.resolve(process.env.SHOTS || fileURLToPath(new URL("../../../.codex/artifacts/remake-browser", import.meta.url)));
 fs.mkdirSync(shots, { recursive: true });
 
@@ -116,7 +117,9 @@ await suite("ch1-eve", async check => {
         assert.equal(s.day, 13); assert.equal(s.slot, 2); assert.equal(s.reel.count, 0);
         if (branch === "practice") {
           assert.equal(result.benches, 1);
-          for (const step of ["mix", "pack", "holes", "place", "heat", "steam", "pull", "care"]) assert(result.steps.includes(`rehearsal:${step}`), step);
+          for (const step of ["mix", "pack", "holes", "heat", "steam", "pull", "care"]) assert(result.steps.includes(`rehearsal:${step}`), step);
+          assert.equal(s.flags._coal_cube_learned, undefined, "練習だけで心得を習得しない");
+          assert(!result.steps.includes("rehearsal:place"), "未習得の配置工程は自動通過する");
           assert.equal(s.flags._craft_practice_runs.length, 1);
           assert.equal(s.flags._craft_practice_runs[0].adjustments, 2);
           assert.equal(s.flags._craft_practice_runs[0].success, true);
@@ -216,7 +219,13 @@ await suite("ch1-eve", async check => {
         await page.locator('[data-test="drill-heat"]').waitFor();
         if (stage !== "drill-menu") await page.locator('[data-test="drill-heat"]').click();
       }
-      if (stage === "during-practice") await advanceTo(page, '[data-test="mix-ok"]');
+      if (stage === "during-practice") {
+        await advanceTo(page, '[data-test="appearance-confirm"]');
+        await confirmAppearanceSetup(page);
+        await advanceTo(page, '[data-test="water-confirm"]');
+        await page.locator('[data-test="water-confirm"]').click();
+        await advanceTo(page, '[data-test="mix-ok"]');
+      }
       if (stage === "during-drill") await page.locator('[data-test="coal-0"]').waitFor();
       if (stage === "during-talk") await page.waitForFunction(() => E.entries.includes("ch1_day7_last_night_talk_sumi"));
       if (stage.startsWith("after-") || stage === "during-feedback") {

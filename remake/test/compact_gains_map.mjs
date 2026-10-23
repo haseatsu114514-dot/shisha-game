@@ -46,20 +46,20 @@ try {
         faces: [...document.querySelectorAll(".pin-face")].map(f => ({ width: f.offsetWidth, owner: f.classList.contains("pin-owner-face"), loaded: f.complete && f.naturalWidth > 0 })),
         icons: ["shop","cafe","kannon","choizap","c_station","rest"].map(k => {
           const p = document.querySelector(`[data-test="pin-${k}"]`), symbol = p.querySelector(".pin-symbol"), name = p.querySelector(".sub-label");
-          const logo = p.querySelector(".store-logo");
-          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, below: rect(name).y > rect(symbol || logo).y, oldGlyph: !!p.querySelector(".label") };
+          const logo = p.querySelector(".store-logo"), facility = p.querySelector(".facility-icon");
+          return { k, vector: !!symbol?.querySelector("svg"), logo: !!logo, facility: !!facility, below: rect(name).y > rect(symbol || logo || facility).y, oldGlyph: !!p.querySelector(".label") };
         }),
         badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
-        gym: document.querySelector('[data-test="pin-choizap"] .store-logo img').src,
+        gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
     assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
-    assert(map.icons.every(i => (i.vector || i.logo) && i.below && !i.oldGlyph));
+    assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
     assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));
-    assert.match(map.gym, /store_logos\/choizap\.png/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
+    assert.match(map.gym, /ui\/map-facilities-extra-579\.webp/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
@@ -73,19 +73,21 @@ try {
       const after=getComputedStyle(n,"::after"), points=n.querySelector(".gc-points"), name=n.querySelector(".gc-main");
       return { heading:n.querySelector(".gc-top").textContent, points:n.querySelector(".gc-points").textContent,
         word:n.querySelector(".gc-change")?.textContent || "", name:n.querySelector(".gc-main").textContent,
+        earned:n.querySelector(".gc-earned")?.textContent,
         height:n.clientHeight, badge:n.querySelector(".gc-badge").clientWidth,
         frame:after.backgroundImage, enabled:after.content !== "none", mask:after.maskImage,
         badgeFrame:getComputedStyle(n.querySelector(".gc-badge")).borderImageSource,
         inside:r.left >= stage.left && r.right <= stage.right + 1,
         noOverflow:n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1,
         noSub:!n.querySelector(".gc-sub"), actual:T.core.state.stats.sense,
-        pointGap:points.getBoundingClientRect().left-name.getBoundingClientRect().right,
+        pointGap:points.getBoundingClientRect().left-n.querySelector(".gc-earned").getBoundingClientRect().right,
         smaller:parseFloat(getComputedStyle(n.querySelector(".gc-count")).fontSize)<parseFloat(getComputedStyle(name).fontSize),
         badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
     assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
+    assert.equal(card.earned,"今回");
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);
     assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.smaller && card.pointGap < 8,JSON.stringify(card));
     assert(Math.abs(card.badgeInk.x)<.75 && Math.abs(card.badgeInk.y)<.75,JSON.stringify(card));

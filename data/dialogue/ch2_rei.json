@@ -109,12 +109,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……花と、どこかジューシーな甘さと、それから奥にお茶みたいな渋みがある"
+          "text": "（花と甘さの奥に、お茶みたいな渋みがある）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "複雑なのに、なんでこんなにまとまってるんだ）"
+          "text": "（複雑なのに、なんでこんなにまとまってるんだ）"
         },
         {
           "speaker": "hajime",
@@ -174,12 +174,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……怖い人なのか、ただものすごく喋れない人なのか。正直、よく分からなかった"
+          "text": "（怖いのか、話すのが苦手なのか。まだ分からない）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でもあの煙は、本物だった）"
+          "text": "（もう少し、あの煙の話を聞いてみたい）"
         },
         {
           "speaker": "hajime",
@@ -500,6 +500,26 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "でも、ステージで笑うのも、嘘じゃない"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "客席があると、言えることが増えるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここだと、小さい声でも聞こえますよ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……健太でもREIでも、同じ手で作ってる。座ってくれ"
         }
       ]
     },

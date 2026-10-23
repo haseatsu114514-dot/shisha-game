@@ -1,6 +1,18 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch1_sumi_cube_coals",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "はじめ、片付けが済んだら炭を見ていけ。今日は四角いやつだ" },
+        { "speaker": "hajime", "face": "normal", "text": "キューブ炭ですね。いつものフラットと、何が違うんですか？" },
+        { "speaker": "sumi", "face": "serious", "text": "同じ三つでも火が強く入る。いつもの待ち方のままじゃ、熱くなるぞ" },
+        { "speaker": "", "face": "", "text": "スミさんと並んで炭の芯を見て、ボウルへ置いたあとの温まり方を確かめた。" },
+        { "speaker": "hajime", "face": "normal", "text": "形だけ替えるんじゃなくて、温度を見て待ち方も変えるんですね" },
+        { "speaker": "sumi", "face": "smile", "text": "そういうことだ。まずは三つで試せ。数を増やす話は、また別だ" },
+        { "speaker": "", "face": "", "text": "キューブ炭の心得を習得した。手持ちのキューブ炭を、制作で選べるようになった。" }
+      ]
+    },
+    {
       "dialogue_id": "ch1_sumi_tutorial",
       "lines": [
         {
@@ -146,7 +158,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ。まず、今ここにある１台を見ろ"
+          "text": "ああ。まず、今ここにある一台を見ろ"
         },
         {
           "speaker": "sumi",
@@ -315,7 +327,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今日は、その隣にもう１台並んでいた。"
+          "text": "今日は、その隣にもう一台並んでいた。"
         },
         {
           "speaker": "",
@@ -405,7 +417,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "分かりました。まずは目の前の１台を、ちゃんと作り切ります"
+          "text": "分かりました。まずは目の前の一台を、ちゃんと作り切ります"
         },
         {
           "speaker": "",
@@ -455,7 +467,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが、自分用ともう１台を作っている。片付けを終えて、カウンターの端に座った。"
+          "text": "スミさんが、自分用ともう一台を作っている。片付けを終えて、カウンターの端に座った。"
         },
         {
           "speaker": "",
@@ -799,6 +811,82 @@
           "speaker": "",
           "face": "",
           "text": "……【根性】と【技術】が上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_home_rig",
+      "_comment": "#638 家シーシャ: 第1章 DAY7 の中間準備（中盤の修行）の最後に一度だけ。ミャアの卓上台を譲られる（台の受け取りは home-rig.js）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片付けを終えると、スミさんが奥から古い箱を持ってきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "これやる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……卓上台、ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店のお下がりだ。ミャアの卓上台。まだ使える"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "家でも吸え。自分の煙を、自分で吸って知れ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "一日の終わりに一服すると、その日の粗が見える。葉は自分で用意しろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（寝る前の一服か。……自分の葉で、いろいろ試してみよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_attack",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、待ってる間も肩に力が入ってるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "失敗したらって考えると、落ち着かなくて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "雑念を全部追うな。目の前の一つだけ、切ってみろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんと呼吸を合わせ、前へ手を振る。浮かんだ言葉を一つ切って、また炭を見る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "そうだ。切ったら少し待て。焦って振り回すなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アタックを習得した。蒸らし中にZキーやボタンで、上側の雑念を切れる。"
         }
       ]
     }

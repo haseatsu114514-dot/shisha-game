@@ -5,24 +5,33 @@ import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, save, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
+import { homeRig } from "./home-rig.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
-import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
+import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
+import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
+import { STATION_FARE, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
 
-/** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
-function spotFace(s) {
-  if (!s.face) return null;
-  if (s.face !== "sumi" && !state.met[s.face]) return null;
-  return faceIconUrl(s.face);
+/** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
+function peopleRow(people) {
+  if (!people.length) return null;
+  return el("span.pin-people", { "aria-label": `在店：${people.map(p => p.name).join("、")}` }, people.map(person => {
+    const face = person.known && faceIconUrl(person.id);
+    return face ? el("img.pin-person", { src: face, alt: person.name, title: person.name, dataset: { personRole: person.role } })
+      : el("span.pin-person.pin-unknown", { role: "img", "aria-label": person.name, title: person.name, dataset: { personRole: person.role }, html:
+        '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="6"/><path d="M5 30v-4a11 11 0 0 1 22 0v4Z"/></svg><b>?</b>' });
+  }));
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
@@ -77,7 +86,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await Promise.all([uiArtReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   let walking = false;
   for (;;) {
@@ -118,6 +127,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const info = el("div.map-info");
     const pins = el("div.map-pins");
     let selected = null;
+    const owner = state;
+    let stationTrip = null;
+    let revealing = false;
+    let stopReveal = () => {};
+    const revealNotice = el("div.map-notice", { role: "status" });
 
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide });
@@ -169,10 +183,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           renderSceneArt(preview, pv.url);
         });
       }
-      info.replaceChildren(
-        el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
+      info.replaceChildren(...[
+        el("div.mi-banner", { text: known ? spotDetailLabel(s) : s.unknownLabel || s.label }),
         preview,
-        el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
+        charName ? el("div.mi-area", { text: charName }) : null,
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
           spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
@@ -183,10 +197,16 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
           : el("div.mi-no", { text: av.why }),
-      );
+        // 家ではシーシャ作りの練習もできる（#638・tonari から移した）。休むのは「家に帰る」のまま
+        av.ok && s.kind === "rest" && homeRig()
+          ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
+          : null,
+      ].filter(child => child != null));
     };
 
     const select = (s, btn) => {
+      if (moving || revealing || root.classList.contains("done")) return;
+      stationTrip?.cancel(); stationTrip = null;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
       SE.click();
@@ -194,8 +214,53 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     };
 
     let moving = false;
-    const go = async (s) => {
-      if (moving || root.classList.contains("done")) return;
+    const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
+    const openStation = () => {
+      if (moving || revealing || !stationActive()) return;
+      stationTrip?.cancel(); stationTrip = null; selected = null;
+      pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
+      const cancel = () => { stationTrip?.cancel(); stationTrip = null; idleInfo(); };
+      const destinations = stationDestinations(state, regions || [], region?.id);
+      const choose = (item) => {
+        if (moving || !stationActive()) return;
+        stationTrip?.cancel();
+        const trip = stationTrip = prepareStationTrip(state, regions, item.id);
+        if (!trip) return;
+        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.fare,
+          onclick: async () => {
+            if (moving || !stationActive()) return;
+            moving = true; confirm.disabled = true;
+            try {
+              if (!trip.commit(state, { active: stationActive(), persist: save })) {
+                openStationAfterFailure(); return;
+              }
+              region = item; selected = null; root.dataset.region = item.id;
+              onRegionChange?.(item.id);
+              SE.select(); updateHud();
+              await stationArrival(trip, () => setMapBackground());
+              if (!stationActive()) return;
+              root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
+              renderPins(); idleInfo();
+            } finally { moving = false; }
+          } });
+        info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),
+          el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
+          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.fare ? " ／ 残金が足りません" : ""}` }),
+          confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+      };
+      const openStationAfterFailure = () => {
+        info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),
+          el("button.mi-go", { text: "戻る", onclick: cancel }));
+      };
+      info.replaceChildren(el("div.mi-banner", { text: "駅・行き先を選ぶ" }),
+        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ 片道 ${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
+        ...destinations.map(item => el("button.mi-go", { type: "button", text: `${item.label} ／ ${yen(STATION_FARE)}`,
+          dataset: { test: `station-destination-${item.id}` }, onclick: () => choose(item) })),
+        el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+    };
+    const go = async (s, mode = null) => {
+      if (moving || revealing || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
       moving = true;
       try {
@@ -204,48 +269,96 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         if (root.classList.contains("done")) return;
         if (!availability(s).ok) { renderInfo(s); return; }
         SE.select();
+        stationTrip?.cancel(); stationTrip = null;
         cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        stopReveal();
         retire(root);
         info.classList.add("leaving");
         interrupt = null;
-        resolve(s.id);
+        resolve(mode ? `${s.id}:${mode}` : s.id); // 家で練習は "rest:practice"
       } finally {
         moving = false;
       }
     };
 
     function renderPins() {
+      stopReveal();
       pins.replaceChildren();
-      for (const s of mapSpots()) {
-      if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
+      const freshPins = [];
+      const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
+      const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
+        id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
+      })));
+      for (const s of spots) {
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
-      const face = locked ? null : spotFace(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
+      const people = locked ? [] : spotPeople(s);
+      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
-        el("div.shield", [
-          badge,
-          el("div.ico", [logo || (face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s))]),
-          logo && face ? el("img.pin-face.pin-owner-face", { src: face, alt: "" }) : null,
+        el("div.pin-visual", [
+          el("div.shield", [
+            badge,
+            el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
+              ? el("span", { text: "？" }) : pinSymbol(s))]),
+          ]),
+          peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
+      if (facility) {
+        const crop = facility.querySelector('.facility-icon-crop');
+        btn.style.setProperty('--facility-art-width', crop.style.width);
+        btn.style.setProperty('--facility-art-height', crop.style.height);
+        for (const axis of ['x', 'y']) btn.style.setProperty(`--facility-badge-${axis}`, facility.style.getPropertyValue(`--facility-badge-${axis}`));
+      }
+      const revealIndex = reveals.indexOf(s.id);
+      if (revealIndex >= 0) {
+        btn.style.visibility = "hidden";
+        freshPins.push({ btn, spot: s, index: revealIndex });
+      }
       pins.append(btn);
       }
+      if (freshPins.length) {
+        revealing = true;
+        root.dataset.revealing = "true";
+        stopReveal = startSpotReveal({
+          pop: () => {
+            for (const { btn, index } of freshPins) {
+              btn.style.visibility = "";
+              btn.classList.add("newly-revealed");
+              btn.style.setProperty("--reveal-delay", `${Math.min(index * 90, 360)}ms`);
+              btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }),
+                el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" }));
+            }
+            revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot)).join("。 ");
+          },
+          done: () => {
+            revealing = false;
+            delete root.dataset.revealing;
+            for (const { btn } of freshPins) {
+              btn.style.visibility = "";
+              btn.classList.remove("newly-revealed");
+              btn.querySelectorAll(".pin-reveal-ring, .pin-reveal-label").forEach(node => node.remove());
+            }
+            revealNotice.textContent = "";
+          },
+        });
+      }
+
     }
 
     idleInfo();
@@ -253,30 +366,24 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
-      regions ? el("nav.map-regions", { "aria-label": "街を選ぶ" }, regions.map(item => el("button", {
-        type: "button", text: item.label, "aria-pressed": String(item === region),
-        dataset: { test: `map-region-${item.id}`, region: item.id },
-        onclick: () => {
-          if (moving || root.classList.contains("done") || region === item) return;
-          region = item; selected = null;
-          onRegionChange?.(item.id);
-          root.dataset.region = item.id;
-          root.querySelectorAll(".map-regions button").forEach(node => node.setAttribute("aria-pressed", String(node.dataset.region === item.id)));
-          void setMapBackground(); updateHud(); renderPins(); idleInfo();
-        },
-      }))) : null,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "繁華街を歩く（仮導入）", dataset: { test: "map-walk" }, onclick: () => {
-        SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
+      stationDestinations(state, regions || [], region?.id).length && !guide
+        ? el("nav.map-regions", { "aria-label": "駅から街移動" }, [el("button", {
+          type: "button", text: `駅・街移動（${region.label}）`, dataset: { test: "station-open" }, onclick: openStation,
+        })]) : null,
+      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
+        if (moving || revealing || root.classList.contains("done")) return;
+        SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
+      revealNotice,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
-    interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
-    mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
+    interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
+    mountReel(root); // 中断・旧保存に残った演出だけを回収する（通常は行動終了時に提示済み）
     onShown?.();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
     const previews = [...new Set(mapSpots().filter(isUnlocked)

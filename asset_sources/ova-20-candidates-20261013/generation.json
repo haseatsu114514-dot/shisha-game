@@ -1,0 +1,705 @@
+{
+  "title": "90年代OVA画風：初稿20案＋強調版4案",
+  "status": "visual_candidates_not_adopted",
+  "created_date_jst": "2026-10-13",
+  "repository": "haseatsu114514-dot/shisha-game",
+  "game_characters": "正規立ち絵・設定を参照。人物・衣装・年齢感を維持した画風試作。場面は仮の構図案。",
+  "anime_reference_note": "KITE(1998)およびBASTARD!!(1992旧OVA)の実際の場面・セル画を作画技法の参照に使用。元作品の画像は同梱せず、出典URLを記録。",
+  "candidates": [
+    {
+      "id": "01",
+      "label": "ひより・KITE寄りの立ち絵",
+      "kind": "portrait",
+      "filename": "images/01.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-b1bdd256-73c3-4df5-a651-44cbb2562224.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nPortrait full-body transparent cutout, ONE woman: Hiyori, 25. Keep her pink-brown HIGH ponytail, soft bangs, light brown eyes, small ivory stand collar and French sleeves on a delicately lace-front blouse, black belted slacks, black loafers, small black handbag and wristwatch from the game PNG. Slightly lowered eyes, shy small bittersweet smile, one hand touching hair beside her ear. A healthy adult office worker acting wistful, not ill or weak. Fine lace is simplified into elegant period ink details; retain clothing construction. All of her feet and ponytail remain inside the canvas; no environment or colored backdrop.",
+      "input_reference_paths": [
+        "/workspace/ova_references/hiyori.png",
+        "/workspace/ova_references/kite-face.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "sha256": "81f0e0e5b5fad5365f2f061f3d0185ee146893a228de0f5faba9bbb3036c49b3",
+      "bytes": 1454086,
+      "input_reference_sha256": {
+        "hiyori.png": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506"
+      }
+    },
+    {
+      "id": "02",
+      "label": "ひより・BASTARD寄りの立ち絵",
+      "kind": "portrait",
+      "filename": "images/02.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-84b3f5a3-b4ba-433c-88d1-a38228d89153.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nPortrait full-body transparent cutout, ONE woman: Hiyori, 25. Preserve exactly the same pink-brown high ponytail, brown eyes, ivory lace French-sleeve stand-collar blouse, black slacks, wristwatch, handbag and loafers. Use a soft friendly expression, lovely broad brown anime irises, a small warm smile, gently rounded cheeks, short chin. Slight three-quarter standing pose, one hand resting near her bag strap. This is the SAME Hiyori as candidate 01 in a different 1992 OVA rendering. All of her body and shoes visible, no background.",
+      "input_reference_paths": [
+        "/workspace/ova_references/hiyori.png",
+        "/workspace/ova_references/hiyori-smile.png",
+        "/workspace/ova_references/bastard-face.jpg",
+        "/workspace/ova_references/bastard-forest.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1084,
+      "height": 1451,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "a528438996b65cf521766856290c4cbfe2e326b112fa2ee94d449463a4848aab",
+      "bytes": 795532,
+      "input_reference_sha256": {
+        "hiyori.png": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+        "hiyori-smile.png": "88c9c8ead7a19168aaddc61fd3cb081aec335733088df43c4b4fba76da4014aa",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a"
+      }
+    },
+    {
+      "id": "03",
+      "label": "みんと・小悪魔の立ち絵",
+      "kind": "portrait",
+      "filename": "images/03.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-76ee5019-1270-4efe-b8ad-e8553b2ff790.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nPortrait full-body transparent cutout, ONE adult woman: Minto, actual age 29. Preserve her long straight BLACK hair and blunt bangs, green eyes, small black devil-horn and bat-wing HAIR accessories, black/neon-green off-shoulder concept-cafe dress, green ribbon with gold heart detail, heart choker, stockings and chunky black/green shoes exactly as the game PNG. Playful confident wink and a little friendly fang smile, finger lightly beside cheek, otherwise an ordinary professional character pose. Warm cute adult face, not a child. Keep all hair and shoes in canvas. No backdrop, no decorative props.",
+      "input_reference_paths": [
+        "/workspace/ova_references/minto.png",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1084,
+      "height": 1451,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "60980230273133ae576e3f14949d74cbff09cdd5d060c4816cf01d2e12935551",
+      "bytes": 894397,
+      "input_reference_sha256": {
+        "minto.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "04",
+      "label": "アゲハ・明るいOVA立ち絵",
+      "kind": "portrait",
+      "filename": "images/04.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-3d1a9c81-e400-4e29-8143-44bdd617afbf.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nPortrait full-body transparent cutout, ONE adult woman: Ageha, 22. Her exact approved youthful friendly face is essential: amber eyes, soft cheeks, short gentle chin, small mouth, cheerful approachable demeanor. Retain honey-blonde TWIN ponytails with pink and cream bear clips, gold earrings, black choker, gold HEART necklace, leopard jacket, pink heart crop top, black pleated skirt and stockings, pink/black shoes. One hand on hip and other hand giving a small friendly wave. Do not add heavy makeup, hollow cheeks, thin cold eyes, glossy enlarged lips or older model-like features. Face identity matters more than leopard pattern alone. All feet and hair visible, transparent only.",
+      "input_reference_paths": [
+        "/workspace/ova_references/ageha.png",
+        "/workspace/ova_references/ageha-smile.png",
+        "/workspace/ova_references/bastard-face.jpg",
+        "/workspace/ova_references/bastard-forest.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1084,
+      "height": 1451,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "c0aa8d4bd63e02b65301a1e3f39ff749f06ac56982261631b6e6d5ed9f0ab4c4",
+      "bytes": 985977,
+      "input_reference_sha256": {
+        "ageha.png": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+        "ageha-smile.png": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a"
+      }
+    },
+    {
+      "id": "05",
+      "label": "凛・都会的なOVA立ち絵",
+      "kind": "portrait",
+      "filename": "images/05.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-e3506ecf-60ea-4dfa-919f-50f80f84b640.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nPortrait full-body transparent cutout, ONE adult woman: Rin, 27. Match the original very dark slate-blue long wolf-cut hair ending between bust and waist, thick sweeping bangs, cheek-framing layers, half-lidded blue-gray eyes, restrained cool smile, silver hoop earrings, rolled-sleeve white shirt, black belted slacks and dark shoes, black clipboard in hand. Adult graceful calm face, no exaggerated makeup. Nails uncolored, no scent-paper strips on her collar, no glasses for this ordinary outfit. Elegant relaxed stance, complete body in frame, transparent background.",
+      "input_reference_paths": [
+        "/workspace/ova_references/rin.png",
+        "/workspace/ova_references/kite-face.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1084,
+      "height": 1451,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "1e2043dae9679c3d814f9e7bd1813a00400aa95cd7e35eb077bfadc5260e1fab",
+      "bytes": 796336,
+      "input_reference_sha256": {
+        "rin.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506"
+      }
+    },
+    {
+      "id": "06",
+      "label": "つむぎ・柔らかなOVA立ち絵",
+      "kind": "portrait",
+      "filename": "images/06.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-a6b039d1-67a5-4641-a63e-7365ac4536b8.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nPortrait full-body transparent cutout, ONE adult woman: Tsumugi, 21. The game PNG defines her actual design despite older text: short BROWN bob, brown eyes, small dark stud earrings, purple hoodie with delicate flower embroidery, black pleated skirt, dark knee socks and plain black shoes. Hold her dark tablet naturally close to chest. Quiet thoughtful expression, slight surprise in large gentle eyes, friendly soft cheeks and a small mouth. Retain age 21 and full adult proportions, not chibi. Complete body and tablet visible; transparent background.",
+      "input_reference_paths": [
+        "/workspace/ova_references/tsumugi.png",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": true,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1084,
+      "height": 1451,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "sha256": "0b6eb673d0ee784f30ab57876e2af0a05e1cbaf595cf7ef33bdc351de1b654e7",
+      "bytes": 717549,
+      "input_reference_sha256": {
+        "tsumugi.png": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "07",
+      "label": "tonari・夜の背景",
+      "kind": "background",
+      "filename": "images/07.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-6a0281a9-d1f7-4508-806b-e382146b0a13.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE anime background art ONLY, no characters. Repaint the supplied real game's tonari room in classic 1998 urban OVA background technique. Preserve its actual small Japanese upstairs lounge geometry: large rectangular LEFT windows showing an ordinary Japanese nighttime neighborhood, olive green wooden-arm sofas, wood tables, wooden bar and shelf on right, patterned rug, warm plaster walls and ceiling beams. Its Turkish MOSAIC pendant lamps have different shapes, glass colors, patterns and hanging heights; motivated normal spot lighting keeps furniture readable. Strong deep blue windows, subdued ochre interior and warm lamp pools; crisp opaque painted forms and subtle gouache edges. For this environment study, keep tables and shelves free of shisha/hookah equipment, hoses, smoke and people; ordinary water glasses, books, and shallow small storage tubs are enough. Preserve existing plants only in their reference locations. No mosques, fantasy palace, arches or giant golden frame.",
+      "input_reference_paths": [
+        "/workspace/ova_references/tonari-night.png",
+        "/workspace/ova_references/kite-room.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "d9e37bfc75d00789cd6f7fffbbe81d5f50cd5fcc6fd814807a495c911bc34733",
+      "bytes": 2428577,
+      "input_reference_sha256": {
+        "tonari-night.png": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42"
+      }
+    },
+    {
+      "id": "08",
+      "label": "tonari・曇り昼の背景",
+      "kind": "background",
+      "filename": "images/08.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-f6e0a5e2-8ba7-4742-b8e6-ab6f160fe01c.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE anime background art ONLY, no characters. The SAME actual tonari room geometry in the supplied game image, now in quiet overcast daytime: rectangular left windows, muted Japanese town outside, olive upholstered wood sofas, warm wood tables and right-hand wooden bar, patterned rug, heterogeneous Turkish mosaic glass hanging lamps, modest ceiling lights. Soft gray-blue daylight mixes with gentle muted amber interior light; beautiful hand-painted 1992 OVA production background, restrained ochre/olive/slate palette and visible opaque pigment. A calm lived-in small Japanese lounge, not an exotic palace. This lighting and furnishings study has uncluttered tabletops: no hookahs, hoses, smoke, charcoal or people; use just ordinary water glasses and books. Preserve recognizable layout and perspective, don't flatten into a generic cafe.",
+      "input_reference_paths": [
+        "/workspace/ova_references/tonari-night.png",
+        "/workspace/ova_references/bastard-forest.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "2561e323ff0ccd85992c93fd492e43672b7db5ceee03cc4e0041d45b79d83478",
+      "bytes": 2502733,
+      "input_reference_sha256": {
+        "tonari-night.png": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a"
+      }
+    },
+    {
+      "id": "09",
+      "label": "EDEN・深い琥珀色の背景",
+      "kind": "background",
+      "filename": "images/09.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-59a4062a-e7f0-47de-881d-ec3c925dcc04.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE anime background art ONLY, no characters. Repaint this EXACT game EDEN reference as fine traditional painted 1992 OVA background, removing its coarse pixel rendering while retaining store identity. Deep green wall paneling, red and green seating cushions, curtained alcoves, herringbone wood floor, red/apple-and-green/apple framed motifs, amber hanging lanterns, intimate dark golden atmosphere. Designed light pools with enough readable shape detail; rich physical paint textures, clean deliberate edges rather than noisy mosaic. Respect the supplied original room's layout, not a clone of tonari. No additional obligatory plants. Environment-only lighting study with tables temporarily cleared of all hookahs, hoses, coals and other smoking equipment; keep no people, no UI, no signage.",
+      "input_reference_paths": [
+        "/workspace/ova_references/eden.png",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "0008c585b2349befde31e774f5daf073302670df94150f86ebebbdce3aad2980",
+      "bytes": 2332827,
+      "input_reference_sha256": {
+        "eden.png": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "10",
+      "label": "ぺぱーみんと・夜の背景",
+      "kind": "background",
+      "filename": "images/10.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-e87cee0a-ce30-4c7f-8277-b508ed29d080.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE anime background art ONLY, no characters. Repaint the actual game's peppermint concept-cafe interior preserving its distinctive mint-green paneling and arches, ivory counters, pink scalloped pendant lights, pink round bar stools, lace curtains, pastel upholstered seating with heart cushions. Turn its original bright interior into a gently nocturnal 1998 OVA painted background: muted cool teal shadows, warm rose/ivory light, believable opaque gouache forms and dimensional drawn architecture. This is an inviting independent small Japanese concept cafe, not a cyberpunk nightclub or generic tonari wood lounge. Shelves contain orderly SMALL shallow rounded rectangular flavor-storage tubs with blank labels and ordinary glasses. For this background-only study omit all hookahs, hoses, coals and smoke. No people or words.",
+      "input_reference_paths": [
+        "/workspace/ova_references/peppermint.png",
+        "/workspace/ova_references/kite-room.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "923be1bfc8001ebc36545874044f74bec0fd8ea1214d6d3ac9bd24a53cc76778",
+      "bytes": 2324542,
+      "input_reference_sha256": {
+        "peppermint.png": "47829d62ec1c6f246273f31b19904d135dbf80abcbe00a5bd754b223f3f78a7d",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42"
+      }
+    },
+    {
+      "id": "11",
+      "label": "ひより・雨の窓辺",
+      "kind": "still",
+      "filename": "images/11.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-4bf60a4c-7e4b-4db5-be8e-9401f2ad19e0.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE cinematic narrative-game STILL, no UI. Hiyori, 25, after work, wearing her EXACT ivory French-sleeve lace blouse and black slacks with pink-brown high ponytail. Medium close-up at tonari's actual rectangular window; Japanese street lights and rain beyond. She gently holds a plain warm ceramic mug with both hands and looks out with a small wistful smile. Her brown eyes and recognizable face receive a flat warm lamp-lit plane on one side and a subtle slate-blue cel shadow on the other. Her black handbag rests on the chair. Side-on asymmetrical composition, large quiet dark foreground shape and intimate reflected window light. Preserve actual tonari room style. No smoking, hookah, hose or borrowed KITE costumes.",
+      "input_reference_paths": [
+        "/workspace/ova_references/hiyori.png",
+        "/workspace/ova_references/tonari-night.png",
+        "/workspace/ova_references/kite-face.jpg",
+        "/workspace/ova_references/kite-room.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "f486fe7736726cf562e986c977a4a47be4e4d0aeb4193f758ed5436c69317d94",
+      "bytes": 2174846,
+      "input_reference_sha256": {
+        "hiyori.png": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea",
+        "tonari-night.png": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42"
+      }
+    },
+    {
+      "id": "12",
+      "label": "アゲハとはじめ・屈託のない笑顔",
+      "kind": "still",
+      "filename": "images/12.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-e12eaed8-8f1e-4a88-a787-c7746b1cc30b.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE bright candid STILL of the real adult characters Ageha, 22, and Hajime, 22, chatting at a small ordinary Japanese cafe table in warm afternoon light. Ageha laughs with the EXACT cheerful closed-eye and mouth shape of her approved smile PNG, soft friendly cheeks and short chin, blonde twin ponytails and bear clips, leopard jacket and pink heart crop top, choker/heart necklace. Hajime is the same ordinary friendly young man from his PNG: black hair, black cap with small smoke-line emblem, black hoodie and black street clothes, small silver cylindrical mouthpiece pendant visibly attached to its necklace. He smiles a little awkwardly at her energy. Naturally drawn hand gestures, comfortable peer friendship, no posing as models. Framing prioritizes faces rather than body display. Colorful opaque painted cafe background and coherent two-tone cel light. No smoking tools or smoke.",
+      "input_reference_paths": [
+        "/workspace/ova_references/ageha.png",
+        "/workspace/ova_references/ageha-smile.png",
+        "/workspace/ova_references/hajime.png",
+        "/workspace/ova_references/bastard-forest.jpg",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "7d8b60b8ae7c94438e0de1faa69f2b6627f24d09fae063dca858ade0e111d39b",
+      "bytes": 2343369,
+      "input_reference_sha256": {
+        "ageha.png": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+        "ageha-smile.png": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+        "hajime.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "13",
+      "label": "みんと・接客中のウインク",
+      "kind": "still",
+      "filename": "images/13.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-11f4424b-78d7-49c8-b0ae-8d9cd1e734f8.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE expressive medium shot STILL: Minto, actual age 29, owner and performer of peppermint, behind the actual mint/ivory counter in the supplied store. Preserve her long straight black hair, blunt bangs, green eyes, devil/bat hair accessories, black-and-neon-green off-shoulder dress, large green ribbon and heart choker. A calculated playful wink and small fang smile as she points lightly toward a little folded blank order card on the counter, no readable text. Warm pink hanging lights, mint walls and heart cushions in a richly drawn background. Lively character acting, welcoming adult performer, no erotic framing. Soft warm flat cel color and expressive large irises on the open eye. No hookah, hose or smoke.",
+      "input_reference_paths": [
+        "/workspace/ova_references/minto.png",
+        "/workspace/ova_references/peppermint.png",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "e26fb8411174d84d30dd1e40c4ac3a51205193e5d78a9be65b870d66dd8c8adc",
+      "bytes": 2382550,
+      "input_reference_sha256": {
+        "minto.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "peppermint.png": "47829d62ec1c6f246273f31b19904d135dbf80abcbe00a5bd754b223f3f78a7d",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "14",
+      "label": "みんと・素顔の帰り道",
+      "kind": "still",
+      "filename": "images/14.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-7f1ca467-6597-4040-96f8-7173be7f021f.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE quiet cinematic STILL of the SAME adult Minto, age 29, in her approved CASUAL outfit PNG rather than performer dress. Preserve her long straight black hair, blunt bangs, green eyes, light ivory cardigan over a dark top, long dark skirt, shoulder handbag with its little green charm, subtle jewelry. She walks along an ordinary Japanese shopping-street storefront after closing, three-quarter waist-up composition, little tired but calm and kind smile. Wet pavement reflects subdued teal window light and a small amber storefront light. Classic hand-painted urban architecture, strong composed shadow masses, clean flat cel face planes, natural adult body proportions. Not a new mystery girl, not copying Sawa, no guns, no hookahs, no smoke.",
+      "input_reference_paths": [
+        "/workspace/ova_references/minto-casual.png",
+        "/workspace/ova_references/kite-room.jpg",
+        "/workspace/ova_references/kite-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "8877ca14db718050019e8e9008448d1b5294ffc2cab4a945056e1041ea0c78f8",
+      "bytes": 2153285,
+      "input_reference_sha256": {
+        "minto-casual.png": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506"
+      }
+    },
+    {
+      "id": "15",
+      "label": "つむぎ・タブレットの猫スケッチ",
+      "kind": "still",
+      "filename": "images/15.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-19073693-9dd6-406a-b283-347e2d1e88d6.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE intimate STILL: Tsumugi, adult 21, at a quiet olive sofa corner of actual tonari. Preserve her brown bob, brown eyes, dark stud earrings, purple floral-embroidered hoodie and black skirt. Slightly overhead diagonal camera: she sits with a stylus in her hand drawing a small simple cat sketch on a tablet; the tablet is clearly held/supported naturally. A plain water glass and closed sketchbook on the wood table. She looks up from her drawing with a hesitant gentle small smile. Friendly round eyes, short soft chin, economical two-tone cel shadows; character integrated into softly hand-painted ochre/olive room with a muted violet shadow hue. No smoking equipment, no chain-like extra jewelry, no captions.",
+      "input_reference_paths": [
+        "/workspace/ova_references/tsumugi.png",
+        "/workspace/ova_references/tonari-night.png",
+        "/workspace/ova_references/bastard-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "d6fba2f79187b8281e8b623374c08288e3f13fde942a6e177bbe567155c95360",
+      "bytes": 2375731,
+      "input_reference_sha256": {
+        "tsumugi.png": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+        "tonari-night.png": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2"
+      }
+    },
+    {
+      "id": "16",
+      "label": "ましろ・mukaiの静かな一息",
+      "kind": "still",
+      "filename": "images/16.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-2a41c308-ffe0-40d9-95af-3d98867b2d16.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE serene STILL: Mashiro, adult 22 and a same-age peer rather than a mature older sister. Preserve her pale ash-blonde TWO long braids, soft bangs, half-lidded golden eyes, beige oversized cardigan over a white ribbon blouse, long sage-green skirt and brown shoes. She sits relaxed at the actual mukai cafe's small marble table, gently cradling a plain coffee mug, sleepy sweet expression, a small book beside her. Use the reference's dark wooden window frames, red upholstered seating and quiet outdoor evening blue as distinct background. Delicate 1992-style drawn eye shape, flat warm cel light on her cheek, soft opaque painted background. Wide 3/4 composition with room breathing space and readable face. No hookahs, hoses or smoke.",
+      "input_reference_paths": [
+        "/workspace/ova_references/mashiro.png",
+        "/workspace/ova_references/mukai.png",
+        "/workspace/ova_references/bastard-forest.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "67f1ca904d5be6939478096bfc6cea39bc1762a1ebf429b0481d9720ba4d6a05",
+      "bytes": 2191867,
+      "input_reference_sha256": {
+        "mashiro.png": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "mukai.png": "c8c258ef1b0d5c18e826ea2013fabb2777d2ee78112ba17253e5f43fe5e4773b",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a"
+      }
+    },
+    {
+      "id": "17",
+      "label": "凛・雨の日の仕事顔",
+      "kind": "still",
+      "filename": "images/17.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-33a9f29d-9f7b-4e46-9e4c-b9fd3d79f2f3.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE sophisticated cinematic STILL: Rin, 27, at a small wholesaler showroom desk reviewing a clipboard. Preserve slate-blue long wolf-cut hair with sweeping bangs and cheek layers, half-lidded blue-gray eyes, silver hoops, rolled white shirt and black slacks. No glasses, no scent-paper strips, nails uncolored. Slight low camera across desk, she turns her face toward the player with a restrained cool smile. Background small neat rows of shallow rounded rectangular storage tubs and sample cards, all small-scale and unbranded, and a rectangular rain-lit Japanese city window. Slate blue, soft gray and restrained warm desk-lamp color; face drawn as clear cel planes with bolder 1998 OVA ink. Character is not cold or hostile. No shisha equipment, no smoke, no visible words.",
+      "input_reference_paths": [
+        "/workspace/ova_references/rin.png",
+        "/workspace/ova_references/kite-room.jpg",
+        "/workspace/ova_references/kite-face.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "ed098c79e5035eefd1ebe18c9bbba6dc242f26a28c8d7170b85a9e634055e724",
+      "bytes": 1999300,
+      "input_reference_sha256": {
+        "rin.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506"
+      }
+    },
+    {
+      "id": "18",
+      "label": "スミさんとはじめ・師弟のカウンター",
+      "kind": "still",
+      "filename": "images/18.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-e71a47f9-acd3-45f0-8bf0-66fe9527c040.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE story STILL: adult Sumi, 46, teaching Hajime, 22, at the real tonari wooden counter. Sumi is the approved MIDDLE-AGED MAN, not a woman: black newsboy cap, square black-framed glasses, thick brows, full short beard, charcoal rolled-sleeve shirt and brown waist apron. Hajime retains black cap, ordinary black-haired friendly face, black hoodie and the visibly complete little silver cylindrical mouthpiece pendant from his PNG. Sumi gently points to a simple blank notebook diagram on the counter while Hajime listens thoughtfully; use an open shallow small transparent rounded rectangular flavor tub beside the notebook, no readable label. Mood calm mentorship, not a tense crime scene. Side two-shot with warm mosaic lamp light and deep blue window in the background. Real drawn adult expressions, KITE-like composed cel light. No hookah, hose, charcoal or smoking.",
+      "input_reference_paths": [
+        "/workspace/ova_references/sumi.png",
+        "/workspace/ova_references/hajime.png",
+        "/workspace/ova_references/tonari-night.png",
+        "/workspace/ova_references/kite-room.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "34e9174de7f67ded065345ea58599fc9206bed999fedf93b19860ffc46248e5d",
+      "bytes": 2049013,
+      "input_reference_sha256": {
+        "sumi.png": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+        "hajime.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+        "tonari-night.png": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42"
+      }
+    },
+    {
+      "id": "19",
+      "label": "なるとはじめ・好敵手の会話",
+      "kind": "still",
+      "filename": "images/19.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-ecee82c0-6ed2-4778-8dee-19b02e6b4770.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection B: closely study the actual BASTARD!! 1992 OVA cel reference. Large clear expressive irises with clean white highlights, soft friendly cheeks and a short gentle chin, tiny simply drawn nose and mouth, modest simplified facial contour, generous carefully designed hair masses and flat highlight bands, economical but beautifully drawn two-tone cel shadows. Preserve the original game's adult age and individual face; no adolescent redesign, no added lipstick, sharpened cheekbones or long model-like chin. Do not copy Yoko's hair, costume or identity.\n\nLANDSCAPE candid lively STILL: Naru, 23, and Hajime, 22, talking as friendly earnest rivals outside a small Japanese shopping-street cafe in late afternoon. Naru matches his exact PNG: short dyed SILVER hair, friendly sharp golden eyes, black-and-white oversized streetwear jacket with a subtle orange inner detail, silver rings and necklace, black cargo trousers and white sneakers. He explains something with an open hand and a genuine enthusiastic smile, not a smug villain. Hajime matches black cap, hoodie, messy black hair and kind ordinary face, smiling while listening. Do not merge their faces or hair. Loose eye-level two-shot, painted storefront reflections and a softly glowing sky, expressive period cell shading. No fighting, weapons, smoking equipment or invented dialogue text.",
+      "input_reference_paths": [
+        "/workspace/ova_references/naru.png",
+        "/workspace/ova_references/hajime.png",
+        "/workspace/ova_references/bastard-forest.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "dca754bcc3cfe600d656ac01497de89674defc0780700f551e408da9eb92b548",
+      "bytes": 2340877,
+      "input_reference_sha256": {
+        "naru.png": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577",
+        "hajime.png": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a"
+      }
+    },
+    {
+      "id": "20",
+      "label": "アダム・EDENのダブルアップル談義",
+      "kind": "still",
+      "filename": "images/20.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-c3a105c3-1388-4904-8018-f52f378995da.png",
+      "prompt": "Create one beautifully finished ORIGINAL art-direction candidate for this existing Japanese shisha narrative game. Use the supplied GAME CHARACTER PNGs as the highest-priority identity references: retain the exact character's hair style/color, eye color, recognizable face, adult age impression, clothing and accessories. These are alternate rendering studies, not replacements with a movie's characters. The supplied KITE/BASTARD stills are VISUAL TECHNIQUE references only, never borrow their characters, clothes, jewelry, settings or plot. Emulate the actual hand-inked, hand-painted CEL ANIMATION qualities visible in these early/late-1990s OVA frames: expressive drawn eyes, simple small mouths and noses, confident organically varied ink contours, deliberate angular solid shadow shapes with two or three paint tones, large designed ribbon-like hair highlights, opaque painted color. Skin and clothing are flat cel paint, not softly airbrushed digital anime. Backgrounds, where requested, are exceptionally composed traditional gouache anime production art, with painted architecture, depth and motivated light. The result should read as an excellent traditional OVA frame, not current AI anime with a retro noise filter. Beautiful clean readable drawing; no VHS effects, fake aging, artificial pixelation, 3D rendering, photographic bokeh, glossy doll faces or giant ornate UI. Every person is the named adult game character. No words, logo, watermark, UI or caption in the artwork. Use warm and cool colors according to the actual scene, not the same sunset lounge in every image.\n\nDirection K: closely study the actual KITE 1998 reference frames. Bold eye contours and expressive lashes, dimensional faces built from CLEAR flat cel-color planes, restrained smaller mouths, strong asymmetrical light/shadow shapes, burgundy-brown hair highlight bands, steel-blue/teal urban ambience contrasted with small warm light accents. Intimate cinematic framing and substantial dark shapes. Keep the original game character attractive, expressive and recognizable; do not copy Sawa or her clothing.\n\nLANDSCAPE characterful STILL: Adam, age 28, standing behind a small EDEN counter passionately explaining his love of double apple. He MUST match the actual approved sprite: center-parted short wavy hair split GREEN on one side and RED on the other, angular serious adult face, black three-quarter-sleeve henley shirt, tied black work apron and trousers. Do not turn him into a generic blond host. A red apple and green apple sit at plausible ordinary fruit scale beside three SMALL shallow clear rounded rectangular flavor tubs with blank front labels. His emphatic expression is endearingly earnest, one hand open in an explanatory gesture. Actual EDEN deep green/red seating, curtains and amber lanterns in hand-painted background, no added nightclub neon. Slight low-angle medium shot, precise flat cel shadow shapes and rich dark framing. No hookahs, hose, charcoal, smoke or words.",
+      "input_reference_paths": [
+        "/workspace/ova_references/adam.png",
+        "/workspace/ova_references/eden.png",
+        "/workspace/ova_references/kite-face.jpg",
+        "/workspace/ova_references/kite-room.jpg"
+      ],
+      "transparent_requested": false,
+      "visual_review": "生成画像を表示して正規立ち絵・設定と目視比較。候補段階。ゲームへの採用・設備構造の最終QA・素材分離は未実施。",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "d1c7562b06b11367525232ab151d5e78e0cf1da0937b7ff98df803a3259bf5ca",
+      "bytes": 2015997,
+      "input_reference_sha256": {
+        "adam.png": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+        "eden.png": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42"
+      }
+    },
+    {
+      "id": "21",
+      "label": "ひより・KITE作画を強めた窓辺",
+      "kind": "stronger",
+      "filename": "images/21.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-1cd097e5-286e-4142-8503-373878d114df.png",
+      "prompt": "This is a deliberately MUCH STRONGER authentic 1990s OVA rendering experiment, editing the supplied existing GAME scene. The user found the previous concepts too modern: thin elegant contemporary anime contours, numerous subtle clothing/hair shades and glossy CG-like background materials. Correct those exact problems. The supplied ACTUAL OLD OVA frame(s) are the AUTHORITATIVE visual-rendering reference, even where that means redrawing rather than lightly filtering the game image. The GAME scene is only the reference for character identity, clothes and scene content, NOT for rendering.\nReconstruct the ENTIRE image as a production cel over a traditional hand-painted 1990s anime background. The characters are clean hand-inked animation drawings with emphatic outer contours and economical intentional interior lines. Eyes are period-designed expressive LARGE irises and broad white eye shapes with ONE or TWO simple painted highlights; no modern tiny jewel-eye detailing. Noses and lips are small economical ink/paint marks, not realistically modeled noses or glossy rendered lips. Hair is made of clear LARGE designed locks, with broad ONE-PAINT flat ribbon/jagged highlights, not dozens of fine shiny strands. Skin uses a FLAT peach/brown base and ONE strong simple shadow tone, optionally a tiny accent; clothing uses flat LOCAL paint and ONE large designed shadow plane, no gradient layers, no microtexture, no fussy repeated folds. Hands must also be drawn with clean economical ink and the same simple cel paint. Keep the adult character's actual age and body proportions; warm expressive adult faces, not children or chibi.\nBACKGROUND must be newly interpreted as authentic opaque GOUACHE production art, restrained period color design with hand-painted architecture, separate foreground/midground/distance planes, dry pigment and soft painted edges. NO polished 3D surface highlights, no CG reflections, no photograph or camera depth-of-field, no photographic bokeh or decorative digital bloom. Never just reduce contrast or add noise to the previous image. No VHS, scanlines, scratches, blurry low resolution, fake film-aging overlays, or paper stains from the cel photos. A high-quality sharp master of an actual hand-painted 1990s OVA frame. NO UI, labels, words, border or watermark. Landscape 4:3 cinematic still. The game characters and clothes remain identifiable; never borrow the anime reference's hair, clothing, jewelry, weapons, identity or plot.\n\nRedraw the GAME still of Hiyori at the rainy tonari window. Hiyori is adult 25, pink-brown HIGH ponytail, brown eyes, ivory lace-front French-sleeve stand-collar blouse, black slacks, wristwatch and small handbag. Same mug and contemplative window scene. But use the ACTUAL KITE reference's drawing language MUCH more directly: broadly shaped expressive eyes, strongly designed near-black lashes, a little angular nose mark, simple lips, a single asymmetric brown cheek/neck shadow. Hair has a few broad flat salmon highlight zigzags and burgundy cel shadows; simplify blouse lace into select drawn decorative marks and WHITE flat paint, not realistic tiny embroidery. Room has cool steel-blue/gray rainy window light and limited warm lamp color, deep intentionally composed dark shapes, flattened matte painted wood. Face remains soft and adult like Hiyori, not Sawa. She looks slightly toward the viewer in a 3/4 face angle, hands holding the mug naturally. Clearly different visual construction from the original GAME digital illustration.",
+      "input_reference_paths": [
+        "/workspace/ova_references/kite-face.jpg",
+        "/workspace/ova_references/kite-room.jpg",
+        "/workspace/shisha-game/asset_sources/ova-20-candidates-20261013/images/11.png"
+      ],
+      "transparent_requested": false,
+      "visual_review": "表示して本人性、顔・線・セル影・髪の反射・背景の塗りを目視比較。正式未採用の強調版。",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "7ecaa7ebc101ed7751b7cf4fed35874c29be1e82eb4b9fbb0352f2ec67da5922",
+      "bytes": 2209493,
+      "input_reference_sha256": {
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42",
+        "11.png": "f486fe7736726cf562e986c977a4a47be4e4d0aeb4193f758ed5436c69317d94"
+      }
+    },
+    {
+      "id": "22",
+      "label": "ひより・旧BASTARD作画を強めた窓辺",
+      "kind": "stronger",
+      "filename": "images/22.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-a70fa9b4-ecc9-40f6-94d6-73686bd617c6.png",
+      "prompt": "This is a deliberately MUCH STRONGER authentic 1990s OVA rendering experiment, editing the supplied existing GAME scene. The user found the previous concepts too modern: thin elegant contemporary anime contours, numerous subtle clothing/hair shades and glossy CG-like background materials. Correct those exact problems. The supplied ACTUAL OLD OVA frame(s) are the AUTHORITATIVE visual-rendering reference, even where that means redrawing rather than lightly filtering the game image. The GAME scene is only the reference for character identity, clothes and scene content, NOT for rendering.\nReconstruct the ENTIRE image as a production cel over a traditional hand-painted 1990s anime background. The characters are clean hand-inked animation drawings with emphatic outer contours and economical intentional interior lines. Eyes are period-designed expressive LARGE irises and broad white eye shapes with ONE or TWO simple painted highlights; no modern tiny jewel-eye detailing. Noses and lips are small economical ink/paint marks, not realistically modeled noses or glossy rendered lips. Hair is made of clear LARGE designed locks, with broad ONE-PAINT flat ribbon/jagged highlights, not dozens of fine shiny strands. Skin uses a FLAT peach/brown base and ONE strong simple shadow tone, optionally a tiny accent; clothing uses flat LOCAL paint and ONE large designed shadow plane, no gradient layers, no microtexture, no fussy repeated folds. Hands must also be drawn with clean economical ink and the same simple cel paint. Keep the adult character's actual age and body proportions; warm expressive adult faces, not children or chibi.\nBACKGROUND must be newly interpreted as authentic opaque GOUACHE production art, restrained period color design with hand-painted architecture, separate foreground/midground/distance planes, dry pigment and soft painted edges. NO polished 3D surface highlights, no CG reflections, no photograph or camera depth-of-field, no photographic bokeh or decorative digital bloom. Never just reduce contrast or add noise to the previous image. No VHS, scanlines, scratches, blurry low resolution, fake film-aging overlays, or paper stains from the cel photos. A high-quality sharp master of an actual hand-painted 1990s OVA frame. NO UI, labels, words, border or watermark. Landscape 4:3 cinematic still. The game characters and clothes remain identifiable; never borrow the anime reference's hair, clothing, jewelry, weapons, identity or plot.\n\nRedraw the SAME GAME still of Hiyori, adult 25, at the rainy tonari window, retaining the same high pink-brown ponytail, brown eyes, ivory lace stand-collar French-sleeve blouse, black slacks, wristwatch, mug and handbag. Use the ACTUAL 1992 BASTARD!! cel's drawing construction VERY strongly: wide clear white eye shapes, LARGE ROUND brown irises with single white painted highlights, a small short nose mark, tiny gentle mouth and a SHORT soft chin. Friendly adult rather than toddler proportions. Character skin is clean flat peach paint plus ONE large cocoa-colored cel shadow. Ponytail becomes a few generous designed hair locks with ONE bold salmon/copper painted highlight band and burgundy shadow. Blouse is flat ivory paint with ONE lavender-gray shadow plane and selective lace linework. Hand-inked outer contour stronger than internal detail. Background is quiet low-chroma slate/ochre/olive traditional anime gouache, without glassy CG gloss; a little amber mosaic-lamp light. She gives the player a small shy smile while holding her mug. Use the anime's actual old clean cel drawing, not an old-looking modern digital anime illustration; do not copy Yoko's red hair, costume or identity.",
+      "input_reference_paths": [
+        "/workspace/ova_references/bastard-face.jpg",
+        "/workspace/ova_references/bastard-forest.jpg",
+        "/workspace/shisha-game/asset_sources/ova-20-candidates-20261013/images/11.png"
+      ],
+      "transparent_requested": false,
+      "visual_review": "表示して本人性、顔・線・セル影・髪の反射・背景の塗りを目視比較。正式未採用の強調版。",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "99865661b8527c628669e755f8f350e506a9224c28d97122f3653a238ea51606",
+      "bytes": 2204693,
+      "input_reference_sha256": {
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a",
+        "11.png": "f486fe7736726cf562e986c977a4a47be4e4d0aeb4193f758ed5436c69317d94"
+      }
+    },
+    {
+      "id": "23",
+      "label": "みんと・旧OVAの顔とセル塗りを強めた接客",
+      "kind": "stronger",
+      "filename": "images/23.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-a7ac3c7d-a83e-425b-bc0b-bdec808222e0.png",
+      "prompt": "This is a deliberately MUCH STRONGER authentic 1990s OVA rendering experiment, editing the supplied existing GAME scene. The user found the previous concepts too modern: thin elegant contemporary anime contours, numerous subtle clothing/hair shades and glossy CG-like background materials. Correct those exact problems. The supplied ACTUAL OLD OVA frame(s) are the AUTHORITATIVE visual-rendering reference, even where that means redrawing rather than lightly filtering the game image. The GAME scene is only the reference for character identity, clothes and scene content, NOT for rendering.\nReconstruct the ENTIRE image as a production cel over a traditional hand-painted 1990s anime background. The characters are clean hand-inked animation drawings with emphatic outer contours and economical intentional interior lines. Eyes are period-designed expressive LARGE irises and broad white eye shapes with ONE or TWO simple painted highlights; no modern tiny jewel-eye detailing. Noses and lips are small economical ink/paint marks, not realistically modeled noses or glossy rendered lips. Hair is made of clear LARGE designed locks, with broad ONE-PAINT flat ribbon/jagged highlights, not dozens of fine shiny strands. Skin uses a FLAT peach/brown base and ONE strong simple shadow tone, optionally a tiny accent; clothing uses flat LOCAL paint and ONE large designed shadow plane, no gradient layers, no microtexture, no fussy repeated folds. Hands must also be drawn with clean economical ink and the same simple cel paint. Keep the adult character's actual age and body proportions; warm expressive adult faces, not children or chibi.\nBACKGROUND must be newly interpreted as authentic opaque GOUACHE production art, restrained period color design with hand-painted architecture, separate foreground/midground/distance planes, dry pigment and soft painted edges. NO polished 3D surface highlights, no CG reflections, no photograph or camera depth-of-field, no photographic bokeh or decorative digital bloom. Never just reduce contrast or add noise to the previous image. No VHS, scanlines, scratches, blurry low resolution, fake film-aging overlays, or paper stains from the cel photos. A high-quality sharp master of an actual hand-painted 1990s OVA frame. NO UI, labels, words, border or watermark. Landscape 4:3 cinematic still. The game characters and clothes remain identifiable; never borrow the anime reference's hair, clothing, jewelry, weapons, identity or plot.\n\nRedraw the GAME Minto counter scene as a TRUE early-1990s OVA close-up. Minto is the adult game owner, actual age 29, LONG straight BLACK hair with blunt bangs, GREEN eyes, small black devil/bat hair accessories, black-and-green off-shoulder dress, green ribbon with heart clasp and heart choker. Keep her cheek resting on one hand, wink, small fang smile, and other hand pointing to the blank folded order card. Use BASTARD!! 1992's really expressive broad open eye and LARGE green iris, simple little nose/mouth, warm gently rounded cheeks, short soft chin, unmistakably period ink shapes. Black hair is ONE blue-black paint mass with selected locks and ONE broad violet-gray highlight band, not many hair strands or shine gradients. Skin base + ONE shadow; black dress base + ONE violet-black shadow; green ribbons two flat cel paints. Remove photo-like lace/shine and excessive detailed internal lines. Pastel mint/pink cafe is painted in matte restrained opaque gouache with simplified readable architecture and distant details. Omit all hookahs or smoking equipment from background shelves, use ordinary glassware and small orderly shallow storage tubs. Her eyes and cheek design should feel genuinely like a 1992 animated frame while preserving adult Minto's identity; not copied Yoko or a modern glossy idol.",
+      "input_reference_paths": [
+        "/workspace/ova_references/bastard-face.jpg",
+        "/workspace/ova_references/bastard-forest.jpg",
+        "/workspace/shisha-game/asset_sources/ova-20-candidates-20261013/images/13.png"
+      ],
+      "transparent_requested": false,
+      "visual_review": "表示して本人性、顔・線・セル影・髪の反射・背景の塗りを目視比較。正式未採用の強調版。",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "039569e3d27a3e59a1fbe2d1f81d25de6229298a857e44f8bd1e17ba5ac80d76",
+      "bytes": 2183456,
+      "input_reference_sha256": {
+        "bastard-face.jpg": "ddedc0fcc42ee2c89cdfe6ac97e0e4d9b43eb7cabb17fcf0cccc744e2395a5a2",
+        "bastard-forest.jpg": "2d3ca891a64ae5b052f29b1e3c1c620a91b4a67aee13f3435f584dd56918968a",
+        "13.png": "e26fb8411174d84d30dd1e40c4ac3a51205193e5d78a9be65b870d66dd8c8adc"
+      }
+    },
+    {
+      "id": "24",
+      "label": "スミさんとはじめ・KITEのセル画設計を強めた師弟",
+      "kind": "stronger",
+      "filename": "images/24.png",
+      "generated_workspace_path": "/workspace/generated_images/exec-eaccc8ae-3cb9-4d35-be36-3b89acc2e3df.png",
+      "prompt": "This is a deliberately MUCH STRONGER authentic 1990s OVA rendering experiment, editing the supplied existing GAME scene. The user found the previous concepts too modern: thin elegant contemporary anime contours, numerous subtle clothing/hair shades and glossy CG-like background materials. Correct those exact problems. The supplied ACTUAL OLD OVA frame(s) are the AUTHORITATIVE visual-rendering reference, even where that means redrawing rather than lightly filtering the game image. The GAME scene is only the reference for character identity, clothes and scene content, NOT for rendering.\nReconstruct the ENTIRE image as a production cel over a traditional hand-painted 1990s anime background. The characters are clean hand-inked animation drawings with emphatic outer contours and economical intentional interior lines. Eyes are period-designed expressive LARGE irises and broad white eye shapes with ONE or TWO simple painted highlights; no modern tiny jewel-eye detailing. Noses and lips are small economical ink/paint marks, not realistically modeled noses or glossy rendered lips. Hair is made of clear LARGE designed locks, with broad ONE-PAINT flat ribbon/jagged highlights, not dozens of fine shiny strands. Skin uses a FLAT peach/brown base and ONE strong simple shadow tone, optionally a tiny accent; clothing uses flat LOCAL paint and ONE large designed shadow plane, no gradient layers, no microtexture, no fussy repeated folds. Hands must also be drawn with clean economical ink and the same simple cel paint. Keep the adult character's actual age and body proportions; warm expressive adult faces, not children or chibi.\nBACKGROUND must be newly interpreted as authentic opaque GOUACHE production art, restrained period color design with hand-painted architecture, separate foreground/midground/distance planes, dry pigment and soft painted edges. NO polished 3D surface highlights, no CG reflections, no photograph or camera depth-of-field, no photographic bokeh or decorative digital bloom. Never just reduce contrast or add noise to the previous image. No VHS, scanlines, scratches, blurry low resolution, fake film-aging overlays, or paper stains from the cel photos. A high-quality sharp master of an actual hand-painted 1990s OVA frame. NO UI, labels, words, border or watermark. Landscape 4:3 cinematic still. The game characters and clothes remain identifiable; never borrow the anime reference's hair, clothing, jewelry, weapons, identity or plot.\n\nRedraw the GAME Sumi-and-Hajime mentor counter scene with strong authentic KITE 1998 cel-animation drawing and cinematic light design. Sumi remains the 46-year-old MAN with black newsboy cap, square black-framed glasses, short full beard, dark charcoal rolled-sleeve shirt and brown apron. Hajime remains adult 22, black cap with small smoke-line motif, ordinary friendly black-haired face, black hoodie and a visibly physical small silver cylindrical mouthpiece attached to his necklace. Sumi points to a blank notebook diagram while Hajime listens, with one SMALL shallow clear rectangular flavor tub on the counter, like the actual scene. Give men clear 1990s anime eye/nose/brow construction, confident hand-drawn contours, simple strong single-shadow facial planes. Skin is flat base + ONE angular warm-brown shadow, clothing base + ONE blue-black shadow, hats with just a few economical seams. Coherent warm key light from a nearby mosaic lamp plus a cool dark-blue window plane, avoiding lush glowing AI highlights. Background is matte opaque traditional gouache architecture and painted glass/lamp shapes, no camera bokeh or glassy CG wood; hands and notebook drawn as clear animation props. Mature calm mentor and friendly young apprentice, not action heroes. No guns, hookahs, hose or smoke. Make this a substantial redraw, not a filter applied to the already modern-looking game illustration.",
+      "input_reference_paths": [
+        "/workspace/ova_references/kite-face.jpg",
+        "/workspace/ova_references/kite-room.jpg",
+        "/workspace/shisha-game/asset_sources/ova-20-candidates-20261013/images/18.png"
+      ],
+      "transparent_requested": false,
+      "visual_review": "表示して本人性、顔・線・セル影・髪の反射・背景の塗りを目視比較。正式未採用の強調版。",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "sha256": "0f9f21ae764d1011839f0d38609bdf84dd14464a7a7aeeafc6fc85e115837382",
+      "bytes": 1953109,
+      "input_reference_sha256": {
+        "kite-face.jpg": "0ca2b6afa93929fc434767ae67b67f31ccbc0835b0df2575772f2cd75adc2506",
+        "kite-room.jpg": "9a41e01ff33cfab9e362122c2435958da8a4084bcee818a902518fb464037f42",
+        "18.png": "34e9174de7f67ded065345ea58599fc9206bed999fedf93b19860ffc46248e5d"
+      }
+    }
+  ],
+  "base_commit": "4599463a34584aa130d5d8230348439ee007b69e",
+  "qa_notes": [
+    "20候補を表示して本人性・衣装・場所・構図を目視確認。正式採用前の比較用。",
+    "01の立ち絵には周囲に半透明の光がある。立ち絵として採用する場合はアルファの整理が必要。",
+    "08および13の背景には原景由来の展示用シーシャ器具が残る。機材採用には実物写真との追加QAが必要。",
+    "一部の案には現代的な細部・塗りが残る。好みの番号を選んだ後、セル影と線の簡略化を揃える。",
+    "喫煙・HMD装着・炭配置の場面は今回の比較対象外。ゲーム挙動・正式素材・台詞は変更していない。"
+  ],
+  "archive_only": true,
+  "anime_references": [
+    {
+      "work": "KITE（1998）",
+      "title": "顔・目の輪郭と非対称のセル影",
+      "image": "https://image.tmdb.org/t/p/original/mevkppkvMmjxz5MqTMdpHGvf4NZ.jpg",
+      "source": "https://animeniz.com/anime-filmler/kite",
+      "note": "太めの目の輪郭、上下のまつ毛、少数の色面で作る顔の立体感。髪の反射は細い光沢を重ねず、形を設計した帯として見る。"
+    },
+    {
+      "work": "KITE（1998）",
+      "title": "窓光と、大きな暗い面の構図",
+      "image": "https://i.pinimg.com/originals/cd/ba/96/cdba961d19c05348ad6b59ccd938de73.jpg",
+      "source": "https://www.pinterest.com/pin/kite-1998--591519732321645010/",
+      "note": "小さい窓からの光、壁に落ちる影、手前と奥の暗さの差。人物と背景が同じ照明で描かれている点を参照。"
+    },
+    {
+      "work": "KITE（1998）",
+      "title": "二人の距離と静かな画面",
+      "image": "https://i.pinimg.com/736x/48/e8/cb/48e8cbf0adccb293d1144149f9691aaa.jpg",
+      "source": "https://www.pinterest.com/pin/582723639337995145/",
+      "note": "会話の二人を並べたときの大きさと距離、落ち着いた色数。キャラの姿や服装ではなく、画面の組み方を参照。"
+    },
+    {
+      "work": "BASTARD!!（1992旧OVA）",
+      "title": "目・頬・小さな口とセル影",
+      "image": "https://i.ebayimg.com/images/g/2GIAAOSwW8FlWnI-/s-l1200.jpg",
+      "source": "https://www.ebay.com/itm/126429087910",
+      "note": "大きく明快な瞳、柔らかい頬、小さな鼻と口。強い影を置いても顔の可愛さが残る面の分け方。出品されている制作セルの写真。"
+    },
+    {
+      "work": "BASTARD!!（1992旧OVA）",
+      "title": "夜の人物と髪の帯状ハイライト",
+      "image": "https://i.ebayimg.com/images/g/ffkAAOSwjfFnD8vU/s-l1200.jpg",
+      "source": "https://www.ebay.com/itm/167027654273",
+      "note": "寒色の夜景と、顔・髪の暖かい色の組み合わせ。髪を束として描く輪郭、明快な反射の帯、二人の構図。制作セル写真。"
+    },
+    {
+      "work": "BASTARD!!（1992旧OVA）",
+      "title": "人物と背景の描き込みの役割",
+      "image": "https://fantasyanime.com/anime/images/bastard1/bastard1_shot21.jpg",
+      "source": "https://fantasyanime.com/anime/bastard-shots",
+      "note": "人物は明快な線とセル塗り、背景は美術として描く。同じ光と色の中で、それぞれの描き込み量を使い分ける。"
+    }
+  ],
+  "owner_feedback": "初稿は古さがあるが当時の90年代感が弱い。より強めてよい。",
+  "stronger_revision": "21〜24は実際のOVAの線・顔・色面・髪のハイライトを優先して描き直した。画質低下やノイズ加工を解決策にしていない。"
+}

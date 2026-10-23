@@ -24,9 +24,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
 concurrency:
-  group: action-context-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   contexts:
     runs-on: ubuntu-latest
@@ -59,6 +61,8 @@ jobs:
           ARTIFACT_DIR: .codex/artifacts/remake-browser/action-context
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/action-context-preview.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           for attempt in {1..30}; do
             if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
             sleep 1

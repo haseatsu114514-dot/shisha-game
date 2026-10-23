@@ -103,6 +103,7 @@ try {
           const core=await import("./js/core/state.js"), s=core.newState();
           Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
           Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds:"preserved",_hiyori_meeting_done:true});
+          s.owned.push("home_rig_set");
           s.lovers=["hiyori"];s.affinity.hiyori=66;s.relationshipMemories=["actually-read"];
           localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         });
@@ -130,9 +131,10 @@ try {
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
-        await activate(p,"pin-tonari",touch);await activate(p,"map-go",touch);
-        await button(p,"tonari-practice").waitFor();if(mode==="ds")await dsGeometry(p);
-        await activate(p,"tonari-practice",touch);await button(p,"mix-ok").waitFor();
+        // 練習は家で（#638）: 地図の家 →「家で練習する」→「一台を通して」
+        await activate(p,"pin-rest",touch);await activate(p,"map-home-practice",touch);
+        await button(p,"home-practice-full").waitFor();if(mode==="ds")await dsGeometry(p);
+        await activate(p,"home-practice-full",touch);await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
         for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);

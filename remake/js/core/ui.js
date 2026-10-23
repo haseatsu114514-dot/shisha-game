@@ -56,6 +56,7 @@ export function initLayers() {
 
 let bgNow = "";
 let bgTask = Promise.resolve();
+let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
@@ -118,18 +119,24 @@ export function uiArtReady(ms = 2000) {
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
- * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
+ * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
 export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
   const host = layers.bg;
-  const key = `${url}|${tint || ""}`;
+  const key = `${url}|${tint || ""}|${sceneArtUrls(url).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
-  if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
+  if (key === bgNow) {
+    refreshWeather();
+    const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
+    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+  }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
-  bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
+  bgAssetsReady = Promise.all([...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000)));
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img");
     renderSceneArt(next, url);
@@ -155,7 +162,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
   });
-  return bgTask;
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
@@ -314,7 +321,8 @@ function pumpBanners() {
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
+          o.kind === "stat" && o.points > 0 ? el("span.gc-earned", { text: "今回" }) : null,
+          o.points > 0 ? el("span.gc-points", { "aria-label": o.kind === "stat" ? `今回の増加 +${o.points}P` : null }, o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
@@ -466,7 +474,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
   };
   const shield = el("div.chapter-title-shield", {
-    onpointerdown: swallow, onpointerup: swallow, onclick: swallow,
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow, dataset: { motion: "chapter" },
   });
   layers.fx.append(shield);
   window.addEventListener("keydown", blockAdvance, true);
@@ -482,13 +490,24 @@ export async function chapterTitle({ no, name, read, sub }) {
       sub ? el("div.cc-sub", { text: sub }) : null,
     ]);
     const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+    // 動き（motions/chapter-title.js）が読めなければ、従来の静止表示のまま進める。
+    const motion = await import("../motions/chapter-title.js").catch(() => null);
+    let play = null;
     // 画像が準備できるまでは本編の上に空白のカードを出さない。
     // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
     if (art && await imageReady(art, 15000)) {
       copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
       card.classList.add("illustrated");
       card.dataset.art = "ready";
-      card.append(el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") }));
+      const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
+      card.append(full);
+      // 分けたレイヤーが一枚でも欠けたら、採用画像の静止表示にする。
+      const extra = motion?.chapterArtUrls(no) || [];
+      if (extra.length && (await Promise.all(extra.map(url => imageReady(url, 15000)))).every(Boolean)) {
+        play = motion.mountChapterTitle(card, { no, full });
+      }
+    } else if (motion) {
+      play = motion.mountChapterTitle(card, { no });
     }
     shield.append(card);
     // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
@@ -497,7 +516,9 @@ export async function chapterTitle({ no, name, read, sub }) {
     SE.jingle();
     await nextFrame();
     card.classList.add("show");
-    await sleep(3200);
+    // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
+    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
+    else await sleep(3200);
     card.classList.add("out");
     // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
     await Promise.race([

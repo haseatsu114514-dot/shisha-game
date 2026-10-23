@@ -45,6 +45,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
+  const tableStatus = el("div.trpg-table-status", { dataset: { test: "trpg-table-status" }, "aria-label": "卓の進行と残りの札" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
   const sound = button(audio.enabled ? "音 ON" : "音 OFF", "trpg-audio", async () => {
     sound.disabled = true;
@@ -60,7 +61,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [el("small", { text: "小さな卓の冒険 / " + presentation.number }),
       el("strong", { text: scenario.title }), teamwork]), tools,
-  ]), progress, table, content, dock);
+  ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
 
   function button(label, test, action, attrs = {}) {
@@ -113,6 +114,18 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     table.hidden = covering;
     progress.hidden = covering;
     teamwork.hidden = covering;
+    syncResources();
+  }
+  function resourceText() {
+    const state = session.snapshot(), step = Math.max(0, PHASES.indexOf(state.phase));
+    const label = presentation.phases[state.phase]?.kicker.split(" / ").pop() || "卓の準備";
+    return `${step + 1}/5 ${label} · 判定 ${state.checks.length}/3 · 連携札 ${state.teamwork}/2`
+      + (presentation.theme === "shark" ? ` · 危機 ${state.pressure}/${session.rules.pressureMax}` : "");
+  }
+  function syncResources() {
+    tableStatus.hidden = session.snapshot().phase === "cover";
+    tableStatus.textContent = resourceText();
+    root.querySelectorAll(".trpg-roll-context").forEach(node => { node.textContent = resourceText(); });
   }
   function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
   function talk(lines, callback, focusTest = null) {
@@ -354,6 +367,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: [wide ? "trpg-modal-wide" : "", skin].filter(Boolean).join(" ") },
       [el("h2", { text: title }), el("div.trpg-modal-body", { tabindex: "0", role: "region", "aria-label": title + "の内容" }, body), el("div.trpg-modal-actions", actions)]);
     overlay = el("div.trpg-overlay", box);
+    if (skin === "trpg-roll-stage") box.insertBefore(el("p.trpg-roll-context", { text: resourceText() }), box.firstChild);
     root.append(overlay);
     const close = () => {
       overlay?.remove(); overlay = null; modalCloser = null;
@@ -389,7 +403,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   function openCheck(kind) {
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
-    const body = el("div", [el("div.trpg-roll-scene",
+    const body = el("div", [el("p.trpg-roll-instruction", { text: "2個の出目 ＋ 補正で判定 · 10以上で成功" }), el("div.trpg-roll-scene",
       el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋1", dataset: { test: "trpg-bonus" } })]))]);
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
     function updateForecast() {
@@ -425,6 +439,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     const roll = button("サイコロを振る", "trpg-roll", () => {
       if (session.snapshot().pending) return;
       const result = session.beginCheck(kind, { support: !!support?.checked });
+      syncResources();
+      pop.box.dataset.rollState = "rolling";
       roll.disabled = true;
       modalCloser = null;
       pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
@@ -448,13 +464,25 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
   }
   function showRollResult(pop, body) {
     const result = session.checkResult();
+    syncResources();
+    pop.box.dataset.rollState = "settled";
+    pop.box.dataset.grade = result.grade;
     body.replaceChildren(
-      el("p", { text: scenario.checks[result.kind].hint }),
+      el("p.trpg-roll-instruction", { text: scenario.checks[result.kind].hint }),
       el("div.trpg-dice-row", [die(result.dice[0]), die(result.dice[1]), el("span.trpg-dice-bonus", { text: "＋" + result.bonus })]),
       el("div.trpg-dice-total", { role: "status", dataset: { test: "trpg-roll-total", grade: result.grade } }, [
-        "合計 " + result.total, el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
+        el("small.trpg-roll-equation", { text: result.dice[0] + " ＋ " + result.dice[1] + " ＋ 補正" + result.bonus + " ＝" }),
+        el("strong", { text: "合計 " + result.total }), el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
       ]),
     );
+    const oldFx = pop.box.querySelector(".trpg-roll-fx"); oldFx?.remove();
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      const fx = el("div.trpg-roll-fx", { "aria-hidden": "true" }, Array.from({ length: result.grade === "success" ? 22 : 10 }, (_, i) =>
+        el("i", { style: { "--angle": i * 137.5 + "deg", "--distance": 90 + i % 5 * 22 + "px", "--delay": i % 3 * 20 + "ms" } })));
+      pop.box.append(fx);
+    }
+    audio.play(result.grade);
     if (result.hypothesisBonus) body.append(el("p.trpg-roll-insight", { text: "見立てが合っていた · 仕掛けに ＋" + result.hypothesisBonus }));
     if (presentation.theme === "shark") body.append(el("p.trpg-roll-consequence", { text: result.grade === "success" ? "危機を進めず、次の場面へ" : "危機 ＋" + session.rules.checkPressure[result.grade] + " · 全員で次の場面へ" }));
     if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
@@ -578,6 +606,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     if (timer) clearTimeout(timer);
     if (rollTicker) clearInterval(rollTicker);
     if (providedAudio) audio.silence(); else audio.destroy();
+    document.removeEventListener("visibilitychange", visibility);
     root.removeEventListener("keydown", keys);
     root.remove();
   }
@@ -608,6 +637,9 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     }
   }
   root.addEventListener("keydown", keys);
+  function visibility() { root.dataset.paused = String(document.hidden); }
+  document.addEventListener("visibilitychange", visibility);
+  visibility();
   renderBody(); root.focus({ preventScroll: true });
   return { finished, snapshot: () => session.snapshot(),
     destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };

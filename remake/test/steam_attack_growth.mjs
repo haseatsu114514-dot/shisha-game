@@ -1,4 +1,4 @@
-// #356: production bullets, controlled RAF clock; no edits to #380's refresh suite.
+// #356: production bullets, controlled RAF/monotonic clock; no edits to #380's refresh suite.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -35,19 +35,22 @@ try {
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.waitForSelector('[data-test="title-new"]');
     await page.evaluate(async()=>{
-      const core=await import('./js/core/state.js');core.newGame();core.state.stamina=80;
+      const core=await import('./js/core/state.js');core.newGame();core.state.flags._sumi_attack_learned=true;core.state.stamina=80;
       window.session=await import('./js/craft/session.js');window.steam=await import('./js/craft/steam.js');
       window.geometry=await import('./js/craft/steam-slash.js');
       __remake.craftTest.auto=null;Math.random=()=>.5;
-      // Only the steam RAF is controlled. Real browser input, spawn and collision run unchanged.
+      // The shared pause clock reads performance.now(), so advance it with RAF.
+      // Real browser input, spawn, collision and recharge rules run unchanged.
       let id=0; window.frames=new Map();window.now=performance.now();
       const nativeRAF=window.requestAnimationFrame.bind(window),nativeCancel=window.cancelAnimationFrame.bind(window);
+      const nativeNow=performance.now.bind(performance);
       window.controlFrames=()=>{
+        now=Math.max(now,nativeNow());performance.now=()=>now;
         window.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};
         window.cancelAnimationFrame=id=>frames.delete(id);
       };
-      window.restoreFrames=()=>{window.requestAnimationFrame=nativeRAF;window.cancelAnimationFrame=nativeCancel;};
-      window.advance=()=>{now=Math.max(now,performance.now())+20;const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
+      window.restoreFrames=()=>{window.requestAnimationFrame=nativeRAF;window.cancelAnimationFrame=nativeCancel;performance.now=nativeNow;};
+      window.advance=()=>{now=Math.max(now,nativeNow())+20;const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
       window.start=mode=>{window.cs=session.newSession(mode);cs.steamSeconds=600;session.openBench(cs);window.run=steam.runSteamDodge(cs);};
       window.button=()=>document.querySelector('[data-test="dodge-slash"]');
       window.enemies=()=>{

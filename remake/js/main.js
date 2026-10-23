@@ -18,8 +18,13 @@ import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
   const stage = $("#stage");
-  const w = window.visualViewport?.width || window.innerWidth;
-  const h = window.visualViewport?.height || window.innerHeight;
+  const viewport = window.visualViewport;
+  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
+  // of the game fit so it does not also change --k (or cancel accessible zoom).
+  // Keep following the visible height when browser chrome / the keyboard moves.
+  const zoom = viewport?.scale || 1;
+  const w = viewport ? viewport.width * zoom : window.innerWidth;
+  const h = viewport ? viewport.height * zoom : window.innerHeight;
   stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
 }
 
@@ -108,7 +113,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -148,6 +153,19 @@ window.__remake = {
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/samechan.js")).playSamechanEncounter();
+      }
+      if (name.startsWith("chapter")) {
+        const n = Number(name.split("-")[1] || 1);
+        const { CHAPTER_TITLE_ART } = await import("./core/chapter-title-art.js");
+        const { chapterTitle } = await import("./core/ui.js");
+        const entry = CHAPTER_TITLE_ART.find((c) => c.chapter === n) || { no: `第${n}章`, name: "", read: "" };
+        await setBg(null);
+        return chapterTitle(entry);
+      }
+      if (name.startsWith("garagara")) {
+        const rank = name.split("-")[1] || "S";
+        await setBg(bgUrl("bg_shop"));
+        return (await import("./daily/kuji.js")).previewReveal(rank);
       }
       if (name.startsWith("dawn")) {
         const kind = name.split("-")[1] || "sun";

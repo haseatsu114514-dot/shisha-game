@@ -5,9 +5,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
 concurrency:
-  group: issue439-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   browser:
     runs-on: ubuntu-latest
@@ -43,10 +45,17 @@ jobs:
           done
           cat "$RUNNER_TEMP/preview.log"
           exit 1
+      - name: Verify chapter asset readiness and next-line prompts
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          TEST_REF: ${{ github.sha }}
+        run: node remake/test/browser/ch1_loading.mjs
       - name: Verify playtest fixes
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: node remake/test/browser/issue439.mjs
+      - name: Verify early contact exchange and legacy saves
+        run: node remake/test/browser/early_contacts_705.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>台詞の本編プレビュー</title>
+<link rel="stylesheet" href="/remake/css/base.css">
+<link rel="stylesheet" href="/remake/css/vn.css">
+<link rel="stylesheet" href="/remake/css/ui-art.css">
+<link rel="stylesheet" href="/remake/css/ui-inner.css">
+<div id="viewport"><div id="stage"><div id="vn" class="active">
+  <div class="vn-box"><div class="vn-name show"></div><div class="vn-text"></div>
+    <div class="vn-inner" hidden></div><div class="vn-next show">▼</div></div>
+</div></div></div>
+<script type="module">
+import { dialoguePages } from "/remake/js/vn/layout.js";
+import { playerInner } from "/remake/js/vn/inner.js";
+import { formatHtml, sliceHtml, visibleLength } from "/remake/js/vn/text.js";
+const box = document.querySelector(".vn-box"), text = document.querySelector(".vn-text");
+const inner = document.querySelector(".vn-inner");
+let pages = [], index = 0;
+function fit() {
+  document.querySelector("#stage").style.setProperty("--k", Math.min(innerWidth / 1280, innerHeight / 720));
+}
+addEventListener("resize", fit); fit();
+await Promise.all(["500", "700"].map(w => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7")));
+await document.fonts.ready;
+function show() {
+  const page = pages[index];
+  box.dataset.page = String(index);
+  const html = formatHtml(page.text), innerHtml = formatHtml(page.inner);
+  text.innerHTML = sliceHtml(html, visibleLength(html));
+  inner.innerHTML = sliceHtml(innerHtml, visibleLength(innerHtml)); inner.hidden = !page.inner;
+}
+addEventListener("message", event => {
+  if (event.origin !== location.origin || event.source !== parent) return;
+  const msg = event.data;
+  if (msg.type === "preview-page") { index = Math.max(0, Math.min(pages.length - 1, msg.index)); if (pages.length) show(); return; }
+  if (msg.type !== "preview-text") return;
+  const line = msg.line, thought = playerInner(line);
+  box.classList.toggle("has-inner", !!thought);
+  box.classList.toggle("narration", !line.speaker);
+  box.classList.toggle("thought", line.speaker === "hajime" && /^（/.test(line.text));
+  document.querySelector(".vn-name").textContent = line.speaker || "ナレーション";
+  // 値の補間・報酬処理などのゲーム状態は再現しない。保存対象の原文だけを組版する。
+  pages = dialoguePages(line.text, thought, text, inner); index = 0; show();
+  parent.postMessage({ type: "preview-result", pages, revision: msg.revision }, location.origin);
+});
+parent.postMessage({ type: "preview-ready" }, location.origin);
+</script>
+</html>

@@ -38,6 +38,8 @@ const mocks = {
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight: () => {} },
   "./ch2-story.js": { chapterTwoNights: () => ({}) },
+  // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
+  "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
 };
 const module = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-preparation.js", root), "utf8"), { context });
 await module.link(async specifier => {
@@ -103,8 +105,9 @@ const loaderDB = { dialogues: { preserved: true } };
 const loaderContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout,
   fetch: async () => ({ ok: true, json: async () => fixture }) });
 const loader = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-city-data.js", root), "utf8"), { context: loaderContext });
-await loader.link(async spec => new vm.SyntheticModule(spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS"], function () {
-  this.setExport(spec.includes("core/data") ? "DB" : "CH2_NIGHTS", spec.includes("core/data") ? loaderDB : []);
+await loader.link(async spec => new vm.SyntheticModule(spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY"], function () {
+  if (spec.includes("core/data")) this.setExport("DB", loaderDB);
+  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); }
 }, { context: loaderContext }));
 await loader.evaluate();
 for (const id of ids) {

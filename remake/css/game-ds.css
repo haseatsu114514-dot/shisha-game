@@ -81,7 +81,9 @@ body.game-ds .dc-row { min-width: 0; padding: 2px 6px; gap: 3px; font-size: 12px
 body.game-ds .dc-row span { font-size: 10px; }
 body.game-ds .dc-row.money b { font-size: 14px; }
 body.game-ds .hud-level { width: 44px; height: 44px; }
-body.game-ds .hud-stamina { display: none; }
+body.game-ds .hud-card .hud-stamina { display: flex; box-sizing: border-box; width: 100%; min-width: 0; height: 14px; gap: 4px; padding: 0 6px; }
+body.game-ds .hud-card .hud-stamina > span { font-size: 10px; }
+body.game-ds .hud-card .hud-stamina .hud-bar { margin-right: -6px; }
 body.game-ds .hud-menu, body.game-ds .hud-lime, body.game-ds .hud-level { min-height: 44px; max-width: 100%; }
 body.game-ds .sub-menu { left: var(--ds-cx); top: var(--ds-cy); width: var(--ds-cw); height: var(--ds-ch); bottom: auto; transform: none; padding: 16px; overflow: auto; touch-action: pan-y; }
 body.game-ds .sub-title { font-size: 26px; }
@@ -109,6 +111,11 @@ body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right {
 body.game-ds .bench-head { position: sticky; left: 0; flex: none; gap: 8px; }
 body.game-ds .bench-title, body.game-ds .bench[data-step] .bench-title { font-size: 24px; }
 body.game-ds .bench-panel { flex: none; width: 760px; min-height: 520px; }
+/* 選択式のpackだけ下段に収める。座標式工程の760pxは維持する。 */
+body.game-ds .bench[data-step="pack"] .bench-panel { width: 100%; min-width: 0; }
+body.game-ds .bench[data-step="pack"] .packing { height: auto; overflow-wrap: anywhere; }
+body.game-ds .bench[data-step="pack"] .pack-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+body.game-ds .bench[data-step="pack"] .pack-footer { flex-wrap: wrap; }
 body.game-ds .bench .btn { min-height: 44px; }
 body.game-ds #modal .modal-box { min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 96px); padding: 18px; }
 body.game-ds #modal .cfg { min-width: 0; }

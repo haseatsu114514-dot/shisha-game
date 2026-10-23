@@ -18,9 +18,11 @@ on:
       - '.github/workflows/hiyori-work-relationship.yml'
 permissions:
   contents: read
+
 concurrency:
-  group: hiyori-work-relationship-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   story:
     runs-on: ubuntu-latest

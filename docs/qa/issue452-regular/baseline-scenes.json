@@ -1,0 +1,219 @@
+{
+  "ref": "7d63fbdc5ce75e57c3cca438476452b7238bd12e",
+  "scenes": {
+    "ch1_salaryman_regular": {
+      "dialogue_id": "ch1_salaryman_regular",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。顔を出すと、スミさんに「ちょうどいい、カウンター頼めるか」と頼まれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際のつむぎが、タブレットに描いていた。目が合うと、小さく会釈して、また画面に目を落とす。",
+          "portrait": "tsumugi",
+          "portrait_face": "bow"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "tsumugi"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの時間。いつもの足音。ドアが開くと、外の空気と一緒にコンビニコーヒーの匂いが入ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。",
+          "portrait": "salaryman",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは小さく頷くだけ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは丁寧にボウルを詰める。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーを計って、ほぐして、一粒ずつ空気の通り道を作るように詰めていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭をコンロに並べて、赤くなるのを待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしの間、店内には炭が静かに弾ける音だけが鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「お待たせしました」。テーブルにシーシャを置く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは無言でホースを手に取り、ゆっくりと吸い始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、と水面が揺れる。吐き出された白い煙が、オレンジ色の照明の中で崩れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その瞬間、ほんの少しだけ──肩の力が抜けたように見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人、いつも何も言わないけど……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここに来ると、ちょっとだけ楽になるのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけの、いつも通りの光景。でも今日は少しだけ、気になった。"
+        }
+      ]
+    },
+    "ch1_salaryman_change": {
+      "dialogue_id": "ch1_salaryman_change",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。",
+          "portrait": "salaryman",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席に座らず、入口に近い席を選んだ。鞄を膝に置いたまま、背筋を伸ばしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、でいいですか？"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……ああ。いや……今日は、ミント多めで。頭、冷やしたいんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……何かあったのかな。聞かない方がいい気がする）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席を立ったところで、スマホが震えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面を見て、ドアの手前で耳に当てる。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……もしもし。うん、今から出る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を待つ間、鞄を持つ手が少し下がった。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "え、まだ決まってないの。……じゃあ、着いてから一緒に選ぼう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さく笑って電話を切り、スマホをしまった。",
+          "portrait": "salaryman",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あんなふうに笑うんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、サラリーマンは一度だけ振り返って、小さく頭を下げた。──初めてのことだった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "salaryman"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、つむぎが画面から顔を上げていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日の人、帰る時に肩が少し下がってましたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。ここで少し、休めたならいいな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "顔は描かないけど。座ってた時の手は、残したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、空いた席とテーブルの間に短い線を足した。"
+        }
+      ]
+    }
+  }
+}

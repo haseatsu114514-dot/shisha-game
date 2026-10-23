@@ -10,14 +10,40 @@ on:
     paths:
       - "data/dialogue/**"
       - "data/characters.json"
+      - "data/story_routes.json"
+      - "data/relationship_memories.json"
+      - "brand/story_and_structure.md"
+      - "brand/character_profiles.md"
+      - "remake/data/lover.json"
+      - "remake/js/core/story-routes.js"
+      - "remake/test/story_routes.mjs"
+      - "tools/check_story_canon.py"
+      - "tools/test_story_canon.py"
+      - "tools/check_dialogue_links.py"
       - "tools/lint_dialogue.py"
       - ".github/workflows/lint-dialogue.yml"
   pull_request:
     paths:
       - "data/dialogue/**"
       - "data/characters.json"
+      - "data/story_routes.json"
+      - "data/relationship_memories.json"
+      - "brand/story_and_structure.md"
+      - "brand/character_profiles.md"
+      - "remake/data/lover.json"
+      - "remake/js/core/story-routes.js"
+      - "remake/test/story_routes.mjs"
+      - "tools/check_story_canon.py"
+      - "tools/test_story_canon.py"
+      - "tools/check_dialogue_links.py"
       - "tools/lint_dialogue.py"
+      - ".github/workflows/lint-dialogue.yml"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
@@ -29,3 +55,13 @@ jobs:
           python-version: "3.x"
       - name: Run dialogue linter
         run: python3 tools/lint_dialogue.py
+      - name: Check active canon and references
+        run: |
+          python3 tools/check_story_canon.py
+          python3 tools/check_dialogue_links.py
+          python3 tools/test_story_canon.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check relationship scene selection
+        run: node remake/test/story_routes.mjs

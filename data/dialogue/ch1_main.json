@@ -208,7 +208,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "今のうちに顔を出せる店、話せる相手、吸っておくべき１台はある"
+          "text": "今のうちに顔を出せる店、話せる相手、吸っておくべき一台はある"
         },
         {
           "speaker": "sumi",
@@ -427,7 +427,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "……まず１台作れ。話はそれからだ"
+            "text": "……まず一台作れ。話はそれからだ"
           },
           {
             "speaker": "",
@@ -535,14 +535,18 @@
           "portrait_face": "normal"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ダブルアップルにミント少し、ですね"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "サラリーマンは小さく頷くだけ。"
+          "type": "choice",
+          "id": "salaryman_first_serve",
+          "choices": [
+            {
+              "text": "注文を先に聞く",
+              "next": "regular_order"
+            },
+            {
+              "text": "水を出して少し待つ",
+              "next": "regular_water"
+            }
+          ]
         },
         {
           "speaker": "",
@@ -599,7 +603,33 @@
           "face": "",
           "text": "それだけの、いつも通りの光景。でも今日は少しだけ、気になった。"
         }
-      ]
+      ],
+      "branches": {
+        "regular_order": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ダブルアップルにミント少し、ですね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サラリーマンは小さく頷くだけ。"
+          }
+        ],
+        "regular_water": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "先に水を置くと、サラリーマンは一口飲んでから、小さく頷いた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ダブルアップルにミント少し、ですね"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_day5_sumi_story",
@@ -734,7 +764,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんの１台のホースを口に当てて、ゆっくり吸い込む。"
+          "text": "スミさんの一台のホースを口に当てて、ゆっくり吸い込む。"
         },
         {
           "speaker": "",
@@ -1030,7 +1060,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（この最後の反復は、明日の１台に必ず出る）"
+            "text": "（この最後の反復は、明日の一台に必ず出る）"
           },
           {
             "speaker": "",
@@ -1228,7 +1258,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「──決勝ッ！　世界の頂点を決める、最後の１台が……いま、提供されますッ！」"
+          "text": "「──決勝ッ！　世界の頂点を決める、最後の一台が……いま、提供されますッ！」"
         },
         {
           "speaker": "",
@@ -1339,7 +1369,7 @@
         {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "じゃあ……お任せで、１台。きみの好きに作って、いいよ"
+          "text": "じゃあ……お任せで、一台。きみの好きに作って、いいよ"
         },
         {
           "speaker": "oneesan",
@@ -1373,7 +1403,7 @@
         {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "……うん、美味しい。もう１口、吸ってもいい？"
+          "text": "……うん、美味しい。つい、もう一口吸いたくなるね"
         },
         {
           "speaker": "oneesan",
@@ -1438,7 +1468,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "スミさん、俺やっぱセンスあるかもです。あのお姉さんに初めて出した１台も、褒めてもらえました"
+            "text": "スミさん、俺やっぱセンスあるかもです。あのお姉さんに初めて出した一台も、褒めてもらえました"
           },
           {
             "speaker": "",
@@ -1724,9 +1754,11 @@
           "text": "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……何かあったのかな。聞かない方がいい気がする）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_salaryman",
+          "next_true": "service_known",
+          "next_false": "service_neutral"
         },
         {
           "speaker": "",
@@ -1804,7 +1836,48 @@
           "face": "",
           "text": "つむぎは、空いた席とテーブルの間に短い線を足した。"
         }
-      ]
+      ],
+      "branches": {
+        "service_known": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_salaryman_service_order",
+            "next_true": "service_order_recall",
+            "next_false": "service_other"
+          }
+        ],
+        "service_other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_salaryman_service_water",
+            "next_true": "service_water_recall",
+            "next_false": "service_neutral"
+          }
+        ],
+        "service_order_recall": [
+          {
+            "speaker": "salaryman",
+            "face": "normal",
+            "text": "……この前も、先に聞いてくれましたね。今日も、助かる"
+          }
+        ],
+        "service_water_recall": [
+          {
+            "speaker": "salaryman",
+            "face": "normal",
+            "text": "……この前、水を先に置いてくれたでしょう。あれ、助かりました"
+          }
+        ],
+        "service_neutral": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……何かあったのかな。聞かない方がいい気がする）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_sketch",
@@ -1941,7 +2014,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、ちゃんと１台出してくるよ"
+          "text": "俺も、ちゃんと一台出してくるよ"
         },
         {
           "speaker": "tsumugi",

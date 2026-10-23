@@ -1,0 +1,217 @@
+{
+  "issue": 664,
+  "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/",
+  "export": "asset_sources/portraits/hiyori-redesign-issue664/export.py",
+  "figure_height_target_px": 1000,
+  "baseline_px": 1173,
+  "records": [
+    {
+      "face": "axe_laugh",
+      "source_sha256": "a45bef8037233a4ef49bd579c118cd8f40544bbf8e553059de3cb92493cc2c1e",
+      "png_sha256": "5aca4154144860c66c31090a32673e3fb4341ce0d847f0f78da92228d6185835",
+      "webp_sha256": "43168cf26d4ec69c8bae300adc9cf336b1d9c6ebcdd3d6e825d3df228d4df0ad",
+      "bbox_px": [
+        272,
+        173,
+        624,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "axe_normal",
+      "source_sha256": "079aa8419f91514f6cb2f48d17deae3ffd2672457a519aad8d0722b6ef6e21f3",
+      "png_sha256": "007694005e041ac77e86a951e746b2fbe5634beb9bd449f5483b82109cfd1bb3",
+      "webp_sha256": "33689f8b7033dbb429903ede8d1a5715b6efdf25f82856d417f73e977b602a90",
+      "bbox_px": [
+        254,
+        173,
+        641,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "axe_shout",
+      "source_sha256": "cd2bec41b789f32b964573328e9ea76fc45140400292a6bfd1b9f3f1a2d81681",
+      "png_sha256": "425c89b6967c3148c8ea47947549dc1a599618f28f43933b7dfeb28cf65dc565",
+      "webp_sha256": "6006ef3b098942ebb521273f40f51d306c8d0f7dd8a8a17b257e745d8d7a60c1",
+      "bbox_px": [
+        260,
+        173,
+        635,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "axe_throw",
+      "source_sha256": "924ffb9ea267a5272c0b4f6135f5b1a9dd90a349525753ba009882b428158608",
+      "png_sha256": "7fb8799592928c37237da3dd63e5d9a09048015edde79341a2366c4ca5b39a56",
+      "webp_sha256": "7984400df32bc40f8ceb8ba8db991c360a8edc3d07fac5f3694ab6b6f23e47d6",
+      "bbox_px": [
+        107,
+        173,
+        788,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "love_blush",
+      "source_sha256": "9ad5e8e1e0a51c00d18a5135e01d5323a3ba51a95294d6a704d809ee51fc1970",
+      "png_sha256": "e8459d8b498bdc2ed691ba7b14002557fb04fbd95e4ea2a2118092a99bb43420",
+      "webp_sha256": "af3d9ee11a0cc98e2fe0a5bb8c62b208133f36e10bf694b55739478fe3df7a08",
+      "bbox_px": [
+        270,
+        173,
+        626,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "normal",
+      "source_sha256": "69ce357c5dac841cad72fd910adabc7edd6b22f500501770b8c6f7f483499401",
+      "png_sha256": "b5f0e3efab144381e76f488c2f30e72b319de20abe4a1e3ab76dd3d7b8a1cd36",
+      "webp_sha256": "8720c8bd4e15aba2ff6e6fae94c86da58b501d16a2d02a4f0d0666dbd9aee767",
+      "bbox_px": [
+        275,
+        173,
+        621,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "office_mukii",
+      "source_sha256": "5767ff073e47bc9ac632c58add38c970406cb5e9637ebef3d00ee1bb3449a8de",
+      "png_sha256": "fdb561892f81aae55f32865134469996e71df24756ee2990de224a2ef58e2284",
+      "webp_sha256": "1f5c188fad437f98fea2881166c44292df1e6268b4de2e99b5b77a9b7a6c78f4",
+      "bbox_px": [
+        273,
+        173,
+        622,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "sad",
+      "source_sha256": "438c8cf783f869980116c5eacdcdee1b5844f7d979ee2325936075a9bbdd95b7",
+      "png_sha256": "83dea2eff402fe3082718875bf2d0296028593458762a6d9e5264b0d3977c810",
+      "webp_sha256": "24f6a9c64d07c4c3d245451d28e8cf19105a045d3425a6a61500db02f5b26c7a",
+      "bbox_px": [
+        268,
+        173,
+        627,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "serious",
+      "source_sha256": "a3be7832b821c96102b42e1e8bcaead606f5400ad1c9d09a8298d998b65afb1c",
+      "png_sha256": "71ef7d2a409c570338de65558d1d4286c8ead26eec405743898e96a5ebe8fe27",
+      "webp_sha256": "302fce28755fedd2124a28751839ffa3291614128b201ef64d683a8decb4dc91",
+      "bbox_px": [
+        274,
+        173,
+        621,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "smile",
+      "source_sha256": "303da37a41f983f550002a0f9c279146d0bedeb9bbad0805ba91604b8234110f",
+      "png_sha256": "9034ae6ed776bc2d7974ba1bcd747c5c634f7fda851a194e18e0b65fd9b216bf",
+      "webp_sha256": "9931d1499e2eeedbf040ff5c2a6c467bbe09d992298cb3dc33f5955ec8590d71",
+      "bbox_px": [
+        269,
+        173,
+        626,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "student_smile",
+      "source_sha256": "04dde4742fdce66a215c73ce50a9b8c6336527a1ab888db275a62ac1b0f73e30",
+      "png_sha256": "ce0ba843611dfd32a03bb2531d76f145ed09403a5306ce356fe508b37bd118a0",
+      "webp_sha256": "fdf7df631a8e6d82aafeea42aa87ceb8f559511fb8dee0209d0c0469a6f19281",
+      "bbox_px": [
+        263,
+        173,
+        632,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "surprise",
+      "source_sha256": "2168129be994e8ab5f8d01328a6e986f0ea7d5345b30b012813350c94a44a9ec",
+      "png_sha256": "3dfe65528b0a6672ff5e7dbc2ba4819cd2401aedc86fe1bbc55d6f179dc109d6",
+      "webp_sha256": "ba2c98aede889b36b66d527c91ffea3fd58350879d8575f44cf61d832e7058d6",
+      "bbox_px": [
+        274,
+        173,
+        622,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    },
+    {
+      "face": "tears",
+      "source_sha256": "9f8b06c878b82984521a3dc8df8208a1b87490737d09c7c7a13a6118113e15e2",
+      "png_sha256": "71380cd1646d407e8bf3262aab8fd2d32f46ee94f506fd2e6978dfdef44a47ab",
+      "webp_sha256": "a040de3afcdae69a6b969f05fd9cec3fe1ce68b5c740c7b5166e7acea9ca62f3",
+      "bbox_px": [
+        274,
+        173,
+        622,
+        1173
+      ],
+      "canvas_px": [
+        896,
+        1200
+      ]
+    }
+  ]
+}

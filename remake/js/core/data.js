@@ -3,6 +3,8 @@
 // 実行時に fetch するだけで、書き換えも二重コピーもしない。
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
+import { registerFortuneReadings } from "./fortune-effects.js";
+
 const ROOT = "../";
 // 章の追加台本は必要になった時だけ読み、起動や他章の通信を増やさない。
 export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament" };
@@ -14,6 +16,8 @@ export function setBackgroundWeatherSource(source) { backgroundWeather = source;
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
   samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  fortuneTrivia: {},
+  fortuneHints: {},
   hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
   flavors: [],
   flavorById: {},
@@ -43,8 +47,10 @@ const DIALOGUE_FILES = [
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
   "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
+  "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
@@ -68,6 +74,7 @@ async function getJSON(path) {
 }
 
 export async function loadAll(onProgress = () => {}) {
+  globalThis.performance?.setResourceTimingBufferSize?.(1000);
   const jobs = [
     ["characters", `${ROOT}data/characters.json`],
     ["relationshipMemories", `${ROOT}data/relationship_memories.json`],
@@ -85,6 +92,8 @@ export async function loadAll(onProgress = () => {}) {
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
+    ["fortuneTrivia", "data/fortune-trivia.json"],
+    ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
   let done = 0;
@@ -120,12 +129,15 @@ export async function loadAll(onProgress = () => {}) {
   DB.friends = raw.friends;
   DB.statusTexts = raw.statusTexts;
   DB.broadcast = raw.broadcast;
+  DB.fortuneTrivia = raw.fortuneTrivia;
+  DB.fortuneHints = raw.fortuneHints;
   DB.manifest = raw.manifest;
   WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {
     if (!key.startsWith("dlg:")) continue;
     for (const d of v.dialogues || []) DB.dialogues[d.dialogue_id] = d;
   }
+  registerFortuneReadings(DB);
   return DB;
 }
 

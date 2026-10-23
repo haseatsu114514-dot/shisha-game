@@ -1,0 +1,10 @@
+[
+  {"id":"long","speaker":"","text":"炭が静かに弾ける音がした。白い煙がゆっくりほどけて、天井へ昇っていく。窓の外には雨が降り続いていた。"},
+  {"id":"emphasis","speaker":"hajime","text":"[imp]見えない所で、ずっと前から積み上げてきたものがあった。[/imp]今、その意味が少しだけ分かった。"},
+  {"id":"short-tail","speaker":"hajime","text":"店内には炭が静かに弾ける音だけが鳴っている。白い煙がゆっくりほどけて、窓の外へ消えていく。待った。"},
+  {"id":"manual","speaker":"hajime","text":"まずは一呼吸。\n\nそれから、もう一度。"},
+  {"id":"inside-word","speaker":"hajime","text":"シー\nシャを作る"},
+  {"id":"inner","speaker":"hiyori","text":"今日は、会社からの通知を切って、ゆっくり煙の香りだけを楽しみたい。","inner":"[imp]本当は、もう少しだけここにいたい。[/imp]時計を見ないでいられる、この静かな時間を大切にしたい。窓の外の雨が止むまで、今だけは何も考えずにいたかった。"},
+  {"id":"ignored-inner","speaker":"hajime","text":"これは自分の言葉。","inner":"他の話者では表示しない"},
+  {"id":"grapheme","speaker":"","text":"👩‍🍳が、[imp]シーシャ[/imp]を作る。ASCII ABC 123 と半角ｶﾅも確認する。"}
+]

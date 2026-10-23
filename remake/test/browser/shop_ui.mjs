@@ -21,8 +21,9 @@ async function open(page, opts = {}) {
   if (!opts.errand) await page.locator('[data-test="shop-enter"]').click();
   await page.locator('.shop-tabs').waitFor();
 }
-const ADOPTED = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
-const PENDING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
+const HEAVEN = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
+const REMAINING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
+const ADOPTED = [...HEAVEN, ...REMAINING];
 const HMD = ['lotos_hagal', 'tanukish_lid', 'amaburst_hms'];
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 fs.mkdirSync(artifacts, { recursive: true });
@@ -50,7 +51,8 @@ await suite("shop-ui", async check => {
       });
       const before = await page.evaluate(() => JSON.stringify(S.core.state));
       await open(page);
-      const mapping = await page.evaluate(async () => Object.keys((await import('./js/daily/shop-art.js')).SHOP_ART));
+      const mapping = await page.evaluate(async () => Object.keys({ ...(await import('./js/daily/shop-art.js')).SHOP_ART,
+        ...(await import('./js/daily/shop-art-remaining.js')).REMAINING_SHOP_ART }));
       assert.deepEqual(mapping.sort(), [...ADOPTED].sort());
       const decodeRows = async expected => {
         assert.equal(await page.locator('.shop-row.product').count(), expected);
@@ -71,17 +73,21 @@ await suite("shop-ui", async check => {
       };
       const flavors = await decodeRows(18);
       assert.deepEqual(flavors.filter(row => row.kind === 'generated').map(row => row.id).sort(), [...ADOPTED].sort());
-      assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id).sort(), [...PENDING].sort());
-      assert.equal(new Set(flavors.map(row => row.url)).size, 11, 'Ten adopted cartons + original shared sheet');
+      assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id), []);
+      assert.equal(new Set(flavors.map(row => row.url)).size, 18, 'Every flavor has its own carton');
       for (const row of flavors) {
-        assert(row.url.includes(row.kind === 'generated' ? `/heaven10/${row.id}.webp` : '/shop/flavors.webp'));
+        assert(row.url.includes(`/${REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
       }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
         const button = page.locator(`[data-test="detail-${id}"]`);
-        const expectedName = await page.evaluate(id => S.data.DB.flavorById[id].short_name || S.data.DB.flavorById[id].name, id);
+        // Old saves retain their data; AF is displayed with the catalog's full maker name.
+        const expectedName = await page.evaluate(id => {
+          const item = S.data.DB.flavorById[id];
+          return item.maker === 'af' ? item.name : item.short_name || item.name;
+        }, id);
         assert.equal(await button.locator('b').innerText(), `${expectedName} 1箱（50g）`);
         await button.scrollIntoViewIfNeeded();
-        // Every adopted item plus pending8's original sheet is recorded in its real list context.
+        // Every carton is recorded in its real list and detail context.
         await capture(page, `${platform}-list-${id}`);
         await button.click();
         const detail = page.locator(`.shop-detail [data-product-art="${id}"]`);
@@ -231,6 +237,70 @@ await suite("shop-ui", async check => {
     assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, 'Cancelled entry leaked the arrival logo');
     await page.evaluate(() => S.curtain.release());
   });
+  for (const touch of [false, true]) await run(`first-mint-tutorial-${touch ? 'touch' : 'pc'}`, async page => {
+    await setup(page, { day: 1, money: 12800 });
+    await page.evaluate(() => { S.core.state.flavorStock.mint = 0; });
+    const press = async selector => touch ? page.locator(selector).tap() : page.locator(selector).click();
+    const allState = () => page.evaluate(() => JSON.stringify(S.core.state));
+    await open(page, { errand: 'mint', expense: true });
+    await page.evaluate(() => S.ui.setBg(S.data.bgUrl('bg_shop'), { fast: true }));
+    assert.equal(await page.locator('.shop-row.product').count(), 18, '他の商品を一覧から消さない');
+    assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'), 'select');
+    assert.equal(await page.locator('[data-test="buy-mint"]').getAttribute('data-errand-target'), 'true');
+    await assertFits(page, '.shop-errand, [data-test="buy-mint"], .shop-foot');
+    await capture(page, `first-errand-${touch ? 'touch' : 'pc'}-select`);
+    let before = await allState();
+    await press('[data-test="buy-blueberry"]');
+    assert.equal(await page.locator('[data-test="quantity-blueberry"]').innerText(), '0');
+    assert.equal(await allState(), before, '他フレーバーの購入拒否で状態を変えない');
+    assert.match(await page.locator('.toast.warn').last().innerText(), /ミントだけ/);
+    await page.evaluate(() => { const b = document.querySelector('[data-test="buy-blueberry"]'); b.click(); b.click(); });
+    assert.equal(await page.locator('.toast.warn').count(), 1, '連打で同じ注意が積み重ならない');
+    assert.equal(await allState(), before);
+
+    await press('[data-tab="equip"]');
+    assert.equal(await page.locator('[data-test="detail-hagal_80beat"]').count(), 1, '機材は表示したまま');
+    before = await allState(); await press('[data-test="buy-hagal_80beat"]');
+    assert.equal(await allState(), before, '機材を購入させない');
+    assert.equal(await page.locator('[data-test="quantity-hagal_80beat"]').innerText(), '0');
+    assert.equal(await page.locator('[data-tab="flavor"]').getAttribute('data-errand-target'), 'true');
+    await press('[data-tab="kuji"]');
+    before = await allState(); await press('[data-test="kuji-g500"]');
+    assert.equal(await allState(), before, 'くじ料金・景品・箱順を購入入力で変えない');
+    assert.equal(await page.locator('[data-test="kuji-reveal"]').count(), 0);
+
+    await press('[data-tab="flavor"]'); await press('[data-category="fruit"]');
+    assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'), 'return-filter');
+    assert.equal(await page.locator('[data-category="all"]').getAttribute('data-errand-target'), 'true');
+    await press('[data-category="all"]'); await press('[data-test="buy-mint"]');
+    assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'), 'purchase');
+    assert.equal(await page.locator('[data-test="shop-checkout"]').getAttribute('data-errand-target'), 'true');
+    await capture(page, `first-errand-${touch ? 'touch' : 'pc'}-purchase`);
+
+    // 選択だけでは購入を保存しない。LOAD後は選び直し、古い画面の入力は無効。
+    await page.evaluate(() => { S.oldBuy = document.querySelector('[data-test="buy-mint"]'); S.core.save(); S.ui.clearScreen(); S.core.load(); });
+    before = await allState(); await page.evaluate(() => S.oldBuy.click());
+    assert.equal(await allState(), before);
+    await open(page, { errand: 'mint', expense: true });
+    assert.equal(await page.locator('[data-test="quantity-mint"]').innerText(), '0');
+    await press('[data-test="buy-mint"]'); await press('[data-test="shop-checkout"]');
+    assert.equal((await snapshot(page)).money, 12800); assert.equal((await snapshot(page)).stock.mint, 50);
+    assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'), 'leave');
+    assert.equal(await page.locator('[data-test="shop-leave"]').getAttribute('data-errand-target'), 'true');
+    await assertFits(page, '.shop-errand, .shop-foot');
+    await capture(page, `first-errand-${touch ? 'touch' : 'pc'}-leave`);
+    before = await allState(); await page.evaluate(() => document.querySelector('[data-test="shop-checkout"]').click());
+    assert.equal(await allState(), before, '確定連打で経費や在庫を二重処理しない');
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+    assert.equal(saved.flavorStock.mint, 50); assert.equal(saved.flags._errand_mint_expensed, true);
+    await press('[data-test="shop-leave"]');
+    await page.evaluate(() => { S.core.state.flags._errand_shop_done = true; }); // calendarの買い出し完了後
+    await open(page);
+    await press('[data-test="buy-blueberry"]'); await press('[data-test="shop-checkout"]');
+    assert.equal((await snapshot(page)).stock.blueberry, 50, '通常営業では他の商品を買える');
+    assert.equal((await snapshot(page)).money, 12800 - await page.evaluate(() => S.data.DB.flavorById.blueberry.price));
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+
   await run('errand-expense-and-preparation', async page => {
     await setup(page, { money: 0, day: 1 });
     await page.evaluate(() => { S.core.state.flavorStock.mint = 0; });
@@ -316,7 +386,10 @@ await suite("shop-ui", async check => {
       (await import('./js/chapters/ch1.js')).setupHooks();
       S.error = null; (await import('./js/daily/calendar.js')).runDaily({ nightEvents: {} }).catch(e => S.error = e.stack);
     });
-    const go = async () => { await page.locator('.map:not(.done) [data-test="pin-shop"]').click(); await tap(page, 'map-go'); };
+    const go = async () => {
+      await page.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
+      await page.locator('.map:not(.done) [data-test="pin-shop"]').click(); await tap(page, 'map-go');
+    };
     await go(); await tap(page, 'shop-entry-back');
     await page.locator('.map:not(.done)').waitFor(); assert.equal((await snapshot(page)).slot, 0);
     await go(); await tap(page, 'shop-enter'); await tap(page, 'buy-mint'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');

@@ -8,8 +8,8 @@
         { "speaker": "", "face": "", "text": "昼下がりのシフト。ハンチング帽を目深にかぶった男の人が、１人で入ってきた。" },
         { "speaker": "", "face": "", "text": "「おまかせで」とだけ言って、窓際の席へ。……注文の仕方が、妙に慣れている。" },
         { "speaker": "hajime", "face": "normal", "text": "（おまかせ、か。……よし、今日の自信作でいこう）" },
-        { "speaker": "", "face": "", "text": "１台を作って運ぶ。男の人は一口吸って、少しだけ眉を動かした。" },
-        { "speaker": "???", "face": "normal", "text": "……ふうん。ねえ君、この１台、狙いは？" },
+        { "speaker": "", "face": "", "text": "一台を作って運ぶ。男の人は一口吸って、少しだけ眉を動かした。" },
+        { "speaker": "???", "face": "normal", "text": "……ふうん。ねえ君、この一台、狙いは？" },
         { "type": "choice", "id": "reviewer_ask", "choices": [
           { "text": "素直に狙いを話す", "next": "honest" },
           { "text": "ちょっと盛って話す", "next": "brag" }
@@ -36,9 +36,9 @@
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットの男性が、ふらりと入ってきた。" },
-        { "speaker": "???", "face": "normal", "text": "若いの、１台お願いできるかな。甘すぎないのがいい" },
+        { "speaker": "???", "face": "normal", "text": "若いの、一台お願いできるかな。甘すぎないのがいい" },
         { "speaker": "hajime", "face": "normal", "text": "はい、少々お待ちください" },
-        { "speaker": "", "face": "", "text": "１台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },
+        { "speaker": "", "face": "", "text": "一台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },
         { "speaker": "", "face": "", "text": "急かさず、話しかけず。気づけば、こっちまで呼吸が深くなっていた。" },
         { "speaker": "???", "face": "smile", "text": "……うん。おいしいねえ" },
         { "speaker": "hajime", "face": "smile", "text": "（……なんだろう。今のひとこと、やけに染みるな）" },
@@ -52,7 +52,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "C.STATIONの待合が、なにやらざわついている。" },
         { "speaker": "", "face": "", "text": "スタッフが壁に、記事のコピーを貼り出していた。覆面レビューサイトの商店街特集らしい。" },
-        { "speaker": "customer", "face": "normal", "text": "見た？ 『tonari──路地裏の名店。若い作り手の１台が、店の空気ごとうまい』だって" },
+        { "speaker": "customer", "face": "normal", "text": "見た？ 『tonari──路地裏の名店。若い作り手の一台が、店の空気ごとうまい』だって" },
         { "speaker": "hajime", "face": "surprise", "text": "（うちの店だ……！ 若い作り手って、俺のこと、か……？）" },
         { "speaker": "", "face": "", "text": "あの日のハンチング帽を思い出す。……そうか、あの人だったんだ。" },
         { "speaker": "", "face": "", "text": "その夜。記事を読んだスミさんが、黙って給料に売上ボーナスを乗せてくれた。" },

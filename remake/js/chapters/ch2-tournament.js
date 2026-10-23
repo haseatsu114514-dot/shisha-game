@@ -9,6 +9,7 @@ import { openPhone, openLime } from "../daily/phone.js";
 import { playBgm } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
+import { stepWater } from "../craft/water-view.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
@@ -16,12 +17,16 @@ import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
+import { playTournamentEvent } from "../craft/tournament-story.js";
+import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "rules", "farewell", "tasteless"].map(id => `ch2_tournament_${id}`);
-const STEPS = [stepSetup, stepMix, stepPack, runHoles, stepPlace, runHeat,
+// SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
+const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
+const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
@@ -98,6 +103,16 @@ async function message(owner, suffix, lines) {
   return !!state.inbox.find(item => item.id === key)?.done;
 }
 function checkpoint(stage) { progress().stage = stage; save(); }
+
+async function commentary(owner, event) {
+  hud(owner, true);
+  const controller = new AbortController(); owner.controller = controller;
+  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal });
+  if (owner.controller === controller) owner.controller = null;
+  if (!live(owner) || !result) return false;
+  progress().craft = clone(owner.cs); save();
+  return true;
+}
 
 export async function runChapterTwoTournament() {
   if (session) { session.active = false; session.controller?.abort(); }
@@ -193,7 +208,10 @@ async function drive(owner) {
     const p = progress();
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "morning") {
-      if (!await message(owner, "morning", ["ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい", "だが一つだけ言わせろ。──お前は今、誰のために作ってる？"])) { if (live(owner)) renderEntry(owner); return; }
+      if (!await message(owner, "morning", [
+        state.flags._ch2_no_audience ? "今日は来ないでくれ、って話は聞いた。店で見てる" : "応援は届いてる。返事は終わってからでいい",
+        "手順を確かめろ。無理なら止めていい。帰ったら飯にするぞ",
+      ])) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
       if (!await read(owner, "lobby")) return;
@@ -211,6 +229,8 @@ async function drive(owner) {
       owner.cs ||= clone(p.craft);
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
+      const event = TOURNAMENT_STORY_STEPS.get(p.step);
+      if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);
       if (!live(owner)) return;
       const top = benchRoot(cs)?.querySelector(".bench-top");
@@ -219,6 +239,10 @@ async function drive(owner) {
       broadcast.block(cs, STEP_IDS[p.step]);
       await STEPS[p.step](cs);
       if (!live(owner)) return;
+      if (p.step === 8 && !cs.failed) {
+        cs.tournamentStory ||= { seen: [] };
+        cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
+      }
       finishStep(state, cs);
       if (cs.failed) { save(); continue; }
       if (MILESTONES.has(p.step)) {
@@ -226,10 +250,15 @@ async function drive(owner) {
         const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
         p.craft = clone(cs); castVotes(p, round, quality);
-        p.stage = p.step === STEPS.length ? "result" : "votes";
-        if (p.stage === "result") recordResult(state, cs.total);
+        p.stage = p.step === STEPS.length ? "tasting" : "votes";
+        if (p.stage === "tasting") recordResult(state, cs.total);
       }
       save();
+    } else if (p.stage === "tasting") {
+      owner.cs ||= clone(p.craft);
+      playBgm("bgm_tournament_wait");
+      if (!await commentary(owner, "tasting")) return;
+      checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") { playBgm("bgm_tournament_wait"); renderVotes(owner, true); return; }
     else if (p.stage === "defeat") { renderDefeat(owner); return; }
@@ -249,3 +278,4 @@ async function drive(owner) {
     else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
   }
 }
+

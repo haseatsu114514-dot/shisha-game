@@ -1,0 +1,35 @@
+# #471 操作と視覚QA
+
+## 最終候補
+
+- `selection.txt`: PC/横持ちタッチ33項目PASS。実キーで全8方向/4姿勢/斜めも同速度/停止を追加。3入口の実クリック/タッチ、LIME受諾/中断、メニュー/保存中の停止、実ロード、旧schema11、昼夜、スロット、画像欠損を確認。
+- `directions.json` / `all-directions.mp4` / `rendered-poses.png`: 本編に接続したCanvasの実キー8方向、32描画姿勢。開始位置だけを揃え、移動をwarpで代用していない。左右と斜めの接地/中間姿勢、停止、同速度を比較。録画は無音。
+- `arcade-enter.mp4` / `kemurikusa-connected.png` / `recording.txt`: 通りの入口から実矢印キーで奥まで歩き、実Zで既存KEMURIKUSA会話へ入った。行き先とその後の訪問/費用は本編の処理。
+- `pc-day.png` / `pc-night.png` / `pc-slot.png` / `touch-day.png` / `touch-night.png`: 表示とHUDの証跡。
+- `projection.txt`: 12床点のカメラ逆変換/画像端/消失点固定、400段階の追従/一定地面速度、3入口の人物/扉比PASS。
+
+通常テストは `node remake/test/browser/street_selection.mjs`（`BASE_URL` と `SHOTS`）、`node remake/test/street_projection.mjs`。Playwrightとプレビューサーバーは `remake/README.md`。動画の入力記録は当時のローカルDAY4プレビューを使用した。
+
+## 不合格と修正の履歴
+
+4コマを並べただけの最初の素材は、移動テストが通っても横/斜めで同じ脚が前に出るため視覚QA不合格。`rendered-poses-before-correction.png` が実描画の比較記録。しゃがみに見えた帽子/胴体のコマ差を固定した上半身の描画で除去し、左右の脚の接地/中間姿勢を作り直した。腰の根元を足の重心から胴の中心へ揃え、歩幅で左右にずれる処理を除去。上下のボブを削除。通常速度0.45→0.75、ダッシュ0.8→1.2。ゲーム時間や体力の消費は変更しない。
+
+初期の原画分離では旧2行用の塊結合が4行の帽子/靴をつなぎ、等分切り出しに落ちた。切れた結果は不採用とし、1px結合/分離失敗時停止へ変更。方向テストは、斜めのキーを順に離した後の最終向きで判定して1回失敗したため、2キーを保持している間に判定するよう修正。停止も別途確認した。
+
+同時に複数ブラウザーで録画した1回は街入口の読み込み待ち30秒を超えて失敗。成功扱いせず、単独・ランチャーと同じ60秒上限で再試行し入店まで確認した。以前のmain統合時には初期ロード後の最初のキーを消していたため、pause中の入力破棄は維持し、復帰時の新規キーを消す処理を除去。その他の初回/途中の失敗はIssueとPRへ記録する。
+
+最新main統合後、pushと同時に走行した8方向速度比較が1回不一致になった。フレーム時間を50msへ切り捨てていたため、20fps以下で移動速度も落ちる実装を100ms上限へ調整。大きな復帰ジャンプは抑え、pause中の移動は引き続き破棄する。実測値を失敗時に残して単独再検証する。
+
+## 範囲と未確認
+
+直接ピンと歩行の章通し（DAY14敗北→再挑戦→クリア、DAY1偵察/登録、DAY2配達、保存）はmain #468統合時に両方PASS。その後の見た目変更は日常処理を変更していない。さらに新しいmainのDAY13/初回説明を取り込んだ後の章通しはPRのCIで再確認する。
+
+物理スマホ/Safari、公開サイトへの反映、長い通りの背景区間接続は未確認/未実装。腕の動きは上半身を固定した今回の候補では静止。歩行アニメ全体を最終承認済みとは呼ばず、候補を操作してレビューする。
+
+## 再開時のmain再照合（2026-10-13）
+
+main 4599463を通常mergeし、入店前のonBeforeGo確認/確認中のpause/確認取消後の復帰、LIME未読表示、現在の入店演出を保持した。nativeの入口/速度/脚の修正は保持。旧試作の640x360座標に依存していたLIME来店前テストだけを実入店ボタンのタップへ変更。selection-latest.txtはPC/タッチ33項目PASS、lime-reminder-latest.txtは18項目PASS。8方向/32姿勢とKEMURIKUSAへの実入店を最新コードで撮り直した。日常/LIME/illness VM・投影・agent docsもPASS。
+
+先行head b211fe1はGitHub CI 7件すべて成功し、直接/歩行ともDAY1偵察・登録、DAY2店先配達、DAY14敗北→再挑戦→クリアまで確認済み。最新main統合後のCIはPR #481の新headで再実行する。物理スマホ/Safari、公開反映、長い背景区間の接続、腕の動きは引き続き未完/未確認。予約status run 38397024178で同じowner/source-runを検証済み。quota補助は既存SyntaxErrorのため成功に数えず、公式利用枠のordinaryUsageAllowed=trueを確認した。
+
+新head abcde27のLIME CI run 38405104095は、street-pc-unread/street-touch-waitingで歩行PNG/JSONが404となり失敗。ローカル18項目PASSと異なる原因はLIME専用workflowのsparse-checkoutにassets/street_walkがなかったため。取得対象と関連path triggerを追加し、欠損チェックを弱めずCIで再確認する。

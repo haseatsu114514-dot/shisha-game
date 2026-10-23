@@ -126,6 +126,11 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-game[data-outcome="killshot"] .axe-result-card { border-color: #7caeb9; background: radial-gradient(ellipse at 50% 20%,rgba(99,170,194,.18),transparent 85%); }
 .axe-game[data-outcome="killshot"] .axe-result-label { display: block; color: #b3e4f4; }
 .axe-game[data-outcome="miss"] .axe-result-value, .axe-game[data-outcome="drop"] .axe-result-value, .axe-game[data-outcome="killshot-miss"] .axe-result-value { color: #c9b9a4; }
+/* Bullseye and killshot: a stamp-like pop plus a warm glow; reduced-motion keeps only the static glow. */
+.axe-game[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 34px rgba(255,205,120,.35); }
+.axe-game[data-phase="result"][data-special="true"] .axe-result-label { color: #ffe7a6; letter-spacing: .3em; }
+.axe-game[data-phase="result"][data-special="true"] .axe-result-value { width: fit-content; transform-origin: left center; color: #fff1c8; text-shadow: 0 0 22px rgba(255,214,130,.85), 0 3px 20px rgba(235,173,78,.3); animation: axe-stamp .42s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes axe-stamp { 0% { transform: scale(.6); opacity: 0; } 55% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 .axe-game:is([data-phase="result"],[data-phase="summary"]) :is(.axe-steps,.axe-timing,.axe-feedback,.axe-steadiness,.axe-stability-meter,.axe-call-status,.axe-note) { display: none; }
 .axe-game[data-phase="summary"] .axe-match-records { grid-template-columns: 1fr 1fr; gap: 12px; }
 .axe-game[data-phase="choice"] :is(.axe-steps,.axe-feedback,.axe-timing) { display: none; }
@@ -383,3 +388,71 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-game *, .axe-game *::before, .axe-game *::after { animation: none !important; transition: none !important; }
 }
 .axe-game[data-reduced-motion="true"] *, .axe-game[data-reduced-motion="true"] *::before, .axe-game[data-reduced-motion="true"] *::after { animation: none !important; transition: none !important; }
+
+/* Scoreboard at the edge, an open throwing lane, and one clear timing cue. */
+.axe-declare { position: absolute; left: 50%; top: 34%; transform: translate(-50%,-50%); z-index: 5; pointer-events: none; display: grid; justify-items: center; gap: 2px; padding: 8px 18px; border: 1px solid #9cecff; border-radius: 6px; background: rgba(10,22,30,.82); color: #b3e4f4; text-align: center; animation: axe-declare-in .95s ease-out both; }
+.axe-declare strong { font-size: 1.1rem; letter-spacing: .08em; color: #9cecff; }
+.axe-declare span { font-size: .9rem; color: #d7f3fb; }
+/* !important: render() sets the called marker's inline yellow glow; the declaration flash briefly overrides it. */
+.axe-declare-flash { filter: drop-shadow(0 0 10px #9cecff) drop-shadow(0 0 3px #e9fbff) !important; }
+@keyframes axe-declare-in { 0% { opacity: 0; transform: translate(-50%,-40%) scale(.9); } 20% { opacity: 1; transform: translate(-50%,-50%) scale(1.04); } 80% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1); } }
+.axe-game[data-reduced-motion="true"] .axe-declare { animation: none; }
+.axe-game { background: linear-gradient(90deg,#0a0d0ec9 40%,#0b0d0ef2 80%),var(--axe-bg) center/cover; }
+.axe-header { z-index: 2; }
+.axe-total { border: 1px solid #d4ac6855; border-left: 3px solid #e8b86e; border-radius: 4px; background: #101817e6; box-shadow: 0 0 calc(var(--score-glow,0) * 30px) #edbd7355; }
+.axe-total strong { color: #fff1ce; }
+.axe-board-pane { border-color: transparent; background: radial-gradient(ellipse at 50% 42%,#ca9a4820,transparent 65%); box-shadow: none; }
+.axe-panel { justify-content: flex-end; background: linear-gradient(180deg,#111a17b8,#111a17ed); border-color: #d7b27120; border-radius: 8px; }
+.axe-scores { margin-bottom: auto; }
+.axe-companion { border-top-color: #d0ad6333; background: #0a100ecc; border-radius: 6px; padding: 8px; gap: 8px; }
+.axe-panel .axe-comment { font-size: 11px; }
+.axe-panel .axe-portrait-frame { width: 40px; height: 42px; }
+.axe-game:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"],[data-phase="flight"]) .axe-companion { display: none; }
+.axe-live-reason { display: none; }
+.axe-live-score strong { grid-row: 1; }
+.axe-live-score { background: transparent; border: 0; border-bottom: 1px solid #e6c38a2b; border-radius: 0; padding-inline: 0; }
+.axe-game:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-timing { display: none; }
+.axe-game:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-feedback { display: none; }
+.axe-timing { padding: 10px 0; }
+.axe-timing .axe-power-label { font-size: 12px; margin-bottom: 3px; }
+.axe-power-readout { display: block; color: #e6bba2; font-size: 17px; min-height: 1.4em; margin-bottom: 12px; line-height: 1.4; }
+.axe-timing[data-quality="sweet"] .axe-power-readout { color: #b9f2b8; }
+.axe-game[data-phase="power"]:has(.axe-timing[data-quality="sweet"]) .axe-primary { background: #b8e5aa; color: #142711; border-color: #def6d3; box-shadow: 0 0 22px #b9ed9e22; }
+.axe-gauge { height: 34px; background: #4d302b; border-color: #bd9d744f; }
+.axe-sweet { background: #80b87a; }
+.axe-sweet::after { content: "適正"; position: absolute; inset: 0; display: grid; place-items: center; color: #173112; font-size: 10px; font-weight: 900; }
+.axe-power-fill { position: absolute; left: 0; bottom: 0; height: 5px; background: #fff3d7aa; pointer-events: none; }
+.axe-needle { width: 4px; background: #fff9e6; box-shadow: 0 0 0 1px #162018,0 0 9px #fff3d799; }
+.axe-needle::before { content: ""; position: absolute; top: -6px; left: -4px; border-inline: 6px solid transparent; border-top: 7px solid #fff3d7; }
+.axe-result-card { text-align: left; background: transparent; border: 0; border-left: 2px solid #d4a56466; border-radius: 0; padding: 12px 16px; animation: none; }
+.axe-result-value { font-size: 64px; margin: 2px 0; }
+.axe-impacts [data-scored="false"] { opacity: .55; }
+.axe-crosshair { color: #fff9dc; }
+.axe-footer { text-align: left; font-size: 10px; opacity: .7; }
+@container (min-width: 1000px) and (min-height: 600px) {
+  .axe-body, .axe-in-stage .axe-body { grid-template-columns: minmax(0,1fr) minmax(310px,29%); gap: 24px; }
+  .axe-header h1 { font-size: 24px; }
+  .axe-total strong { font-size: 45px; }
+  .axe-target { flex-basis: 0; }
+  .axe-panel, .axe-in-stage .axe-panel { padding: 18px; gap: 9px; }
+}
+@container (max-width: 600px) {
+  .axe-scores { margin-bottom: 0; }
+  .axe-panel { align-content: end; }
+  .axe-timing { padding: 3px 0; }
+  .axe-power-readout { font-size: 13px; margin-bottom: 8px; }
+  .axe-gauge { height: 28px; }
+  .axe-result-value { font-size: 52px; }
+}
+@container (max-height: 500px) {
+  .axe-scores { margin-bottom: 0; }
+  .axe-game:not([data-phase="result"]):not([data-phase="summary"]) .axe-companion { display: none; }
+  .axe-panel .axe-companion { min-height: 0; padding: 4px 6px; }
+  .axe-panel .axe-companion .axe-portrait-frame { display: none; }
+  .axe-panel .axe-comment { font-size: 10px; }
+  .axe-timing { padding: 1px 0; }
+  .axe-timing .axe-power-label { font-size: 9px; }
+  .axe-power-readout { font-size: 11px; margin-bottom: 7px; }
+  .axe-gauge { height: 23px; }
+  .axe-result-value { font-size: 48px; }
+}

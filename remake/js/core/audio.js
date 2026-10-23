@@ -133,10 +133,16 @@ function ensureCtx() {
 export function unlockAudio() {
   audioUnlocked = true;
   const c = ensureCtx();
-  if (c && c.state === "suspended") c.resume().then(() => { syncRain(); syncPulls(); }, () => {});
-  else { syncRain(); syncPulls(); }
+  const ready = () => {
+    if (c?.state !== "running") return;
+    syncRain(); syncPulls();
+    // resume() is asynchronous. Read the latest request only after it succeeds;
+    // stop/scene changes during unlock must not revive an old title request.
+    if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
+  };
+  if (c && c.state === "suspended") c.resume().then(ready, () => {});
+  else ready();
   preloadSe();
-  if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
 }
 
 export function applyVolumes() {
@@ -282,7 +288,7 @@ export function startBubbling({ strength = 1 } = {}) {
 
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
-  sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
+  hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
   pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
   mashiro: 880, samechan: 1250,
 };
@@ -295,7 +301,7 @@ export const SE = {
   blip: (speaker) => {
     if (!config.voiceBlip || !speaker) return tone({ freq: 1800, type: "sine", dur: 0.02, vol: 0.03 });
     const f = BLIP[speaker] || 600;
-    tone({ freq: f * (0.95 + Math.random() * 0.1), type: speaker === "pakki" ? "square" : "triangle", dur: 0.045, vol: 0.06 });
+    tone({ freq: f * (0.95 + Math.random() * 0.1), type: speaker === "pakki" ? "square" : "triangle", dur: 0.045, vol: speaker === "sumi" ? 0.09 : 0.06 });
   },
   pour: () => noise({ dur: 0.18, vol: 0.12, filter: 3000, q: 0.5, sweepTo: 1200 }),
   punch: () => { tone({ freq: 2400, to: 1400, type: "square", dur: 0.03, vol: 0.08 }); noise({ dur: 0.05, vol: 0.12, filter: 5000, type: "highpass" }); },
@@ -374,12 +380,12 @@ export function playSe(id, ...args) {
 
 /** CONTINUE専用SE。既存AudioContext/設定を共有し、離脱時は予約済みの音も止める。 */
 export function createContinueAudio({ enabled = true } = {}) {
-  let alive = true, output = null, restore = 0, holdMix = 1;
+  let alive = true, paused = false, output = null, restore = 0, holdMix = 1;
   const voices = new Set();
   const ownsMusic = () => currentKey === "bgm_continue_urgent" || pendingBgm === "bgm_continue_urgent";
   function instrument() {
     const c = ensureCtx();
-    if (!alive || !enabled || !c || c.state !== "running" || document.hidden
+    if (!alive || paused || !enabled || !c || c.state !== "running" || document.hidden
       || config.mute || config.muted || !(config.seVolume > 0)) return null;
     if (!output) { output = c.createGain(); output.connect(seBus); }
     return c;
@@ -426,7 +432,7 @@ export function createContinueAudio({ enabled = true } = {}) {
     }
   }
   function pulse(fn) {
-    if (!alive || !enabled || document.hidden || config.mute || config.muted || !(config.seVolume > 0)) return;
+    if (!alive || paused || !enabled || document.hidden || config.mute || config.muted || !(config.seVolume > 0)) return;
     if (!instrument()) return;
     fn(); mix(.8);
     clearTimeout(restore);
@@ -445,8 +451,10 @@ export function createContinueAudio({ enabled = true } = {}) {
       if (!instrument()) return;
       if (!config.voiceBlip) return note(1800, { dur: .02, vol: .03 });
       const f = (BLIP[speaker] || 600) * (.95 + Math.random() * .1);
-      note(f, { dur: .045, vol: .06, type: "triangle" });
+      note(f, { dur: .045, vol: speaker === "sumi" ? .09 : .06, type: "triangle" });
     },
+    // 通常の刻みは毎秒BGMをduckせず、他の予約SEと同じvoicesで停止する。
+    tick() { note(1000, { dur: .04, vol: .045, type: "triangle" }); },
     count(remaining) {
       pulse(() => remaining === 0 ? note(70, { to: 45, dur: .2, vol: .22 })
         : note([990, 870, 780, 700, 620][remaining - 1], { dur: .07, vol: .13, type: "triangle" }));
@@ -463,12 +471,16 @@ export function createContinueAudio({ enabled = true } = {}) {
     expire() { holdMix = .1; clearTimeout(restore); mix(holdMix, 350); },
     setEnabled(value) { enabled = !!value; if (!enabled) { silence(); clearTimeout(restore); mix(holdMix); } },
     pause() {
-      if (!alive || !ownsMusic()) return;
+      if (!alive) return;
+      paused = true;
       silence(); clearTimeout(restore);
+      if (!ownsMusic()) return;
       bgmPaused = true; currentEl?.pause(); mix(holdMix);
     },
     resume() {
-      if (!alive || !ownsMusic()) return;
+      if (!alive) return;
+      paused = false;
+      if (!ownsMusic()) return;
       bgmPaused = false;
       if (currentEl) currentEl.play().catch(() => {});
       mix(holdMix);
@@ -504,7 +516,7 @@ const SYNTH_FALLBACK = {
 export const currentBgm = () => currentKey;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
-const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 

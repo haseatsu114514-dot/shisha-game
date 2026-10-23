@@ -9,13 +9,16 @@ import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { showHud } from "./hud.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { runAxeThrow } from "../minigames/axe.js";
+import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
+import { playAxeBarSighting } from "./axe-bar-discovery.js";
+import { playBgm, currentBgm } from "../core/audio.js";
 
 const modes = { practice: "3投練習", league: "10投スコアアタック" };
 let active = false;
 
 /** 入店・記録閲覧・中断は無料。完走時だけ消費し、行動と保存はcalendarが確定する。 */
 export async function visitAxeBar({ staminaGuard = async () => true, signal } = {}) {
-  if (active || !state || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
+  if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
   active = true;
   const owner = state, day = state.day, slot = state.slot, chapter = state.chapter;
   const abort = new AbortController();
@@ -26,14 +29,21 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   window.addEventListener("pagehide", cancel, { once: true });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   const host = el("div.sub-menu.axe-bar-menu", { dataset: { test: "axe-bar-menu" } });
+  host.hidden = true; // 目撃VNの間は空の枠を見せない。メニュー構築時に表示する。
   showScreen("axe-bar", host); showHud(false);
+  const bgmBefore = currentBgm() || "kansetsu_shomei_to_black_coffee"; playBgm("bgm_axe"); // #788 入店中は斧投げ曲
   const observer = new MutationObserver(() => { if (!host.isConnected) cancel(); });
   observer.observe(layers.screen, { childList: true });
   const available = () => current() && owner.visitedDay.axe_bar !== day && owner.money >= AXE_BAR.playCost && owner.stamina > 0;
   try {
     await setBg(bgUrl(AXE_BAR.preview), { fast: true });
     if (!current()) return false;
+    // 実来店の無料目撃。プレイ／レッスンの完走や精算とは独立して完読だけを保存する。
+    if (axeBarSightingDue(owner)) {
+      if (!await playAxeBarSighting({ signal: abort.signal }) || !current()) return false;
+    }
     const mode = await new Promise(resolve => {
+      host.hidden = false;
       let lessonOpen = false, picked = false;
       const pick = value => { if (!lessonOpen && !picked) { picked = true; resolve(value); } };
       abort.signal.addEventListener("abort", () => { picked = true; resolve(null); }, { once: true });
@@ -54,7 +64,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         }
       } });
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
-        venueHost("maki", DB.dialogues[welcome].lines[0].text, DB), el("p.sub-lead", { text: status }),
+        venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
         lesson,
         el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
           disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
@@ -77,11 +87,12 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       best: newBest ? entry : previous.best };
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
-    toast(`斧崎マキ「${DB.dialogues[reply].lines[0].text}」`, { kind: "good" });
+    toast(`斧崎マキ「${DB.dialogues[reply]?.lines?.[0]?.text || ""}」`, { kind: "good" });
     return true;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);
     signal?.removeEventListener("abort", cancel); abort.abort(); active = false;
     if (state === owner && host.isConnected) showHud(hadHud);
+    if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); // #788 退店・中断で元の曲へ
   }
 }

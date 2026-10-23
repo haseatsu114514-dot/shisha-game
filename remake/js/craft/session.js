@@ -8,7 +8,7 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
-import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
+import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
@@ -28,6 +28,7 @@ import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
+import { applyCoalTraining } from "./coals.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -48,7 +49,7 @@ export const DRILLS = {
 
 export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
-  return {
+  const cs = {
     mode,
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
@@ -76,12 +77,15 @@ export function newSession(mode) {
     arcade: { total: 0, parts: {} },
     retryUsed: false,
   };
+  applyCoalTraining(cs, state.flags);
+  return cs;
 }
 
 let bench = null;
 
 // 同時に待つベース/工程の準備を一つにまとめる。キャッシュ済みなら幕を出さない。
-function waitForBenchAssets(b, task) {
+function waitForBenchAssets(b, task, assets = task) {
+  b.pendingWork = (b.pendingWork || 0) + 1;
   b.pendingAssets = (b.pendingAssets || 0) + 1;
   b.root.inert = true;
   b.root.setAttribute("aria-busy", "true");
@@ -91,13 +95,17 @@ function waitForBenchAssets(b, task) {
     b.loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
     b.root.append(b.loading);
   }, 220);
-  return Promise.resolve(task).finally(() => {
+  const assetsReady = Promise.resolve(assets).finally(() => {
     if (--b.pendingAssets) return;
     clearTimeout(b.loadingTimer); b.loadingTimer = null;
     b.loading?.remove(); b.loading = null;
+  });
+  const complete = Promise.all([task, assetsReady]).finally(() => {
+    if (--b.pendingWork) return;
     b.root.inert = false;
     b.root.removeAttribute("aria-busy");
   });
+  return Object.assign(complete, { assetsReady });
 }
 
 /**
@@ -105,9 +113,15 @@ function waitForBenchAssets(b, task) {
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
 export function openBench(cs, { steps = [] } = {}) {
+  applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
-  const bg = () => setBg(bgUrl(cs.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
-  if (bench && bench.cs === cs && bench.root.isConnected) { bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, bg()])); return bench; }
+  const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
+  if (bench && bench.cs === cs && bench.root.isConnected) {
+    const background = bg();
+    bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, background]),
+      Promise.all([bench.ready.assetsReady, background.assetsReady]));
+    return bench;
+  }
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -122,7 +136,7 @@ export function openBench(cs, { steps = [] } = {}) {
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -135,7 +149,9 @@ export function openBench(cs, { steps = [] } = {}) {
   showScreen("bench", root);
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
-  bench.ready = waitForBenchAssets(bench, Promise.all([bg(), warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]));
+  const background = bg();
+  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]);
+  bench.ready = waitForBenchAssets(bench, Promise.all([background, assets]), assets);
   renderFatigue();
   return bench;
 }
@@ -144,11 +160,12 @@ export async function waitBenchReady(cs, step = null, options = {}) {
   const b = bench;
   if (b?.cs !== cs) return;
   if (!step) { await b.ready; return; }
-  await waitForBenchAssets(b, Promise.all([
-    b.ready,
+  const assets = Promise.all([
+    b.ready.assetsReady,
     warmCraftAssets(cs.mode, { cs, step, ...options }),
     b.worker.prepare(step),
-  ]));
+  ]);
+  await waitForBenchAssets(b, Promise.all([b.ready, assets]), assets);
   const current = b.sequence.indexOf(step === "timer" ? "steam" : step);
   const next = current >= 0 ? b.sequence[current + 1] : null;
   if (next && !b.prefetchSteps.has(next)) {
@@ -165,10 +182,65 @@ export function benchRoot(cs) {
   return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
 }
 
+/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
+export async function explainTutorialStep(cs, id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
+  if (!current()) return false;
+  if (cs.mode !== "tutorial") return true;
+  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
+  b.explainedLessons ??= new Set();
+  if (!lesson || b.explainedLessons.has(id)) return true;
+  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+  const guide = b.guide.root, note = b.guide.note, fullNote = note.textContent;
+  const tip = guide.querySelector(".bench-guide-tip"), summary = guide.querySelector("summary");
+  // 固定作業台の縮小後も、初回説明は読める文字と押せる閉じ口を保つ。
+  const styles = [
+    [tip, { width: "min(760px, calc(92vw / var(--k, 1)))" }],
+    [note, { fontSize: "calc(16px / var(--k, 1))", lineHeight: "1.5" }],
+    [tip.querySelector("b"), { fontSize: "calc(16px / var(--k, 1))" }],
+    [tip.querySelector("small"), { fontSize: "calc(14px / var(--k, 1))" }],
+    [summary, { width: "calc(44px / var(--k, 1))", height: "calc(44px / var(--k, 1))" }],
+  ].map(([node, values]) => ({ node, values, previous: Object.fromEntries(Object.keys(values).map(key => [key, node.style[key]])) }));
+  styles.forEach(({ node, values }) => Object.assign(node.style, values));
+  // 最初はスミの既存説明だけ。詳しい操作は従来の「?」に残す。
+  note.textContent = lesson.detail;
+  const pending = new Promise(resolve => {
+    const finish = ok => {
+      guide.removeEventListener("toggle", closed);
+      observer.disconnect();
+      styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
+      if (current() || note.textContent === lesson.detail) note.textContent = fullNote;
+      if (b.panel.dataset.step === id) {
+        guide.open = false;
+        b.panel.inert = false;
+        b.root.dataset.helpPaused = "false";
+      }
+      resolve(ok);
+    };
+    const closed = () => { if (!guide.open) finish(current()); };
+    const observer = new MutationObserver(() => { if (!current()) finish(false); });
+    guide.addEventListener("toggle", closed);
+    observer.observe(b.root.ownerDocument.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-step"] });
+    guide.open = true;
+    // toggleの配送を待たず、この描画から操作を止める。
+    b.panel.inert = true;
+    b.root.dataset.helpPaused = "true";
+    // 既存の自動操作フックも、表示してからガイドを閉じて進む。
+    if (craftTest.auto) sleep(120).then(() => { if (current()) guide.open = false; });
+  });
+  b.pendingHelp = { id, promise: pending };
+  const acknowledged = await pending;
+  b.pendingHelp = null;
+  if (!acknowledged || !current()) return false;
+  b.explainedLessons.add(id);
+  return true;
+}
+
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
-  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[lessonStep] : null;
+  const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.open = false;
@@ -368,10 +440,10 @@ export function refreshBench() {
 }
 
 /** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */
-export function presentBenchResult(panel, title) {
+export function presentBenchResult(panel, title, advice = "") {
   const score = bench?.panel === panel ? bench.cs[panel.dataset.step]?.score ?? 0 : 0;
   const evaluation = evaluationOf(score);
-  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, final: true });
+  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, text: advice, final: true });
   return { evaluation, hasAudience: !!(bench?.panel === panel && bench.audience) };
 }
 
@@ -393,16 +465,18 @@ export function tickerSay(text) {
 // ---------------------------------------------------------------- 自主練
 
 /** ドリルを1本。戻り値は出来の段階 0〜2 */
-export async function runDrill(kind) {
+/** 工程をひとつ反復する。venue: "home" なら家の作業台（#638） */
+export async function runDrill(kind, { venue = null } = {}) {
   try {
-    return await drill(kind);
+    return await drill(kind, { venue });
   } finally {
     retire(layers.screen.querySelector(":scope > .bench")); // 終わった作業台は次の会話で片付く
   }
 }
 
-async function drill(kind) {
+async function drill(kind, { venue = null } = {}) {
   const cs = newSession("drill");
+  if (venue) cs.venue = venue;
   const labels = { holes: "FOIL", heat: "HEAT", steam: "STEAM", pull: "PULL" };
   openBench(cs, { steps: [[kind, labels[kind]]] });
   await waitBenchReady(cs);
