@@ -2,12 +2,13 @@
 import { loadAll } from "../core/data.js";
 import { newGame } from "../core/state.js";
 import { initLayers, layers } from "../core/ui.js";
-import { unlockAudio } from "../core/audio.js";
+import { unlockAudio, SE } from "../core/audio.js";
 import { el } from "../core/util.js";
-import { newSession, openBench } from "./session.js";
+import { newSession, openBench, stepPanel } from "./session.js";
 import { stepPack } from "./steps.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
+import { mountWaterPour } from "./water-pour-view.js";
 
 function fit() {
   const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
@@ -26,7 +27,7 @@ export async function boot() {
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
   const query = new URLSearchParams(location.search);
-  const step = ["holes", "heat"].includes(query.get("step")) ? query.get("step") : "pack";
+  const step = ["holes", "heat", "water"].includes(query.get("step")) ? query.get("step") : "pack";
   const cs = newSession("tutorial");
   cs.mix = { double_apple: 10, mint: 2 };
   if (step !== "pack") cs.pack = "normal";
@@ -35,6 +36,12 @@ export async function boot() {
   document.getElementById("craft-preview-loading").hidden = true;
   async function play() {
     activeStep(step);
+    if (step === "water") {
+      // 試作：本編の工程列（#743）には入れず、試遊だけで遊ぶ。何本でも続けられる。
+      const panel = stepPanel("setup", "水入れ", "長押しで注ぐ。入れすぎたら長押しでボトルを傾けてこぼす。揺れが収まってから、金の目安線に水面を合わせて「決める」", { brief: "目安線ぴったりに水を入れる" });
+      globalThis.__waterPourPreview = mountWaterPour(panel, { sound: SE, endless: true }); // 確認用の読み取り口
+      return;
+    }
     if (step === "heat") {
       await runHeat(cs);
       layers.screen.append(el("section.craft-preview-end", [
