@@ -30,7 +30,7 @@ const values = {
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
-    stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
+    visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
@@ -44,9 +44,8 @@ const values = {
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
-  // 家シーシャ（#638）: 寝る前の一服と家の練習はこのテストの対象外（home_shisha.mjs で確かめる）
+  // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
-  "home-practice.js": { runHomePractice: async () => ({ used: false, exerted: false }) },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
@@ -101,6 +100,12 @@ result = await run({ stamina: 58, guts: 90, roll: 0 }); assert.deepEqual(result.
 result = await run({ stamina: 24, day: 12, roll: 0, paths: ["tonari", "tonari", "rest"] });
 assert(!result.played.includes("remake_sick_tournament"), "家で休むと、その晩の発病予約を解消する");
 console.log("[illness] PASS: increasing risk, lucky zero, canceled action, actual save, rest, half/full sick days, capacity/discount boundary, tournament without a softlock");
+
+// #783: 廃止前の直接ルートが来ても家で休む。在庫・記録の家練習処理は呼ばない。
+result = await run({ stamina: 10, day: 12, slot: 0, paths: ["rest:practice"], answers: ["full"] });
+assert(result.saves.some(s => s.day === 12 && s.slot === 2 && s.rest?.fullDay && s.stamina === 100));
+assert.equal(state.visitedDay.home_practice, undefined);
+assert(result.saves.some(s => s.day === 12 && s.visitedDay.rest === 12));
 
 // #367: 能動休養は過去へ戻らず、既存の1枠回復を残り時間へ適用する。
 result = await run({ stamina: 10, day: 12, slot: 0, paths: ["rest"], answers: ["full"] });
