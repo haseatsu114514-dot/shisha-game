@@ -1,0 +1,66 @@
+name: Issue claim read-only diagnostic
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_paths:
+        description: Optional repository-relative paths, one per line (diagnosis only)
+        required: false
+        type: string
+  pull_request:
+    paths:
+      - '.github/workflows/issue-claim-diagnostic.yml'
+      - 'tools/issue_claim_diagnostic.cjs'
+      - 'tools/test_issue_claim_diagnostic.mjs'
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tools/issue_claim_diagnostic.cjs
+            tools/test_issue_claim_diagnostic.mjs
+          sparse-checkout-cone-mode: false
+      - run: node --test tools/test_issue_claim_diagnostic.mjs
+  diagnose:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: tools/issue_claim_diagnostic.cjs
+          sparse-checkout-cone-mode: false
+      - name: Inventory reservations without changing them
+        uses: actions/github-script@v7
+        env:
+          CANDIDATE_PATHS: ${{ inputs.candidate_paths }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const {diagnose, parsePaths} = require('./tools/issue_claim_diagnostic.cjs');
+            const paths = parsePaths(process.env.CANDIDATE_PATHS || '');
+            const report = await diagnose(github, context, paths);
+            core.info('ISSUE_CLAIM_DIAGNOSTIC_JSON=' + JSON.stringify(report));
+            const activeUnknown = report.rows.filter(row => row.relation === 'active_future_scope_unknown').length;
+            const unverified = report.rows.filter(row => row.relation === 'unverified').length;
+            const review = report.rows.filter(row => row.review_required).length;
+            await core.summary
+              .addHeading('Read-only reservation diagnostic')
+              .addRaw('This report is not a claim, scope review, or permission to edit or merge.\n')
+              .addRaw('Repository comments scanned: ' + report.comments_scanned + '\n')
+              .addRaw('Current claimed or uncertain records: ' + report.rows.length + '\n')
+              .addRaw('Rows needing one-time scope or evidence review: ' + review + '\n')
+              .addRaw('Active future scopes unknown: ' + activeUnknown + '\n')
+              .addRaw('Unverified records: ' + unverified + '\n')
+              .addRaw('The complete machine-readable inventory is in the job log as ISSUE_CLAIM_DIAGNOSTIC_JSON.\n')
+              .write();
