@@ -1,3 +1,5 @@
+import { normalizeCommuteState, chooseMorningCity, returnCityHome } from "./ch2-commute.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { CH2_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
@@ -46,7 +48,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   }
   const outing = knownCityOutings(state).find(item => item.id === spot.id && item.kind === "outing");
   if (outing) {
-    if (state.money < outing.cost) return { used: false, exerted: false };
+    if (spendableMoney(state) < outing.cost) return { used: false, exerted: false };
     const dialogueId = state.flags[`_ch2_visited_${outing.id}`] ? outing.repeat : outing.first;
     const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
@@ -56,6 +58,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     return { used: true, exerted: outing.stamina < 0 };
   }
   if (spot.kind === "trpg") return null;
+  if (spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
   const first = !state.flags._ch2_talks?.[id];
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const followup = !first && !state.flags._ch2_followup_done?.[id];
@@ -114,12 +117,14 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
 
 export async function runChapterTwoPreparation() {
   setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
+  normalizeCommuteState(state);
   const startDay = dayOneProgress(state).startDay;
   scheduleChapterTwoTrpgNight(state, startDay);
   state.flags._ch2_preparation_started = true;
   state.flags._ch2_region ||= "home";
   save();
   await runDaily({
+    morningDeparture: chooseMorningCity, beforeHomecoming: returnCityHome,
     startNextDay: true, untilDay: startDay + 13, tournamentName: "HAZE: OPEN CLOUD",
     mapOptions: () => ({
       regionId: state.flags._ch2_region,

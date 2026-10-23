@@ -34,7 +34,7 @@ class Element {
 const screen = new Element(), storage = new Map();
 const noop = () => {}, yes = () => true;
 let backgrounds = 0, transitionRelease = null;
-const document = { hidden: false, querySelector: s => screen.querySelector(s), getElementById: () => null };
+const document = { body: { classList: { contains: () => false } }, hidden: false, querySelector: s => screen.querySelector(s), getElementById: () => null };
 const context = vm.createContext({ console, document, setTimeout, clearTimeout, localStorage: {
   getItem: k => storage.get(k) || null, setItem: (k, v) => storage.set(k, v),
   removeItem: () => { throw Error("existing saves must not be deleted"); },
@@ -90,12 +90,15 @@ await test("chapter1, first-day and unreleased cities blocked", () => {
   assert.equal(travel.prepareStationTrip(s, [...regions, { id: "invented" }], "invented"), null);
   assert.equal(travel.prepareStationTrip(s, [regions[0], { ...regions[1], unlocked: false }], "widehanga"), null);
 });
-await test("cancel and insufficient funds do not charge; exact fare works", () => {
+await test("cancel and insufficient funds do not charge; outbound reserves the return fare", () => {
   let s = fresh(199), t = travel.prepareStationTrip(s, regions, "widehanga");
   assert.equal(t.commit(s), false); assert.equal(s.money, 199);
   s.money = 200; t.cancel(); assert.equal(t.commit(s), false); assert.equal(s.money, 200);
-  t = travel.prepareStationTrip(s, regions, "widehanga"); assert.equal(t.commit(s), true); assert.equal(s.money, 0);
+  t = travel.prepareStationTrip(s, regions, "widehanga"); assert.equal(t.commit(s), false);
+  s.money = 400; assert.equal(t.commit(s), true); assert.equal(s.money, 200);
   assert.equal(t.commit(s), false); assert.equal(s.flags._ch2_region, "widehanga");
+  const back = travel.prepareStationTrip(s, regions, "home");
+  assert.equal(back.commit(s), true); assert.equal(s.money, 0); assert.equal(s.flags._ch2_region, "home");
 });
 await test("fresh SAVE/LOAD keeps money and location together; slots preserved", () => {
   const s = fresh(); const untouched = "existing-slot-preserved"; storage.set("suien_remake_slot3", untouched);

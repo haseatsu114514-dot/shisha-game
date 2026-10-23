@@ -229,7 +229,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         const trip = stationTrip = prepareStationTrip(state, regions, item.id);
         if (!trip) return;
         const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
-          dataset: { test: "station-confirm" }, disabled: state.money < trip.fare,
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.required,
           onclick: async () => {
             if (moving || !stationActive()) return;
             moving = true; confirm.disabled = true;
@@ -251,7 +251,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           } });
         info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
-          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.fare ? " ／ 残金が足りません" : ""}` }),
+          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
           confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
       };
       const openStationAfterFailure = () => {

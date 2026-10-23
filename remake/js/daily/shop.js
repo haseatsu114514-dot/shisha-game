@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
@@ -283,7 +284,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     function render(focusTest = null) {
       if (finished || state !== session) return;
       const scroll = body.scrollTop, rows = order(), count = rows.reduce((n, r) => n + r.quantity, 0), total = rows.reduce((n, r) => n + r.cost, 0);
-      money.replaceChildren(el("small", { text: "所持金" }), el("span", { text: priceText(state.money) }));
+      money.replaceChildren(el("small", { text: stockChapter === 2 ? "所持金（帰りの200円を確保）" : "所持金" }), el("span", { text: priceText(state.money) }));
       if (errandBox) {
         const done = flavorStock(errand) >= minStock;
         errandBox.classList.toggle("done", done);
@@ -309,10 +310,10 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       body.replaceChildren(...(tab === "flavor" ? groupShopFlavors(flavorIds.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category))).map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
-      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: state.money >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - state.money)}` }));
+      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
       summary.disabled = !count;
       summary.setAttribute("aria-label", `選択した${count}点の内容を確認。合計${yen(total)}`);
-      checkout.disabled = !count || total > state.money;
+      checkout.disabled = !count || total > spendableMoney(state);
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
       pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
@@ -327,7 +328,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
       if (firstErrand && rows.some(r => !r.flavor || r.item.id !== "mint")) { refuseOtherPurchase(); return; }
-      if (state.money < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
+      if (spendableMoney(state) < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);
       for (const { item, flavor, quantity, free } of rows) {

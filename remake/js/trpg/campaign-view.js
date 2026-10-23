@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
@@ -162,7 +163,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
             if (buyTrpgBook(getState(), catalog, book.id)) { save(); render("新しいTRPGが、本棚に加わりました。"); }
             else render("本棚に加えられませんでした。所持金と入荷状況を確認してください。");
-          }, readOnly || state.money < book.price));
+          }, readOnly || spendableMoney(state) < book.price));
       } else {
         copy.append(el("p", { text: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason }),
           el("small", { text: scenario.duration + " · 夜の1枠 · 結末を迎えた本は一度きり" }),

@@ -17,6 +17,8 @@ const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"],
   this.setExport("timeOfDay", () => "day");
 }, { context });
 const mocks = {
+  "../core/travel-budget.js": { spendableMoney: value => value.money },
+  "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷" },
   "../core/stats.js": {

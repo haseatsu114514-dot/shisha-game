@@ -1,5 +1,6 @@
 // 駅の確定処理。演出や待機より先に、運賃と既存の現在地を一緒に保存する。
-export const STATION_FARE = 200;
+import { CITY_TRAIN_FARE as STATION_FARE } from "../core/travel-budget.js";
+export { STATION_FARE };
 const CONNECTED_CITIES = new Set(["home", "widehanga"]);
 
 export function stationDestinations(value, regions = [], from = value?.flags?._ch2_region) {
@@ -15,13 +16,13 @@ export function prepareStationTrip(value, regions, destination) {
   const chapter = value.chapter, day = value.day, slot = value.slot;
   let consumed = false;
   return {
-    from, to: destination, fare: STATION_FARE,
+    from, to: destination, fare: STATION_FARE, required: STATION_FARE * (destination === "widehanga" ? 2 : 1),
     cancel() { consumed = true; },
     commit(current, { active = true, persist = () => {} } = {}) {
       if (consumed || !active || current !== value || current.chapter !== chapter
         || current.day !== day || current.slot !== slot || current.flags._ch2_region !== from
         || !stationDestinations(current, regions, from).some(r => r.id === destination)) return false;
-      if (!Number.isFinite(current.money) || current.money < STATION_FARE) return false;
+      if (!Number.isFinite(current.money) || current.money < STATION_FARE * (destination === "widehanga" ? 2 : 1)) return false;
       consumed = true;
       // 同期区間。中断後に再開しても、保存済み現在地から再徴収しない。
       current.money -= STATION_FARE;
