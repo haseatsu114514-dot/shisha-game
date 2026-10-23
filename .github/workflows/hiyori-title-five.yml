@@ -1,6 +1,7 @@
 name: Hiyori five title illustrations
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'assets/ui/title_arts/**'
       - 'remake/img/ui/title_arts/**'
@@ -19,6 +20,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   illustrations:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

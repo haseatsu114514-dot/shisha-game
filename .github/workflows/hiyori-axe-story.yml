@@ -1,6 +1,7 @@
 name: Hiyori formal axe story
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'data/dialogue/hiyori.json'
       - 'remake/js/core/hiyori-route.js'
@@ -21,6 +22,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   story:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:

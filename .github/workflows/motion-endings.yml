@@ -2,6 +2,7 @@ name: Motion endings
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "remake/js/motions/**"
       - "remake/js/core/mg-kit.js"
@@ -45,6 +46,7 @@ concurrency:
 
 jobs:
   motion-endings:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     # Leave room for repository checkout, browser setup and the full VN/editor suite.
     timeout-minutes: 20

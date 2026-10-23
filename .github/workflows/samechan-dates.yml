@@ -1,6 +1,7 @@
 name: Samechan date regressions
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/data/lover.json'
       - 'remake/js/daily/samechan-date.js'
@@ -37,6 +38,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   dates:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

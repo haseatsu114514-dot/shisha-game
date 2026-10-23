@@ -1,6 +1,7 @@
 name: Action and night scene contexts
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/js/chapters/ch1.js'
       - 'remake/js/daily/calendar.js'
@@ -31,6 +32,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   contexts:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

@@ -1,6 +1,7 @@
 name: Chapter 1 presentation and feedback
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: ['remake/**', 'data/**', '.github/workflows/ch1-presentation.yml']
   push:
     branches: [main]
@@ -15,6 +16,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   presentation:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     # Allow existing stages plus ten production LOAD cases; assertion timeouts stay unchanged.
     # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.

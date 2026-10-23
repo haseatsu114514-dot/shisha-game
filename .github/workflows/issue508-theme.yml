@@ -1,6 +1,7 @@
 name: Approved chapter 1 scenes and salaryman portraits
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'data/dialogue/ch1_main.json'
       - 'data/dialogue/ch1_naru.json'
@@ -26,6 +27,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   approved-scenes:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:

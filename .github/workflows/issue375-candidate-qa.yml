@@ -1,6 +1,7 @@
 name: Issue 375 candidate QA
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'asset_sources/heroine-title-candidates-20261009/review-issue375/**'
       - '.github/workflows/issue375-candidate-qa.yml'
@@ -15,6 +16,7 @@ concurrency:
 
 jobs:
   candidate-review:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

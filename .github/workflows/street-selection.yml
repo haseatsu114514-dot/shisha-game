@@ -1,6 +1,7 @@
 name: Chapter 1 street selection
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/**'
       - 'data/**'
@@ -27,6 +28,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   browser:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     strategy:
       fail-fast: false
       matrix:

@@ -1,6 +1,7 @@
 name: Approved chapter title cards
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: ['remake/js/chapters/ch1.js', 'remake/js/chapters/ch1-title-motion.js', 'remake/test/browser/ch1_title_motion.mjs', 'remake/js/core/ui.js', 'remake/js/core/chapter-title-art.js', 'remake/css/base.css', 'remake/img/ui/chapters/**', 'remake/chapter-titles-preview.html', 'remake/test/browser/chapter_titles.mjs', '.github/workflows/chapter-titles.yml']
   push:
     branches: [main]
@@ -15,6 +16,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   browser:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

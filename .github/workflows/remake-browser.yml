@@ -2,6 +2,7 @@ name: Remake browser regressions
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/**'
       - 'data/**'
@@ -36,6 +37,7 @@ concurrency:
 
 jobs:
   ds-layout:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     name: Reversible game display on PC and touch
     runs-on: ubuntu-latest
     # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
@@ -83,6 +85,7 @@ jobs:
   #   2: Pakki 69 + Save/load 338 + Saved-lover dates 362          ~ 769s
   #   3: Title 82 + Store logos 183 + HUD 40 + Continue 201 + Steam 210 ~ 716s
   chromium-shard:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     name: chromium (shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -298,7 +301,7 @@ jobs:
   # workflow is cancelled, which kept superseded PR runs alive and blocked the
   # next run in the same concurrency group.
   chromium:
-    if: ${{ !cancelled() }}
+    if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.draft) && (!cancelled()) }}
     needs: chromium-shard
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -313,6 +316,7 @@ jobs:
   # The existing general suite uses about 23 of its 25 minutes. Keep eve's
   # real timers and all 34 cases on a separate runner with its own preview server.
   eve:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     name: Chapter 1 eve choices and saves
     runs-on: ubuntu-latest
     # Include observed ~12m OS dependency setup plus the full regression suite.
@@ -369,6 +373,7 @@ jobs:
           retention-days: 7
 
   practice:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     name: Chapter 1 focused practice and saves
     runs-on: ubuntu-latest
     # Include observed ~12m OS dependency setup plus the full regression suite.
@@ -425,6 +430,7 @@ jobs:
           retention-days: 7
 
   hud-fortune:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     name: Unified HUD and daylight fortune readings
     runs-on: ubuntu-latest
     timeout-minutes: 15

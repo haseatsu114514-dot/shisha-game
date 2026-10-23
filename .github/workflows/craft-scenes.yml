@@ -1,6 +1,7 @@
 name: Craft scene readiness and actions
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "remake/js/craft/worker*.js"
       - "remake/js/craft/readiness.js"
@@ -25,6 +26,7 @@ concurrency:
 
 jobs:
   scenes:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

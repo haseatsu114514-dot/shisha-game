@@ -1,6 +1,7 @@
 name: TRPG two-story collection
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'data/dialogue/trpg_ordinary.json'
       - 'data/dialogue/trpg_shark.json'
@@ -83,6 +84,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   preview:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

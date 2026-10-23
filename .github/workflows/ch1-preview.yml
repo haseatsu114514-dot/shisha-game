@@ -2,6 +2,7 @@ name: Chapter 1 retro preview
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'data/chapter_previews/**'
       - 'remake/js/chapters/ch1.js'
@@ -35,6 +36,7 @@ concurrency:
 
 jobs:
   browser:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

@@ -1,6 +1,7 @@
 name: Chapter play spots
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/js/daily/axe-bar*.js'
       - 'remake/js/daily/spots.js'
@@ -30,6 +31,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   venues:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

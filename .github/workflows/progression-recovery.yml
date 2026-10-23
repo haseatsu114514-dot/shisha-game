@@ -1,6 +1,7 @@
 name: Progression recovery regressions
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'remake/**'
       - 'data/**'
@@ -23,6 +24,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   recovery:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
     timeout-minutes: 25

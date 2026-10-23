@@ -1,6 +1,7 @@
 name: Facility encounters and Eden service
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'data/dialogue/ch1_spots.json'
       - 'data/dialogue/ch1_adam.json'
@@ -24,6 +25,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   encounters:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

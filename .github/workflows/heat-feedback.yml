@@ -2,6 +2,7 @@ name: Heat feedback
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "remake/js/craft/heat*.js"
       - "remake/js/craft/coals.js"
@@ -29,6 +30,7 @@ concurrency:
 
 jobs:
   heat-feedback:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

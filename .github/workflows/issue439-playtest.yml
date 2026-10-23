@@ -1,6 +1,7 @@
 name: Issue 439 playtest regressions
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: ['remake/**', 'data/**', 'assets/backgrounds/**', '.github/workflows/issue439-playtest.yml']
   workflow_dispatch:
 permissions:
@@ -12,6 +13,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   browser:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
