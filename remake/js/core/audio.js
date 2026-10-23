@@ -360,6 +360,11 @@ export const SE = {
   glitch: () => { for (let i = 0; i < 8; i++) tone({ freq: 200 + Math.random() * 2400, type: "square", dur: 0.03, vol: 0.05, delay: i * 0.05 }); },
   // 温度計の一番上で一台が爆発して焦げる（TH06）。低い破裂と崩れる火の粉。
   burst: () => { tone({ freq: 90, to: 26, type: "sine", dur: 1.1, vol: 0.45 }); noise({ dur: 1, vol: 0.3, filter: 1800, sweepTo: 220 }); noise({ dur: 0.22, vol: 0.2, filter: 6000, type: "highpass" }); for (let i = 0; i < 6; i++) noise({ dur: 0.04, vol: 0.12, filter: 2000 + Math.random() * 3000, delay: 0.25 + Math.random() * 0.6, q: 2 }); },
+  // 電車（motions/train.js）: 低いうなりの上に「ガタン・ゴトン」と継ぎ目の音が2回
+  train: (sec = 2.6) => {
+    noise({ dur: sec, vol: 0.1, filter: 220, q: 0.7 });
+    [0.15, 0.27, 1.05, 1.17].forEach((t, i) => { tone({ freq: i % 2 ? 72 : 96, to: 48, type: "sine", dur: 0.12, vol: 0.22, delay: t }); noise({ dur: 0.05, vol: 0.08, filter: 1400, delay: t }); });
+  },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
 };
 

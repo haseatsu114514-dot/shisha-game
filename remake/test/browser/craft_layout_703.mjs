@@ -112,6 +112,9 @@ await suite('craft-layout-703', async check => {
             await test(page,'timer-start').click(); await page.evaluate(()=>QA.run);
           }
           if(step==='steam') {
+            await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+              && document.querySelector('.bench-panel')?.inert);
+            await setGuide(page, false, options.hasTouch);
             // Finish the real game before replacing its DOM with the next step.
             await test(page,'step-next').waitFor({timeout:30000});
             await test(page,'step-next').click(); await page.evaluate(()=>QA.run);

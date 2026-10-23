@@ -104,7 +104,20 @@ try {
         await button(p, "title-config").focus(); await p.keyboard.press("Enter");
         await p.locator("#modal.show .cfg").waitFor();
         await p.locator("#modal.show .modal-actions button").click();
-        await button(p, "title-gallery").click(); await button(p, "gallery-close").click();
+        await button(p, "title-gallery").click();
+        if (device === "phone" && mode === "normal") {
+          const reachable = await p.evaluate(() => {
+            const hit = node => {
+              const r = node.getBoundingClientRect();
+              return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+            };
+            return { close: hit(document.querySelector(".gal-close")),
+              layoutChoices: [...document.querySelectorAll(".title-layout-toolbar button, .title-layout-toolbar a")].every(hit) };
+          });
+          assert.deepEqual(reachable, { close: true, layoutChoices: true }, "Gallery close and display controls must remain reachable");
+          await p.screenshot({ path: path.join(dir, "normal-gallery-landscape-open.png") });
+        }
+        await button(p, "gallery-close").click();
         await button(p, "title-load").click(); await button(p, "slot-cancel").click();
         await button(p, "title-new").click(); await button(p, "cancel-new").click();
         assert.deepEqual(await snapshot(p), before, "opening/cancelling menus changed save");

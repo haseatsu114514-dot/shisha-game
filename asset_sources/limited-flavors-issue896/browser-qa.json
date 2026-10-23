@@ -1,0 +1,236 @@
+[
+  {
+    "name": "pc",
+    "rows": [
+      {
+        "id": "mint",
+        "src": "http://127.0.0.1:8123/remake/img/shop/heaven10/mint.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          36.140625,
+          47.515625
+        ]
+      },
+      {
+        "id": "rose",
+        "src": "http://127.0.0.1:8123/remake/img/shop/remaining8/rose.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          32.921875,
+          47.515625
+        ]
+      },
+      {
+        "id": "nightside_earlgrey",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/nightside_earlgrey.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          34.265625,
+          47.515625
+        ]
+      },
+      {
+        "id": "cardamom",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/cardamom.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          33.125,
+          47.515625
+        ]
+      },
+      {
+        "id": "lavender",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/lavender.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          36.109375,
+          47.515625
+        ]
+      }
+    ],
+    "errors": [],
+    "fallback": "pass",
+    "stateUnchanged": true
+  },
+  {
+    "name": "touch",
+    "rows": [
+      {
+        "id": "mint",
+        "src": "http://127.0.0.1:8123/remake/img/shop/heaven10/mint.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          29.25,
+          34.66667175292969
+        ],
+        "visible": [
+          19.576171875,
+          25.737632751464844
+        ]
+      },
+      {
+        "id": "rose",
+        "src": "http://127.0.0.1:8123/remake/img/shop/remaining8/rose.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          29.25,
+          34.666656494140625
+        ],
+        "visible": [
+          17.8326416015625,
+          25.737625122070312
+        ]
+      },
+      {
+        "id": "nightside_earlgrey",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/nightside_earlgrey.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          29.25,
+          34.66667175292969
+        ],
+        "visible": [
+          18.560546875,
+          25.737640380859375
+        ]
+      },
+      {
+        "id": "cardamom",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/cardamom.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          29.25,
+          34.66667175292969
+        ],
+        "visible": [
+          17.9427490234375,
+          25.737640380859375
+        ]
+      },
+      {
+        "id": "lavender",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/lavender.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          29.25,
+          34.66667175292969
+        ],
+        "visible": [
+          19.5592041015625,
+          25.737625122070312
+        ]
+      }
+    ],
+    "errors": [],
+    "fallback": "pass",
+    "stateUnchanged": true
+  },
+  {
+    "name": "ds",
+    "rows": [
+      {
+        "id": "mint",
+        "src": "http://127.0.0.1:8123/remake/img/shop/heaven10/mint.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          36.140625,
+          47.515625
+        ]
+      },
+      {
+        "id": "rose",
+        "src": "http://127.0.0.1:8123/remake/img/shop/remaining8/rose.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          32.921875,
+          47.515625
+        ]
+      },
+      {
+        "id": "nightside_earlgrey",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/nightside_earlgrey.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          34.265625,
+          47.515625
+        ]
+      },
+      {
+        "id": "cardamom",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/cardamom.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          33.125,
+          47.515625
+        ]
+      },
+      {
+        "id": "lavender",
+        "src": "http://127.0.0.1:8123/remake/img/shop/limited/lavender.webp",
+        "w": 512,
+        "h": 512,
+        "box": [
+          54,
+          64
+        ],
+        "visible": [
+          36.109375,
+          47.515625
+        ]
+      }
+    ],
+    "errors": [],
+    "fallback": "pass",
+    "stateUnchanged": true
+  }
+]

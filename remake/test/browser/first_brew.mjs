@@ -111,7 +111,18 @@ await suite("first-brew", async check => {
       window.running = T.steam.runSteamDodge(cs);
     });
     await page.locator('[data-test="dodge"]').waitFor();
-    await page.waitForTimeout(4000); await guide(page).click(); await page.waitForTimeout(100);
+    // 自動表示の開始説明を承諾し、実際に始まったゲームで任意ヘルプを検査する。
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
+    await guide(page).click();
+    await page.locator('.countdown').waitFor();
+    await page.locator('.countdown').waitFor({ state: 'detached' });
+    await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]').disabled);
+    const started = await page.locator('[data-test="steam-clock"]').textContent();
+    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before, started);
+    await guide(page).click();
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
     const sample = () => page.evaluate(() => ({
       time: document.querySelector('[data-test="steam-clock"]').textContent,
       temp: document.querySelector('[data-test="steam-temperature"]').getAttribute("aria-valuenow"),
@@ -119,7 +130,9 @@ await suite("first-brew", async check => {
     }));
     const before = await sample(); await page.keyboard.press("ArrowRight"); await page.waitForTimeout(1500);
     assert.deepEqual(await sample(), before);
-    await guide(page).click(); await page.waitForTimeout(600);
+    await guide(page).click();
+    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before.time
+      || document.querySelector('[data-test="steam-temperature"]').getAttribute('aria-valuenow') !== before.temp, before);
     assert.notDeepEqual(await sample(), before);
   });
 

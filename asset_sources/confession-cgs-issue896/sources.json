@@ -1,0 +1,81 @@
+{
+  "items": [
+    {
+      "id": "cg_minto_confession",
+      "source": "assets/cgs/cg_minto_confession.png",
+      "size": [
+        1672,
+        941
+      ],
+      "sha256": "0a670f14067a30bd711f4f5007d369bbb6de0581cb107df63b01164607b6725d",
+      "delivery": "remake/img/cgs/cg_minto_confession.webp",
+      "deliveryBytes": 374888,
+      "prompt": "minto.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "assets/sprites/characters/minto/chr_minto_ura_smile.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png"
+      ]
+    },
+    {
+      "id": "cg_tsumugi_confession",
+      "source": "assets/cgs/cg_tsumugi_confession.png",
+      "size": [
+        1672,
+        941
+      ],
+      "sha256": "c7671704ff7f2a2e726dcf8cfb052a0e5a02a035d01a658c04c361b6f6ab9233",
+      "delivery": "remake/img/cgs/cg_tsumugi_confession.webp",
+      "deliveryBytes": 344406,
+      "prompt": "tsumugi.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "remake/img/backgrounds/bg_street_night.webp"
+      ],
+      "revisionPrompts": [
+        "tsumugi-reframe.prompt.txt",
+        "tsumugi-socks.prompt.txt",
+        "tsumugi-location.prompt.txt"
+      ]
+    },
+    {
+      "id": "cg_rin_confession",
+      "source": "assets/cgs/cg_rin_confession.png",
+      "size": [
+        1672,
+        941
+      ],
+      "sha256": "7878f6338c3181ab9a1d60a327965e78d228f99467b9c1f15c0828ec02365652",
+      "delivery": "remake/img/cgs/cg_rin_confession.webp",
+      "deliveryBytes": 362970,
+      "prompt": "rin.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "source": "asset_sources/confession-cgs-issue896/rejected/tsumugi-v1-hand-hidden.png",
+      "sha256": "876c06e1e5d42a8a68df6ac0ca83d7621f43dbabcf987fc8a66be0f5f7f8c48f"
+    },
+    {
+      "source": "asset_sources/confession-cgs-issue896/rejected/tsumugi-v2-short-socks.png",
+      "sha256": "c68bcfe467ae33bf75af81843e8d02c53bede2135b2f72db375b1221dedae8d0"
+    },
+    {
+      "source": "asset_sources/confession-cgs-issue896/rejected/tsumugi-v3-wrong-location.png",
+      "sha256": "0e0b105243c8a4ec38ed92b3cf7045d1d6d094ad338ad182bc6f2e579ab1ac9e"
+    }
+  ]
+}

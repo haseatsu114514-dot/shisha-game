@@ -1,5 +1,5 @@
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
-// シーシャ作りの練習（通しの一台・工程の自主練）は家へ移した（#638・home-practice.js）。工程を選ぶ画面 chooseDrill は第1章の準備イベントで使う。
+// シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire } from "../core/ui.js";
@@ -191,7 +191,7 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は家で（#638） */
+/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
     const sumiNew = hasNewStory("sumi");

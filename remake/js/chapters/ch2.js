@@ -10,6 +10,7 @@ import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
+import { trainRide } from "../core/scene-motions.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
 
 let session = null;
@@ -131,6 +132,9 @@ async function continueDayOne() {
         save();
       }
       if (!await scene("remake_ch2_departure", "隣町へ出発", bgUrl("bg_tonari_inside", "day"))) return;
+      // 電車で隣町へ。車内が通り過ぎる間に駅前へ替える（駅前の絵が遅いときは地図の昼）
+      await trainRide(async () => { await setBg(await imageReady(STATION, 15000) ? STATION : MAP.day, { instant: true }); }, { tone: "day" });
+      if (!current(owner)) return;
       await checkpoint("arrival");
     } else if (stage === "arrival") {
       const ready = await imageReady(STATION, 15000);
@@ -144,6 +148,8 @@ async function continueDayOne() {
       return;
     } else if (stage === "return") {
       if (!await scene("ch2_city_return", "地元へ帰る列車", MAP.night)) return;
+      await trainRide(() => setBg(bgUrl("bg_tonari_inside", "night"), { instant: true }), { tone: "night" });
+      if (!current(owner)) return;
       state.slot = 1;
       await checkpoint("tonari");
     } else if (stage === "tonari") {

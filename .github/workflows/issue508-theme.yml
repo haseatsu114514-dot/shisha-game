@@ -43,6 +43,7 @@ jobs:
             assets/sprites
             assets/cgs
             assets/ui
+            asset_sources/shisha-hardware-reference/skin-candidates-issue374
             docs/qa/issue508-theme
       - uses: actions/setup-node@v7.1.0
         with:

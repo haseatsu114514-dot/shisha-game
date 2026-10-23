@@ -84,23 +84,6 @@ try {
         cases.push({ name: `baito:${after}`, spent, earned, pay: core.state.money - before, spins: core.state.reel.count });
       } finally { clearInterval(timer); }
     }
-    // #638: 自主練は無料のシフト後メニューから家へ移った。旧ボタンを待たず、
-    // 家の実メニュー・工程・終了を通し、体力を使っても能力報酬がないことを保つ。
-    // 工程ドリルは配合しないので葉は減らない（一台を通したときの消費は home_shisha.mjs で検証・#638）。
-    reset(); core.state.stamina = 80; core.state.owned.push("home_rig_set");
-    const homeBefore = { stats: { ...core.state.stats }, statXp: { ...core.state.statXp }, money: core.state.money,
-      flavorStock: { ...core.state.flavorStock }, slot: core.state.slot };
-    const practiceTimer = setInterval(() => {
-      document.querySelector('[data-test="drill-heat"]')?.click();
-      document.querySelector('[data-test="drill-finish"]')?.click();
-    }, 20);
-    let homePractice;
-    try {
-      const { value, spent } = await stats.paidAction(() => import("./js/daily/home-practice.js")
-        .then(home => home.runHomePractice({ staminaGuard: async () => true })));
-      homePractice = { value, spent, stamina: core.state.stamina, stats: { ...core.state.stats },
-        statXp: { ...core.state.statXp }, money: core.state.money, flavorStock: { ...core.state.flavorStock }, slot: core.state.slot };
-    } finally { clearInterval(practiceTimer); }
     // 誘いは会話の後払いでも成長する。低体力で実消耗ゼロなら経験値も付かない。
     reset();
     const invitation = await stats.paidAction(async () => {
@@ -127,7 +110,7 @@ try {
       text: vn.backlog().slice(-2).map(l => l.text).join(" ") };
     // 既存セーブの残高を初期金額で置き換えない。
     reset(); core.state.money = 12345; core.save(); core.newGame(); core.load();
-    return { money, forced, cases, homeBefore, homePractice, rinRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
+    return { money, forced, cases, rinRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
       restoredMoney: core.state.money };
   });
   assert.equal(report.money, 30000); assert.equal(report.restoredMoney, 12345);
@@ -144,8 +127,6 @@ try {
     }
     if (entry.pay !== undefined) assert(entry.pay >= 8000);
   }
-  assert.deepEqual(report.homePractice, { ...report.homeBefore, value: { used: true, exerted: true }, spent: 10, stamina: 70 },
-    "Home practice consumes stamina without free ability growth, money or flavor-stock changes");
   assert(report.carrySaved); assert.equal(report.invitationSpent, 10); assert.equal(report.invitationXp, 2);
   assert.equal(report.zeroXp, 0); assert.equal(report.zeroSpins, 0); assert.equal(report.smallXp, 1);
   assert.equal(report.mixed.xp, 0); assert(report.mixed.affinity > 0);
