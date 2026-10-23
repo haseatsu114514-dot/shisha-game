@@ -113,8 +113,7 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "node --test tools/sequential_merge/test.mjs",
-        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
-        "python3 tools/test_text_editor_server.py"
+        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'"
       ]
     },
     {
@@ -1315,6 +1314,7 @@
         "remake/tools/measure_load.mjs"
       ],
       "run": [
+        "python3 tools/test_text_editor_server.py",
         "node remake/test/browser/text_editor.mjs",
         "node remake/test/text_wrap.mjs",
         "node remake/test/notifications_layout.mjs",

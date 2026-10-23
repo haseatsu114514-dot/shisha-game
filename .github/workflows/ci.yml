@@ -99,6 +99,7 @@ jobs:
             *.xml
             *.toml
             *.lock
+            /.agents/
             /assets/audio/
             /remake/fonts/
       - uses: actions/setup-python@v5
@@ -134,16 +135,14 @@ jobs:
       # 131-byte pointer files. The cache means only new images are downloaded.
       - name: List game images stored in Git LFS
         id: lfs-list
-        run: |
-          hash="$(git lfs ls-files -l -I "assets/**,remake/img/**" | cut -d' ' -f1 | sort | sha256sum | cut -c1-32)"
-          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+        run: echo "hash=$(tools/ci/lfs_images.sh hash)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: .git/lfs/objects
           key: lfs-game-${{ steps.lfs-list.outputs.hash }}
           restore-keys: lfs-game-
       - name: Fetch game images stored in Git LFS
-        run: git lfs pull --include="assets/**,remake/img/**" --exclude=""
+        run: tools/ci/lfs_images.sh fetch
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
