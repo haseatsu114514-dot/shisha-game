@@ -24,6 +24,16 @@ case "${1:-}" in
     ;;
   fetch)
     mapfile -t files < <(pointers)
+    # An image pinned as a normal Git file in .gitattributes must never be a
+    # pointer: that means a commit replaced the real image by mistake.
+    bad=()
+    for f in "${files[@]}"; do
+      [ "$(git check-attr filter -- "$f" | sed 's/.*: //')" = lfs ] || bad+=("$f")
+    done
+    if [ "${#bad[@]}" -gt 0 ]; then
+      printf 'Image replaced by a Git LFS pointer (it is pinned as a normal Git file; restore it from main): %s\n' "${bad[@]}" >&2
+      exit 1
+    fi
     echo "Git LFS images to fetch: ${#files[@]}"
     for f in "${files[@]}"; do
       git lfs smudge -- "$f" < "$f" > "$f.lfs-tmp"
