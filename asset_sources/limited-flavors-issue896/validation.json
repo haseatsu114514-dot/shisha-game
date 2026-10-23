@@ -1,0 +1,160 @@
+{
+  "items": [
+    {
+      "id": "nightside_earlgrey",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          290,
+          157,
+          968,
+          1103
+        ],
+        "box": [
+          288,
+          155,
+          682,
+          950
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "fbad3af5459cb584db3c3bcb221ae2c40a07e1108b2e2a9af132bde6ba0b0e31"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          118,
+          64,
+          396,
+          451
+        ],
+        "box": [
+          116,
+          62,
+          282,
+          391
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "3e32753a605aecae6fe1412c804cf7ff6717362fda7fedf62ba693d07fbb1dd7"
+      },
+      "bytes": 34504
+    },
+    {
+      "id": "cardamom",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          264,
+          105,
+          995,
+          1164
+        ],
+        "box": [
+          262,
+          103,
+          735,
+          1063
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "343cb4e589416092bfdbbc3a1e78bfad6a7aa9b3487545110d3914f49a7b5669"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          107,
+          43,
+          407,
+          475
+        ],
+        "box": [
+          105,
+          41,
+          304,
+          436
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b67baaf68cf3e6f7a5151dfb96e556f176b0b8741b3d69da8cd8ac2f965fdfff"
+      },
+      "bytes": 24692
+    },
+    {
+      "id": "lavender",
+      "source": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          306,
+          209,
+          948,
+          1056
+        ],
+        "box": [
+          304,
+          207,
+          646,
+          851
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "f4c2c7fee6a653c3b100d01354d5281a12666b4b42e702093a55073fe4ad34dc"
+      },
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          125,
+          85,
+          387,
+          431
+        ],
+        "box": [
+          123,
+          83,
+          266,
+          350
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "576bdc244bedc1a192d061f143bb788dced5f2bff57c5c5fba9c8e9f176d7334"
+      },
+      "bytes": 21440
+    }
+  ]
+}
