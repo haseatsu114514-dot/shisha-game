@@ -61,28 +61,31 @@ export const SCENE_PROPS = {
 };
 
 const sceneFile = (url) => String(url || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png");
-function propsFor(url) {
+// homeRigs:false は制作画面用。作業中は大会用の台だけを見せ、所持品の台を背景に置かない（#873）。
+function propsFor(url, { homeRigs = true } = {}) {
   const available = new Set(DB.manifest.sceneProps || []);
-  const props = isHome(url) ? HOME_SCENE_PROPS.filter((p) => state?.owned?.includes(p.owned)) : SCENE_PROPS[sceneFile(url)] || [];
+  const props = isHome(url) ? (homeRigs ? HOME_SCENE_PROPS.filter((p) => state?.owned?.includes(p.owned)) : [])
+    : SCENE_PROPS[sceneFile(url)] || [];
   return props.filter((p) => available.has(p.file));
 }
-export function sceneArtUrls(url) {
+export function sceneArtUrls(url, options) {
   if (!url) return [];
-  return [...new Set([url, ...propsFor(url).map((p) => img(`ui/scene_props/${p.file}`))])];
+  return [...new Set([url, ...propsFor(url, options).map((p) => img(`ui/scene_props/${p.file}`))])];
 }
 
 /** 背景と台を一枚としてcoverする。横長のマッププレビューも同じ切り取りになる。 */
-export function renderSceneArt(host, url) {
+export function renderSceneArt(host, url, { homeRigs = true } = {}) {
   host.querySelector(":scope > .scene-art")?.remove();
   delete host.dataset.sceneBg;
   delete host.dataset.homeScene;
   delete host.dataset.homeRigs;
-  if (isHome(url)) {
+  // 制作画面の家背景は所持品が変わっても台を足さないので、再描画の対象にしない。
+  if (isHome(url) && homeRigs) {
     host.dataset.homeScene = url;
     host.dataset.homeRigs = propsFor(url).map((p) => p.owned).join(",");
   }
   host.style.backgroundImage = url ? `url("${url}")` : "none";
-  const props = propsFor(url);
+  const props = propsFor(url, { homeRigs });
   if (!props.length) return;
   const file = sceneFile(url);
   host.dataset.sceneBg = file;
