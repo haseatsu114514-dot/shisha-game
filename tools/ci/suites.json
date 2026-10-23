@@ -2072,7 +2072,19 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/title-review"
       },
-      "pillow": true
+      "pillow": true,
+      "sparse": [
+        "/asset_sources/ch1-keyart/",
+        "/asset_sources/heroine-title-candidates-20261009/",
+        "/asset_sources/hiyori-title-candidates-issue373/",
+        "/asset_sources/minto-cheki-variants-v1/",
+        "/asset_sources/minto-first-cheki/",
+        "/asset_sources/minto-first-cheki-v2/",
+        "/asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/",
+        "/asset_sources/shisha-hardware-reference/ng-examples/",
+        "/asset_sources/title-art/heroine-concepts-v1-20261008/",
+        "/asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/"
+      ]
     },
     {
       "id": "trpg",
