@@ -7,6 +7,7 @@ source. PNG checks cover bytes, IHDR dimensions and color mode, not visual fit.
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import struct
@@ -23,7 +24,8 @@ CATALOG_FIELDS = (
     "runtime_paths", "status", "integration_issue", "concept_length_cm",
     "dimensional_status",
 )
-# These are deliberately unknown. Approval of a design is not a rendering contract.
+# Default to unknown; only validated connection metadata is copied from source.
+# Approval of a design is not a rendering or physical-fit certification.
 UNVERIFIED_RENDER_FIELDS = (
     "crop", "bbox", "anchor", "relative_scale", "connection_position",
     "connection_diameter", "compatible_ids", "distribution_path",
@@ -65,6 +67,67 @@ def png_header(data):
     if not width or not height or depth != 8 or color != 6 or compression or filtering or interlace not in (0, 1):
         raise CatalogError("expected an 8-bit RGBA PNG header")
     return [width, height], "RGBA"
+
+
+def finite_number(value):
+    # Avoid coercing arbitrarily large JSON integers to float (OverflowError).
+    return type(value) is int or (type(value) is float and math.isfinite(value))
+
+
+def validate_connections(document):
+    """Check candidate metadata only; v1 cannot certify physical fit."""
+    contract = document.get("connection_contract")
+    if not isinstance(contract, dict) or set(contract) != {"version", "candidate_pairs"}:
+        raise CatalogError("connection_contract must contain version and candidate_pairs")
+    if type(contract["version"]) is not int or contract["version"] != 1:
+        raise CatalogError("connection_contract.version must be 1")
+    pairs = contract["candidate_pairs"]
+    if not isinstance(pairs, list):
+        raise CatalogError("connection_contract.candidate_pairs must be an array")
+    for field in ("runtime_integrated", "distribution_assets_ready"):
+        if document["adoption"][field] is not False:
+            raise CatalogError(f"connection contract v1 requires adoption.{field}=false")
+
+    by_id = {item["id"]: item for item in document["items"]}
+    for item in by_id.values():
+        label = f"{item['id']}: connection"
+        if item["runtime_integrated"] is not False:
+            raise CatalogError(f"{label}: v1 requires runtime_integrated=false")
+        connection = item.get("connection")
+        if not isinstance(connection, dict) or set(connection) != {"position_px", "diameter_mm"}:
+            raise CatalogError(f"{label} must contain position_px and diameter_mm (null if unknown)")
+        position = connection["position_px"]
+        if position is not None and (
+            not isinstance(position, list) or len(position) != 2
+            or any(not finite_number(v) for v in position)
+            or any(not 0 <= v < limit for v, limit in zip(position, item["size"]))
+        ):
+            raise CatalogError(f"{label}.position_px must be null or finite [x,y] inside original size")
+        diameter = connection["diameter_mm"]
+        if diameter is not None and (
+            not finite_number(diameter) or diameter <= 0
+        ):
+            raise CatalogError(f"{label}.diameter_mm must be null or a positive finite number")
+
+    seen = set()
+    for index, pair in enumerate(pairs):
+        label = f"connection_contract.candidate_pairs[{index}]"
+        if not isinstance(pair, dict) or set(pair) != {"handle_id", "mouthpiece_id", "physical_fit"}:
+            raise CatalogError(f"{label}: expected handle_id, mouthpiece_id and physical_fit")
+        for field, category in (("handle_id", "handle"), ("mouthpiece_id", "mouthpiece")):
+            identifier = pair[field]
+            if not isinstance(identifier, str) or identifier not in by_id:
+                raise CatalogError(f"{label}.{field}: unknown id {identifier!r}")
+            item = by_id[identifier]
+            if item["category"] != category or item["approved"] is not True:
+                raise CatalogError(f"{label}.{field}: expected approved {category}")
+        key = (pair["handle_id"], pair["mouthpiece_id"])
+        if key in seen:
+            raise CatalogError(f"{label}: duplicate candidate pair")
+        seen.add(key)
+        if pair["physical_fit"] is not None:
+            raise CatalogError(f"{label}.physical_fit must remain null (unverified) in v1")
+    return contract
 
 
 def load_catalog(root=ROOT, source=SOURCE):
@@ -142,11 +205,16 @@ def load_catalog(root=ROOT, source=SOURCE):
                       "render_contract": {key: None for key in UNVERIFIED_RENDER_FIELDS}})
     if errors:
         raise CatalogError("\n".join(errors))
+    connection_contract = validate_connections(document)
+    for source_item, item in zip(document["items"], items):
+        item["render_contract"]["connection_position"] = source_item["connection"]["position_px"]
+        item["render_contract"]["connection_diameter"] = source_item["connection"]["diameter_mm"]
     return {
         "source": source_path.relative_to(root).as_posix(),
         "source_sha256": hashlib.sha256(raw).hexdigest(),
         "adoption": adoption,
-        "verification": "original SHA256 and PNG IHDR dimensions/mode; not runtime or visual-fit QA",
+        "verification": "original SHA256, PNG IHDR dimensions/mode and connection metadata; not physical-fit, runtime or visual QA",
+        "connection_contract": connection_contract,
         "items": items,
     }
 
@@ -168,7 +236,10 @@ def main(argv=None):
         for item in catalog["items"]:
             print(f"{item['id']} | {item['name']} | {item['category']} | {item['size']} | "
                   f"approval={item['approval_scope']} | runtime_integrated={item['runtime_integrated']}")
-        print("Rendering/crop/anchor/connection/transparency processing are unverified (null).")
+        print(f"Connection metadata PASS: {len(catalog['connection_contract']['candidate_pairs'])} candidate pairs; "
+              "physical fit is unverified (null), not installation approval.")
+        print("Connection coordinates/diameters may be null; numeric values only pass shape/range checks.")
+        print("Rendering/crop/bbox/anchor/scale/compatibility/transparency processing remain unverified (null).")
     return 0
 
 

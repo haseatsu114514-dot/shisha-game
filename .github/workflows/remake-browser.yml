@@ -30,14 +30,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: remake-browser-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   ds-layout:
     name: Reversible game display on PC and touch
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -45,11 +47,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned browser dependencies
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Start production preview server
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/ds-preview.log" 2>&1 &
@@ -72,11 +75,21 @@ jobs:
             .codex/artifacts/game-layout/
             ${{ runner.temp }}/ds-preview.log
           retention-days: 7
-  chromium:
+  # The full suite took about 39 minutes on one runner (PR #555 needed a 40m
+  # limit). Split the same steps across three runners; every step still runs in
+  # exactly one shard, in the original relative order, with all assertions kept.
+  # Shard balance (seconds measured on run 39562573727):
+  #   1: Hiyori 539 + Minto 28 + Tsumugi 191 + developer tools 9   ~ 767s
+  #   2: Pakki 69 + Save/load 338 + Saved-lover dates 362          ~ 769s
+  #   3: Title 82 + Store logos 183 + HUD 40 + Continue 201 + Steam 210 ~ 716s
+  chromium-shard:
+    name: chromium (shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
-    # The full suite reached the final developer-tool checks before its 30m
-    # job limit on PR #555. Keep every assertion and allow the suite to finish.
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     env:
       TEST_REF: ${{ github.sha }}
     steps:
@@ -116,13 +129,14 @@ jobs:
           cat "$RUNNER_TEMP/remake-preview.log"
           exit 1
       - name: Adam and EDEN adopted art on PC and touch
+        if: matrix.shard == 1
         timeout-minutes: 3
         env:
           ARTIFACT_DIR: .codex/artifacts/adam-eden-711
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node remake/test/browser/adam_eden_711.mjs
       - name: Preserve Adam and EDEN review images
-        if: always()
+        if: always() && matrix.shard == 1
         uses: actions/upload-artifact@v7.0.2
         with:
           name: adam-eden-711-results
@@ -130,6 +144,7 @@ jobs:
           retention-days: 7
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Pakki reel lifecycle and introduction read-through
+        if: matrix.shard == 2
         timeout-minutes: 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
@@ -140,6 +155,7 @@ jobs:
           test -x "$CHROME_EXECUTABLE_PATH"
           node remake/test/reel_lifecycle.mjs
       - name: Save/load, legacy migration and PC/mobile controls
+        if: matrix.shard == 2
         run: |
           node remake/test/browser/save_load.mjs
           node remake/test/browser/title_layout.mjs
@@ -148,10 +164,12 @@ jobs:
           node remake/test/browser/home_shisha.mjs
           node remake/test/browser/home_practice_leaves.mjs
       - name: Saved-lover date UI routes and legacy invitation boundaries
+        if: matrix.shard == 2
         run: |
           node remake/test/lover_dates.mjs
           node remake/test/browser/lover_date_route.mjs
       - name: Hiyori encounters, LIME, saves and PC/mobile portraits
+        if: matrix.shard == 1
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hiyori
@@ -163,24 +181,28 @@ jobs:
           node remake/test/browser/map_guests.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
+          node --experimental-vm-modules remake/test/samechan_story.mjs
           node remake/test/samechan_portrait.mjs
           node remake/test/browser/samechan_entry.mjs
           node remake/test/browser/samechan_confession.mjs
           node remake/test/browser/affinity_gates.mjs
           node remake/test/browser/relationship_ui.mjs
       - name: Minto identity, private outing and relationship progression
+        if: matrix.shard == 1
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/minto_progression.mjs
       - name: Tsumugi fixed events, legacy saves and continuous chapter days
+        if: matrix.shard == 1
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
           node remake/test/tsumugi_story.mjs
       - name: Title art rotation and SKIP visual readiness
+        if: matrix.shard == 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: |
@@ -189,6 +211,7 @@ jobs:
           node remake/test/browser/tonari_opening.mjs
           node remake/test/browser/tutorial_transition.mjs
       - name: Adopted store logos and entry cards on PC and mobile
+        if: matrix.shard == 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           SHOTS: .codex/artifacts/remake-browser/store-logos
@@ -199,6 +222,7 @@ jobs:
           ARTIFACT_DIR=.codex/artifacts/remake-browser/map-reveals node remake/test/browser/map_reveals.mjs
           node remake/test/browser/shop_ui.mjs
       - name: Unified HUD and daylight fortune readings
+        if: matrix.shard == 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hud-fortune
@@ -210,6 +234,7 @@ jobs:
           node remake/test/browser/hud_fortune.mjs
           node remake/test/browser/fortune_readings.mjs
       - name: Continue captions, asset readiness, clock and audio
+        if: matrix.shard == 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
         run: |
@@ -218,11 +243,14 @@ jobs:
           node remake/test/continue_neon.mjs
           SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs
       - name: Steam slash, recharge and PC/mobile controls
+        if: matrix.shard == 3
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           SHOTS: .codex/artifacts/remake-browser/steam
         run: |
           export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/attack_training.mjs
+          node remake/test/steam_attack_lesson.mjs
           node remake/test/steam_slash.mjs
           node remake/test/steam_word_cut.mjs
           node remake/test/steam_attack_growth.mjs
@@ -230,6 +258,7 @@ jobs:
           node remake/test/steam_forecast.mjs
           node remake/test/browser/thermometer_alignment.mjs
       - name: Validate developer tools available on this branch
+        if: matrix.shard == 1
         run: |
           selected=()
           [[ ! -f remake/js/core/dev-inspector.js ]] || selected+=(inspect)
@@ -245,18 +274,37 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: remake-browser-results
+          name: remake-browser-results-shard-${{ matrix.shard }}
           path: |
             .codex/artifacts/remake-browser/
             ${{ runner.temp }}/remake-preview.log
           retention-days: 7
+
+  # Keep the historical "chromium" check name: it passes only when every shard
+  # succeeded (a failed, cancelled or skipped shard fails this job). Use
+  # !cancelled() rather than always(): an always() job still runs after the
+  # workflow is cancelled, which kept superseded PR runs alive and blocked the
+  # next run in the same concurrency group.
+  chromium:
+    if: ${{ !cancelled() }}
+    needs: chromium-shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every chromium shard to succeed
+        env:
+          SHARDS_RESULT: ${{ needs.chromium-shard.result }}
+        run: |
+          echo "chromium shards: $SHARDS_RESULT"
+          test "$SHARDS_RESULT" = success
 
   # The existing general suite uses about 23 of its 25 minutes. Keep eve's
   # real timers and all 34 cases on a separate runner with its own preview server.
   eve:
     name: Chapter 1 eve choices and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/eve
@@ -278,11 +326,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Choices, actual steps, legacy flags and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/eve-preview.log" 2>&1 &
@@ -304,7 +353,8 @@ jobs:
   practice:
     name: Chapter 1 focused practice and saves
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Include observed ~12m OS dependency setup plus the full regression suite.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/practice
@@ -326,11 +376,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install pinned test dependencies and Chromium
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: DAY3 review, DAY7 care, legacy history and interrupted saves
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/practice-preview.log" 2>&1 &

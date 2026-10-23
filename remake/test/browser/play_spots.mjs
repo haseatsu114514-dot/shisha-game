@@ -50,6 +50,7 @@ async function value(page) {
   });
 }
 async function go(page, id) {
+  await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #796: 新ピンの解錠演出中は選択を受け付けない
   await hit(page, "pin-" + id); await hit(page, "map-go");
   await page.locator(t(id === "axe_bar" ? "axe-bar-practice" : "trpg-campaign-notice")).waitFor();
 }

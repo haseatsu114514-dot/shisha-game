@@ -22,6 +22,8 @@ try {
       QA.core.newGame();
       const s = QA.core.state;
       s.phase = "daily"; s.met.naru = true; s.affinity.naru = 17;
+      // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
+      s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。
       s.inbox = [{ id: "qa_layout", day: s.day, read: true, done: false, log: [],
         msg: { id: "qa_layout", sender: "naru", type: "chat", messages: ["今日もいい煙だったな"],
@@ -53,7 +55,8 @@ try {
         QA.stats.gainStat("charm", amount);
       }, { from, amount });
       await page.waitForSelector(".gain-card.st-charm.show");
-      assert.equal(await page.locator(".gc-earned").count(), 0, "能力通知に『今回』を表示しない");
+      assert.equal(await page.locator(".gc-earned").count(), 1, "能力通知に今回の増分ラベルを1つ表示する");
+      assert.equal(await page.locator(".gc-earned").textContent(), "今回");
       assert.equal(await page.locator(".gc-points").textContent(), `+${amount}P`);
       assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
       const after = await page.evaluate(() => JSON.stringify(QA.core.state));

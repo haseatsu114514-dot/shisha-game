@@ -1,0 +1,6 @@
+[
+  {"file":"fixture.json","id":"age-check","path":"/0/lines/0","text":"それと、すみません。研修中の身なので、念のため年齢確認をさせてください"},
+  {"file":"fixture.json","id":"generic","path":"/0/lines/1","text":"今日は準備をします。お客様のため丁寧に道具を選びます"},
+  {"file":"fixture.json","id":"manual-tags","path":"/0/lines/2","text":"[imp]シー\nシャを作る\n\n丁寧に、道具を準備する。[/imp]"},
+  {"file":"fixture.json","id":"inner","path":"/0/lines/3","speaker":"hiyori","text":"[imp]今日は、会社からの通知を切って、ゆっくり煙の香りだけを楽しみたい。[/imp]","inner":"あの人のために、今日は落ち着いて話を聞いてみようと思います。"}
+]

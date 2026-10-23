@@ -6,6 +6,7 @@ import { play } from "../vn/engine.js";
 import { runAxeThrow } from "../minigames/axe.js";
 import { bgUrl } from "../core/data.js";
 import { setBg } from "../core/ui.js";
+import { playBgm, currentBgm } from "../core/audio.js";
 
 export function hiyoriAxeAffordable() {
   const event = hiyoriRoute().events?.find(e => e.id === "axe_reveal");
@@ -28,8 +29,9 @@ export async function playHiyoriAxeSequence(event, { signal } = {}) {
     if (!current()) return false;
     const opening = await play(event.dialogue, { signal: abort.signal });
     if (!current() || opening?.id !== event.dialogue) return false;
+    const bgmBefore = currentBgm() || "tonari"; playBgm("bgm_axe"); // #788 実プレイ中だけ斧投げ曲。終了・中断でtonariの曲へ
     const game = await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal,
-      mode: "practice", opponent: "hiyori" });
+      mode: "practice", opponent: "hiyori" }).finally(() => { if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); });
     if (!current() || !game.completed) return false;
     const ending = await play(event.outro, { signal: abort.signal });
     return current() && ending?.id === event.outro;

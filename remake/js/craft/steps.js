@@ -5,14 +5,14 @@ import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
-import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
+import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
@@ -64,9 +64,11 @@ export const isSuyakiBowl = (bowlId) => {
 };
 
 export async function stepSetup(cs) {
+  const trained = applyCoalTraining(cs, state.flags);
   await waitBenchReady(cs, "setup");
   const types = [["bowl", "ボウル（ハガル）"], ["hms", "HMD（ヒートマネジメント）"], ["charcoal", "炭（チャコール）"]];
   for (const [type, label] of types) {
+    if (type === "charcoal" && !trained) continue;
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
     const suyaki = type === "hms" && isSuyakiBowl(cs.equip.bowl);
     const selectable = owned.filter((e) => !(suyaki && e.id === "tanukish_lid"));
@@ -88,7 +90,8 @@ export async function stepSetup(cs) {
       };
     }));
   }
-  state.equip = { ...cs.equip };
+  // 制作中の制限で旧セーブの装備・所有品を消さない。
+  state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };
   refreshBench();
 }
 
@@ -323,7 +326,6 @@ export async function stepMix(cs) {
   // 家で練習: 自分の葉として使った分（課題の支給分は除く）。減らすのは作り終えたとき（home-practice.js）
   if (cs.venue === "home") cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)));
   cs.mixInfo = evaluateMix(cs);
-  scoreStep(cs, "mix", cs.mixInfo.score, "配合");
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
@@ -387,6 +389,7 @@ export async function stepPack(cs) {
 }
 
 export async function stepPlace(cs) {
+  if (!applyCoalTraining(cs, state.flags)) { refreshBench(); return; }
   await waitBenchReady(cs, "place");
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);

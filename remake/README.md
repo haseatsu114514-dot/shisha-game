@@ -251,7 +251,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    配達の目的地は案内するが、終了後はDAY2の夜から自由行動。PEPPERMINTへの初入店は自由選択で通常の訪問料・行動を使う。自分で先に行っていた旧セーブの店は飛ばし、DAY3以降の旧セーブには割り込まない
 4. 日常 DAY1〜14（1日2行動・昼/夜）
    - tonari（お客さんとして＝つむぎ／バイト＝接客イベント＋給料／スミさんと話す）。
-   - 家（休む／家で練習＝通しの一台か工程ひとつ／寝る前の一服＝家シーシャ。#638）。
+   - 家（休む／寝る前の一服＝家シーシャ。#638）。家で練習は #783 で廃止し、シーシャ作りの練習は店でだけ行う。
      DAY3・DAY8 と、4日以上シフトに入っていない朝はスミさんから「昼のシフト入れるか？」の LIME（乗るとそのままバイト・給料に上乗せ）
    - KEMURIKUSA（なる）・EDEN（アダム）・PEPPERMINT（みんと）: 固有会話を順に消化
    - Dr.fookah（フレーバー・機材の売買／2階＝凛）・カフェ・観音堂・チョイザップ・C.STATION・家に帰る
@@ -478,3 +478,44 @@ node remake/test/playthrough.mjs
 家シーシャでもミント単などの単体は美味しい一台として成立します。共通の配合評価で種類数だけの減点を解消し、ミント単に「他の香りを隠す」減点を付けません。みんとへの配達は入店鈴と店内背景を挟んでから引き渡します。店頭のドバジ6／アフサール2も箱画像となり、全18種を個別の箱で表示します。
 
 `node remake/test/kuji_balance.mjs` / `node remake/test/home_shisha.mjs` / `node remake/test/browser/ch1_feedback.mjs` / `node remake/test/browser/minto_delivery.mjs` / `node remake/test/browser/shop_ui.mjs`。温度ゲージは#637の同期更新を、入力イベント内の読み取りとPC／横持ちタッチで検証しています。
+
+### 台詞生成後の自然改行チェック（変更行のみ）
+
+AI生成 → 変更した `text` / `inner` の抽出 → 本編・エディタ共通の
+`js/vn/layout.js` / `text.js` で組版 → 診断と表示確認 → 必要箇所だけ修正、の順に確認します。
+プロンプトだけで自然改行を保証せず、一括固定改行や意味の書換えで検査を通しません。
+
+```sh
+node tools/check_changed_dialogue_layout.mjs --base old.json --current new.json --output work/wrap-check
+# または変更済みレコードだけの配列を渡す（形式: remake/test/natural_wrap_cases.json）
+node tools/check_changed_dialogue_layout.mjs --records changed-records.json --output work/wrap-check
+node remake/test/text_wrap.mjs --fixed-only
+node remake/test/natural_wrap.mjs
+node remake/test/browser/natural_wrap.mjs
+```
+
+既存のPlaywrightとChromeを利用できます。`PLAYWRIGHT_MODULE` は既存モジュールの絶対パス、
+`CHROME_EXECUTABLE_PATH` はブラウザのパスです。検査は指定ファイルだけを読み、全台詞を探索しません。
+base/currentはdialogue_idとJSON pointerで照合し、本文・本心・話者・種別が同じレコードを除きます。
+配列の並べ替えは変更として扱うことがあります。削除レコードには描画対象がありません。
+
+実フォントの通常998px・狭幅520px・本心併記700pxを、独立した共有組版ハーネスで確認します。
+base/vn/ui-art/ui-innerの本番CSSとフォントを使い、1280×720ステージを844×390へ縮小します。
+パネル画像だけは取得せず無効化し、枠・余白の寸法は本番CSSを保ちます。
+通常・モバイルの本文は自然な998px、520pxと700pxはsyntheticWidth付き合成条件です。
+viewport・ステージ・枠の収容とスクリーンショット寸法を検査します（ゲーム全体の起動・実機検証ではありません）。
+本心併記モードでは本心がないレコードにも検査用本心を付け、その結果をsyntheticInnerで区別します。
+本心は本編と同じplayerInner条件を適用します。外部通信は遮断し、新しいブラウザコンテキストを使います。
+results.jsonには安定したfile/id/path、ページ、前後行付き分断診断、幅、フォント読込、画像名を保存します。
+画像は各レコード・幅の最初のページ、幅超過は全ページを検査します。
+疑わしい分断は人が確認し、フォント未読込・幅超過・ブラウザエラーは失敗とします。
+
+組版はIntlの語とBudouXを併用し、「語＋の＋語」の連鎖を保守的に保護します。
+まとまり自体が幅を超えるときだけ語境界、次いで書記素境界への分割を許します。
+極小幅で禁則・単一書記素が収まらない場合も前進し、診断に残します。
+Intlは品詞解析ではなく、同音・固有名詞・慣用句の意味の自然さを完全保証しません。
+手動改行は固定で、この診断の自動修正対象ではありません。
+反復DPは各開始位置の後続結果を保存し、幅に収まる候補までしか調べません。
+通常24単位では約48書記素＋タグまでを先読みし、候補評価O(NW)、保存O(N+W)です
+（Nはトークン数、Wは一行内候補数）。文字列連結・実測には文字列長に応じたコストが加わります。
+極端に大きい指定上限・タグ列では候補評価も最悪O(N²)になるため、任意長入力の定時間保証ではありません。

@@ -179,6 +179,7 @@ try {
       T.ch1.resumeGame().catch(e => { window.calendarError = e.message; });
     }, day);
     await calendar.waitForSelector('.map:not(.done) [data-spot="rest"]', { timeout: 20000 });
+    await calendar.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
     await calendar.locator('.map:not(.done) [data-spot="rest"]').click();
     await calendar.locator('[data-test="map-go"]').click();
     if (day < 13) {
@@ -258,6 +259,7 @@ try {
         assert(before.flags._tsumugi_contest_submitted);
         assert.equal(before.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
       }
+      await consecutive.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
       await consecutive.locator('.map:not(.done) [data-spot="rest"]').click();
       await consecutive.locator('[data-test="map-go"]').click();
       // Keep resting through the real invitation deadline prompt without

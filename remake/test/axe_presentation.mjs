@@ -1,9 +1,27 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { BULLS, KILLS, resolveThrow } from "../js/minigames/axe-model.js";
-import { shotFeedback, sessionStats, impactFeedback } from "../js/minigames/axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, declarationCue } from "../js/minigames/axe-presentation.js";
+
+test("declaring a new killshot blue gives one cue; same blue, normal, or non-killshot gives none", () => {
+  const [first, second] = KILLS;
+  assert.deepEqual(declarationCue(null, first.id), { label: "KILL SHOT 宣言", target: first.id, place: "左上" });
+  assert.equal(declarationCue(first.id, first.id), null);
+  assert.equal(declarationCue(first.id, null), null);
+  assert.equal(declarationCue(null, null), null);
+  assert.equal(declarationCue(null, "not-a-target"), null);
+  assert.equal(declarationCue(first.id, second.id).target, second.id);
+});
 
 const shot = (x = 0, y = 0, power = .62, called = null) => resolveThrow({ x, y, power, called });
+
+test("bullseye and killshot hits get the special celebration, ordinary hits do not", () => {
+  const killTarget = KILLS[0];
+  assert.equal(impactFeedback(shot()).special, true);
+  assert.equal(impactFeedback(shot(killTarget.x, killTarget.y, .62, killTarget.id)).special, true);
+  assert.equal(impactFeedback(shot(.7, 0)).special, false);
+  assert.equal(impactFeedback(shot(.9, .9)).special, false);
+});
 
 test("misses never celebrate a valid-power axe stuck outside the scoring circle or called blue", () => {
   for (const failed of [shot(.9, .9), shot(1.08, 1.08), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {

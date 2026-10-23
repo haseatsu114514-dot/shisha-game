@@ -28,6 +28,7 @@ import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
+import { applyCoalTraining } from "./coals.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -48,7 +49,7 @@ export const DRILLS = {
 
 export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
-  return {
+  const cs = {
     mode,
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
@@ -76,6 +77,8 @@ export function newSession(mode) {
     arcade: { total: 0, parts: {} },
     retryUsed: false,
   };
+  applyCoalTraining(cs, state.flags);
+  return cs;
 }
 
 let bench = null;
@@ -110,6 +113,7 @@ function waitForBenchAssets(b, task, assets = task) {
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
 export function openBench(cs, { steps = [] } = {}) {
+  applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
   if (bench && bench.cs === cs && bench.root.isConnected) {

@@ -315,6 +315,21 @@
           "text": "（笑われると思ってたけど、ここだと俺もつい喋ってしまう）"
         },
         {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "そうだ、はじめくん、ジムは行ってる？ チョイザップっていう店が、みんとのおすすめなんだ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ジムですか。あまり考えたことなかったな"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "見た目も武器だよ♡ 煙を吐く姿だって、お客さんはちゃんと見てるからね？"
+        },
+        {
           "type": "remember",
           "memory_id": "minto_welcome"
         },
@@ -452,7 +467,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "PEPPERMINTのドアを開けると、明るい声が飛んできた。"
+            "text": "ぺぱーみんとのドアを開けると、明るい声が飛んできた。"
           },
           {
             "speaker": "minto",
@@ -481,7 +496,7 @@
         "dl_door": [
           {
             "speaker": "",
-            "text": "配達のあと、改めてPEPPERMINTの入口をくぐった。"
+            "text": "配達のあと、改めてぺぱーみんとの入口をくぐった。"
           },
           {
             "speaker": "minto",
@@ -744,7 +759,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "PEPPERMINTのドアを開けると、カウンターの奥に見覚えのある横顔があった。",
+          "text": "ぺぱーみんとのドアを開けると、カウンターの奥に見覚えのある横顔があった。",
           "portrait": "oneesan"
         },
         {

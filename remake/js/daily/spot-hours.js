@@ -24,6 +24,5 @@ export function spotTimeNote(spot, save) {
   if (spot.kind === "trpg") return save.slot === 0 ? "昼：店長と無料試遊・本選び" : "夜：仲間とTRPG";
   if (spot.id === "choizap") return save.slot === 0 ? "無人ジム・動画で自主トレ" : "無人ジム・夜の自主トレ";
   if (spot.id === "kannon") return save.slot === 0 ? "昼：猫と街の人のいる境内" : "夜：静かな境内でひと休み";
-  if (spot.kind === "tonari" || spot.kind === "rival") return save.slot === 0 ? "昼：仕込みや調整の話" : "夜：常連が集まる時間";
   return "";
 }

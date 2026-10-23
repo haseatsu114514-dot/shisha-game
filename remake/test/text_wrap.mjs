@@ -4,12 +4,15 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { autoWrap, paginate, WRAP_LIMIT, MAX_PAGE_LINES } from "../js/vn/text.js";
+import { autoWrap, paginate, WRAP_LIMIT, MAX_PAGE_LINES, textWidth } from "../js/vn/text.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const strip = (s) => s.replace(/\[\/?[a-z]+\]/g, "");
 const width = (s) => [...strip(s)].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
 const lines = (text) => autoWrap(text).split("\n");
+
+// エディタの字数目安も本編のトークン計算を使う（装飾・改行・結合文字）。
+assert.equal(textWidth("[imp]👩‍🍳が[/imp]\nAB"), 3);
 
 // 1) 以前は語の途中で折れていた第1章の台詞。守る語が2行に分かれない
 const keepWhole = [
@@ -46,7 +49,7 @@ assert.equal(paginate(compact).length, 1, paginate(compact).join(" ‖ "));
 
 // 4) 全台詞の不変条件: 1行は上限以内、行頭禁則・行頭の空白なし、1ページは2行まで
 const NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
-const files = fs.readdirSync(path.join(root, "data/dialogue")).filter((f) => f.endsWith(".json"));
+const files = process.argv.includes("--fixed-only") ? [] : fs.readdirSync(path.join(root, "data/dialogue")).filter((f) => f.endsWith(".json"));
 const texts = [];
 function walk(node, file, id) {
   if (Array.isArray(node)) return node.forEach((x) => walk(x, file, id));
@@ -80,4 +83,4 @@ assert(singleLinePages.every(page => !page.includes("\n")));
 assert.equal(singleLinePages.map(strip).join(""), strip(singleLineText));
 assert(singleLinePages.every(page => page.startsWith("[imp]") && page.endsWith("[/imp]")));
 
-console.log(`text_wrap OK: ${texts.length} texts`);
+console.log(process.argv.includes("--fixed-only") ? "text_wrap OK: fixed cases; corpus skipped" : `text_wrap OK: ${texts.length} texts`);

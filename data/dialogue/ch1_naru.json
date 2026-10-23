@@ -1,6 +1,13 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch1_naru_cafe_intro",
+      "lines": [
+        { "speaker": "naru", "face": "normal", "text": "昼にひと息つくなら、喫茶こはくもいいよ。焼き菓子もうまいんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "喫茶こはく、覚えておくよ" }
+      ]
+    },
+    {
       "dialogue_id": "ch1_naru_first",
       "lines": [
         {
@@ -241,7 +248,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "だったら、このあとC.STATIONを見てこいよ"
+          "text": "だったら、大会前にC.STATIONの受付へ寄っとけよ"
         },
         {
           "speaker": "naru",
@@ -251,12 +258,12 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "受付で登録できる。会長も今日、店にいるはずだ"
+          "text": "受付で登録できる。店員に聞けば案内してくれる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとうございます。帰りに寄ってみます"
+          "text": "ありがとうございます。次に出かける時に寄ってみます"
         },
         {
           "type": "set_flag",

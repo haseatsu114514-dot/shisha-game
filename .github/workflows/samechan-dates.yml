@@ -30,9 +30,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
 concurrency:
-  group: samechan-dates-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   dates:
     runs-on: ubuntu-latest

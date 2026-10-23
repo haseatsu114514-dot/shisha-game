@@ -48,8 +48,8 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     tube, skin,
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${bandPreview ? ".mix-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
-    // 初回レッスンには出さない。再表示の解放条件（日付・好感度等）は未指定。
-    hidden: cs?.mode === "tutorial",
+    // 初回も時間設定から実温度計を表示。配合中のプレビューは引き続き隠す。
+    hidden: cs?.mode === "tutorial" && bandPreview,
     role: bandPreview ? "img" : "meter", "aria-label": bandPreview ? "配合の適温・最適温" : "煙の温度",
     "aria-valuemin": bandPreview ? null : "0", "aria-valuemax": bandPreview ? null : "1", dataset: { test: bandPreview ? "mix-temperature" : compact ? "steam-temperature" : "pull-temperature" },
     style: { "--thermo-inset": framed ? "10%" : "0%", "--thermo-span": framed ? `${frameWidth}px` : "44px" },

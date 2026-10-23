@@ -126,6 +126,11 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-game[data-outcome="killshot"] .axe-result-card { border-color: #7caeb9; background: radial-gradient(ellipse at 50% 20%,rgba(99,170,194,.18),transparent 85%); }
 .axe-game[data-outcome="killshot"] .axe-result-label { display: block; color: #b3e4f4; }
 .axe-game[data-outcome="miss"] .axe-result-value, .axe-game[data-outcome="drop"] .axe-result-value, .axe-game[data-outcome="killshot-miss"] .axe-result-value { color: #c9b9a4; }
+/* Bullseye and killshot: a stamp-like pop plus a warm glow; reduced-motion keeps only the static glow. */
+.axe-game[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 34px rgba(255,205,120,.35); }
+.axe-game[data-phase="result"][data-special="true"] .axe-result-label { color: #ffe7a6; letter-spacing: .3em; }
+.axe-game[data-phase="result"][data-special="true"] .axe-result-value { width: fit-content; transform-origin: left center; color: #fff1c8; text-shadow: 0 0 22px rgba(255,214,130,.85), 0 3px 20px rgba(235,173,78,.3); animation: axe-stamp .42s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes axe-stamp { 0% { transform: scale(.6); opacity: 0; } 55% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 .axe-game:is([data-phase="result"],[data-phase="summary"]) :is(.axe-steps,.axe-timing,.axe-feedback,.axe-steadiness,.axe-stability-meter,.axe-call-status,.axe-note) { display: none; }
 .axe-game[data-phase="summary"] .axe-match-records { grid-template-columns: 1fr 1fr; gap: 12px; }
 .axe-game[data-phase="choice"] :is(.axe-steps,.axe-feedback,.axe-timing) { display: none; }
@@ -385,6 +390,13 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-game[data-reduced-motion="true"] *, .axe-game[data-reduced-motion="true"] *::before, .axe-game[data-reduced-motion="true"] *::after { animation: none !important; transition: none !important; }
 
 /* Scoreboard at the edge, an open throwing lane, and one clear timing cue. */
+.axe-declare { position: absolute; left: 50%; top: 34%; transform: translate(-50%,-50%); z-index: 5; pointer-events: none; display: grid; justify-items: center; gap: 2px; padding: 8px 18px; border: 1px solid #9cecff; border-radius: 6px; background: rgba(10,22,30,.82); color: #b3e4f4; text-align: center; animation: axe-declare-in .95s ease-out both; }
+.axe-declare strong { font-size: 1.1rem; letter-spacing: .08em; color: #9cecff; }
+.axe-declare span { font-size: .9rem; color: #d7f3fb; }
+/* !important: render() sets the called marker's inline yellow glow; the declaration flash briefly overrides it. */
+.axe-declare-flash { filter: drop-shadow(0 0 10px #9cecff) drop-shadow(0 0 3px #e9fbff) !important; }
+@keyframes axe-declare-in { 0% { opacity: 0; transform: translate(-50%,-40%) scale(.9); } 20% { opacity: 1; transform: translate(-50%,-50%) scale(1.04); } 80% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1); } }
+.axe-game[data-reduced-motion="true"] .axe-declare { animation: none; }
 .axe-game { background: linear-gradient(90deg,#0a0d0ec9 40%,#0b0d0ef2 80%),var(--axe-bg) center/cover; }
 .axe-header { z-index: 2; }
 .axe-total { border: 1px solid #d4ac6855; border-left: 3px solid #e8b86e; border-radius: 4px; background: #101817e6; box-shadow: 0 0 calc(var(--score-glow,0) * 30px) #edbd7355; }

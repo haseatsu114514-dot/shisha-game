@@ -8,13 +8,17 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
 concurrency:
-  group: ch1-presentation-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   presentation:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Allow existing stages plus ten production LOAD cases; assertion timeouts stay unchanged.
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 30
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/presentation
@@ -36,11 +40,12 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: remake/test/browser/package-lock.json
-      - name: Install browser dependencies
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Actual-result and taste boundaries
         run: |
           node remake/test/mix_recognition.mjs
@@ -56,6 +61,31 @@ jobs:
           node remake/test/browser/ch1_story_feedback.mjs
           node remake/test/browser/craft_materials.mjs
           node remake/test/browser/first_brew.mjs
+      - name: Delivery starts indoors in normal, AUTO, SKIP and legacy LOAD (#709)
+        env:
+          ARTIFACT_DIR: .codex/artifacts/minto-start709
+        run: node remake/test/browser/minto_delivery.mjs
+      - name: Resume registration first spin through production LOAD (#749)
+        run: |
+          node --experimental-vm-modules remake/test/early_deliveries.mjs
+          node remake/test/browser/reel_registration_load.mjs
+      - name: Preserve compact delivery frame evidence
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import gzip, json
+          from pathlib import Path
+          source = Path('.codex/artifacts/minto-start709')
+          target = Path('.codex/artifacts/remake-browser/presentation/delivery-frame-proof')
+          target.mkdir(parents=True, exist_ok=True)
+          for path in source.glob('*-frames.json'):
+              data = json.loads(path.read_text())
+              raw = json.dumps(data, ensure_ascii=False, separators=(',', ':')).encode()
+              (target / (path.name + '.gz')).write_bytes(gzip.compress(raw, mtime=0))
+          results = source / 'minto-delivery.json'
+          if results.exists():
+              (target / results.name).write_bytes(results.read_bytes())
+          PY
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v7.0.2

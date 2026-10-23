@@ -46,7 +46,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const owner = state;
   if (!owner || owner.chapter < 2 || owner.phase !== "daily") return { completed: false };
   const { save } = await import("../core/state.js");
-  const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
+  const [{ el }, { layers, showScreen }, { playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
     import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
     import("../trpg/campaign-view.js"), import("./hud.js"), import("../core/bus.js"),
   ]);
@@ -54,7 +54,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const host = el("section.trpg-screen", { "aria-label": "ボドゲカフェのシナリオ棚" });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   showHud(false);
-  showScreen("trpg", host); stopBgm(.2);
+  showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
   const controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy });
   const unsubscribe = on("hud", () => { if (state !== owner) controller.destroy(); });
   const observer = new MutationObserver(() => { if (!host.isConnected) controller.destroy(); });

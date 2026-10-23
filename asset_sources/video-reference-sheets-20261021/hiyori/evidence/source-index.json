@@ -1,0 +1,163 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "axe_laugh",
+      "axe_normal",
+      "axe_shout",
+      "axe_throw",
+      "love_blush",
+      "normal",
+      "office_mukii",
+      "sad",
+      "serious",
+      "smile",
+      "student_smile",
+      "surprise",
+      "tears"
+    ],
+    "h": 0.8333,
+    "b": 0.0225,
+    "ax": 0.4572,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "hiyori",
+    "name": "朝霧ひより",
+    "reading": "あさぎり ひより",
+    "display_name": "ひより",
+    "role": "heroine_local",
+    "age": 25,
+    "height_cm_range": [
+      156,
+      158
+    ],
+    "nationality": "Japan",
+    "affiliation": "地元企業の総務（社会人3年目）／tonariの元アルバイト",
+    "play_style": "自称・儚い女",
+    "description": "大学時代にtonariで働き、卒業とともに退職した会社員。社会人3年目の総務で、優秀かつ責任感が強く仕事をこなす一方、最近は職場の忙しさや重圧で本当に疲れている。現実逃避したさと、25歳になりアラサーを意識して恋人探しに焦る気持ちから『儚い女ならモテて大切にされるのでは』と思い込み、悲劇のヒロインぶる遅咲きの厨二病のような自己演出を始めた。序盤は物憂げなお姉さんを全力で演じる。実際は健康的で活動的、明るくノリがよく、少し口が悪くリアクションが大きい。芝居も素顔も本人の好きなあり方で、恋人になっても儚い女ごっこを楽しむ。",
+    "background_secret": "儚い演技の動機は本物の仕事疲れからの現実逃避、悲劇のヒロイン願望、アラサーを意識した恋愛への焦り、『儚い女ならモテるかも』という本人なりの思い込み。極端にキャラを作り込む姿は遅咲きの厨二病に近い。アニメ作品に影響された設定は撤回済みで、原因に使わない。本人は仕事ができる優秀な社員で、疲労まで演技ではない。病弱・非力・虚弱や悲惨な過去を勝手に足さず、悪意ある嘘つき・恋愛詐欺・無能な社員にはしない。学校・会社の格や役職などは未確定。",
+    "hobbies": [
+      "シーシャ",
+      "斧投げ",
+      "ラーメン",
+      "ゆるいキャラクターグッズ"
+    ],
+    "favorite_flavor": "ピーチ、紅茶、フルーツ系",
+    "image_color": "#f3a7b6",
+    "romance_target": "hajime",
+    "appearance": "赤みのあるピンクブラウンの高いポニーテール。軽い前髪、明るい茶色の瞳、親しみやすく柔らかな顔立ち。現在の髪型はポニーテールが正本で、大学時代はミディアムヘア。現在は伏し目・少し下がった眉・小さな寂しげな微笑みで儚いお姉さんを演じる。健康的で、素では豊かな表情と屈託のない笑顔。同じ顔・体格を保ち、奇抜な装飾に頼らない。",
+    "outfits": {
+      "office": "生成して採用した白〜アイボリーの小さな立ち襟・フレンチスリーブのレースブラウス。黒いスラックス、黒の小さな手提げバッグとローファー。退勤後の寄り道では社員証・名札・首のストラップなし。伏し目と小さな微笑みで儚さを出す。凛の長袖シャツとは袖・襟・レースで区別する。",
+      "casual": "黒系のパーカー、カーゴパンツ、スニーカーのボーイッシュな私服",
+      "lounge": "少し気だるげで大人っぽい私服。煙と照明に似合う雰囲気。元スタッフ時代の衣装とは別",
+      "date": "カーディガンや柔らかいニット。少し女性らしい服装",
+      "axe": "普段と同じアイボリーのレースブラウス、黒スラックスと黒ローファー。投擲中はバッグを画面外に置く。儚い演技を忘れ、姿勢と笑顔で全力で楽しむ",
+      "student": "大学時代の回想用。ピンクブラウンのミディアムヘア、黒Tシャツと店員エプロン。元気な笑顔。現在の服装と混同しない。"
+    },
+    "expressions_required": [
+      "通常",
+      "儚げな微笑み",
+      "物憂げ",
+      "眠そう",
+      "照れ",
+      "困惑",
+      "硬直",
+      "本気の笑顔",
+      "爆笑",
+      "驚愕",
+      "怒り",
+      "真剣",
+      "恋愛中の照れ"
+    ],
+    "speech_rules": {
+      "public": "儚げで少し意味深な短い言葉。好きな食べ物・仕事の愚痴・元店員の知識で演技が崩れることもある",
+      "inner": "台詞行のinnerに本心を書く。高いテンション、俗っぽさ、照れや好意。UIが括弧を付け、プレイヤーにだけ表示する",
+      "knowledge": "はじめにはinnerが聞こえない。表の発言・表情・行動から徐々に気づき、初対面で全てを見抜かない",
+      "romance": "普段は本心にしかなかった好き・会いたい・帰りたくないが、関係が進んで初めて表の台詞になる。全行に本心を付けない"
+    },
+    "relationships": {
+      "hajime": "他店で偶然『どこかで働いてるの？』と儚げに話しかけ、tonari勤務と聞いて初めて元バイトの先輩と明かす。序盤から中盤は儚いお姉さんを全力で演じ、スミさんへの本当の尊敬やはじめへの心からの応援はtonari再会エピソードの終盤で初めて言葉にする。演技から素顔を知り、どちらも面白いと思う相手。恋愛になるとひよりは不器用になる",
+      "sumi": "大学時代のtonari勤務からの知り合いで、実は心から尊敬する男性の師匠。序盤はその気持ちを深く語らず、素顔を知るスミさんの前で演技するのを恥ずかしがる。久しぶりのtonari帰還で変わらぬ優しさに涙し、感動エピソード終盤で初めて師匠を高く評価してはじめを励ます"
+    },
+    "asset_status": "#664で現在の11表情を再制作し、axe_throwとoffice_mukiiを追加。現在の12表情は普段と同じレースブラウスと黒スラックス、学生時代のstudent_smileのみミディアムヘアと店員服。全13表情の原画・生成指示・書き出し手順はasset_sources/portraits/hiyori-redesign-issue664/に保存。正式立ち絵は896×1200で人物高1000px。旧斧投げキャップ/Tシャツ案は不採用。",
+    "height_cm": 157,
+    "spriteScale": 0.94,
+    "intro_cutin": {
+      "title": "儚げな元スタッフ",
+      "line": "……煙みたいに、もう遠い昔だけどね",
+      "face": "normal",
+      "color": "#cc8fa7"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+      "sha": "5e5e0564d10e7f791a246206b2bf7b8c56811b17",
+      "size": 383063
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+      "sha": "d880d71fa75fb56c394534918c51798c18c2918b",
+      "size": 367324
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+      "sha": "05b0f5bf369c58c2729007ffe26d2715b5bb339c",
+      "size": 402298
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_throw.png",
+      "sha": "f45426447dbc3ae335ebc303216aa0eeb7505c32",
+      "size": 434944
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+      "sha": "3c6868e94f3656c3cf58ff0736c1ed02028cccc5",
+      "size": 370698
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+      "sha": "f53dc53f8e628701e1b207c2a1c7a0e2da895f46",
+      "size": 366723
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_office_mukii.png",
+      "sha": "556477b5aee3cfac350969a821ff2288d663a48e",
+      "size": 361988
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+      "sha": "2b459c82ddd3838324e1a595b2b2b8ef2fe0cc0a",
+      "size": 380697
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+      "sha": "bd42d271b1813e3708378c7ce3354755f9e51097",
+      "size": 373644
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+      "sha": "a3c443b4c88c75a0c47f925eaa77a040b6380c00",
+      "size": 375436
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+      "sha": "4f9861914dd08ab8fd4740a8ade545e8a270c136",
+      "size": 363270
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+      "sha": "c6287094d39062ff920fdf13741531673f9e6c02",
+      "size": 368754
+    },
+    {
+      "path": "assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+      "sha": "52cb76130a687c11c46ba3c5bdfc479f7971861c",
+      "size": 370500
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

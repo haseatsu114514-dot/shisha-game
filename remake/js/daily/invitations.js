@@ -17,7 +17,7 @@ export const storeInvitationSpot = (message) => message?.accept_event === "inter
 export function storeInvitationDialogue(dialogue, slot) {
   if (!dialogue || slot !== 1) return dialogue;
   return { ...dialogue, lines: (dialogue.lines || []).map((line, i) => i === 0
-    ? { ...line, text: line.text.replace("昼下がりのPEPPERMINT", "夜のPEPPERMINT") } : line) };
+    ? { ...line, text: line.text.replace("昼下がりのぺぱーみんと", "夜のぺぱーみんと") } : line) };
 }
 
 /**
@@ -31,3 +31,16 @@ export function visitReminderSpot(message) {
   if (message.accept_event === "__hiyori_shop__") return message.visit_spot || null;
   return storeInvitationSpot(message) || message.reminder_spot || null;
 }
+
+/** 本文や話者から推測せず、既存の店/リマインダー指定で会場を決める。 */
+export function invitationVisitSpot(invite, source) {
+  if (invite.event === "__hiyori_shop__") return invite.visitSpot || null;
+  if (invite.event === "__sumi_baito__" || invite.event === "hiyori_tonari_return") return "tonari";
+  return visitReminderSpot(source || { type: "invitation", accept_event: invite.event });
+}
+
+export const immediateInvitation = (invite, save) => !!invite && !invite.afterClose
+  && (invite.day ?? save.day) === save.day && invite.slot === save.slot;
+
+export const missedInvitationNote = item => item.msg?.type === "invitation"
+  && item.result === "expired" ? "返信するタイミングを逃した" : null;

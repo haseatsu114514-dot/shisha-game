@@ -32,6 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -133,7 +134,8 @@ async function openingPart() {
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
     const scene = mountColdOpen();
-    await scene.ready;
+    // Decorative images keep loading alongside narration; decoding them must not
+    // hold the first dialogue window (the cold-open lines need no portraits/bg).
     const co = DB.dialogues.ch1_cold_open;
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
@@ -238,10 +240,18 @@ async function tutorial(progress = null) {
 // ---------------------------------------------------------------- 夜の固定イベント
 // pin=マップの「!」印／teaser=前日の就寝時の予感／beat=イベント前のつなぎ一行
 
-const nightScene = (id, bg) => async () => {
+const nightScene = (id, bg) => async (context) => {
   const dialogue = DB.dialogues[id];
   if ((bg || dialogue?.metadata?.bg || "").includes("tonari") && dialogue?.lines?.some((line) => line.speaker === "sumi")) await meetHiyoriAtTonari();
-  await play(id, bg ? { bg } : {});
+  // 配達報告から同じ来店で続く場合だけ、正本の冒頭から再入店の節を除く。
+  // DB本体・残りの台詞・分岐・dialogue_idは変更せず、通常訪問には元の台本を使う。
+  const opening = dialogue?.lines?.[0];
+  const sameVisit = context?.returnedToTonari && id === "ch1_salaryman_regular" && typeof opening?.text === "string";
+  const scene = sameVisit ? { ...dialogue, lines: [
+    { ...opening, text: opening.text.replace(/^夜のtonari。顔を出すと、/, "夜のtonari。") },
+    ...dialogue.lines.slice(1),
+  ] } : id;
+  await play(scene, bg ? { bg } : {});
 };
 // つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
 const sketchScene = (id, bg) => async () => {
@@ -249,7 +259,7 @@ const sketchScene = (id, bg) => async () => {
   await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
   await play(id, { bg });
 };
-const once = (key, fn) => ({ id: key, doneKeys: [key], run: async () => { await fn(); setFlag(key); }, done: () => flag(key) });
+const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
   2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
@@ -329,7 +339,7 @@ async function earlyPractice() {
   }
   if (!progress.practiceDone && progress.choice !== "review") {
     if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。通し練習はマップの家から「家で練習する」を選べます。", recommended: recommendedDrill() });
+      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。", recommended: recommendedDrill() });
       save();
     }
     beginEvePractice(progress);
@@ -443,12 +453,12 @@ async function tournamentDay() {
     const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
     if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
-    state.tournament.stockSnap = { ...state.flavorStock }; // 再挑戦は大会の頭から＝持ち込み在庫も会場入り前に戻す
+    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
   showHud(false);
-  if (state.tournament.stockSnap) state.flavorStock = { ...state.tournament.stockSnap };
+  restoreEntryResources(state);
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
@@ -598,6 +608,7 @@ async function victory(cs) {
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
+  delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
   // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
@@ -701,24 +712,25 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  const owner = state;
   if (state?.phase === "tournament") {
     recordTournamentLoss(state.tournament);
     save();
   }
   await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
+  if (state !== owner) return; // 準備待ち中にLOADした旧画面を、新しい保存の上へ出さない。
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
     onRetry: async () => {
-      const owner = state;
       if (!owner) { location.reload(); return; }
       await chooseRetryAssist(owner.tournament);
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
-      smokeWipe(() => { tournamentDay(); }, { color: "dark" });
+      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
     },
     onTitle: () => location.reload(),
   });

@@ -8,19 +8,19 @@ import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { homeRig } from "./home-rig.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
-import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
-import { newlyRevealedSpots } from "./map-reveals.js";
-import { createMapFacilityIcon, hasFacilityIcon } from "./facility-icons.js";
+import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
+import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
 function peopleRow(people) {
@@ -85,7 +85,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await Promise.all([uiArtReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   let walking = false;
   for (;;) {
@@ -126,6 +126,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const info = el("div.map-info");
     const pins = el("div.map-pins");
     let selected = null;
+    let revealing = false;
+    let stopReveal = () => {};
+    const revealNotice = el("div.map-notice", { role: "status" });
 
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide });
@@ -177,10 +180,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           renderSceneArt(preview, pv.url);
         });
       }
-      info.replaceChildren(
-        el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
+      info.replaceChildren(...[
+        el("div.mi-banner", { text: known ? spotDetailLabel(s) : s.unknownLabel || s.label }),
         preview,
-        el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
+        charName ? el("div.mi-area", { text: charName }) : null,
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
           spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
@@ -195,10 +198,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok && s.kind === "rest" && homeRig()
           ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
           : null,
-      );
+      ].filter(child => child != null));
     };
 
     const select = (s, btn) => {
+      if (revealing || root.classList.contains("done")) return;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
       SE.click();
@@ -207,7 +211,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
 
     let moving = false;
     const go = async (s, mode = null) => {
-      if (moving || root.classList.contains("done")) return;
+      if (moving || revealing || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
       moving = true;
       try {
@@ -217,6 +221,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         if (!availability(s).ok) { renderInfo(s); return; }
         SE.select();
         cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        stopReveal();
         retire(root);
         info.classList.add("leaving");
         interrupt = null;
@@ -227,8 +232,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     };
 
     function renderPins() {
+      stopReveal();
       pins.replaceChildren();
-      const spots = mapSpots().filter(s => (s.kind !== "spot" || isUnlocked(s)) && (s.kind !== "fortune" || fortuneToday()));
+      const freshPins = [];
+      const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
         id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
       })));
@@ -270,20 +277,38 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       const revealIndex = reveals.indexOf(s.id);
       if (revealIndex >= 0) {
-        btn.classList.add("newly-revealed");
-        btn.style.setProperty("--reveal-delay", `${Math.min(revealIndex * 90, 360)}ms`);
-        btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }));
-        const revealLabel = el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" });
-        revealLabel.addEventListener("animationend", () => {
-          btn.classList.remove("newly-revealed");
-          btn.querySelector(".pin-reveal-ring")?.remove();
-          revealLabel.remove();
-        }, { once: true });
-        btn.querySelector(".shield").append(revealLabel);
-        btn.setAttribute("aria-label", `新しいスポット・${btn.getAttribute("aria-label")}`);
+        btn.style.visibility = "hidden";
+        freshPins.push({ btn, spot: s, index: revealIndex });
       }
       pins.append(btn);
       }
+      if (freshPins.length) {
+        revealing = true;
+        root.dataset.revealing = "true";
+        stopReveal = startSpotReveal({
+          pop: () => {
+            for (const { btn, index } of freshPins) {
+              btn.style.visibility = "";
+              btn.classList.add("newly-revealed");
+              btn.style.setProperty("--reveal-delay", `${Math.min(index * 90, 360)}ms`);
+              btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }),
+                el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" }));
+            }
+            revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot)).join("。 ");
+          },
+          done: () => {
+            revealing = false;
+            delete root.dataset.revealing;
+            for (const { btn } of freshPins) {
+              btn.style.visibility = "";
+              btn.classList.remove("newly-revealed");
+              btn.querySelectorAll(".pin-reveal-ring, .pin-reveal-label").forEach(node => node.remove());
+            }
+            revealNotice.textContent = "";
+          },
+        });
+      }
+
     }
 
     idleInfo();
@@ -295,7 +320,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         type: "button", text: item.label, "aria-pressed": String(item === region),
         dataset: { test: `map-region-${item.id}`, region: item.id },
         onclick: () => {
-          if (moving || root.classList.contains("done") || region === item) return;
+          if (moving || revealing || root.classList.contains("done") || region === item) return;
           region = item; selected = null;
           onRegionChange?.(item.id);
           root.dataset.region = item.id;
@@ -304,16 +329,18 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         },
       }))) : null,
       canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
-        SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
+        if (moving || revealing || root.classList.contains("done")) return;
+        SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
+      revealNotice,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
-    interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
+    interrupt = (v) => { interrupt = null; stopReveal(); retire(root); resolve(v); };
     mountReel(root); // 中断・旧保存に残った演出だけを回収する（通常は行動終了時に提示済み）
     onShown?.();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。

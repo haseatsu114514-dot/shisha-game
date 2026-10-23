@@ -1,6 +1,7 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
+import { createNameFit } from "./name-fit.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
@@ -8,8 +9,9 @@ import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
-import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
-import { playerInner, paginateInner } from "./inner.js";
+import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { playerInner } from "./inner.js";
+import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
@@ -34,6 +36,7 @@ export const hooks = {
 
 const log = [];
 let dom = null;
+let nameFit = null;
 let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
@@ -67,8 +70,11 @@ function buildDom() {
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
+  dom.autoBtn.setAttribute("aria-pressed", "false");
+  dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
@@ -85,11 +91,20 @@ function buildDom() {
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
 }
 
-function setAuto(v) { autoMode = v; dom?.autoBtn.classList.toggle("on", v); if (v) kickAuto(); }
+function setAuto(v) {
+  if (v) setSkip(false);
+  autoMode = v;
+  dom?.autoBtn.classList.toggle("on", v);
+  dom?.autoBtn.setAttribute("aria-pressed", String(v));
+  clearTimeout(autoTimer);
+  if (v) kickAuto();
+}
 function setSkip(v) {
+  if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
+  dom?.skipBtn.setAttribute("aria-pressed", String(v));
   clearTimeout(autoTimer);
   if (v && running?.typing) completeTyping();
   if (v || autoMode) kickAuto();
@@ -552,11 +567,14 @@ async function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
+    dom.name.style.setProperty("--vn-name-length", String([...name].length));
+    dom.name.title = name;
     dom.name.classList.add("show");
+    nameFit.fit();
   } else {
     dom.name.classList.remove("show");
   }
@@ -597,43 +615,13 @@ async function showLine(line) {
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
   dom.box.classList.toggle("has-inner", !!inner);
-  r.pages = paginateForBox(text, dom.text, paginate, inner ? 1 : 2).map((value) => ({ text: value, inner: "" }));
-  if (inner) {
-    // 本心は最後の発言ページの下に出す。長い本心の続きでは発言を残し、打ち直さない。
-    dom.inner.hidden = false; // 本心の書体・実幅を計測する間だけ表示状態にする
-    const thoughts = paginateForBox(inner, dom.inner, paginateInner);
-    const last = r.pages.at(-1);
-    last.inner = thoughts[0];
-    r.pages.push(...thoughts.slice(1).map((value) => ({ text: last.text, inner: value, continuation: true })));
-  }
+  r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
   if (!NO_PORTRAIT.has(speaker) && Object.hasOwn(r.slots, speaker)) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
   renderPage();
-}
-
-// 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
-let measurementContext = null;
-function paginateForBox(text, target = dom.text, split = paginate, maxLines = 2) {
-  measurementContext ||= document.createElement("canvas").getContext("2d");
-  if (!measurementContext || !target.clientWidth) return split(text, { maxLines });
-  const style = getComputedStyle(target);
-  const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-  const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
-  const tracking = parseFloat(style.letterSpacing) || 0;
-  return split(text, {
-    maxLines,
-    maxWidth: target.clientWidth - 4,
-    measure(value) {
-      measurementContext.font = normal;
-      const regularWidth = measurementContext.measureText(value).width;
-      measurementContext.font = emphasis; // [imp]も本文からはみ出さない幅に収める
-      return Math.max(regularWidth, measurementContext.measureText(value).width) +
-        Math.max(0, Array.from(value).length - 1) * tracking;
-    },
-  });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する

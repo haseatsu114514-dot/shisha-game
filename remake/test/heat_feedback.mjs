@@ -33,6 +33,8 @@ try {
       }
       await page.evaluate(async ({ compact, count }) => {
         const core = await import("./js/core/state.js"); core.newGame();
+        // Advanced-count fixture: learning and four-point layout are independent prerequisites.
+        Object.assign(core.state.flags, { _coal_cube_learned: true, _coal_four_unlocked: true });
         const session = await import("./js/craft/session.js"), heat = await import("./js/craft/heat.js");
         const pull = await import("./js/craft/pull.js"), common = await import("./js/craft/common.js");
         window.QA = { core, session, heat, pull, common };

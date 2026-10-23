@@ -78,4 +78,18 @@ python3 -m unittest discover -s tools -p test_shisha_appearance_catalog.py
 
 正常時は終了コード0と `PASS: 4 originals validated ...` を出力する。4点とも1536×1024・RGBA・`approval=design_only`・`runtime_integrated=False`。異常時は終了コード1と、該当項目の位置・ID・理由（例：`duplicate id`、`SHA256 mismatch`、`invalid category`）を標準エラーへ出す。重複ID・JSON同名キー・欠落原画・ハッシュ不一致・不正カテゴリ・寸法/モード不整合・不正な採用情報をfixtureで検査する。原画・正本が取得できない場合も成功扱いにしない。`--source` で検査するJSONも原画パスも、このリポジトリ内に限定する（外部へ向かうsymlinkも拒否）。過去の `generated_original` は生成履歴なので検査対象外。
 
-PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画像全体のデコード、実ピクセルのalpha再測定、実機嵌合や画面QAではない。`alpha_extrema` と長さ目安は正本メタデータの継承で、配信用仕上げ済み／実寸検証済みの主張ではない。切り抜き・bbox・アンカー・相対縮尺・接続位置/径・組合せ・配信用パス・透過処理は、派生カタログの `render_contract` ではすべて `null`（未確定）。後続の素材仕上げ・選択・描画・保存導入は本段階の対象外。
+PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画像全体のデコード、実ピクセルのalpha再測定、実機嵌合や画面QAではない。`alpha_extrema` と長さ目安は正本メタデータの継承で、配信用仕上げ済み／実寸検証済みの主張ではない。切り抜き・bbox・アンカー・相対縮尺・実物適合ID（`compatible_ids`）・配信用パス・透過処理は、派生カタログの `render_contract` では引き続き `null`（未確定）。接続候補と接続位置/径の扱いは以下の契約に従う。後続の素材仕上げ・選択・描画・保存導入は本段階の対象外。
+
+
+## 接続候補の機械検証（#437 接続契約v1）
+
+同じ `candidates.json` に各項目の `connection` と、トップレベルの `connection_contract` を追加する。別カタログ・runtimeデータは作らない。契約v1はデザイン採用段階専用で、`approval_scope: design_only`、`runtime_integrated: false` と `adoption.distribution_assets_ready: false` を維持する。
+
+- `connection_contract.version` は整数 `1`。`candidate_pairs` は検討対象の組を `{handle_id, mouthpiece_id, physical_fit}` で列挙する。現在は採用2ハンドル×2マウスピースの4組。存在する採用IDをハンドル→マウスピースの順で参照し、同じ組の重複・逆順・同カテゴリ・未知ID・未採用IDを拒否する。配列にない組を自動補完しない。候補がない場合は空配列を許容する。
+- `physical_fit` はv1では必ず `null`（未検証）。候補列挙はカテゴリ上の整合だけで、どの組も実物嵌合・装着承認・描画可能を表さない。`true` も `false` も拒否し、未検証を「適合しない」とも判定しない。
+- 各素材の `connection` は `position_px` と `diameter_mm` の2キーを必須とし、未知値は省略や0でなく `null`。現在の4点は両方とも `null` のまま。`concept_length_cm` や原画寸法から接続位置・径・相対縮尺を推定しない。
+- `position_px` は原画左上を原点、右を+x、下を+yとする接続中心 `[x, y]`。ハンドルはチップ側、マウスピースはハンドル側の接続部を対象とする。数値を与える場合は有限数かつ `0 <= x < width`、`0 <= y < height`。`diameter_mm` はその接続部の径の数値欄で、有限の正数のみ。bool・文字列・NaN・無限大・範囲外座標・0以下の径を拒否する。これは値の形式検査であり、内外径・差し込み方式・挿入量・公差・実測根拠を確定する物理嵌合仕様ではない。数値を記入しても適合や実測済みとは判定しない。
+
+派生出力では `connection_contract` を継承し、各素材の `position_px` / `diameter_mm` を `render_contract.connection_position` / `connection_diameter` へそれぞれ転記する（単位は原画px / mm）。`compatible_ids` は候補リストから生成せず `null` を維持する。数値のあるsynthetic fixtureでも `physical_fit` と `relative_scale` は `null` のまま検査する。
+
+上記の既存コマンドで、原画SHA256・PNG IHDR検査に加えて接続契約を検査する。終了コード0の `Connection metadata PASS` はID・カテゴリ・値域の検証のみ。画像全体のデコード・実物/画像QA・装着承認・配信用仕上げ・ゲーム導入・選択/保存の完了ではない。原画・採用履歴・本編state/manifest/レンダラーは変更しない。

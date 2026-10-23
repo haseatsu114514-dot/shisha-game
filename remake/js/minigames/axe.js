@@ -8,7 +8,7 @@ import { COMPANIONS, reaction, matchReaction } from "./axe-companions.js";
 import { axeRules } from "./axe-rules.js";
 import { TARGET, FLIGHT, flightPose, impactPose } from "./axe-flight.js";
 import { createAxe, renderAxe } from "./axe-geometry.js";
-import { shotFeedback, sessionStats, impactFeedback } from "./axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, declarationCue } from "./axe-presentation.js";
 import { coachDialog } from "./axe-coach.js";
 const active = new WeakMap(), artReady = new Map();
 function decodeArt(url) {
@@ -19,7 +19,9 @@ function decodeArt(url) {
   return artReady.get(url);
 }
 const art = name => new URL("../../img/" + name, import.meta.url).href;
-const ART = { bg: art("backgrounds/bg_axe_lounge_night.webp"), board: art("ui/axe_throw/target_board.webp") };
+const ART = { bg: art("backgrounds/bg_axe_lounge_night.webp"), board: art("ui/axe_throw/target_board_display.webp") };
+// Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
+if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const faceArt = (id, face) => art("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
 const cycles = { horizontal: 3200, vertical: 3600, power: 2400 };
@@ -49,6 +51,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null;
   let portraitKey = null;
+  let declareTimer = 0, declareNode = null, declareMarker = null;
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null;
   const taught = new Set();
   const isPaused = () => document.hidden || Boolean(helpPanel || coachPanel);
@@ -250,9 +253,28 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function selectCall(id) {
     if (actor !== "player" || phase !== "choice" || isPaused() || performance.now() - lastAction < 250 || id && !canCall(id, shots)) return;
+    const cue = declarationCue(called, id);
     called = id; render();
+    if (cue) showDeclareCue(cue);
+  }
+  function showDeclareCue(cue) {
+    clearDeclareCue();
+    declareMarker = markers.get(cue.target) || null;
+    declareMarker?.classList.add("axe-declare-flash");
+    declareNode = el("div.axe-declare", { "aria-hidden": "true", dataset: { test: "axe-declare" } }, [
+      el("strong", { text: cue.label }), el("span", { text: cue.place }),
+    ]);
+    root.append(declareNode);
+    SE.good();
+    declareTimer = setTimeout(clearDeclareCue, 950);
+  }
+  function clearDeclareCue() {
+    clearTimeout(declareTimer); declareTimer = 0;
+    declareNode?.remove(); declareNode = null;
+    declareMarker?.classList.remove("axe-declare-flash"); declareMarker = null;
   }
   function setPhase(next) {
+    clearDeclareCue();
     phase = next; elapsed = 0; stamp = null;
     if (next === "flight") {
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
@@ -319,6 +341,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     root.dataset.opponentThrows = String(match?.opponent.length || 0);
     root.dataset.phase = phase; root.dataset.timing = String(gaugeAt(elapsed, cycles[phase] || 3200));
     root.dataset.outcome = displayedShot?.outcome || "";
+    root.dataset.special = String(Boolean(displayedShot) && impactFeedback(displayedShot).special);
     root.dataset.focused = String(moving && held < focusUntil);
     root.dataset.aimX = String(aim.x); root.dataset.aimY = String(aim.y); root.dataset.power = String(power);
     root.dataset.paused = String(isPaused()); root.dataset.called = called || "";
@@ -474,7 +497,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : phase === "choice" ? shots.length === 5 ? "後半5投。キルショットの閉鎖は引き継ぎます。" : "通常の得点か、青いキルショットか。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
       : phase === "opponent-ready" ? called ? "ひよりがキルショットを宣言" : "ひよりの投擲を見よう" : phase === "power" ? "③ 白い着地点＋緑の力で投げる" : phase === "flight" ? "それっ！"
       : phase === "result" ? last.outcome === "drop" ? (last.dropReason === "weak" ? "力が足りず落下 · 0点" : "回転が合わず落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
-      : last.outcome === "killshot-miss" ? "宣言した青い的から外れた · 0点" : last.score ? "命中！ " + last.score + "点" : "的の外 · 0点"
+      : last.outcome === "killshot-miss" ? "宣言した青い的から外れた · 0点" : last.score ? (last.outcome === "bull" ? "ど真ん中！ " : "命中！ ") + last.score + "点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
     const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: "ひよりの勝ち", draw: "引き分け · 延長なし" })[matchResult(match).winner] : nextNote;
     if (note.textContent !== finalNote) note.textContent = finalNote;
@@ -490,13 +513,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     total.style.setProperty("--score-glow", "0");
     if (!show) return;
     const progress = Math.min(1, elapsed / effect.duration), x = CX + shot.landing.x * R, y = CY + shot.landing.y * R;
-    const color = effect.color, recoil = Math.max(0, 1 - elapsed / 260) ** 2 * effect.strength;
+    const color = effect.color, recoil = Math.max(0, 1 - elapsed / 260) ** 2 * effect.strength * (effect.special ? 1.6 : 1);
     boardPane.style.transform = `translate(${Math.sin(elapsed * .12) * recoil}px, ${Math.cos(elapsed * .15) * recoil * .65}px)`;
     total.style.setProperty("--score-glow", String(Math.max(0, 1 - progress)));
     impactFx.setAttribute("transform", `translate(${x} ${y})`);
-    impactFlash.setAttribute("r", 8 + Math.min(1, elapsed / 130) * 35);
-    impactFlash.setAttribute("opacity", Math.max(0, 1 - elapsed / 150) * .7);
-    impactRing.setAttribute("r", 8 + Math.sqrt(progress) * (shot.score >= 6 ? 100 : 65));
+    impactFlash.setAttribute("r", 8 + Math.min(1, elapsed / 130) * (effect.special ? 55 : 35));
+    impactFlash.setAttribute("opacity", Math.max(0, 1 - elapsed / (effect.special ? 220 : 150)) * (effect.special ? .9 : .7));
+    impactRing.setAttribute("r", 8 + Math.sqrt(progress) * (effect.special ? 130 : shot.score >= 6 ? 100 : 65));
     impactRing.setAttribute("stroke", color);
     impactRing.setAttribute("opacity", (1 - progress) * .8);
     echoRing.setAttribute("r", 5 + Math.sqrt(progress) * (shot.score >= 6 ? 70 : 44));
@@ -549,7 +572,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function cleanup(completed) {
     if (phase === "closed") return;
-    phase = "closed"; cancelAnimationFrame(frame); lifetime.abort(); root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
+    clearDeclareCue(); phase = "closed"; cancelAnimationFrame(frame); lifetime.abort(); root.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
     root.remove(); active.delete(host); if (previousFocus?.isConnected) previousFocus.focus(); finish(result(completed, shots));
   }
 }

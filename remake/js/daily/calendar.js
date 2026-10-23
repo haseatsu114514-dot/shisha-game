@@ -1,6 +1,6 @@
-// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
+// 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
@@ -17,7 +17,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { runHomePractice } from "./home-practice.js";
@@ -25,13 +25,13 @@ import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
 import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./samechan.js";
 
-import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
+import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
@@ -53,8 +53,21 @@ export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
   queuedLimeSender = null;
+  const owner = state;
+  // 登録済みでも、説明中に保存された初回体験は配達・日付更新より先に完了する。
+  // 導入済み旧保存から初回体験を推測せず、既存の確定・報酬処理を再利用する。
+  if (owner.flags._pakki_first_spin_pending) {
+    if (owner.flags._c_station_registered && owner.visitedDay.c_station == null) {
+      owner.visitedDay.c_station = owner.day;
+      // 初回確定でpendingが消え、その演出中に再中断しても訪問日を失わない。
+      save(); // 会話・訪問回数・成長・行動は繰り返さない。
+    }
+    await installReel();
+    if (state !== owner) return;
+  }
   // 中断/旧保存の回転も、日付更新や朝のイベントより先に完了させる。再抽選はしない。
   await showReelNow({ label: "前回のスロット" });
+  if (state !== owner) return;
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
@@ -73,6 +86,23 @@ export async function runDaily(def) {
       await day1Errands();
       save();
     }
+    // 旧DAY1夜の保存も、退勤後は再勤務・配達へ戻さない。
+    if (state.chapter === 1 && state.day === 1 && state.flags._errand_scout_done) {
+      state.flags._day1_shift_ended = true;
+      state.flags._delivery_schedule_v2 = true;
+      state.slot = 2;
+      save();
+    }
+    // DAY2の出発前に二軒分をtonariでまとめて受注する（登録より先）。
+    if (state.chapter === 1 && !(await briefDeliveryBatch())) return;
+    // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
+    if (state.chapter === 1 && state.day >= 2
+      && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
+      && state.flags._errand_scout_done
+      && (state.flags._delivery_schedule_v2 || !(state.flags._delivery_adam_done && state.flags._delivery_minto_done))) {
+      state.flags._delivery_schedule_v2 = true;
+      if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
+    }
     while (state.slot < 2) {
       const delivery = dueDelivery();
       if (delivery) await deliver(delivery);
@@ -80,7 +110,10 @@ export async function runDaily(def) {
       updateHud();
       save();
     }
-    await endDay();
+    // 2件の納品後、最終報告のため一度だけ職場へ戻る。
+    const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
+    if (reported === false) return;
+    await endDay({ returnedToTonari: reported === true });
     save();
   }
 }
@@ -116,12 +149,26 @@ async function readLime(sender) {
   state.flags._lime_opened = true;
   state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
   const before = state.pendingInvite;
-  await openLime({ tutorial: first, sender, fixedNight });
+  let interrupted = false;
+  await openLime({ tutorial: first, sender, fixedNight, beforeClose: async () => {
+    const invite = state.pendingInvite;
+    if (!invite || invite === before || !immediateInvitation(invite, state)) return;
+    const owner = state;
+    const source = invitationSourceMessage(invite);
+    const destination = spotById(invitationVisitSpot(invite, source));
+    const background = DB.dialogues[invite.event]?.metadata?.bg
+      || (destination && (destination.bg || VISIT_BG[destination.charId] || (destination.id === "tonari" ? "bg_tonari_inside" : null)));
+    if (background) await setBg(bgUrl(background, state.slot ? "night" : "day"), { fast: true });
+    if (state === owner && state.pendingInvite === invite) {
+      interrupted = interruptMap("__lime__");
+      if (interrupted) dropRetired(); // スマホが消える前にマップのピンも片付ける。
+    }
+  } });
   syncSamechanKnowledge();
   setPhoneBadge(unreadCount());
   save();
-  // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
-  if (state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
+  // 後の時間帯の約束もデータは維持する。常設バナーは出さない。
+  if (!interrupted && state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
 }
 
 async function confirmLimeReminder(destination, { spendsAction = true, slotsUsed = 1 } = {}) {
@@ -195,7 +242,7 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 /**
  * 1日目だけ、自由行動の前にスミさんのおつかいを2つ実地でやる（旧版 N18/N19）。
  * ① Dr.fookah でミントを仕入れる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
- * マップは行き先の1か所だけ選べる案内つき。続く配達（DAY1 夜・DAY2 昼）が済んでからが本当の自由行動
+ * 偵察を終えたら退勤済みのまま帰宅。参加登録と配達2件は翌日へ。
  */
 async function day1Errands() {
   const f = state.flags;
@@ -210,7 +257,7 @@ async function day1Errands() {
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
     await openShop({ errand: "mint", expense: true });
     f._errand_shop_done = true;
-    toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」", { ms: 3200 });
+    toast("スミ「仕入れ、ご苦労さん」", { ms: 3200 });
     save();
     await bannersIdle();
   }
@@ -228,34 +275,79 @@ async function day1Errands() {
     f._errand_naru_visited = true;
     save();
   }
-  await chooseSpot({ guide: { pin: "c_station", text: "大会を運営する C.STATION へ。店舗の受付で参加登録！" } });
-  // 初回は一服する来店ではなく、無料の会場見学・参加登録。
+  f._errand_scout_done = true;
+  state.slot = 2; // 偵察でこの日は終了。消耗・費用・行動後処理は従来の1回だけ。
+  await afterAction({ exerted: true });
+}
+
+async function registerTournament() {
   const venue = spotById("c_station");
+  // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
+  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
+  await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   state.visitedDay.c_station = state.day;
-  f._errand_scout_done = true;
-  state.slot++;
-  await afterAction({ exerted: true });
+  save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
 
 // ---------------------------------------------------------------- tonari の配達
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY1 夜に EDEN、DAY2 昼に PEPPERMINT。配達先までは案内し、完了後に自由行動へ戻す（DL02更新）。
- * EDENは従来の無料体験、PEPPERMINTは店先で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
+ * DAY2朝に二軒分をまとめて受注し、昼にPEPPERMINT、夜にEDEN。納品後にtonariへ一度だけ報告する。
+ * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "adam", day: 1, slot: 1, scene: "remake_delivery_eden", text: "古いダブルアップルの缶を EDEN へ。EDEN をタップ！" },
   { charId: "minto", day: 2, slot: 0, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
+  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;
 const DELIVERY_STAMINA = -10;
 
+/** DAY2朝の一括受注。旧途中セーブの既読・訪問済み状態を新規受注に戻さない。 */
+async function briefDeliveryBatch() {
+  const f = state.flags;
+  if (state.chapter !== 1 || state.day < 2 || state.slot >= 2
+    || !f._errand_scout_done || restingToday()) return true;
+  if (!f._delivery_batch_started) {
+    if (state.day !== 2 || state.slot !== 0
+      || DELIVERIES.some(d => f[`_delivery_${d.charId}_told`]
+        || f[`_delivery_${d.charId}_done`] || f[`_delivery_${d.charId}`]
+        || storyCount(d.charId) > 0)) return true;
+    f._delivery_batch_started = true;
+    save();
+  }
+  const owner = state;
+  for (const d of DELIVERIES) {
+    if (f[`_delivery_${d.charId}_told`] || f[`_delivery_${d.charId}_done`]) continue;
+    const result = await play(d.scene, { bg: TONARI_BG });
+    if (state !== owner || result?.cancelled) return false;
+    f[`_delivery_${d.charId}_told`] = true;
+    save(); // 1件目の依頼説明後に中断しても再度読まない。
+  }
+  return true;
+}
+
+/** 報酬・体力・枠を二重計上せず、最後の勤務報告のみ一度再生。
+ * true: 今回帰店した / null: 報告不要 / false: 会話中断・別セーブへの切替。
+ */
+async function reportDeliveryBatch() {
+  const f = state.flags;
+  if (!f._delivery_batch_started || f._delivery_report_done
+    || !DELIVERIES.every(d => f[`_delivery_${d.charId}_done`])) return null;
+  const owner = state;
+  const result = await play("remake_delivery_report", { bg: TONARI_BG });
+  if (state !== owner || result?.cancelled) return false;
+  f._delivery_report_done = true;
+  save();
+  return true;
+}
+
 function dueDelivery() {
-  if (state.chapter !== 1 || state.day > DELIVERY_LAST_DAY || !state.flags._errand_scout_done) return null;
+  if (state.chapter !== 1 || state.day < 2 || !state.flags._errand_scout_done
+    || (state.day > DELIVERY_LAST_DAY && !state.flags._delivery_schedule_v2) || restingToday()) return null;
   const inv = state.pendingInvite;
   if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) return null; // 先にした約束を守る
   for (const d of DELIVERIES) {
@@ -263,7 +355,8 @@ function dueDelivery() {
     if (state.flags[done] || state.day * 2 + state.slot < d.day * 2 + d.slot) continue;
     if (storyCount(d.charId) > 0) { state.flags[done] = true; continue; } // もう自分で行った店
     const spot = spotById(d.charId);
-    if (spot && !isClosed(spot)) return d;
+    // 先の配達先が休業なら順番を入れ替えず、次の営業枠へ延期する。
+    return spot && !isClosed(spot) ? d : null;
   }
   return null;
 }
@@ -280,8 +373,8 @@ async function deliver({ charId, scene, text }) {
   addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
   if (charId === "minto") {
-    // 到着から入店し、カウンターで引き渡す。客としての初回接客は自由行動に残す。
-    await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/bg_street_day.png" });
+    // 最初の背景・人物・台詞から店内。客としての初回接客は自由行動に残す。
+    await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
     f.known_name_minto = true;
     f._met_minto = true;
     markMet("minto");
@@ -352,7 +445,6 @@ async function takeAction() {
   const spotId = await chooseSpot({
     ...chapterDef.mapOptions?.(),
     eventPin: ev && !ev.done?.() ? ev.pin : null,
-    notice: inv && (inv.day ?? state.day) > state.day ? `DAY ${inv.day}に約束がある` : inv && inv.slot > state.slot ? "今夜は約束がある" : "",
     onShown: () => {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
       else limeCoach(phoneButton);
@@ -490,11 +582,19 @@ function postponeUnaffordableInvitation(inv) {
   return true;
 }
 
+function invitationSourceMessage(inv) {
+  return state.inbox?.find(item => item.id === inv.originId || item.originId === inv.originId)?.msg
+    || DB.lime.find(message => message.id === inv.originId)
+    || DB.lime.find(message => message.accept_event === inv.event && message.sender === inv.sender);
+}
+
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
+  const owner = state;
+  const destination = invitationVisitSpot(inv, invitationSourceMessage(inv));
+  let result;
   const cost = invitationCost(inv.event);
   addMoney(-cost);
-  await fadeBlack(null, 300);
   if (inv.event === "__sumi_baito__") {
     // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
     state.visitedDay.tonari_baito = state.day;
@@ -522,14 +622,20 @@ async function meetInvitation(inv) {
     gainAffinity(inv.sender, 10);
     addStamina(-10);
   } else {
-    await play(storeInvitationSpot({ accept_event: inv.event })
+    result = await play(storeInvitationSpot({ accept_event: inv.event })
       ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event);
+    if (state !== owner || result?.cancelled) return false;
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
     if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;
     if (inv.event === "ch1_adam_outing_dagurikura") state.flags._adam_arcade_done = true;
     gainAffinity(inv.sender, 10);
     addStamina(-10);
     await afterStory(inv.event); // 私服の約束のあとの、途中の質問（みんと）
+  }
+  if (state !== owner || result?.cancelled) return false;
+  if (destination) {
+    state.visitedDay[destination] = state.day;
+    state.flags[`_invitation_visit_${destination}`] = `${state.chapter}:${state.day}`;
   }
   if (inv.event !== "__sumi_baito__" && CHAR_STAT[inv.sender]) {
     const { earnStat } = await import("../core/stats.js");
@@ -576,14 +682,18 @@ async function beat(text) {
   b.remove();
 }
 
-async function endDay() {
+async function endDay({ returnedToTonari = false } = {}) {
   syncNightQueue(chapterDef.nightEvents);
   const rested = restingToday();
   const nightCount = await runNightPlan(chapterDef.nightEvents, async (ev) => {
     await bannersIdle();
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
+    // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
+    const sameVisit = returnedToTonari && ev.pin === "tonari";
+    returnedToTonari = false;
     if (rested || state.restDay?.illnessHealth) await beat("今日は休んでいたが、この予定だけは外せない——");
-    if (ev.beat) await beat(ev.beat);
+    if (ev.beat && !sameVisit) await beat(ev.beat);
+    return sameVisit ? { returnedToTonari: true } : undefined;
   });
   save();
   await bannersIdle();
@@ -591,11 +701,13 @@ async function endDay() {
   let metTonight = state.flags._private_night_day === state.day; // 夜の行動枠で約束の相手に会った
   let companion = metTonight ? state.flags._private_night_char : null;
   if (appointment && (appointment.day ?? state.day) === state.day
-    && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1)
+    && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1
+      || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1)
     && !postponeUnaffordableInvitation(appointment)) {
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
-    await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。" : "休養のあと、LIMEで約束した場所へ——");
+    await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
+      : rested ? "休養のあと、LIMEで約束した場所へ——" : "仕事を終え、LIMEで約束した場所へ。");
     if (appointment.event === "date_samechan") {
       if (!samechanDateReady()) cancelSamechanAppointment(appointment);
       else {

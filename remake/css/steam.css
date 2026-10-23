@@ -170,3 +170,6 @@
   .dodge-mist { opacity: .12; }
   .dodge-thought-echo { animation: none; opacity: .2; }
 }
+
+.slash-lock { position: absolute; top: 0; left: -25px; width: 226px; text-align: center; font-size: 13px; color: #f4dba5; line-height: 1.3; }
+.slash-lock[hidden] { display: none; }

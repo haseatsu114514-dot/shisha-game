@@ -19,8 +19,8 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
-// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
+// （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -291,9 +291,12 @@ for (;;) {
 
   // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
-    if (!snap.errandDone) guided++; else deliveryGuided++;
     const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
-    if (id === "c_station" && snap.slot !== 0) throw new Error("DAY1 scout consumed the action before registration");
+    if (!snap.errandDone || id === "c_station") guided++; else deliveryGuided++;
+    if (snap.day === 1 && !["shop", "naru"].includes(id)) throw new Error("DAY1 must end after scouting");
+    if (id === "minto" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Minto must be the first DAY2 delivery");
+    if (id === "adam" && (snap.day !== 2 || snap.slot !== 1)) throw new Error("Adam must be the second DAY2 delivery");
+    if (id === "c_station" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Registration must happen before DAY2 deliveries");
     await chooseDestination(id);
     continue;
   }
@@ -303,7 +306,7 @@ for (;;) {
     const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
     if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
     checkedDeliveryBoundary = true;
-    log("DAY2 minto storefront delivery preserves normal first visit");
+    log("DAY2 minto indoor delivery preserves normal first visit");
   }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
@@ -311,6 +314,8 @@ for (;;) {
   // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     fortuneTried = true;
+    // #780: 新ピンの解錠演出中は選択を受け付けないので、演出の終わりを待つ。
+    await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'), null, { timeout: 10000 }).catch(() => {});
     await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
     continue;
   }
@@ -456,7 +461,7 @@ if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pe
 // 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
 if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
-// スミさんの配達（DAY1 夜 EDEN・DAY2 昼 PEPPERMINT）: 初来店を配達の場面で通す
+// スミさんの配達（DAY2 昼 PEPPERMINT・夜 EDEN）: 初来店を配達の場面で通す
 log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
 if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
   throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");

@@ -237,5 +237,138 @@ class PreflightTests(unittest.TestCase):
                     checker.GitHub("owner/repo").open_pulls()
 
 
+def comment(number=1, body=None, kind="User"):
+    if body is None:
+        body = ('WORKER: fixture-worker\nPLANNED_FILES: ["tools/example.py"]\n'
+                'DEPENDS: {"issues": [], "prs": []}')
+    return {"id": number, "body": body, "user": {"type": kind, "login": "fixture-author"}}
+
+
+class IssueFixtures(Fixtures):
+    def __init__(self, comments=None, **kwargs):
+        super().__init__(**kwargs)
+        self.comment_data = comments or []
+        self.issues[422] = {"number": 422, "state": "open", "comments": len(self.comment_data)}
+
+    def comments(self, number):
+        return copy.deepcopy(self.comment_data)
+
+
+class IssuePlanTests(unittest.TestCase):
+    def test_issue_and_json_plan_reports_match(self):
+        client = IssueFixtures([comment()], pulls={7: pull()}, files={7: [{"filename": "tools/example.py"}]})
+        from_issue = checker.check_issue(422, client)
+        from_json = checker.check(plan(), client)
+        from_issue.pop("plan_source")
+        from_issue.pop("observed_at")
+        from_json.pop("observed_at")
+        self.assertEqual(from_issue, from_json)
+
+    def test_plan_uses_existing_overlap_and_dependency_checks(self):
+        c = comment()
+        c["body"] = c["body"].replace('"prs": []', '"prs": [9]')
+        report = checker.check_issue(422, IssueFixtures([c], pulls={7: pull(), 9: pull(9, state="closed")},
+                                                     files={7: [{"filename": "tools/example.py"}]}))
+        self.assertEqual(report["status"], "requires_review")
+        self.assertEqual(report["file_overlaps"][0]["pr"], 7)
+        self.assertFalse(report["unmerged_dependencies"][0]["merged"])
+        self.assertEqual(report["plan_source"], {"issue": 422, "comment_id": 1, "author": "fixture-author"})
+        self.assertIn("PLAN_SOURCE: Issue #422 comment=1", checker.render_text(report))
+
+    def test_no_plan_is_incomplete_including_body_bot_and_examples(self):
+        for comments in ([], [comment(body="WORKER: only")], [comment(kind="Bot")],
+                         [comment(body="```text\n" + comment()["body"] + "\n```")],
+                         [comment(body="~~~text\n" + comment()["body"] + "\n~~~")],
+                         [comment(body="\n".join("> " + line for line in comment()["body"].splitlines()))]):
+            with self.subTest(comments=comments):
+                client = IssueFixtures(comments)
+                client.issues[422]["body"] = comment()["body"]
+                report = checker.check_issue(422, client)
+                self.assertEqual(report["status"], "incomplete")
+                self.assertIn("no explicit human comment plan", report["missing_information"][0])
+                self.assertEqual(report["fetch_failures"], [])
+
+    def test_explicit_empty_is_valid(self):
+        c = comment(body='WORKER: fixture\nPLANNED_FILES: []\nDEPENDS: {"issues": [], "prs": []}')
+        report = checker.check_issue(422, IssueFixtures([c]))
+        self.assertEqual(report["status"], "no_detected_overlap")
+        self.assertEqual(report["plan"]["files"], [])
+
+    def test_latest_creation_wins_unrelated_and_bot_comments_do_not_replace(self):
+        latest = comment(20)
+        client = IssueFixtures([comment(30, "ordinary progress"), latest,
+                                comment(40, kind="Bot"), comment(10, "DEPENDS: invalid")])
+        report = checker.check_issue(422, client)
+        self.assertEqual(report["status"], "no_detected_overlap")
+        self.assertEqual(report["plan_source"]["comment_id"], 20)
+
+    def test_latest_partial_or_invalid_plan_never_falls_back(self):
+        original = comment()["body"]
+        bodies = ["PLANNED_FILES: []", "DEPENDS: {}", original.replace("WORKER: fixture-worker", "WORKER:"),
+                  original.replace('PLANNED_FILES: ["tools/example.py"]', "PLANNED_FILES: none"),
+                  original.replace('"prs": []', '"prs": [], "prs": [9]'),
+                  original + "\nWORKER: duplicate", original + "\nPLANNED_FILES: []",
+                  original + '\nDEPENDS: {"issues": [], "prs": []}',
+                  original.replace('["tools/example.py"]', '["tools/example.py", "tools/example.py"]'),
+                  original.replace('"prs": []', '"prs": [9, 9]'),
+                  original.replace('"issues": []', '"issues": [422]'),
+                  original.replace('"tools/example.py"', '"../escape"'),
+                  original.replace('"prs": []', '"prs": [true]')]
+        for body in bodies:
+            with self.subTest(body=body):
+                report = checker.check_issue(422, IssueFixtures([comment(), comment(2, body)]))
+                self.assertEqual(report["status"], "incomplete")
+                self.assertTrue(report["missing_information"])
+                self.assertEqual(report["plan_source"]["comment_id"], 2)
+
+    def test_issue_and_comment_fetch_failures_are_separate(self):
+        for method in ("issue", "comments"):
+            client = IssueFixtures([comment()])
+            setattr(client, method, lambda n: (_ for _ in ()).throw(checker.FetchError("fixture unavailable")))
+            report = checker.check_issue(422, client)
+            self.assertEqual(report["status"], "incomplete")
+            self.assertEqual(report["missing_information"], [])
+            self.assertEqual(report["fetch_failures"], ["fixture unavailable"])
+
+    def test_incomplete_malformed_or_duplicate_comments_fail_closed(self):
+        for values in ([comment(), comment()], [{"id": 1}], [comment(kind="Unknown")], []):
+            client = IssueFixtures([comment()])
+            client.comment_data = values
+            report = checker.check_issue(422, client)
+            self.assertEqual(report["status"], "incomplete")
+            self.assertTrue(report["fetch_failures"])
+        client = IssueFixtures([comment()])
+        client.issues[422]["pull_request"] = {}
+        self.assertTrue(checker.check_issue(422, client)["fetch_failures"])
+
+    def test_issue_cli_codes_and_argument_exclusion(self):
+        for comments, code in (([comment()], 0), ([], 2)):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                actual = checker.main(["--issue", "422", "--format", "json"], IssueFixtures(comments))
+            self.assertEqual(actual, code)
+            self.assertEqual(json.loads(output.getvalue())["status"],
+                             "no_detected_overlap" if code == 0 else "incomplete")
+        client = IssueFixtures([comment()], pulls={7: pull()}, files={7: [{"filename": "tools/example.py"}]})
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(checker.main(["--issue", "422"], client), 1)
+        for args in (["--issue", "0"], ["--issue", "-1"], ["--issue", "422", "--plan", "p.json"]):
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:
+                checker.main(args, IssueFixtures())
+            self.assertEqual(error.exception.code, 2)
+
+    def test_comment_endpoint_is_get_only_and_all_pages_are_read(self):
+        with patch.object(checker.subprocess, "run") as run:
+            run.side_effect = [subprocess.CompletedProcess([], 0, '{"number":422}', ""),
+                               subprocess.CompletedProcess([], 0, '[{"id":1}]\n[{"id":2}]', "")]
+            client = checker.GitHub("owner/repo")
+            self.assertEqual(client.issue(422), {"number": 422})
+            self.assertEqual(client.comments(422), [{"id": 1}, {"id": 2}])
+            for call in run.call_args_list:
+                self.assertEqual(call.args[0][:4], ["gh", "api", "--method", "GET"])
+            self.assertEqual(run.call_args_list[1].args[0][-2:],
+                             ["repos/owner/repo/issues/422/comments?per_page=100", "--paginate"])
+
+
 if __name__ == "__main__":
     unittest.main()

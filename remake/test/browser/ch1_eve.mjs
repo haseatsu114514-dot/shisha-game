@@ -116,7 +116,9 @@ await suite("ch1-eve", async check => {
         assert.equal(s.day, 13); assert.equal(s.slot, 2); assert.equal(s.reel.count, 0);
         if (branch === "practice") {
           assert.equal(result.benches, 1);
-          for (const step of ["mix", "pack", "holes", "place", "heat", "steam", "pull", "care"]) assert(result.steps.includes(`rehearsal:${step}`), step);
+          for (const step of ["mix", "pack", "holes", "heat", "steam", "pull", "care"]) assert(result.steps.includes(`rehearsal:${step}`), step);
+          assert.equal(s.flags._coal_cube_learned, undefined, "練習だけで心得を習得しない");
+          assert(!result.steps.includes("rehearsal:place"), "未習得の配置工程は自動通過する");
           assert.equal(s.flags._craft_practice_runs.length, 1);
           assert.equal(s.flags._craft_practice_runs[0].adjustments, 2);
           assert.equal(s.flags._craft_practice_runs[0].success, true);

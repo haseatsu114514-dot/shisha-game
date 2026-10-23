@@ -16,13 +16,16 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
 concurrency:
-  group: progression-recovery-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   recovery:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Include the observed ~7m npm setup delay; assertion deadlines stay unchanged.
+    timeout-minutes: 25
     env:
       TEST_REF: ${{ github.sha }}
       ARTIFACT_DIR: .codex/artifacts/remake-browser/progression-recovery
@@ -49,11 +52,12 @@ jobs:
           node --experimental-vm-modules remake/test/lime_consistency.mjs
           node --experimental-vm-modules remake/test/daily_consistency.mjs
           node --experimental-vm-modules remake/test/illness.mjs
-      - name: Install pinned browser
+      - name: Install pinned npm dependencies
         working-directory: remake/test/browser
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
+        run: npm ci --prefer-offline --loglevel=http
+      - name: Install Chromium and OS dependencies
+        working-directory: remake/test/browser
+        run: npx playwright install --with-deps chromium
       - name: Opening checkpoints and unread lover milestones
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/recovery-preview.log" 2>&1 &

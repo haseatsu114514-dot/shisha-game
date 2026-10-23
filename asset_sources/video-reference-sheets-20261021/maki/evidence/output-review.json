@@ -1,0 +1,30 @@
+{
+  "id": "maki",
+  "name": "斧崎マキ",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1963037,
+  "sha256": "4c5c37205fa44a4268e0545193b0643b1f3eef3437d4b5fb701634973b11c3bb",
+  "approved_input": {
+    "path": "assets/sprites/characters/maki/chr_maki_normal.png",
+    "sha": "98821db463c3befa092330989d08e2440466b83f",
+    "size": 578450
+  },
+  "input_git_blob_verified": "98821db463c3befa092330989d08e2440466b83f",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "成人女性のがっしりした体格、赤茶の短髪と銅色の前髪、そばかす、琥珀色の目、錆赤シャツ、濃茶の革エプロン、作業パンツと編み上げ靴。",
+  "inferred": "エプロンの背面交差ストラップと腰紐、作業服とポケットの後ろ、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "maki-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}

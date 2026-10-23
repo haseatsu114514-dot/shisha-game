@@ -6,6 +6,12 @@ on:
       - '.github/workflows/title-review.yml'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Supersede outdated PR runs; never cancel runs for pushes to main.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   review:
     runs-on: ubuntu-latest

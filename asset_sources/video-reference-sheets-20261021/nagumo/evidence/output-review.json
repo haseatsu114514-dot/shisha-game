@@ -1,0 +1,30 @@
+{
+  "id": "nagumo",
+  "name": "南雲",
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 1753531,
+  "sha256": "6ceda0b6c52346d71d47c4928a561677c1ec3bf9ce2b80f8e166c7fcea3bfa29",
+  "approved_input": {
+    "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+    "sha": "37be28dcaf26b22dc17a43c55b983ef2382eece9",
+    "size": 494583
+  },
+  "input_git_blob_verified": "37be28dcaf26b22dc17a43c55b983ef2382eece9",
+  "input_visually_inspected": true,
+  "output_visually_inspected": true,
+  "visual_review": "4 full-body views and 5 expression portraits visible, face/hair/outfit/colors checked against sole adopted normal sprite; inference footer visible; no full-body cropping",
+  "features": "成熟した顔と皺、黒髪と白いこめかみ、チャコール色の三つ揃いスーツ、白シャツ、柄入りネクタイ、白いポケットチーフ、左腕時計、黒い革靴。",
+  "inferred": "スーツ背面の縫い目とベント、隠れたベスト構造、後ろ髪、靴のかかと。",
+  "limits": [
+    "Generated derivative proposal, not official newly adopted game art",
+    "Expressions are newly drawn from normal sprite, not exact copies of other adopted expression PNGs",
+    "Fine pixel texture is smoother than original sprite; numerical proportions and exact pixels not guaranteed"
+  ],
+  "image_tool": "image_gen.imagegen built-in",
+  "calls": 1,
+  "file": "nagumo-reference-sheet.png",
+  "artifact_role": "production reference; original game sprite unchanged",
+  "library_saved_by_commander": true
+}

@@ -257,7 +257,9 @@ function fortuneMult(id) {
  * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
  * 告白はMAXだけでは予約しない（交友の締めくくりで恋愛を選んだ相手だけ・daily/bonds.js）。
  */
-export function gainAffinity(id, pts) {
+export const LIME_AFFINITY_SCALE = 0.25;
+
+export function gainAffinity(id, pts, opts = {}) {
   if (!id || !(pts > 0)) return;
   let mult = 1 + 0.2 * tier01("charm");
   if ((state.lovers || []).includes(id)) {
@@ -283,7 +285,9 @@ export function gainAffinity(id, pts) {
   const prevPts = state.affinity[id] || 0;
   // 従来の加算量（倍率込みで四捨五入）の85%。旧式（pts×倍率×0.85）は1〜2ptの報酬で従来より増えていた
   state.affinityCarry ||= {};
-  const value = Math.round(pts * mult) * AFFINITY_PACE + (state.affinityCarry[id] || 0);
+  // LIME返信のみ、整数丸めの後・端数繰り越しの前に倍率を掛ける（丸めで0にならず微量が累積する）
+  const scale = opts.source === "lime" ? LIME_AFFINITY_SCALE : 1;
+  const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
   const applied = affinityGateWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;

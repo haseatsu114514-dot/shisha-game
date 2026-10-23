@@ -73,19 +73,21 @@ try {
       const after=getComputedStyle(n,"::after"), points=n.querySelector(".gc-points"), name=n.querySelector(".gc-main");
       return { heading:n.querySelector(".gc-top").textContent, points:n.querySelector(".gc-points").textContent,
         word:n.querySelector(".gc-change")?.textContent || "", name:n.querySelector(".gc-main").textContent,
+        earned:n.querySelector(".gc-earned")?.textContent,
         height:n.clientHeight, badge:n.querySelector(".gc-badge").clientWidth,
         frame:after.backgroundImage, enabled:after.content !== "none", mask:after.maskImage,
         badgeFrame:getComputedStyle(n.querySelector(".gc-badge")).borderImageSource,
         inside:r.left >= stage.left && r.right <= stage.right + 1,
         noOverflow:n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1,
         noSub:!n.querySelector(".gc-sub"), actual:T.core.state.stats.sense,
-        pointGap:points.getBoundingClientRect().left-name.getBoundingClientRect().right,
+        pointGap:points.getBoundingClientRect().left-n.querySelector(".gc-earned").getBoundingClientRect().right,
         smaller:parseFloat(getComputedStyle(n.querySelector(".gc-count")).fontSize)<parseFloat(getComputedStyle(name).fontSize),
         badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
     assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
+    assert.equal(card.earned,"今回");
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);
     assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.smaller && card.pointGap < 8,JSON.stringify(card));
     assert(Math.abs(card.badgeInk.x)<.75 && Math.abs(card.badgeInk.y)<.75,JSON.stringify(card));

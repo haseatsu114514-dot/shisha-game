@@ -18,8 +18,9 @@ import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
+import { tsumugiMessages } from "./tsumugi-schedule.js";
 
-import { invitationCost, storeInvitationSpot, visitReminderSpot } from "./invitations.js";
+import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -241,7 +242,7 @@ export function morningMessages(opts = {}) {
     senders.add("sumi");
   }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
-  const messages = [...DB.lime].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
   for (const template of messages) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || !eligible(template, opts)) continue;
@@ -573,9 +574,10 @@ function declineConflictingInvites(acceptedItem, opts = {}) {
 
 /**
  * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
- * 戻る/閉じるで途中で抜けたら、返事は次に開いたときに続きから
+ * 返信を選ぶ前に戻る/閉じるで抜けたら、次に開いたときに選択から再開
  */
 async function runItem(item, ui, accepted, { forced = false } = {}) {
+  const session = state;
   const m = item.msg;
   const g = ui.gen;
   const alive = () => ui.live(g);
@@ -595,6 +597,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   }
   if (!alive()) return;
   if (item.done) {
+    const missed = missedInvitationNote(item);
+    if (missed) { ui.note(missed); return; }
     for (const entry of item.log || []) {
       if (entry.note) ui.note(entry.note);
       else await ui.bubble(entry.text, entry.me, from, false);
@@ -608,7 +612,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.done = true;
       item.result = "expired";
       item.replyState = "expired";
-      const note = importantInvite(m) ? "返事をしそびれた……。また都合の合う日に誘ってくれるそうだ" : "返事をしそびれた……";
+      const note = missedInvitationNote(item);
       item.log.push({ note });
       ui.note(note);
       return;
@@ -665,20 +669,31 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         delete state.flags[`_invited_${originId(item)}`];
       }
       if (m.decline_response) await theirs(m.decline_response.text);
-      gainAffinity(m.sender, 1);
+      gainAffinity(m.sender, 1, { source: "lime" });
     }
     return;
   }
   if (m.replies && m.replies.length) {
     const r = await ui.choose(m.replies);
-    if (!r || !alive()) return;
-    await mine(r.text);
-    if (r.response) await theirs(r.response);
+    if (!r || !alive() || state !== session || item.done) return;
+    // 返信は演出を待つ前に一度だけ確定。戻る/再入室では確定済みの履歴を表示する。
+    item.done = true;
+    item.replyState = "replied";
+    item.log.push({ me: true, text: r.text });
+    if (r.response) item.log.push({ me: false, text: r.response });
     bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
-    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-    gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
-    bond.private = false;
+    try {
+      // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
+      const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), { source: "lime" });
+    } finally {
+      bond.private = false;
+    }
+    // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
+    await ui.bubble(r.text, true);
+    if (!alive() || state !== session) return;
+    if (r.response) await ui.bubble(r.response, false, from);
+    return;
   }
   item.done = true;
   item.replyState = m.replies?.length ? "replied" : "none";
@@ -691,6 +706,8 @@ function drawHistory(items, ui) {
     if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
     if (!it.read) continue;
     for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
+    const missed = missedInvitationNote(it);
+    if (missed) { ui.note(missed); continue; }
     for (const l of it.log || []) {
       if (l.note) ui.note(l.note);
       else ui.bubble(l.text, l.me, accountOf(it), false);
@@ -704,7 +721,7 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null, fixedNight = () => false } = {}) {
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
@@ -753,7 +770,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last.day) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : null,
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
     }
@@ -797,7 +814,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   if (sender && thread(sender).length) showThread(sender);
   else showList();
   await closed;
-  await ui.close();
+  // 準備が失敗した場合もスマホの操作ロックを残さない。
+  try { await beforeClose?.(); } finally { await ui.close(); }
   return accepted;
 }
 

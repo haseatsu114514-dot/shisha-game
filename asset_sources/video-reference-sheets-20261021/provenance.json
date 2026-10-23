@@ -1,0 +1,76 @@
+{
+  "issue": 801,
+  "kind": "generated_video_production_reference_not_canonical_game_assets",
+  "source_main": "f0af2d890ee814485ef861ea62923de48b950316",
+  "files": [
+    {
+      "character": "ageha",
+      "path": "asset_sources/video-reference-sheets-20261021/ageha/ageha-reference-sheet.png",
+      "bytes": 2134660,
+      "sha256": "1f2aba61059d981a007d8f2ebccbd5803969db5faedf72aec6c4ff43852bdc17",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/ageha/",
+      "notes": "正規normal原画を参照。残る4表情は通常原画と設定からの新規提案。背面ジャケット柄、後ろ髪、髪飾り、靴、ストッキング/ガーターは補完。背面装飾の左右と靴を修正済み。"
+    },
+    {
+      "character": "hajime",
+      "path": "asset_sources/video-reference-sheets-20261021/hajime/hajime-reference-sheet.png",
+      "bytes": 1965433,
+      "sha256": "61ba77e331cda69427b56fc4f8b86b0f54c87291f249a71f68bf91c4fb5d42ac",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/hajime/",
+      "notes": "採用5表情のblob一致。黒キャップ/黒パーカー/黒カーゴパンツ/黒靴/銀マウスピースを優先。背面キャップ、フード、靴、衣服構造は補完。側面カーゴポケットの重複を修正済み。"
+    },
+    {
+      "character": "mashiro",
+      "path": "asset_sources/video-reference-sheets-20261021/mashiro/mashiro-reference-sheet.png",
+      "bytes": 2327265,
+      "sha256": "1e2c07c5c5d9280d0eaca956c7bb7aa9711da6cc64e9b98055eed2147b94dd5b",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/mashiro/",
+      "notes": "採用6表情blob一致、生成には5枚参照。sad画像の実際のあくびをYAWNと表記。二本編み、カーディガン、スカート、靴の側背面構造は補完。"
+    },
+    {
+      "character": "sumi",
+      "path": "asset_sources/video-reference-sheets-20261021/sumi/sumi-reference-sheet.png",
+      "bytes": 2186323,
+      "sha256": "bc56dd7706fe94d929f8dd128196085694c3f145b7071145be785c059bcd5697",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/sumi/",
+      "notes": "採用5表情blob一致。46歳、黒キャスケット/黒角眼鏡/髭/チャコールシャツ/茶色腰エプロン維持。帽子後部、髭の立体、シャツ背面、エプロン紐、靴等は補完。側面結び位置の厳密な整合は未確定。3/4は浅い回転。"
+    },
+    {
+      "character": "dr_kemuri",
+      "path": "asset_sources/video-reference-sheets-20261021/dr_kemuri/dr-kemuri-reference-sheet.png",
+      "bytes": 2658439,
+      "sha256": "99a440f3dba50547d1d36bab236acc6e8d74dd6323340e4926d23a3486fd709e",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/dr_kemuri/",
+      "notes": "採用5表情blob一致。茶色分け髪/黒角眼鏡/少量の顎髭/汚れた白衣/開襟白系シャツ/ベージュパンツ/黒サンダルを実画像優先。背面汚れ、髪、衣服/小物の不可視構造は補完。設定文の青ネクタイは混ぜていない。"
+    },
+    {
+      "character": "adam",
+      "path": "asset_sources/video-reference-sheets-20261021/adam/adam-reference-sheet.png",
+      "bytes": 2457381,
+      "sha256": "d1970e94e8c89b247bdafa72eca16d5ccdee38befec6db5d7ab2da4033c65f5b",
+      "width": 1536,
+      "height": 1024,
+      "source_commit": "f0af2d890ee814485ef861ea62923de48b950316",
+      "source_directory": "assets/sprites/characters/adam/",
+      "notes": "本人左髪=緑、右髪=赤。正面画面左赤/右緑、背面画面左緑/右赤、右側面は赤が手前。両目琥珀。黒ヘンリーシャツ/腰エプロン維持。main旧配色を入力にせずPR742修正normalを参照。側背面色分けの立体、エプロン背面の紐/結びは補完案。",
+      "source_correction_commit": "2224b428b341ee58680caf46dba550c6cb4794b7",
+      "source_correction_pr": 742,
+      "source_normal_blob": "9ee76e3d2713b15022dfb78b4528a416ec64a6da"
+    }
+  ]
+}
