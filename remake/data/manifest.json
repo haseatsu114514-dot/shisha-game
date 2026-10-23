@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-23 12:29 UTC",
+ "generated": "2026-10-23 13:45 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -336,8 +336,11 @@
   "cg_ch1_tsumugi_heart_art.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
+  "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
   "cg_oneesan_first_smoke.png",
+  "cg_rin_confession.png",
+  "cg_tsumugi_confession.png",
   "cg_tsumugi_smoke_color.png"
  ],
  "faceIcons": [
@@ -2017,6 +2020,9 @@
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "sprites/characters/uranaishi/chr_uranaishi_normal.png"
+  "sprites/characters/uranaishi/chr_uranaishi_normal.png",
+  "cgs/cg_minto_confession.png",
+  "cgs/cg_rin_confession.png",
+  "cgs/cg_tsumugi_confession.png"
  ]
 }

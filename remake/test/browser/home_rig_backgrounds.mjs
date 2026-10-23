@@ -209,7 +209,7 @@ await suite("home-rig-backgrounds", async check => {
         await hit(page, label, '[data-test="pin-rest"]');
         await page.waitForFunction(() => document.querySelectorAll(".mi-preview [data-home-rig]").length === 2);
         assert.deepEqual(await rigs(page, ".mi-preview"), variants[3]);
-        await assertFits(page, '[data-test="map-go"], [data-test="map-home-practice"]');
+        await assertFits(page, '[data-test="map-go"]');
         await page.screenshot({ path: `${out}/${label}-preview-${tod}.jpg`, type: "jpeg", quality: 82 });
         await page.evaluate(() => homeMap.interruptMap("rest"));
       }

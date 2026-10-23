@@ -96,8 +96,8 @@ await leaves.link(name => {
   }, { context });
 });
 await leaves.evaluate();
-for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix-capped-by-own-leaves", false], ["reload-mid-bench-keeps-save", false]]) {
-  let phase = "home", observedAuto;
+for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["store-leaves-without-own-stock", false], ["reload-mid-bench-keeps-save", false]]) {
+  let phase = "chooser", observedAuto;
   const inputs = [], reachedMix = new Error("mix boundary reached");
   const page = {
     evaluate: async (_fn, args) => { if (args) observedAuto = args.auto; },
@@ -109,7 +109,7 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix
         if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
       },
       scrollIntoViewIfNeeded: async () => {},
-      click: async () => { if (selector.includes("home-practice-full")) phase = "chooser"; else { phase = selector.includes("appearance-confirm") ? "appearance-confirmed" : "confirmed"; inputs.push("click"); } },
+      click: async () => { phase = selector.includes("appearance-confirm") ? "appearance-confirmed" : "confirmed"; inputs.push("click"); },
       tap: async () => { assert(selector.includes("appearance-confirm") || selector.includes("water-confirm")); phase = selector.includes("appearance-confirm") ? "appearance-confirmed" : "confirmed"; inputs.push("tap"); },
     }),
   };
@@ -119,4 +119,3 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix
   assert.equal(Boolean(tests.get(name).opts?.hasTouch), touch);
 }
 console.log("PASS: all three actual manual browser-test callbacks confirm appearance and water before mix (touch/mouse/mouse)");
-

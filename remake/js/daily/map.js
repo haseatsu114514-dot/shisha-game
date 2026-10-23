@@ -10,7 +10,6 @@ import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
-import { homeRig } from "./home-rig.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
@@ -204,10 +203,6 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
           : el("div.mi-no", { text: av.why }),
-        // 家ではシーシャ作りの練習もできる（#638・tonari から移した）。休むのは「家に帰る」のまま
-        av.ok && s.kind === "rest" && homeRig()
-          ? el("button.mi-go.mi-go-alt", { dataset: { test: "map-home-practice" }, onclick: () => go(s, "practice") }, [el("span", { text: "家で練習する" })])
-          : null,
       ].filter(child => child != null));
     };
 
@@ -282,7 +277,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         retire(root);
         info.classList.add("leaving");
         interrupt = null;
-        resolve(mode ? `${s.id}:${mode}` : s.id); // 家で練習は "rest:practice"
+        resolve(mode ? `${s.id}:${mode}` : s.id);
       } finally {
         moving = false;
       }

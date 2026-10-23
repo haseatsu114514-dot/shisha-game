@@ -119,8 +119,8 @@ try {
       await hit(p, `title-layout-${device.mode}`, device.touch);
       assert.equal(await p.locator(".title").getAttribute("data-layout"), device.mode);
       await hit(p,"title-load",device.touch); await hit(p,"slot-1",device.touch); await map(p,device.touch);
-      await hit(p,"pin-rest",device.touch); await hit(p,"map-home-practice",device.touch);
-      await hit(p,"home-practice-full",device.touch);
+      // 作業台の表示検査は店の制作本体を直接呼ぶ（自宅練習は廃止）。
+      await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });
       await confirmAppearanceSetup(p, { touch: device.touch });
       await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();

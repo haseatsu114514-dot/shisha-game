@@ -1,5 +1,5 @@
 // node --experimental-vm-modules remake/test/water_setup_helper.mjs
-// Scoped orchestration regression: real home callbacks / packing setup source,
+// Scoped orchestration regression: real shop callbacks / packing setup source,
 // real confirmation helpers, page adapter. Does not claim native browser coverage.
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -15,7 +15,7 @@ function exportsModule(values) {
   }, { context });
 }
 const homeText = fs.readFileSync(new URL("./browser/home_practice_leaves.mjs", import.meta.url), "utf8");
-const home = new vm.SourceTextModule(homeText + "\nexport { realPathToMix };\n", { context });
+const home = new vm.SourceTextModule(homeText, { context });
 await home.link(name => {
   if (name === "node:assert/strict") return exportsModule({ default: assert });
   if (name === "./support.mjs") return exportsModule({ suite: async (_name, register) => register(async (name, fn, opts) => tests.set(name, { fn, opts })) });
@@ -26,11 +26,10 @@ await home.link(name => {
 await home.evaluate();
 
 function fakePage({ touch, waterError = null } = {}) {
-  let phase = "home", observedAuto, mixWaits = 0;
+  let phase = "appearance", observedAuto, mixWaits = 0;
   const calls = [];
   const reachedMix = new Error("verified MIX boundary");
   const act = (selector, method) => {
-    if (selector.includes("home-practice-full")) { phase = "appearance"; return; }
     if (selector.includes("appearance-confirm")) { assert.equal(phase, "appearance"); phase = "water"; calls.push(`appearance:${method}`); }
     if (selector.includes("water-confirm")) { assert.equal(phase, "water"); phase = "mix"; calls.push(`water:${method}`); }
   };
@@ -64,10 +63,7 @@ async function reachesMix(label, run, touch, manualAuto = false) {
   assert.equal(page.mixWaits, 1);
   console.log(`PASS ${label}`); cases++;
 }
-for (const touch of [false, true]) {
-  await reachesMix(`realPathToMix ${touch ? "touch" : "PC"}`, p => home.namespace.realPathToMix(p, touch), touch);
-}
-for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix-capped-by-own-leaves", false], ["reload-mid-bench-keeps-save", false]]) {
+for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["store-leaves-without-own-stock", false], ["touch-store-leaves-without-own-stock", true], ["reload-mid-bench-keeps-save", false]]) {
   const test = tests.get(name); assert(test, name);
   assert.equal(Boolean(test.opts?.hasTouch), touch);
   await reachesMix(name, test.fn, touch, true);
@@ -78,7 +74,7 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix
 // untouched in ds_packing.mjs and belong to the actual browser suite.
 const packingText = fs.readFileSync(new URL("./browser/ds_packing.mjs", import.meta.url), "utf8");
 assert.match(packingText, /^import \{ confirmWaterSetup \} from "\.\/water_setup\.mjs";$/m, "packing must import the actual water helper");
-const marker = '      await hit(p,"home-practice-full",device.touch);';
+const marker = '      await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });';
 const start = packingText.indexOf(marker), end = packingText.indexOf('await b(p,"mix-ok").waitFor();', start);
 assert(start >= 0 && end > start && packingText.indexOf(marker, start + 1) < 0, "one supported packing entry segment");
 const deviceStart = packingText.indexOf("const devices = ["), deviceEnd = packingText.indexOf("\n];", deviceStart);
@@ -89,7 +85,7 @@ await packing.link(name => exportsModule(name === "appearance" ? { confirmAppear
 await packing.evaluate();
 for (const device of packing.namespace.devices) await reachesMix(`packing ${device.name}`, p => packing.namespace.setup(p, device), device.touch);
 
-for (const [name, run] of [["home", p => tests.get("mix-capped-by-own-leaves").fn(p)], ["packing", p => packing.namespace.setup(p, { touch: false })]]) {
+for (const [name, run] of [["shop", p => tests.get("store-leaves-without-own-stock").fn(p)], ["packing", p => packing.namespace.setup(p, { touch: false })]]) {
   const error = new Error("missing water confirmation"); const page = fakePage({ waterError: error });
   await assert.rejects(run(page), actual => actual === error);
   assert.deepEqual(page.calls, ["appearance:click"]); assert.equal(page.mixWaits, 0);
