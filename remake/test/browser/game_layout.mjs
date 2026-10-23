@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
+prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const dir = process.env.ARTIFACT_DIR || ".codex/artifacts/game-layout";
@@ -131,10 +134,14 @@ try {
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
-        // 練習は家で（#638）: 地図の家 →「家で練習する」→「一台を通して」
-        await activate(p,"pin-rest",touch);await activate(p,"map-home-practice",touch);
-        await button(p,"home-practice-full").waitFor();if(mode==="ds")await dsGeometry(p);
-        await activate(p,"home-practice-full",touch);await button(p,"mix-ok").waitFor();
+        // 店の制作本体の表示を検査する。日常の1行動は消費しない。
+        await p.evaluate(() => {
+          import("./js/craft/practice.js").then(m => m.runFullPractice())
+            .then(() => import("./js/daily/map.js")).then(m => { window.__layoutMap = m.chooseSpot(); });
+        });
+        await confirmAppearanceSetup(p, { touch });
+        await confirmWaterSetup(p, { touch });
+        await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
         for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);
@@ -146,8 +153,8 @@ try {
         // No state/score/slot/result is synthesized by this test.
         await p.evaluate(()=>{__remake.craftTest.auto="good";});
         await activate(p,"pack-confirm",touch);
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch,90000);
-        const after=await state(p);assert.equal(after.day,6);assert.equal(after.slot,1);assert.equal(after.money,before.money);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===0,touch,90000);
+        const after=await state(p);assert.equal(after.day,6);assert.equal(after.slot,0);assert.equal(after.money,before.money);
         assert.equal(after.marker,"preserved");assert.deepEqual(after.lovers,before.lovers);assert.deepEqual(after.memory,before.memory);
         assert.equal(after.runs.length,before.runs.length+1);assert.equal(after.runs.at(-1).served,true);
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
@@ -156,12 +163,12 @@ try {
         await activate(p,"hud-menu",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
         const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
-        assert.equal(saved.slot,1);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
+        assert.equal(saved.slot,0);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
         await activate(p,"hud-menu",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===0,touch);
         assert.deepEqual(await state(p),after);if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
         if(mode==="ds"){
           await activate(p,"game-layout-recover",touch);await ready(p);

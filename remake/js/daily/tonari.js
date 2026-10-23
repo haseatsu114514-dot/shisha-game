@@ -1,5 +1,5 @@
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
-// シーシャ作りの練習（通しの一台・工程の自主練）は家へ移した（#638・home-practice.js）。工程を選ぶ画面 chooseDrill は第1章の準備イベントで使う。
+// シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire } from "../core/ui.js";

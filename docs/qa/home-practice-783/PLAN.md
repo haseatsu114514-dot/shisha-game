@@ -1,5 +1,14 @@
 # Issue #783 家で練習の廃止・店の練習で店の葉を使う（PLAN）
 
+## 残差の実装
+
+家練習のボタン・calendarの分岐・import・本体をまとめて撤去し、店の配合に店頭葉を追加。私物減算は大会だけに維持する。`visitedDay.home_practice` は無視し、休養にも使う `_home_tonight` と在庫・自己ベストは保持する。
+
+`home_practice_leaves.mjs` は既存CIの入口名を保ち、店の制作本体で在庫ゼロからの選択・完成・中断/再開・SAVE/LOAD、大会の持ち込み上限/支給葉、昼夜と台の有無によらない家練習入口の消失を検証する。表示回帰の `ds_packing` / `game_layout` も店の制作本体を直接呼ぶ。後者は日常の消費行動を伴わないfixtureで、制作記録・保存と画面構成を確認する。
+
+以下はPR #813保存時の経緯・差分案。古いDraft待ちや家練習テストの仕様を現在の未完条件として再採用しない。
+
+
 - Issue: #783 / Draft PR: #813（branch `agy/783-20261021`、base `origin/main ea0229db`）
 - 台帳 owner: `agy-g38fh-20261021-783-7a1c`
 - 仕様変更コメント: https://github.com/haseatsu114514-dot/shisha-game/issues/783#issuecomment-6306840779

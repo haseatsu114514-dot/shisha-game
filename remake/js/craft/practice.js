@@ -15,9 +15,8 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", venue = null } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice" } = {}) {
   const cs = newSession(coached ? "tutorial" : "rehearsal");
-  if (venue) cs.venue = venue; // "home": 家の作業台で練習（#638）
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
   await waitBenchReady(cs);
   await stepSetup(cs);

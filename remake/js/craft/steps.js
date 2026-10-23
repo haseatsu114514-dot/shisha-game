@@ -9,7 +9,7 @@ import { stepPanel, refreshBench, reactAudience, waitBenchReady } from "./sessio
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
-import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt } from "../daily/shop.js";
+import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt, SHOP_FLAVORS } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
@@ -184,7 +184,7 @@ export function evaluateMix(cs) {
 }
 
 /**
- * 配合を手持ちの葉に収める（家で練習・#638）。並んでいない葉は外し、各葉は残量まで・合計は器の量まで。
+ * 配合を使用可能な葉に収める。並んでいない葉は外し、各葉は残量まで・合計は器の量まで。
  * minTotal を渡すと、足りない分を残量の多い葉から1gずつ足す（自動操作で決定できる配合にする）。
  */
 export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
@@ -210,20 +210,17 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
-  // 使えるフレーバー: 在庫のあるもの＋課題フレーバー（主催者支給）。チュートリアルは店の基本形。
-  // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
+  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
-  // 家で練習（#638）は自分の葉を使う。詰めるのは手持ちの範囲まで。減らすのは一台を作り終えたとき（home-practice.js）
-  const ownLeaves = consumes || cs.venue === "home";
   const supplied = (id) => !!reg && id === reg.flavor;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
+  if (!consumes) ids = [...new Set([...SHOP_FLAVORS, ...ids])].filter((id) => DB.flavorById[id]);
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
-  const limit = (id) => (ownLeaves && !supplied(id) ? flavorStock(id) : Infinity);
+  const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
-  if (cs.venue === "home") cs.mix = fitMixToStock(cs.mix, ids, limit, capacity(cs));
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
@@ -287,7 +284,7 @@ export async function stepMix(cs) {
       el("div.fr-name", [
         el("b", { text: f?.short_name || f?.name || id }),
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
-          : ownLeaves ? el("small.fr-stock", { text: `${consumes ? "持ち込み" : "手持ち"} 残り${flavorStock(id)}g` })
+          : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
           : el("small", { text: f?.description || "" }),
         ratio,
       ]),
@@ -323,7 +320,6 @@ export async function stepMix(cs) {
         const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
         cs.mix = { strawberry: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
-      if (cs.venue === "home") cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
       setTimeout(() => okBtn.click(), 60);
@@ -331,8 +327,6 @@ export async function stepMix(cs) {
   });
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
-  // 家で練習: 自分の葉として使った分（課題の支給分は除く）。減らすのは作り終えたとき（home-practice.js）
-  if (cs.venue === "home") cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)));
   cs.mixInfo = evaluateMix(cs);
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
