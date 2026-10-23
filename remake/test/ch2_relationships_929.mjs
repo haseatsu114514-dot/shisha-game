@@ -1,0 +1,64 @@
+// 第2章のオーナー採用改稿（#929）: なるとだけ本当に傷つき、あげは・神崎・REIは見捨てない。
+// 台本の構造で確かめる（表示・保存はブラウザの ch2_story / ch2_tournament / story_canon が確認する）。
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const read = (name) => Object.fromEntries(JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url), "utf8"))
+  .dialogues.map((d) => [d.dialogue_id, d]));
+const all = (scene) => [...scene.lines, ...Object.values(scene.branches || {}).flat()];
+const text = (scene) => all(scene).map((l) => l.text || "").join("\n");
+const isolation = read("ch2_isolation"), main = read("ch2_main"), tournament = read("ch2_tournament");
+const ch3 = read("ch3_main"), prep = read("ch2_preparation"), craft = read("tournament_craft"), echoes = read("ch2_choice_echoes");
+
+// DAY11: なるの店の話を画面で読ませ、その最中にスマホの採点表へ目が落ちる。省略した会話を後から叱らない
+const naru = isolation.ch2_naru_confrontation;
+const at = (re) => naru.lines.findIndex((l) => re.test(l.text || ""));
+assert(at(/また来る/) >= 0 && at(/約束/) > at(/また来る/), "なるが店を続ける話を実際にする");
+assert(at(/採点表/) > at(/約束/), "話の最中に採点表を見る");
+assert(at(/点になるのか/) > at(/採点表/));
+assert.doesNotMatch(text(naru), /さっきの話、聞いてたか|頭に入らない/);
+const choice = naru.lines.find((l) => l.type === "choice");
+assert.deepEqual(choice.choices.map((c) => c.next), ["listen", "push"], "既存の選択順と保存フラグを維持");
+const flags = (branch) => naru.branches[branch].filter((l) => l.type === "set_flag").map((l) => l.flag);
+assert.deepEqual(flags("listen"), ["_ch2_naru_listened"]); assert.deepEqual(flags("push"), ["_ch2_naru_hurt"]);
+assert.match(naru.branches.listen.map((l) => l.text).join("\n"), /もう一回ちゃんと話そう/, "聞いても距離はすぐゼロにならない");
+assert.match(naru.branches.push.map((l) => l.text).join("\n"), /勝ち負けの話はしてない[\s\S]*帰れ[\s\S]*返事は来なかった/);
+assert.doesNotMatch(naru.branches.listen.map((l) => l.text).join("\n"), /勝ったのは/, "選んでいない強気の発言を足さない");
+assert.match(echoes.remake_ch2_eve_choices.branches.hurt.map((l) => l.text).join("\n"), /既読/);
+
+// 謙虚・休養を選んだ進行にも、一律の傲慢な独白を押し付けない
+assert.doesNotMatch(text(main.ch2_sumi_silence), /勝てば、全部正しくなる/);
+
+// DAY4: 安全確認と店の対応が先、常連の冗談は後。危険を軽く扱う地の文を残さない
+const burn = main.ch2_sofa_burn.lines;
+const safe = burn.findIndex((l) => /けがはなかった/.test(l.text || "")), joke = burn.findIndex((l) => l.speaker === "salaryman");
+assert(safe > 0 && joke > safe);
+assert.doesNotMatch(text(main.ch2_sofa_burn), /起こりうるミス/);
+assert.equal(text(main.ch2_slump_taste).match(/いつもの(お前|はじめ)/g)?.length, 1, "スミの同じ意味の台詞を重ねない");
+
+// DAY13: 搬入の確認から戻るあげはを、初対面のように迎えない
+const eve = main.ch2_pre_tournament_realisation.lines;
+assert.match(eve[1].text, /戻ってきた/); assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /何してんの/);
+
+// DAY14: あげはは消えない。悔しさと祝福を両立し、関係は続く。神崎・REIも勝者を認める
+const farewell = text(tournament.ch2_tournament_farewell);
+assert.doesNotMatch(farewell, /理由は、聞かないで|消えた|もう帰るんですか/);
+assert.match(farewell, /悔しい/); assert.match(farewell, /おめでと、ハジメっち/); assert.match(farewell, /うちの店/);
+for (const id of ["kumicho", "rei", "ageha"]) assert(tournament.ch2_tournament_farewell.lines.some((l) => l.speaker === id), id);
+assert(tournament.ch2_tournament_farewell.lines.some((l) => l.flag === "_ch2_ageha_secret"), "手の震えは秘密を知る保存だけ");
+assert.doesNotMatch(tournament.ch2_tournament_farewell.lines.map((l) => l.text || "").join("\n"), /震え/);
+assert.doesNotMatch(text(tournament.ch2_tournament_lobby), /帰って|来ないで/);
+const waiting = craft.tournament_craft_waiting_2.lines;
+for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speaker === id), `制作中の ${id}`);
+assert(waiting.some((l) => ["maezono", "dr_kemuri", "nagumo"].includes(l.speaker)), "審査員の短い反応");
+assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
+
+// REI再訪: 曲の感想に具体的に答え、同じ空返事を繰り返さない
+const rei = prep.remake_ch2_rei_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
+assert.match(rei[0], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
+
+// 第3章（未接続）: なるへははじめから連絡し、あげはとは和解ではなく続いた友情
+assert.match(ch3.ch3_naru_reconcile.lines[0].text, /自分から/);
+const reunion = text(ch3.ch3_ageha_reunion);
+assert.doesNotMatch(reunion, /逃げ|ごめん|怒ってる/); assert.match(reunion, /約束/);
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge");

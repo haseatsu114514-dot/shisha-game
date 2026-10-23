@@ -106,7 +106,9 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.getByRole('button',{name:/第三章|第3章/}).count(),0);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
-    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味の輪郭は戻らない/);
+    // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
+    assert.doesNotMatch(afterText,/理由は、聞かないで|扉の向こうへ消えた/);assert.match(afterText,/おめでと、ハジメっち/);assert.match(afterText,/次は、うちの店ね/);
+    assert.match(afterText,/スジの通った一台/);assert.match(afterText,/味の輪郭は戻らない/);
     assert.match(afterText,/おめでとうの文字が届いていた/);
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
