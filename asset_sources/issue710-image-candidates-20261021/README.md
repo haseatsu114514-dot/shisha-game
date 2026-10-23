@@ -1,4 +1,18 @@
-# #710 採用確認用の画像候補（未採用・未組み込み）
+# #710 炭候補と採用済みの会社員2表情
+
+## 2026-10-23 会社員の採用・配信仕上げ
+
+オーナーがこのチャットで通常・笑顔の原画を確認し、「会社員2枚を採用して進める」と決定。予約手順の今回限りの省略も明示許可済み（[Issue記録](https://github.com/haseatsu114514-dot/shisha-game/issues/710#issuecomment-6362993662)）。炭v1/v2は引き続き保留。
+
+`salaryman-normal-v1.png` と `salaryman-smile-v1.png` の原画はそのまま保持し、低alpha（1〜15）の残留を除き、共通crop・倍率・位置で896×1200へ縮小配置した。旧2表情の人物高1098px・足元1175pxに合わせ、normal/smileのPNGとlossless/exact-alpha WebPの4点を置換。共通のmanifest geometryは維持する。
+
+再現・検査: `python3 tools/build_salaryman_710.py --check`。原画SHA、出力4点の再現性、PNG/WebPの復号後RGBA完全一致、四辺の透過余白を確認する。[採用・変換記録](salaryman-adoption.json)にパラメータとhashを保存。新規生成・描き直し・炭の接続は行っていない。
+
+局所表示検証の実行結果は本ブランチの [salaryman-qa.json](salaryman-qa.json) を参照。PC1280×720／横持ちタッチ844×390の実VN・4立ち絵場面で通常→笑顔の枠位置不変、SKIP時の選択保持、退場を確認。画像の寸法・URL・復号、pageerror/resource errorも既存テストで検査。冒頭の顔なしカットも両画面で確認済み（計4ケース成功）。実機Safari・全章通し・公開配信は未検証。
+
+以下は候補保存時の記録。会社員の未採用表記は上の採用決定で更新され、炭の保留と生成履歴は維持する。
+
+## 候補保存時の記録
 
 炭2枚、会社員通常・笑顔各1枚。原画は生成出力をそのまま保存し、切貼り・描画・透過加工をしていない。ゲーム素材・manifest・コードは無変更。候補の採用はユーザー確認後の別作業。
 

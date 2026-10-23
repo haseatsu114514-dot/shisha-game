@@ -1507,9 +1507,24 @@
           "text": "届けたら一服していけ。配達の手当は、バイト代につけとく"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "配達の前に、C.STATIONの受付で大会の参加登録を済ませてこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさんに教えてもらった受付ですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。登録が済んだらPEPPERMINT、それからEDENだ"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
-          "text": "了解です。……落とさないように、行ってきます"
+          "text": "先に大会の登録、そのあと二軒ですね。行ってきます"
         }
       ],
       "branches": {
