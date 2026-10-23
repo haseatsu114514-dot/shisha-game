@@ -17,6 +17,7 @@ import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
+import { configureAppearance } from "../appearance/select.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = {
@@ -92,6 +93,13 @@ export async function stepSetup(cs) {
   }
   // 制作中の制限で旧セーブの装備・所有品を消さない。
   state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };
+  if (!autoSkill()) {
+    try {
+      await configureAppearance(state, () => stepPanel("setup", "外観の選択", "機材の性能や所持品は変わらない"));
+    } catch {
+      toast("外観一覧を読み込めなかったため、選択は変更していません。", { kind: "warn" });
+    }
+  }
   refreshBench();
 }
 
