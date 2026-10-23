@@ -1,0 +1,68 @@
+{
+  "issue": 710,
+  "owner_decision": "会社員2枚を採用して進める",
+  "originals": "unchanged",
+  "coal": "on hold; not connected",
+  "canvas": [
+    896,
+    1200
+  ],
+  "shared_crop": [
+    335,
+    33,
+    783,
+    1425
+  ],
+  "shared_size": [
+    353,
+    1098
+  ],
+  "shared_position": [
+    279,
+    77
+  ],
+  "records": [
+    {
+      "face": "normal",
+      "source_sha256": "efa68511b363679676ae36d95755e2f69b0b94780a690a7812ead6a49f88e29c",
+      "removed_faint_pixels": 13823,
+      "alpha_bounds": [
+        279,
+        77,
+        629,
+        1174
+      ],
+      "outputs": {
+        "assets/sprites/characters/salaryman/chr_salaryman_normal.png": {
+          "sha256": "446e02ceafb0d457fffbb262e7a107a8faaf4306193c660e24b3a9a2cf20aec0",
+          "bytes": 439701
+        },
+        "remake/img/sprites/characters/salaryman/chr_salaryman_normal.webp": {
+          "sha256": "d1a75e073ec660a261e4c9dac2b1062d032705890333239cf214c60692349806",
+          "bytes": 282050
+        }
+      }
+    },
+    {
+      "face": "smile",
+      "source_sha256": "4a497003ba2f5d6523274ca2bd227a42ca3c0da49a74079adae06ef05e203c40",
+      "removed_faint_pixels": 12655,
+      "alpha_bounds": [
+        279,
+        77,
+        632,
+        1175
+      ],
+      "outputs": {
+        "assets/sprites/characters/salaryman/chr_salaryman_smile.png": {
+          "sha256": "7a41202914b4b90286fb06d4c5c556b98fb9f6200eaccf1398628e59e260a3e4",
+          "bytes": 444670
+        },
+        "remake/img/sprites/characters/salaryman/chr_salaryman_smile.webp": {
+          "sha256": "44d0009721805c7333c3fff79c4489a8be1f4d9a0eef5706bf8134d1e333be97",
+          "bytes": 285526
+        }
+      }
+    }
+  ]
+}
