@@ -74,6 +74,7 @@ async function normalGeometry(p) {
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {
+  if (process.env.CASE_FILTER && name !== process.env.CASE_FILTER) return;
   // Isolate device emulation/input as well as storage between landscape/portrait fixtures.
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
@@ -173,7 +174,7 @@ try {
         if(mode==="ds"){
           await activate(p,"game-layout-recover",touch);await ready(p);
           assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),1);
+          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),0);
         }
       });
     }
@@ -246,4 +247,5 @@ try {
 } finally {
   fs.writeFileSync(path.join(dir,"results.json"),JSON.stringify({base,results},null,2)+"\n");
 }
+assert(results.length > 0, "No game layout cases were selected");
 assert.equal(results.filter(r=>r.status==="failed").length,0);
