@@ -57,8 +57,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .git/lfs/objects
-          key: lfs-site-${{ steps.lfs-list.outputs.hash }}
-          restore-keys: lfs-site-
+          key: lfs-game-${{ steps.lfs-list.outputs.hash }}
+          restore-keys: lfs-game-
       - name: Fetch game images stored in Git LFS
         run: |
           git lfs pull --include="assets/**,remake/img/**" --exclude=""

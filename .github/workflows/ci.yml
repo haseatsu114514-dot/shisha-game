@@ -1,0 +1,207 @@
+# The one CI workflow. It replaces the former ~45 per-feature workflows.
+# - quick:   checks without a browser. Runs on every event, a few minutes.
+# - browser: Chromium suites from tools/ci/suites.json whose paths match the
+#            changed files, spread over up to 8 groups. Draft PRs skip them;
+#            they run when the PR is marked Ready for review.
+# - result:  the single check to wait for before merging ("CI / result").
+# Pushes to main run quick only; the nightly run covers every browser suite.
+# To add a test, add it to tools/ci/suites.json. Do not add a workflow.
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 18 * * *" # 03:17 JST: every browser suite on main
+  workflow_dispatch:
+    inputs:
+      suites:
+        description: "Browser suite ids, comma separated (empty = all)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  # A new push to a PR replaces the running check of the old head.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: tools/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Choose browser suites
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          PR: ${{ github.event.pull_request.number }}
+          DRAFT: ${{ github.event.pull_request.draft }}
+          SUITES: ${{ inputs.suites }}
+        run: |
+          case "$EVENT" in
+            pull_request)
+              if [ "$DRAFT" = "true" ]; then
+                node tools/ci/plan.mjs --none --reason "Draft PR: browser suites run when it is marked Ready for review"
+              else
+                gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" \
+                  --jq '.[] | .filename, (.previous_filename // empty)' > "$RUNNER_TEMP/changed.txt"
+                node tools/ci/plan.mjs --changed "$RUNNER_TEMP/changed.txt"
+              fi ;;
+            push)
+              node tools/ci/plan.mjs --none --reason "push to main: quick checks only; the nightly run covers browser suites" ;;
+            *)
+              if [ -n "$SUITES" ]; then node tools/ci/plan.mjs --all --only "$SUITES"; else node tools/ci/plan.mjs --all; fi ;;
+          esac
+
+  quick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Text files of the whole repo (for the docs and legacy-term scans), plus
+      # audio and fonts. No images and no full 4.4GB checkout.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            *.md
+            *.json
+            *.js
+            *.mjs
+            *.cjs
+            *.py
+            *.gd
+            *.txt
+            *.csv
+            *.sh
+            *.html
+            *.css
+            *.yml
+            *.yaml
+            *.svg
+            *.xml
+            *.toml
+            *.lock
+            /assets/audio/
+            /remake/fonts/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Quick checks
+        run: node tools/ci/run.mjs --kind quick
+
+  browser:
+    needs: plan
+    if: needs.plan.outputs.count != '0'
+    name: browser ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    env:
+      TEST_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+    steps:
+      # Only the folders the tests use (about 0.7GB instead of 4.4GB).
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ matrix.sparse }}
+      # New game images are stored in Git LFS. Without them the game shows
+      # 131-byte pointer files. The cache means only new images are downloaded.
+      - name: List game images stored in Git LFS
+        id: lfs-list
+        run: |
+          hash="$(git lfs ls-files -l -I "assets/**,remake/img/**" | cut -d' ' -f1 | sort | sha256sum | cut -c1-32)"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-game-${{ steps.lfs-list.outputs.hash }}
+          restore-keys: lfs-game-
+      - name: Fetch game images stored in Git LFS
+        run: git lfs pull --include="assets/**,remake/img/**" --exclude=""
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: remake/test/browser/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test packages
+        run: |
+          npm ci --prefix remake/test/browser --prefer-offline --no-audit --no-fund
+          if [ "${{ matrix.pillow }}" = "true" ]; then python3 -m pip install --quiet Pillow==12.3.0; fi
+      # The runner image already has Chromium's system libraries, so no
+      # `--with-deps` (its apt step alone took up to 10 minutes).
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('remake/test/browser/package-lock.json') }}
+      - name: Install and check Chromium
+        working-directory: remake/test/browser
+        run: |
+          npx playwright install chromium
+          node -e 'const {chromium}=require("playwright");(async()=>{const b=await chromium.launch();console.log("Chromium",b.version());await b.close()})().catch(e=>{console.error(e);process.exit(1)})'
+          echo "PLAYWRIGHT_CHROMIUM=$(node -p 'require("playwright").chromium.executablePath()')" >> "$GITHUB_ENV"
+      - name: Start preview server
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - name: Browser suites
+        run: node tools/ci/run.mjs --kind browser --suites "${{ matrix.suites }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-${{ matrix.shard }}
+          path: |
+            .codex/artifacts/
+            ${{ runner.temp }}/*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  result:
+    if: always()
+    needs: [plan, quick, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every CI job to pass
+        env:
+          PLAN: ${{ needs.plan.result }}
+          QUICK: ${{ needs.quick.result }}
+          BROWSER: ${{ needs.browser.result }}
+        run: |
+          echo "plan=$PLAN quick=$QUICK browser=$BROWSER"
+          test "$PLAN" = success
+          test "$QUICK" = success
+          case "$BROWSER" in success|skipped) ;; *) exit 1 ;; esac
