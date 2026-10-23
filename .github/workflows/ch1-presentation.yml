@@ -57,6 +57,9 @@ jobs:
             if curl --fail --silent --output /dev/null http://127.0.0.1:8123/remake/; then break; fi
             sleep 1
           done
+          node remake/test/browser/first_brew_finish.mjs
+          node remake/test/browser/setup_continuation.mjs
+          node remake/test/browser/ch2_choice_echoes.mjs
           node remake/test/browser/ch1_presentation.mjs
           node remake/test/browser/ch1_story_feedback.mjs
           node remake/test/browser/craft_materials.mjs

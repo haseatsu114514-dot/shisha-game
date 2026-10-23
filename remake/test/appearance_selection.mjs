@@ -80,6 +80,7 @@ async function fixture() {
   await entry.evaluate();
   return { ...entry.namespace, requests, notices, storage,
     get panel() { return panel; },
+    newPanel: () => (panel = new Element("section")),
     failWrites: value => { failWrites = value; }, auto: value => { auto = value; }, failFetch: value => { fetchError = value; },
     control: id => { const node = descendants(panel).find(node => node.dataset.test === id); assert(node, id); return node; },
   };
@@ -118,21 +119,21 @@ await check("all four handle/mouthpiece combinations and each category cleared i
   }
 });
 
-await check("setup chooser confirms only appearance, cancellation preserves state and reentry restores selection", async () => {
+await check("standalone chooser confirms only appearance, cancellation preserves state and reentry restores selection", async () => {
   const f = await fixture(); const options = f.model.appearanceOptions(document); f.core.newGame();
   const before = copy(f.core.state);
-  let pending = f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } }); await flush();
+  let pending = f.select.configureAppearance(f.core.state, f.newPanel); await flush();
   const h = f.control("appearance-handle"), m = f.control("appearance-mouthpiece");
   assert.equal(h.value, ""); h.value = options.handle[0].id; h.handlers.change(); m.value = options.mouthpiece[1].id; m.handlers.change();
   f.control("appearance-confirm").click(); await pending;
   const selected = { handle: h.value, mouthpiece: m.value };
   assert.deepEqual(copy(f.core.state), { ...before, appearance: selected });
-  pending = f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } }); await flush();
+  pending = f.select.configureAppearance(f.core.state, f.newPanel); await flush();
   assert.equal(f.control("appearance-handle").value, selected.handle);
   f.control("appearance-handle").value = ""; f.control("appearance-handle").handlers.change();
   f.control("appearance-cancel").click(); await pending;
   assert.deepEqual(copy(f.core.state.appearance), selected);
-  pending = f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } }); await flush();
+  pending = f.select.configureAppearance(f.core.state, f.newPanel); await flush();
   assert.equal(f.control("appearance-handle").value, selected.handle);
   for (const key of ["handle", "mouthpiece"]) { const select = f.control("appearance-" + key); select.value = ""; select.handlers.change(); }
   f.control("appearance-confirm").click(); await pending;
@@ -142,7 +143,7 @@ await check("setup chooser confirms only appearance, cancellation preserves stat
 
 await check("new selection survives autosave and all manual slot loads; save/load failures preserve progress", async () => {
   const f = await fixture(), options = f.model.appearanceOptions(document); f.core.newGame();
-  let pending = f.select.configureAppearance(f.core.state, () => f.panel); await flush();
+  let pending = f.select.configureAppearance(f.core.state, f.newPanel); await flush();
   for (const [key, id] of [["handle", options.handle[1].id], ["mouthpiece", options.mouthpiece[0].id]]) {
     const select = f.control("appearance-" + key); select.value = id; select.handlers.change();
   }
@@ -158,7 +159,7 @@ await check("new selection survives autosave and all manual slot loads; save/loa
   const before = new Map(f.storage); f.failWrites(true); assert.equal(f.core.saveToSlot("suien_remake_slot1"), false);
   assert.deepEqual(f.storage, before); assert.deepEqual(copy(f.core.state.appearance), selected); f.failWrites(false);
   for (const invalid of ["{broken", "null"]) { f.storage.set("suien_remake_slot2", invalid); assert.equal(f.core.loadFromSlot("suien_remake_slot2"), null); assert.deepEqual(copy(f.core.state.appearance), selected); }
-  pending = f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } }); await flush();
+  pending = f.select.configureAppearance(f.core.state, f.newPanel); await flush();
   for (const key of ["handle", "mouthpiece"]) { const select = f.control("appearance-" + key); select.value = ""; select.handlers.change(); }
   f.control("appearance-confirm").click(); await pending;
   f.core.save(); f.core.newGame(); f.core.load();
@@ -166,14 +167,21 @@ await check("new selection survives autosave and all manual slot loads; save/loa
   assert.deepEqual(copy({ owned: f.core.state.owned, equip: f.core.state.equip, stats: f.core.state.stats, money: f.core.state.money }), invariant);
 });
 
-await check("catalog failure leaves appearance and resources untouched; auto setup does not pause for picker", async () => {
-  const f = await fixture(); f.core.newGame(); const before = copy(f.core.state);
+await check("catalog failure preserves state; manual and auto setup never request the catalog", async () => {
+  const f = await fixture(); f.core.newGame();
+  f.core.state.appearance = { handle: "saved-handle", mouthpiece: "saved-mouthpiece" };
+  const before = copy(f.core.state);
   f.failFetch(new Error("offline"));
-  await f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } });
-  assert.deepEqual(copy(f.core.state), before); assert.equal(f.notices.length, 1);
-  f.auto(true); const requests = f.requests.length;
-  await f.steps.stepSetup({ mode: "practice", equip: { ...f.core.state.equip } });
-  assert.equal(f.requests.length, requests); assert.deepEqual(copy(f.core.state), before);
+  await assert.rejects(f.select.configureAppearance(f.core.state, f.newPanel), /offline/);
+  assert.deepEqual(copy(f.core.state), before);
+  const requests = f.requests.length;
+  for (const auto of [false, true]) for (const mode of ["practice", "tournament", "rehearsal", "tutorial"]) {
+    f.auto(auto);
+    await f.steps.stepSetup({ mode, equip: { ...f.core.state.equip } });
+    assert.equal(f.requests.length, requests);
+    assert.deepEqual(copy(f.core.state), before);
+    assert.equal(f.notices.length, 0);
+  }
 });
 
 console.log(`appearance selection: ${cases.length} cases passed (DOM/Storage fixture; no renderer or physical-fit QA)`);

@@ -3,8 +3,7 @@
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/home_practice_leaves.mjs
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
-import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
-prepareAppearanceCatalog();
+import { confirmSetupWater } from "./appearance_setup.mjs";
 
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 
@@ -76,7 +75,7 @@ async function realPathToMix(page, tap) {
     await page.waitForTimeout(100);
   }
   await act("pin-rest"); await act("map-home-practice"); await act("home-practice-full");
-  await confirmAppearanceSetup(page, { touch: tap });
+  await confirmSetupWater(page, { touch: tap });
   await page.locator('[data-test="mix-ok"]').waitFor();
 }
 
@@ -142,7 +141,7 @@ await suite("home-practice-leaves", async (check) => {
       (await import("./js/daily/hud.js")).initHud({ phone() {}, status() {}, menu() { window.__menuOpened++; } });
     });
     await page.locator('[data-test="home-practice-full"]').click();
-    await confirmAppearanceSetup(page, { touch: true });
+    await confirmSetupWater(page, { touch: true });
     await page.locator('[data-test="mix-ok"]').waitFor();
     // 作業台では見えないHUDのMENUを押せない（タイトルへ戻る＝途中保存をさせない）
     const hit = await page.evaluate(() => {
@@ -158,7 +157,7 @@ await suite("home-practice-leaves", async (check) => {
   await check("mix-capped-by-own-leaves", async (page) => {
     await startPractice(page, { double_apple: 8, mint: 6 }, { auto: null });
     await page.locator('[data-test="home-practice-full"]').click();
-    await confirmAppearanceSetup(page);
+    await confirmSetupWater(page);
     await page.locator('[data-test="mix-ok"]').waitFor();
     assert.match(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-stock').innerText(), /手持ち 残り8g/);
     for (let n = 0; n < 10; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
@@ -168,7 +167,7 @@ await suite("home-practice-leaves", async (check) => {
   await check("reload-mid-bench-keeps-save", async (page) => {
     await startPractice(page, { double_apple: 20, mint: 10 }, { auto: null });
     await page.locator('[data-test="home-practice-full"]').click();
-    await confirmAppearanceSetup(page);
+    await confirmSetupWater(page);
     await page.locator('[data-test="mix-ok"]').waitFor();
     for (let n = 0; n < 9; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
     // 課題（支給）の葉を、決定できるまで足す

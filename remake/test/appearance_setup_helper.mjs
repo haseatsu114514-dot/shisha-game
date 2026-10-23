@@ -6,29 +6,21 @@ import os from "node:os";
 import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./browser/appearance_setup.mjs";
+import { waitForSetupContinuation, confirmSetupWater, prepareAppearanceCatalog } from "./browser/appearance_setup.mjs";
 
-for (const touch of [false, true]) {
-  const calls = [];
-  let ready = false;
-  const page = { locator: selector => {
-    assert.equal(selector, '[data-test="appearance-confirm"]');
-    return {
-      waitFor: async options => { assert.deepEqual(options, { state: "visible" }); ready = true; calls.push("visible"); },
-      scrollIntoViewIfNeeded: async () => { assert(ready); calls.push("scroll"); },
-      click: async () => { assert(ready); calls.push("click"); },
-      tap: async () => { assert(ready); calls.push("tap"); },
-    };
-  } };
-  await confirmAppearanceSetup(page, { touch });
-  assert.deepEqual(calls, ["visible", "scroll", touch ? "tap" : "click"]);
-}
-let clicked = false;
-const missing = { locator: () => ({ waitFor: async () => { throw new Error("chooser missing"); },
-  click: async () => { clicked = true; }, tap: async () => { clicked = true; } }) };
-await assert.rejects(confirmAppearanceSetup(missing), /chooser missing/);
-assert.equal(clicked, false, "a missing chooser/catalog must fail, not be skipped");
-console.log("PASS: appearance setup helper performs ordered mouse/touch input and preserves missing-chooser failures");
+const calls = [];
+const page = { locator: selector => ({
+  first() { assert.match(selector, /water-confirm.*mix-ok/); return this; },
+  waitFor: async options => { assert.deepEqual(options, { state: "visible" }); calls.push("next step visible"); },
+  count: async () => { assert.match(selector, /appearance-confirm/); return 0; },
+}) };
+await waitForSetupContinuation(page);
+assert.deepEqual(calls, ["next step visible"]);
+const missing = { locator: () => ({ first() { return this; }, waitFor: async () => { throw new Error("next step missing"); } }) };
+await assert.rejects(waitForSetupContinuation(missing), /next step missing/);
+const blocked = { locator: () => ({ first() { return this; }, waitFor: async () => {}, count: async () => 1 }) };
+await assert.rejects(waitForSetupContinuation(blocked), /Appearance must not block/);
+console.log("PASS: setup helper requires the next real step and rejects a blocking appearance picker");
 
 // An unrelated tiny synthetic Git repository; no clone, remote or user config edits.
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "appearance-catalog-test-"));
@@ -88,7 +80,7 @@ const leaves = new vm.SourceTextModule(fs.readFileSync(new URL("./browser/home_p
 await leaves.link(name => {
   const exports = name === "node:assert/strict" ? { default: assert }
     : name === "./support.mjs" ? { suite: async (_name, register) => register(async (name, fn, opts) => tests.set(name, { fn, opts })) }
-    : { confirmAppearanceSetup, prepareAppearanceCatalog: () => {} };
+    : { waitForSetupContinuation, confirmSetupWater, prepareAppearanceCatalog: () => {} };
   return new vm.SyntheticModule(Object.keys(exports), function () {
     for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
   }, { context });
@@ -100,18 +92,20 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix
   const page = {
     evaluate: async (_fn, args) => { if (args) observedAuto = args.auto; },
     locator: selector => ({
+      first() { return this; },
       waitFor: async () => {
-        if (selector.includes("appearance-confirm")) assert.equal(phase, "chooser");
-        if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
+        if (selector.includes("water-confirm")) assert.equal(phase, "crafting");
+        else if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
       },
+      count: async () => 0,
       scrollIntoViewIfNeeded: async () => {},
-      click: async () => { if (selector.includes("home-practice-full")) phase = "chooser"; else { phase = "confirmed"; inputs.push("click"); } },
-      tap: async () => { assert(selector.includes("appearance-confirm")); phase = "confirmed"; inputs.push("tap"); },
+      click: async () => { if (selector.includes("home-practice-full")) phase = "crafting"; else { phase = "confirmed"; inputs.push("click"); } },
+      tap: async () => { assert(selector.includes("water-confirm")); phase = "confirmed"; inputs.push("tap"); },
     }),
   };
   await assert.rejects(tests.get(name).fn(page), error => error === reachedMix);
   assert.equal(observedAuto, null, "manual path must remain manual");
-  assert.deepEqual(inputs, [touch ? "tap" : "click"]);
+  assert.deepEqual(inputs, [touch ? "tap" : "click"], "confirm real water instead of cosmetics before mix");
   assert.equal(Boolean(tests.get(name).opts?.hasTouch), touch);
 }
-console.log("PASS: all three actual manual browser-test callbacks confirm appearance before mix (touch/mouse/mouse)");
+console.log("PASS: all three actual manual browser-test callbacks confirm water and reach mix without cosmetic input (touch/mouse/mouse)");
