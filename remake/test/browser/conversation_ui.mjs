@@ -64,10 +64,30 @@ await suite("conversation-ui", async check => {
       await page.selectOption("#preview-scene", "narration");
       await page.locator(".vn-box.narration").waitFor();
       assert.equal(await page.locator(".vn-name.show").count(), 0);
+      const frameStyle = () => page.locator(".vn-box").evaluate(box => ({
+        frame: getComputedStyle(box, "::before").backgroundImage,
+        top: getComputedStyle(box, "::before").top,
+        nameHidden: getComputedStyle(box.querySelector(".vn-name")).display === "none",
+        height: box.offsetHeight,
+      }));
+      const narration = await frameStyle();
+      assert(narration.frame.includes("narration.svg"), "Narration must use the flat, nameless frame");
+      assert.equal(narration.top, "0px");
+      assert(narration.nameHidden);
+      await page.locator(".vn-next.show").waitFor();
+      // A newly opened scene rejects input for 320ms, even if its text is ready.
+      await page.waitForTimeout(350);
+      await page.locator(".vn-text").click();
+      await page.locator(".vn-box.thought").waitFor();
+      assert.deepEqual(await frameStyle(), narration, "Inner monologue must use the same nameless frame");
       assert.deepEqual(await storageSnapshot(page), saved, "Preview must not change saved games/config");
       await page.selectOption("#preview-scene", "hiyori");
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……また見つかっちゃった");
       await page.locator(".vn-next.show").waitFor();
+      const dialogue = await frameStyle();
+      assert(dialogue.frame.includes("dialogue.svg"), "Speech must restore the named frame");
+      assert.equal(dialogue.nameHidden, false);
+      assert.equal(dialogue.height, narration.height, "Switching frames must preserve text layout");
     }, { viewport });
   }
 }, { entry: new URL("conversation-preview.html", baseURL).href, readySelector: ".vn-box" });
