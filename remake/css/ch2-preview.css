@@ -176,3 +176,4 @@ body.game-ds.ch2-main .ch2-actions .btn { min-width: 0; min-height: 44px; font-s
 body.game-ds.ch2-main .ch2-map-main .spot-pin { flex-direction: row; }
 body.game-ds.ch2-main .ch2-map-main .spot-pin { display: grid; grid-template-columns: 36px minmax(0, 1fr); grid-template-rows: auto auto; min-height: 92px; height: auto; gap: 4px; }
 body.game-ds.ch2-main .ch2-map-main .spot-pin .pin-status { grid-column: 1 / -1; }
+.map .spot-pin[data-test^="pin-ch2_"] .evt-badge { top: 4px; right: 4px; }

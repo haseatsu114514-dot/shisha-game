@@ -58,6 +58,7 @@ async function act(page,id,{touch=false}={}) {
   }
   await page.waitForFunction(old => window.__remake.state.day > old.day || window.__remake.state.slot > old.slot,
     { day: before.day, slot: before.slot });
+  if (before.slot === 1) await page.waitForFunction(day => __remake.state.day > day, before.day);
   const after = await value(page);
   if (after.day > before.day) {
     await page.locator(t('ch2-morning-home')).click();

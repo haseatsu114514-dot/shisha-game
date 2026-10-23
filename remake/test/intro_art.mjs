@@ -153,6 +153,7 @@ try {
     await page.evaluate((slot) => {
       T.core.state.phase = "daily"; T.core.state.day = 6; T.core.state.slot = slot;
       T.core.state.weatherSeed = 0;
+      for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
       T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
       T.mapTask = T.map.chooseSpot();
     }, slot);
