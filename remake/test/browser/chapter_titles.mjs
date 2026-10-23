@@ -123,6 +123,7 @@ await suite('chapter-titles', async check => {
   }
 
   await check('portrait-ds-keeps-full-title', async page => {
+    await page.locator('[data-test="title-layout-settings"]').tap();
     await page.locator('[data-test="title-layout-ds"]').tap();
     await page.evaluate(async () => {
       const core = await import('./js/core/state.js'); core.newGame();

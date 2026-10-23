@@ -14,6 +14,7 @@ const browserOptions = { headless: true, ...(process.env.CHROME_EXECUTABLE_PATH 
 const results = [];
 const button = (p, id) => p.locator(`[data-test="${id}"]`);
 const activate = async (p, id, touch) => {
+  if (id === "title-layout-ds") await activate(p, "title-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
 };
