@@ -111,16 +111,6 @@ await suite("first-brew", async check => {
       window.running = T.steam.runSteamDodge(cs);
     });
     await page.locator('[data-test="dodge"]').waitFor();
-    // 自動表示の開始説明を承諾し、実際に始まったゲームで任意ヘルプを検査する。
-    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
-      && document.querySelector('.bench-panel')?.inert);
-    await guide(page).click();
-    await page.locator('.countdown').waitFor();
-    await page.locator('.countdown').waitFor({ state: 'detached' });
-    await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]').disabled);
-    const started = await page.locator('[data-test="steam-clock"]').textContent();
-    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before, started);
-    await guide(page).click();
     await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
       && document.querySelector('.bench-panel')?.inert);
     const sample = () => page.evaluate(() => ({
@@ -128,12 +118,34 @@ await suite("first-brew", async check => {
       temp: document.querySelector('[data-test="steam-temperature"]').getAttribute("aria-valuenow"),
       heart: document.querySelector(".dodge-heart").style.transform,
     }));
-    const before = await sample(); await page.keyboard.press("ArrowRight"); await page.waitForTimeout(1500);
-    assert.deepEqual(await sample(), before);
+    const startup = await sample(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(1500);
+    assert.deepEqual(await sample(), startup, 'automatic startup explanation holds clock, temperature and input');
+    await page.keyboard.up("ArrowRight");
+    assert.equal(await page.locator('.countdown').count(), 0, 'countdown waits for startup dismissal');
     await guide(page).click();
-    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before.time
-      || document.querySelector('[data-test="steam-temperature"]').getAttribute('aria-valuenow') !== before.temp, before);
+    await page.locator('.countdown').waitFor();
+    await page.waitForFunction(() => document.querySelector('.countdown')?.textContent === 'GO!');
+    await page.locator('.countdown').waitFor({ state: 'detached' });
+    await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]').disabled);
+    assert(await guide(page).evaluate(n => n === document.activeElement), 'closed guide summary retains keyboard focus');
+    const started = await sample();
+    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before.time, started);
+    await page.keyboard.down("ArrowRight");
+    await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, started.heart);
+    await page.keyboard.up("ArrowRight");
+    const stopped = (await sample()).heart;
+    await page.waitForTimeout(250);
+    assert.equal((await sample()).heart, stopped, 'keyup stops movement while summary remains focused');
+    await guide(page).click();
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
+    const before = await sample(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(1500);
+    assert.deepEqual(await sample(), before);
+    await page.keyboard.up("ArrowRight");
+    await guide(page).click(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(600);
     assert.notDeepEqual(await sample(), before);
+    await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, before.heart);
+    await page.keyboard.up("ArrowRight");
   });
 
   await check("care-help-and-draw", async page => {
@@ -222,7 +234,7 @@ await suite("first-brew", async check => {
     wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
     wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28); wav.writeUInt16LE(2, 32);
     wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(16000, 40);
-    await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/wav", body: wav }));
+    await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.fulfill({ status: 200, contentType: "audio/wav", body: wav }));
     await page.evaluate(async () => {
       const s = T.core.state;
       Object.assign(s, { phase: "tournament", day: 14 });

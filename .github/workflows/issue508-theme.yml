@@ -34,6 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
             remake
             data
@@ -44,6 +45,7 @@ jobs:
             assets/cgs
             assets/ui
             docs/qa/issue508-theme
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: '22'

@@ -11,7 +11,7 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
 const errors = [], missing = [];
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2|css|js)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", r => r.abort());
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", r => r.abort());
 async function mount(options = {}) {
   await page.evaluate(async options => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");

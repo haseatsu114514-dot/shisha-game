@@ -17,7 +17,7 @@ page.on('response', r => {
     failed.push({ url: r.url(), status: r.status() });
   }
 });
-await page.route('https://bgmer.net/**', r => r.abort());
+await page.route('**/assets/audio/bgm/bgm_continue_urgent.mp3', r => r.abort());
 
 try {
   await page.goto(new URL('continue-preview.html', base).href);

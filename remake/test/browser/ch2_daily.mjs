@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { suite, assertFits } from './support.mjs';
-const evidence = fileURLToPath(new URL('../../../docs/qa/ch2-daily/', import.meta.url));
+import { travelToCity, stationFares } from './station_helpers.mjs';
+const evidence = (process.env.COMPARISON_DIR || fileURLToPath(new URL('../../../docs/qa/ch2-daily/', import.meta.url))).replace(/\/?$/, '/');
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
@@ -39,10 +40,7 @@ async function begin(page) { await page.locator(t('ch2-main-next-day')).click();
 async function value(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
 async function settled(page) { await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); } // #780: 新ピンの解錠演出中は選択を受け付けない
 async function wide(page, touch = false) {
-  await settled(page);
-  const button = page.locator(t('map-region-widehanga'));
-  if(touch) await button.tap(); else await button.click();
-  await page.locator(`${map}[data-region="widehanga"]`).waitFor();
+  await travelToCity(page, 'widehanga', { touch });
 }
 async function go(page, id, touch = false) {
   await settled(page);
@@ -92,7 +90,7 @@ await suite('ch2-daily',async check=>{
     });
     assert.match(preview.src,/bg_ch2_rei_entry.webp/);assert.equal(preview.width,1280);assert.equal(preview.height,720);
     await capture(page,'day2-widehanga.png');
-    v=await value(page);assert.equal(v.money,36000);assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
+    v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
     await page.locator(t('hud-menu')).click();await page.locator(t('menu-save')).click();
     await page.locator(t('slot-0')).waitFor();
     assert.match(await page.locator(t('slot-0')).textContent(),/第2章・DAY 2/);
@@ -101,19 +99,19 @@ await suite('ch2-daily',async check=>{
     await page.locator('#modal.show').waitFor({state:'hidden'});
     await reloadSave(page,1);v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.flags._ch2_region,'widehanga');
     assert.deepEqual(v.flavorStock,{mint:21.5,double_apple:6});assert.deepEqual(v.relationshipMemories,['qa_old_memory']);assert.deepEqual(v.loverSince,{minto:10});
-    const slots=await page.evaluate(()=>[1,2,3].map(i=>JSON.parse(localStorage.getItem(`suien_remake_slot${i}`)).money));assert.deepEqual(slots,[36000,1002,1003]);
+    const slots=await page.evaluate(()=>[1,2,3].map(i=>JSON.parse(localStorage.getItem(`suien_remake_slot${i}`)).money));assert.deepEqual(slots,[36000-stationFares(page),1002,1003]);
   });
   await check('paid-city-talk-repeat-and-contact',async page=>{
     await setup(page);await begin(page);await wide(page);await act(page,'ch2_ageha');
-    let v=await value(page);assert.equal(v.money,33000);assert.equal(v.slot,1);assert.equal(v.stamina,95);
+    let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,95);
     assert.equal(v.flags._ch2_talks.ageha,1);assert.equal(v.visits.ageha,1);assert(v.contacts.includes('ageha'));
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
     await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
     assert.equal(await page.locator(t('map-go')).count(),0);
-    await page.locator(t('map-region-home')).click();await act(page,'rest');
+    await travelToCity(page,'home');await act(page,'rest');
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
     assert.equal(v.inbox.filter(i=>i.id==='lime_ch2_ageha_after_visit').length,1);
-    await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000);assert.equal(v.flags._ch2_talks.ageha,2);
+    await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,2);
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_followup'));
     assert.equal(v.flags._ch2_followup_done.ageha,true);
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
@@ -123,9 +121,9 @@ await suite('ch2-daily',async check=>{
         if(window.__dailyTrace.at(-1)!==id)window.__dailyTrace.push(id);
       };
     });
-    await page.locator(t('map-region-home')).click();await act(page,'rest');
+    await travelToCity(page,'home');await act(page,'rest');
     await wide(page);await act(page,'ch2_ageha');v=await value(page);
-    assert.equal(v.money,27000);assert.equal(v.flags._ch2_talks.ageha,3);
+    assert.equal(v.money,27000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,3);
     // 続編のあとは、あげはの店に通う回を順に読む（#626）。全部読んだら従来の repeat に戻る
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_gyaru'));assert(v.flags._ch2_read_remake_ch2_ageha_gyaru);
   });
@@ -140,12 +138,12 @@ await suite('ch2-daily',async check=>{
   await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
     for(const id of ['ageha','kumicho','rei']) {await act(page,`ch2_${id}`,{touch:true});}
-    await page.locator(t('map-region-home')).tap(); await act(page,'rest',{touch:true});
-    let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000);
+    await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
+    let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
     assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
     const trace=await page.evaluate(()=>window.__dailyTrace);assert.equal(trace.filter(id=>id==='ch2_naru_warm').length,1);
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),161,'Fixed Naru night must not award growth');
-    await capture(page,'touch-day4-home.png');await reloadSave(page);v=await value(page);assert.equal(v.day,18);assert.equal(v.money,27000);
+    await capture(page,'touch-day4-home.png');await reloadSave(page);v=await value(page);assert.equal(v.day,18);assert.equal(v.money,27000-stationFares(page));
     assert.equal(await page.locator(t('ch2-main-next-day')).count(),0);
   },{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   await check('preparation-json-failure-keeps-day1-and-retries',async page=>{
@@ -158,20 +156,20 @@ await suite('ch2-daily',async check=>{
   await check('reload-unread-paid-room-keeps-last-action-point',async page=>{
     await setup(page);await begin(page);await wide(page);
     await page.evaluate(()=>{window.__remake.vnTest.turbo=false;});await go(page,'ch2_kumicho');await page.locator('#vn.active .vn-box').waitFor();
-    assert.equal((await value(page)).money,33000);
-    await reloadSave(page);const v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.money,36000);assert.equal(v.flags._ch2_talks?.kumicho,undefined);
+    assert.equal((await value(page)).money,33000-stationFares(page));
+    await reloadSave(page);const v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.money,36000-stationFares(page));assert.equal(v.flags._ch2_talks?.kumicho,undefined);
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);
-    await act(page,'ch2_kumicho');assert.equal((await value(page)).money,33000);
+    await act(page,'ch2_kumicho');assert.equal((await value(page)).money,33000-stationFares(page));
   });
   await check('unaffordable-city-visit-spends-nothing',async page=>{
     await setup(page,{money:2000});await begin(page);await wide(page);await settled(page);await page.locator(t('pin-ch2_rei')).click();
     assert.match(await page.locator('.mi-no').textContent(),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
-    const v=await value(page);assert.equal(v.money,2000);assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
+    const v=await value(page);assert.equal(v.money,2000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
   });
   await check('room-image-failure-preserves-cost-and-action',async page=>{
     let bad=true;await page.route('**/bg_ch2_rei_entry.webp',r=>bad?r.fulfill({status:200,contentType:'image/webp',body:'bad image'}):r.continue());
     await setup(page);await begin(page);await wide(page);await go(page,'ch2_rei');
-    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000);assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.rei,undefined);
-    bad=false;await act(page,'ch2_rei');v=await value(page);assert.equal(v.money,33000);assert.equal(v.slot,1);
+    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.rei,undefined);
+    bad=false;await act(page,'ch2_rei');v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);
   });
 });

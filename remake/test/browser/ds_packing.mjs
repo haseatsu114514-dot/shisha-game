@@ -185,3 +185,4 @@ try {
 } catch(e) { report.launchError=e.stack; console.error(e.stack); }
 finally { await browser?.close(); write("results.json",report); }
 if (report.launchError || report.cases.length!==4 || report.cases.some(r=>r.status!=="passed")) process.exitCode=1;
+

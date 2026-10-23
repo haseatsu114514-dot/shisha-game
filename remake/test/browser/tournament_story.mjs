@@ -52,7 +52,7 @@ await suite('tournament-story',async check=>{
   await check('chapter1-four-events-in-real-tournament',async page=>{
     page.setDefaultTimeout(60000);
     // この会話テストでは、外部CONTINUE曲だけを同梱音源で代用する。
-    await page.route('https://bgmer.net/**',route=>route.fulfill({
+    await page.route('**/assets/audio/bgm/bgm_continue_urgent.mp3',route=>route.fulfill({
       path:new URL('../../../assets/audio/bgm/bgm_tournament_wait.mp3',import.meta.url).pathname,contentType:'audio/mpeg',
     }));
     // CDPへ動的importのPromiseを返さず、ブラウザ自身に依存moduleを読み込ませる。

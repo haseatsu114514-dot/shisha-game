@@ -62,9 +62,13 @@ jobs:
       - name: Install pinned npm dependencies
         working-directory: remake/test/browser
         run: npm ci --prefer-offline --loglevel=http
-      - name: Install Chromium and OS dependencies
+      - name: Install and verify pinned Chromium
         working-directory: remake/test/browser
-        run: npx playwright install --with-deps chromium
+        run: |
+          # Hosted libraries are present; avoid upgrading OS packages before
+          # the full playthrough. Fail here if the pinned browser cannot launch.
+          npx playwright install chromium
+          node -e 'const { chromium } = require("playwright"); (async () => { const browser = await chromium.launch(); console.log("Browser:", browser.version()); await browser.close(); })().catch(error => { console.error(error); process.exitCode = 1; });'
       - name: Start current preview server
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/street-server.log" 2>&1 &

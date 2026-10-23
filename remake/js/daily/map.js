@@ -73,7 +73,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
- * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
+ * @param opts.onShown  マップと解禁の余韻を出し終えたとき（LIME の初回案内など）
  * @param opts.onBeforeGo (spot) => boolean | Promise<boolean>。false ならマップを開いたまま移動を中止する。
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
@@ -130,7 +130,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     let stationTrip = null;
     let revealing = false;
     let stopReveal = () => {};
-    const revealNotice = el("div.map-notice", { role: "status" });
+    const revealNotice = el("div.map-notice.map-unlock-notice", { role: "status" });
+    let mapShown = false, promptsShown = false;
+    const showPrompts = () => {
+      if (!mapShown || promptsShown || revealing || state !== owner || root.classList.contains("done")) return;
+      promptsShown = true;
+      mountReel(root); // 中断・旧保存に残った演出も解禁後に提示する。
+      onShown?.();
+    };
 
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide });
@@ -330,6 +337,14 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       if (freshPins.length) {
         revealing = true;
         root.dataset.revealing = "true";
+        const clearReveal = () => {
+          for (const { btn } of freshPins) {
+            btn.style.visibility = "";
+            btn.classList.remove("newly-revealed");
+            btn.querySelectorAll(".pin-reveal-ring, .pin-reveal-label").forEach(node => node.remove());
+          }
+          revealNotice.textContent = "";
+        };
         stopReveal = startSpotReveal({
           pop: () => {
             for (const { btn, index } of freshPins) {
@@ -341,15 +356,16 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
             }
             revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot)).join("。 ");
           },
-          done: () => {
+          settle: () => {
+            clearReveal();
+            root.dataset.revealPhase = "pause";
+          },
+          done: ({ cancelled }) => {
             revealing = false;
             delete root.dataset.revealing;
-            for (const { btn } of freshPins) {
-              btn.style.visibility = "";
-              btn.classList.remove("newly-revealed");
-              btn.querySelectorAll(".pin-reveal-ring, .pin-reveal-label").forEach(node => node.remove());
-            }
-            revealNotice.textContent = "";
+            delete root.dataset.revealPhase;
+            clearReveal();
+            if (!cancelled) showPrompts();
           },
         });
       }
@@ -378,8 +394,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     renderPins();
     showScreen("map", root);
     interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
-    mountReel(root); // 中断・旧保存に残った演出だけを回収する（通常は行動終了時に提示済み）
-    onShown?.();
+    mapShown = true;
+    showPrompts();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
     const previews = [...new Set(mapSpots().filter(isUnlocked)
       .flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];
