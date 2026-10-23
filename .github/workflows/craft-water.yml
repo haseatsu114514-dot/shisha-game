@@ -1,0 +1,39 @@
+name: Craft water boundaries
+on:
+  pull_request:
+    paths:
+      - 'remake/js/craft/water*.js'
+      - 'remake/css/craft-water.css'
+      - 'remake/js/craft/practice*.js'
+      - 'remake/js/chapters/ch2-tournament*.js'
+      - 'remake/test/water.mjs'
+      - '.github/workflows/craft-water.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/craft/water*.js'
+      - 'remake/css/craft-water.css'
+      - 'remake/js/craft/practice*.js'
+      - 'remake/js/chapters/ch2-tournament*.js'
+      - 'remake/test/water.mjs'
+      - '.github/workflows/craft-water.yml'
+permissions:
+  contents: read
+jobs:
+  water-boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /remake/js/craft/water*.js
+            /remake/js/craft/practice*.js
+            /remake/js/chapters/ch2-tournament*.js
+            /remake/js/core/util.js
+            /remake/js/core/state.js
+            /remake/js/core/rules.js
+            /remake/js/core/bus.js
+            /remake/test/water.mjs
+      - run: node --experimental-vm-modules remake/test/water.mjs
