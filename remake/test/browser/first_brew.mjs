@@ -127,11 +127,15 @@ await suite("first-brew", async check => {
     await page.waitForFunction(() => document.querySelector('.countdown')?.textContent === 'GO!');
     await page.locator('.countdown').waitFor({ state: 'detached' });
     await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]').disabled);
+    assert(await guide(page).evaluate(n => n === document.activeElement), 'closed guide summary retains keyboard focus');
     const started = await sample();
     await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before.time, started);
     await page.keyboard.down("ArrowRight");
     await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, started.heart);
     await page.keyboard.up("ArrowRight");
+    const stopped = (await sample()).heart;
+    await page.waitForTimeout(250);
+    assert.equal((await sample()).heart, stopped, 'keyup stops movement while summary remains focused');
     await guide(page).click();
     await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
       && document.querySelector('.bench-panel')?.inert);
