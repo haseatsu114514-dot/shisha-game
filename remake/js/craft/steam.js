@@ -7,7 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -287,6 +287,7 @@ export async function runSteamDodge(cs) {
   clock.update(seconds);
   refreshLabel();
   slashLabel();
+  if (!await explainTutorialStep(cs, "steam")) { unkey(); input.abort(); return; }
   await countdown();
   running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
   const auto = autoSkill();
