@@ -281,6 +281,34 @@
           "speaker": "",
           "face": "",
           "text": "REIさんはケースを持ち直して、搬入口の方へ歩いていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その先、搬入口の灯りの下に、背の高い男が立っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手帳を開いて、選手たちの出入りを見ている。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男はこちらを一度だけ見ると、暗がりの方へ歩いていった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "volk"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_scout_seen"
         }
       ],
       "branches": {

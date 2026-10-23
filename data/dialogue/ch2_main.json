@@ -444,6 +444,21 @@
         {
           "speaker": "ageha",
           "face": "normal",
+          "text": "搬入口に、背の高い外国の人いたでしょ。あの人、うちの店にも来てた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "何も頼まないで、メモだけ取って帰ったの。誰なんだろね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（さっきの人だ。……でも今は、考える余裕がない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
           "text": "その順番、誰に教わったの？"
         },
         {

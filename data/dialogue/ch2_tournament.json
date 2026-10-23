@@ -123,6 +123,27 @@
           "speaker": "",
           "face": "",
           "text": "4台の向こうで、上園、チャコール博士、南雲が席についた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の一番後ろ、壁際に、背の高い男が一人で立っていた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_seen",
+          "next_true": "scout_seen",
+          "next_false": "scout_first"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "volk"
         }
       ],
       "branches": {
@@ -152,6 +173,20 @@
             "speaker": "rei",
             "face": "smile",
             "text": "零-ZERO-のREI。今日の煙、楽しみにしてる"
+          }
+        ],
+        "scout_seen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（また、あの人だ。試煙会にも、会場の外にもいた）"
+          }
+        ],
+        "scout_first": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（一人だけ、手帳を開いてる。誰だろう）"
           }
         ]
       }

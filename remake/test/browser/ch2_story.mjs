@@ -109,6 +109,7 @@ await suite('ch2-story', async check => {
     // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・REIはそこで名乗り、面識が残る
     assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
     assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
+    assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
     await assertFits(page, '.ch2-contest .btn');
     await reload(page); await page.locator(end).waitFor();
