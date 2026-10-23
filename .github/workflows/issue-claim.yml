@@ -4,32 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: Reservation operation, or maintain completed claims and outdated instructions
+        description: Reservation operation
         required: true
         type: choice
-        options: [next, claim, release, status, transfer, park, resume, handoff, pickup, maintain]
+        options: [claim, release, handoff]
       issue:
-        description: Issue number (except next or maintain)
-        required: false
+        description: Target Issue number
+        required: true
         type: string
       owner:
         description: Unique worker session ID
-        required: false
+        required: true
         type: string
       request_id:
         description: Unique request ID
         required: false
         type: string
-      claim_run:
-        description: Current successful reservation run (transfer, park, resume or status)
-        required: false
-        type: string
-      handoff_comment:
-        description: Stopped/pushed handoff record for transfer
-        required: false
-        type: string
       summary:
-        description: Handoff only; DONE / TODO / TEST / NEXT after pushing all work (max 1200 characters)
+        description: Handoff only; saved PR/branch and DONE / TODO / TEST / NEXT (max 1200 characters)
         required: false
         type: string
       agent:
@@ -40,48 +32,29 @@ on:
         options: [codex, claude, any]
   issue_comment:
     types: [created]
-  issues:
-    types: [opened, edited, reopened, closed]
-  pull_request:
-    types: [closed]
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/issue-claim.yml'
-      - 'tools/issue_claim_coordinator.cjs'
-      - 'docs/issue_claim_protocol.md'
-  schedule:
-    - cron: '23 3 * * *'
 permissions:
   issues: write
   contents: read
-  pull-requests: read
-  actions: read
 jobs:
   coordinate:
     if: >-
-      (github.event_name != 'issue_comment' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.type != 'Bot' &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
-      startsWith(github.event.comment.body, '/issue-claim '))) &&
-      (github.event_name != 'issues' || github.event.action == 'closed' ||
-      contains(github.event.issue.body, 'claim/status') || contains(github.event.issue.body, 'status成功') ||
-      contains(github.event.issue.body, '1worker1') || contains(github.event.issue.body, 'issue-claim-policy:v2')) &&
-      (github.event_name != 'pull_request' ||
-      (github.event.pull_request.merged && github.event.pull_request.head.repo.full_name == github.repository))
+      startsWith(github.event.comment.body, '/issue-claim '))
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     concurrency:
-      group: issue-claim-coordinator
+      group: issue-claim-${{ inputs.issue || github.event.issue.number }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.repository.default_branch }}
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
-          sparse-checkout: tools/issue_claim_coordinator.cjs
+          sparse-checkout: /tools/issue_claim_coordinator.cjs
           sparse-checkout-cone-mode: false
-      - name: Coordinate reservations and maintenance
+      - name: Coordinate reservation
         uses: actions/github-script@v7
         env:
           OPERATION: ${{ inputs.operation }}
@@ -89,8 +62,6 @@ jobs:
           OWNER: ${{ inputs.owner }}
           AGENT: ${{ inputs.agent }}
           REQUEST_ID: ${{ inputs.request_id }}
-          CLAIM_RUN: ${{ inputs.claim_run }}
-          HANDOFF_COMMENT: ${{ inputs.handoff_comment }}
           SUMMARY: ${{ inputs.summary }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

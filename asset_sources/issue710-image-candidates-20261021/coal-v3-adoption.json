@@ -1,0 +1,115 @@
+{
+  "issue": 710,
+  "status": "owner adopted; integrated; local opening 6 cases passed; CI pending",
+  "owner_reply": "この案を採用して進める",
+  "route": "built-in image_gen.imagegen",
+  "calls": 1,
+  "transparent_background": false,
+  "prompt": "coal-v3-prompt.txt",
+  "reference_order": [
+    {
+      "path": "assets/ui/making/hajime_craft_heat.png",
+      "sha256": "825582bcb0fb6777a647bdf596eda29d953d591ec198f0d1ae7096d8f2401cf1",
+      "bytes": 1992855,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "asset_sources/shisha-hardware-reference/heat-management-reference-20261009.webp",
+      "sha256": "bb4d278249e172d46ad06bda87cb8b8b78e9d8b27c0f1c93c0fda008962a35b5",
+      "bytes": 2212,
+      "size": [
+        436,
+        134
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "composition": {
+    "person": "Hajime: hand and black hoodie only, face outside crop",
+    "scene": "holding a hot small charcoal cube in tongs",
+    "hookah": "outside crop",
+    "HMD": "outside crop",
+    "coal": "one small cube inside two opposing jaws",
+    "hose": "outside crop",
+    "mouthpiece": "none in crop",
+    "framing": "16:9 hand closeup with quiet lower 28 percent for dialogue"
+  },
+  "files": [
+    {
+      "path": "asset_sources/issue710-image-candidates-20261021/opening-coal-v3.png",
+      "sha256": "8dd6a31333fa408be29aefe5ec1079b909d7dc0eebd5649270b1f61b45bf1c53",
+      "bytes": 1902995,
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "assets/backgrounds/bg_tonari_opening_coal.png",
+      "sha256": "8dd6a31333fa408be29aefe5ec1079b909d7dc0eebd5649270b1f61b45bf1c53",
+      "bytes": 1902995,
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "remake/img/backgrounds/bg_tonari_opening_coal.webp",
+      "sha256": "f4e7bbe18424e261895367f20f59508d66752b31968827a0a5adc71734c79cdc",
+      "bytes": 1372288,
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "operations": "Original and assets PNG bytes unchanged; lossless WebP only; no collage or retouching",
+  "visual_review": {
+    "jaw_contacts": "Top and bottom jaws visibly touch the coal inside their ends",
+    "scale": "Cube width about one third of palm; hand and cube share depth",
+    "hand": "No visibly detached wrist or extra fingers; hoodie retained",
+    "coal": "Grey ash and restrained ember; no flame",
+    "background": "Unified painted lighting and Turkish mosaic lamps; no UI/text"
+  },
+  "reference_limit": "Only the existing reduced H2 photographic sheet was locally available, not original IMG_1188.jpeg. Coarse tong/coal scale reference only; no claim of full-resolution equipment reference inspection. No HMD drawn.",
+  "old_candidates": "v1 and v2 unchanged, not adopted",
+  "qa": {
+    "name": "tonari-opening",
+    "baseURL": "http://127.0.0.1:8123/remake/",
+    "timeoutMs": 10000,
+    "ref": "a76749f01f32b29c864a35a86a6ad9ac6640f5f4-plus-coal",
+    "results": [
+      {
+        "label": "desktop-normal-cuts",
+        "status": "passed"
+      },
+      {
+        "label": "touch-normal-cuts",
+        "status": "passed"
+      },
+      {
+        "label": "skip-reduced-motion-and-abort",
+        "status": "passed"
+      },
+      {
+        "label": "missing-insert-keeps-dialogue-playable",
+        "status": "passed"
+      },
+      {
+        "label": "missing-coal-keeps-dialogue-playable",
+        "status": "passed"
+      },
+      {
+        "label": "preview-start-stop-replay-preserves-storage",
+        "status": "passed"
+      }
+    ]
+  }
+}

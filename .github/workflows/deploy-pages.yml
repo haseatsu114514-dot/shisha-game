@@ -33,6 +33,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch adopted opening image only
+        run: git lfs pull --include="assets/backgrounds/bg_tonari_opening_coal.png,remake/img/backgrounds/bg_tonari_opening_coal.webp" --exclude=""
       - name: Prepare site
         run: |
           mkdir -p _site/tools
