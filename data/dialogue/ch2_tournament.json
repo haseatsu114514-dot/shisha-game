@@ -157,7 +157,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "課題はストロベリー！　課題の葉はこちらで支給します"
+          "text": "課題はストロベリー！　支給する葉は、アフサールの新作です"
         },
         {
           "speaker": "maezono",
@@ -180,11 +180,26 @@
           "text": "（香りの輪郭が、まだつかめない。でも、手順は忘れていない）"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_afsahr_tasting",
+          "next_true": "tasted"
+        },
+        {
           "speaker": "pakki",
           "face": "excited",
           "text": "準備ができた選手から、制作を始めてください！"
         }
-      ]
+      ],
+      "branches": {
+        "tasted": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（試煙会で吸った苺だ。熱に弱い。神崎さんは、炭を一つ抜いていた）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_tournament_farewell",

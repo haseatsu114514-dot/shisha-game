@@ -21,7 +21,8 @@ import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./tempe
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = {
   1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" },
-  2: { flavor: "strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
+  // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
+  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
 };
 export const regulationFor = (cs) => (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
@@ -204,10 +205,11 @@ export async function stepMix(cs) {
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
   // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
-  const supplied = (id) => !!reg && id === reg.flavor;
+  const supplyId = reg ? reg.supply || reg.flavor : null;
+  const supplied = (id) => !!reg && id === supplyId;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
   if (!consumes) ids = [...new Set([...SHOP_FLAVORS, ...ids])].filter((id) => DB.flavorById[id]);
-  if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
+  if (reg && !ids.includes(supplyId)) ids.unshift(supplyId);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
   const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
@@ -310,7 +312,7 @@ export async function stepMix(cs) {
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
         const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
-        cs.mix = { strawberry: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
+        cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();

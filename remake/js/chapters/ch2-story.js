@@ -15,9 +15,10 @@ async function readStep(step) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
     await setBg(MAP.night, { instant: true });
   }
-  if (step.room) {
-    if (!await imageReady(ROOMS[step.room], 15000)) throw new Error(`店内を読み込めませんでした: ${step.room}`);
-    await setBg(ROOMS[step.room], { instant: true });
+  const place = step.bg || (step.room && ROOMS[step.room]);
+  if (place) {
+    if (!await imageReady(place, 15000)) throw new Error(`場面の背景を読み込めませんでした: ${step.bg || step.room}`);
+    await setBg(place, { instant: true });
   }
   syncAgehaVibes(owner.flags);
   const result = await play(step.id);
