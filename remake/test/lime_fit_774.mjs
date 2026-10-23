@@ -59,7 +59,8 @@ async function contactCase({old=false,skip=false,reduce=false}={}) {
   let shown=0,continued=0;
   const state={flags:{},contacts:old?['naru']:[]};
   const context=vm.createContext({console,document:{body:{classList:{contains:()=>skip}}}});
-  const motion=new vm.SyntheticModule(['exchange'],function(){this.setExport('exchange',async()=>{shown++;});},{context});
+  let still=null;
+  const motion=new vm.SyntheticModule(['exchange'],function(){this.setExport('exchange',async(_id,_context,options)=>{shown++;still=options?.still;});},{context});
   await motion.link(()=>{});await motion.evaluate();
   const wrapper=new vm.SourceTextModule(sceneSource,{context,importModuleDynamically:async()=>motion});
   const imports={'state.js':{state},'data.js':{DB:{}},'transition-kit.js':{reducedMotion:()=>reduce},'mg-kit.js':{motionVariant:()=> 'a'}};
@@ -68,7 +69,9 @@ async function contactCase({old=false,skip=false,reduce=false}={}) {
   Object.assign(context,{state,running:r,vnTest:{turbo:false},limeExchange:wrapper.namespace.limeExchange,next:()=>{continued++;}});
   new vm.Script('function probe(){const r=running;for(;;){const line=r.queue.shift();if(!line)return;const type=line.type;'+control+'}}').runInContext(context);
   for(let i=0;i<2;i++){r.queue.push({type:'set_flag',flag:'_lime_contact_naru'});context.probe();for(let j=0;j<20;j++)await Promise.resolve();}
-  assert.equal(shown,old||skip||reduce?0:1);
+  // #833: SKIP中も動きを減らす設定でも、初めての交換は一度だけ見せる（後者は動かない画面）。
+  assert.equal(shown,old?0:1);
+  if(!old)assert.equal(still,reduce,'reduced motion shows the still card');
   assert.equal(state.flags._lime_contact_naru,true);
   assert.equal(continued,old?0:1,'only the first new exchange waits');
   assert.deepEqual(state.contacts,old?['naru']:[],'existing control state semantics');
