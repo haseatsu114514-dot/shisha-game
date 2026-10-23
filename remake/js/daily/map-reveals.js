@@ -2,22 +2,26 @@
 // Loading an existing save establishes a baseline; it never celebrates all old unlocks.
 const histories = new WeakMap();
 
-/** タイマーと中断のどちらでも一度だけ解錠。進行フラグは扱わない。 */
-export function startSpotReveal({ pop, done, delay = 650, duration = 1800,
+/** 解禁表示→余韻→通常案内。中断時も一度だけ解錠し、後続案内は出さない。 */
+export function startSpotReveal({ pop, settle = () => {}, done, delay = 650, duration = 1800, pause = 450,
   schedule = setTimeout, cancel = clearTimeout }) {
   let finished = false;
   const timers = [];
-  const finish = () => {
+  const finish = (cancelled = true) => {
     if (finished) return;
     finished = true;
     timers.forEach(cancel);
-    done();
+    done({ cancelled });
   };
   timers.push(schedule(() => {
     if (finished) return;
     try { pop(); } catch (error) { finish(); throw error; }
   }, delay));
-  timers.push(schedule(finish, delay + duration));
+  timers.push(schedule(() => {
+    if (finished) return;
+    try { settle(); } catch (error) { finish(); throw error; }
+    if (!finished) timers.push(schedule(() => finish(false), pause));
+  }, delay + duration));
   return finish;
 }
 

@@ -1,6 +1,7 @@
 // Production DAY4–13 calendar: real rest inputs, story checkpoints, reload and failure recovery.
 import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
+import { travelToCity } from './station_helpers.mjs';
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
 const end = t('ch2-tournament-entry');
@@ -153,7 +154,7 @@ await suite('ch2-story', async check => {
   });
   await check('legacy-volk-records-kept-without-chapter2-entrance', async page => {
     await seed(page, { legacyVolk: true }); await atMap(page, 4, 0);
-    await page.locator(t('map-region-widehanga')).click();
+    await travelToCity(page,'widehanga');
     assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 3);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
       ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());

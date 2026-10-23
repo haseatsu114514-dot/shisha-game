@@ -2,6 +2,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -116,7 +118,10 @@ await suite("ch1-tournament", async check => {
     } finally { release(); }
     const deadline = Date.now() + 15000;
     while (!(await page.locator('.bench .opt-grid, [data-test="mix-ok"]').count())) {
-      // 初期機材が一種類ずつなら機材選択は省略され、配合へ進む。
+      // 現行の外観選択を実入力で確定してから、元の機材/配合到達を検査する。
+      if (await page.locator('[data-test="appearance-confirm"]').isVisible()) {
+        await confirmAppearanceSetup(page);
+      }
       assert(Date.now() < deadline, "Tournament did not resume after the image arrived");
       const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
       if (await skip.count()) await skip.click();

@@ -7,7 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -41,7 +41,10 @@ export function refreshEffect() {
 }
 
 export async function runSteamDodge(cs) {
+  const owner = state;
   await waitBenchReady(cs, "steam");
+  const root = benchRoot(cs);
+  if (state !== owner || !root) return;
   SE.coalPlace();
   const stock = refreshStock();
   const effect = refreshEffect();
@@ -50,6 +53,7 @@ export async function runSteamDodge(cs) {
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
+  const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -287,11 +291,12 @@ export async function runSteamDodge(cs) {
   clock.update(seconds);
   refreshLabel();
   slashLabel();
-  if (!await explainTutorialStep(cs, "steam")) { unkey(); input.abort(); return; }
-  await countdown();
-  running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
-  const auto = autoSkill();
   try {
+    if (!await explainTutorialStep(cs, "steam") || !isCurrent()) return;
+    await countdown();
+    if (!isCurrent()) return;
+    running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
+    const auto = autoSkill();
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
     else await new Promise((resolve) => {
       const gameClock = createCraftClock(panel);
@@ -308,6 +313,7 @@ export async function runSteamDodge(cs) {
       pollAttackPad(false);
 
       const loop = (now) => {
+        if (!isCurrent()) { gameClock.dispose(); return resolve(); }
         const current = gameClock.now();
         const dt = Math.min(0.05, (current - last) / 1000); last = current;
         pollAttackPad(!gameClock.paused);
@@ -364,7 +370,12 @@ export async function runSteamDodge(cs) {
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
     setPlayerMental(cs, "steady");
+    if (!isCurrent() && panel.dataset.step === "steam") {
+      root.querySelector(".bench-guide").open = false;
+      panel.inert = false; root.dataset.helpPaused = "false";
+    }
   }
+  if (!isCurrent()) return;
   const score = clamp(100 - hits * 14, 0, 100);
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
@@ -374,6 +385,7 @@ export async function runSteamDodge(cs) {
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
+  if (!isCurrent()) return;
   await resultCard(panel, {
     title: "蒸らし 結果",
     lines: [

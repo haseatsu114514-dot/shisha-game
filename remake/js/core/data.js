@@ -303,10 +303,6 @@ export function bgmUrl(key) {
   const files = DB.manifest.bgm || [];
   const file = [`${key}.bgm`, `${key}.mp3`].find((name) => files.includes(name));
   if (file) return `${ROOT}assets/audio/bgm/${file}`;
-  // BGMer公式配布のEMGコール。個人・商用ゲームへの利用、加工、再配布が許可される。
-  // 本体へ音源を正式同梱した場合は上記のローカルファイルが優先される。
-  // HTTPS配信ができない環境ではcore/audio.jsのWebAudio緊迫ループへ自動フォールバック。
-  if (key === "bgm_continue_urgent") return "https://bgmer.net/wp-content/uploads/2021/10/163_BPM115.mp3";
   return null;
 }
 

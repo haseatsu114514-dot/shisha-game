@@ -12,7 +12,7 @@ try {
   const page = await browser.newPage();
   page.on('pageerror', e => errors.push(e.message));
   page.on('response', r => { if (r.status() >= 400 && /\.(webp|png|woff2|css|js)/.test(r.url())) missing.push(r.url()); });
-  await page.route('https://bgmer.net/**', r => r.abort());
+  await page.route('**/assets/audio/bgm/bgm_continue_urgent.mp3', r => r.abort());
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => {
