@@ -15,6 +15,7 @@ const shift = () => import("../motions/shift.js");
 const shark = () => import("../motions/shark.js");
 const sketch = () => import("../motions/sketch.js");
 const lime = () => import("../motions/lime.js");
+const train = () => import("../motions/train.js");
 
 export async function limeExchange(charId, context = null) {
   if (skipMotion()) return;
@@ -55,6 +56,14 @@ export async function shiftClose() {
 export async function sharkSwim(mid) {
   const run = skipMotion() ? null : await variant("shark", shark);
   if (run) await run(mid);
+  else await mid?.();
+}
+
+/** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
+export async function trainRide(mid, opts = {}) {
+  // テストの高速送りでも省く（engine の vnTest は window.__remake 経由で見る。循環 import を避ける）
+  const mod = skipMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
+  if (mod) await mod.a(mid, opts);
   else await mid?.();
 }
 

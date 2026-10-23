@@ -140,6 +140,11 @@ window.__remake = {
         await motions.shiftClose();
         return play("remake_baito_end", { bg: "res://assets/backgrounds/bg_tonari_inside.png" });
       }
+      if (name.startsWith("train")) {
+        const tone = name.split("-")[1] === "night" ? "night" : "day";
+        await setBg(bgUrl("bg_tonari_inside", tone));
+        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), { tone });
+      }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/samechan.js")).playSamechanEncounter();
