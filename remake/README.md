@@ -1,5 +1,13 @@
 # 水煙前線 -EN:CODE- リメイク版（remake/）
 
+電車の乗車演出は紫で統一し、220msのフェードイン＋1秒の車内＋280msのフェードアウトでつなぎます。
+第2章導入・帰路と、駅で地元／隣町を選ぶ移動に共通です。背景と地図のピンは車内が不透明な間に交換します。
+第2章以降は、面識のあるサメちゃん・ひより・みんと（私服）・あだむ・つむぎの一人がときどき紫のシルエットで混ざります。なるは候補に含めません。
+出現は既存の `weatherSeed` と章・日・時間帯で固定し、保存・好感度・在店予定を更新しません。
+ハロウィンの開催日は未定です。第2章のイベント側で `state.flags._ch2_halloween_active` を `true`／`false` に切り替えると、魔女帽子・角の仮装客を出し分けられます。
+確認は `__remake.dev.motion("train")`、`"train-halloween"`、`"train-samechan"`（末尾は上記5人のID）。
+回帰は `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/motion_endings.mjs --train-only` と `node --experimental-vm-modules remake/test/station_travel.mjs`。
+
 本リポジトリの現行版。ESモジュールで工程ごとに実装し、共有JSONを直接読む。
 旧ブラウザ版 `web/`・単一HTML配布版は2026-10-07のオーナー指示で削除済み。現行セーブのキーは引き続き `suien_remake_save`。
 
