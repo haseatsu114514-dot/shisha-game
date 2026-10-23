@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { travelToCity as travel } from "./station_helpers.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -191,9 +192,10 @@ await suite("play-spots", async runCheck => {
 
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(label + "-ch2-city-club-and-return", async page => {
-      await setup(page, { chapter: 2 }); const before = await value(page);
+      await setup(page, { chapter: 2 });
       assert.equal(await page.locator(t("pin-trpg_bar")).count(), 0);
-      await hit(page, "map-region-widehanga"); await page.locator(t("pin-trpg_bar")).waitFor();
+      await travel(page, "widehanga"); const before = await value(page);
+      await page.locator(t("pin-trpg_bar")).waitFor();
       assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
       await assertFits(page, ".spot-pin, .map-regions button");
       assert.deepEqual(await value(page), before);
@@ -210,8 +212,9 @@ await suite("play-spots", async runCheck => {
   }
 
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) await check((label === "pc" ? "" : "touch-") + "ch2-table-purchase-completion-and-save", async page => {
-    await setup(page, { chapter: 2, slot: 1, club: true }); const before = await value(page);
-    await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+    await setup(page, { chapter: 2, slot: 1, club: true });
+    await travel(page, "widehanga"); const before = await value(page);
+    await go(page, "trpg_bar");
     await capture(page, label + "-ordinary-entry");
     await hit(page, "trpg-buy-ordinary-cup");
     assert.equal((await value(page)).money, before.money - 500); assert.equal((await value(page)).slot, 1);
@@ -223,7 +226,7 @@ await suite("play-spots", async runCheck => {
     assert.equal(restored.money, before.money - 500); assert.equal(restored.day, 16); assert.equal(restored.slot, 1);
     assert.deepEqual(restored.trpg.owned, ["ordinary-cup"]);
     for (const key of ["stats", "stamina", "affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(restored[key], before[key]);
-    await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+    await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
     await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
@@ -252,9 +255,9 @@ await suite("play-spots", async runCheck => {
     await check(label + "-ch2-day8-shark-from-town-and-load", async page => {
       // 本編の日程と地図を使う。入部済み保存から再開し、夜予定の判定を迂回しない。
       await setup(page, { chapter: 2, day: 22, slot: 1, club: true, clubIds: ["hiyori", "samechan"] });
-      const before = await value(page);
-      assert.deepEqual(before.trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
-      await hit(page, "map-region-widehanga"); await page.locator(t("pin-trpg_bar")).waitFor();
+      assert.deepEqual((await value(page)).trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
+      await travel(page, "widehanga"); const before = await value(page);
+      await page.locator(t("pin-trpg_bar")).waitFor();
       await capture(page, label + "-cafe-map"); await go(page, "trpg_bar");
       await page.locator('[data-test="venue-host-sai"] img').evaluate(img => img.decode());
       assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 8/);
@@ -290,7 +293,7 @@ await suite("play-spots", async runCheck => {
       await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
       await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
       assert.deepEqual(await value(page), after);
-      await hit(page, "map-region-widehanga"); await go(page, "trpg_bar");
+      await travel(page, "widehanga"); await go(page, "trpg_bar");
       assert.equal(await page.locator(t("trpg-play-shark-last-order")).count(), 0);
       assert((await page.locator(t("trpg-memory-shark-last-order")).textContent()).length > 0);
       await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
