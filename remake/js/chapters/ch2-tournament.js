@@ -2,7 +2,7 @@
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, imageReady } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { openPhone, openLime } from "../daily/phone.js";
@@ -19,11 +19,11 @@ import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues, ROOMS } from "./ch2-city-data.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
-const REQUIRED = ["lobby", "entrance", "rules", "farewell", "tasteless"].map(id => `ch2_tournament_${id}`);
+const REQUIRED = ["lobby", "entrance", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
@@ -274,7 +274,17 @@ async function drive(owner) {
       if (!await message(owner, "tokyo", ["東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
       state.flags._ch2_cleared = true; state.flags._ch2_tokyo_invitation = true;
       state.phase = "cleared"; checkpoint("complete");
-    } else if (p.stage === "complete") { renderComplete(owner); return; }
+    } else if (p.stage === "complete") {
+      // 章の最後に、はじめのいない店であげはの心の声（#929）。読了時だけ記録し、クリア済みの旧セーブにも一度だけ出す。
+      if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
+        if (!await imageReady(ROOMS.ageha, 15000)) throw new Error("MELTY PUFFの店内を読み込めませんでした");
+        await setBg(ROOMS.ageha, { instant: true });
+        if (!await read(owner, "ageha_heart")) return;
+        state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
+        await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
+      }
+      renderComplete(owner); return;
+    }
     else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
   }
 }

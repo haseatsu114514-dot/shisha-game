@@ -368,6 +368,90 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_tournament_ageha_heart",
+      "comment": "第2章の最後（#929・オーナー指定）。はじめのいない場面で、あげはの心の声だけを見せる。「才能の壁」は両側にあった。感覚派は崩れた日に直し方が分からない。調子が悪かったはずのはじめが手順で戻って優勝したことに、本人へは言わない嫉妬を抱く。祝福は本心のまま。手の震えは秘密を知る保存だけで描く。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ夜。閉店後のMELTY PUFFで、あげはは一人、ソファに座っていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret",
+          "next_false": "plain"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（……感覚って、来る日は来るのに、来ない日は何やっても来ない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（崩れたら、直し方が分かんない。うちは、ずっとそうだった）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（ハジメっちも、最近ずっと調子悪かった。煙に出てたもん）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（なのに、手順を一個ずつ確かめて、最後まで崩れなかった）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "（崩れても、言葉で戻ってこられるんだ。……うちには、それがない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "（ハジメっち、うちのこと天才だと思ってるでしょ。でも、逆だよ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚のホワイトグミベアを手に取る。甘い匂いに、少しだけ肩の力が抜けた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "（優勝、すごかった。おめでとって言ったのも、ほんと）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（でも、……こんなの、ズルいよ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは小さく笑って、店の明かりを落とした。"
+        }
+      ],
+      "branches": {
+        "secret": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の上で、指を握ったり開いたりする。今日は朝から、震えが止まらなかった。"
+          }
+        ],
+        "plain": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の上で、指を握ったり開いたりする。今日の一台は、思った通りに作れなかった。"
+          }
+        ]
+      }
     }
   ]
 }

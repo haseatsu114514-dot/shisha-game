@@ -91,4 +91,15 @@ for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "rei"]]) {
 assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /笑い方/);
 assert.match(window.branches.listened.map((l) => l.text).join("\n"), /肩は叩かれなかった/);
 
-console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights");
+// 章の最後: はじめのいない場面で、あげはの心の声だけ。才能の壁は両側にあった（本人には言わない嫉妬）
+const heart = tournament.ch2_tournament_ageha_heart;
+assert(!all(heart).some((l) => l.speaker === "hajime"), "はじめはこの場にいない");
+const voice = heart.lines.filter((l) => l.speaker === "ageha").map((l) => l.text);
+assert(voice.length >= 4 && voice.every((t) => /^（.*）$/.test(t)), "あげはの台詞はすべて心の声");
+assert.match(voice.join("\n"), /崩れ/); assert.match(voice.at(-1), /こんなの、ズルいよ/);
+assert.doesNotMatch(heart.lines.map((l) => l.text || "").join("\n"), /震え/, "震えは秘密を知る保存だけ");
+assert.match(heart.branches.secret.map((l) => l.text).join("\n"), /震え/);
+assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));
+assert.match(craft.tournament_craft_waiting_2.lines.map((l) => l.text).join("\n"), /あげはの目が、こっちの手元/, "制作中の小さな伏線");
+
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice");
