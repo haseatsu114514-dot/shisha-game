@@ -1,6 +1,47 @@
 # 神崎竜二：外見の再設計候補
 
-## 最新：怖い顔・控えめな体格・派手なスーツ・小指を隠す
+## 白系チェック採用：竜二一式と部下の立ち絵
+
+白系大柄チェックの3番目を選択した指示に基づいて制作。肩書きはオーナー指定の **「水煙の龍」**。
+
+### 竜二：5表情
+
+![通常・笑顔・真剣・驚き・男泣き](white-check-set/expressions-preview.webp)
+
+### 登場カットイン：水煙の龍
+
+![PCでの実カットイン](white-check-set/cutin-pc.webp)
+
+[スマホ表示](white-check-set/cutin-touch.webp) ／ [会話画面](white-check-set/conversation-pc-normal.webp)
+
+### 部下兼店員：4表情
+
+![通常・笑顔・緊張・驚き](white-check-set/staff-expressions-preview.webp)
+
+[部下の会話画面](white-check-set/staff-conversation-pc-normal.webp)
+
+### データ一式
+
+- [竜二一式ZIP（約7.4MB）](white-check-set/ryuji-white-check-set.zip?raw=true)：透過立ち絵5枚と可逆WebP、顔アイコン、登場背景PNG/WebP、設定・目録の更新値、検証記録。
+- [部下一式ZIP（約2.6MB）](white-check-set/kanzaki-staff-set.zip?raw=true)：透過立ち絵4枚と可逆WebP、顔アイコン、目録の追加値、検証記録。
+- 顔アイコン：[竜二](white-check-set/face_kumicho.png) ／ [部下](white-check-set/face_kanzaki_staff.png)
+
+竜二は53歳を基準に、白チェックのダブル・黒シャツ・紫のネクタイ・色付き眼鏡で統一。全表情とも小指はポケットで隠して有無を断定しない。登場文言は「水煙の龍／神崎竜二／回し飲みはな、盃と同じだ」。文字を背景へ焼き込まず、ゲーム既存のカットイン描画で表示している。
+
+部下は仮ID `kanzaki_staff`、制作上は29歳・173cmの目安。黒スーツ・短髪で竜二と区別し、店員としての笑顔と構成員らしい硬い表情を用意。氏名・正式プロフィール・物語の登場箇所は勝手に決めていない。
+
+### 確認済みの内容
+
+- 全9枚896×1200 RGBA。人物ごとに共通倍率で整形し、足元の横ずれは竜二約0.70px、部下約0.31px。全画像の四辺に見切れなし。
+- PNGとlossless WebPは全RGBA画素が一致。原画の低アルファを一括で削除・二値化していない。
+- 明暗背景で全表情・同一人物性・小指の遮蔽を目視。画像表示ツールでだけ低アルファの赤黄が強く見える箇所も、ブラウザ合成では確認済み。
+- 既存の会話エンジンでPC・タッチの竜二5表情と部下4表情を切り替え、配置枠が共通でブラウザエラーなし。既存カットイン描画でPC・タッチの「水煙の龍」を確認。
+- 表示検証はローカルのプレビューで候補素材・目録値を差し込んで実施。本編の人物画像・設定・台詞・manifestはまだ差し替えていない。ZIPは想定導入先の構造を持ち、導入時はリポジトリのGit LFS規約に従って保存する。
+- 原画は [竜二シート](white-check-set/source-boss-sheet.png)・[部下シート](white-check-set/source-staff-sheet.png)・[登場背景](white-check-set/source-intro-background.png)。生成指示と検証記録も同フォルダに保存。
+
+---
+
+## 採用デザインの比較時点：白系チェックを選択
 
 ![修正版3案](flashy-slim-hidden-fingers.png)
 
