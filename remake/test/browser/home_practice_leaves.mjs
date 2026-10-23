@@ -3,6 +3,8 @@
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/home_practice_leaves.mjs
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+prepareAppearanceCatalog();
 
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 
@@ -74,6 +76,7 @@ async function realPathToMix(page, tap) {
     await page.waitForTimeout(100);
   }
   await act("pin-rest"); await act("map-home-practice"); await act("home-practice-full");
+  await confirmAppearanceSetup(page, { touch: tap });
   await page.locator('[data-test="mix-ok"]').waitFor();
 }
 
