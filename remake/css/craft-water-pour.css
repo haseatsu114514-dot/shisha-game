@@ -1,0 +1,27 @@
+/* 水入れミニゲーム（試遊）。炭焼きの側面カードと同じ真鍮枠・暗い木目の作業台に合わせる。 */
+.wpour { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 18px; align-items: stretch; width: 100%; height: 100%; min-height: 0; }
+.wpour-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; border-radius: 14px; background: radial-gradient(ellipse at 50% 40%, #2a1a2a 0%, #160d14 62%, #0e0810 100%); }
+.wpour-canvas { position: absolute; inset: 0; display: block; touch-action: none; }
+.wpour-info { display: flex; flex-direction: column; gap: 10px; padding: 12px 12px 10px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; color: #eee6d7; font-variant-numeric: tabular-nums; min-height: 0; overflow-y: auto; }
+.wpour-head h2 { margin: 0; font-family: "Craft Mincho", var(--font, serif); font-weight: 700; font-size: 27px; line-height: 1.2; }
+.wpour-head small { font-size: 12px; letter-spacing: .08em; }
+.wpour-goal { margin: 0; font-size: 14px; line-height: 1.5; color: #f3d68b; }
+.wpour-status { margin: 0; min-height: 1.5em; font-size: 13px; color: #cfc2ad; }
+.wpour-actions { display: grid; gap: 8px; }
+.wpour-actions .btn { width: 100%; min-width: 0; min-height: 48px; padding: 8px 10px; font-size: 16px; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.wpour[data-pour="on"] .wpour-pour, .wpour[data-tilt="on"] .wpour-tilt { border-color: #fff1c4; box-shadow: 0 0 0 2px #fff1c455, 0 0 18px #7fe0f066; }
+.wpour-spilled { margin: 0; font-size: 13px; color: #b9d7dc; }
+.wpour-spilled b { font-size: 16px; color: #dff8fb; }
+.wpour-result { display: grid; gap: 4px; padding: 8px 10px; border-top: 1px solid #e4c77d55; text-align: center; }
+.wpour-result[hidden] { display: none; }
+.wpour-stamp { font-size: 30px; letter-spacing: .06em; line-height: 1.1; }
+.wpour-stamp.perfect { color: #ffdf7d; text-shadow: 0 0 18px #ffc24acc; }
+.wpour-stamp.great { color: #f6e6a6; text-shadow: 0 0 12px #ffc24a88; }
+.wpour-stamp.good { color: #cce1be; }
+.wpour-stamp.miss { color: #eab6ab; }
+.wpour-grade { margin: 0; font-size: 14px; }
+.wpour-result small { font-size: 11px; color: #cfc2ad; }
+.wpour-next[hidden] { display: none; }
+.wpour-next { width: 100%; min-width: 0; font-size: 15px; }
+.wpour-keys { margin: auto 0 0; font-size: 11px; color: #a99a88; }
+@media (hover: none) { .wpour-keys { display: none; } }

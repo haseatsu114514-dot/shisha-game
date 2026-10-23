@@ -32,7 +32,7 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 - 現行必須checksの無断省略、失敗の隠蔽、assertion・判定の緩和は禁止する。
 - 見込み時間・通信量が大きければ実行前に節約案を示す。大容量通信の事前承認は下記の既存ルールを維持する。
 - 目安時間をハードな成功期限にせず、固定時間上限による中断を成功扱いしない。timeout・cancel・未実施を区別して記録する。
-- この方針は既存必須CI・独立レビュー・claim・mergeの安全条件や通信制限を緩和しない。
+- 検証方針は必須CI・独立レビュー・mergeの安全条件や通信制限を維持する。予約は本書の3操作に従う。
 
 ## リポジトリ取得と通信量（必須）
 
@@ -56,11 +56,11 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 
 - ローカルCLIと、認証済みGitHub連携/APIのどちらでも作業できる。`gh`・shell・ローカルcheckoutの有無を実装許可の条件にせず、利用可能な経路で同じ予約・差分・保存・検証条件を満たす。CLIの未導入とGitHub権限不足は区別する。
 - CLI経路では下のGit Safetyを実行する。checkoutを持たないGitHub連携では、対象repo、最新main SHA、作業branchのbase/head、既存PRの変更ファイル、現在の予約owner/runをAPIで確認する。ローカル専用のroot・hooks・スクリプト検査は「対象外」と記録し、実行済みとは報告しない。実際にcheckoutで編集する場合はCLI側の検査も必要。
-- 連携経路での保存は、最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitを作成する。ref更新は期待headを指定し、forceを使わない。無関係なtreeを置き換えず、予期しないhead変更は再読・再比較する。既存PRの再開にはそのbranchと、別workerなら正式な移管を使う。
-- 予約は両経路ともゲームrepoの同じ `issue-claim.yml` を使う。dispatchがない連携はIssue/PR Conversationへの `/issue-claim` コメントを使い、コメントIDに対応した成功runと最新bot owner/runを照合する。連携が自動で付ける既知の署名1つは受理され、不正な要求には拒否理由が返る（形式・結果の読み方は予約手順書）。`next`が使えなくても、候補を読み取り選定して `claim` できる。詳細と両経路の例: [予約手順書](docs/issue_claim_protocol.md)。
+- 連携経路での保存は、最新mainを親に別branchを作り、対象ファイルの現在blob SHAまたは親treeを確認してcommitを作成する。ref更新は期待headを指定し、forceを使わない。無関係なtreeを置き換えず、予期しないhead変更は再読・再比較する。既存PRの続きを編集するときはそのbranchを使い、現在の予約を確認する。
+- 予約は両経路とも `issue-claim.yml` の claim / release / handoff を使う。連携からは対象Issueへの `/issue-claim` コメントでも申請できる。形式・結果確認は [予約手順書](docs/issue_claim_protocol.md) に従う。
 - GitHub連携でcommit作成とbranch更新を確認することはCLIのcommit/pushに相当する。PRを作り、変更を含む正確なheadのCIを確認する。ローカルテスト不能なら未実施と記録し、対応CIで検証する。テスト・run情報も読めなければ確認済みとせず、必要な変更だけを保留する。
 - 既存認証の範囲で可能な経路を使い、CLI不在だけを理由に再承認・新規ログインを求めない。新しい認証情報、権限拡大、公開範囲変更が必要な場合だけ、その変更の前に相談する。権限拒否を別アカウントや別経路で迂回しない。
-- 共通コードの分離先は非公開の `haseatsu114514-dot/dot-ai-bridge-test`。分離先のPRをゲームmainへの外部コード導入済みとは扱わない。handoff/pickupはこのrepo内の実装を使う。外部コードの取得・本番切替が承認・導入されるまでは、このrepoのmainと予約台帳を使う。非公開repoの参照権限がなくても、このrepo内の手順で既存作業を継続できる。既存予約をコピー・初期化・再取得しない。
+- 共通コードの分離先は非公開の `haseatsu114514-dot/dot-ai-bridge-test`。外部コードの本番導入を承認・実施するまでは、このrepoのmainと予約手順を使う。
 
 ## Git Safety
 
@@ -120,7 +120,7 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 - 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
   チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
 - 作業を始めるときは、GitHub API等で最新のmain refと必要な差分を必ず確認する。既存checkout/cacheを再利用し、ローカルrefの不足時だけ、上の取得・通信量ルールに従い対象refを限定取得する。新規作業は**最新の `origin/main` から新しいブランチ**を切る。
-  保存済みPRの再開は、現在のIssue予約とリモートのPR/headを確認し、必要な移管後に既存ブランチで継続する。古いローカルコピーだけを根拠に再開せず、別workerの未コミット変更を上書きしない。
+  保存済みPRの再開は、現在のIssue予約とリモートのPR/headを確認し、予約を取得して既存ブランチで継続する。古いローカルコピーだけを根拠に再開せず、別workerの未コミット変更を上書きしない。
 - 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
   push が権限などで止まったら、回避したり差分ファイルを作って終えたりせず、止まってオーナーに報告する。
 - 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
@@ -138,7 +138,7 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 - 未完了の作業は、既存 Issue があれば更新し、なければ GitHub Issue を作成する。完了範囲、残タスク、関連 PR/ブランチ/コミット、テスト結果、ブロッカー、次の具体的手順を記す。未完成の変更を完成扱いでマージしない。
 - 作業中の有効な変更は安全な作業ブランチへ commit/push してから終了する。push 不可・Git 安全チェック失敗時は無理に回避せず、失われる恐れのある差分と復旧手順を報告する。秘密情報は Issue に書かない。
 - 制限到達後に追加操作できることを前提にしない。余裕があるうちに小さな単位で保存し、次のセッションは Issue と PR を確認して再開する。
-- 利用上限で別のAIへ交代する運用は維持する。交代前の区切りでCLIのcommit/pushまたはGitHub連携でのcommit/branch更新・未完Draft PR・DONE/TODO/TEST/NEXTを保存し、現担当が `handoff` で編集停止と引き継ぎ待ちを記録する。次AIのIDを事前に決めたり、同じ作業の再承認をユーザーへ求めたりしない。後任は新worker IDの `pickup` 成功と現在bot owner/run一致を確認して保存済みブランチを継続する。手順は `docs/issue_claim_protocol.md`。有効な保存/停止記録がない場合は従来の回復手順を使い、無反応や残量の推測で予約を奪わない。
+- 利用上限で交代するときは、commit/push・未完Draft PR・DONE/TODO/TEST/NEXTを保存し、現担当が `handoff` で予約を空ける。後任は新worker IDの `claim` 成功と現在のbot owner/runを確認して保存済みブランチを継続する。次AIのID決定や同じ作業の再承認は不要。手順は `docs/issue_claim_protocol.md`。
 
 ### Mac 利用枠チェック補助
 
@@ -158,19 +158,9 @@ GitHub連携だけの環境では、このローカル補助の実行を要求�
 
 ## 複数CodexチャットのIssue予約（必須）
 
-- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。実装前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` または `/issue-claim` コメントで同じ排他的予約を取得する。読み取りだけの相談・調査・レビューには予約不要。
-- ワークフロー実行の**成功と現在のbot台帳のowner/run一致を確認するまで**実装しない。成功直後の別 `status` 実行は必須ではなく、GitHub APIで台帳と成功runを照合してよい。予約済みIssueは別セッションで作業しない。
-- 作業の継続単位はIssue/PR。現在の担当・ブランチ・採用/保留・次の手順は対象Issue/PRに記録する。スキルや過去メモの「Codex担当」「Claude担当」を現在の排他的担当とみなさない。
-- workerごとに実装中は1件。全変更をpushした保存PRを `park` すると、Issueの排他的予約を保持したレビュー待ちとなり、独立した別Issueを予約できる。待ち中のIssueは `resume` 成功と新owner/run・保存headの確認後に編集を再開する。同じworkerが複数の待ちPRを持ってよい。
-- AI交代には保存済みPRを `handoff` で引き継ぎ待ちにし、後任が `pickup` で同じIssue/PRを取得する。これは予約を解放せずに行う。`park` はレビュー待ちであり、後任への移管許可ではない。未取得のhandoffを元担当が取り消す場合は `resume`、取得後は旧担当で再開しない。
-- 利用枠切れ時はpushと引き継ぎを優先し、予約を勝手に解除しない。PRの安全確認・マージは従来のGit Safetyを維持する。
-
-### 予約からPRまでのセッション運用（クラウド/複数チャット共通）
-
-- 新規実装ではセッション固有の worker ID を決め、`docs/issue_claim_protocol.md` に従って `next` または `claim` を実行する。同じworkerの再開は現在のowner/runと保存済みPRを確認して継続し、再予約は不要。別workerへの保存済みOpen PRの移管は `transfer` を使う。成功runとIssue番号を確認できなければ実装を開始しない。手動で選んだIssueも同様。
-- **他のチャットの worker ID を使い回さない**。Codexの複数チャットも各々別worker。Issue/PR/作業ブランチの紐付けを記録し、予約中のIssueを別workerが勝手に再開しない。
-- 作業中は小さな単位でcommit/pushし、PRを早めに作成する。利用枠切れ・中断時はIssueに `WORKER / ISSUE / BRANCH / PR / DONE / TODO / TEST / BLOCKERS / NEXT` を残す。未完成ならDraft PRにし、予約は保持する。
-- 中断・採用保留だけでは予約を解除しない。Issueがcompletedで閉じ、同一repoからmainへマージされた参照PRがあり、参照Open PRがなく、成功runと現在の台帳を再確認できた完了予約は自動整理する。明示放棄などは従来どおり同じworkerで `release` する。
-- 別セッションへの引き継ぎは旧worker停止・成果物pushを確認し、有効な `handoff` 保存記録があれば後任の `pickup` を使う。記録がなければ従来どおり、Open PRがなければ旧release→新claim、保存済みOpen PRがあれば `docs/issue_claim_protocol.md` の `transfer` を使う。通常の移管はwrite権限と旧担当側の記録で行い、追加の管理者承認は不要。移管run成功と現在の新owner/run一致を確認してから編集する。
-- 古いIssue本文・コメントの共通手順は、冒頭の自動同期欄と現行の予約手順を優先する。個別の採用保留・検証条件・範囲指定・停止指示は維持する。
-- PRをマージする前に対象ブランチと最新mainの差分、競合、必須CI、レビュー要件、テスト、未完了項目を確認する。未確認・失敗・競合時は**自動マージ禁止**。安全なPRのみ順次マージし、Issueの予約を解放する。
+- 操作は **claim / release / handoff** の3つだけ。CLI・GitHub連携共通の形式は [予約手順書](docs/issue_claim_protocol.md)。読み取り調査・レビューは予約不要。
+- 2026-10-23のオーナー指示により旧v1予約はすべて無効。既存PRの続きを含め、v2でclaimしてから編集する。過去のIssue本文・コメントの共通予約手順より本節を優先する。
+- セッション固有のworker IDで空いているIssueを `claim` し、成功run・`CLAIMED_ISSUE`・現在のbot owner/runを確認する。同じworkerは複数Issueを持てる。待ち行列はIssue番号ごとで、他Issueの予約を走査しない。
+- 完了・放棄は現担当が `release` する。AI交代は変更をcommit/pushし、保存先とDONE/TODO/TEST/NEXTを添えた `handoff` で予約を空ける。後任は新worker IDで `claim` する。
+- 旧形式の予約履歴や保存済み成果は削除しない。新形式で他workerが予約中のIssueを横取りせず、共有ファイルの衝突はIssue/PRで調整する。自動解除・旧予約の回復手続きは設けない。
+- 作業の区切りと終了時にcommit/pushし、PRに変更・検証・残作業・次の一手を残す。未完はDraftとする。予約はマージ許可ではなく、Git Safety・最新main・競合・必須CI・レビュー・未完了項目を別途確認する。

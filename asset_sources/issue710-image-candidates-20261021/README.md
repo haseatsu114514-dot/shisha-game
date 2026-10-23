@@ -1,4 +1,16 @@
-# #710 炭候補と採用済みの会社員2表情
+# #710 採用済み炭カット・会社員2表情と旧候補
+
+## 2026-10-23 炭v3の採用・本編接続
+
+オーナーの「それここでできない？」を受け、冒頭の炭カットもこのチャットで制作。組み込みimage_genで一枚絵を1回生成し、表示後に「この案を採用して進める」と回答を受けた。[原画](opening-coal-v3.png)・[実プロンプト](coal-v3-prompt.txt)・[参照hash/構成/採用/検品/局所QA](coal-v3-adoption.json)を保存。旧v1/v2はそのまま保持し採用しない。
+
+手・トング・小さな角炭・店内が一体の原画を、そのまま `assets/backgrounds/bg_tonari_opening_coal.png` へ複製し、lossless WebPを `remake/img/backgrounds/bg_tonari_opening_coal.webp` へ保存。PNG/WebPの復号後RGB完全一致を確認した。炭をつかむ2本の顎の接点、灰/赤熱、手との縮尺、UIを重ねる前の文字/ロゴ不在を原寸・本編PC/横タッチで目視確認。新規PNG/WebPはLFS管理。Pages・冒頭の該当CIにはこの2配信パスだけの実体取得を追加した。
+
+`playTonariOpening()`の炭カットを専用CG1枚へ変更。旧hand/emberの合成を除去し、共有制作画像は変更していない。画像失敗時のroom復帰、カット順・本文・保存/報酬、LOG/AUTO/SKIP/低モーション/中断の責務は維持。
+
+`CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/tonari_opening.mjs` の6ケース成功。PC/横タッチの通常送りと一枚絵復号、旧合成要素なし、LOG停止/復帰、SKIP/低モーション/中断、既存接客カット欠損、新CG欠損、プレビューの再開・AUTOと保存不変を確認。画像の見た目採用と局所確認であり、実機Safari・全章・公開版確認は未実施。CI/マージの最終状態はIssue #710／今回のPRを参照。
+
+参照写真は既存の縮小H2一覧のみがローカルにあり、元の `IMG_1188.jpeg` を原寸で確認したとは報告しない。HMDを描かない手元カットに必要な粗い縮尺の参照として使い、写真の転載や製品/人物の模写はしていない。
 
 ## 2026-10-23 会社員の採用・配信仕上げ
 
