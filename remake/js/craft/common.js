@@ -56,8 +56,8 @@ export function keys(map) {
   const h = (e) => {
     if (globalThis.document?.querySelector(".bench-guide[open]")) return;
     // 説明・体調を開く操作を、ミニゲームのSpace/Enterに流さない。
-    if (e.target?.closest?.(".bench-guide, .bench-condition")) return;
-    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".timer-button, .dodge-action")) return;
+    if (e.target?.closest?.(".bench-condition")) return;
+    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".bench-guide, .timer-button, .dodge-action")) return;
     const fn = map[e.key] || map[e.code];
     if (fn) { e.preventDefault(); fn(e); }
   };

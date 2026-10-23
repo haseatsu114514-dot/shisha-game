@@ -1,0 +1,66 @@
+name: Water pour preview
+
+on:
+  pull_request:
+    paths:
+      - "remake/js/craft/water-pour*.js"
+      - "remake/css/craft-water-pour.css"
+      - "remake/js/craft/preview.js"
+      - "remake/craft-preview.html"
+      - "remake/test/water_pour.mjs"
+      - "remake/test/browser/water_pour.mjs"
+      - ".github/workflows/water-pour.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  water-pour:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Water volume, spill and grading logic
+        run: node remake/test/water_pour.mjs
+      - name: Install browser test dependencies outside the game
+        run: |
+          npm install --prefix "$RUNNER_TEMP/water-test" playwright@1.62.1
+          node "$RUNNER_TEMP/water-test/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Pour, spill, judge and touch layout on the preview page
+        env:
+          NODE_PATH: ${{ runner.temp }}/water-test/node_modules
+          ARTIFACT_DIR: ${{ runner.temp }}/water-pour
+        run: |
+          python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/shisha-preview.log" 2>&1 &
+          python3 - <<'PY'
+          import time, urllib.request
+          for attempt in range(50):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:8123/remake/", timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.1)
+          else:
+              raise SystemExit("Preview server did not start")
+          PY
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/browser/water_pour.mjs
+          node remake/test/browser/craft_materials.mjs
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: water-pour
+          path: ${{ runner.temp }}/water-pour
+          if-no-files-found: ignore

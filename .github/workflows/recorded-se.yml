@@ -71,7 +71,7 @@ jobs:
         working-directory: remake/test/browser
         run: |
           npm ci
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Decode and play recorded effects on PC and touch layouts
         run: |
           python3 remake/tools/serve_preview.py --port 8123 > "$RUNNER_TEMP/recorded-se.log" 2>&1 &

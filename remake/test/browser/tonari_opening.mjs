@@ -55,7 +55,12 @@ await suite("tonari-opening", async check => {
             await page.screenshot({ path: path.join(captures, `${label}-${cue}.png`) });
           }
           if (cue === "coal") {
-            assert.match(await page.locator(".to-ember").evaluate(node => getComputedStyle(node).backgroundImage), /heat_cube_lit\.webp/);
+            const coal = page.locator("img.to-coal");
+            assert.equal(await coal.count(), 1);
+            assert(await coal.evaluate(image => image.complete && image.naturalWidth > 1280
+              && image.src.endsWith("bg_tonari_opening_coal.webp")), "Adopted single-image coal cut did not decode");
+            assert.equal(await page.locator(".to-hand, .to-ember").count(), 0, "Old composite remained");
+            await assertFits(page, "img.to-coal");
             // LOGは冒頭のカットや本文を進めず、閉じた後に同じ場面へ戻る。
             await page.locator('[data-test="vn-log"]').click();
             await page.locator(".vn-log.show").waitFor();
@@ -116,6 +121,22 @@ await suite("tonari-opening", async check => {
     await page.locator("#vn.active").waitFor();
     assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), "room");
     assert.equal(await page.locator(".to-customer").count(), 0);
+    await page.waitForTimeout(350);
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => O531.done);
+    await assertClean(page);
+  });
+
+  await check("missing-coal-keeps-dialogue-playable", async page => {
+    await setup(page);
+    await page.route("**/bg_tonari_opening_coal.webp", route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid image" }));
+    await page.evaluate(() => {
+      const source = O531.data.DB.dialogues.ch1_opening;
+      O531.launch({ dialogue: { ...source, lines: source.lines.filter(line => line.shot === "coal"), branches: {} } });
+    });
+    await page.locator("#vn.active").waitFor();
+    assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), "room");
+    assert.equal(await page.locator(".to-coal").count(), 0);
     await page.waitForTimeout(350);
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => O531.done);
