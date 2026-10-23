@@ -234,7 +234,7 @@ await suite("first-brew", async check => {
     wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
     wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28); wav.writeUInt16LE(2, 32);
     wav.writeUInt16LE(16, 34); wav.write("data", 36); wav.writeUInt32LE(16000, 40);
-    await page.route("https://bgmer.net/**", route => route.fulfill({ status: 200, contentType: "audio/wav", body: wav }));
+    await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.fulfill({ status: 200, contentType: "audio/wav", body: wav }));
     await page.evaluate(async () => {
       const s = T.core.state;
       Object.assign(s, { phase: "tournament", day: 14 });

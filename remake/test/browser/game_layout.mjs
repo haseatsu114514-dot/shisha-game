@@ -2,6 +2,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
+prepareAppearanceCatalog();
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -134,7 +137,10 @@ try {
         // 練習は家で（#638）: 地図の家 →「家で練習する」→「一台を通して」
         await activate(p,"pin-rest",touch);await activate(p,"map-home-practice",touch);
         await button(p,"home-practice-full").waitFor();if(mode==="ds")await dsGeometry(p);
-        await activate(p,"home-practice-full",touch);await button(p,"mix-ok").waitFor();
+        await activate(p,"home-practice-full",touch);
+        await confirmAppearanceSetup(p, { touch });
+        await confirmWaterSetup(p, { touch });
+        await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
         for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);
