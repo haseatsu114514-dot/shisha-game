@@ -508,6 +508,7 @@ async function showCg(id, effect = "") {
   if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
+    if (running !== r) return;
     dom.cg.dataset.cg = id;
     dom.cg.style.backgroundImage = `url("${url}")`;
     if (instant) dom.cg.style.transition = "none";
@@ -518,6 +519,7 @@ async function showCg(id, effect = "") {
   if (running !== r) return;
   if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
   if (!vnTest.turbo) await visualSettled(dom.cg);
+  if (running !== r) return;
   if (hooks.onCg) hooks.onCg(id);
 }
 
