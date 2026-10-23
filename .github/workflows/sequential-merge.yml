@@ -1,17 +1,7 @@
 name: Sequential merge read-only preflight
 
+# Manual tool only. Its regression tests run in the CI workflow (quick: tools).
 on:
-  pull_request:
-    paths:
-      - 'tools/sequential_merge/**'
-      - 'docs/sequential_merge.md'
-      - '.github/workflows/sequential-merge.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'tools/sequential_merge/**'
-      - 'docs/sequential_merge.md'
-      - '.github/workflows/sequential-merge.yml'
   workflow_dispatch:
     inputs:
       pull_request:
