@@ -111,16 +111,37 @@ await suite("first-brew", async check => {
       window.running = T.steam.runSteamDodge(cs);
     });
     await page.locator('[data-test="dodge"]').waitFor();
-    await page.waitForTimeout(4000); await guide(page).click(); await page.waitForTimeout(100);
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
     const sample = () => page.evaluate(() => ({
       time: document.querySelector('[data-test="steam-clock"]').textContent,
       temp: document.querySelector('[data-test="steam-temperature"]').getAttribute("aria-valuenow"),
       heart: document.querySelector(".dodge-heart").style.transform,
     }));
-    const before = await sample(); await page.keyboard.press("ArrowRight"); await page.waitForTimeout(1500);
+    const startup = await sample(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(1500);
+    assert.deepEqual(await sample(), startup, 'automatic startup explanation holds clock, temperature and input');
+    await page.keyboard.up("ArrowRight");
+    assert.equal(await page.locator('.countdown').count(), 0, 'countdown waits for startup dismissal');
+    await guide(page).click();
+    await page.locator('.countdown').waitFor();
+    await page.waitForFunction(() => document.querySelector('.countdown')?.textContent === 'GO!');
+    await page.locator('.countdown').waitFor({ state: 'detached' });
+    await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]').disabled);
+    const started = await sample();
+    await page.waitForFunction(before => document.querySelector('[data-test="steam-clock"]').textContent !== before.time, started);
+    await page.keyboard.down("ArrowRight");
+    await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, started.heart);
+    await page.keyboard.up("ArrowRight");
+    await guide(page).click();
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
+    const before = await sample(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(1500);
     assert.deepEqual(await sample(), before);
-    await guide(page).click(); await page.waitForTimeout(600);
+    await page.keyboard.up("ArrowRight");
+    await guide(page).click(); await page.keyboard.down("ArrowRight"); await page.waitForTimeout(600);
     assert.notDeepEqual(await sample(), before);
+    await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, before.heart);
+    await page.keyboard.up("ArrowRight");
   });
 
   await check("care-help-and-draw", async page => {
