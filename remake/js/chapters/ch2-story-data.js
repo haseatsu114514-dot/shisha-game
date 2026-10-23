@@ -1,7 +1,10 @@
 // 章内日で記す。保存日時・夜の予定表へ渡すときだけ通算日に変換する。
-// あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試飲会・10日目のスランプ来店を強制の夜にする。
+// あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
+// 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
 // 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
-// room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。contact はその夜に連絡先も交換する。
+// room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。contact はその夜に連絡先も交換する。
+// C.STATIONの客席（夜）。#921の柚ヶ谷店専用背景が統合されたら、そちらへ差し替える。
+export const C_STATION_TASTING_BG = "../assets/backgrounds/bg_c_station_night.png";
 export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
@@ -20,8 +23,8 @@ export const CH2_NIGHTS = [
   { day: 7, pin: "adam", label: "アダムとの距離", steps: [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
-  { day: 9, pin: "ch2_ageha", label: "店長同士の試飲会", steps: [
-    { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", room: "ageha" },
+  { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", steps: [
+    { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
   ] },
   { day: 10, pin: "tonari", label: "スミさんの沈黙", steps: [
     { id: "ch2_sumi_silence", file: "ch2_main" },
@@ -48,7 +51,7 @@ export const AGEHA_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcome
 export const AGEHA_BADDAY = { id: "remake_ch2_ageha_badday", fromDay: 7 };
 const VIBES = ["scout", "gyaru", "newcomer", "magazine"];
 
-/** バイブスの答え合わせで2回以上当てたら、試飲会であげはが不安を少し話す */
+/** バイブスの答え合わせで2回以上当てたら、試煙会であげはが不安を少し話す */
 export function syncAgehaVibes(flags) {
   const hits = VIBES.filter((id) => flags[`_ch2_vibes_hit_${id}`]).length;
   if (hits >= 2) flags._ch2_vibes_understood = true;

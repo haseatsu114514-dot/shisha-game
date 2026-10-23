@@ -135,7 +135,7 @@ export async function runChapterTwoTournament() {
 function renderEntry(owner) {
   card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・REI。4人一斉、一台を仕上げる一発勝負。", [
     button(owner, "LIMEを読んで会場へ", "start", async () => { checkpoint("morning"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "課題はストロベリー。必要な葉は主催者支給。制作から提供、その後の調整まで同じ一台で行います。" })]);
+  ], [el("p.ch2-contest-note", { text: "課題はストロベリー。アフサールの新作を主催者が支給。制作から提供、その後の調整まで同じ一台で行います。" })]);
 }
 function renderReady(owner) {
   card(owner, "ready", "一台で、最後まで。", "予選・準決勝はありません。提供後も、客席で吸われた一台を2回調整します。", [

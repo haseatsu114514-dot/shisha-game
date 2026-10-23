@@ -131,20 +131,23 @@ await suite('ch2-tournament',async check=>{
     await seed(page,{stage:'ready',auto:null});await press(t('craft-start'));
     await confirmAppearanceSetup(page, { touch });
     await confirmWaterSetup(page, { touch });
-    await page.locator(dt('mix-plus-strawberry')).waitFor();
+    await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     assert.match(await page.locator('.bench-mode').textContent(),/HAZE: OPEN CLOUD/);
     assert.match(await page.locator(dt('mix-taste')).textContent(),/つかめない/);
+    // #929: 課題の支給葉は試煙会で吸ったアフサールの新作。旧AFストロベリーの行は持ち込みが無ければ出さない
+    assert.match(await page.locator('.flavor-row[data-flavor="afsahr_strawberry"]').textContent(),/アフサール ストロベリー[\s\S]*課題（支給）/);
+    assert.equal(await page.locator('.flavor-row[data-flavor="strawberry"]').count(),0);
     assert.match(await page.locator('.worker-scene-tag').textContent(),/HAZE: OPEN CLOUD/);
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
     await assertFits(page,'.bench-top > *, .bench-phase-copy b');
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
-    for(let n=0;n<3;n++)await press(dt('mix-plus-strawberry'));
+    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     const before=await get(page);
     await press(t('menu'));await press(t('save'));await press(dt('slot-1'));
-    await reload(page,1,touch);await page.locator(dt('mix-plus-strawberry')).waitFor();
+    await reload(page,1,touch);await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     let s=await get(page);assert.deepEqual(s.flavorStock,before.flavorStock);assert.equal(s.flags._ch2_tournament.step,1);
-    for(let n=0;n<3;n++)await press(dt('mix-plus-strawberry'));
+    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     await assertFits(page,dt('mix-ok'));await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});
     await press(dt('mix-ok'));await page.locator(t('votes')).waitFor();
