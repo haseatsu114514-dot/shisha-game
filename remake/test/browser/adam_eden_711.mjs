@@ -19,7 +19,7 @@ const PRESERVED = {
 };
 fs.mkdirSync(OUT, { recursive: true });
 const report = { test: 'adam-eden-711', ref: process.env.TEST_REF || null, prHeadSHA: process.env.PR_HEAD_SHA || null, baseURL: BASE,
-  rule: 'Adam anatomical left green/right red; front screen left red/right green. EDEN pairs screen left red/right green.',
+  rule: 'Adam anatomical left green/right red; front screen left red/right green. Adopted EDEN interior apple pairs screen left green/right red.',
   visualReviewRequired: true, chapterPlaythrough: false, cases: [] };
 function saveReport() {
   report.screenshotBytes = fs.readdirSync(OUT).filter(x => x.endsWith('.jpg'))
@@ -237,6 +237,8 @@ async function runScene(page, row, touch) {
     await page.waitForFunction(() => A711.arrived);
     row.background = await background(page, '#bg');
     assert(row.background.src.endsWith('/bg_eden_shop.webp'));
+    assert.equal(row.background.renderer, 'css-background', 'Adopted EDEN art already includes tabletop hookahs; do not overlay old props');
+    assert.equal(row.background.layers.length, 1, 'EDEN must use the adopted background without duplicate equipment');
     row.screenshots.push(await shot(page, prefix + '-background'));
   } else if (row.name === 'eden-visit') {
     await page.evaluate(async () => { A711.task = (await import('./js/daily/spots.js')).visitChar('adam'); });
@@ -247,6 +249,8 @@ async function runScene(page, row, touch) {
     row.images = await images(page, '#vn img[data-speaker="adam"]');
     row.background = await background(page, '#bg');
     assert(row.background.src.endsWith('/bg_eden_shop.webp'));
+    assert.equal(row.background.renderer, 'css-background', 'EDEN visits must not restore old equipment overlays');
+    assert.equal(row.background.layers.length, 1, 'EDEN visit must show only the adopted background');
     await page.waitForTimeout(1300);
     row.screenshots.push(await shot(page, prefix));
   } else if (row.name === 'tournament-cg') {
