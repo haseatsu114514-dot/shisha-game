@@ -95,7 +95,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /asset_sources/
+            !/asset_sources/*/
+            /assets/
+            !/assets/*/
+            /docs/
+            !/docs/*/
+            /docs/qa/
+            !/docs/qa/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             asset_sources/fortune-teller-682
             docs/qa/hud-fortune-682
             tools
@@ -312,7 +324,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /assets/
+            !/assets/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             remake
             data
             assets/audio
@@ -362,7 +380,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /assets/
+            !/assets/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             remake
             data
             assets/audio
@@ -411,7 +435,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /*
+            !/*/
+            /asset_sources/
+            !/asset_sources/*/
+            /assets/
+            !/assets/*/
+            /docs/
+            !/docs/*/
+            /docs/qa/
+            !/docs/qa/*/
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
             asset_sources/fortune-teller-682
             docs/qa/hud-fortune-682
             tools
