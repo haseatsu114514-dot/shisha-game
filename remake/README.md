@@ -26,7 +26,7 @@
 - `temperature-model.js` が選択中の葉の既存 `heat_tolerance` を正の有限なgで加重平均し、倍率tを算出。緑 `[.42*t,.66*t]`、虹 `[.49*t,.59*t]`、中心 `.54*t` を配合プレビュー・蒸らし・吸い出し・提供・調整・判定・採点・背景・autoで共用する。
 - 同比率で総gだけを変えても帯は同じ。総gは従来の温まり方に影響する。空配合はt=1、未知の葉や未定義/不正な耐熱性はその葉の倍率1。旧セーブに新しい温度帯フィールドを要求せず、共有定数を上書きしない。
 - 危険 `.90`、爆発 `1.0`、冷え切り `.06` は絶対値を維持。演出の旧 `.76` は緑上端〜危険 `.90` の中の相対位置へ移し、高耐熱の葉が適温のまま過熱表示や熱すぎる吸引ペナルティを受けない。
-- `node remake/test/mix_temperature.mjs` と `node remake/test/browser/mix_temperature.mjs` で全フレーバーの境界、実g操作から提供/調整、支給ミント、旧データ、採点、演出、auto、セッション分離を検証する。CI: `.github/workflows/mix-temperature.yml`。
+- `node remake/test/mix_temperature.mjs` と `node remake/test/browser/mix_temperature.mjs` で全フレーバーの境界、実g操作から提供/調整、支給ミント、旧データ、採点、演出、auto、セッション分離を検証する。CI: `tools/ci/suites.json` の `mix-temperature`。
 
 2026-10-11の蒸らし操作（過去の日付の回数制限を更新）:
 

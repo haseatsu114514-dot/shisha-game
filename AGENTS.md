@@ -40,7 +40,15 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 現行必須checksの無断省略、失敗の隠蔽、assertion・判定の緩和は禁止。成功・失敗・timeout・cancel・未実施を区別して記録する。
 - CI待ちの間に同じ確認や報告を繰り返さない。結果が出てから判断する。古いHEADの失敗や、再実行で成功に置き換わった結果を停止理由にしない。
 - 未完の実装はDraft PR、完成したらReady for review にする。**CI待ちだけでDraftに留めない**。
-- マージは、競合なし・現HEADの必須CIが成功・未解決の指摘なしを確認して行う。条件を満たすPRは速やかにmergeする。
+- マージは、競合なし・現HEADの `CI / result` が成功・未解決の指摘なしを確認して行う。条件を満たすPRは速やかにmergeする。
+
+### CI（2026-10-23 に1本へ統合）
+
+- workflowは [ci.yml](.github/workflows/ci.yml) の1本（ほかは公開用の `deploy-pages.yml` と手動用の `sequential-merge.yml` だけ）。**PRで待つチェックは `CI / result` の1つだけ**。
+- quick（ブラウザ不要の検査）は毎回すべて動く。browser（Chromium）は変更ファイルに関係するテストだけを最大8グループに分けて動かす。
+- Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
+- テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
+- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、4.4GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
 
 ## 実行経路: CLI / GitHub連携
 
@@ -74,6 +82,16 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけ取得する。新しい作業場所は既存repoの `git worktree add` を使う。やむを得ない新規取得は事前に相談し、`--filter=blob:none` 等で最小化する。
 - 全履歴・全ブランチ・素材・LFSの一括取得や、CI成果物の大量ダウンロード（`gh run download` の繰り返し）を自動実行しない。大容量通信が見込まれる操作は、目的・推定量（不明なら不明）・節約案を示して承認を得る。
 - shallow/filtered fetchでも少量とは限らない。想定外に転送量が増えたら中断し、状況を報告する。
+- 最新のファイル一式だけでも約4.4GB（`asset_sources/` 約3GB・`docs/qa` 約0.7GB）ある。ゲーム開発に要るのは約0.7GB。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
+
+  ```bash
+  git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
+  cd shisha-game
+  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/'
+  ```
+
+  `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
 
 ### 画像と Git LFS
 

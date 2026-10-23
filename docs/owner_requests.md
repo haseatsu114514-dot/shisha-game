@@ -7,6 +7,9 @@
 | AG914-01 | ✅ 本PR | Issue予約（claim / release / handoff・`/issue-claim`・bot台帳）を撤廃。予約workflow 2本・コーディネータ・テスト・手順書を削除し、AGENTS.md・CLAUDE.md・スキル・資料の予約手順を外す。過去の予約手順・予約待ちは無効と明記 |
 | AG914-02 | ✅ 本PR | AGENTS.md を #914 の整理案ベースで短く再構成（止まる条件を限定、behindだけでmergeしない、CI待ちでDraftに留めない、試作ツールは任意）。#894 の「流れを止めない」方針も統合。フルクローン禁止・通信量・LFS・Git Safety は維持 |
 | AG914-03 | ✅ 本PR | CI: 全コメントで起動していた予約workflowを削除。時間上限の無かった8 workflowに `timeout-minutes` を設定（最大6時間の停滞を防ぐ）。`check_git_safety.sh` の「再clone」「毎回merge」案内を修正 |
+| AG914-04 | ✅ #918 | オーナー「全部解消していって」 → 公開版で告白CG・限定フレーバー・電車の画像が131バイトのLFSポインタで配信されていた。deployでLFS画像を全部取得（キャッシュ）し、ポインタが残れば公開を止める。`.gitattributes` の固定リスト漏れ49件を再生成 |
+| AG914-05 | ✅ 本PR | オーナー「CIやテスト待ちが長い」「43本のworkflowを1本に置き換えてよい」 → `ci.yml` 1本に統合。テストは削らず `tools/ci/suites.json` へ移した。ブラウザの準備はグループごとに1回（`--with-deps` 廃止）、必要なフォルダだけ取得、重複テストは1回、Draftはbrowser省略、main pushはquickのみ・毎晩全テスト。待つチェックは `CI / result` 1つ |
+| AG914-06 | ✅ 本PR | オーナー「4.8GBを丸ごと取得はWi-Fi的にNG」 → AGENTS.md に約0.7GBの軽量取得手順（shallow + blobless + sparse）を追記。CIのcheckoutも必要なフォルダだけにした |
 
 ## 2026-10-23 電車に乗るトランジション（#891）
 
