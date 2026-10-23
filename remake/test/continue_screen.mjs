@@ -10,7 +10,7 @@ const errors = [], missing = [];
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", route => route.abort()); // オフラインでも成立する。
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort()); // オフラインでも成立する。
 async function mount(variant = 0, options = {}) {
   await page.evaluate(async ({ variant, options }) => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
@@ -351,7 +351,7 @@ try {
   // プレビューは両分岐を見せ、セーブと恋人抽選履歴を変えない。
   const preview = await browser.newPage({ viewport: { width: 844, height: 390 } });
   preview.on("pageerror", e => errors.push(e.message));
-  await preview.route("https://bgmer.net/**", route => route.abort());
+  await preview.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort());
   await preview.goto(new URL("continue-preview.html", base).href);
   await preview.waitForFunction(() => !document.querySelector("#preview-play").disabled);
   await preview.evaluate(() => localStorage.setItem("suien_remake_save", "preview-sentinel"));

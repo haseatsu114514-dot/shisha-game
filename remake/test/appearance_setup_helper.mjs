@@ -6,7 +6,8 @@ import os from "node:os";
 import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { waitForSetupContinuation, confirmSetupWater, prepareAppearanceCatalog } from "./browser/appearance_setup.mjs";
+import { confirmAppearanceSetup, waitForSetupContinuation, prepareAppearanceCatalog } from "./browser/appearance_setup.mjs";
+import { confirmWaterSetup } from "./browser/water_setup.mjs";
 
 const calls = [];
 const page = { locator: selector => ({
@@ -16,6 +17,7 @@ const page = { locator: selector => ({
 }) };
 await waitForSetupContinuation(page);
 assert.deepEqual(calls, ["next step visible"]);
+assert.equal(confirmAppearanceSetup, waitForSetupContinuation, "old callers wait for the next real step");
 const missing = { locator: () => ({ first() { return this; }, waitFor: async () => { throw new Error("next step missing"); } }) };
 await assert.rejects(waitForSetupContinuation(missing), /next step missing/);
 const blocked = { locator: () => ({ first() { return this; }, waitFor: async () => {}, count: async () => 1 }) };
@@ -80,26 +82,29 @@ const leaves = new vm.SourceTextModule(fs.readFileSync(new URL("./browser/home_p
 await leaves.link(name => {
   const exports = name === "node:assert/strict" ? { default: assert }
     : name === "./support.mjs" ? { suite: async (_name, register) => register(async (name, fn, opts) => tests.set(name, { fn, opts })) }
-    : { waitForSetupContinuation, confirmSetupWater, prepareAppearanceCatalog: () => {} };
+    : name === "./water_setup.mjs" ? { confirmWaterSetup }
+    : { confirmAppearanceSetup, prepareAppearanceCatalog: () => {} };
   return new vm.SyntheticModule(Object.keys(exports), function () {
     for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
   }, { context });
 });
 await leaves.evaluate();
-for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["mix-capped-by-own-leaves", false], ["reload-mid-bench-keeps-save", false]]) {
-  let phase = "home", observedAuto;
+for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["store-leaves-without-own-stock", false], ["reload-mid-bench-keeps-save", false]]) {
+  let phase = "crafting", observedAuto;
   const inputs = [], reachedMix = new Error("mix boundary reached");
   const page = {
     evaluate: async (_fn, args) => { if (args) observedAuto = args.auto; },
+    async waitForSelector(selector, options) { const control = this.locator(selector); await control.waitFor(options); return { ...control, dispose: async () => {} }; },
     locator: selector => ({
       first() { return this; },
       waitFor: async () => {
-        if (selector.includes("water-confirm")) assert.equal(phase, "crafting");
+        assert(!/appearance-confirm/.test(selector), "appearance must not be awaited");
+        if (selector.includes("water-confirm")) assert.equal(phase, "crafting", name);
         else if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
       },
       count: async () => 0,
       scrollIntoViewIfNeeded: async () => {},
-      click: async () => { if (selector.includes("home-practice-full")) phase = "crafting"; else { phase = "confirmed"; inputs.push("click"); } },
+      click: async () => { assert(selector.includes("water-confirm")); phase = "confirmed"; inputs.push("click"); },
       tap: async () => { assert(selector.includes("water-confirm")); phase = "confirmed"; inputs.push("tap"); },
     }),
   };

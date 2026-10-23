@@ -11,11 +11,10 @@ from pathlib import Path, PurePosixPath
 
 
 LIMITATIONS = [
-    "Unpushed work and unrecorded plans are invisible; no reservation is granted.",
+    "Unpushed work and unrecorded plans are invisible.",
     "File overlap is a review candidate, not proof of a defect or merge conflict.",
     "GitHub responses are snapshots, not an atomic lock; recheck before editing/merging.",
     "An Issue closed as completed records resolution only, not verified implementation.",
-    "This tool does not replace claim/status/transfer or bypass referencing-PR guards.",
 ]
 
 

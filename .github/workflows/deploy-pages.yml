@@ -28,13 +28,46 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # 公開に使うフォルダだけ取得する（asset_sources/ や docs/ の約3.7GBは取らない）。
       - uses: actions/checkout@v4
-      - name: Fetch adopted opening image only
-        run: git lfs pull --include="assets/backgrounds/bg_tonari_opening_coal.png,remake/img/backgrounds/bg_tonari_opening_coal.webp" --exclude=""
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /assets/
+            /data/
+            /remake/
+            /experiments/proto/street/
+            /icon.svg
+            /tools/browser/flavor_stats_editor.html
+            /tools/title-review/
+      # 新しく追加した画像は Git LFS に入っている。全部取得しないと本番で
+      # 131バイトのポインタが画像の代わりに配信される（告白CG・限定フレーバー等）。
+      # LFSの実体はキャッシュし、新しい画像の分だけダウンロードする。
+      - name: List game images stored in Git LFS
+        id: lfs-list
+        run: |
+          hash="$(git lfs ls-files -l -I "assets/**,remake/img/**" | cut -d' ' -f1 | sort | sha256sum | cut -c1-32)"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-site-${{ steps.lfs-list.outputs.hash }}
+          restore-keys: lfs-site-
+      - name: Fetch game images stored in Git LFS
+        run: |
+          git lfs pull --include="assets/**,remake/img/**" --exclude=""
+          # 本番へポインタを出さない: LFS管理のゲーム画像がすべて実体になったか確認する。
+          if git lfs ls-files -I "assets/**,remake/img/**" | grep -q ' - '; then
+            echo "Some Git LFS images were not downloaded:" >&2
+            git lfs ls-files -I "assets/**,remake/img/**" | grep ' - ' >&2
+            exit 1
+          fi
       - name: Prepare site
         run: |
           mkdir -p _site/tools

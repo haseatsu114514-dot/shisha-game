@@ -5,6 +5,9 @@ const shots=process.env.SHOTS;
 if(shots)fs.mkdirSync(shots,{recursive:true});
 const capture=async(page,name)=>{if(shots)await page.screenshot({path:`${shots}/${name}.png`});};
 import { suite, assertFits } from './support.mjs';
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from './appearance_setup.mjs';
+import { confirmWaterSetup } from './water_setup.mjs';
+prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(()=>structuredClone(window.__remake.state));
@@ -124,6 +127,8 @@ await suite('ch2-tournament',async check=>{
   for(const touch of [false,true]) await check(`${touch?'touch-':''}native-mix-manual-save-load-and-single-stock-cost`,async page=>{
     const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
     await seed(page,{stage:'ready',auto:null});await press(t('craft-start'));
+    await confirmAppearanceSetup(page, { touch });
+    await confirmWaterSetup(page, { touch });
     await page.locator(dt('mix-plus-strawberry')).waitFor();
     assert.match(await page.locator('.bench-mode').textContent(),/HAZE: OPEN CLOUD/);
     assert.match(await page.locator(dt('mix-taste')).textContent(),/つかめない/);

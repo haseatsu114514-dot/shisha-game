@@ -24,22 +24,36 @@ try {
       window.R = { core: await import('./js/core/state.js'), map: await import('./js/daily/map.js'), hud: await import('./js/daily/hud.js') };
       R.core.config.bgmVolume = 0; R.hud.initHud({}); R.hud.showHud(true);
       Object.assign(R.core.newGame(), { phase: 'daily', day: 3, seed: 131, weatherSeed: 4 });
-      window.reopen = async () => {
+      R.shown = 0;
+      R.phaseObserver = new MutationObserver(records => {
+        if (records.some(r => r.target.dataset.revealPhase === 'pause')) R.pauseAt = performance.now();
+      });
+      R.phaseObserver.observe(document.getElementById('screen'), { subtree: true, attributes: true, attributeFilter: ['data-reveal-phase'] });
+      window.reopen = async (options = {}) => {
         if (window.flow) { R.map.interruptMap(null); await window.flow; }
         const saved = JSON.stringify(R.core.state);
-        window.flow = R.map.chooseSpot();
+        window.flow = R.map.chooseSpot({ ...options, onShown: () => { R.shown++; R.shownAt = performance.now(); } });
         return saved;
       };
       void reopen();
     });
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'first map must not celebrate existing places');
+    assert.equal(await page.evaluate(() => R.shown), 1);
     const saved = await page.evaluate(async () => {
       Object.assign(R.core.state.met, { adam: true, minto: true, sumi: true, tsumugi: true });
       Object.assign(R.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
-      return reopen();
+      return reopen({ notice: '次の予定を確認しよう', guide: { pin: 'choizap', text: '次はちょいZAPへ' } });
     });
+    const currentMap = page.locator('.map:not(.done)');
+    await currentMap.locator('[data-test="map-guide"]').waitFor({ state: 'attached' });
+    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
+    assert.equal(await currentMap.locator('.map-guide').isVisible(), false);
+    assert.equal(await currentMap.locator('.map-notice:not(.map-unlock-notice)').isVisible(), false);
+    assert.equal(await page.evaluate(() => R.shown), 1, 'onShown waits for the reveal');
     await page.locator('[data-test="pin-kannon"].newly-revealed').waitFor();
+    assert(await currentMap.locator('.map-unlock-notice').isVisible());
+    assert.equal(await currentMap.locator('.map-guide').isVisible(), false);
     assert.equal(await page.evaluate(() => JSON.stringify(R.core.state)), saved, 'presentation must not modify save');
     assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['choizap', 'kannon']);
     assert.equal(await page.locator('.pin-people').first().evaluate(n => getComputedStyle(n).justifyContent), 'flex-start');
@@ -53,8 +67,18 @@ try {
       await page.screenshot({ path: `${out}/unlock-pop.jpg`, type: 'jpeg', quality: 80 });
       await page.evaluate(() => document.querySelectorAll('.newly-revealed').forEach(pin => pin.getAnimations({ subtree: true }).forEach(a => a.play())));
     }
-    // Reveal holds all destination controls until its timer completes.
+    // After the unlock label, keep a quiet pause before guides and callbacks.
+    await page.locator('.map[data-reveal-phase="pause"]').waitFor();
+    assert.equal(await currentMap.locator('.map-unlock-notice').textContent(), '');
+    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
+    assert.equal(await currentMap.locator('.map-guide').isVisible(), false);
+    assert.equal(await page.evaluate(() => R.shown), 1);
     await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
+    assert(await currentMap.locator('.map-guide').isVisible());
+    assert(await currentMap.locator('.map-info').isVisible());
+    assert(await currentMap.locator('.map-notice:not(.map-unlock-notice)').isVisible());
+    assert.equal(await page.evaluate(() => R.shown), 2);
+    assert(await page.evaluate(() => R.shownAt - R.pauseAt >= 400), 'a visible quiet pause precedes follow-up messages');
     const gym = page.locator('[data-test="pin-choizap"]'); await gym.scrollIntoViewIfNeeded(); await gym.click();
     assert(await gym.evaluate(n => n.classList.contains('sel')));
     await page.waitForFunction(() => !document.querySelector('.newly-revealed'));

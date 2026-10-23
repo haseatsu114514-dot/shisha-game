@@ -52,34 +52,17 @@ assert.deepEqual(mixPercents({ a: 0, b: 5 }), { a: 0, b: 100 });
 const stepsSource = fs.readFileSync(new URL("../js/craft/steps.js", import.meta.url), "utf8");
 assert(stepsSource.includes("mixPercents(cs.mix)") && stepsSource.includes("fr-ratio"), "大会・練習の配合画面にも比率を出す");
 
-// 練習は家へ（tonari ではやらない）。地図の家に「家で練習する」、メニューは「特に練習したいところ」
+// 自宅練習は廃止。「寝る前の一服」はこのファイルの他のケースで維持する。
 const src = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
-const tonariSrc = src("../js/daily/tonari.js");
-for (const id of ["tonari-practice", "after-full", "after-drill"]) assert(!tonariSrc.includes(id), `tonari から練習を外す: ${id}`);
-assert(src("../js/daily/map.js").includes("map-home-practice"), "地図の家に「家で練習する」");
-const practiceSrc = src("../js/daily/home-practice.js");
-assert(practiceSrc.includes("特に練習したいところ") && practiceSrc.includes('venue: "home"'), "家の練習メニューと家の作業台");
-const { HOME_PRACTICE_STAMINA } = await import("../js/daily/home-practice.js");
-assert.deepEqual(HOME_PRACTICE_STAMINA, { full: -12, drill: -10 });
+assert(!src("../js/daily/map.js").includes("map-home-practice"));
+assert(!fs.existsSync(new URL("../js/daily/home-practice.js", import.meta.url)));
 const { benchBgRef, benchPlaceTag } = await import("../js/craft/worker.js");
 assert.deepEqual([benchBgRef({ mode: "rehearsal", venue: "home" }), benchPlaceTag({ mode: "drill", venue: "home" })], ["bg_home", "HOME"]);
 assert.deepEqual([benchBgRef({ mode: "rehearsal" }), benchPlaceTag({ mode: "rehearsal" })], ["bg_tonari_inside", "TONARI"]);
 
-// 家の練習は自分の葉を使う（#638 オーナー決定）。減らすのは一台を作り終えたときの1回だけ
+// 最初の一杯でも使う配合の上限処理。
 {
-  const practice = await import("../js/daily/home-practice.js");
   const { fitMixToStock } = await import("../js/craft/steps.js");
-  assert.equal(practice.HOME_PRACTICE_GRAMS, 12);
-  const s = newGame();
-  s.flavorStock = { double_apple: 9, mint: 2 };
-  assert.equal(practice.homeLeavesEnough(), false, "葉が12gないと一台を通せない");
-  s.flavorStock = { double_apple: 10, mint: 2 };
-  assert.equal(practice.homeLeavesEnough(), true, "ちょうど12gなら通せる");
-  practice.consumeHomePracticeLeaves({ double_apple: 10, mint: 2 });
-  assert.deepEqual(s.flavorStock, { double_apple: 0, mint: 0 }, "使った分だけ減る");
-  practice.consumeHomePracticeLeaves({ double_apple: 3 });
-  assert.equal(s.flavorStock.double_apple, 0, "0g未満にはならない");
-  practice.consumeHomePracticeLeaves(undefined);
   // 配合を手持ちに収める: 並んでいない葉は外し、残量まで・器の量まで。minTotal で足りない分を足す
   const stock = { double_apple: 7, mint: 3, lemon: 20 };
   const lim = (id) => stock[id] ?? 0;
@@ -88,11 +71,7 @@ assert.deepEqual([benchBgRef({ mode: "rehearsal" }), benchPlaceTag({ mode: "rehe
   assert.deepEqual(fitMixToStock({ double_apple: 9, mint: 3 }, ids, lim, 12, 12), { double_apple: 7, mint: 3, lemon: 2 });
   assert.deepEqual(fitMixToStock({ lemon: 20 }, ids, lim, 15), { lemon: 15 }, "器の量を超えない");
   assert.deepEqual(fitMixToStock({}, ["mint"], (id) => (id === "mint" ? 3 : 0), 12, 12), { mint: 3 }, "足りなければ足せる分だけ");
-  // 途中で抜けた一台では減らさない: 減算は runFullPractice が正常に戻った後にだけ置く
-  const full = practiceSrc.slice(practiceSrc.indexOf('if (pick === "full")'));
-  assert(full.indexOf("await runFullPractice") < full.indexOf("consumeHomePracticeLeaves(cs.ownLeavesUsed)"), "作り終えた後に減らす");
-  assert(stepsSource.includes("cs.ownLeavesUsed = Object.fromEntries(Object.entries(cs.mix).filter(([id]) => !supplied(id)))"), "課題の支給分は減らさない");
-  assert(!stepsSource.includes('cs.mode === "tournament" || cs.venue'), "配合の決定時には大会だけ減らす（家は上限だけ）");
+
 }
 
 // 旧セーブ: 中間準備を終えていれば読み込み時に卓上台を渡す。終えていなければ渡さない（スミさんの会話の数では決めない）

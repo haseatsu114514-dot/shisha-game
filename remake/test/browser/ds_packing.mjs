@@ -5,7 +5,9 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { confirmSetupWater } from "./appearance_setup.mjs";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
+prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const dir = process.env.ARTIFACT_DIR || ".codex/artifacts/ds-packing";
@@ -117,9 +119,10 @@ try {
       await hit(p, `title-layout-${device.mode}`, device.touch);
       assert.equal(await p.locator(".title").getAttribute("data-layout"), device.mode);
       await hit(p,"title-load",device.touch); await hit(p,"slot-1",device.touch); await map(p,device.touch);
-      await hit(p,"pin-rest",device.touch); await hit(p,"map-home-practice",device.touch);
-      await hit(p,"home-practice-full",device.touch);
-      await confirmSetupWater(p, { touch: device.touch });
+      // 作業台の表示検査は店の制作本体を直接呼ぶ（自宅練習は廃止）。
+      await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });
+      await confirmAppearanceSetup(p, { touch: device.touch });
+      await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();
       if (device.mode === "ds") assert.equal(await p.locator(".bench-panel").evaluate(n=>n.getBoundingClientRect().width),760,"non-pack fixed panel was shrunk");
       for (let n=0;n<10;n++) await hit(p,"mix-plus-double_apple",device.touch);
@@ -182,3 +185,4 @@ try {
 } catch(e) { report.launchError=e.stack; console.error(e.stack); }
 finally { await browser?.close(); write("results.json",report); }
 if (report.launchError || report.cases.length!==4 || report.cases.some(r=>r.status!=="passed")) process.exitCode=1;
+

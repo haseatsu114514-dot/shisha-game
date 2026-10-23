@@ -1,189 +1,141 @@
-// #638: 家で練習（一台を通して）は自分の葉を使う。減るのは一台を作り終えたときの1回だけ。
-// 途中で再読込した一台は保存に残らない（二重消費・消費漏れなし）。葉が12gなければ選べない。
-// CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/home_practice_leaves.mjs
+// #783: 店の練習は私物を減らさない。旧ファイル名は既存CIの入口として維持。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
-import { confirmSetupWater } from "./appearance_setup.mjs";
-
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
+prepareAppearanceCatalog();
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 
-// 実際の家の練習メニュー（runHomePractice）を開く。作業台は既存の自動操作で進める
 async function startPractice(page, stock, { auto = "good" } = {}) {
   await page.evaluate(async ({ stock, auto }) => {
     const core = await import("./js/core/state.js");
-    const vn = await import("./js/vn/engine.js"), craft = await import("./js/craft/session.js");
-    vn.vnTest.turbo = true; craft.craftTest.auto = auto;
-    core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80, weatherSeed: 4 });
-    core.state.flavorStock = { ...stock };
-    core.state.flavors = Object.keys(stock);
-    core.save(); // 行動前のオートセーブ
+    const craft = await import("./js/craft/session.js");
+    core.newGame(); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80, weatherSeed: 4 });
+    core.state.flavorStock = { ...stock }; core.state.flavors = Object.keys(stock);
+    core.config.bgmVolume = core.config.seVolume = 0;
+    craft.craftTest.auto = auto;
+    core.save();
     window.__practice = { done: false };
-    import("./js/daily/home-practice.js").then(home => home.runHomePractice({ staminaGuard: async () => true }))
-      .then(value => { window.__practice = { done: true, value }; });
+    // 店イベントと同じ制作本体を呼ぶ。日常の行動・消耗はこのfixtureでは追加しない。
+    import("./js/craft/practice.js").then(m => m.runFullPractice())
+      .then(cs => { window.__practice = { done: true, mix: cs.mix }; });
   }, { stock, auto });
-  await page.locator('[data-test="home-practice-full"]').waitFor();
 }
-
 const snapshot = page => page.evaluate(async () => {
   const core = await import("./js/core/state.js");
-  const runs = core.state.flags._craft_practice_runs || [];
-  const steps = await import("./js/craft/steps.js");
-  return { stock: { ...core.state.flavorStock }, stamina: core.state.stamina, runs: runs.length, mix: runs.at(-1)?.mix || null,
-    supplied: steps.regulationFor({ mode: "rehearsal" })?.flavor || null,
-    saved: JSON.parse(localStorage.getItem(core.SAVE_KEY) || "null")?.flavorStock || null };
+  return { stock: { ...core.state.flavorStock }, runs: core.state.flags._craft_practice_runs || [],
+    saved: JSON.parse(localStorage.getItem(core.SAVE_KEY)).flavorStock };
 });
-const sum = o => Object.values(o || {}).reduce((s, g) => s + g, 0);
 
-async function completes(page, tap) {
-  await startPractice(page, { double_apple: 20, mint: 10 });
-  const full = page.locator('[data-test="home-practice-full"]');
-  assert.equal(await full.isEnabled(), true);
-  if (tap) await full.tap(); else await full.click();
-  await page.waitForFunction(() => window.__practice.done, null, { timeout: 120000 });
-  const after = await snapshot(page);
-  assert.equal(after.runs, 1, "一台を作り終えた記録が1件");
-  assert(sum(after.mix) >= 12, `配合は12g以上: ${JSON.stringify(after.mix)}`);
-  for (const [id, before] of Object.entries({ double_apple: 20, mint: 10 })) {
-    // 練習でも大会の課題を再現する。課題の葉は支給なので、大会と同じく減らさない
-    const used = id === after.supplied ? 0 : (after.mix[id] || 0);
-    assert.equal(after.stock[id], before - used, `${id}は自分の葉として使った分だけ減る`);
-  }
-  assert(sum(after.mix) - (after.mix[after.supplied] || 0) > 0, "自分の葉を使っている");
-  assert.deepEqual((await page.evaluate(() => window.__practice.value)), { used: true, exerted: true });
-}
-
-// 日常の実経路: タイトルからLOAD→地図→家→「家で練習する」→「一台を通して」→配合画面
-async function realPathToMix(page, tap) {
-  const act = async (id) => { const t = page.locator(`[data-test="${id}"]`); await t.scrollIntoViewIfNeeded(); if (tap) await t.tap(); else await t.click(); };
-  await page.evaluate(async () => {
-    const core = await import("./js/core/state.js"), s = core.newState();
-    Object.assign(s, { phase: "daily", day: 6, slot: 0, money: 45678, stamina: 90, weatherSeed: 4 });
-    Object.assign(s.flags, { _morning_6: true, _lime_tut: 1, _lime_opened: true });
-    s.owned.push("home_rig_set");
-    s.flavorStock = { double_apple: 20, mint: 10 };
-    localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); localStorage.setItem("suien_remake_slot1", JSON.stringify(s));
-  });
-  await page.reload(); await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
-  await page.evaluate(() => { window.__remake.vnTest.turbo = true; });
-  await act("title-load"); await act("slot-1");
-  const deadline = Date.now() + 90000;
-  while (!(await page.evaluate(() => document.body.dataset.screen === "map" && !document.body.classList.contains("vn-open")))) {
-    assert(Date.now() < deadline, "地図に着かない");
-    const choice = page.locator(".vn-choices.show button:not(:disabled)");
-    if (await choice.count()) await choice.first().click({ timeout: 500 }).catch(() => {});
-    else if (await page.evaluate(() => document.body.classList.contains("in-vn"))) await page.keyboard.press("Enter");
-    await page.waitForTimeout(100);
-  }
-  await act("pin-rest"); await act("map-home-practice"); await act("home-practice-full");
-  await confirmSetupWater(page, { touch: tap });
-  await page.locator('[data-test="mix-ok"]').waitFor();
-}
-
-await suite("home-practice-leaves", async (check) => {
-  for (const [label, opts, tap] of [["pc", {}, false], ["touch", touch, true]]) {
-    await check(`${label}-title-mid-practice-keeps-pre-action-save`, async (page) => {
-      await realPathToMix(page, tap);
-      // 体力は作り始めに引かれている（まだ保存はされていない）
-      assert.equal(await page.evaluate(() => window.__remake.state.stamina), 78);
-      // 会話中など見えないMENUからでも「タイトルへ戻る」に届いた場合を、MENUの処理を直接呼んで再現する
-      await page.locator('[data-test="hud-menu"]').dispatchEvent("click");
-      await page.locator('[data-test="menu-title"]').waitFor();
-      await Promise.all([page.waitForEvent("load"), page.locator('[data-test="menu-title"]').dispatchEvent("click")]);
-      await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
-      const saved = await page.evaluate(async () => {
+await suite("shop-practice-stock", async check => {
+  for (const [label, options] of [["pc", {}], ["touch", touch]]) {
+    await check(`${label}-full-practice-save-load-preserves-stock`, async page => {
+      const stock = { double_apple: 1, mint: 1 };
+      await startPractice(page, stock);
+      await page.waitForFunction(() => window.__practice.done, null, { timeout: 120000 });
+      const after = await snapshot(page);
+      assert.equal(after.runs.length, 1);
+      assert.equal(after.runs[0].served, true);
+      assert.deepEqual(after.stock, stock, "完成しても私物は減らない");
+      assert.deepEqual(after.saved, stock, "途中のオートセーブも私物不変");
+      const loaded = await page.evaluate(async () => {
         const core = await import("./js/core/state.js");
-        const s = JSON.parse(localStorage.getItem(core.SAVE_KEY));
-        return { stock: s.flavorStock, stamina: s.stamina, slot: s.slot, runs: (s.flags._craft_practice_runs || []).length };
+        core.save(); const auto = core.load().flavorStock;
+        localStorage.setItem("suien_remake_slot1", JSON.stringify(core.state));
+        const slot = core.loadFromSlot("suien_remake_slot1").flavorStock;
+        return { auto, slot, runs: core.state.flags._craft_practice_runs.length };
       });
-      assert.deepEqual(saved, { stock: { double_apple: 20, mint: 10 }, stamina: 90, slot: 0, runs: 0 },
-        "途中でタイトルへ戻っても、葉・体力・行動・記録は行動前のまま");
-    }, opts);
+      assert.deepEqual(loaded, { auto: stock, slot: stock, runs: 1 });
+    }, options);
+
+    await check(`${label}-home-menu-absent-with-and-without-rig`, async page => {
+      for (const slot of [0, 1]) for (const rig of [false, true]) {
+        await page.evaluate(async ({ slot, rig }) => {
+          const core = await import("./js/core/state.js"), map = await import("./js/daily/map.js");
+          map.interruptMap(null);
+          core.newGame(); Object.assign(core.state, { phase: "daily", day: 8, slot, weatherSeed: 4 });
+          if (rig) core.state.owned.push("home_rig_set");
+          window.__map = map.chooseSpot();
+        }, { slot, rig });
+        await page.locator('.map:not(.done)').waitFor();
+        const pin = page.locator('[data-test="pin-rest"]');
+        if (options.hasTouch) await pin.tap(); else await pin.click();
+        assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0);
+        assert.equal(await page.locator('[data-test="map-go"]').innerText(), "家に帰る");
+      }
+    }, options);
   }
 
-  await check("pc-full-run-consumes-once", page => completes(page, false));
-  await check("touch-full-run-consumes-once", page => completes(page, true), touch);
-
-  await check("not-enough-leaves-disabled", async (page) => {
-    await startPractice(page, { double_apple: 9, mint: 2 });
-    const full = page.locator('[data-test="home-practice-full"]');
-    assert.equal(await full.isDisabled(), true, "12g未満では「一台を通して」を押せない");
-    assert.match(await full.innerText(), /12g/);
-    // 工程ドリルは配合しないので選べる
-    assert.equal(await page.locator('[data-test="drill-heat"]').isEnabled(), true);
-    await page.locator('[data-test="home-practice-back"]').click();
-    await page.waitForFunction(() => window.__practice.done);
-    assert.deepEqual((await snapshot(page)).stock, { double_apple: 9, mint: 2 }, "戻ったら何も減らない");
-  });
-
-  await check("stamina-warning-cancel-changes-nothing", async (page) => {
-    await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      core.newGame(); core.state.owned.push("home_rig_set"); Object.assign(core.state, { phase: "daily", day: 8, slot: 0, stamina: 80 });
-      core.state.flavorStock = { double_apple: 20, mint: 10 };
-      window.__before = JSON.stringify(core.state);
-      window.__practice = { done: false };
-      // 体力警告で「やめる」を選んだのと同じ: staminaGuard が false
-      import("./js/daily/home-practice.js").then(h => h.runHomePractice({ staminaGuard: async () => false }))
-        .then(value => { window.__practice = { done: true, value }; });
-    });
-    await page.locator('[data-test="home-practice-full"]').click();
-    await page.waitForFunction(() => window.__practice.done);
-    assert.deepEqual(await page.evaluate(() => window.__practice.value), { used: false, exerted: false });
-    assert.equal(await page.evaluate(async () => JSON.stringify((await import("./js/core/state.js")).state) === window.__before), true,
-      "葉・体力・行動・記録は何も変わらない");
-  });
-
-  await check("hidden-menu-not-clickable-on-bench", async (page) => {
+  await check("hidden-menu-not-clickable-on-bench", async page => {
     await startPractice(page, { double_apple: 20, mint: 10 }, { auto: null });
-    // 日常の画面と同じ実HUDを組む（MENUを押した回数だけ数える）
     await page.evaluate(async () => {
-      window.__menuOpened = 0;
-      (await import("./js/daily/hud.js")).initHud({ phone() {}, status() {}, menu() { window.__menuOpened++; } });
+      (await import("./js/daily/hud.js")).initHud({ phone() {}, status() {}, menu() { throw Error("hidden menu opened"); } });
     });
-    await page.locator('[data-test="home-practice-full"]').click();
-    await confirmSetupWater(page, { touch: true });
+    await confirmAppearanceSetup(page, { touch: true });
+    await confirmWaterSetup(page, { touch: true });
     await page.locator('[data-test="mix-ok"]').waitFor();
-    // 作業台では見えないHUDのMENUを押せない（タイトルへ戻る＝途中保存をさせない）
-    const hit = await page.evaluate(() => {
-      const m = document.querySelector('[data-test="hud-menu"]');
-      if (!m) throw new Error("HUD MENU was not built");
-      const r = m.getBoundingClientRect();
+    assert.equal(await page.evaluate(() => {
+      const m = document.querySelector('[data-test="hud-menu"]'), r = m.getBoundingClientRect();
       const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
       return top === m || m.contains(top);
-    });
-    assert.equal(hit, false, "作業台の上に見えないMENUが残っている");
+    }), false);
   }, touch);
 
-  await check("mix-capped-by-own-leaves", async (page) => {
-    await startPractice(page, { double_apple: 8, mint: 6 }, { auto: null });
-    await page.locator('[data-test="home-practice-full"]').click();
-    await confirmSetupWater(page);
+  for (const [name, options] of [["store-leaves-without-own-stock", {}], ["touch-store-leaves-without-own-stock", touch]]) await check(name, async page => {
+    await startPractice(page, {}, { auto: null });
+    await confirmAppearanceSetup(page, { touch: !!options.hasTouch });
+    await confirmWaterSetup(page, { touch: !!options.hasTouch });
     await page.locator('[data-test="mix-ok"]').waitFor();
-    assert.match(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-stock').innerText(), /手持ち 残り8g/);
-    for (let n = 0; n < 10; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
-    assert.equal(await page.evaluate(() => document.querySelector('.flavor-row[data-flavor="double_apple"] .fr-g').textContent), "8g", "手持ちより多くは詰められない");
-  });
+    const press = locator => options.hasTouch ? locator.tap() : locator.click();
+    assert.equal(await page.locator('.flavor-row').count(), 18);
+    assert.equal(await page.locator('.fr-stock').count(), 0);
+    for (let n = 0; n < 10; n++) await press(page.locator('[data-test="mix-plus-blueberry"]'));
+    for (let n = 0; n < 2; n++) await press(page.locator('[data-test="mix-plus-mint"]'));
+    assert.equal(await page.locator('.flavor-row[data-flavor="blueberry"] .fr-g').textContent(), "10g");
+    assert.equal(await page.locator('[data-test="mix-ok"]').isEnabled(), true);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await press(page.locator('[data-test="mix-ok"]'));
+    await page.waitForFunction(() => window.__practice.done, null, { timeout: 120000 });
+    assert.deepEqual(await page.evaluate(() => window.__practice.mix), { blueberry: 10, mint: 2 });
+    assert.deepEqual((await snapshot(page)).stock, {});
+  }, options);
 
-  await check("reload-mid-bench-keeps-save", async (page) => {
-    await startPractice(page, { double_apple: 20, mint: 10 }, { auto: null });
-    await page.locator('[data-test="home-practice-full"]').click();
-    await confirmSetupWater(page);
+  await check("reload-mid-bench-keeps-save", async page => {
+    const stock = { double_apple: 20, mint: 10 };
+    await startPractice(page, stock, { auto: null });
+    await confirmAppearanceSetup(page);
+    await confirmWaterSetup(page);
     await page.locator('[data-test="mix-ok"]').waitFor();
-    for (let n = 0; n < 9; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
-    // 課題（支給）の葉を、決定できるまで足す
-    for (let n = 0; n < 8 && !(await page.locator('[data-test="mix-ok"]').isEnabled()); n++) await page.locator('[data-test="mix-plus-mint"]').click();
+    for (let n = 0; n < 10; n++) await page.locator('[data-test="mix-plus-lemon"]').click();
+    for (let n = 0; n < 2; n++) await page.locator('[data-test="mix-plus-mint"]').click();
     await page.locator('[data-test="mix-ok"]').click();
     await page.locator('[data-test="pack-confirm"]').waitFor();
-    const mid = await snapshot(page);
-    assert.deepEqual(mid.stock, { double_apple: 20, mint: 10 }, "配合を決めた時点ではまだ減らない");
-    assert.deepEqual(mid.saved, { double_apple: 20, mint: 10 });
-    await page.reload({ waitUntil: "load" });
+    assert.deepEqual((await snapshot(page)).stock, stock);
+    await page.reload();
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
-    const reloaded = await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.load();
-      return { stock: s.flavorStock, stamina: s.stamina, runs: (s.flags._craft_practice_runs || []).length };
+    assert.deepEqual(await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), s = core.load();
+      return { stock: s.flavorStock, stamina: s.stamina, runs: s.flags._craft_practice_runs || [] };
+    }), { stock, stamina: 80, runs: [] });
+    await startPractice(page, stock);
+    await page.waitForFunction(() => window.__practice.done, null, { timeout: 120000 });
+    assert.deepEqual((await snapshot(page)).stock, stock, "再開して完成しても減らない");
+  });
+
+  await check("tournament-caps-and-consumes-only-carried-leaves", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), craft = await import("./js/craft/session.js"), steps = await import("./js/craft/steps.js");
+      core.newGame(); core.state.flavorStock = { double_apple: 10, mint: 3 }; core.state.flavors = ["double_apple", "mint"];
+      craft.craftTest.auto = null;
+      window.__mix = craft.newSession("tournament"); craft.openBench(__mix);
+      window.__mixDone = false; steps.stepMix(__mix).then(() => { window.__mixDone = true; });
     });
-    assert.deepEqual(reloaded, { stock: { double_apple: 20, mint: 10 }, stamina: 80, runs: 0 }, "途中の一台は保存に残らない");
+    await page.locator('[data-test="mix-ok"]').waitFor();
+    assert.equal(await page.locator('[data-test="mix-plus-blueberry"]').count(), 0);
+    for (let n = 0; n < 12; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
+    assert.equal(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-g').textContent(), "10g");
+    for (let n = 0; n < 2; n++) await page.locator('[data-test="mix-plus-mint"]').click();
+    await page.locator('[data-test="mix-ok"]').click(); await page.waitForFunction(() => window.__mixDone);
+    assert.deepEqual(await page.evaluate(async () => (await import("./js/core/state.js")).state.flavorStock), { double_apple: 0, mint: 3 });
   });
 });

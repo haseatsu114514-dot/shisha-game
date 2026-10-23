@@ -23,9 +23,13 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     artImg("heat_stove.png", width, "stove-img"),
   ]);
   const coals = coalSpots(count).map(([x, y, label], i) => {
+    // 開始時だけ小さく変化させる。基本の並び・名前・炭同士の操作間隔を保つ。
+    const left = x + (Math.random() - .5) * .036;
+    const top = y + (Math.random() - .5) * .024;
     const files = coalSpriteFiles(types[i]);
     const visual = el("div.coal-sprite", { style: {
       width: coalWidth + "px", height: artHeight(files.lit, coalWidth) + "px",
+      "--coal-angle": (Math.random() - .5) * 5 + "deg",
     } }, [
       artImg(files.cold, coalWidth, "c-cold"),
       artImg(files.lit, coalWidth, "c-red"),
@@ -36,7 +40,7 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     const node = el("button.coal", {
       dataset: { test: "coal-" + i, position: label },
       "aria-label": label + "の炭を取り出す",
-      style: { left: x * 100 + "%", top: y * 100 + "%", zIndex: String(Math.round(y * 100)) },
+      style: { left: left * 100 + "%", top: top * 100 + "%", zIndex: String(Math.round(top * 100)) },
     }, [visual, el("i.coal-corners", { "aria-hidden": "true" })]);
     stove.append(node);
     return { node, visual, label, width: coalWidth };
@@ -60,7 +64,7 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     const c = coals[index], [x, y] = CARRIER_SPOTS[stored.children.length];
     const sprite = c.visual.cloneNode(true);
     const scale = (compact ? 30 : 35) / c.width;
-    sprite.style.transform = "translateX(-50%) scale(" + scale + ")";
+    sprite.style.transform = "translateX(-50%) scale(" + scale + ") rotate(var(--coal-angle, 0deg))";
     const coal = el("li.coal-stored", { style: {
       left: x * 100 + "%", top: y * 100 + "%",
       "--red": c.node.style.getPropertyValue("--red"),
