@@ -76,6 +76,9 @@ body.game-ds .hud-right { flex-wrap: wrap; justify-content: flex-end; width: 36%
 body.game-ds .hud-card { width: 62%; min-width: 0; flex: none; padding: 6px; }
 body.game-ds .dc-meta { margin-left: 6px; flex: 1; min-width: 0; }
 body.game-ds .dc-main { width: 35px; min-width: 35px; flex: none; }
+body.game-ds .dc-area { font-size: 10px; letter-spacing: 0; }
+body.game-ds .dc-area-full { display: none; }
+body.game-ds .dc-area-short { display: block; }
 body.game-ds .dc-day b { font-size: 24px; }
 body.game-ds .dc-row { min-width: 0; padding: 2px 6px; gap: 3px; font-size: 12px; }
 body.game-ds .dc-row span { font-size: 10px; }
@@ -117,7 +120,35 @@ body.game-ds .bench[data-step="pack"] .packing { height: auto; overflow-wrap: an
 body.game-ds .bench[data-step="pack"] .pack-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
 body.game-ds .bench[data-step="pack"] .pack-footer { flex-wrap: wrap; }
 body.game-ds .bench .btn { min-height: 44px; }
-body.game-ds #modal .modal-box { min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 96px); padding: 18px; }
+body.game-ds #modal .modal-box { min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 24px); padding: 18px; }
 body.game-ds #modal .cfg { min-width: 0; }
 body.game-ds #modal .cfg-row { flex-wrap: wrap; }
 body.game-ds #modal .modal-body { overflow: auto; }
+body.game-ds .phone { width: min(340px, calc(100% - 24px)); height: min(640px, calc(100% - 24px)); }
+body.game-ds .lime-actions { max-height: 45%; overflow-y: auto; touch-action: pan-y; }
+body.game-ds .lime-actions > .lime-reply { flex: none; min-height: 40px; }
+body.game-ds .status-modal .st-me { grid-template-columns: 220px minmax(0, 1fr); column-gap: 12px; }
+body.game-ds .status-modal .radar { width: 220px; height: 220px; }
+@media (max-width: 500px) {
+  body.game-ds .status-modal .st-me { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+  body.game-ds .status-modal .st-radar { align-self: center; }
+  body.game-ds .status-modal .st-side { display: flex; flex-direction: column; gap: 5px; }
+  body.game-ds .status-modal .st-tabs { flex-wrap: wrap; }
+  body.game-ds .status-modal .st-row { min-width: 0; }
+}
+@media (max-width: 360px) {
+  body.game-ds .status-modal .st-row { gap: 6px; }
+  body.game-ds .status-modal .st-line { flex-wrap: wrap; gap: 4px 8px; }
+  body.game-ds .status-modal .st-name { flex: none; width: 48px; }
+  body.game-ds .status-modal .st-info { flex: 1; }
+}
+@media (orientation: landscape) {
+  body[data-screen="end"][data-game-layout="ds"] .game-layout-toolbar {
+    left: 4px !important; right: auto !important; top: 8px !important;
+    transform: none !important; width: 72px; max-width: 72px !important;
+    flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+    gap: 2px; font-size: 10px; text-align: center;
+  }
+  body[data-screen="end"][data-game-layout="ds"] .game-layout-toolbar :is(button, a) { padding: 3px 1px; line-height: 1.25; }
+  body[data-screen="end"][data-game-layout="ds"] .game-layout-note { font-size: 9px; line-height: 1.2; }
+}
