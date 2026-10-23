@@ -98,3 +98,6 @@ for (const [id, day] of [["lime_ageha_ch2_goodday", 4], ["lime_ageha_ch2_badday"
   for (const r of m.replies || []) assert([...r.text].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0) <= 19, r.text);
 }
 console.log("[ch2 ageha] PASS: forced nights, visit order, bad day, vibes, secret branches, C.STATION tasting, supplied strawberry, recipe, LIME");
+
+// 第2章の人間関係の改稿（#929）も同じquick検査で確かめる（tools/ci を変えると全ブラウザ検査が走るため、ここから実行する）
+await import("./ch2_relationships_929.mjs");

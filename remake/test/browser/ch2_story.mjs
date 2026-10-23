@@ -121,7 +121,7 @@ await suite('ch2-story', async check => {
     await reload(page); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_read_ch2_abyss_baito); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000);
     const log = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(l => l.text).join('\n'));
-    assert(!log.includes('──炭を、落とした。')); assert(log.includes('同じ夜'));
+    assert(!log.includes('炭を、落とした。')); assert(log.includes('同じ夜'));
   });
   await check('full-rest-still-reads-fixed-accident-without-payment', async page => {
     await seed(page, { sick: true }); await atMap(page, 4, 0);

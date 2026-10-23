@@ -67,7 +67,12 @@
           {
             "speaker": "ageha",
             "face": "sad",
-            "text": "……見なかったことにして。お願い"
+            "text": "……見なかったことにして。今日は、ちゃんと勝負したいの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。……終わったら、水、持っていきます"
           }
         ]
       }
@@ -95,7 +100,7 @@
         {
           "speaker": "kumicho",
           "face": "serious",
-          "text": "──おう、そのとおり。俺はヤクザだ"
+          "text": "おう、そのとおり。俺はヤクザだ"
         },
         {
           "speaker": "kumicho",
@@ -212,29 +217,78 @@
         {
           "speaker": "",
           "face": "",
-          "text": "トロフィーを受け取る。あげはの姿が、客席の出口に見えた。"
+          "text": "トロフィーを受け取る。拍手の向こうで、神崎さんが一度だけ大きくうなずいた。"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "あげはさん！　もう帰るんですか？"
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "スジの通った一台だった。東京でも、その手を雑に扱うなよ"
         },
         {
-          "speaker": "ageha",
-          "face": "sad",
-          "text": "……ごめん。理由は、聞かないで"
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
         },
         {
-          "speaker": "hajime",
-          "face": "sad",
-          "text": "……また、お店に行きます"
+          "type": "hide_portrait",
+          "char_id": "kumicho"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "rei"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは小さくうなずいて、扉の向こうへ消えた。"
+          "text": "舞台を降りると、出口の手前であげはが待っていた。目の縁が、少し赤い。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……悔しい。めっちゃ悔しい。うち、今日いちばん頑張ったのに"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でも、おめでと、ハジメっち。ちゃんと、すごかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます。あげはさんの一台も、すごかったです"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今日はちょっと疲れたから、帰って休む。落ち着いたら、また一台作ろ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "前夜に言ったでしょ。次は、うちの店ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは手を振って、迎えに来たギャル友たちの方へ歩いていった。"
         }
-      ]
+      ],
+      "comment": "DAY14優勝後（#929）。あげはは消えない。負けた悔しさと祝福を両立し、次は店で一台をと約束して友人関係を続ける。神崎・REIも勝者を認める。手の震えは秘密を知る保存でだけ、はじめが気づく。",
+      "branches": {
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（握った指先が、まだ少し震えていた。それでも、最後まで作りきったんだ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_tournament_tasteless",
@@ -260,6 +314,16 @@
           "speaker": "",
           "face": "",
           "text": "スマホには、おめでとうの文字が届いていた。勝ったことを喜んでくれる人がいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはの「おめでと」も、神崎さんやREIさんの言葉も、ちゃんと届いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なのに、受け取る場所だけが、どこにも見つからない）"
         },
         {
           "speaker": "",
