@@ -1,6 +1,7 @@
+import { el } from "../core/util.js";
 import { state, save } from "../core/state.js";
 import { bgUrl } from "../core/data.js";
-import { modal, setBg } from "../core/ui.js";
+import { modal, setBg, showScreen } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { CH2_CITY_NAME } from "../core/city-locations.js";
 import { STATION_FARE, prepareStationTrip } from "../daily/station-travel.js";
@@ -19,6 +20,8 @@ export async function chooseMorningCity() {
   if (state.flags._ch2_morning_departed === state.day) return;
   const owner = state, day = state.day;
   await setBg(bgUrl("bg_home", "day"), { instant: true });
+  if (state !== owner || state.day !== day) return;
+  showScreen("home", el("main.ch2-morning-home"));
   const canGo = state.money >= STATION_FARE * 2;
   const destination = await modal({ title: "今日はどこに行こう？", body: `自宅から出発する。${CH2_CITY_NAME}へは片道200円。帰りの切符代200円も残しておこう。${canGo ? "" : "今は往復分が足りないので、地元で過ごそう。"}`, options: [
     { label: "地元・大須／栄へ", value: "home", test: "ch2-morning-home" },

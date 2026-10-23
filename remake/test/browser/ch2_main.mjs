@@ -132,6 +132,7 @@ await suite('ch2-main', async check => {
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'A meeting is not a spot introduction');
     for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
+    await screenshot(page, 'city-discovered-spots.png');
     await page.locator(test('return')).tap();
     await page.locator(test('complete')).waitFor();
     const value = await page.evaluate(() => window.__remake.state);

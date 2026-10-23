@@ -1,4 +1,4 @@
-# 柚ヶ谷：背景・登場カットイン・あげはとのプリクラ
+# 柚ヶ谷：背景・登場カットイン・プリクラ
 
 Issue #921。2026-10-24 JST。このチャットで生成した画像をすべて掲載。**画像をクリック／タップして原寸で見られます。**
 
@@ -29,6 +29,14 @@ MELTY PUFFの初回サービス。正式立ち絵を参照し、盛れた瞳・�
 1章の青緑ソファ・木材・黒い天井・暖かい照明を継承。左のボックス席、右奥の曲線カウンター、駅前の高架が見える窓で違う支店にしています。県大会ホールと同じビルの店舗ですが、地図の行き先と訪問は別です。
 
 ![シーステーション 柚ヶ谷店](selected/c-station.png)
+
+## ゲーム画面：街の発見と朝の行き先選び
+
+作業ブランチの実画面です。本番への反映とは別に確認できます。
+
+![教わったスポットが増えた2章マップ](../../docs/qa/ch2-main/city-discovered-spots.png)
+
+![自宅で起きてから選ぶ街](../../docs/qa/ch2-daily/morning-city-choice.png)
 
 ## 本編用に選んだ背景
 
@@ -131,3 +139,7 @@ A：正面・左右の低い机 ／ B：斜めの構図 ／ C：暖色の夜
 ## 制作記録
 
 生成はimage_gen。元PNGを保持し、新規画像はGit LFS。実際の生成指示は[prompts.json](prompts.json)、実寸・SHA256・状態は[metadata.json](metadata.json)。配信用はWebPに変換。人物PNGは描き直さず正規素材を使用。神崎の店の台は準備前なのでボウル・HMD・炭・ホース・ハンドルなし。比較時点の旧地名を含む指示は履歴で、画像には街名を描いていません。
+
+## 別作業の神崎・部下の画像も見る
+
+[神崎の新衣装・年齢案・白チェック衣装一式・部下の立ち絵と登場案](https://github.com/haseatsu114514-dot/shisha-game/blob/codex/ryuji-yakuza-designs/asset_sources/portraits/kumicho-yakuza-concepts/README.md)

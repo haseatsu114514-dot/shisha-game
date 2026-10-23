@@ -146,7 +146,10 @@ await suite('ch2-daily',async check=>{
   });
   await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
-    for(const id of ['ageha','kumicho','rei']) {await act(page,`ch2_${id}`,{touch:true});}
+    for(const id of ['ageha','kumicho','rei']) {
+      if ((await value(page)).flags._ch2_region === 'home') await wide(page, true);
+      await act(page,`ch2_${id}`,{touch:true});
+    }
     await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
     assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
@@ -205,6 +208,7 @@ await suite('ch2-daily',async check=>{
     await page.evaluate(() => { __remake.state.flags._kumicho_sento_introduced = true; });
     await page.locator(t('ch2-main-next-day')).click();
     await page.locator(t('ch2-morning-city')).waitFor();
+    await capture(page, 'morning-city-choice.png');
     assert.equal((await value(page)).flags._ch2_region, 'home');
     await page.locator(t('ch2-morning-city')).click();
     await page.locator('.map[data-region="widehanga"]').waitFor();
