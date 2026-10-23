@@ -244,6 +244,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
               if (!stationActive()) return;
               root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
               renderPins(); idleInfo();
+              // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
+              // 到着後は新しい街の上画面（HUDと地図）から見せる。
+              if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
             } finally { moving = false; }
           } });
         info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),
