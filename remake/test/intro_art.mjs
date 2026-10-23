@@ -26,7 +26,7 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      if (Object.keys(DB.manifest.introArt).length !== 15) throw new Error("登場背景が15種ではない");
+      if (Object.keys(DB.manifest.introArt).length !== 17) throw new Error("登場背景が17種ではない");
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });

@@ -1,3 +1,4 @@
+import { CH2_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
@@ -6,7 +7,11 @@ import { imageReady, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, VISIT_COST } from "../daily/spots.js";
+import { setHiyoriExtraShops } from "../daily/hiyori.js";
 import { trpgSpot } from "../daily/trpg.js";
+import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./ch2-outings.js";
+import { offerAgehaPurikura } from "./ch2-purikura.js";
+import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit, scheduleChapterTwoTrpgNight } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
@@ -25,16 +30,31 @@ const unknownDescriptions = {
 };
 export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop => ({
   ...stop, id: `ch2_${stop.id}`, charId: stop.id, kind: "rival", region: "widehanga",
-  label: stop.name, area: "ワイドハンガ街",
+  label: stop.name, area: CH2_CITY_NAME,
   theme: "store", glyph: "煙", cost: VISIT_COST, stamina: -16, desc: descriptions[stop.id],
   unknownDesc: unknownDescriptions[stop.id],
-  previewUrl: ROOMS[stop.id],
+  previewUrl: ROOMS[stop.id], face: stop.id,
 }));
 
 async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const owner = state, id = spot.charId;
+  if (spot.id === CITY_SHOP.id) {
+    await openShop({ branch: "widehanga" });
+    return { used: false, exerted: false };
+  }
+  const outing = knownCityOutings(state).find(item => item.id === spot.id && item.kind === "outing");
+  if (outing) {
+    if (state.money < outing.cost) return { used: false, exerted: false };
+    const dialogueId = state.flags[`_ch2_visited_${outing.id}`] ? outing.repeat : outing.first;
+    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
+    if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+    addMoney(-outing.cost); addStamina(outing.stamina);
+    state.flags[`_ch2_visited_${outing.id}`] = true;
+    return { used: true, exerted: false };
+  }
+  if (spot.kind === "trpg") return null;
   const first = !state.flags._ch2_talks?.[id];
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const followup = !first && !state.flags._ch2_followup_done?.[id];
@@ -61,14 +81,20 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     recordCityVisit(state, id);
   }
   // 新しい続編には制御行・報酬を持たせず、正常終端まで請求を保留する。
-  // cancelled/途中LOAD/例外で費用だけがRAMや保存に残らない。既存chat/repeatの順序は保持。
-  if (!followup) { addMoney(-spot.cost); addStamina(spot.stamina); }
+  // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
   await setBg(ROOMS[id], { instant: true });
   if (state !== owner) return { used: false, exerted: false };
   const result = await play(scene);
   if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);
+  if (discovered && !state.flags[discovered.flag]) {
+    const introduction = await play(discovered.introduction);
+    if (state !== owner || !introduction || introduction.cancelled) return { used: false, exerted: false };
+    introduceCitySpot(state, id);
+  }
+  if (id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha, spot)) return { used: false, exerted: false };
+  addMoney(-spot.cost); addStamina(spot.stamina);
   if (followup) {
-    addMoney(-spot.cost); addStamina(spot.stamina);
     (state.flags._ch2_followup_done ||= {})[id] = true;
   }
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
@@ -86,6 +112,7 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
 }
 
 export async function runChapterTwoPreparation() {
+  setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
   const startDay = dayOneProgress(state).startDay;
   scheduleChapterTwoTrpgNight(state, startDay);
   state.flags._ch2_preparation_started = true;
@@ -97,11 +124,11 @@ export async function runChapterTwoPreparation() {
       regionId: state.flags._ch2_region,
       regions: [
         { id: "home", label: "地元・大須／栄", background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg") },
-        { id: "widehanga", label: "隣町・ワイドハンガ", background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, trpgSpot()].filter(Boolean) },
+        { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean) },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
     }),
-    spotById: id => PREPARATION_SPOTS.find(spot => spot.id === id),
+    spotById: id => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state)].find(spot => spot.id === id),
     performSpot: visitPreparationSpot,
     nightEvents: chapterTwoNights(startDay),
   });

@@ -325,7 +325,12 @@
   "bg_tournament_stage.png",
   "eden.png",
   "kemurikusa.png",
-  "peppermint.png"
+  "peppermint.png",
+  "bg_yuzugaya_trpg.webp",
+  "bg_yuzugaya_aquarium.webp",
+  "bg_yuzugaya_sento.webp",
+  "bg_yuzugaya_shop.webp",
+  "bg_yuzugaya_kumicho.webp"
  ],
  "cgs": [
   "cg_ch1_dr_kemuri_hook.png",
@@ -341,7 +346,9 @@
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
   "cg_tsumugi_confession.png",
-  "cg_tsumugi_smoke_color.png"
+  "cg_tsumugi_smoke_color.png",
+  "cg_ageha_first_purikura.png",
+  "cg_ryuji_purikura.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -1246,6 +1253,32 @@
      "top": -159.22
     }
    }
+  },
+  "kumicho": {
+   "color": "#b13432",
+   "secondary": "#eadcc0",
+   "shadow": "#290c0e",
+   "background": "ui/character_intros/kumicho.png",
+   "frames": {
+    "normal": {
+     "width": 1000,
+     "left": -180,
+     "top": -12
+    }
+   }
+  },
+  "rei": {
+   "color": "#b0102a",
+   "secondary": "#eadcc0",
+   "shadow": "#210c17",
+   "background": "ui/character_intros/rei.png",
+   "frames": {
+    "normal": {
+     "width": 1000,
+     "left": -180,
+     "top": -12
+    }
+   }
   }
  },
  "titleArts": [
@@ -2023,6 +2056,10 @@
   "sprites/characters/uranaishi/chr_uranaishi_normal.png",
   "cgs/cg_minto_confession.png",
   "cgs/cg_rin_confession.png",
-  "cgs/cg_tsumugi_confession.png"
+  "cgs/cg_tsumugi_confession.png",
+  "ui/character_intros/kumicho.png",
+  "ui/character_intros/rei.png",
+  "cgs/cg_ageha_first_purikura.png",
+  "cgs/cg_ryuji_purikura.png"
  ]
 }

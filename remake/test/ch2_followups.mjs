@@ -18,6 +18,7 @@ const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"],
 }, { context });
 const mocks = {
   "../core/data.js": { DB, bgUrl: x => x },
+  "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷" },
   "../core/stats.js": {
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
@@ -34,7 +35,11 @@ const mocks = {
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000 },
+  "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "../daily/trpg.js": { trpgSpot: () => null },
+  "../daily/shop.js": { openShop: async () => null },
+  "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
+  "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight: () => {} },
   "./ch2-story.js": { chapterTwoNights: () => ({}) },
@@ -103,10 +108,11 @@ for (const id of ids) {
 let fixture = preparation;
 const loaderDB = { dialogues: { preserved: true } };
 const loaderContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout,
-  fetch: async () => ({ ok: true, json: async () => fixture }) });
+  fetch: async url => ({ ok: true, json: async () => String(url).includes("ch2_deliveries") ? JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_deliveries.json", root))) : fixture }) });
 const loader = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-city-data.js", root), "utf8"), { context: loaderContext });
-await loader.link(async spec => new vm.SyntheticModule(spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY"], function () {
-  if (spec.includes("core/data")) this.setExport("DB", loaderDB);
+await loader.link(async spec => new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY"], function () {
+  if (spec.includes("city-locations")) this.setExport("CITY_BACKGROUNDS", { kumicho: "room" });
+  else if (spec.includes("core/data")) this.setExport("DB", loaderDB);
   else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); }
 }, { context: loaderContext }));
 await loader.evaluate();
@@ -118,5 +124,8 @@ for (const id of ids) {
 fixture = structuredClone(preparation); fixture.dialogues.find(d => d.dialogue_id.endsWith("_followup")).lines = [{}];
 await assert.rejects(loader.namespace.loadPreparationDialogues(), /続編台本の形式/);
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-assert.equal(Object.keys(loaderDB.dialogues).length, 10);
+assert.equal(Object.keys(loaderDB.dialogues).length, 26);
+assert(loaderDB.dialogues.remake_ch2_rei_trpg);
+assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
+assert(loaderDB.dialogues.remake_ch2_kumicho_sento);
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");

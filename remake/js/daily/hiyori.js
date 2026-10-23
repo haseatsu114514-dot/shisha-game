@@ -15,6 +15,8 @@ import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discove
 import { playAxeBarRumor } from "./axe-bar-discovery.js";
 
 let active = false;
+let extraShopSource = () => [];
+export function setHiyoriExtraShops(source) { extraShopSource = source; }
 
 function ownedConversation(signal) {
   const owner = state, controller = new AbortController();
@@ -96,7 +98,7 @@ export function hiyoriShopLocation() {
   const ready = first || hiyoriEventStatus("relay") === "ready" || hiyoriEventStatus("cracks") === "ready"
     || !!DB.dialogues[`hiyori_shop_repeat_${Number(state.flags._hiyori_repeat_count || 0) % 4}`]?.lines?.length;
   if (!ready) return null;
-  const candidates = allSpots().filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
+  const candidates = [...allSpots(), ...extraShopSource()].filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
     && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day)
     .map(spot => ({ id: spot.id, roll: encounterRoll(spot) }))
     .filter(spot => first || spot.roll < 0.2)

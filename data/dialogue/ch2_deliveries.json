@@ -1,0 +1,790 @@
+{
+  "comment": "第2章の配達・街の紹介。読了と保存は呼出元が管理。初日の下見は無料。入浴・水族館の通常訪問は呼出元の費用と行動を使う。",
+  "dialogues": [
+    {
+      "dialogue_id": "remake_ch2_delivery_offer",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうだ。隣町の三軒に、預かってる荷物を届けてくれ"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "スミさんが、小さな包みを三つと、店名を書いたメモを並べた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "MELTY PUFF、神崎煙草店、零-ZERO-。まとめて持っていけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "配達しながら、ご挨拶してくればいいんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。回る順番は任せる。会場の下見も忘れんなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "三軒と県大会ホール。全部回ったら、ここへ戻ります"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "頼んだ。急がなくていいから、相手の顔を見て渡せ"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "包みを鞄へ入れる。知らない店の名前が、今日の行き先になった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_delivery_ageha",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それと、スミさんからの荷物です。tonariから預かってきました"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、待ってたやつ！ ありがと、ハジメっち"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "あげはさんが包みの宛名を確かめて、カウンターへ置いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "スミさんにも、助かったって伝えといて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。また今度、ゆっくりお邪魔します"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_delivery_kumicho",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんから、こちらを預かってきました"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "神崎さんは包みを両手で受け取り、宛名に目を落とした。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、確かに。スミに礼を言っといてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。配達で、街の道も少し分かってきました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "用事がありゃ、知らねえ店にも入りやすいだろ。また来な"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_delivery_rei",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんからお預かりした荷物も、お届けに来ました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ありがとう。待ってた"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "零さんは包みを受け取ると、伝票を静かに揃えた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "スミさんに、確かに受け取ったと伝えてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。店の場所も覚えたので、また来ます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_trpg",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "カウンターの隅に、小さな袋があった。中で多面体のサイコロが光る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、変わったサイコロですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……TRPG用。休みの日に、遊んでる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "零さんが？ 音楽以外にも、趣味があるんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "音楽も好きだ。でも、こっちは別の世界に入り浸れる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "誰かの役になって、みんなで話を作る。気づくと何時間も経ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ゲームの世界を、みんなで歩く感じですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そう。思い通りにならないところも、面白い"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "駅の北側に、六角サイさんのボドゲカフェがある。夜はTRPGバーになる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "初めてでも、遊び方を教えてくれる。気になったら、寄ってみるといい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。場所、教えてもらっていいですか？"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "零さんが地図を開いて、店の場所を指した。新しい行き先を、スマホに残す。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_delivery_report",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それと、三軒とも荷物をお渡ししました。皆さんから、お礼を"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。ご苦労さん。初めての道で、ちゃんと回れたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "店の名前だけじゃなくて、どんな人がいるのかも分かりました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それなら、次は入りやすいだろ。配達も、そういう仕事だ"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "メモの三つの店名に、受け渡し済みの印をつけた。鞄が少し軽くなっていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_aquarium",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、この街、初めてなんでしょ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。駅から出ただけで、ちょっと迷いました"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "分かる。ビルばっかで、最初はどこも同じに見えるんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でもさ、駅の向こうのビル、水族館入ってるんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "こんな街の真ん中に、水族館ですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そう！ 電車降りて、買い物して、そのまま魚見に行けるの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "青い水槽の前、ずっといられる。外が都会なの、忘れちゃうんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "配達の帰りにも寄れそうですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "駅前にDr.fookahの支店もあるよ。仕入れなら、そこ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "会場はあっち。お腹すいたら、駅の地下にも色々あるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。急に、街が分かってきました"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ。大会のことだけじゃなくて、街も楽しんできなよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_sento",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "小僧、帰りに時間があったら、駅裏の銭湯も見てけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、お風呂好きなんですか？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "サウナだ。熱と水と、最後にぼうっと座る時間。あれがいい"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "袖口から覗く刺青に、つい目がいった。神崎さんは気づいて頷く。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "刺青が入ってても入れる。そういう店は、まだ限られるからな"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あそこは、ありがてえ。昔から通ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よく行かれるんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "水風呂はシングル。つまり、一桁だ。しかも、とんでもねえ熱波師がいる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あの風が来ると、体感百五十度って言いたくなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ひゃくごじゅう……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "室温じゃねえぞ。ロウリュの後に風が来た、その感じだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ただ熱けりゃいいわけでもねえ。今日は下の段だな、とか、体と相談する"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつも同じ入り方じゃないんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。水風呂を出て椅子に座るだろ。急に、何も考えなくてよくなる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ああ、ととのったなって。それで十分なんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……思ってたより、ずっと詳しいですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "店ごとに水が違うからな。気づくと、遠くの銭湯まで行っちまう"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "神崎さんは少しだけ笑って、スマホの地図をこちらへ向けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_visit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "駅前のビルを上がると、通りの音が遠のいた。水槽の青が、床をゆっくり揺らす。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この壁の向こうは、さっきまで歩いてた街なのに）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "小さな魚の群れが、一度に向きを変える。しばらく、目で追った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "今日は水槽の前で、急がず立ち止まった。前に来た時と、光の見え方が違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ場所でも、見るところって変わるんだな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_visit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "神崎さんに聞いた銭湯は、駅裏の細い通りにあった。受付から、湯の匂いがする。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（刺青があっても入れるって、神崎さん、ほっとした顔してたな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "湯とサウナを自分のペースで楽しんで、椅子に腰を下ろした。肩の力が、少し抜けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "湯上がりに椅子へ座る。さっきまで頭の中にあった段取りが、少し遠くなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ととのうって、こういう時間のことかもしれない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_look",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "あげはさんの教えてくれたビルには、水族館の入口があった。街の真ん中で、青い光が揺れている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今度は、ゆっくり見に来よう。今日はまず、配達だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_look",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "駅裏で、神崎さんの教えてくれた銭湯を見つけた。暖簾の向こうから、湯上がりの人が出てくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（場所、分かった。配達を終えた日に、来てみよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_purikura",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、待って。せっかくだし、一枚撮ってこ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "写真ですか？ 配達の途中なんですけど……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちのプリクラ。初めて来た人、一回サービスなの"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "あげはさんがカーテンを開け、空いた場所をぽんぽんと叩く。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ほら、ハジメっちも入って。うち一人だと、ただの自撮りじゃん！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "わ、分かりました。……え、もう撮るんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "さん、に、いち！ はい、ピース！"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "四回のシャッターの後、画面の自分を見て、思わず顔を近づけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の目、こんなにキラキラしてましたっけ……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "盛れてる盛れてる！ 落書き、うちに任せて"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "ピンクのペンでハート、豹柄の囲み、勢いのある丸文字。画面がどんどん賑やかになる。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ハジメっち初ぷり」っと。こっちは「うちら優勝☆」！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会、まだこれからですよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "写真の話！ いいじゃん、縁起よくて"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ageha_first_purikura",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "出てきたシールには、いつもより目の大きい二人と、あげはさんの落書きが詰まっていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、半分こ。帰ってから見て、笑っていいからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。……スミさんに見つかったら、何て言おう"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_invite",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、今日もプリ撮っていきなよ。もちろん、気が向いたらでいいからね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_solo",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、一人で撮ってみようかな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、ソロプリ!? うちですらやったことないのに！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前、画面に追いつけなかったので。練習というか……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "プリクラの自主練って何！ じゃ、落書きはうちが盛っとくね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_pair",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさん、また一緒に撮ってもらえますか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "おっけー！ 今度はハジメっちも、最初からピースしてね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_guest",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よかったら、一緒に撮りませんか？"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "相席していた相手が頷いて、プリクラの方へ立ち上がった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいじゃん！ 撮り方分かんなかったら、うち呼んでね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ryuji_melty_greeting",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "邪魔する。近くまで来たんでな。店の方にも、一言挨拶をと思ってよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "りゅうじさん！ わざわざありがと。ハジメっちも来てるよ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。この街の店同士、顔も出さずに世話になるわけにゃいかねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、こういうのもきっちりしてるんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "煙だけ丁寧でも、付き合いが雑じゃ職人失格だろ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "じゃ、ちょっと座ってって。ハジメっちの隣、空いてるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_ryuji",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、よかったら一緒にプリクラ撮りませんか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "写真か。……誘ってもらって断る筋もねえな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "その承諾、重っ！ じゃ、二人ともここ入ってー"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "狭いブースの中で、神崎が背筋を伸ばした。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "どこに礼すりゃいい。あのレンズか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "たぶん、礼はいらないと思います"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "次、指ハート！ 指先で小さいハート作って！"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……こうか。左右の高さが揃わねえな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "職人のこだわりを、ここで……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "待って、顔が本気すぎて無理！ それも採用！"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ryuji_purikura"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……俺の目、こんなに光ってたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "僕もです。二人とも、すごいことになってますね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "落書きは「盛れても筋は通す☆」っと。これ、店に飾っていい？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "いや、そいつは……まず台紙を選ばせろ。貼るならきっちり貼る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "飾る方はいいんだ……"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    }
+  ]
+}

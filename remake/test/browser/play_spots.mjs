@@ -15,7 +15,7 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
   page.setDefaultTimeout(20000);
   await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run }) => {
     const core = await import("./js/core/state.js"), s = core.newGame();
-    s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
+    s.flags._rei_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
     Object.assign(s.flags, { _axe_bar_sighting_done: true, _axe_bar_sighting_day: day - 1, _axe_bar_sighting_chapter: chapter }); // 目撃後の既存店舗回帰
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,

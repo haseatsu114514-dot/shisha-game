@@ -1,3 +1,4 @@
+import { ryujiAtMeltyPuff } from "../core/ryuji-visit.js";
 // 地図の在店表示。来店と同じ判定を読み、報酬・既読・抽選状態は更新しない。
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
@@ -8,6 +9,7 @@ import { hiyoriFirstMeetingReady } from "../core/axe-bar-discovery.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 // 今後のゲストはここへ独立した登場条件を追加する。好感度の変化は表示側で起こさない。
 const GUESTS = [
+  { id: "kumicho", present: spot => spot.id === "ch2_ageha" && ryujiAtMeltyPuff(state) },
   { id: "tsumugi", present: spot => spot.id === "tonari" && tsumugiAtTonari(state) },
   { id: "hiyori", present: spot => {
     if (!hiyoriFirstMeetingReady(state)) return false;
