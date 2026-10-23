@@ -65,4 +65,7 @@ assert(!src("../js/daily/calendar.js").includes("runHomePractice"));
 assert(!steps.includes('cs.venue === "home"'));
 assert(!steps.includes('ownLeavesUsed'));
 
+const openingDialogue = src("../../data/dialogue/remake_ch1.json");
+assert(!/家でも練習|家での練習/.test(openingDialogue), "廃止した家練習へ案内しない");
+
 console.log("practice shop only 783: ok");

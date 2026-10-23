@@ -191,7 +191,7 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は家で（#638） */
+/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
     const sumiNew = hasNewStory("sumi");

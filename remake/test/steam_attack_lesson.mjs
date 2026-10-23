@@ -49,6 +49,10 @@ await suite('attack-lesson', async check => {
     for (const mode of ['tutorial','tournament','drill','rehearsal']) {
       await page.evaluate(mode=>A.start(mode,false), mode);
       const button=page.locator('[data-test="dodge-slash"]'); await button.waitFor();
+      if (mode === 'tutorial') {
+        await page.waitForFunction(() => document.querySelector('.bench-guide')?.open);
+        await page.locator('.bench-guide summary').click();
+      }
       await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
       assert(await button.isDisabled()); await assertFits(page,'[data-test="slash-lock"]');
       await page.keyboard.press('z');

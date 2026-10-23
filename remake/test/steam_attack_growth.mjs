@@ -198,6 +198,10 @@ try {
     assert.equal(await page.evaluate(()=>cs.steam.combo),0);assert.equal(await page.evaluate(()=>cs.steam.maxCombo),total);
     // The next (initial practice) session resets growth and needs no new unlock flags.
     await page.evaluate(()=>{restoreFrames();start('tutorial');});
+    await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
+      && document.querySelector('.bench-panel')?.inert);
+    const guide = page.locator('.bench-guide summary');
+    if (mobile) await guide.tap(); else await guide.click();
     // 新しい作業台は素材decode後に操作を作る。その待ち中はボタンがまだ無い。
     await page.waitForFunction(()=>button() && !button().disabled);
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),'0');
