@@ -17,3 +17,24 @@
 
 WORKER: codex-dialogue-ui-20261020-a91f
 CLAIM: https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39386478328
+
+## 枠線の段差修正・名前なし枠 (#880 / PR #881)
+
+操作バーを本文の原画から消す矩形マスクが、本文上辺の金線を削っていた。マスクを分離し、元画像の水平罫を再利用してつなぎ、操作バー下隅の外に残っていた本文の罫線もクリップした。原画PNG・埋め込みWebPのbytesは維持。
+
+ユーザーの追加指定で、ナレーションと主人公の心の声に平らな名前なし枠 `narration.svg` を追加。元画像の下辺・隅飾りを反転し、紫の面を元の本文へなじませた。既存 `.narration` / `.thought` にCSSで適用する。通常の発話で名前付きの枠に戻り、本文の領域と行送りは変わらない。ひよりの発話と併記される本心は名前付きの枠を維持する。
+
+2026-10-23 Chromiumでの検証:
+
+- `CHROME_EXECUTABLE_PATH=/usr/bin/chromium ARTIFACT_DIR=/tmp/vn-fixed node remake/test/browser/conversation_ui.mjs` — PC1280×768／横持ち844×438の2ケースPASS。従来の操作・保存不変の確認に加え、地の文→心の声→発話で枠を切り替え、名前の非表示と本文寸法不変を確認。
+- 同じ本編エンジンのプレビューで、通常PC1280×768／横持ち844×438／DS横1280×768／DS縦390×844の4表示を確認。操作バーが画面内に収まり、名前なし枠から発話へ戻ることを確認。
+- `remake/index.html` のニューゲーム冒頭でも名前なし枠を確認。
+- `git diff --check`、Git Safety — PASS。実機Safari・全章通しは未実施。
+
+表示記録: [名前付き](frame-880/named.png)、[ナレーション](frame-880/narration.png)、[DS縦の心の声](frame-880/thought-ds.png)。
+
+#832 / PR #845のengine・表示名helperには変更なし。そのPRとの統合時も、今回の最新ユーザー指定「ナレーション・心の声は名前なし」を優先する。公開反映までユーザー依頼済み。CI・mainへのマージ・Pagesの結果はPR #881に記録する。
+
+WORKER: codex-vn-frame-880-20261023-b629
+
+CLAIM: https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39936962066
