@@ -81,6 +81,14 @@ test('changed checkpoint head, failed run, and malformed marker remain unverifie
   assert.deepEqual(report.rows.map(row => row.relation),['unverified','unverified','unverified']);
 });
 
+test('a malformed handoff checkpoint is never treated as stopped work', async () => {
+  const wait='<!-- issue-claim-wait:v1 '+JSON.stringify({prs:[{number:20,head:sha}],handoff:{}})+' -->';
+  const {github}=fixture({comments:[marker(1,10,claim('worker',1,wait))]});
+  const report=await diagnose(github,context,['data/a.json']);
+  assert.equal(report.rows[0].phase,'unknown');
+  assert.equal(report.rows[0].relation,'unverified');
+});
+
 test('API failure cannot produce an apparently complete report', async () => {
   const {github}=fixture();
   github.paginate=async () => {throw Error('page fetch failed')};

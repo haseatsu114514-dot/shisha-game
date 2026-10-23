@@ -49,8 +49,20 @@ function claimFromComment(comment) {
       if (!wait || (comment.body.match(/<!-- issue-claim-wait:/g) || []).length !== 1) throw Error('bad marker');
       checkpoint = JSON.parse(wait[1]);
       if (!checkpoint || !Array.isArray(checkpoint.prs) || !checkpoint.prs.length ||
+          new Set(checkpoint.prs.map(pr => pr.number)).size !== checkpoint.prs.length ||
           checkpoint.prs.some(pr => !Number.isSafeInteger(pr.number) || pr.number < 1 ||
             !/^[a-f0-9]{40}$/.test(pr.head))) throw Error('bad checkpoint');
+      if (match[1] !== 'claimed') throw Error('released record has waiting checkpoint');
+      if ('handoff' in checkpoint) {
+        const offer = checkpoint.handoff;
+        if (!offer || Array.isArray(offer) || offer.version !== 1 || offer.from !== match[2] ||
+            typeof offer.actor !== 'string' || !/^[a-zA-Z0-9-]+$/.test(offer.actor) ||
+            typeof offer.source_run !== 'string' || !/^[1-9][0-9]*$/.test(offer.source_run) ||
+            offer.stopped !== true || offer.pushed !== true || typeof offer.summary !== 'string' ||
+            !offer.summary.trim() || offer.summary.length > 1200 || offer.summary.includes('<!-- issue-')) {
+          throw Error('bad handoff checkpoint');
+        }
+      }
       phase = checkpoint.handoff ? 'handoff' : 'waiting';
     } catch (_) { phase = 'unknown'; checkpoint = null; }
   }
