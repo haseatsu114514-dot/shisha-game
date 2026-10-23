@@ -1,0 +1,31 @@
+{
+  "purpose": "QA comparison only; not a production image edit",
+  "left": "before/normal.png",
+  "right": "trials/normal-01.png",
+  "candidate_status": "rejected",
+  "before_size": [
+    896,
+    1200
+  ],
+  "trial_size": [
+    1084,
+    1451
+  ],
+  "comparison_normalization": "trial resized to original 896x1200 using LANCZOS before identical crops",
+  "crop_boxes": {
+    "Head: inspect face and hair": [
+      290,
+      96,
+      590,
+      396
+    ],
+    "Outfit: inspect original fabric texture": [
+      268,
+      460,
+      656,
+      720
+    ]
+  },
+  "before_sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+  "trial_sha256": "c8bf1e4c2b1ee18a796b9853df467b161b4d9ec99fca67f8393027a21b5651c8"
+}

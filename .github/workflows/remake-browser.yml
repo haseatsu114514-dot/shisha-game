@@ -128,6 +128,20 @@ jobs:
           done
           cat "$RUNNER_TEMP/remake-preview.log"
           exit 1
+      - name: Adam and EDEN adopted art on PC and touch
+        if: matrix.shard == 1
+        timeout-minutes: 3
+        env:
+          ARTIFACT_DIR: .codex/artifacts/adam-eden-711
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node remake/test/browser/adam_eden_711.mjs
+      - name: Preserve Adam and EDEN review images
+        if: always() && matrix.shard == 1
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: adam-eden-711-results
+          path: .codex/artifacts/adam-eden-711/
+          retention-days: 7
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Pakki reel lifecycle and introduction read-through
         if: matrix.shard == 2

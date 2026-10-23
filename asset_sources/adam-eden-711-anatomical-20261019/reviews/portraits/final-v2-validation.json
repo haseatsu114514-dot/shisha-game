@@ -1,0 +1,306 @@
+{
+  "recipe_file": "mask-recommendations-v2.json",
+  "recipe_sha256": "8d18210ac3b5ba1465f3da7e51353e4bddd6077b4cde50b0de8a9be368c5cf0b",
+  "coordinate_note": "Inclusive XYXY for reported bounding boxes/semantic core rectangles; original image pixel coordinates.",
+  "portraits": {
+    "normal": {
+      "source": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "file_bytes": 450844,
+      "sha256": "b1200dd85c3949eeb534f28ba90f4219a1fe3b1bc442f35cd24ec581023c5baf",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 11236,
+      "changed_bbox_xyxy_inclusive": [
+        348,
+        123,
+        521,
+        278
+      ],
+      "changes_outside_frozen_v2_masks": 0,
+      "eyebrow_guard_rectangles_unchanged": true,
+      "semantic_core_regions": {
+        "face_core": {
+          "rectangle_xyxy_inclusive": [
+            406,
+            190,
+            451,
+            260
+          ],
+          "changed_pixels": 0
+        },
+        "right_ear_core": {
+          "rectangle_xyxy_inclusive": [
+            487,
+            217,
+            491,
+            227
+          ],
+          "changed_pixels": 0
+        },
+        "neck_core": {
+          "rectangle_xyxy_inclusive": [
+            465,
+            253,
+            473,
+            275
+          ],
+          "changed_pixels": 0
+        }
+      },
+      "original_sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+      "visual_review": "PASS: original/candidate head at 3x and forelock boundary at 12x; eyes, ears, neck, hair wisps and intended red-left/green-right appearance checked."
+    },
+    "smile": {
+      "source": "assets/sprites/characters/adam/chr_adam_smile.png",
+      "file_bytes": 441084,
+      "sha256": "a9663ef76a2b8efdd3fa4362a6519c97302d0a3a5068098b55c7d576d1e711c9",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 11249,
+      "changed_bbox_xyxy_inclusive": [
+        329,
+        120,
+        505,
+        274
+      ],
+      "changes_outside_frozen_v2_masks": 0,
+      "eyebrow_guard_rectangles_unchanged": true,
+      "semantic_core_regions": {
+        "face_core": {
+          "rectangle_xyxy_inclusive": [
+            388,
+            185,
+            430,
+            253
+          ],
+          "changed_pixels": 0
+        },
+        "right_ear_core": {
+          "rectangle_xyxy_inclusive": [
+            472,
+            212,
+            478,
+            219
+          ],
+          "changed_pixels": 0
+        },
+        "neck_core": {
+          "rectangle_xyxy_inclusive": [
+            453,
+            251,
+            462,
+            269
+          ],
+          "changed_pixels": 0
+        }
+      },
+      "original_sha256": "a66fef386a04e8d61938c90924a13b6e70265b608ff1c0e03b5b185484aec27f",
+      "visual_review": "PASS: original/candidate head at 3x and forelock boundary at 12x; eyes, ears, neck, hair wisps and intended red-left/green-right appearance checked."
+    },
+    "serious": {
+      "source": "assets/sprites/characters/adam/chr_adam_serious.png",
+      "file_bytes": 449258,
+      "sha256": "c8efbed43ecf0ad88338e14c23b9cf5db4238130e5f55a82e1147e1439329b3b",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 11429,
+      "changed_bbox_xyxy_inclusive": [
+        363,
+        123,
+        537,
+        282
+      ],
+      "changes_outside_frozen_v2_masks": 0,
+      "eyebrow_guard_rectangles_unchanged": true,
+      "semantic_core_regions": {
+        "face_core": {
+          "rectangle_xyxy_inclusive": [
+            425,
+            191,
+            467,
+            263
+          ],
+          "changed_pixels": 0
+        },
+        "right_ear_core": {
+          "rectangle_xyxy_inclusive": [
+            503,
+            217,
+            509,
+            229
+          ],
+          "changed_pixels": 0
+        },
+        "neck_core": {
+          "rectangle_xyxy_inclusive": [
+            477,
+            257,
+            485,
+            279
+          ],
+          "changed_pixels": 0
+        }
+      },
+      "original_sha256": "8123f694c34837e2c605a1d119aadd62afa262f5b7dee1f32b0fa18abb14d1fd",
+      "visual_review": "PASS: original/candidate head at 3x and forelock boundary at 12x; eyes, ears, neck, hair wisps and intended red-left/green-right appearance checked."
+    },
+    "surprise": {
+      "source": "assets/sprites/characters/adam/chr_adam_surprise.png",
+      "file_bytes": 452763,
+      "sha256": "b9d11d4bc616b37fd114f304cffcf3838b7d53744780af31280e4dbce7b9ccad",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 11194,
+      "changed_bbox_xyxy_inclusive": [
+        355,
+        118,
+        526,
+        278
+      ],
+      "changes_outside_frozen_v2_masks": 0,
+      "eyebrow_guard_rectangles_unchanged": true,
+      "semantic_core_regions": {
+        "face_core": {
+          "rectangle_xyxy_inclusive": [
+            413,
+            185,
+            455,
+            257
+          ],
+          "changed_pixels": 0
+        },
+        "right_ear_core": {
+          "rectangle_xyxy_inclusive": [
+            491,
+            215,
+            497,
+            226
+          ],
+          "changed_pixels": 0
+        },
+        "neck_core": {
+          "rectangle_xyxy_inclusive": [
+            467,
+            254,
+            477,
+            274
+          ],
+          "changed_pixels": 0
+        }
+      },
+      "original_sha256": "338341ad64a9b9d2561d3bb82ff1730139afedd8a12e3e15fbd37013c3240577",
+      "visual_review": "PASS: original/candidate head at 3x and forelock boundary at 12x; eyes, ears, neck, hair wisps and intended red-left/green-right appearance checked."
+    },
+    "intense": {
+      "source": "assets/sprites/characters/adam/chr_adam_intense.png",
+      "file_bytes": 418820,
+      "sha256": "79bf60369bc7a6eee4b3fbc5d16464b3d9a4b2e89a60c0c534c4adc74d8a4399",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 11614,
+      "changed_bbox_xyxy_inclusive": [
+        346,
+        120,
+        518,
+        275
+      ],
+      "changes_outside_frozen_v2_masks": 0,
+      "eyebrow_guard_rectangles_unchanged": true,
+      "semantic_core_regions": {
+        "face_core": {
+          "rectangle_xyxy_inclusive": [
+            409,
+            190,
+            452,
+            263
+          ],
+          "changed_pixels": 0
+        },
+        "right_ear_core": {
+          "rectangle_xyxy_inclusive": [
+            486,
+            213,
+            491,
+            225
+          ],
+          "changed_pixels": 0
+        },
+        "neck_core": {
+          "rectangle_xyxy_inclusive": [
+            465,
+            254,
+            472,
+            271
+          ],
+          "changed_pixels": 0
+        }
+      },
+      "original_sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc",
+      "visual_review": "PASS: original/candidate head at 3x and forelock boundary at 12x; eyes, ears, neck, hair wisps and intended red-left/green-right appearance checked."
+    }
+  },
+  "other_assets": {
+    "eden": {
+      "source": "assets/backgrounds/bg_eden_shop.png",
+      "file_bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 1468,
+      "changed_bbox_xyxy_inclusive": [
+        620,
+        214,
+        692,
+        242
+      ],
+      "changes_outside_apple_silhouettes": 0,
+      "stem_guards_unchanged": true,
+      "visual_review": "PASS: center painting at 7x; foreground red-left/green-right, rear red apple and stems retained."
+    },
+    "face_icon": {
+      "source": "assets/ui/face_icons/face_adam.png",
+      "file_bytes": 42385,
+      "sha256": "593a00769659a284095be0268ee432c062b53af8a8d093b486b456261a9eb6c2",
+      "dimensions": [
+        160,
+        160
+      ],
+      "dimensions_unchanged": true,
+      "alpha_equal": true,
+      "changed_pixels": 13951,
+      "changed_bbox_xyxy_inclusive": [
+        10,
+        9,
+        159,
+        159
+      ],
+      "visual_review": "PASS: original/candidate at 4x; same framing/face appearance, coherent red-left/green-right hair, no observed geometric redraw.",
+      "rgb_invariance_limit": "Full crop uses MEDIANCUT 256-color quantization in tools/make_face_icons.py::make_icon, followed by conversion back to RGBA and original resized alpha. Palette recomputation changes RGB outside hair; no outside-hair RGB invariance claim is made for this derivative."
+    }
+  },
+  "review_status": "Independent local v2 source/candidate review complete for these seven exact outputs. Runtime WebP/manifest and browser/game QA are outside this review."
+}
