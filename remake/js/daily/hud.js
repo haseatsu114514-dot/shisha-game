@@ -119,7 +119,13 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  dom.area.textContent = state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "WIDEHANGA" : "SAKAE";
+  const widehanga = state.chapter === 2 && state.flags._ch2_region === "widehanga";
+  dom.area.dataset.region = widehanga ? "widehanga" : "sakae";
+  dom.area.setAttribute("aria-label", widehanga ? "WIDEHANGA" : "SAKAE");
+  dom.area.replaceChildren(
+    el("span.dc-area-full", { text: widehanga ? "WIDEHANGA" : "SAKAE" }),
+    el("span.dc-area-short", { text: widehanga ? "ワイド" : "SAKAE" }),
+  );
   dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";

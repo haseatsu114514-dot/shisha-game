@@ -131,6 +131,31 @@ try {
       });
     }
   }
+  for (const [device, options] of Object.entries({
+    landscape: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
+    portrait: sizes.phone,
+    small: { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true },
+  })) {
+    await check(`ds-gallery-${device}`, options, async p => {
+      await layout(p, "ds");
+      await button(p, "title-gallery").tap();
+      const geometry = await p.evaluate(() => {
+        const box = document.querySelector(".gal").getBoundingClientRect();
+        const note = document.querySelector(".gal-note").getBoundingClientRect();
+        const close = document.querySelector(".gal-close").getBoundingClientRect();
+        const count = document.querySelector(".gal-count");
+        const hit = document.elementFromPoint(close.x + close.width / 2, close.y + close.height / 2);
+        return {
+          fits: [box, note, close].every(r => r.left >= 0 && r.top >= 64 && r.right <= innerWidth && r.bottom <= innerHeight),
+          countFits: count.scrollWidth <= count.clientWidth + 1 && count.getBoundingClientRect().height <= 24,
+          closeHit: document.querySelector(".gal-close").contains(hit),
+        };
+      });
+      assert.deepEqual(geometry, { fits: true, countFits: true, closeHit: true });
+      await p.screenshot({ path: path.join(dir, `ds-gallery-${device}-open.png`) });
+      await button(p, "gallery-close").tap();
+    });
+  }
   await check("forced-normal-and-save-preservation", sizes.phone, async p => {
     await seed(p); await layout(p, "ds"); const before = await snapshot(p);
     await p.evaluate(() => sessionStorage.setItem("suien_remake_boot_load", "1"));

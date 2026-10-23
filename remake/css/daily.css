@@ -122,7 +122,8 @@ body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
   align-items: flex-start;
   padding: 12px 16px;
 }
-body.in-vn .hud, body.vn-open .hud { opacity: 0; }
+body.in-vn .hud, body.vn-open .hud { opacity: 0; pointer-events: none; }
+body.in-vn .hud-right, body.vn-open .hud-right { pointer-events: none; }
 /* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
 body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; pointer-events: none; }
 body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
@@ -148,6 +149,8 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-card::after, .hud-level::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 .dc-main { display: flex; flex-direction: column; justify-content: center; min-width: 70px; }
 .dc-area { font-family: var(--font); font-size: 12px; letter-spacing: 0.34em; color: var(--gold); line-height: 1; margin-bottom: 3px; }
+.dc-area-short { display: none; }
+.dc-area[data-region="widehanga"] .dc-area-full { font-size: 11px; letter-spacing: .08em; }
 .dc-day { line-height: 1; }
 .dc-day b { font-size: 34px; font-weight: 800; }
 .dc-day small { margin-left: 2px; font-size: 13px; color: var(--text-dim); }
