@@ -15,6 +15,7 @@
   --vn-lounge-name: #edca82;
 }
 .vn-box {
+  --vn-frame-overhang: 41px;
   background: none;
   border: 0;
   border-image: none;
@@ -26,7 +27,7 @@
 .vn-box::before {
   content: "";
   position: absolute;
-  inset: -41px 0 0;
+  inset: calc(-1 * var(--vn-frame-overhang)) 0 0;
   width: auto;
   border-radius: 0;
   background: var(--vn-lounge-frame) center / 100% 100% no-repeat;
@@ -57,8 +58,9 @@
   text-shadow: 0 1px 1px #000b;
 }
 .vn-box:is(.narration, .thought)::before {
-  /* 地の文と心の声は、本文の寸法を保った名前欄のない専用枠。 */
-  inset: 0;
+  /* SVGの共通下端629と縮尺を揃える。名前付きviewBoxは178〜629（451）、
+     名前なしは259〜629なので、上端の差81だけを同じ縮尺で切り詰める。 */
+  inset: calc((100% + var(--vn-frame-overhang)) * 81 / 451 - var(--vn-frame-overhang)) 0 0;
   background-image: var(--vn-lounge-narration);
 }
 .vn-box:is(.narration, .thought) .vn-name { display: none; }
@@ -109,9 +111,7 @@
 .vn-next { right: 32px; bottom: 13px; color: #edca82; }
 
 /* DS表示でも同じ素材。本文と選択肢の領域・44pxの操作範囲を維持。 */
-body.game-ds .vn-box { overflow: visible; border-image: none; }
-body.game-ds .vn-box::before { inset: -20px 0 0; }
-body.game-ds .vn-box:is(.narration, .thought)::before { inset: 0; }
+body.game-ds .vn-box { --vn-frame-overhang: 20px; overflow: visible; border-image: none; }
 body.game-ds .vn-box .vn-name {
   left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
   font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
