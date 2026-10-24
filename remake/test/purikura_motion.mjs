@@ -22,7 +22,7 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
   const values = {
     "util.js": { el, sleep: async () => {} },
     "state.js": { state: owner },
-    "data.js": { cgUrl: () => cg, portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
+    "data.js": { cgUrl: (id) => (typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
     "ui.js": { imageReady: async () => { if (loadDuring) stateModule.setExport("state", loaded); return true; } },
     "audio.js": { SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
     "transition-kit.js": { svg: el, move: async (node, frames, ms, opt = {}) => { anims.push({ node, frames, ms, ...opt }); } },
@@ -98,11 +98,32 @@ for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   const f = await fixture({ width: 844, height: 326 });
   assert.equal(f.find("div.mo-pk-scene")[0].style.transform, `translate(-50%, -50%) scale(${Math.min(844 / 1280, 326 / 720)})`);
 }
-// 専用CGがあれば、盛ったあとと印刷はCGを使う
+// #921 の4コマのCG（cg_ageha_first_purikura）があれば、最後に出てくるシールだけそれを使い、真ん中で左右に切る
 {
-  const f = await fixture({ cg: "cg_ch2_ageha_purikura.png" });
-  assert.equal(f.find("img.mo-pk-cg").length, 1 + 4);
-  assert.equal(f.find("img.mo-pk-sprite.hajime").length, 3 + 3, "poses and thumbs still come from sprites");
+  const cg = "img/cgs/cg_ageha_first_purikura.webp";
+  const f = await fixture({ cg });
+  const halves = f.made.filter((n) => n.selector.startsWith("div.mo-pk-half.cg."));
+  assert.deepEqual(halves.map((n) => n.selector), ["div.mo-pk-half.cg.left", "div.mo-pk-half.cg.right"]);
+  for (const h of halves) assert.equal(h.style.backgroundImage, `url("${cg}")`);
+  const sheet = f.find("div.mo-pk-sheet.cg")[0];
+  assert.deepEqual([sheet.style.width, sheet.style.height], ["374px", "560px"], "the 2:3 sheet keeps its shape");
+  assert.equal(f.find("div.mo-pk-cutline")[0].style.left, "186px", "cut down the middle");
+  assert.equal(f.find("img.mo-pk-sprite.hajime").length, 3 + 3, "shooting and thumbs still come from sprites");
+  assert.equal(f.find("div.mo-pk-print").length, 0, "no sprite copies on the printed sheet");
+  const right = halves[1];
+  const slide = f.anims.find((a) => a.node === right).frames.at(-1).transform;
+  assert(slide.startsWith("translate(-93.5px"), "the kept half moves to the centre");
+}
+// 半分こ用の縦長シール（1列分）があれば、4コマより優先し、同じ絵を左右に1枚ずつ並べる
+{
+  const strip = "img/cgs/cg_ch2_ageha_purikura_strip.webp";
+  const f = await fixture({ cg: { cg_ch2_ageha_purikura_strip: strip, cg_ageha_first_purikura: "img/cgs/cg_ageha_first_purikura.webp" } });
+  const halves = f.made.filter((n) => n.selector.startsWith("div.mo-pk-half.cg."));
+  assert.deepEqual(halves.map((n) => n.selector), ["div.mo-pk-half.cg.strip.left", "div.mo-pk-half.cg.strip.right"]);
+  for (const h of halves) assert.equal(h.style.backgroundImage, `url("${strip}")`);
+  const sheet = f.find("div.mo-pk-sheet.cg")[0];
+  assert.deepEqual([sheet.style.width, sheet.style.height], ["616px", "520px"], "two 640x1080 strips side by side");
+  assert.equal(f.find("div.mo-pk-cutline")[0].style.left, "307px");
 }
 // 画像を待つ間にLOADされたら、前のセーブの演出を始めない
 {

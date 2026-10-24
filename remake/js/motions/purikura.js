@@ -2,7 +2,8 @@
 // 撮影スタート → 3連写（ふつう・笑顔・あげはが寄ってはじめがびっくり）→ 盛り → 落書き → 印刷 → ハサミで半分こ。
 // a は撮影が主役（毎回3・2・1、盛りを選ぶ）、b は落書きとシールが主役（撮影はさっと、スタンプ多め）。?movar=b で比べる。
 // 落書きで、あげはのペンの線だけがゆっくりよれ、途中でペンを置いてスタンプに持ち替える（手の震え。演出の中では誰も触れない）。
-// 写真は専用CG（cg_ch2_ageha_purikura）があれば盛りのあとに使い、無い間は立ち絵の胸から上で代用する。文字は画像に焼き込まない。
+// 撮影から落書きまでは立ち絵の胸から上で写す。最後に出てくるシールは、半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）があれば2枚並べて、
+// 無ければ #921 で作った4コマのCG（cg_ageha_first_purikura）を、どちらも無ければ立ち絵の写真と落書きの2×2を使う（オーナー決定 2026-10-24）。
 // DOMの初期値は「撮り終えた画面」。動きは最初にまとめて予約し、fill で途中の見た目を作る。
 import { el, sleep } from "../core/util.js";
 import { state } from "../core/state.js";
@@ -13,7 +14,11 @@ import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
-export const PURIKURA_CG = "cg_ch2_ageha_purikura";
+export const PURIKURA_CG = "cg_ageha_first_purikura";
+// 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
+export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
+// 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
+const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
 // 立ち絵（896×1200）を写真に置く位置（%）。はじめの頭は(205,175)、あげはの頭は(440,190)あたり
 const SPRITE = {
@@ -54,11 +59,8 @@ function shot(pose, { mori = false, glow = mori ? el("div.mo-pk-glow") : null } 
     glow,
   ]);
 }
-/** 仕上がりの写真（CGがあればCG、無ければ立ち絵の3枚目を盛ったもの）に落書きを重ねた1枚 */
-const finished = (cg, extra) => el("div.mo-pk-print", [
-  cg ? el("div.mo-pk-photo", [el("img.mo-pk-cg", { src: cg, alt: "" })]) : shot(POSES[2], { mori: true }),
-  doodles(extra).layer,
-]);
+/** CGが無いときの仕上がり: 立ち絵の3枚目を盛ったものに落書きを重ねた1枚 */
+const finished = (extra) => el("div.mo-pk-print", [shot(POSES[2], { mori: true }), doodles(extra).layer]);
 /** 640×480 の部品を小さな枠に縮めて置く */
 const mini = (node, w, h, cls = "") => el(`div.mo-pk-mini${cls}`, { style: { width: `${w}px`, height: `${h}px` } }, [
   el("div.mo-pk-mini-in", { style: { transform: `scale(${w / PW})` } }, [node]),
@@ -183,14 +185,13 @@ function doodles(extra = 0) {
 
 // ---------------------------------------------------------------- 画面
 
-function build(cg, plan) {
+function build(art, plan) {
   const glow = el("div.mo-pk-glow");
   const poses = POSES.map((p, i) => shot(p, i === 2 ? { mori: true, glow } : {}));
-  const cgLayer = cg ? el("div.mo-pk-photo", [el("img.mo-pk-cg", { src: cg, alt: "" })]) : null;
   const ink = doodles(plan.stamps);
   const pinkPen = el("div.mo-pk-pen.pink"), goldPen = el("div.mo-pk-pen.gold");
   const count = ["3", "2", "1"].map((n) => el("span.mo-pk-count", { text: n }));
-  const view = el("div.mo-pk-view", [...poses, cgLayer, ink.layer, ...count, pinkPen, goldPen]);
+  const view = el("div.mo-pk-view", [...poses, ink.layer, ...count, pinkPen, goldPen]);
   const thumbs = POSES.map((p, i) => { const s = SLOT(i); return mini(shot(p), s.w, s.h, ".mo-pk-thumb"); });
   thumbs.forEach((t, i) => Object.assign(t.style, { left: `${SLOT(i).x}px`, top: `${SLOT(i).y}px` }));
   const menu = (plan.menu ? ["ナチュラル", "盛り", "超盛り"] : []).map((t, i) => el(`div.mo-pk-mori-btn${i === 2 ? ".pick" : ""}`, { text: t, style: { top: `${120 + i * 120}px` } }));
@@ -204,21 +205,24 @@ function build(cg, plan) {
   const head = el("div.mo-pk-head", labels);
   const machine = el("div.mo-pk-machine", [head, view, ...thumbs, ...menu, ...tools, pick]);
   const nail = el("div.mo-pk-nail");
-  // 印刷したシール（2列×2段。真ん中で切ると1列ずつ）
-  const half = (side) => el(`div.mo-pk-half.${side}`, [mini(finished(cg, plan.stamps), 240, 180), mini(finished(cg, plan.stamps), 240, 180)]);
+  // 印刷したシール。真ん中で切ると半分ずつ（CGは4コマを左右に、代用は2列×2段を1列ずつ）
+  const size = SHEET[art.kind];
+  const half = (side) => (art.url
+    ? el(`div.mo-pk-half.cg${art.kind === "strip" ? ".strip" : ""}.${side}`, { style: { backgroundImage: `url("${art.url}")` } })
+    : el(`div.mo-pk-half.${side}`, [mini(finished(plan.stamps), 240, 180), mini(finished(plan.stamps), 240, 180)]));
   const left = half("left"), right = half("right");
-  const cutLine = el("div.mo-pk-cutline");
+  const cutLine = el("div.mo-pk-cutline", { style: { left: `${size.w / 2 - 1}px` } });
   const shine = el("div.mo-pk-shine");
   // 刃先が下（切り進む向き）。持ち手の輪は上
   const bladeL = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: -11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M-6 -16 L6 36", stroke: "#cfd6e0", "stroke-width": 6, "stroke-linecap": "round" })]);
   const bladeR = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: 11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M6 -16 L-6 36", stroke: "#e9edf2", "stroke-width": 6, "stroke-linecap": "round" })]);
-  const scissors = svg("svg", { class: "mo-pk-scissors", viewBox: "-30 -40 60 80" }, [bladeL, bladeR, svg("circle", { cx: 0, cy: 0, r: 3, fill: "#8a94a3" })]);
-  const sheet = el("div.mo-pk-sheet", [left, right, cutLine, shine, scissors]);
+  const scissors = svg("svg", { class: "mo-pk-scissors", viewBox: "-30 -40 60 80", style: `left: ${size.w / 2 - 30}px` }, [bladeL, bladeR, svg("circle", { cx: 0, cy: 0, r: 3, fill: "#8a94a3" })]);
+  const sheet = el(`div.mo-pk-sheet${art.url ? ".cg" : ""}`, { style: { left: `${(1280 - size.w) / 2}px`, top: `${size.top}px`, width: `${size.w}px`, height: `${size.h}px` } }, [left, right, cutLine, shine, scissors]);
   const flash = el("div.mo-pk-flash");
   const bg = el("div.mo-pk-bg");
   const twinkles = [[120, 120], [1150, 160], [90, 560], [1190, 600], [640, 40], [1000, 680]].map(([x, y]) =>
     el("i.mo-pk-twinkle", { style: { left: `${x}px`, top: `${y}px` } }));
-  return { bg, twinkles, machine, head, labels, view, poses, glow, cgLayer, ink, pinkPen, goldPen, count, thumbs, menu, tools, pick, nail, sheet, left, right, cutLine, shine, scissors, blades: [bladeL, bladeR], flash };
+  return { size, bg, twinkles, machine, head, labels, view, poses, glow, ink, pinkPen, goldPen, count, thumbs, menu, tools, pick, nail, sheet, left, right, cutLine, shine, scissors, blades: [bladeL, bladeR], flash };
 }
 
 /** 点列に沿って動く（ペン先）。WAAPIの位置キーを長さに合わせて並べる */
@@ -289,7 +293,6 @@ function schedule(ui, plan) {
   const third = ui.poses[2];
   at(third, [{ filter: "none" }, { filter: "brightness(1.1) saturate(1.22) contrast(1.03)" }], 520, glowAt, { easing: E.out });
   at(ui.glow, [{ opacity: 0 }, { opacity: 1 }], 520, glowAt);
-  if (ui.cgLayer) at(ui.cgLayer, [{ opacity: 0, filter: "brightness(1.6)" }, { opacity: 1, filter: "none" }], 620, glowAt + 120);
   at(ui.flash, [{ opacity: 0 }, { opacity: 0.7 }, { opacity: 0 }], 420, glowAt, { fill: "forwards" });
 
   // 落書き: 道具が並ぶ。はじめの金のペンはまっすぐ星を描き、あげはのピンクのペンはよれて途中で止まる
@@ -328,29 +331,31 @@ function schedule(ui, plan) {
 
   // 印刷: 機械が引っ込み、シールが下から出てくる → 光沢が走る
   at(ui.machine, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-40px) scale(.94)" }], 380, P.print, { fill: "forwards", easing: E.in });
-  at(ui.sheet, [{ opacity: 0, transform: "translateY(520px) rotate(4deg)" }, { opacity: 1, transform: "rotate(-2deg)" }], 640, P.print + 240, { easing: E.out });
+  const S = ui.size;
+  at(ui.sheet, [{ opacity: 0, transform: `translateY(${760 - S.top}px) rotate(4deg)` }, { opacity: 1, transform: "rotate(-2deg)" }], 640, P.print + 240, { easing: E.out });
   at(ui.shine, [{ opacity: 1, backgroundPosition: "130% 0" }, { opacity: 1, backgroundPosition: "-30% 0" }], 620, P.print + 900, { fill: "forwards", easing: E.inOut });
   // 半分こ: 真ん中の点線をハサミが下まで切り、片方がこちらへ来る
   const C = P.cut;
   at(ui.cutLine, [{ opacity: 0, transform: "scaleY(0)" }, { opacity: 1, transform: "scaleY(1)" }], 260, C, { fill: "forwards" });
-  at(ui.scissors, [{ opacity: 0, transform: "translateY(-30px)" }, { opacity: 1, transform: "translateY(-30px)", offset: 0.12 }, { opacity: 1, transform: "translateY(440px)", offset: 0.9 }, { opacity: 0, transform: "translateY(470px)" }], 760, C + 120, { fill: "forwards", easing: "linear" });
+  at(ui.scissors, [{ opacity: 0, transform: "translateY(-30px)" }, { opacity: 1, transform: "translateY(-30px)", offset: 0.12 }, { opacity: 1, transform: `translateY(${S.h - 40}px)`, offset: 0.9 }, { opacity: 0, transform: `translateY(${S.h - 10}px)` }], 760, C + 120, { fill: "forwards", easing: "linear" });
   ui.blades.forEach((blade, i) => at(blade, [{ transform: "rotate(0deg)" }, { transform: `rotate(${i ? 10 : -10}deg)` }, { transform: "rotate(0deg)" }], 190, C + 200, { fill: "forwards", easing: "linear", iterations: 3 }));
   at(ui.cutLine, [{ opacity: 1 }, { opacity: 0 }], 160, C + 900, { fill: "forwards" });
   at(ui.left, [{ transform: "none", opacity: 1 }, { transform: "translate(-300px, 60px) rotate(-10deg)", opacity: 0 }], 620, C + 920, { fill: "forwards", easing: E.inOut });
-  at(ui.right, [{ transform: "none" }, { transform: "translate(-134px, 0px) scale(1.16) rotate(2deg)" }], 620, C + 920, { fill: "forwards", easing: E.inOut });
+  at(ui.right, [{ transform: "none" }, { transform: `translate(${-S.w / 4}px, 0px) scale(1.16) rotate(2deg)` }], 620, C + 920, { fill: "forwards", easing: E.inOut });
   return { snap, glowAt, lift, stamps: ink.stamps.map((_, i) => st0 + i * gap), print: P.print, cut: C, end: P.end };
 }
 
 export async function shoot(variant = "a") {
   const owner = state;
   const plan = PLANS[variant] || PLANS.a;
-  const cg = cgUrl(PURIKURA_CG);
-  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), cg].filter(Boolean))];
+  const strip = cgUrl(PURIKURA_STRIP), sheetCg = strip ? null : cgUrl(PURIKURA_CG);
+  const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
+  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
   await Promise.all(urls.map((u) => imageReady(u, 3000)));
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
     if (state !== owner) return;
-    const ui = build(cg, plan);
+    const ui = build(art, plan);
     const scene = el("div.mo-pk-scene", { style: {
       position: "absolute", left: "50%", top: "50%", width: "1280px", height: "720px", transformOrigin: "center",
     } }, [ui.bg, ...ui.twinkles, ui.machine, ui.sheet, ui.nail, ui.flash]);
