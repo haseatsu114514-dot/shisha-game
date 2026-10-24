@@ -108,6 +108,9 @@ await suite("ch3-tournament", async check => {
       "ch3_home_customer", "ch3_ageha_reunion"];
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();
+      if (index === 0) assert(await page.locator('#bg > .bg-img').last().evaluate(node =>
+        node.style.backgroundImage.includes('bg_ch3_hotel_night')),
+      'The victory-night hotel must have its own room background');
       await page.locator('[data-test="ch3-aftermath-continue"]').click();
       if (index === 0) {
         await page.locator(aftermath(scenes[1])).waitFor();

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-24 21:05 UTC",
+ "generated": "2026-10-24 21:16 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -313,6 +313,7 @@
   "bg_cafe_day.png",
   "bg_cafe_night.png",
   "bg_cafe_overcast_day.png",
+  "bg_ch3_hotel_night.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
   "bg_eden_shop.png",
@@ -1850,6 +1851,7 @@
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
   "backgrounds/bg_cafe_overcast_day.png",
+  "backgrounds/bg_ch3_hotel_night.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
