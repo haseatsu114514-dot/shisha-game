@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import * as core from "../js/core/state.js";
-import { captureEntryResources, restoreEntryResources } from "../js/chapters/tournament-resources.js";
+import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
 
 const storage = new Map();
 globalThis.localStorage = {
@@ -90,7 +90,8 @@ const context = vm.createContext({
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: stub, ownsFlavor: () => false, flavorStock: id => entrant.flavorStock[id] || 0,
   addFlavorStock: (id, amount) => { entrant.flavorStock[id] = (entrant.flavorStock[id] || 0) + amount; },
-  captureEntryResources, restoreEntryResources, save: () => saves.push(copy(entrant)), toast: stub,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130,
+  save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(), maybeShuraba: stub,
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
 });
@@ -102,6 +103,17 @@ await vm.runInContext("tournamentDay()", context);
 assert.equal(saves.length, 1, "retry never overwrites the entry save");
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, { double_apple: 12 });
+// #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
+entrant.stamina = 3; entrant.tournament.retryAssist = true;
+await vm.runInContext("tournamentDay()", context);
+assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
+assert.deepEqual(sessions[2].flavorStock, { double_apple: 12 }, "stock is restored once, unchanged by recovery");
+assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
+entrant.stamina = 3; entrant.tournament.retryAssist = false;
+await vm.runInContext("tournamentDay()", context);
+assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
+assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
+assert.equal(saves.length, 1, "recovery never writes a new entry save");
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  await play("ch1_tournament_after"'));
 assert(victory.includes("delete state.tournament.entryResources"), "victory clears the retry snapshot");
 
