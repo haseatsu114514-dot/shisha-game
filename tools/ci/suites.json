@@ -2172,6 +2172,26 @@
         "ARTIFACT_DIR": ".codex/artifacts/water-pour"
       },
       "chrome": "playwright"
+    },
+    {
+      "id": "ui-themes",
+      "title": "UI theme switching and preference persistence",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/css/ui-themes.css",
+        "remake/js/core/ui-theme.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/js/vn/conversation-preview.js",
+        "remake/conversation-preview.html",
+        "remake/img/ui/vn-lounge/**",
+        "remake/test/browser/ui_themes.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ui_themes.mjs"
+      ]
     }
   ]
 }

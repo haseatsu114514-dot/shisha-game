@@ -1,0 +1,143 @@
+/* 会話枠に合わせたゲーム全体の素材・配色。寸法、判定色、クリック領域は既存のまま。 */
+:root:where([data-ui-theme]:not([data-ui-theme="classic"])) {
+  --gold: #bde5dc; --gold-hi: #e4fff7; --text: #f4f4ef; --text-dim: #bdc9c5;
+  --ink: #0b1015; --ink-2: #151c24; --panel: #101820f5; --panel-edge: #a3d5c477;
+  --inner-edge: #b7e5d83d; --inner-face: #b5e9d609; --inner-hover: #b5e9d618; --inner-active: #b5e9d628;
+  --ui-radius: 25px 9px 28px 11px; --ui-button-radius: 22px; --ui-shadow: 0 0 17px #a5e5d01c, 0 8px 24px #0006;
+  --ui-edge: #b7e5d866; --ui-button: linear-gradient(130deg,#18252bed,#111820f5);
+  --vn-lounge-frame: url("../img/ui/vn-lounge/smoke.svg");
+  --vn-lounge-narration: url("../img/ui/vn-lounge/smoke.svg"); --vn-lounge-name: #e2fff6;
+}
+html[data-ui-theme="smoke-purple"] {
+  --gold: #c6a2e8; --gold-hi: #efdbff; --text-dim: #c9bdd3;
+  --ink: #100b19; --ink-2: #22182f; --panel: #1b1127f5; --panel-edge: #bd9ee077;
+  --inner-edge: #c6a2e83d; --inner-face: #cfb4ec09; --inner-hover: #cfb4ec18; --inner-active: #cfb4ec28;
+  --ui-edge: #cba6ee88; --ui-shadow: 0 0 19px #bd83ef22, 0 8px 24px #0006;
+  --ui-button: linear-gradient(130deg,#30213eed,#1b1228f5); --vn-lounge-name: #efdbff;
+  --vn-lounge-frame: url("../img/ui/vn-lounge/smoke-purple.svg"); --vn-lounge-narration: url("../img/ui/vn-lounge/smoke-purple.svg");
+}
+html[data-ui-theme="cut-paper"] {
+  --gold: #d68bea; --gold-hi: #f3c3ff; --text-dim: #c9b7d0;
+  --ink: #120c1d; --ink-2: #25172f; --panel: #1d1229fa; --panel-edge: #d68bea99;
+  --inner-edge: #d68bea55; --inner-face: #ce8feb09; --inner-hover: #ce8feb19; --inner-active: #ce8feb2c;
+  --ui-radius: 0; --ui-button-radius: 2px; --ui-edge: #c579de; --ui-shadow: 5px 5px 0 #9947b266, 0 8px 24px #0006;
+  --ui-button: linear-gradient(120deg,#382044,#1b1029); --vn-lounge-name: #f6d2ff;
+  --vn-lounge-frame: url("../img/ui/vn-lounge/cut-paper.svg"); --vn-lounge-narration: url("../img/ui/vn-lounge/cut-paper.svg");
+}
+html[data-ui-theme="amber"] {
+  --gold: #efb455; --gold-hi: #ffe2a6; --text: #fff1da; --text-dim: #cdb48e;
+  --ink: #130c07; --ink-2: #29190d; --panel: #201208f7; --panel-edge: #e8a44688;
+  --inner-edge: #e8a44644; --inner-face: #f3b85b09; --inner-hover: #f3b85b18; --inner-active: #f3b85b28;
+  --ui-radius: 20px; --ui-button-radius: 14px; --ui-edge: #e8a446aa; --ui-shadow: inset 0 0 0 3px #e8a44613, 0 0 14px #e8a44620, 0 8px 24px #0006;
+  --ui-button: linear-gradient(150deg,#39200e,#1c1009); --vn-lounge-name: #ffe2a6;
+  --vn-lounge-frame: url("../img/ui/vn-lounge/amber.svg"); --vn-lounge-narration: url("../img/ui/vn-lounge/amber.svg");
+}
+html[data-ui-theme="tissue"] {
+  --gold: #d7c69f; --gold-hi: #f2e7cd; --text: #f7f2e6; --text-dim: #c6beac;
+  --ink: #161617; --ink-2: #2e2c2a; --panel: #29292af7; --panel-edge: #d8c9a766;
+  --inner-edge: #d8c9a744; --inner-face: #e6dcc414; --inner-hover: #e6dcc423; --inner-active: #e6dcc433;
+  --ui-radius: 2px; --ui-button-radius: 1px; --ui-edge: #d8c9a788; --ui-shadow: 4px 4px 0 #ded3b961, -3px -2px 0 #eee1c532, 0 8px 24px #0006;
+  --ui-button: linear-gradient(155deg,#3a3935,#262627); --vn-lounge-name: #eee5ce;
+  --vn-lounge-frame: url("../img/ui/vn-lounge/tissue.svg"); --vn-lounge-narration: url("../img/ui/vn-lounge/tissue.svg");
+}
+
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.panel,.modal-box,.ink-panel,.vn-log,.map-info,.map-notice,.map-time,.hud-card,.hud-level,.hud-menu,.hud-stamina,.toast,.shop-item,.st-row) {
+  background: var(--panel); border: 1px solid var(--ui-edge); border-image: none;
+  border-radius: var(--ui-radius); box-shadow: var(--ui-shadow); backdrop-filter: none;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.mi-banner,.spot-pin .sub-label,.dc-row,.st-tab,.shop-tab,.gl-tab,.vn-ctl) {
+  background: var(--ui-button); border: 1px solid var(--ui-edge); border-image: none;
+  border-radius: var(--ui-button-radius); color: var(--text); filter: none; clip-path: none; box-shadow: none;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.st-tab,.shop-tab,.gl-tab,.vn-ctl):is(:hover,:focus-visible,.on,.primary) {
+  color: var(--gold-hi); background: var(--inner-active); border-color: var(--gold); filter: none;
+  box-shadow: inset 0 -2px 0 color-mix(in srgb,var(--gold) 45%,transparent);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.st-tab,.shop-tab,.gl-tab,.vn-ctl):focus-visible {
+  outline: 2px solid var(--gold-hi); outline-offset: 2px;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.panel,.modal-box,.ink-panel) :is(.panel,.ink-panel,.st-row) {
+  background: var(--inner-face); border-color: var(--inner-edge); box-shadow: none;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .spot-pin .shield::before {
+  background: var(--panel); border: 1px solid var(--ui-edge); border-radius: var(--ui-radius);
+  mask: none; -webkit-mask: none; box-shadow: var(--ui-shadow);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .spot-pin .shield::after {
+  background: var(--pin-accent); border-radius: 4px; mask: none; -webkit-mask: none;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .gain-card {
+  background: var(--panel); border: 1px solid color-mix(in srgb,var(--gc) 70%,var(--ui-edge));
+  border-image: none; border-radius: var(--ui-radius); box-shadow: var(--ui-shadow);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .gain-card::after { content: none; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.gc-badge:not(.face),.st-badge) {
+  background: var(--inner-face); border: 1px solid var(--inner-edge); border-image: none; border-radius: var(--ui-button-radius);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.hud-bar,.gc-meter) {
+  background: #0007; border: 1px solid var(--inner-edge); border-radius: var(--ui-button-radius);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.hud-bar b,.gc-meter i) {
+  background: var(--stamina-fill,var(--gc,var(--gold))); mask: none; -webkit-mask: none; border-radius: var(--ui-button-radius);
+}
+/* 体力の緑/黄/赤、能力の5色は意味を持つためテーマ色で置き換えない。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .ui-heart::before,
+html[data-ui-theme]:not([data-ui-theme="classic"]) .ui-heart::after,
+html[data-ui-theme]:not([data-ui-theme="classic"]) .gc-hearts i::before,
+html[data-ui-theme]:not([data-ui-theme="classic"]) .gc-hearts i::after {
+  background: #ffb5c5; clip-path: polygon(50% 18%,30% 3%,10% 12%,0 36%,7% 58%,50% 98%,93% 58%,100% 36%,90% 12%,70% 3%);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.ui-heart,.gc-hearts i)::after {
+  background: linear-gradient(to top,#ffa9c0 var(--fill,0%),transparent var(--fill,0%));
+}
+
+/* 会話の本文幅・高さと名前の領域、操作バーとの5px間隔は保持する。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box::before { inset: -41px -20px -12px; background-size: 100% 100%; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box:is(.narration,.thought)::before { inset: -41px -20px -12px; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-name {
+  color: var(--vn-lounge-name); background: transparent; border: 0; border-radius: 0; box-shadow: none;
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-name::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg,transparent,var(--gold) 25%,var(--gold-hi)); box-shadow: 0 0 6px var(--gold);
+}
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-controls { background: none; padding: 5px 0; gap: 0; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-controls .vn-ctl { padding: 0 8px; border-radius: 22px; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-controls .vn-ctl + .vn-ctl::before { content: none; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-next { color: var(--gold-hi); }
+html[data-ui-theme="cut-paper"] .vn-box .vn-name {
+  background: #d38bea; color: #210e2e; clip-path: polygon(12% 0,90% 0,100% 100%,0 100%); text-shadow: none;
+}
+html[data-ui-theme="cut-paper"] .vn-name::after { content: none; }
+html[data-ui-theme][data-ui-theme="cut-paper"] :is(.btn,.vn-choice,.vn-controls .vn-ctl) { border-radius: 0; border-left: 4px solid var(--gold); }
+html[data-ui-theme="tissue"] .vn-box .vn-name { background: #ece2ca; color: #303033; text-shadow: none; box-shadow: 3px -3px #dfd3b88a; }
+html[data-ui-theme="tissue"] .vn-name::after { content: none; }
+html[data-ui-theme="amber"] .vn-box .vn-name { background: #2c190ef2; border: 1px solid #e8a446aa; border-radius: 20px 20px 0 0; }
+
+.ui-theme-select { max-width: 100%; font: inherit; padding: 8px 12px; background: var(--ink-2); color: var(--text); border: 1px solid var(--panel-edge); border-radius: 4px; min-height: 44px; }
+.ui-theme-select:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+.cfg-row:has(.ui-theme-select) { flex-wrap: wrap; }
+.ui-samples { position:absolute; top:46px; left:60px; right:60px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; z-index:28; }
+.ui-samples[hidden] { display:none; }
+.ui-sample-panel { padding:24px; min-width:0; }
+.ui-sample-panel h2 { margin:8px 0 20px; font-size:25px; color:var(--gold-hi); }
+.ui-sample-panel > small { color:var(--text-dim); letter-spacing:.16em; }
+.ui-sample-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.ui-sample-actions .btn { min-width:0; min-height:44px; font-size:18px; padding:12px 8px; }
+.ui-sample-panel .hud-stamina { display:flex; gap:12px; padding:12px; font-size:17px; }
+.ui-sample-panel .hud-bar { display:block; width:140px; }
+.ui-sample-panel .gain-card { position:relative; transform:none; opacity:1; margin-top:24px; display:flex; min-width:0; width:100%; }
+.ui-sample-panel .gc-meta { display:flex; flex-direction:column; }
+.ui-sample-panel .gc-meta b { font-size:20px; }
+.ui-sample-panel .gc-meta small { font-size:11px; }
+@media(max-width:700px) { .preview-tools { gap: 5px; } .preview-tools b { display: none; } .preview-tools .ui-theme-select { max-width: 42vw; min-height:36px; padding:5px; font-size:12px; } }
+@media(max-width:700px) {
+  .preview-tools { display:grid; grid-template-columns:1fr 1fr; height:auto; min-height:88px; }
+  .preview-tools select,.preview-tools .ui-theme-select { min-width:0; width:100%; max-width:100%; }
+}
+
+/* DS表示の本文領域や操作の位置を拡げず、同じ皮膜だけ載せる。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-box::before,
+html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-box:is(.narration,.thought)::before { inset: -20px 0 0; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-controls { background: none; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-box .vn-name { border-width: 0; }

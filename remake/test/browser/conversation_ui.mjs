@@ -94,4 +94,4 @@ await suite("conversation-ui", async check => {
         "Named and nameless artwork must share the bottom edge");
     }, { viewport });
   }
-}, { entry: new URL("conversation-preview.html", baseURL).href, readySelector: ".vn-box" });
+}, { entry: new URL("conversation-preview.html?theme=classic", baseURL).href, readySelector: ".vn-box" });
