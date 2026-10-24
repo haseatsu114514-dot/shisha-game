@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "status": "script_only",
-  "comment": "第3章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。第1〜2章の実行順はremake/js/chaptersが正。",
+  "status": "partially_connected",
+  "comment": "第3章は東京導入から久世との再訪まで接続。全国大会と第4章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。第1〜2章の実行順はremake/js/chaptersが正。",
   "heroine_ids": [
     "tsumugi",
     "minto",

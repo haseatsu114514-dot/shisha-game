@@ -45,13 +45,16 @@ export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
   const catalog = await json(new URL("trpg_catalog.json", base), signal);
   const entries = scenarioId ? catalog.scenarios.filter(s => s.id === scenarioId) : catalog.scenarios;
   if (!entries.length) throw new Error("Unknown TRPG scenario: " + scenarioId);
-  const [scenarios, characters, manifest, overlays, club] = await Promise.all([
+  const [scenarios, characters, manifest, overlays, club, talk] = await Promise.all([
     Promise.all(entries.map(entry => json(new URL(entry.file, base), signal))),
     json(new URL("characters.json", base), signal),
     json(new URL("../../data/manifest.json", import.meta.url), signal),
     Promise.all((catalog.characterProfiles || []).map(file => json(new URL(file, base), signal))),
     json(new URL(catalog.club.file, base), signal),
+    // Optional table chatter: a missing file only removes the doubles chatter.
+    catalog.tableTalk ? json(new URL(catalog.tableTalk, base), signal).catch(error => { if (signal?.aborted) throw error; return null; }) : null,
   ]);
+  const tableTalk = Object.fromEntries((talk?.dialogues || []).map(d => [d.dialogue_id, d.lines]));
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
   const urls = new Set();
@@ -63,9 +66,10 @@ export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
     });
     s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
   });
+  Object.values(tableTalk).flat().forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
   await Promise.all([...urls].map(url => preload(url, signal)));
   if (signal?.aborted) throw signal.reason || new DOMException("Aborted", "AbortError");
-  return { catalog, scenarios, characters: [...people.values()], manifest, club };
+  return { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk };
 }
 
 export async function loadTrpgResources({ scenarioId = "ordinary-cup", signal } = {}) {

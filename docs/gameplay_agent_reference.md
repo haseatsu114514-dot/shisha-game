@@ -13,7 +13,7 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
 
 - 正式タイトルは **「水煙前線 -EN:CODE-」**。一人称視点で、主人公の立ち絵は通常の会話には表示しない
 - 現行コード・画面・バランスは `remake/`、台詞等の正本は `data/`、画像・音声は `assets/`
-- 進行・テスト・画面構成は `remake/README.md`。第1・2章を通しで遊べる。第3章以降は未接続の台本が先行している
+- 進行・テスト・画面構成は `remake/README.md`。第1・2章を通しで遊べる。第3章は東京到着から久世との再訪まで接続し、全国大会と第4章以降は未接続の台本が先行している
 - `data/*.json` を直接読むので台詞変更時のビルド不要。画像を追加/差し替えた場合のみ `python3 remake/tools/build_manifest.py`
 - 正史・仕様は本ファイル・`docs/master_spec.md`・`brand/story_and_structure.md`・`data/*.json`
 - セーブは `suien_remake_save`。手動3枠と移行処理は `remake/js/core/state.js`

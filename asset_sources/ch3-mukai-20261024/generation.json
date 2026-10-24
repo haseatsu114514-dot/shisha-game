@@ -1,0 +1,22 @@
+{
+  "tool": "image_gen.imagegen",
+  "source": "source.png",
+  "source_width": 1672,
+  "source_height": 941,
+  "source_sha256": "025f164f5ec7cce6c4755b241f7b2c48eedc4eec0ee2286faa0c925344b487df",
+  "first_draft": "first-draft.png",
+  "first_draft_sha256": "8d9c44fe7e3af157b3125ccfd30c9339aed86e98c2903798509256c513d67b32",
+  "runtime": "../../assets/backgrounds/bg_mukai_shop.png",
+  "runtime_width": 1280,
+  "runtime_height": 720,
+  "runtime_sha256": "998401f6510d9ef9937b9710b1df1d49507e95e91f7331cbcfb6c1af1afeb4fc",
+  "runtime_conversion": "convert source.png -resize '1280x720^' -gravity center -extent 1280x720 -strip bg_mukai_shop.png",
+  "qa": {
+    "style": "hand-painted anime game background; initial photorealistic draft rejected",
+    "equipment_visible": false,
+    "people_visible": false,
+    "text_or_logo_visible": false,
+    "foreground_space_for_portraits": true,
+    "visually_inspected_source_and_runtime": true
+  }
+}
