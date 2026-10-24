@@ -251,8 +251,16 @@ function voteReason(p, cs, final = false) {
       : `いちばん低いのは「${weakest.label}」（${Math.round(weakest.score)}点）。ここを上げると、次の票が動きやすい。`);
   }
   const affected = JUDGES.filter(judge => last[judge]?.tactic?.affected);
-  if (affected.length) lines.push(`久世の青柑橘が${names(affected)}の比較に残った。票を決めるのは、それぞれの一口。`);
-  else if (JUDGES.some(judge => last[judge]?.tactic)) lines.push("久世は青柑橘を強く差し出したが、今回は比較の基準を動かせなかった。");
+  if (affected.length) {
+    const judge = affected.find(who => last[who].tactic.affected === "hajime") || affected[0];
+    const tactic = last[judge].tactic;
+    const target = displayName(tactic.affected, state);
+    const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
+    const others = affected.filter(who => who !== judge);
+    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。青柑橘の余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+  } else if (JUDGES.some(judge => last[judge]?.tactic)) {
+    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の青柑橘は直後の比較に残らなかった。");
+  }
   return lines;
 }
 
