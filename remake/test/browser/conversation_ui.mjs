@@ -11,13 +11,13 @@ await suite("conversation-ui", async check => {
         const box = document.querySelector(".vn-box").getBoundingClientRect();
         const controls = document.querySelector(".vn-controls").getBoundingClientRect();
         const name = document.querySelector(".vn-name");
-        return { gap: (box.top - controls.bottom) / (box.width / 1216), font: getComputedStyle(name).fontFamily,
+        return { aligned:Math.abs((name.getBoundingClientRect().top+name.getBoundingClientRect().height/2)-(controls.top+controls.height/2))/(box.width/1216), font: getComputedStyle(name).fontFamily,
           nameTop: parseFloat(getComputedStyle(name).top),
           buttons: [...document.querySelectorAll(".vn-ctl")].map(el => parseFloat(getComputedStyle(el).minHeight)) };
       });
-      assert(Math.abs(geometry.gap - 12) < .1, "Control frame must have a 12px gap above dialogue");
+      assert(geometry.aligned<=4,"name and commands share the attached header centreline");
       assert(geometry.font.includes("Suien Name"));
-      assert.equal(geometry.nameTop, -30);
+      assert.equal(geometry.nameTop, -36);
       assert(geometry.buttons.every(height => height >= 44));
       await page.locator('[data-test="vn-auto"]').click();
       assert(await page.locator('[data-test="vn-auto"]').evaluate(el => el.classList.contains("on")));

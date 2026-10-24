@@ -89,6 +89,7 @@
     ],
     "dropdown_roundtrip": "blue -> smoke -> blue passed",
     "main_config_unchanged": true,
-    "quick": "7/7 passed"
+    "quick": "7/7 passed",
+    "composition": "latest: body 30px, name 26px, commands 16px in one frame header; 1280x768 and 844x438 passed"
   }
 }

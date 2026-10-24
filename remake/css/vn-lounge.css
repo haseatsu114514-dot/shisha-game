@@ -10,7 +10,7 @@
 .vn-box, .vn-controls { translate: 0 2px; }
 :root {
   --vn-dialogue-width: 1216px;
-  --vn-dialogue-height: 208px;
+  --vn-dialogue-height: 224px;
   --vn-dialogue-bottom: 24px;
   --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
   --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
@@ -112,22 +112,6 @@
 .vn-controls .vn-ctl.on::after { content: "·"; margin-left: 3px; color: #f0cd82; }
 .vn-controls .vn-ctl:focus-visible { outline: 2px solid #f0cd82; outline-offset: -3px; }
 .vn-next { right: 32px; bottom: 13px; color: #edca82; }
-
-/* 画面の左右32pxまで広げる。本文は左右の折り返しや煙の輪郭から離す。
-   操作バーは上方、次送りは本文の右下に分離する。 */
-body:not(.game-ds) .vn-box {
-  width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
-  bottom:var(--vn-dialogue-bottom); padding:48px 84px 28px 100px;
-}
-body:not(.game-ds) .vn-controls {
-  right:48px; width:400px; height:54px;
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 12px);
-}
-body:not(.game-ds) .vn-next { right:44px; bottom:44px; font-size:24px; }
-body:not(.game-ds) .vn-choices,
-body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 12px + 54px + 16px);
-}
 
 /* DS表示でも同じ素材。本文と選択肢の領域・44pxの操作範囲を維持。 */
 body.game-ds .vn-box { --vn-frame-overhang: 20px; overflow: visible; border-image: none; }

@@ -43,11 +43,13 @@ await suite("ui-themes-preview", async check => {
           const scale = box.width / 1216;
           const overlaps = (a,b) => a.right>b.left && a.left<b.right && a.bottom>b.top && a.top<b.bottom;
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
-            footerClear:next.bottom<=box.bottom-39*scale,
+            footerClear:next.bottom<=box.bottom-45*scale,
             nameAligned:Math.abs(nameGlyph.left-text.left)<=.5,
             nameInFrame:name.top>=box.top-4*scale && name.bottom<=text.top-2*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            toolbarAbove:controls.bottom<=box.top-10*scale && controls.left>box.left+box.width/2,
+            headerAttached:controls.top>=box.top-44*scale && controls.bottom<=text.top-8*scale && controls.left>box.left+box.width/2,
+            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2))<=4*scale,
+            typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
         });
@@ -60,11 +62,15 @@ await suite("ui-themes-preview", async check => {
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 4px bob");
-        assert(twoLines.toolbarAbove,"all toolbars stay above the frame on the right");
-        assert(twoLines.margins[0]>=99.9 && twoLines.margins[1]>=83.9,"reserve space for visible folds and smoke, beyond glyph bounds");
+        assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
+        assert(twoLines.headerAligned,"name and controls share a header centreline");
+        assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
+        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.6,"command text is a quieter third level");
+        assert(twoLines.margins[0]>=99.9 && twoLines.margins[1]>=91.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
         assert.equal(await page.locator(".vn-name").evaluate(el=>getComputedStyle(el).display),"none");
+        if(id==="cut-paper") assert((await page.locator(".vn-box").evaluate(el=>getComputedStyle(el,"::before").backgroundImage)).includes("cut-paper-narration.webp"),"narration uses artwork without an empty speaker tab");
         await page.selectOption("#preview-scene","hiyori");
         await page.locator(".vn-next.show").waitFor();
         await page.waitForTimeout(350);
@@ -87,7 +93,7 @@ await suite("ui-themes-preview", async check => {
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(const layout of layouts) assert.deepEqual(layout,layouts[0],"skins share text, frame and upper-right toolbar geometry");
+      for(const layout of layouts) assert.deepEqual(layout.slice(0,8),layouts[0].slice(0,8),"skins share the safe text and frame geometry; header anchors follow their artwork");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
       const paddedNameFits = await page.evaluate(async () => {
