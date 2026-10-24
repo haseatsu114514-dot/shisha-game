@@ -57,10 +57,10 @@ export function initGameLayout() {
     if (active) body.dataset.dsView = view; else delete body.dataset.dsView;
     visual.hidden = controls.hidden = !active;
     toolbar.hidden = !inGame || !(mode === "ds" || tried);
-    // 通常版の右上MENU/LIMEを覆わず、従来のステージ位置を維持する。
+    // DS風が効いていない画面（章タイトル等）では左下の隅に小さく置き、見出しや右上のMENU/LIMEを覆わない。
     Object.assign(toolbar.style, active
-      ? { left: "auto", right: "10px", transform: "none" }
-      : { left: "50%", right: "auto", transform: "translateX(-50%)" });
+      ? { left: "auto", right: "10px", top: "8px", bottom: "auto", transform: "none" }
+      : { left: "8px", right: "auto", top: "auto", bottom: "8px", transform: "none" });
     buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
     note.textContent = mode !== "ds" ? "" : !ready ? "表示準備ができないため通常表示" : !view ? "この画面は通常表示です" : "";
     // DS専用CSSが届かないときは、開き直しの入口を畳まずに見せる。
