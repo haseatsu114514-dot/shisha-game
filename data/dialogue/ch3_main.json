@@ -1,5 +1,5 @@
 {
-  "comment": "第3章の正史台本。進行順はdata/story_routes.json。remake本編への接続は未実装。",
+  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。任意場面は未接続。",
   "dialogues": [
     {
       "dialogue_id": "ch3_opening",
@@ -574,7 +574,7 @@
           "text": "写真を撮り終えると、まずスマホを探した。今度は、知らせたい人がいた。"
         }
       ],
-      "comment": "成功時の台本。失敗時は勝利台本へ進めず、再挑戦へ。競技・制作の本体は未接続。"
+      "comment": "成功時の台本。失敗時は勝利台本へ進めず、再挑戦へ。"
     },
     {
       "dialogue_id": "ch3_abyss_hotel",

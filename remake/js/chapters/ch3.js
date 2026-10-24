@@ -1,4 +1,4 @@
-// 第3章・東京導入。第2章の優勝後から久世との再訪までを、場面単位で保存する。
+// 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
