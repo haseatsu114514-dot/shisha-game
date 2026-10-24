@@ -6,7 +6,7 @@ import vm from "node:vm";
 
 const root = new URL("../js/core/", import.meta.url);
 const storage = new Map();
-const context = vm.createContext({ console, Date, Math,
+const context = vm.createContext({ console, Date, Math, setTimeout, clearTimeout,
   localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
 });
 const modules = new Map();
@@ -145,3 +145,26 @@ for (const alreadySaved of [false, true]) {
   assert.equal(core.load().pendingInvite.originId, "separate_samechan");
 }
 console.log("[samechan migration] PASS: all save slots, old schemas, invitations, romance, receipts, read milestones and repeated loads");
+
+// #784: サメちゃんのLIME返信で出る「好感度が少し上がった」は、実際に好感度が増えた時だけ。
+// 返信1回分（0.25倍）の端数だけでは通知せず、端数が1に達した時の通知は実際の値と一致する。
+{
+  const statsModule = await load(new URL("stats.js", root));
+  await statsModule.evaluate();
+  const stats = statsModule.namespace, bus = modules.get(new URL("bus.js", root).href).namespace;
+  const events = []; bus.on("affinity-gain", payload => events.push(payload));
+  const flush = () => new Promise(resolve => setTimeout(resolve, 800));
+  core.newGame(); core.state.met.samechan = true; core.state.affinity.samechan = 9;
+  stats.gainAffinity("samechan", 1, { source: "lime" }); await flush();
+  assert.equal(core.state.affinity.samechan, 9, "One reply is only a fraction");
+  assert(core.state.affinityCarry.samechan > 0 && core.state.affinityCarry.samechan < 1);
+  assert.deepEqual(events, [], "No notice without an actual gain");
+  for (let i = 0; i < 11; i++) stats.gainAffinity("samechan", 1, { source: "lime" });
+  await flush();
+  const gained = core.state.affinity.samechan - 9;
+  assert(gained >= 1, "Replies accumulate into a real gain");
+  assert.equal(events.length, 1);
+  assert.equal(events[0].id, "samechan"); assert.equal(events[0].prevPts, 9);
+  assert.equal(events[0].pts, core.state.affinity.samechan, "The notice shows the actual value");
+  console.log(`[samechan lime] PASS: fraction without notice, ${gained}pt notice equals the actual affinity`);
+}

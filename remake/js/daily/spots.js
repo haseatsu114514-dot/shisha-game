@@ -98,6 +98,11 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
+/** 好感度の上がらない施設（#621・#784）。自分で選んだ1回の行動で、主な能力1つに2P。
+ *  それ以外の行動は従来どおり最大2能力に各1P。 */
+export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe", "axe_bar"]);
+export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
+  ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot()].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
