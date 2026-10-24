@@ -1,4 +1,4 @@
-import { spendableMoney } from "../core/travel-budget.js";
+import { spendableMoney, returnFareReserve } from "../core/travel-budget.js";
 // ピンと街の入口は同じ訪問条件を使う。ここでは進行・支払い・訪問記録を変更しない。
 import { state } from "../core/state.js";
 import { yen } from "../core/util.js";
@@ -25,7 +25,7 @@ export function spotAvailability(s, { guide = null } = {}) {
     return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
   }
   if (!["shop", "rest", "tonari", "trpg", "axe"].includes(s.kind) && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
-  if (s.cost && !freeGuide(s, guide) && spendableMoney(state) < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}。柚ヶ谷では帰りの200円も残す）`, tag: "お金が足りない" };
+  if (s.cost && !freeGuide(s, guide) && spendableMoney(state) < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}${returnFareReserve(state) ? "。柚ヶ谷では帰りの200円も残す" : ""}）`, tag: "お金が足りない" };
   return { ok: true };
 }
 

@@ -321,6 +321,7 @@ await suite('ch2-main', async check => {
 
   await check('ds-small-city-map-and-stop-controls', async page => {
     await page.setViewportSize({ width: 844, height: 390 });
+    await page.locator('[data-test="title-layout-settings"]').tap();
     await page.locator('[data-test="title-layout-ds"]').tap();
     await setup(page, { knownTrpg: false });
     await begin(page);

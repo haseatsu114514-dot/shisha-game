@@ -242,6 +242,7 @@ try {
     // The fixture's completion screen uses the normal portrait rotate hint;
     // enter the DS map before testing its real touch controls.
     await button(p,"ch2-main-next-day").evaluate(n=>n.click());
+    await activate(p,"ch2-morning-home",true);
     await p.locator('[data-destination-selection]:not(.done)').waitFor();
     await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));
     await activate(p,"station-open",true);
