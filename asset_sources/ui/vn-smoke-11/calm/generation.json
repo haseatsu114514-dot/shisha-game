@@ -69,7 +69,9 @@
     "all_six_themes": "passed",
     "blue_four_characters": "passed",
     "classic_operations": "PC/landscape passed",
-    "DS": "PC/touch passed",
-    "quick": "7/7 passed"
+    "DS": "PC/touch passed after latest two-screen layout integration; soft-panel name and two-line portrait screenshot viewed",
+    "quick": "7/7 passed",
+    "integration_base": "e4b686425",
+    "notifications": "PC/touch LIME, rewards and 12 dialogue pages passed"
   }
 }

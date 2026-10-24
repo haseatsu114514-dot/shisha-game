@@ -109,8 +109,9 @@ html:root[data-ui-theme="cut-paper"] body.game-ds .vn-controls {
   background:var(--panel); border:1px solid var(--ui-edge); border-radius:10px; clip-path:none;
 }
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box .vn-name {
-  left:24px; top:2px; height:24px; line-height:22px;
+  left:24px; top:16px; height:24px; line-height:22px;
   background:radial-gradient(ellipse,#251e2dd9,transparent 75%);
 }
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box { padding-top:48px; padding-bottom:16px; }
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-controls { padding:2px 4px; }
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-next { bottom:16px; }
