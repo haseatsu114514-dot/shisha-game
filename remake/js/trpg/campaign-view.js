@@ -1,3 +1,4 @@
+import { storeLogo } from "../core/store-logos.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -49,7 +50,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     ]) : el("p.trpg-club-line.trpg-club-narration", { text: line.text });
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
     root.append(el("header.trpg-campaign-header", [
-      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
+      el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : completed ? "この夜の物語が、本棚に残った。" : daytime ? "昼の一卓、本棚の一冊。" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ本棚は空です" }),
         button(closeLabel, "trpg-campaign-close", close)]),

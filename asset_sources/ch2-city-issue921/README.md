@@ -6,9 +6,19 @@ Issue #921。2026-10-24 JST。このチャットで生成した画像をすべ�
 
 ## 神崎りゅうじとはじめ：筋は通す。ぷりも撮る♡
 
+**最新採用デザイン：53歳、色付き眼鏡と口ひげ、白の大柄チェックスーツ。** #924の正式な素材一式を参照して作り直しました。会話の立ち絵・顔アイコン・「水煙の龍」の登場絵も同じデザインへ更新しています。
+
 筋を通す職人がMELTY PUFFへ挨拶に来た回。面識と実際の在店が揃った時だけ、相席相手として一緒に撮れます。指ハートも本気。撮影後は無料の記念品になります。
 
-![神崎とはじめのプリクラ](selected/ryuji-purikura.png)
+![神崎とはじめのプリクラ・最新白チェック版](selected/ryuji-purikura.png)
+
+<details><summary>旧デザインの比較用画像（本編では使いません）</summary>
+
+![旧デザイン](candidates/ryuji-purikura-old-design.png)
+
+![旧デザインの登場表示](candidates/cutin-kumicho-old-design-preview.png)
+
+</details>
 
 ## あげはとはじめの初プリ：ギャル落書き・盛れた顔
 
@@ -23,6 +33,20 @@ MELTY PUFFの初回サービス。正式立ち絵を参照し、盛れた瞳・�
 ![盛り・キラキラ追加版](candidates/purikura-v2.png)
 
 </details>
+
+## 店のロゴ
+
+MELTY PUFF・神崎煙草店・零-ZERO-は既存の正式ロゴ。Dr.fookahとC.STATIONの柚ヶ谷店は本店と共通の正式ロゴを使います。ボドゲカフェ／TRPGバー・水族館・銭湯の分を新規生成し、マップと店内の案内へ反映しています。
+
+![ボドゲカフェ／TRPGバーのロゴ](selected/trpg-logo.png)
+
+![都市型水族館のロゴ](selected/aquarium-logo.png)
+
+![銭湯・サウナのロゴ](selected/sento-logo.png)
+
+![2章の店ロゴ一覧・実際の表示](logos-preview.png)
+
+![2章の日常マップに反映したロゴ](logos-map-preview.png)
 
 ## シーステーション 柚ヶ谷店
 

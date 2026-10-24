@@ -178,3 +178,6 @@ body.game-ds.ch2-main .ch2-map-main .spot-pin { display: grid; grid-template-col
 body.game-ds.ch2-main .ch2-map-main .spot-pin .pin-status { grid-column: 1 / -1; }
 .map .spot-pin[data-test^="pin-ch2_"] .evt-badge { top: 4px; right: 4px; }
 .map .spot-pin[data-test^="pin-ch2_"] { min-width: 100px; }
+
+.shop-paper .shop-head h2.shop-brand { display: flex; align-items: center; gap: 12px; }
+.trpg-campaign-header .store-logo { display: block; margin-bottom: 6px; }

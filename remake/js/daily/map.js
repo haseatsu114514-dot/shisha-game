@@ -299,7 +299,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -307,7 +307,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,

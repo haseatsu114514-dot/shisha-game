@@ -1,3 +1,4 @@
+import { storeLogo } from "../core/store-logos.js";
 import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
@@ -109,8 +110,8 @@ function productArt(item, flavor, size = 66) {
   const art = EQUIP_ART[item.art || item.id];
   return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();
 }
-function shopHeader(sub, money, name = "Dr.fookah") {
-  return el("header.shop-head", [el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
+function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
+  return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
 const rinUnavailable = () => rinVisitReason(state);
 
@@ -374,7 +375,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     filters.append(el("span", { text: `1箱 ${FLAVOR_BOX_GRAMS}g` }));
     const leaveButton = el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave });
     const root = showScreen("shop", el("section.shop.shop-paper", { "aria-label": "Dr.fookah ショップ" }, [
-      shopHeader(stockChapter === 2 ? "柚ヶ谷店・県大会の仕入れ" : "1F ショップ", money, shopName), errandBox, tabs, filters, body,
+      shopHeader(stockChapter === 2 ? "柚ヶ谷店・県大会の仕入れ" : "1F ショップ", money, shopName, stockChapter === 2), errandBox, tabs, filters, body,
       el("footer.shop-foot", [leaveButton, summary, checkout]),
     ]));
     // 過去の画面のイベントが、新しくロードしたセーブや閉店後の状態へ届かないようにする。

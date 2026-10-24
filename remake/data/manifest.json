@@ -217,11 +217,15 @@
   },
   "kumicho": {
    "faces": [
-    "normal"
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
    ],
-   "h": 0.9792,
-   "b": 0.0117,
-   "ax": 0.4831,
+   "h": 0.9508,
+   "b": 0.0217,
+   "ax": 0.4997,
    "aspect": 0.7467
   },
   "rei": {
@@ -367,7 +371,8 @@
   "face_pakki.png",
   "face_rin.png",
   "face_sumi.png",
-  "face_tsumugi.png"
+  "face_tsumugi.png",
+  "face_kumicho.png"
  ],
  "making": [
   "bench_base.png",
@@ -1256,15 +1261,35 @@
    }
   },
   "kumicho": {
-   "color": "#b13432",
-   "secondary": "#eadcc0",
-   "shadow": "#290c0e",
+   "color": "#b6a4cf",
+   "secondary": "#eee4bf",
+   "shadow": "#221a29",
    "background": "ui/character_intros/kumicho.png",
    "frames": {
     "normal": {
-     "width": 1000,
-     "left": -180,
-     "top": -12
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "smile": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "serious": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "surprise": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "sad": {
+     "width": 896,
+     "left": -106,
+     "top": 5
     }
    }
   },
@@ -2061,6 +2086,10 @@
   "ui/character_intros/kumicho.png",
   "ui/character_intros/rei.png",
   "cgs/cg_ageha_first_purikura.png",
-  "cgs/cg_ryuji_purikura.png"
+  "cgs/cg_ryuji_purikura.png",
+  "sprites/characters/kumicho/chr_kumicho_smile.png",
+  "sprites/characters/kumicho/chr_kumicho_serious.png",
+  "sprites/characters/kumicho/chr_kumicho_surprise.png",
+  "sprites/characters/kumicho/chr_kumicho_sad.png"
  ]
 }

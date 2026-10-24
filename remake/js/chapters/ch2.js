@@ -1,6 +1,6 @@
 import { CH2_CITY_NAME, CH2_CITY_EN } from "../core/city-locations.js";
 // 第2章「才能の壁」初日。第1章の状態を引き継ぎ、読んだ場面の区切りだけを保存する。
-import { DB, bgUrl, faceIconUrl } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -292,16 +292,13 @@ function renderMap() {
     );
   };
   for (const stop of stops) {
-    const known = ROOMS[stop.id] && state.met[stop.id];
-    const face = known && faceIconUrl(stop.id);
     const done = deliveries?.done?.[stop.id];
     const pin = el("button.spot-pin.pin-store", { type: "button", style: { left: `${stop.x}%`, top: `${stop.y}%` },
       dataset: { test: test(stop.id === "station" ? "station" : `pin-${stop.id}`), read: String(visited.has(stop.id)), spot: stop.id },
       "aria-pressed": "false", "aria-label": `${stop.name}${deliveryPending(state, stop.id) ? "・配達先" : ""}`,
       onclick: () => selected === stop ? go(stop) : select(stop, pin) }, [
-      el("div.shield", [el("span.ico", [face ? el("img.pin-face", { src: face, alt: "" })
-        : ROOMS[stop.id] ? storeLogo(`ch2_${stop.id}`, { width: 68, height: 42 })
-        : el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : "駅"), "aria-hidden": "true" })])]),
+      el("div.shield", [el("span.ico", [storeLogo(ROOMS[stop.id] ? `ch2_${stop.id}` : stop.id, { width: 68, height: 42 })
+        || el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : "駅"), "aria-hidden": "true" })])]),
       el("span.sub-label", { text: stop.name }),
       el("small.pin-status", { text: deliveryPending(state, stop.id) ? "配達先" : done ? "お届け済み" : visited.has(stop.id) ? "確認済み" : stop.outing ? "教えてもらった場所" : "" }),
     ]);

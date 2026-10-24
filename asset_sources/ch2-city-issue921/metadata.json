@@ -131,11 +131,11 @@
     "status": "review"
   },
   {
-    "id": "ryuji-purikura",
-    "file": "selected/ryuji-purikura.png",
+    "id": "ryuji-purikura-old-design",
+    "file": "candidates/ryuji-purikura-old-design.png",
     "bytes": 3036726,
     "sha256": "7f9f4e92fd1582a936cb67c2d67051802bc49553ca64e4b53fcb51312d24902f",
-    "status": "selected-runtime-cg"
+    "status": "superseded-old-design"
   },
   {
     "id": "c-station",
@@ -143,5 +143,33 @@
     "bytes": 2577465,
     "sha256": "10fec44b7697fdb97b5d17b4b1d31202f090be3f8566316a6b9b9329d14f5f01",
     "status": "selected-runtime-background"
+  },
+  {
+    "id": "ryuji-purikura",
+    "file": "selected/ryuji-purikura.png",
+    "bytes": 3010026,
+    "sha256": "8a14dc00ea9cc1e053d459147b28f85a72f164370fbfce8188ddb91775fc2845",
+    "status": "selected-runtime-latest"
+  },
+  {
+    "id": "trpg-logo",
+    "file": "selected/trpg-logo.png",
+    "bytes": 2049043,
+    "sha256": "250a3126d086002f26e97da6e3b648f65c456a4e69ada890b21f5adcfbb9fb50",
+    "status": "selected-runtime-latest"
+  },
+  {
+    "id": "aquarium-logo",
+    "file": "selected/aquarium-logo.png",
+    "bytes": 1639862,
+    "sha256": "990f3330e8e198b05e9b63660a1628f1177e384c61be39a142cee9c1bac0436b",
+    "status": "selected-runtime-logo"
+  },
+  {
+    "id": "sento-logo",
+    "file": "selected/sento-logo.png",
+    "bytes": 1363219,
+    "sha256": "a50da82fe7f0473fa5be025c85fccc9ee77ed3f70ff34c4a36e99e1c4fcc7b2d",
+    "status": "selected-runtime-logo"
   }
 ]
