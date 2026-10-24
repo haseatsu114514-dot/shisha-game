@@ -205,5 +205,3 @@ html[data-ui-theme][data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::after
 }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-text { font-weight:700; }
 
-/* 名前の実フォント高を収め、本文との間も確保する。 */
-html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box { padding-top:48px; }

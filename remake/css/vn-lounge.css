@@ -117,7 +117,7 @@
    操作バーは上方、次送りは本文の右下に分離する。 */
 body:not(.game-ds) .vn-box {
   width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
-  bottom:var(--vn-dialogue-bottom); padding:36px 84px 28px 100px;
+  bottom:var(--vn-dialogue-bottom); padding:48px 84px 28px 100px;
 }
 body:not(.game-ds) .vn-controls {
   right:48px; width:400px; height:54px;
