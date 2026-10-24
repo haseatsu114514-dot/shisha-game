@@ -1187,7 +1187,8 @@
     "audit_sheet": "faces-096-100.webp",
     "classification": "正常な輪郭・影（目視で明確な異常なし）",
     "priority": "none",
-    "note": "両目とも細い落ち着いた表情。片眼だけの潰れや肌の歪みなし。"
+    "note": "両目とも細い落ち着いた表情。片眼だけの潰れや肌の歪みなし。 追加のサイズ点検で全体を左4px・上3pxへ平行移動して足元を整列。顔の画素・縮尺は保持。",
+    "resolved_source_sha256": "139f234e67220f08e4796bb09e853b0b9b37fc721e8fb8440594eeb26f2e8ddf"
   },
   {
     "character": "uranaishi",
