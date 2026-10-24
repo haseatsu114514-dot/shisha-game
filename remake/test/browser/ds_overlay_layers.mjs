@@ -204,6 +204,10 @@ await suite("ds-overlay-layers", async check => {
           && title.top < toolbar.bottom && title.bottom > toolbar.top;
         assert(!overlaps, `Display toolbar covers chapter-clear title: ${JSON.stringify({ title, toolbar })}`);
         await reachable(page.locator(".end-title"));
+        // 切替の選択肢は「表示」を開くと出る。
+        await reachable(page.locator('[data-test="game-layout-settings"]'));
+        if (!(await page.locator(".game-layout-toolbar").evaluate(n => n.open)))
+          await page.locator('[data-test="game-layout-settings"]').tap();
         for (const control of ["game-layout-normal", "game-layout-ds", "game-layout-recover"])
           await reachable(page.locator(`[data-test="${control}"]`));
         await page.screenshot({ path: path.join(out, "ds-overlay-landscape-clear.png") });
