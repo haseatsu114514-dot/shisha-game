@@ -181,14 +181,15 @@ html[data-ui-theme][data-ui-theme="cut-paper"] .vn-name::before {
   content:""; position:absolute; inset:0; pointer-events:none;
   background:repeating-linear-gradient(120deg,transparent 0 6px,#291238 6px 11px,transparent 11px 18px) left / 50px 100% no-repeat;
 }
-/* 11: 背景の明暗に左右されない局所的な墨色。矩形の名札にはしない。 */
+/* 11: 名前を本文と同じ左端へ揃え、煙の本文面の上部に接続する。 */
 html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box .vn-name {
-  left:20px; top:-44px; width:240px; height:44px; padding:0 32px;
-  line-height:42px; text-align:left;
+  left:88px; top:-2px; width:240px; height:34px; padding:0 12px;
+  line-height:32px; text-align:left;
   background:radial-gradient(ellipse at center,#080e16ed 0%,#080e16c9 48%,#080e1600 74%);
   color:var(--vn-lounge-name); text-shadow:0 2px 3px #000,0 0 8px #000;
 }
 html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-name::after {
+  left:12px;
   background:linear-gradient(90deg,transparent,var(--vn-lounge-name) 25%,var(--vn-lounge-name));
   box-shadow:0 0 4px var(--gold);
 }

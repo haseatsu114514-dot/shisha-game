@@ -4,15 +4,38 @@ import { newGame, state, config } from "../core/state.js";
 import { initLayers } from "../core/ui.js";
 import { play } from "./engine.js";
 import { markIntroSeen } from "./intro.js";
-import { applyUiTheme, createUiThemeSelect } from "../core/ui-theme.js";
+import { applyUiTheme, UI_THEMES } from "../core/ui-theme.js";
 
 const selector = document.querySelector("#preview-scene");
 const status = document.querySelector("#preview-status");
 const stage = document.querySelector("#stage");
-const theme = applyUiTheme(new URL(location.href).searchParams.get("theme"));
-const themeSelect = createUiThemeSelect(theme, applyUiTheme);
+const previewQuery = new URL(location.href).searchParams;
+function applyPreviewTheme(value) {
+  if(value === "heisei-blue") { document.documentElement.dataset.uiTheme=value; return value; }
+  return applyUiTheme(value);
+}
+const theme = applyPreviewTheme(previewQuery.get("theme"));
+const themeSelect=document.createElement("select");
+themeSelect.className="ui-theme-select";
+themeSelect.setAttribute("aria-label","UIデザイン");
+for(const {id,label} of [...UI_THEMES,{id:"heisei-blue",label:"R2 平成の青いADV（比較用）"}]) {
+  const option=document.createElement("option"); option.value=id; option.textContent=label; themeSelect.append(option);
+}
+themeSelect.value=theme;
+themeSelect.addEventListener("change",()=>applyPreviewTheme(themeSelect.value));
 themeSelect.id = "preview-theme";
 document.querySelector("#preview-restart").before(themeSelect);
+const characterSelect=document.createElement("select");
+characterSelect.id="preview-character";
+characterSelect.setAttribute("aria-label","比較するキャラクター");
+for(const [id,label] of [["hiyori","ひより"],["minto","みんと"],["ageha","あげは"],["tsumugi","つむぎ"]]) {
+  const option=document.createElement("option"); option.value=id; option.textContent=label; characterSelect.append(option);
+}
+characterSelect.value=["hiyori","minto","ageha","tsumugi"].includes(previewQuery.get("character"))?previewQuery.get("character"):"hiyori";
+if(previewQuery.has("character")) selector.value="characters";
+characterSelect.hidden=selector.value!=="characters";
+characterSelect.disabled=true;
+themeSelect.after(characterSelect);
 const kit = document.createElement("aside");
 kit.className = "ui-samples";
 kit.hidden = true;
@@ -81,7 +104,15 @@ async function start() {
     markIntroSeen(id);
   }
   Object.assign(config, { textSpeed: 4, mute: true });
+  characterSelect.hidden=selector.value!=="characters";
+  const characterLines = {
+    hiyori:{speaker:"hiyori",face:"smile",text:"今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。"},
+    minto:{speaker:"minto",face:"normal",text:"そうそう！\n時間帯でレシピを変えるの、大事なんだよ？"},
+    ageha:{speaker:"ageha",face:"normal",text:"おつかれ、ハジメっち！\nうちも今、店閉めてきたとこ〜"},
+    tsumugi:{speaker:"tsumugi",face:"normal",text:"……今日は、見せられる絵がなくて。\nすみません"},
+  };
   const scenes = {
+    characters:{dialogue_id:"ui-preview-characters",lines:[characterLines[characterSelect.value]]},
     hiyori: { ...DB.dialogues.hiyori_shop_repeat_0, lines: DB.dialogues.hiyori_shop_repeat_0.lines.slice(1) },
     twolines: { dialogue_id: "ui-preview-two-lines", lines: [
       { speaker: "hiyori", face: "smile", text: "今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。" },
@@ -106,11 +137,14 @@ async function start() {
   if (!signal.aborted) status.textContent = "会話終了 ·「もう一度」で再生できます";
 }
 selector.addEventListener("change", start);
+characterSelect.addEventListener("change", start);
 document.querySelector("#preview-restart").addEventListener("click", start);
 try {
   await loadAll();
   await Promise.all([document.fonts.load('700 24px "Suien Name"', "ひよりアダム"), document.fonts.load('500 32px "Suien Gothic"')]);
   selector.disabled = false;
+  characterSelect.disabled = false;
+  if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Blue Mincho"',"みんとあげはつむぎ時間帯");
   document.querySelector("#preview-restart").disabled = false;
   await start();
 } catch (error) {

@@ -2181,6 +2181,9 @@
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
+        "remake/css/blue-window-preview.css",
+        "remake/img/ui/blue-preview/**",
+        "remake/fonts/ZenOldMincho-Blue-Regular.woff2",
         "remake/css/vn-lounge.css",
         "remake/js/vn/name-fit.js",
         "remake/js/core/ui-theme.js",

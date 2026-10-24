@@ -1,0 +1,35 @@
+/* R2は比較プレビュー専用。本編CONFIGや既定テーマには登録しない。 */
+@font-face {
+  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
+  font-style:normal; font-weight:400; font-display:block;
+}
+html[data-ui-theme="heisei-blue"] {
+  --gold:#b6dbff; --gold-hi:#eef7ff; --vn-lounge-name:#fff;
+  --ink:#030c23; --ink-2:#071b43; --panel:#061638fa; --panel-edge:#b4ceef;
+  --ui-edge:#bed6ee; --ui-button:linear-gradient(#174f9e,#001b52);
+}
+html[data-ui-theme="heisei-blue"] .vn-box { background:linear-gradient(#001137,#001137) center / 90% 80% no-repeat; }
+html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-box::before,
+html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-box:is(.narration,.thought)::before {
+  inset:-20px -16px -12px;
+  background:url("../img/ui/blue-preview/panel.webp") center / 100% 100% no-repeat;
+}
+html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-box .vn-name {
+  left:28px; top:-66px; width:280px; height:76px; padding:4px 24px 0 40px; line-height:72px;
+  background:url("../img/ui/blue-preview/name.webp") center / 100% 100% no-repeat;
+  font-family:"Suien Blue Mincho",serif; font-weight:400; color:#fff; text-shadow:0 2px 4px #000;
+  font-size:var(--vn-name-fit-size,clamp(14px,calc(216px / var(--vn-name-length,4)),32px));
+}
+html[data-ui-theme="heisei-blue"] .vn-name::after { content:none; }
+html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-controls {
+  background:url("../img/ui/blue-preview/controls.webp") center / 100% 100% no-repeat;
+  padding:5px 5px; gap:0;
+}
+html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-controls .vn-ctl {
+  background:none; border:0; border-radius:0; box-shadow:none; color:#fff;
+  font-family:"Suien Blue Mincho",serif; font-weight:400; text-shadow:0 1px 3px #000;
+}
+html[data-ui-theme="heisei-blue"] :is(.vn-text,.vn-inner) { font-family:"Suien Blue Mincho",serif; font-weight:400; }
+html[data-ui-theme="heisei-blue"] .vn-text { color:#fff; text-shadow:0 2px 3px #000; }
+.preview-tools:has(#preview-character:not([hidden])) { height:auto; min-height:48px; flex-wrap:wrap; }
+#preview-character[hidden] { display:none; }

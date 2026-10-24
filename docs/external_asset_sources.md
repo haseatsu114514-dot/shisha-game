@@ -151,3 +151,9 @@
 
 ---
 2026-10-09 時点のリンク集。**この段階で素材本体のダウンロードやゲームへの採用はしていない。** 新しい素材を採用したときは、その都度出典・ライセンス・採用理由をこのファイルか別の台帳に追記する。
+
+## 2026-10-24 採用記録：青い会話ウインドウ比較用フォント
+
+- **Zen Old Mincho Regular** — The Zen Old Mincho Project Authors。[公式配布TTF](https://github.com/google/fonts/blob/main/ofl/zenoldmincho/ZenOldMincho-Regular.ttf)、SIL Open Font License 1.1。商用利用・ゲーム同梱・GitHub再配布可、ライセンスを同梱。
+- 保管先：`remake/fonts/ZenOldMincho-Blue-Regular.woff2`、ライセンス：`remake/fonts/OFL-ZenOldMincho.txt`。TTFからWOFF2へ可逆圧縮、文字マップと横幅メトリクスの一致を確認。
+- 使用位置：R2「平成の青いADV」の名前・本文・操作文字（会話プレビュー専用）。青い光沢と銀縁へ明朝体を合わせるため採用。出典・元ファイルと同梱版のSHA-256は `asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/generation.json`。

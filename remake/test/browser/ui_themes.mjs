@@ -36,17 +36,26 @@ await suite("ui-themes-preview", async check => {
           const text = el.getBoundingClientRect();
           const box = el.closest(".vn-box").getBoundingClientRect();
           const next = document.querySelector(".vn-next").getBoundingClientRect();
-          const name = document.querySelector(".vn-name").getBoundingClientRect();
+          const nameEl = document.querySelector(".vn-name");
+          const name = nameEl.getBoundingClientRect();
+          const nameRange = document.createRange(); nameRange.selectNodeContents(nameEl);
+          const nameGlyph = nameRange.getBoundingClientRect();
           const scale = box.width / 1216;
           const overlaps = (a,b) => a.right>b.left && a.left<b.right && a.bottom>b.top && a.top<b.bottom;
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
             footerClear:next.bottom<=box.bottom-39*scale,
+            nameAligned:Math.abs(nameGlyph.left-text.left)<=.5,
+            nameInFrame:name.top>=box.top-4*scale && name.bottom<=text.top-2*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
             toolbarAbove:controls.bottom<=box.top-10*scale && controls.left>box.left+box.width/2,
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
         });
         assert.equal(twoLines.count,2,"two full lines render in every theme");
+        if(id==="smoke" || id==="smoke-purple") {
+          assert(twoLines.nameAligned,"smoke name glyphs align with the main text left edge");
+          assert(twoLines.nameInFrame,"smoke name stays connected to the upper text panel instead of floating outside it");
+        }
         assert(twoLines.contained,"both lines fit inside the text area");
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
@@ -143,3 +152,42 @@ await suite("ui-themes-config",async check=>{
     assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"smoke","unknown skin safely uses the default");
   });
 });
+
+
+await suite("blue-window-character-preview",async check=>{
+  for(const viewport of [{width:1280,height:768},{width:844,height:438}]) {
+    await check(String(viewport.width),async page=>{
+      await page.locator(".vn-next.show").waitFor();
+      const saved=await storageSnapshot(page);
+      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"heisei-blue");
+      for(const [id,name] of [["minto","みんと"],["ageha","あげは"],["tsumugi","つむぎ"],["hiyori","ひより"]]) {
+        await page.selectOption("#preview-character",id);
+        await page.locator(".vn-next.show").waitFor();
+        await page.evaluate(()=>document.fonts.ready);
+        assert.equal(await page.locator(".vn-name").textContent(),name);
+        const rendered=await page.evaluate(()=>{
+          const text=document.querySelector(".vn-text"),name=document.querySelector(".vn-name"),sprite=document.querySelector("img.portrait");
+          const rect=sel=>document.querySelector(sel).getBoundingClientRect();
+          const range=document.createRange();range.selectNodeContents(text);
+          const rows=[...range.getClientRects()].filter(r=>r.width>0);
+          const ctl=rect(".vn-controls"),next=rect(".vn-next"),label=name.getBoundingClientRect();
+          const overlap=(a,b)=>a.right>b.left&&a.left<b.right&&a.bottom>b.top&&a.top<b.bottom;
+          return {lines:new Set(rows.map(r=>Math.round(r.top))).size,
+            clear:rows.every(r=>!overlap(r,ctl)&&!overlap(r,next)&&!overlap(r,label)),
+            portrait:sprite.complete&&sprite.naturalWidth>0?new URL(sprite.src).pathname:null,
+            font:getComputedStyle(text).fontFamily};
+        });
+        assert.equal(rendered.lines,2);
+        assert(rendered.clear,"blue preview text is clear of name, controls and next indicator");
+        assert(rendered.portrait?.includes("/"+id+"/"),"use the official character sprite");
+        assert(rendered.font.includes("Suien Blue Mincho"));
+      }
+      assert.deepEqual(await storageSnapshot(page),saved,"character comparison never writes saves/config");
+      await page.selectOption("#preview-theme","smoke");
+      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"smoke");
+      await page.selectOption("#preview-theme","heisei-blue");
+      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"heisei-blue","blue theme is selectable from the dropdown after leaving it");
+      assert.deepEqual(await storageSnapshot(page),saved);
+    },{viewport});
+  }
+},{entry:new URL("conversation-preview.html?theme=heisei-blue&character=minto",baseURL).href,readySelector:".vn-box"});
