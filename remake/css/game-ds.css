@@ -194,7 +194,7 @@ body.game-ds .map .spot-pin .ico > :is(img, .pin-symbol) { width: 34px; height: 
 body.game-ds .map .spot-pin .ico > .store-logo { zoom: .46; flex: none; }
 body.game-ds .map .spot-pin:not(.facility-location) .ico > :is(.facility-icon, .map-facility-icon) { zoom: .34; flex: none; }
 /* 施設アイコンは facility-icons.css のDS寸法（56px・印は絵の縁）をそのまま使う。 */
-body.game-ds .map .spot-pin.facility-location .shield { width: 64px !important; height: 64px !important; padding: 4px !important; zoom: .65625; }
+body.game-ds .map .spot-pin.facility-location .shield { width: 64px !important; height: 64px !important; padding: 4px !important; zoom: .65625; background: transparent; }
 body.game-ds .map .spot-pin.facility-location .ico { overflow: visible; }
 body.game-ds .map .spot-pin .sub-label {
   position: static; transform: none; margin: 0; padding: 0; min-height: 0; display: block; text-align: left;
