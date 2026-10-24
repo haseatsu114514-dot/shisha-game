@@ -248,8 +248,9 @@ export async function visitChar(charId, { welcome = null } = {}) {
     await playQuestionVisit(charId, { bg });
     gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
-    state.story[charId] = idx + 1;
     await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
+    if (state !== owner || cancelled) return false;
+    state.story[charId] = idx + 1;
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
   } else if (finaleAtVisit(charId)) {

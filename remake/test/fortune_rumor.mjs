@@ -173,7 +173,7 @@ await check("public customer abort during rumor never completes; retry can compl
 await check("missing or cancelled host conversation cannot unlock the rumor", async () => {
   for(const outcome of ["host-missing","host-cancel"]){fresh();mode=outcome;
     assert.equal(await tonari.tonariCustomer(),false);assert.equal(core.state.flags[key],undefined);
-    assert(!trace.includes(rumor.FORTUNE_RUMOR_SCENE));}
+    assert(!trace.includes(rumor.FORTUNE_RUMOR_SCENE));assert.equal(core.state.story.tsumugi||0,0,"Incomplete first host conversation stays unread");}
 });
 await check("obsolete LIME is not newly delivered and requested scene is retained exactly", () => {
   const lime=JSON.parse(fs.readFileSync(new URL("../../data/lime_messages.json",import.meta.url)));
