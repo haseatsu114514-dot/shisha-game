@@ -62,6 +62,8 @@ await suite('craft-layout-703', async check => {
     ['portrait-ds',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},'ds'],
   ]) {
     await check(`layout-${name}`,async page=>{
+      if(options.hasTouch)await test(page,'title-layout-settings').tap();
+      else await test(page,'title-layout-settings').click();
       await test(page,`title-layout-${layout}`).click();await init(page,'drill');await run(page,'mix');
       await overlap(page);
       for(let i=0;i<9;i++)await test(page,'mix-plus-double_apple').click();
