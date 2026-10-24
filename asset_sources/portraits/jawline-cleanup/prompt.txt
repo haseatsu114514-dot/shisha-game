@@ -1,0 +1,7 @@
+Status: REJECTED after user visual review; not an approved correction.
+Tool: standard image_gen (2026-10-24).
+Inputs: existing ageha sad / minto normal sprites, crop (400,280,580,450), resized to 720x680 for editing. One independent call per character, transparent_background=true.
+
+Edit this exact existing game sprite crop with extremely minimal local retouching. Output same crop, same aspect ratio and exact alignment. Only fix the ugly dark brown/black doubled outline with pale rim along the bottom of the cheek and chin, just above the shaded neck. Replace that overemphasized jaw contour with a delicate thin warm skin-brown transition between the face skin and neck shadow; keep the exact jaw shape and retain natural neck shadow. Do NOT remove or modify the black choker with gold ring/buckle BELOW the neck, the necklace, hair, hand, mouth, eyes, expression, face features, proportions, or colors. No redesign, no beautification, no new details, no smoothing of whole image, no changing expression. Keep every other part unchanged and preserve transparency. This is surgical cleanup of the jaw contour only.
+
+Full generated crops and masks are retained only to document the rejected experiment. apply.py requires an explicit output directory and cannot write into game assets.

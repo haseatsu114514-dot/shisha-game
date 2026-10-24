@@ -1,0 +1,32 @@
+{
+  "tool": "standard image_gen",
+  "status": "sad_v1_applied_local_unpublished",
+  "source": "sad-v1-source.png",
+  "sha256": "c1a9d42efc7d2ff2840bae577f15f0d1434635bc70fe7ab9a0d825221e15db0e",
+  "prompt": "sad-v1-prompt.txt",
+  "size": [
+    1084,
+    1451
+  ],
+  "visible_bbox": [
+    313,
+    17,
+    842,
+    1407
+  ],
+  "visible_height": 1390,
+  "processing": "uniform downscale and placement then -4px feet alignment; no face compositing",
+  "references": [
+    {
+      "path": "asset_sources/portraits/jawline-cleanup/ageha-sad-before.png",
+      "role": "identity, sad expression, pose and costume",
+      "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "identity and fine detailed art style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "limitations": "Drawing/shading smoother, eyes and cheeks slightly rounder. User has not yet reviewed final sad v1."
+}

@@ -1,0 +1,290 @@
+[
+  {
+    "id": "minto-smile-v1",
+    "tool": "standard image_gen",
+    "source": "minto-smile-v1-source.png",
+    "source_sha256": "2d87381afacb87b357598ce33454075d7040a5b228917a363654d9c7ed9528b7",
+    "prompt": "minto-smile-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/minto-eye-jaw-review/normal-v4-source.png",
+        "sha256": "0fb72a63db9506e7c431d00c7652c3fd6739d7a15e97807951f4eed73448ef86",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+        "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-by-owner",
+    "review_note": "正面化により元の顔向きと表情が変わりすぎたため不採用。ゲームはprevious/の元画像へ戻した。"
+  },
+  {
+    "id": "ageha-normal-v1",
+    "tool": "standard image_gen",
+    "source": "ageha-normal-v1-source.png",
+    "source_sha256": "dcf256aff5935ad4ba103119771dbdcc2f6a95da08ec8411bad37b5768b51723",
+    "prompt": "ageha-normal-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_normal.png",
+        "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/ageha-jaw-review/sad-v1-source.png",
+        "sha256": "c1a9d42efc7d2ff2840bae577f15f0d1434635bc70fe7ab9a0d825221e15db0e",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+        "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "applied-local"
+  },
+  {
+    "id": "ageha-serious-v1",
+    "tool": "standard image_gen",
+    "source": "ageha-serious-v1-source.png",
+    "source_sha256": "b2e4167ef5c6badf39245dcb03c83afc8f19855ddae961abb3ae7f6b26247445",
+    "prompt": "ageha-serious-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_serious.png",
+        "sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/ageha-normal-v1-source.png",
+        "sha256": "dcf256aff5935ad4ba103119771dbdcc2f6a95da08ec8411bad37b5768b51723",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/ageha-jaw-review/sad-v1-source.png",
+        "sha256": "c1a9d42efc7d2ff2840bae577f15f0d1434635bc70fe7ab9a0d825221e15db0e",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "applied-local"
+  },
+  {
+    "id": "ageha-smile-v1",
+    "tool": "standard image_gen",
+    "source": "ageha-smile-v1-source.png",
+    "source_sha256": "da53d34184a244d23e7a67a63c044426229ea9c0731781a6b140eb22cf61f072",
+    "prompt": "ageha-smile-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_smile.png",
+        "sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/ageha-normal-v1-source.png",
+        "sha256": "dcf256aff5935ad4ba103119771dbdcc2f6a95da08ec8411bad37b5768b51723",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/ageha-jaw-review/sad-v1-source.png",
+        "sha256": "c1a9d42efc7d2ff2840bae577f15f0d1434635bc70fe7ab9a0d825221e15db0e",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "applied-local"
+  },
+  {
+    "id": "ageha-surprise-v1",
+    "tool": "standard image_gen",
+    "source": "ageha-surprise-v1-source.png",
+    "source_sha256": "1574db73f4202dc5458603817ba0e409f382eb58ba69bd3215329a7c19cb6383",
+    "prompt": "ageha-surprise-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_surprise.png",
+        "sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/ageha-normal-v1-source.png",
+        "sha256": "dcf256aff5935ad4ba103119771dbdcc2f6a95da08ec8411bad37b5768b51723",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/ageha-jaw-review/sad-v1-source.png",
+        "sha256": "c1a9d42efc7d2ff2840bae577f15f0d1434635bc70fe7ab9a0d825221e15db0e",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "applied-local"
+  },
+  {
+    "id": "mashiro-normal-v1",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v1-source.png",
+    "source_sha256": "58a2f68324f96afd8f88bdddf186bfce307e82c4e55efcb4c5897962f35eb949",
+    "prompt": "mashiro-normal-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
+        "sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_serious.png",
+        "sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+        "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-normal-v2",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v2-source.png",
+    "source_sha256": "417d28b8202bf3f9835f7ef0ba1718e133a5ebbf7adbb112345636db8a555d56",
+    "prompt": "mashiro-normal-v2-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/mashiro-normal-v1-source.png",
+        "sha256": "58a2f68324f96afd8f88bdddf186bfce307e82c4e55efcb4c5897962f35eb949",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
+        "sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_serious.png",
+        "sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-normal-v3",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v3-source.png",
+    "source_sha256": "0ec87a12f813ae31d3fa17d161d1f98b52cd06736c676f20ca8f004d8371a828",
+    "prompt": "mashiro-normal-v3-prompt.txt",
+    "references": [
+      {
+        "path": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+        "sha256": "ddf6be2cad76f9f12959a70ac723c5e9cc1ca55c2c6ef6cf86839ea87c85b101",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
+        "sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/ageha-normal-v1-source.png",
+        "sha256": "dcf256aff5935ad4ba103119771dbdcc2f6a95da08ec8411bad37b5768b51723",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-normal-v4",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v4-source.png",
+    "source_sha256": "b82a8441b2e65f57c7d524d79ca30d8de1db25bb302f06d7c5fd1a29ede797e7",
+    "prompt": "mashiro-normal-v4-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
+        "sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/mashiro-normal-v3-source.png",
+        "sha256": "0ec87a12f813ae31d3fa17d161d1f98b52cd06736c676f20ca8f004d8371a828",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-normal-v5",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v5-source.png",
+    "source_sha256": "5aca466783b20993a435eb86b8295e023262b4d6a93294d1b8410576f42ea1d0",
+    "prompt": "mashiro-normal-v5-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/mashiro-normal-v4-source.png",
+        "sha256": "b82a8441b2e65f57c7d524d79ca30d8de1db25bb302f06d7c5fd1a29ede797e7",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-normal-v6",
+    "tool": "standard image_gen",
+    "source": "mashiro-normal-v6-source.png",
+    "source_sha256": "a2d41f207007cfa37ca5a709fb23f1b6fbed21559bf4fc14a68c1bfcdca451f8",
+    "prompt": "mashiro-normal-v6-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/mashiro-normal-v5-source.png",
+        "sha256": "5aca466783b20993a435eb86b8295e023262b4d6a93294d1b8410576f42ea1d0",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  },
+  {
+    "id": "mashiro-serious-v1",
+    "tool": "standard image_gen",
+    "source": "mashiro-serious-v1-source.png",
+    "source_sha256": "85451b9140232a1664f0c3715a365f64e28f728664b1f50119571f3d7f484117",
+    "prompt": "mashiro-serious-v1-prompt.txt",
+    "references": [
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/mashiro-normal-v3-source.png",
+        "sha256": "0ec87a12f813ae31d3fa17d161d1f98b52cd06736c676f20ca8f004d8371a828",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_serious.png",
+        "sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+        "role": "See saved prompt; reference order preserved"
+      },
+      {
+        "path": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+        "sha256": "ddf6be2cad76f9f12959a70ac723c5e9cc1ca55c2c6ef6cf86839ea87c85b101",
+        "role": "See saved prompt; reference order preserved"
+      }
+    ],
+    "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
+    "status": "rejected-not-applied"
+  }
+]
