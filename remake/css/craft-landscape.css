@@ -60,7 +60,7 @@
   body:not(.game-ds) .bench[data-step="mix"] .fr-g { grid-row: 2; grid-column: 3; font-size: calc(16px / var(--k, 1)); }
   body:not(.game-ds) .bench[data-step="mix"] .fr-ratio { font-size: var(--landscape-text); min-height: 1.45em; }
   body:not(.game-ds) .bench[data-step="mix"] .mix-taste-tags span { font-size: var(--landscape-text); }
-  body:not(.game-ds) .bench[data-step="mix"] .mix-side :is(.recipe-line,.mix-hint) { font-size: var(--landscape-text); line-height: 1.45; }
+  body:not(.game-ds) .bench[data-step="mix"] :is(.mix-side .recipe-line,.mix-list .mix-hint) { font-size: var(--landscape-text); line-height: 1.45; }
   body:not(.game-ds) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .opt-badge { font-size: var(--landscape-text); line-height: 1.45; }
   body:not(.game-ds) .bench[data-step="mix"] .mix-footer > .btn { min-height: var(--landscape-target); font-size: calc(16px / var(--k, 1)); padding: 12px; }
   body:not(.game-ds) .bench[data-step="mix"] .mix-footer :is(.lcd,.reg-line) { font-size: var(--landscape-text); line-height: 1.45; }

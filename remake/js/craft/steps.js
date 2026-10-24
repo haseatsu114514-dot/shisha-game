@@ -297,9 +297,13 @@ export async function stepMix(cs) {
     : null;
 
   panel.append(el("div.mix", [
-    el("div.mix-side", [vessel, taste, recipeLine,
-      hint ? el("div.mix-hint", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null]),
-    el("div.mix-list", [el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }), ...rows.map((r) => r.row)]),
+    el("div.mix-side", [vessel, taste, recipeLine]),
+    // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
+    // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
+    el("div.mix-list", [el("div.mix-list-head", [
+      el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
+      hint ? el("div.mix-hint", { dataset: { test: "mix-hint" }, text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null,
+    ]), ...rows.map((r) => r.row)]),
     temperaturePreview,
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
   ]));

@@ -181,7 +181,8 @@
 
 /* 配合: 葉と器、香りの返事を中心に置く。 */
 .mix { display: grid; grid-template-columns: 300px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 18px 24px; height: 100%; }
-.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; }
+.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; overflow-y: auto; }
+.mix-side > * { flex: none; }
 .mix-vessel { position: relative; flex: none; width: 300px; height: 332px; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #d5a26012, transparent 70%); }
 .mix-vessel-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
 .mix-vessel-art > .art { flex: none; }
@@ -192,6 +193,7 @@
 .mix-taste-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .mix-taste-tags span { padding: 3px 9px; border: 1px solid #c4ab7a44; border-radius: 20px; font-size: 12px; color: #d0bda0; }
 .mix-list { min-width: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
+.mix-list-head { flex: none; display: grid; gap: 6px; }
 .mix-list-caption { margin: 8px 0 2px; font-size: 16px; letter-spacing: .08em; color: #d3c2a8; }
 .flavor-row { display: flex; align-items: center; gap: 8px; padding: 12px; min-height: 76px; background: linear-gradient(120deg, #a2815520, #ffffff04); border: 1px solid #ae906c38; border-radius: 10px; }
 .fr-package { flex: none; grid-area: 1 / 1; width: 54px; height: 64px; display: grid; place-items: center; }
@@ -221,7 +223,7 @@
 .reg-line { font-size: 12px; color: #ff9b9b; line-height: 1.5; }
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
-.mix-hint { font-size: 12px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 1px solid #afc7d244; }
+.mix-hint { font-size: 14px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 2px solid #afc7d266; background: #afc7d20d; }
 .mix-temperature-preview { min-width: 0; display: grid; gap: 5px; font-size: 13px; color: var(--text-dim); }
 .mix-temperature-legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .mix-thermal-scale { position: relative; height: 22px; overflow: hidden; background: #55515d; border: 1px solid #eadbc2; border-radius: 4px; }
