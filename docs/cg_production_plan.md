@@ -31,7 +31,7 @@
 | 12 | `cg_ageha_epilogue` | 結 | epilogue_ageha | ホテル最上階ラウンジ、ドレスで振り返る |
 | 13 | `cg_mashiro_epilogue` | 結 | epilogue_mashiro | 膝の上で「充電」。煙がゆっくり天井へ |
 | 14 | `cg_shuraba` | 結 | ending_shuraba | ギャグスチル。無言で隣の席をアピールする4人の圧と、固まるはじめ視点 |
-| 15 | `cg_ch2_ageha_purikura` | ch2 | remake_ch2_ageha_gyaru のプリクラ（`motions/purikura.js`。無い間は立ち絵で代用） | プリクラの3枚目そのものの写真（1200x900・4:3）。寄って笑うあげはと、驚くはじめの胸から上。文字・落書き・スタンプ・枠は焼き込まない（コードが描く）。#939 |
+| 15 | `cg_ageha_first_purikura` | ch2 | remake_ch2_ageha_gyaru のプリクラ（`motions/purikura.js` の最後に出てくるシール） | #921 で作った4コマのシール（960x1440・ギャル文字と落書き入り）。演出では真ん中で左右に切って見せる。撮影から落書きまでは立ち絵で写す（2026-10-24 オーナー決定・#939）。無い環境では立ち絵の2×2で代用 |
 
 ## 生成プロンプト案（image-to-image、立ち絵参照前提・英語）
 
@@ -46,15 +46,7 @@
 6-9 confession — 各立ち絵参照＋`blushing, teary eyes, night street / lounge background, emotional close-up`
 10-14 epilogue/shuraba — 上表の構図メモ参照
 
-15. cg_ch2_ageha_purikura（#939。参照画像に `assets/sprites/characters/ageha/chr_ageha_smile.png`・`assets/sprites/characters/hajime/chr_hajime_surprise.png`・`chr_hajime_normal.png` を添付。主人公の顔はこのプリクラだけ写す）
-
-```
-Create one game CG image. Save as assets/cgs/cg_ch2_ageha_purikura.png, 1200x900 pixels (4:3 landscape), opaque, no transparency.
-Style: fine pixel-painterly game rendering that matches the attached approved character sprites exactly (same faces, hair, outfits, line quality and colors). The image itself is a Japanese purikura (photo-sticker booth) photo: bright soft studio flash, slightly overexposed, smooth glowing skin and a gentle pink-white beauty-filter feel, but keep the approved faces and eye sizes from the sprites (no enlarged anime eyes, no heavy makeup, no glossy lips).
-Scene: the third shot inside the booth, waist-up two-shot facing the camera at eye level. Left: Hajime, the same approved 22-year-old young man as chr_hajime_surprise.png (black cap with small emblem, short black hair, black zip hoodie over a black t-shirt, silver tag necklace), surprised and a little flustered, eyes wide, mouth slightly open, one hand near his chest. Right: Ageha, the same approved 22-year-old woman as chr_ageha_smile.png (honey-blonde twin ponytails with pink and cream bear hair clips, leopard jacket over a pink crop top, black choker, gold heart necklace), leaning in close toward Hajime with the joyful closed-eye smile, making a peace sign near her cheek. Hajime's head around 32% from the left and 36% from the top; Ageha's head around 62% from the left and 40% from the top; keep empty margin along the top edge and the four corners for doodles the game draws later.
-Background: plain soft pink-to-white booth backdrop with a few blurred round light bokeh dots, nothing else.
-Do not draw any text, letters, numbers, logos, shop names, stamps, doodles, hearts, stars, frames, borders, UI or watermarks (the game draws all doodles and frames in code). No shisha pipe, hose or coals in the frame. No other people.
-```
+15. cg_ageha_first_purikura — #921 で生成・採用済み（原画とプロンプトは #921 の `asset_sources/ch2-city-issue921/`）。#939 では新しく生成しない
 
 ## 運用メモ
 

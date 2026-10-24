@@ -63,7 +63,6 @@
   position: absolute; inset: 0; mix-blend-mode: screen;
   background: radial-gradient(ellipse at 50% 38%, #ffffff8c, #ffd0e655 50%, transparent 78%);
 }
-.mo-pk-cg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .mo-pk-ink { position: absolute; left: 0; top: 0; width: 640px; height: 480px; border-radius: 18px; }
 .mo-pk-word { font-family: var(--font); font-weight: 900; letter-spacing: 0.04em; }
 .mo-pk-pop { transform-box: fill-box; transform-origin: center; }
@@ -105,7 +104,7 @@
 }
 .mo-pk-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 7; pointer-events: none; }
 /* 印刷したシールと半分こ */
-.mo-pk-sheet { position: absolute; left: 373px; top: 120px; width: 534px; height: 480px; }
+.mo-pk-sheet { position: absolute; } /* 位置と大きさは purikura.js の SHEET */
 .mo-pk-half {
   position: absolute; top: 0; width: 267px; height: 480px; padding: 20px 7px 0 20px; background: #fff;
   display: flex; flex-direction: column; gap: 14px; box-shadow: 0 16px 34px #5a0f3a66;
@@ -119,10 +118,15 @@
 }
 .mo-pk-half.left::after { border-radius: 0 0 0 14px; }
 .mo-pk-half.right::after { border-radius: 0 0 14px 0; }
-.mo-pk-cutline { position: absolute; left: 266px; top: 10px; bottom: 10px; border-left: 3px dashed var(--pk-hot); opacity: 0; transform-origin: top; z-index: 2; }
+/* #921 の4コマのシール（CG）。1枚の絵を左右半分ずつ見せる */
+.mo-pk-half.cg { width: 50%; height: 100%; padding: 0; background-size: 200% 100%; background-repeat: no-repeat; }
+.mo-pk-half.cg.left { left: 0; background-position: 0 0; border-radius: 10px 0 0 10px; }
+.mo-pk-half.cg.right { left: 50%; background-position: 100% 0; border-radius: 0 10px 10px 0; }
+.mo-pk-half.cg::after { content: none; }
+.mo-pk-cutline { position: absolute; top: 10px; bottom: 10px; border-left: 3px dashed var(--pk-hot); opacity: 0; transform-origin: top; z-index: 2; }
 .mo-pk-shine {
   position: absolute; inset: 0; opacity: 0; z-index: 2; border-radius: 14px; pointer-events: none;
   background: linear-gradient(105deg, transparent 38%, #ffffffb0 47%, #ffffff40 52%, transparent 60%) no-repeat; background-size: 260% 100%; background-position: 130% 0;
 }
-.mo-pk-scissors { position: absolute; left: 237px; top: -30px; width: 60px; height: 80px; opacity: 0; z-index: 3; overflow: visible; filter: drop-shadow(0 4px 6px #0005); }
+.mo-pk-scissors { position: absolute; top: -30px; width: 60px; height: 80px; opacity: 0; z-index: 3; overflow: visible; filter: drop-shadow(0 4px 6px #0005); }
 .mo-pk-blade { transform-box: view-box; transform-origin: 30px 40px; }
