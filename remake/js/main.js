@@ -131,6 +131,15 @@ window.__remake = {
         const scene = DB.dialogues.ch1_minto_first;
         return play({ dialogue_id: "dev_cheki", metadata: {}, lines: scene.branches.cheki_taken }, { bg: bgRef("peppermint") });
       }
+      // LIME交換: lime（なる）／lime-adam／lime-minto-private（栞の私用アカウント）
+      if (name.startsWith("lime")) {
+        const [, id = "naru", context = null] = name.split("-");
+        state.contacts = ["sumi", "tsumugi", "minto", "adam", "naru"].filter((c) => c !== id || context === "private");
+        if (context === "private") Object.assign(state.flags, { _minto_name_known: true, _lime_exchange_shown_minto_private: true });
+        state.flags[`_lime_contact_${id}`] = true;
+        await setBg(bgUrl("bg_tonari_inside", "night"));
+        return motions.limeExchange(id, context);
+      }
       if (name === "tarot") {
         state.fortune = { char: "tsumugi" };
         return play("remake_fortune_result", { bg: bgRef("bg_street") });
