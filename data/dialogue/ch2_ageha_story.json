@@ -889,6 +889,39 @@
           "text": "煙が落ち着くと、店員は深く頭を下げた。神崎さんは「いい手だ」とだけ言って席へ戻った。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが席へ戻りかけて、客席の奥を見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背の高い外国人の男が、一人で座っていた。台には手をつけず、小さな手帳に何か書いている。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……ありゃ、人を見る訓練を受けた目だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が合いかけた瞬間、男は手帳を閉じて席を立った。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "volk"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_scout_seen"
+        },
+        {
           "type": "choice",
           "id": "ch2_tasting_turn",
           "choices": [

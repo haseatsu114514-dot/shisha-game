@@ -10,7 +10,7 @@ const all = (scene) => [...scene.lines, ...Object.values(scene.branches || {}).f
 const text = (scene) => all(scene).map((l) => l.text || "").join("\n");
 const isolation = read("ch2_isolation"), main = read("ch2_main"), tournament = read("ch2_tournament");
 const ch3 = read("ch3_main"), prep = read("ch2_preparation"), craft = read("tournament_craft"), echoes = read("ch2_choice_echoes");
-const remake = read("remake_ch2");
+const remake = read("remake_ch2"), ageha = read("ch2_ageha_story"), ch3volk = read("ch3_volk");
 
 // DAY11: なるの店の話を画面で読ませ、その最中にスマホの採点表へ目が落ちる。省略した会話を後から叱らない
 const naru = isolation.ch2_naru_confrontation;
@@ -102,4 +102,20 @@ assert.match(heart.branches.secret.map((l) => l.text).join("\n"), /震え/);
 assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));
 assert.match(craft.tournament_craft_waiting_2.lines.map((l) => l.text).join("\n"), /あげはの目が、こっちの手元/, "制作中の小さな伏線");
 
-console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice");
+// 第3章のライバルの偵察（#929）: 名乗らない「？？？」が顔だけ見せて所々に現れる。第2章では名前・面識・会話を持たせない
+for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei, tournament.ch2_tournament_entrance]) {
+  const lines = all(scene), said = lines.filter((l) => l.speaker === "volk").map((l) => l.text);
+  assert(said.length >= 1 && said.every((t) => t === "……"), `${scene.dialogue_id}: 台詞は無言だけ`);
+  assert(!lines.some((l) => l.flag === "_met_volk" || l.type === "intro"), `${scene.dialogue_id}: 面識・紹介を付けない`);
+  assert.doesNotMatch(text(scene), /ヴォルク|鉄の煙|ロシア|Железный/, `${scene.dialogue_id}: 名前と正体を出さない`);
+  const hide = lines.findIndex((l) => l.type === "hide_portrait" && l.char_id === "volk");
+  assert(hide > lines.findIndex((l) => l.speaker === "volk"), `${scene.dialogue_id}: 去ったら立ち絵を下げる`);
+}
+for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei]) assert(scene.lines.some((l) => l.flag === "_ch2_scout_seen"));
+assert.match(text(main.ch2_pre_tournament_realisation), /うちの店にも来てた/);
+assert.match(text(ageha.remake_ch2_ageha_tasting), /人を見る訓練/);
+const meet = ch3volk.ch3_volk_first;
+assert(meet.lines.some((l) => l.flag === "_ch2_scout_seen") && meet.branches.unseen.length);
+assert.match(meet.branches.seen_in_ch2.map((l) => l.text).join("\n"), /偵察[\s\S]*軍/, "第3章で、軍で覚えた偵察だと分かる");
+
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");
