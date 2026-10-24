@@ -81,7 +81,7 @@ export function startAttempt(value, craft) {
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
     stage: "craft", step: 0, craft: copy(craft), rollback: null,
-    votes: initialVotes(), voted: 0, lastVotes: null, result: null, failure: null,
+    votes: initialVotes(), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
   value.phase = "tournament";

@@ -104,9 +104,11 @@ assert.deepEqual(result.tastingPlan, p.tastingPlan);
 // 敗北後だけ再戦し、失敗した一台の消費は元へ。以前の章と交流は保持する。
 p.stage = "defeat";
 p.failure = "low_score";
+p.defeatRead = true;
 startAttempt(value, craft);
 assert.equal(p.attempts, 2);
 assert.equal(p.voted, 0);
+assert.equal(p.defeatRead, false, "A new failed attempt must be able to read its own defeat scene");
 assert.deepEqual(resources(value), resources(before));
 assert.equal(p.history.length, 1);
 for (const key of ["tournament", "lovers", "contacts", "money", "inbox", "keepsakes", "relationshipMemories"]) {
