@@ -5,7 +5,6 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
-import { confirmAppearanceSetup } from "./browser/appearance_setup.mjs";
 
 const source = fs.readFileSync(new URL("./browser/ch1_eve.mjs", import.meta.url), "utf8");
 const callbacks = new Map();
@@ -17,7 +16,6 @@ await mod.link(name => {
     : name === "node:fs" ? { default: { mkdirSync() {} } }
     : name === "node:path" ? { default: path }
     : name === "node:url" ? { fileURLToPath }
-    : name === "./appearance_setup.mjs" ? { confirmAppearanceSetup }
     : name === "./support.mjs" ? {
       suite: async (_name, register) => register(async (name, fn) => callbacks.set(name, fn)),
       assertFits: async () => {},
@@ -30,7 +28,7 @@ await mod.link(name => {
 await mod.evaluate();
 assert.equal(callbacks.size, 1);
 
-for (const blocked of [null, "appearance", "water"]) {
+for (const blocked of [null, "water"]) {
   let stage = "choice", auto;
   const input = [], saveBoundary = new Error("reached actual save call after MIX");
   const page = {
@@ -47,18 +45,13 @@ for (const blocked of [null, "appearance", "water"]) {
     waitForTimeout: async () => { throw new Error(`blocked at ${stage}`); },
     locator: selector => ({
       isVisible: async () => selector.includes("choice-3") ? stage === "choice"
-        : selector.includes("appearance-confirm") ? stage === "appearance"
         : selector.includes("water-confirm") ? stage === "water"
         : selector.includes("mix-ok") ? stage === "mix" : false,
       count: async () => 4,
-      waitFor: async () => { assert.equal(stage, "appearance"); },
       scrollIntoViewIfNeeded: async () => {},
       click: async () => {
-        if (selector.includes("choice-0")) stage = "appearance";
-        else if (selector.includes("appearance-confirm")) {
-          assert.equal(stage, "appearance"); input.push("appearance");
-          if (blocked !== "appearance") stage = "water";
-        } else if (selector.includes("water-confirm")) {
+        if (selector.includes("choice-0")) stage = "water";
+        else if (selector.includes("water-confirm")) {
           assert.equal(stage, "water"); input.push("water");
           if (blocked !== "water") stage = "mix";
         } else throw new Error(`Unexpected input: ${selector}`);
@@ -69,7 +62,7 @@ for (const blocked of [null, "appearance", "water"]) {
   if (blocked) await assert.rejects(run, new RegExp(`blocked at ${blocked}`));
   else await assert.rejects(run, error => error === saveBoundary);
   assert.equal(auto, null, "manual SAVE path must remain manual");
-  assert.deepEqual(input, blocked === "appearance" ? ["appearance"] : ["appearance", "water"]);
+  assert.deepEqual(input, ["water"], "appearance no longer blocks ordinary practice");
 }
-console.log("PASS: actual eve manual SAVE callback confirms appearance then water before MIX/save boundary");
-console.log("PASS: pending appearance/water confirmation still blocks; manual auto:null preserved");
+console.log("PASS: actual eve manual SAVE callback confirms water (no appearance step) before MIX/save boundary");
+console.log("PASS: pending water confirmation still blocks; manual auto:null preserved");

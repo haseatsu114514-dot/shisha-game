@@ -26,11 +26,11 @@ await home.link(name => {
 await home.evaluate();
 
 function fakePage({ touch, waterError = null } = {}) {
-  let phase = "appearance", observedAuto, mixWaits = 0;
+  let phase = "water", observedAuto, mixWaits = 0;
   const calls = [];
   const reachedMix = new Error("verified MIX boundary");
   const act = (selector, method) => {
-    if (selector.includes("appearance-confirm")) { assert.equal(phase, "appearance"); phase = "water"; calls.push(`appearance:${method}`); }
+    if (selector.includes("appearance-confirm")) assert.fail("appearance must not be confirmed in ordinary setup");
     if (selector.includes("water-confirm")) { assert.equal(phase, "water"); phase = "mix"; calls.push(`water:${method}`); }
   };
   return {
@@ -39,19 +39,21 @@ function fakePage({ touch, waterError = null } = {}) {
     evaluate: async (_fn, args) => { if (args && Object.hasOwn(args, "auto")) observedAuto = args.auto; return true; },
     reload: async () => {}, waitForTimeout: async () => {},
     locator: selector => ({
+      first() { return this; },
+      count: async () => 0,
       waitFor: async options => {
-        if (selector.includes("appearance-confirm")) { assert.equal(phase, "appearance"); assert.deepEqual(options, { state: "visible" }); }
+        assert(!/appearance-confirm/.test(selector), "appearance must not be awaited");
         if (selector.includes("water-confirm")) {
+          // Also the setup-continuation wait ("water-confirm, mix-ok").
           assert.equal(phase, "water"); assert.deepEqual(options, { state: "visible" });
           if (waterError) throw waterError;
-        }
-        if (selector.includes("mix-ok")) { mixWaits++; assert.equal(phase, "mix", "MIX wait must follow native water confirmation"); throw reachedMix; }
+        } else if (selector.includes("mix-ok")) { mixWaits++; assert.equal(phase, "mix", "MIX wait must follow native water confirmation"); throw reachedMix; }
       },
       scrollIntoViewIfNeeded: async () => {},
       click: async () => act(selector, "click"),
       tap: async () => act(selector, "tap"),
     }),
-    expected: [`appearance:${touch ? "tap" : "click"}`, `water:${touch ? "tap" : "click"}`],
+    expected: [`water:${touch ? "tap" : "click"}`],
   };
 }
 let cases = 0;
@@ -88,7 +90,7 @@ for (const device of packing.namespace.devices) await reachesMix(`packing ${devi
 for (const [name, run] of [["shop", p => tests.get("store-leaves-without-own-stock").fn(p)], ["packing", p => packing.namespace.setup(p, { touch: false })]]) {
   const error = new Error("missing water confirmation"); const page = fakePage({ waterError: error });
   await assert.rejects(run(page), actual => actual === error);
-  assert.deepEqual(page.calls, ["appearance:click"]); assert.equal(page.mixWaits, 0);
+  assert.deepEqual(page.calls, []); assert.equal(page.mixWaits, 0);
   console.log(`PASS ${name} propagates water failure before MIX`); cases++;
 }
 console.log(`${cases} scoped callsite checks passed; old water22/VM7/helper fixtures not rerun; no native browser claim.`);

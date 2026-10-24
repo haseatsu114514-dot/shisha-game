@@ -4,6 +4,7 @@ import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
+import { trainRide } from "../core/scene-motions.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -240,10 +241,17 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
               region = item; selected = null; root.dataset.region = item.id;
               onRegionChange?.(item.id);
               SE.select(); updateHud();
-              await stationArrival(trip, () => setMapBackground());
+              await trainRide(() => stationArrival(trip, async () => {
+                if (!stationActive()) return;
+                await setMapBackground();
+                if (!stationActive()) return;
+                root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
+                renderPins(); idleInfo();
+              }));
               if (!stationActive()) return;
-              root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
-              renderPins(); idleInfo();
+              // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
+              // 到着後は新しい街の上画面（HUDと地図）から見せる。
+              if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
             } finally { moving = false; }
           } });
         info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),

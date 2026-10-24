@@ -36,12 +36,13 @@ try {
     assert.equal(await page.locator(".gc-sub").textContent(), "好感度が少し上がった");
     assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
     const layer = await page.evaluate(() => {
-      const banners = document.getElementById("banners"), modal = document.getElementById("modal");
+      const banners = document.getElementById("banners"), modal = document.getElementById("modal"), wipe = document.getElementById("wipe");
       const r = banners.querySelector(".gain-card").getBoundingClientRect();
       return { front: +getComputedStyle(banners).zIndex > +getComputedStyle(modal).zIndex,
+        coveredByWipe: +getComputedStyle(wipe).zIndex > +getComputedStyle(banners).zIndex,
         pointer: getComputedStyle(banners).pointerEvents, fits: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
     });
-    assert.deepEqual(layer, { front: true, pointer: "none", fits: true });
+    assert.deepEqual(layer, { front: true, coveredByWipe: true, pointer: "none", fits: true });
     if (shots) await page.screenshot({ path: `${shots}/${label}-lime.png` });
     // カードが表示中でもLIMEを操作できる。
     await page.locator('[data-test="lime-back"]').click();

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "mashiro",
+    "tool": "image_gen.imagegen",
+    "date": "2026-10-24 JST",
+    "prompt": "mashiro-prompt.txt",
+    "source": "mashiro.png",
+    "reference_images": [],
+    "scope": "背景のみ新規生成。人物は採用PNGを変更せずブラウザで重ねる",
+    "sha256": "77144d9780399a7aaebc86cfec87e118e2b4681425f319287efff9989ad86bba"
+  },
+  {
+    "id": "volk",
+    "tool": "image_gen.imagegen",
+    "date": "2026-10-24 JST",
+    "prompt": "volk-prompt.txt",
+    "source": "volk.png",
+    "reference_images": [],
+    "scope": "背景のみ新規生成。人物は採用PNGを変更せずブラウザで重ねる",
+    "sha256": "068a1e5fc9c1ad96b2bc2e26e14546b2e9bdb65247b246e27f403a0f56623a7f"
+  }
+]

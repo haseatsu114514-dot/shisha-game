@@ -34,12 +34,14 @@ class Element {
 const screen = new Element(), storage = new Map();
 const noop = () => {}, yes = () => true;
 let backgrounds = 0, transitionRelease = null;
-const document = { hidden: false, querySelector: s => screen.querySelector(s), getElementById: () => null };
+let rides = 0;
+const document = { hidden: false, body: new Element("body"), querySelector: s => screen.querySelector(s), getElementById: () => null };
 const context = vm.createContext({ console, document, setTimeout, clearTimeout, localStorage: {
   getItem: k => storage.get(k) || null, setItem: (k, v) => storage.set(k, v),
   removeItem: () => { throw Error("existing saves must not be deleted"); },
 } });
 const mocks = {
+  "core/scene-motions.js": { trainRide: async mid => { rides++; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
   "core/ui.js": { showScreen: (_, node) => screen.replaceChildren(node), setBg: async () => { backgrounds++; if (transitionRelease) await transitionRelease.promise; },
@@ -116,7 +118,8 @@ await test("stale state, date, slot and interrupted screen rejected", () => {
 await test("map destination selection, fare confirmation, cancel and funds guard", async () => {
   fresh(); await open(); assert.equal(button("map-region-widehanga"), null); choose();
   assert.match(button("station-confirm").textContent, /200円/); button("station-cancel").click(); assert.equal(core.state.money, 1000);
-  choose(); await button("station-confirm").click(); assert.equal(core.state.money, 800); assert.equal(screen.children[0].dataset.region, "widehanga");
+  choose(); const beforeRides = rides; await button("station-confirm").click();
+  assert.equal(rides, beforeRides + 1); assert.equal(core.state.money, 800); assert.equal(screen.children[0].dataset.region, "widehanga");
   map.interruptMap("__lime__"); screen.replaceChildren(); fresh(199); await open(); choose();
   assert.equal(button("station-confirm").disabled, true); button("station-confirm").click(); assert.equal(core.state.money, 199);
   map.interruptMap("__lime__"); screen.replaceChildren();

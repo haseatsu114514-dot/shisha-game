@@ -41,12 +41,7 @@ export const SCENE_PROPS = {
     { file: "shisha_kemurikusa.png", x: 390, y: 378, h: 190, ratio: 454 / 768 },
     { file: "shisha_tonari.png", x: 180, y: 406, h: 220, ratio: 469 / 768 },
   ],
-  "bg_eden_shop.png": [
-    { file: "shisha_eden.png", x: 550, y: 428, h: 130, ratio: 522 / 768 },
-    { file: "shisha_eden.png", x: 955, y: 448, h: 170, ratio: 522 / 768 },
-    { file: "shisha_eden.png", x: 139, y: 554, h: 220, ratio: 522 / 768 },
-    { file: "shisha_eden.png", x: 1110, y: 609, h: 290, ratio: 522 / 768 },
-  ],
+  // EDENの採用背景はテーブル・展示台上のシーシャを含む。旧位置の台を重ねない。
   "bg_tonari_inside_day.png": TONARI_SCENE_PROPS,
   "bg_tonari_inside_night.png": TONARI_SCENE_PROPS,
   "peppermint.png": [

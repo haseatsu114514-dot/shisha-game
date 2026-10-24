@@ -148,7 +148,10 @@ window.__remake = {
       if (name.startsWith("train")) {
         const tone = name.split("-")[1] === "night" ? "night" : "day";
         await setBg(bgUrl("bg_tonari_inside", tone));
-        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), { tone });
+        const passenger = name.split("-").slice(1).find(id => ["samechan", "hiyori", "minto", "adam", "tsumugi"].includes(id));
+        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), {
+          ...(name.includes("halloween") ? { halloween: true } : {}), ...(passenger ? { cameo: passenger } : {}),
+        });
       }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));

@@ -342,11 +342,13 @@ async function maybeCafeIdea(spot, visit) {
 }
 
 export async function restAtHome(spot, { fullDay = false } = {}) {
+  const owner = state;
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  await play(fullDay ? "remake_rest_day" : "remake_rest");
+  const result = await play(fullDay ? "remake_rest_day" : "remake_rest");
+  if (state === owner && owner.chapter === 2 && result && !result.cancelled) owner.flags._ch2_rest_taken = true;
 }
 
 /** 好感度の段階（♥の数） */
