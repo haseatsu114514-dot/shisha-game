@@ -15,7 +15,7 @@ function winningSave() {
   Object.assign(value, { chapter: 3, phase: "tournament", day: 42, slot: 0, money: 23456,
     stamina: 41, flavorStock: { mint: 8.5, double_apple: 4 } });
   value.flags = {
-    _ch3_intro: { startDay: 29, stage: 14, titleSeen: true },
+    _ch3_intro: { startDay: 29, stage: 18, titleSeen: true },
     _ch3_tournament: { result: { rank: 1, votes: { nagumo: { hajime: 10 } } } },
     _ch3_tournament_won: true,
   };

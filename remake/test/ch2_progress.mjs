@@ -119,3 +119,4 @@ assert.equal(tokyo.chapter, 3);
 assert.equal(tokyo.phase, "tournament");
 assert.equal(tokyo.flags._ch3_cleared, undefined);
 console.log("PASS: Chapter 3 entrance preserves the save, rival visits reach DAY14, and scenes checkpoint once");
+await import("./ch3_aftermath.mjs");

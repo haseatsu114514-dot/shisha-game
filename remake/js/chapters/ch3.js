@@ -106,7 +106,7 @@ export function beginChapterThree() {
 
 export function resumeChapterThree() {
   if (state?.chapter !== 3) return false;
-  if (state.flags?._ch3_aftermath) {
+  if (state.flags?._ch3_tournament_won || state.flags?._ch3_aftermath || state.flags?._ch3_cleared) {
     import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
     return true;
   }
