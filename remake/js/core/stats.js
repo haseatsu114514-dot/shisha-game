@@ -168,7 +168,12 @@ export function affinityLevel(id) {
 export function affinityPointCap(id) {
   const stage = pendingAffinityStage(state, id, DB);
   const cap = stage && stage.level < 5 ? AFFINITY_RANK_PTS[stage.level + 1] - 1 : Infinity;
-  return Math.max(state.affinity[id] || 0, Math.min(cap, affinityGateWaiting(id) ? AFFINITY_RANK_PTS[3] : Infinity));
+  // 第1章の固定物語だけでつむぎは♥1/♥2。未読の個別会話から先へは進めない。
+  const fixedTsumugiLevel = id === "tsumugi"
+    ? state.flags._tsumugi_contest_submitted ? 2 : state.flags._tsumugi_contest_research ? 1 : 0
+    : 0;
+  return Math.max(state.affinity[id] || 0, AFFINITY_RANK_PTS[fixedTsumugiLevel],
+    Math.min(cap, affinityGateWaiting(id) ? AFFINITY_RANK_PTS[3] : Infinity));
 }
 const releasedPoints = id => (Number(state.flags[`_${id}_affinity_released_pts`]) || 0)
   + (Number(state.flags[`_${id}_affinity_stage_released_pts`]) || 0);
