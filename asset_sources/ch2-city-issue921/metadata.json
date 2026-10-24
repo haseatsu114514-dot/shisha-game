@@ -1,0 +1,175 @@
+[
+  {
+    "id": "trpg",
+    "file": "candidates/trpg.png",
+    "bytes": 2729245,
+    "sha256": "85aba60eae0b4842c0d225f287c4a447939194716f6dccc1503f0949e88b079e",
+    "status": "candidate"
+  },
+  {
+    "id": "arcade-withdrawn",
+    "file": "candidates/arcade-withdrawn.png",
+    "bytes": 2800330,
+    "sha256": "85436a371136136e1a5c55e978d52b36ba4b8aef4b17a3ec8f13da5703681105",
+    "status": "on-hold-owner-may-use-later"
+  },
+  {
+    "id": "sento",
+    "file": "candidates/sento.png",
+    "bytes": 3072460,
+    "sha256": "b746db2a1e87723abe1c79a8c92baffba5ad1ba2eae162133873cada25feda93",
+    "status": "candidate"
+  },
+  {
+    "id": "kumicho-room",
+    "file": "candidates/kumicho-room.png",
+    "bytes": 2522122,
+    "sha256": "2f160aaf8aa13530113dd8538474d2e565ca05118e67da28d07df9764462f8bd",
+    "status": "candidate"
+  },
+  {
+    "id": "shop",
+    "file": "candidates/shop.png",
+    "bytes": 2848685,
+    "sha256": "9b92c20e575e9d7db8ba6f30d280ff1c809f33e74033e9e235a8115223d73bf3",
+    "status": "candidate"
+  },
+  {
+    "id": "aquarium",
+    "file": "candidates/aquarium.png",
+    "bytes": 2972986,
+    "sha256": "3c439882e52e90d372c95e3afd69c22b067c27c867bf05eec59100b3b779c9c7",
+    "status": "candidate"
+  },
+  {
+    "id": "cutin-kumicho",
+    "file": "candidates/cutin-kumicho.png",
+    "bytes": 3257758,
+    "sha256": "1d7e7225601c2692f3044e8ce3e230c367626e53026d113b2021252cf25dd92f",
+    "status": "candidate"
+  },
+  {
+    "id": "cutin-rei",
+    "file": "candidates/cutin-rei.png",
+    "bytes": 3459823,
+    "sha256": "320e03a3ce1fb1a8ba44356c09651d9eee233b02b19ca56fa78ceba2a2a68284",
+    "status": "candidate"
+  },
+  {
+    "id": "selected-trpg",
+    "file": "selected/trpg.png",
+    "runtime": "assets/backgrounds/bg_yuzugaya_trpg.webp",
+    "bytes": 2874926,
+    "sha256": "00f6c49b56156b360af9f91e49242256a66daa1464240873f3f744ba276b3d80",
+    "status": "selected-by-assistant-owner-delegated"
+  },
+  {
+    "id": "selected-aquarium",
+    "file": "selected/aquarium.png",
+    "runtime": "assets/backgrounds/bg_yuzugaya_aquarium.webp",
+    "bytes": 2679832,
+    "sha256": "3caa176c959a3f9c3b7972b42df92872953d69543f1b269e3f1dc5b34b2eb532",
+    "status": "selected-by-assistant-owner-delegated"
+  },
+  {
+    "id": "selected-sento",
+    "file": "selected/sento.png",
+    "runtime": "assets/backgrounds/bg_yuzugaya_sento.webp",
+    "bytes": 3135167,
+    "sha256": "c222344f391fa6ef487fa234bbb08efd623416730468a970231899d7bc184889",
+    "status": "selected-by-assistant-owner-delegated"
+  },
+  {
+    "id": "selected-shop",
+    "file": "selected/shop.png",
+    "runtime": "assets/backgrounds/bg_yuzugaya_shop.webp",
+    "bytes": 2332319,
+    "sha256": "6bb0a16e89b77a95cf6669148f7718f57465224903b9f71dc54754a9a2e6ed39",
+    "status": "selected-by-assistant-owner-delegated"
+  },
+  {
+    "id": "selected-kumicho",
+    "file": "selected/kumicho.png",
+    "runtime": "assets/backgrounds/bg_yuzugaya_kumicho.webp",
+    "bytes": 2528826,
+    "sha256": "53ca49f28854f3c86cfafc9a6e49ed9506eff248fc611fe69971fb53b5412dd9",
+    "status": "selected-by-assistant-owner-delegated"
+  },
+  {
+    "id": "purikura-v1",
+    "file": "candidates/purikura-v1.png",
+    "bytes": 2815404,
+    "sha256": "ee90dfa3dce731137183d99c6c218c6b1978d5c49f02cbd765bf6e2d6014ae7c",
+    "status": "review"
+  },
+  {
+    "id": "purikura-v2",
+    "file": "candidates/purikura-v2.png",
+    "bytes": 2874242,
+    "sha256": "98e6076751ed2dcb6e16c56de85e834eca69dc887fe76ecf318a243938459550",
+    "status": "review"
+  },
+  {
+    "id": "purikura",
+    "file": "selected/purikura.png",
+    "bytes": 2964271,
+    "sha256": "7e5b9b4b69c90ed632559813127aa168a51b94adddaff4432141f6b868bc1a97",
+    "status": "selected"
+  },
+  {
+    "id": "cutin-kumicho-preview",
+    "file": "cutin-kumicho-preview.png",
+    "bytes": 1040029,
+    "sha256": "dfb761be2bd279fe207be4260a01801256ab7d0cad360349b02e0120b2711c2f",
+    "status": "review"
+  },
+  {
+    "id": "cutin-rei-preview",
+    "file": "cutin-rei-preview.png",
+    "bytes": 1035182,
+    "sha256": "92ac597d4095152a21d830bf2e2eaa0faf663fff8cda9973aa9f05124cc2c7ca",
+    "status": "review"
+  },
+  {
+    "id": "ryuji-purikura-old-design",
+    "file": "candidates/ryuji-purikura-old-design.png",
+    "bytes": 3036726,
+    "sha256": "7f9f4e92fd1582a936cb67c2d67051802bc49553ca64e4b53fcb51312d24902f",
+    "status": "superseded-old-design"
+  },
+  {
+    "id": "c-station",
+    "file": "selected/c-station.png",
+    "bytes": 2577465,
+    "sha256": "10fec44b7697fdb97b5d17b4b1d31202f090be3f8566316a6b9b9329d14f5f01",
+    "status": "selected-runtime-background"
+  },
+  {
+    "id": "ryuji-purikura",
+    "file": "selected/ryuji-purikura.png",
+    "bytes": 3010026,
+    "sha256": "8a14dc00ea9cc1e053d459147b28f85a72f164370fbfce8188ddb91775fc2845",
+    "status": "selected-runtime-latest"
+  },
+  {
+    "id": "trpg-logo",
+    "file": "selected/trpg-logo.png",
+    "bytes": 2049043,
+    "sha256": "250a3126d086002f26e97da6e3b648f65c456a4e69ada890b21f5adcfbb9fb50",
+    "status": "selected-runtime-latest"
+  },
+  {
+    "id": "aquarium-logo",
+    "file": "selected/aquarium-logo.png",
+    "bytes": 1639862,
+    "sha256": "990f3330e8e198b05e9b63660a1628f1177e384c61be39a142cee9c1bac0436b",
+    "status": "selected-runtime-logo"
+  },
+  {
+    "id": "sento-logo",
+    "file": "selected/sento-logo.png",
+    "bytes": 1363219,
+    "sha256": "a50da82fe7f0473fa5be025c85fccc9ee77ed3f70ff34c4a36e99e1c4fcc7b2d",
+    "status": "selected-runtime-logo"
+  }
+]

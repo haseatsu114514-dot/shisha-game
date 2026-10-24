@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru"]);
@@ -76,7 +77,7 @@ export function syncTrpgStock(state, catalog) {
 export function buyTrpgBook(state, catalog, id) {
   const book = catalog.scenarios.find(b => b.id === id);
   if (!book || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
-    || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || state.money < book.price) return false;
+    || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || spendableMoney(state) < book.price) return false;
   state.money -= book.price;
   state.trpg.owned.push(id);
   return true;

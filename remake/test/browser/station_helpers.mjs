@@ -41,3 +41,11 @@ export async function travelToCity(page, destination, { touch } = {}) {
   'A confirmed trip changes only the city and one fare, preserving actions and progress');
   fares.set(page, stationFares(page) + fare);
 }
+
+// 夜を柚ヶ谷で終えた時の、実際の帰宅切符も費用集計へ含める。
+export function recordReturnFare(page, before, after) {
+  if (before.flags._ch2_region === 'widehanga' && after.day > before.day) {
+    assert.equal(after.flags._ch2_region, 'home', 'Every morning starts at home');
+    fares.set(page, stationFares(page) + STATION_FARE);
+  }
+}

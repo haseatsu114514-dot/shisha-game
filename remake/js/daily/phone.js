@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // LIME（スマホ）。朝に届くメッセージ・返信の選択肢・誘い。
 // ルール: 同じ相手からは1日1話題まで（小分けの連投はOK）／連絡先を交換した相手だけ（master_spec #7/#26）
 // 朝は通知だけ出して受信箱に積み、プレイヤーが好きなときにアプリを開いて読む（オーナー指定）。
@@ -619,7 +620,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     }
     const polite = POLITE.has(m.sender);
     const cost = invitationCost(m.accept_event);
-    const affordable = state.money >= cost;
+    const affordable = spendableMoney(state) >= cost;
     const go = m.accept_text || (polite ? "行きます！" : "行く！");
     const no = st === "busy"
       ? polite ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった"

@@ -91,6 +91,7 @@ export function finishStep(value, craft) {
 export function castVotes(p, round, performance, prefByJudge = null) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
   const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
+  const lastVotes = {};
   for (const judge of JUDGES) {
     const bias = judge === "maezono" ? { ageha: 4, rei: 1 }
       : judge === "dr_kemuri" ? { kumicho: 3 } : { rei: 3 };
@@ -105,7 +106,10 @@ export function castVotes(p, round, performance, prefByJudge = null) {
     if (available < amount) throw new Error("審査員の持ち点が不足しています");
     row[order[0]] += amount - 1;
     row[order[1]]++;
+    // 表示専用（#909）。この回に誰へ何点入れたか。得点・順位の計算には使わない。
+    lastVotes[judge] = { first: order[0], second: order[1], points: { [order[0]]: amount - 1, [order[1]]: 1 } };
   }
+  p.lastVotes = lastVotes;
   p.voted++;
   p.quality = quality;
   return true;
