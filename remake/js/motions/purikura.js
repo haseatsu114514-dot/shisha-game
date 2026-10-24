@@ -2,8 +2,8 @@
 // 撮影スタート → 3連写（ふつう・笑顔・あげはが寄ってはじめがびっくり）→ 盛り → 落書き → 印刷 → ハサミで半分こ。
 // a は撮影が主役（毎回3・2・1、盛りを選ぶ）、b は落書きとシールが主役（撮影はさっと、スタンプ多め）。?movar=b で比べる。
 // 落書きで、あげはのペンの線だけがゆっくりよれ、途中でペンを置いてスタンプに持ち替える（手の震え。演出の中では誰も触れない）。
-// 撮影から落書きまでは立ち絵の胸から上で写す。最後に出てくるシールは #921 で作った4コマのCG（cg_ageha_first_purikura・落書き入り）を使い、
-// CGが無い環境では立ち絵の写真と落書きの2×2で代用する（オーナー決定 2026-10-24）。演出で足す文字は画像に焼き込まない。
+// 撮影から落書きまでは立ち絵の胸から上で写す。最後に出てくるシールは、半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）があれば2枚並べて、
+// 無ければ #921 で作った4コマのCG（cg_ageha_first_purikura）を、どちらも無ければ立ち絵の写真と落書きの2×2を使う（オーナー決定 2026-10-24）。
 // DOMの初期値は「撮り終えた画面」。動きは最初にまとめて予約し、fill で途中の見た目を作る。
 import { el, sleep } from "../core/util.js";
 import { state } from "../core/state.js";
@@ -15,8 +15,10 @@ import { MG_EASE as E } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
 export const PURIKURA_CG = "cg_ageha_first_purikura";
-// 印刷したシールの大きさ（場面の座標）。CGは縦長の4コマ（960×1440）、代用は写真の2×2
-const SHEET = { cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
+// 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
+export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
+// 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
+const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
 // 立ち絵（896×1200）を写真に置く位置（%）。はじめの頭は(205,175)、あげはの頭は(440,190)あたり
 const SPRITE = {
@@ -183,7 +185,7 @@ function doodles(extra = 0) {
 
 // ---------------------------------------------------------------- 画面
 
-function build(cg, plan) {
+function build(art, plan) {
   const glow = el("div.mo-pk-glow");
   const poses = POSES.map((p, i) => shot(p, i === 2 ? { mori: true, glow } : {}));
   const ink = doodles(plan.stamps);
@@ -204,9 +206,9 @@ function build(cg, plan) {
   const machine = el("div.mo-pk-machine", [head, view, ...thumbs, ...menu, ...tools, pick]);
   const nail = el("div.mo-pk-nail");
   // 印刷したシール。真ん中で切ると半分ずつ（CGは4コマを左右に、代用は2列×2段を1列ずつ）
-  const size = cg ? SHEET.cg : SHEET.sprites;
-  const half = (side) => (cg
-    ? el(`div.mo-pk-half.cg.${side}`, { style: { backgroundImage: `url("${cg}")` } })
+  const size = SHEET[art.kind];
+  const half = (side) => (art.url
+    ? el(`div.mo-pk-half.cg${art.kind === "strip" ? ".strip" : ""}.${side}`, { style: { backgroundImage: `url("${art.url}")` } })
     : el(`div.mo-pk-half.${side}`, [mini(finished(plan.stamps), 240, 180), mini(finished(plan.stamps), 240, 180)]));
   const left = half("left"), right = half("right");
   const cutLine = el("div.mo-pk-cutline", { style: { left: `${size.w / 2 - 1}px` } });
@@ -215,7 +217,7 @@ function build(cg, plan) {
   const bladeL = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: -11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M-6 -16 L6 36", stroke: "#cfd6e0", "stroke-width": 6, "stroke-linecap": "round" })]);
   const bladeR = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: 11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M6 -16 L-6 36", stroke: "#e9edf2", "stroke-width": 6, "stroke-linecap": "round" })]);
   const scissors = svg("svg", { class: "mo-pk-scissors", viewBox: "-30 -40 60 80", style: `left: ${size.w / 2 - 30}px` }, [bladeL, bladeR, svg("circle", { cx: 0, cy: 0, r: 3, fill: "#8a94a3" })]);
-  const sheet = el(`div.mo-pk-sheet${cg ? ".cg" : ""}`, { style: { left: `${(1280 - size.w) / 2}px`, top: `${size.top}px`, width: `${size.w}px`, height: `${size.h}px` } }, [left, right, cutLine, shine, scissors]);
+  const sheet = el(`div.mo-pk-sheet${art.url ? ".cg" : ""}`, { style: { left: `${(1280 - size.w) / 2}px`, top: `${size.top}px`, width: `${size.w}px`, height: `${size.h}px` } }, [left, right, cutLine, shine, scissors]);
   const flash = el("div.mo-pk-flash");
   const bg = el("div.mo-pk-bg");
   const twinkles = [[120, 120], [1150, 160], [90, 560], [1190, 600], [640, 40], [1000, 680]].map(([x, y]) =>
@@ -346,13 +348,14 @@ function schedule(ui, plan) {
 export async function shoot(variant = "a") {
   const owner = state;
   const plan = PLANS[variant] || PLANS.a;
-  const cg = cgUrl(PURIKURA_CG);
-  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), cg].filter(Boolean))];
+  const strip = cgUrl(PURIKURA_STRIP), sheetCg = strip ? null : cgUrl(PURIKURA_CG);
+  const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
+  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
   await Promise.all(urls.map((u) => imageReady(u, 3000)));
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
     if (state !== owner) return;
-    const ui = build(cg, plan);
+    const ui = build(art, plan);
     const scene = el("div.mo-pk-scene", { style: {
       position: "absolute", left: "50%", top: "50%", width: "1280px", height: "720px", transformOrigin: "center",
     } }, [ui.bg, ...ui.twinkles, ui.machine, ui.sheet, ui.nail, ui.flash]);

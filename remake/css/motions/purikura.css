@@ -123,6 +123,7 @@
 .mo-pk-half.cg.left { left: 0; background-position: 0 0; border-radius: 10px 0 0 10px; }
 .mo-pk-half.cg.right { left: 50%; background-position: 100% 0; border-radius: 0 10px 10px 0; }
 .mo-pk-half.cg::after { content: none; }
+.mo-pk-half.cg.strip { background-size: 100% 100%; background-position: 0 0; } /* 1列分の絵をそのまま左右に1枚ずつ */
 .mo-pk-cutline { position: absolute; top: 10px; bottom: 10px; border-left: 3px dashed var(--pk-hot); opacity: 0; transform-origin: top; z-index: 2; }
 .mo-pk-shine {
   position: absolute; inset: 0; opacity: 0; z-index: 2; border-radius: 14px; pointer-events: none;
