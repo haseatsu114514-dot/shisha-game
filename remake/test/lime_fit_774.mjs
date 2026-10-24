@@ -13,13 +13,11 @@ async function fixture(width, height, fail = false) {
     return {selector, style:{...attrs.style}, attrs, children, append(...nodes){this.children.push(...nodes);}};
   }
   const values = {
-    'util.js': {el, sleep:async()=>{}}, 'state.js':{state:{}},
-    'data.js':{displayName:()=> 'なる', faceIconUrl:()=> 'existing-face'},
+    'util.js': {el, sleep:async()=>{if(fail) throw Error('animation failure');}}, 'state.js':{state:{}},
+    'data.js':{DB:{}, displayName:()=> 'なる', faceIconUrl:()=> 'existing-face'},
     'ui.js':{imageReady:async()=>true}, 'audio.js':{SE:{phone(){phones++;}}},
-    'transition-kit.js':{svg:el,stageSvg:(children)=>el('svg',{},children),move:async(node,frames,duration)=>{
-      transforms.push(scene?.style.transform);
-      if(fail) throw Error('animation failure');
-    }},
+    'transition-kit.js':{svg:el,move:async()=>{ transforms.push(scene?.style.transform); }},
+    'mg-kit.js':{MG_EASE:{out:'out',in:'in',inOut:'inOut',back:'back'},motionVariant:()=> 'a'},
     'stage.js':{backdrop:()=>el('backdrop'),stagePlay:async(name,run)=>{
       root = el(name); root.clientWidth=width;root.clientHeight=height;
       await run(root);scene=root.children.find(n=>n.selector==='div.mo-lime-scene');
@@ -37,14 +35,14 @@ async function fixture(width, height, fail = false) {
   const run=module.namespace.exchange('naru');
   if(fail) await assert.rejects(run,/animation failure/);else await run;
   assert(disconnected,'resize observer cleanup');
-  const scale=Math.min(width/1280,height/720);
+  const scale=Math.min(width/560,height/720);
   assert.equal(transforms[0],`translate(-50%, -50%) scale(${scale})`);
-  assert.equal(scene.style.width,'1280px');assert.equal(scene.style.height,'720px');
+  assert.equal(scene.style.width,'560px');assert.equal(scene.style.height,'720px');
   assert.equal(phones,fail?0:1);
   assert.equal(root.children[0].selector,'backdrop','backdrop covers the whole stage');
   if(!fail){
     root.clientWidth=844;root.clientHeight=326;observer.callback();
-    assert.equal(scene.style.transform,`translate(-50%, -50%) scale(${326/720})`);
+    assert.equal(scene.style.transform,`translate(-50%, -50%) scale(${Math.min(844/560,326/720)})`);
   }
   return {width,height,scale,phones};
 }
