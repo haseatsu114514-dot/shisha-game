@@ -241,8 +241,9 @@ await suite("play-spots", async runCheck => {
     assert.equal(saved.slot, 2); assert.equal(saved.day, 16); assert(saved.trpg.cleared["ordinary-cup"]);
     assert.equal(saved.money, before.money - 500); assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
     await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
-    await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
-    const after = await value(page); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
+    await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
+    assert.equal(await page.locator(map).getAttribute("data-region"), "home");
+    const after = await value(page); assert.equal(after.money, before.money - 500 - 200, "One return ticket after the night table"); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
     assert(after.trpg.cleared["ordinary-cup"]);
     await manualSave(page);
     await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
@@ -284,20 +285,23 @@ await suite("play-spots", async runCheck => {
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       for (const key of ["met", "affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
       await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
-      await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
+      await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
+      assert.equal(await page.locator(map).getAttribute("data-region"), "home");
       const after = await value(page); assert.equal(after.day, 23); assert.equal(after.slot, 0);
-      assert.equal(after.money, before.money - 800); assert.equal(after.stamina, before.stamina + 14);
+      assert.equal(after.money, before.money - 800 - 200); assert.equal(after.stamina, before.stamina + 14);
       assert.deepEqual(after.trpg.cleared["shark-last-order"], saved.trpg.cleared["shark-last-order"]);
       await capture(page, label + "-cafe-return");
       await manualSave(page);
       await page.reload(); await hit(page, "title-load"); await hit(page, "slot-1"); await page.locator(map).waitFor();
       await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
       assert.deepEqual(await value(page), after);
-      await travel(page, "widehanga"); await go(page, "trpg_bar");
+      await travel(page, "widehanga");
+      const revisit = await value(page); assert.deepEqual(revisit, { ...after, money: after.money - 200 }, "Revisit charges only one outbound ticket");
+      await go(page, "trpg_bar");
       assert.equal(await page.locator(t("trpg-play-shark-last-order")).count(), 0);
       assert((await page.locator(t("trpg-memory-shark-last-order")).textContent()).length > 0);
       await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
-      assert.deepEqual(await value(page), after);
+      assert.deepEqual(await value(page), revisit);
     }, options);
   }
 
