@@ -381,6 +381,7 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
+  uiTheme: "smoke",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時

@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "character": "mukai_master",
+  "status": "new portrait candidate; not installed in production",
+  "references": [
+    {
+      "path": "asset_sources/review-candidates-20261024/assets/05-direction-A.png",
+      "ref": "origin/codex/review-images-20261024-task5",
+      "role": "earlier Mukai design"
+    }
+  ],
+  "files": [
+    {
+      "path": "asset_sources/portraits/mukai_master-remaster-v1/normal-preview.png",
+      "bytes": 340877,
+      "sha256": "671ca43d1767b0afdc06a283eb59318f92efb2cde70b88ffa219d1887dc8be60"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-remaster-v1/normal-prompt.txt",
+      "bytes": 1384,
+      "sha256": "62407ac0416fbfee049c04c163f43f72adb1134ef9d64fd7afeaf235c11d0330"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-remaster-v1/normal-source.png",
+      "bytes": 864105,
+      "sha256": "529bed4e08900c5eabf92fa34df928727851113f437c4d0c6753d168486fa525"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "raw_margin_note": "Original head/foot padding is smaller than requested; preview adds canvas padding without painting.",
+    "preview": "896x1200 RGBA; proportional resize and placement only; cat sits at pet scale, not human height",
+    "limits": [
+      "Normal pose only; expression variants not generated",
+      "No runtime manifest or face icon replacement",
+      "Fine low-alpha fringe preserved; inspect against light/dark backgrounds"
+    ]
+  }
+}

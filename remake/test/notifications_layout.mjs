@@ -91,7 +91,7 @@ try {
             return b.top >= r.top && b.bottom <= r.bottom - 19 * scale && n.scrollWidth <= n.clientWidth + 1;
           }) };
       });
-      assert.equal(geometry.height, 178);
+      assert.equal(geometry.height, 188); // 名前と操作を上辺へ出し、本文2行を収める共通会話枠
       assert(geometry.contained, JSON.stringify(geometry));
       if (geometry.inner) {
         innerPages++;

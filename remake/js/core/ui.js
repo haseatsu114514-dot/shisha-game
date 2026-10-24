@@ -10,6 +10,7 @@ import { rainScene } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
+import { uiThemeFrame } from "./ui-theme.js";
 
 export const layers = {};
 
@@ -108,7 +109,8 @@ export function warmUiArt() {
     const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls(), ...allStoreLogoUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
-  return uiArt;
+  // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
+  return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true })]);
 }
 
 /** 顔アイコンやスロットが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */

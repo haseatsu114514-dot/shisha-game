@@ -89,7 +89,18 @@ export async function assertFits(page, selector) {
         contained: r.left >= stage.left - 1 && r.top >= stage.top - 1
           && r.right <= stage.right + 1 && r.bottom <= stage.bottom + 1
           && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1,
-        textFits: node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
+        textFits: node.matches(".vn-box")
+          ? [...node.querySelectorAll(".vn-text, .vn-inner:not([hidden])")].every(part => {
+            const b = part.getBoundingClientRect();
+            return b.left >= r.left - 1 && b.right <= r.right + 1 && b.top >= r.top - 1 && b.bottom <= r.bottom + 1
+              && part.scrollWidth <= part.clientWidth + 1 && part.scrollHeight <= part.clientHeight + 1;
+          }) && [...node.querySelectorAll(".vn-name:not([hidden])")].every(part => {
+            if (!part.textContent || !part.getBoundingClientRect().width) return true;
+            const text = document.createRange(); text.selectNodeContents(part);
+            const b = text.getBoundingClientRect();
+            return b.left >= -1 && b.top >= -1 && b.right <= innerWidth + 1 && b.bottom <= innerHeight + 1;
+          })
+          : node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
     });
   });
   assert(results.length > 0, `Missing layout target: ${selector}`);

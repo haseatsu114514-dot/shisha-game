@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1248 228" preserveAspectRatio="none">
+<defs>
+ <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ce81f7"/><stop offset=".5" stop-color="#a143ce"/><stop offset="1" stop-color="#dc9aff"/></linearGradient>
+ <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17101f"/><stop offset=".6" stop-color="#100b18"/><stop offset="1" stop-color="#21102b"/></linearGradient>
+ <pattern id="dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.35" fill="#120a1b"/></pattern>
+</defs>
+<!-- 影、紫の台紙、黒い本文面。中央x100..1148/y48..188は文字のために静かにする。 -->
+<path fill="#08060d" d="M30 9 1179 19 1248 173 1199 218 90 228 4 164 34 65 0 85Z"/>
+<path fill="url(#purple)" d="M36 0 1188 28 1241 183 1189 215 83 221 9 156 49 52 10 66Z"/>
+<path fill="url(#ink)" d="M53 14 1177 38 1227 179 1184 204 130 211 28 153 65 53 26 64Z"/>
+<!-- 左端を折る面。右下は短い切り込みと長い斜線、外側に細い紙片。 -->
+<path fill="#dfaeff" d="M28 153 83 221 130 211 70 177Z"/>
+<path fill="#723095" d="M130 211 1184 204 1112 187 216 217Z"/>
+<path fill="#dd9cff" d="M1112 187 1184 204 1227 179 1195 210 1122 213Z"/>
+<path fill="#9e4ac9" d="M22 27 34 24 10 92 1 94Z"/>
+<path fill="#e5b8ff" d="M62 3 74 5 43 74 34 80Z"/>
+<!-- コラージュ状の網点。中央の字面へは重ねない。 -->
+<path fill="url(#dots)" d="M37 3 71 4 24 137 10 156 49 52 10 66Z"/>
+<path fill="url(#dots)" opacity=".65" d="M83 221 130 211 70 177 28 153Z"/>
+<path fill="#bf73e5" d="M1206 47 1224 51 1238 89 1217 81Z"/>
+<path fill="#f0d7ff" d="M1230 196 1239 191 1244 199 1235 204Z"/>
+</svg>
