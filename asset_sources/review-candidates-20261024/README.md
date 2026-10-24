@@ -420,3 +420,18 @@
 原画は新規画像としてGit LFSで保存。過去の採用素材・履歴は移行していません。新たな外部ホスティングやLibrary再送ではなく、同じshisha-gameリポジトリの候補専用保存です。新画像を採用する場合は、本人確認後に別の本編接続・対象受入を行います。
 
 [全候補の寸法・SHA256・品質記録](./candidates.json)
+
+
+## 既存の比較資料への入口
+
+画像を重複保存せず、GitHubの既存資料へつなぎます。リンク先の過去の採用・検証記録と、現在の本編への反映は別に確認してください。旧文書内の予約手順は現在の作業条件ではありません。
+
+| 資料 | 今回の扱い |
+|---|---|
+| [採用済みハンドル2点・短いチップ2点](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/shisha-hardware-reference/skin-candidates-issue374/README.md) | 原画4点は採用済み。外観選択・実装受入は #437 の別工程。 |
+| [スミ登場カットインの制作履歴](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/character-intros/sumi-coal-issue750/README.md) | 過去候補と修正経緯の参照。今回の未採用スチルとは別。全受入完了を意味しない。 |
+| [制作UIの既存実画面](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/craft-ui-20261010/README.md) | 過去の実装・画面記録。新しい16工程×3方向のAI比較48案とは別資料。新比較はローカル保存35/48の記録があり、今回のGitHub30画像には含めていない。 |
+| [90年代OVAスタディと旧タイトル試作](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/retro-ova-study-519/README.md) | 履歴。最新の「人物は元の既存デザイン、背景の90年代方向は維持」という本人方針に従う。旧キャラ案を新しい採用案とは扱わない。 |
+| [ショップ画像の既存採用・旧候補](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/shop-art-issue586/README.md) | 現行採用と旧Draftの履歴が同居。実在アマボーストを参考にする新版は未生成で、この一覧から代替採用しない。 |
+
+会話ウインドウ15案は本ページの上段にあります。Rei新3案は未生成。#947の縦長プリクラシールは制作再開待ちで、既存4コマ参照CG自体を新作として掲載しません。
