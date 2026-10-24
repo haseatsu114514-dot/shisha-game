@@ -27,6 +27,8 @@ try {
     T.core.newGame();
     T.core.state.met.minto = true;
     T.core.state.met.naru = true;
+    // #814: 初めての私的なお出かけまでに読んでいる固有会話（読まないと次のハートへ上がらない）。
+    Object.assign(T.core.state.story, { minto: 4, naru: 2 });
     T.bus.on("affinity-gain", (event) => T.events.push(event));
     T.vn.vnTest.turbo = true;
     T.vn.hooks.contextChar = "minto";
@@ -93,6 +95,7 @@ try {
     T.stats.gainAffinity("naru", 10);
     T.core.newGame(); // 別のセーブへ移る前の未表示通知を持ち越さない
     T.core.state.met.minto = true;
+    T.core.state.story.minto = 4;
     T.stats.gainAffinity("minto", 10);
   });
   await page.waitForTimeout(1000);

@@ -127,7 +127,12 @@ try {
       await confirmAppearanceSetup(p, { touch: device.touch });
       await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();
-      if (device.mode === "ds") assert.equal(await p.locator(".bench-panel").evaluate(n=>n.getBoundingClientRect().width),760,"non-pack fixed panel was shrunk");
+      // DS風の配合は下画面（触る画面）の幅に組み直す。横にはみ出さない。
+      if (device.mode === "ds") {
+        const fit = await p.evaluate(() => ({ panel: document.querySelector(".bench-panel").getBoundingClientRect().width,
+          screen: document.querySelector(".game-ds-controls").getBoundingClientRect().width }));
+        assert(fit.panel > 0 && fit.panel <= fit.screen + 1, `mix panel overflows the touch screen: ${JSON.stringify(fit)}`);
+      }
       for (let n=0;n<10;n++) await hit(p,"mix-plus-double_apple",device.touch);
       for (let n=0;n<2;n++) await hit(p,"mix-plus-mint",device.touch);
       await hit(p,"mix-ok",device.touch); await b(p,"pack-confirm").waitFor();
@@ -166,8 +171,12 @@ try {
       await hit(p,"pack-confirm",device.touch); await b(p,"hole-start").waitFor();
       assert.equal(await p.locator(".bench").getAttribute("data-step"),"holes");
       if (device.mode === "ds") {
-        assert.equal(await p.locator(".bench-panel").evaluate(n=>n.getBoundingClientRect().width),760,"following coordinate stage fixed width changed");
-        assert.equal(await b(p,"hole-preview").evaluate(n=>n.getBoundingClientRect().width),430,"foil coordinate surface was shrunk");
+        // 座標で操作する工程は760px基準の盤面を、形を保ったまま下画面の幅へ等倍率で縮める。
+        const stage = await p.evaluate(() => ({ panel: document.querySelector(".bench-panel").getBoundingClientRect().width,
+          foil: document.querySelector('[data-test="hole-preview"]').getBoundingClientRect().width,
+          screen: document.querySelector(".game-ds-controls").getBoundingClientRect().width }));
+        assert(stage.panel <= stage.screen + 1, `coordinate stage overflows the touch screen: ${JSON.stringify(stage)}`);
+        assert(Math.abs(stage.foil / stage.panel - 430 / 760) < .01, `foil surface was not scaled with its stage: ${JSON.stringify(stage)}`);
       }
       assert.deepEqual(errors,[]); result.status="passed";
     } catch (e) {
