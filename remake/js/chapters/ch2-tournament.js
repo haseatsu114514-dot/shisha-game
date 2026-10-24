@@ -4,6 +4,9 @@ import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, imageReady } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { maxStamina } from "../core/stats.js";
+import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { openPhone, openLime } from "../daily/phone.js";
 import { playBgm } from "../core/audio.js";
@@ -144,7 +147,9 @@ function renderReady(owner) {
       if (p.entry) restoreResources(state, p.entry);
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: OPEN CLOUD";
-      startAttempt(state, owner.cs); save();
+      owner.cs.retryAssist = p.retryAssist === true; // 救済は次の一台だけ（#590）
+      startAttempt(state, owner.cs);
+      applyAssistRecovery(state, p.retryAssist, maxStamina()); save();
       await drive(owner);
     }, true),
   ]);
@@ -186,9 +191,15 @@ function renderVotes(owner, final = false) {
 }
 function renderDefeat(owner) {
   const p = progress(); broadcast.clearComments();
+  // 同じ敗北の再表示では数え直さない。3敗目から第1章と同じ救済を選べる（#590）。
+  recordTournamentLoss(p); save();
   card(owner, "defeat", p.failure ? "一台を、作り直そう。" : "県代表には届かなかった。",
     p.failure ? "提供できる状態を保てませんでした。大会に持ち込んだ材料と体力から、もう一度挑戦できます。" : "同じ大会の最初から再挑戦できます。失敗した挑戦の消費は持ち越しません。", [
-      button(owner, "大会に再挑戦", "retry", async () => { checkpoint("ready"); renderReady(owner); }, true),
+      button(owner, "大会に再挑戦", "retry", async () => {
+        await chooseRetryAssist(p);
+        if (!live(owner)) return;
+        checkpoint("ready"); renderReady(owner);
+      }, true),
     ]);
 }
 function renderComplete(owner) {

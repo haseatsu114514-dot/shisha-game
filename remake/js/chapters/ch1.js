@@ -32,7 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
-import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
+import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -459,6 +459,7 @@ async function tournamentDay() {
   }
   showHud(false);
   restoreEntryResources(state);
+  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");

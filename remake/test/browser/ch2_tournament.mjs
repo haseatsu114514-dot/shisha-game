@@ -11,7 +11,7 @@ prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(()=>structuredClone(window.__remake.state));
-async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
+async function seed(page, { known = false, stage = '', auto = 'good', progress = null } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js'); const s = core.newGame();
@@ -25,6 +25,7 @@ async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
     if(opts.known) for(const who of ['ageha','kumicho','rei'])s.met[who]=true;
     for(const who of ['ageha','kumicho','rei','pakki','maezono','dr_kemuri','nagumo','hajime','sumi'])s.flags[`_intro_${who}`]=true;
     if(opts.stage) (await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s).stage=opts.stage;
+    if(opts.progress) Object.assign((await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s),opts.progress);
     Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});core.saveConfig();core.save();
     const vn=await import('./js/vn/engine.js'); (await import('./js/chapters/ch1.js')).setupHooks();
     vn.vnTest.turbo=true; vn.vnTest.choose=()=>0;
@@ -32,7 +33,7 @@ async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
     vn.hooks.onLine=(id,line)=>{if(window.__trace.at(-1)!==id)window.__trace.push(id);if(line.text)window.__texts.push(line.text);};
     (await import('./js/craft/session.js')).craftTest.auto=opts.auto;
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, {known,stage,auto});
+  }, {known,stage,auto,progress});
 }
 async function phone(page,touch=false) {
   await page.locator(dt('phone-next')).waitFor();
@@ -174,6 +175,24 @@ await suite('ch2-tournament',async check=>{
     await page.locator(t('defeat')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
+  });
+  // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
+  for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{
+    const entry={flavorStock:{double_apple:40,mint:12},stamina:30,equip:null,recipes:{},stats:{technique:42,sense:42,guts:42,charm:42,insight:42}};
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'burnt',entry}});
+    await page.evaluate(async e=>{const c=await import('./js/core/state.js');e.equip=structuredClone(c.state.equip);c.state.flags._ch2_tournament.entry=e;c.save();},entry);
+    await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();
+    await page.locator(dt(assist?'retry-assist-yes':'retry-assist-no')).click();
+    await page.locator(t('ready')).waitFor();
+    let s=await get(page);assert.equal(s.flags._ch2_tournament.losses,3);assert.equal(s.flags._ch2_tournament.retryAssist,assist);
+    await page.locator(t('craft-start')).click();
+    await confirmAppearanceSetup(page,{touch:false});
+    await page.waitForFunction(()=>window.__remake?.state?.flags?._ch2_tournament?.attempts===4);
+    s=await get(page);
+    const max=await page.evaluate(async()=>(await import('./js/core/stats.js')).maxStamina());
+    assert.equal(s.stamina,assist?max:30,'assist recovers to the current maximum; declining keeps the entry stamina');
+    assert.equal(s.flags._ch2_tournament.entry.stamina,30,'the entry snapshot is not rewritten');
+    assert.equal(s.flags._ch2_tournament.craft.retryAssist,assist);
   });
   await check('missing-dialogue-preflight-retry-keeps-save',async page=>{
     let bad=true;await page.route('**/ch2_tournament.json',async route=>{
