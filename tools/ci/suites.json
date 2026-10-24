@@ -205,7 +205,7 @@
       "id": "ch1-facility-art",
       "title": "Chapter 1 facility art",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 10,
       "paths": [
         "assets/backgrounds/**",
@@ -224,13 +224,16 @@
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
-      "weight": 9.0,
+      "weight": 9,
       "timeout": 30,
       "paths": [
         "remake/**",
         "data/**"
       ],
       "run": [
+        "node remake/test/browser/first_brew_finish.mjs",
+        "node remake/test/browser/setup_continuation.mjs",
+        "node remake/test/browser/ch2_choice_echoes.mjs",
         "node remake/test/browser/ch1_presentation.mjs",
         "node remake/test/browser/ch1_story_feedback.mjs",
         "node remake/test/browser/first_brew.mjs",
@@ -246,7 +249,7 @@
       "id": "craft-materials",
       "title": "Craft materials",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -669,7 +672,7 @@
       "id": "chapter-titles",
       "title": "Approved chapter title cards",
       "kind": "browser",
-      "weight": 5.0,
+      "weight": 5,
       "timeout": 15,
       "paths": [
         "remake/js/chapters/ch1.js",
@@ -691,7 +694,7 @@
       "id": "craft-scenes",
       "title": "Craft scene readiness and actions",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 10,
       "paths": [
         "remake/js/craft/worker*.js",
@@ -834,7 +837,10 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/ch1-tournament"
       },
-      "chrome": "playwright"
+      "chrome": "playwright",
+      "sparse": [
+        "/docs/qa/issue508-theme/"
+      ]
     },
     {
       "id": "steam-forecast",
@@ -877,7 +883,7 @@
       "id": "hiyori-axe-art",
       "title": "Hiyori axe art",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "asset_sources/hiyori-axe-issue477/**",
@@ -904,7 +910,7 @@
       "id": "hiyori-axe-story",
       "title": "Hiyori formal axe story",
       "kind": "browser",
-      "weight": 7.0,
+      "weight": 7,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -925,7 +931,7 @@
       "id": "hiyori-natural",
       "title": "Natural New Game to the axe story",
       "kind": "browser",
-      "weight": 10.0,
+      "weight": 10,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -946,7 +952,7 @@
       "id": "hiyori-work",
       "title": "Hiyori work and relationship story",
       "kind": "browser",
-      "weight": 8.0,
+      "weight": 8,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -972,7 +978,7 @@
       "id": "hiyori-natural-work",
       "title": "Natural New Game to Hiyori work",
       "kind": "browser",
-      "weight": 11.0,
+      "weight": 11,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1047,7 +1053,7 @@
       "id": "hiyori-title-five",
       "title": "Hiyori five title illustrations",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "assets/ui/title_arts/**",
@@ -1101,7 +1107,9 @@
         "BASE_URL=http://127.0.0.1:8123/remake/ ARTIFACT_DIR=.codex/artifacts/title-candidates-375 node asset_sources/heroine-title-candidates-20261009/review-issue375/background-plants/preview.mjs"
       ],
       "sparse": [
-        "/asset_sources/heroine-title-candidates-20261009/review-issue375/"
+        "/asset_sources/heroine-title-candidates-20261009/review-issue375/",
+        "/asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.png",
+        "/asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png"
       ],
       "pillow": true
     },
@@ -1184,7 +1192,7 @@
       "id": "lime-evening",
       "title": "LIME evening visit",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 10,
       "paths": [
         "remake/js/daily/phone.js",
@@ -1237,7 +1245,7 @@
       "id": "motion-endings",
       "title": "Motion endings and transitions",
       "kind": "browser",
-      "weight": 3.0,
+      "weight": 3,
       "timeout": 20,
       "paths": [
         "remake/js/motions/**",
@@ -1280,7 +1288,7 @@
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 20,
       "paths": [
         "remake/js/motions/**",
@@ -1391,7 +1399,7 @@
       "id": "progression-recovery",
       "title": "Opening checkpoints and lover milestones",
       "kind": "browser",
-      "weight": 8.0,
+      "weight": 8,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -1464,7 +1472,7 @@
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1487,7 +1495,7 @@
       "id": "relationships",
       "title": "Hiyori, Samechan and relationship UI",
       "kind": "browser",
-      "weight": 7.0,
+      "weight": 7,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -1519,7 +1527,7 @@
       "id": "minto-progression",
       "title": "Minto identity and relationship progression",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1540,7 +1548,7 @@
       "id": "tsumugi-story",
       "title": "Tsumugi fixed events and chapter days",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1561,7 +1569,7 @@
       "id": "dev-tools",
       "title": "Developer tools available on this branch",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1602,7 +1610,7 @@
       "id": "save-load",
       "title": "Save/load and legacy migration",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1674,7 +1682,7 @@
       "id": "home-and-controls",
       "title": "Title layout, contacts, home shisha and practice",
       "kind": "browser",
-      "weight": 7.0,
+      "weight": 7,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -1698,7 +1706,7 @@
       "id": "lover-date-route",
       "title": "Saved-lover date routes",
       "kind": "browser",
-      "weight": 2.0,
+      "weight": 2,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1718,7 +1726,7 @@
       "id": "title-arts",
       "title": "Title art rotation",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1746,7 +1754,7 @@
       "id": "opening-and-readiness",
       "title": "Visual readiness, opening and tutorial transition",
       "kind": "browser",
-      "weight": 3.0,
+      "weight": 3,
       "timeout": 20,
       "paths": [
         "remake/**",
@@ -1768,7 +1776,7 @@
       "id": "maps-and-shop",
       "title": "Store logos, map facilities and shop UI",
       "kind": "browser",
-      "weight": 4.0,
+      "weight": 4,
       "timeout": 20,
       "paths": [
         "remake/**",
@@ -1826,7 +1834,7 @@
       "id": "continue-screen",
       "title": "Continue captions, readiness and typing",
       "kind": "browser",
-      "weight": 3.0,
+      "weight": 3,
       "timeout": 15,
       "paths": [
         "remake/**",
@@ -1848,7 +1856,7 @@
       "id": "steam-attack",
       "title": "Steam slash, recharge and thermometer",
       "kind": "browser",
-      "weight": 5.0,
+      "weight": 5,
       "timeout": 20,
       "paths": [
         "remake/**",
@@ -1876,7 +1884,7 @@
       "id": "ch1-eve",
       "title": "Chapter 1 eve choices and saves",
       "kind": "browser",
-      "weight": 8.0,
+      "weight": 8,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -1989,7 +1997,7 @@
       "id": "street-selection",
       "title": "Chapter 1 street selection",
       "kind": "browser",
-      "weight": 1.0,
+      "weight": 1,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -2010,7 +2018,7 @@
       "id": "playthrough-direct",
       "title": "Complete chapter 1 with direct pins",
       "kind": "browser",
-      "weight": 11.0,
+      "weight": 11,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -2031,7 +2039,7 @@
       "id": "playthrough-street",
       "title": "Complete chapter 1 with street entrances",
       "kind": "browser",
-      "weight": 11.0,
+      "weight": 11,
       "timeout": 25,
       "paths": [
         "remake/**",
@@ -2067,7 +2075,19 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/title-review"
       },
-      "pillow": true
+      "pillow": true,
+      "sparse": [
+        "/asset_sources/ch1-keyart/",
+        "/asset_sources/heroine-title-candidates-20261009/",
+        "/asset_sources/hiyori-title-candidates-issue373/",
+        "/asset_sources/minto-cheki-variants-v1/",
+        "/asset_sources/minto-first-cheki/",
+        "/asset_sources/minto-first-cheki-v2/",
+        "/asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/candidate/",
+        "/asset_sources/shisha-hardware-reference/ng-examples/",
+        "/asset_sources/title-art/heroine-concepts-v1-20261008/",
+        "/asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/"
+      ]
     },
     {
       "id": "trpg",

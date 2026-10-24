@@ -378,22 +378,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まだ一回しか聴けてなくて。でも、気になってます"
+          "text": "サビの前、音がふっと引くところが好きでした"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……急がなくていい。俺も、一枚をずっと聴くことがある"
+          "face": "smile",
+          "text": "……あそこ、聴いてくれたんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "次は、もう少し聴いてから話しに来ます"
+          "text": "煙でも、ああいう余韻を残せるかなって考えてました"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……うん。待ってる"
+          "text": "残せる。吐いたあと、すぐ次を吸わせなければ"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……好きな曲が増えたら、教えて。俺も、次の一枚を選んでおく"
         }
       ]
     },

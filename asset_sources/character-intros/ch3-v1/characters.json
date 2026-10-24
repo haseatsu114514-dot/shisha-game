@@ -1,0 +1,58 @@
+[
+  {
+    "id": "mashiro",
+    "name": "ましろ",
+    "full": "",
+    "title": "mukaiの眠たげな同期",
+    "line": "……今日は、お茶でもいいよぉ",
+    "expression": "normal",
+    "color": "#b5c8b9",
+    "secondary": "#eee5cc",
+    "shadow": "#172d2b",
+    "motif": "smoke",
+    "motif_label": "お茶・湯気・リネン",
+    "portrait": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "portrait_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+    "portrait_authority": "採用済みゲーム立ち絵。拡縮・配置のみ。描き直し・フィルタなし",
+    "caption_source": "data/characters.json: mashiro.intro_cutin",
+    "frame": {
+      "width": 1162.048,
+      "left": -271.376,
+      "top": -347.188
+    },
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch3-v1/backgrounds/mashiro.png",
+        "sha256": "77144d9780399a7aaebc86cfec87e118e2b4681425f319287efff9989ad86bba"
+      }
+    }
+  },
+  {
+    "id": "volk",
+    "name": "ヴォルク",
+    "full": "",
+    "title": "誤差ゼロの職人",
+    "line": "ブレは、許さない",
+    "expression": "normal",
+    "color": "#8fb4d8",
+    "secondary": "#c6e7df",
+    "shadow": "#112739",
+    "motif": "smoke",
+    "motif_label": "精密な目盛り・ノギス・ダークミント",
+    "portrait": "assets/sprites/characters/volk/chr_volk_normal.png",
+    "portrait_sha256": "7d096196d6ad952694943299e3113244804d4b6fe33c246b34ec96046bbdc917",
+    "portrait_authority": "採用済みゲーム立ち絵。拡縮・配置のみ。描き直し・フィルタなし",
+    "caption_source": "data/characters.json: volk.intro_cutin",
+    "frame": {
+      "width": 878.28,
+      "left": -124.572,
+      "top": 21.336
+    },
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch3-v1/backgrounds/volk.png",
+        "sha256": "068a1e5fc9c1ad96b2bc2e26e14546b2e9bdb65247b246e27f403a0f56623a7f"
+      }
+    }
+  }
+]

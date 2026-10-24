@@ -100,11 +100,16 @@ await suite('ch2-story', async check => {
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
     const trace = await page.evaluate(() => window.__storyTrace);
-    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_slump_taste','ch2_lingering_smell','ch2_adam_distance',
-      'ch2_sumi_silence','ch2_naru_confrontation','ch2_minto_warning','ch2_tsumugi_color','remake_ch2_eve_arrival','ch2_pre_tournament_realisation'];
+    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_lingering_smell','ch2_adam_distance',
+      'remake_ch2_ageha_tasting','ch2_sumi_silence','ch2_naru_confrontation','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
+      'remake_ch2_eve_arrival','remake_ch2_eve_rei','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
+    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・REIはそこで名乗り、面識が残る
+    assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
+    assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
+    assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
     await assertFits(page, '.ch2-contest .btn');
     await reload(page); await page.locator(end).waitFor();
@@ -118,7 +123,7 @@ await suite('ch2-story', async check => {
     await reload(page); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_read_ch2_abyss_baito); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000);
     const log = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(l => l.text).join('\n'));
-    assert(!log.includes('──炭を、落とした。')); assert(log.includes('同じ夜'));
+    assert(!log.includes('炭を、落とした。')); assert(log.includes('同じ夜'));
   });
   await check('full-rest-still-reads-fixed-accident-without-payment', async page => {
     await seed(page, { sick: true }); await atMap(page, 4, 0);

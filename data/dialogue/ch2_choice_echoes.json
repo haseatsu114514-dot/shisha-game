@@ -1,0 +1,69 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "remake_ch2_eve_choices",
+      "metadata": {},
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_rest_taken",
+          "next_true": "rest"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_listened",
+          "next_true": "listened",
+          "next_false": "check_hurt"
+        }
+      ],
+      "branches": {
+        "rest": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（休んだ時間まで、無駄だったことにしたくない）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（味はまだ遠い。でも、休むと決めた自分まで責めなくていい）"
+          }
+        ],
+        "listened": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（なるさんと、点のつかない話をする約束をしたんだった）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの子の誕生日の話は、最後まで聞けた。明日が終わったら、俺から連絡しよう）"
+          }
+        ],
+        "check_hurt": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_naru_hurt",
+            "next_true": "hurt"
+          }
+        ],
+        "hurt": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（なるさんには、謝ったままだ。既読はついたのに、返事はまだ来ない）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（勝ち負けの話はしてない。……あの声が、まだ耳に残ってる）"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2692,6 +2692,37 @@
             "face": "ura_smile",
             "text": "……ミント、しっかり感じる。口の中がすうっとして……うん。こういうの、好き"
           }
+        ],
+        "finish_balanced": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……うん、美味しい。熱もちょうどよくて、もう一口吸いたくなるね"
+          }
+        ],
+        "finish_cool": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_normal",
+            "text": "少しぬるい、かな……。でも、この組み合わせ、美味しいね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（次は、もう少し熱を入れてから出そう）"
+          }
+        ],
+        "finish_hot": [
+          {
+            "speaker": "oneesan",
+            "face": "ura_normal",
+            "text": "少し熱い、かも……。香りの組み合わせは、美味しいんだけど"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（次は、熱を落ち着かせてから出そう）"
+          }
         ]
       }
     },

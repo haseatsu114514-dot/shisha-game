@@ -62,7 +62,28 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .mo
 }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg { min-width: 0; }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg-row { flex-wrap: wrap; }
-body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-overlay { top: 64px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { min-width: 0; min-height: 0; width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head { align-items: center; flex-wrap: wrap; gap: 8px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head h2 { font-size: clamp(18px, 6vw, 28px); letter-spacing: .2em; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-count { flex: none; white-space: nowrap; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-close { flex: none; min-height: 38px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { min-height: 0; }
+@media (max-width: 500px) {
+  body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* 通常表示の短い横画面では、表示切替バーをギャラリーの閉じるボタンから離す。 */
+@media (max-height: 500px) and (orientation: landscape) {
+  body[data-screen="title"]:has(.title[data-layout="normal"]):has(#modal .gal-overlay) .title-layout-toolbar {
+    left: 4px !important; right: auto !important;
+    width: 72px; max-width: 72px !important;
+    flex-direction: column; flex-wrap: nowrap; align-items: stretch;
+    gap: 2px; font-size: 10px; text-align: center;
+  }
+  body[data-screen="title"]:has(.title[data-layout="normal"]):has(#modal .gal-overlay) .title-layout-toolbar :is(button, a) {
+    padding: 3px 1px; line-height: 1.25;
+  }
+}
 @media (max-width: 760px) and (orientation: portrait) {
   .title[data-layout="ds"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(300px, 1fr)); padding-top: 66px; }
   .title[data-layout="ds"] .title-ds-controls { padding: 14px 18px; }
