@@ -1,6 +1,6 @@
 import { normalizeCommuteState, chooseMorningCity, returnCityHome } from "./ch2-commute.js";
 import { spendableMoney } from "../core/travel-budget.js";
-import { CH2_CITY_NAME } from "../core/city-locations.js";
+import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
@@ -129,7 +129,7 @@ export async function runChapterTwoPreparation() {
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
       regions: [
-        { id: "home", label: "地元・大須／栄", background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg") },
+        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => allSpots().filter(spot => spot.kind !== "trpg") },
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean) },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },

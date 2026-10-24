@@ -3,7 +3,7 @@ import { state, save } from "../core/state.js";
 import { bgUrl } from "../core/data.js";
 import { modal, setBg, showScreen } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { CH2_CITY_NAME } from "../core/city-locations.js";
+import { CH2_CITY_NAME, HOME_CITY_NAME, HOME_CITY_READING } from "../core/city-locations.js";
 import { STATION_FARE, prepareStationTrip } from "../daily/station-travel.js";
 const regions = [{ id: "home" }, { id: "widehanga" }];
 
@@ -23,8 +23,8 @@ export async function chooseMorningCity() {
   if (state !== owner || state.day !== day) return;
   showScreen("home", el("main.ch2-morning-home"));
   const canGo = state.money >= STATION_FARE * 2;
-  const destination = await modal({ title: "今日はどこに行こう？", body: `自宅から出発する。${CH2_CITY_NAME}へは片道200円。帰りの切符代200円も残しておこう。${canGo ? "" : "今は往復分が足りないので、地元で過ごそう。"}`, options: [
-    { label: "地元・大須／栄へ", value: "home", test: "ch2-morning-home" },
+  const destination = await modal({ title: "今日はどこに行こう？", body: `${HOME_CITY_NAME}（${HOME_CITY_READING}）の自宅から出発する。${CH2_CITY_NAME}へは片道200円。帰りの切符代200円も残しておこう。${canGo ? "" : "今は往復分が足りないので、地元で過ごそう。"}`, options: [
+    { label: `地元・${HOME_CITY_NAME}へ`, value: "home", test: "ch2-morning-home" },
     ...canGo ? [{ label: `${CH2_CITY_NAME}へ（片道200円）`, value: "widehanga", test: "ch2-morning-city" }] : [],
   ] });
   if (state !== owner || state.day !== day) return;
@@ -45,7 +45,7 @@ export async function returnCityHome() {
   if (state.flags._ch2_region === "widehanga") {
     const trip = prepareStationTrip(state, regions, "home");
     if (!trip?.commit(state, { persist: save })) throw new Error("帰宅の切符代200円が不足しています");
-    await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、地元へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
+    await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
   }
   if (state === owner) await setBg(bgUrl("bg_home", "night"), { instant: true });
 }

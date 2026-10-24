@@ -20,7 +20,7 @@ const mocks = {
   "../core/travel-budget.js": { spendableMoney: value => value.money },
   "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
   "../core/data.js": { DB, bgUrl: x => x },
-  "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷" },
+  "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
