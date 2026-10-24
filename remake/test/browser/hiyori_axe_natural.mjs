@@ -31,14 +31,19 @@ try {
     const context = await browser.newContext(options);
     const page = await context.newPage();
     const errors = [], failedResources = [], cache = { cold: 0, warm: 0 };
+    const revalidated = { cold: 0, warm: 0 };
     const cdp = await context.newCDPSession(page);
     await cdp.send('Network.enable');
     let cachePhase = 'cold';
     cdp.on('Network.requestServedFromCache', () => cache[cachePhase]++);
+    // Fresh CI checkouts revalidate images with HTTP 304 instead of a memory-cache event.
+    cdp.on('Network.responseReceivedExtraInfo', event => {
+      if (event.statusCode === 304) revalidated[cachePhase]++;
+    });
     page.on('pageerror', e => errors.push(e.message));
     page.on('response', r => { if (r.status() >= 400) failedResources.push(`${r.status()} ${r.url()}`); });
     page.on('requestfailed', r => { if (!/ERR_ABORTED/.test(r.failure()?.errorText || '')) failedResources.push(`${r.failure()?.errorText} ${r.url()}`); });
-    const row = { label, base, cache, startedAt: new Date().toISOString(), status: 'running' };
+    const row = { label, base, cache, revalidated, startedAt: new Date().toISOString(), status: 'running' };
     results.push(row);
     const seen = new Set(), actions = [];
     async function click(selector) {
@@ -55,7 +60,7 @@ try {
       await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
       await page.locator('#boot').waitFor({ state: 'detached' });
       await page.screenshot({ path: path.join(out, `${label}-warm-title.png`) });
-      assert(cache.warm > 0, 'Warm reload must actually reuse cached resources');
+      assert(cache.warm + revalidated.warm > 0, 'Warm reload must actually reuse cached resources');
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
         const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
