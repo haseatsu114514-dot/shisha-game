@@ -1,3 +1,4 @@
+import { AGEHA_AFFINITY_VISITS } from "../core/affinity-stages.js";
 // 章内日で記す。保存日時・夜の予定表へ渡すときだけ通算日に変換する。
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
@@ -55,7 +56,7 @@ export const CH2_NIGHTS = [
 ];
 
 // あげはの店に通う回（初回・続編のあと、この順に一度ずつ）。7日目以降は先に「ダメな日」を挟む。
-export const AGEHA_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"];
+export const AGEHA_VISITS = AGEHA_AFFINITY_VISITS;
 export const AGEHA_BADDAY = { id: "remake_ch2_ageha_badday", fromDay: 7 };
 const VIBES = ["scout", "gyaru", "newcomer", "magazine"];
 
@@ -70,5 +71,9 @@ export function syncAgehaVibes(flags) {
 export function agehaStoryScene(save, day, dialogues) {
   const unread = (id) => !!dialogues[id]?.lines?.length && !save.flags?.[`_ch2_read_${id}`];
   if (day >= AGEHA_BADDAY.fromDay && unread(AGEHA_BADDAY.id)) return AGEHA_BADDAY.id;
-  return AGEHA_VISITS.find(unread) || null;
+  const next = AGEHA_VISITS.find(id => !save.flags?.[`_ch2_read_${id}`]);
+  const required = AGEHA_VISITS.indexOf(next) + 2;
+  // 次の実会話の♥を満たすまで、いつもの会話。欠落原稿を飛ばして後段へ進めない。
+  const threshold = [0, 9, 20, 33, 48, 66][required];
+  return next && unread(next) && (save.affinity?.ageha || 0) >= threshold ? next : null;
 }

@@ -24,6 +24,7 @@ async function setup(page, id, stop = null) {
       _ch2_talks: { [id]: 9 }, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     for (const who of ["ageha", "kumicho", "rei"]) { v.met[who] = true; v.flags[`_intro_${who}`] = true; }
+    v.affinity[id] = 9; // preceding chat read; followup is the heart1 scene
     v.visits[id] = 97; v.contacts = ["sumi", "ageha"]; v.flags._lime_contact_ageha = true;
     v.lovers = ["minto"]; v.loverSince = { minto: 10 }; v.relationshipMemories = ["qa_old_memory"];
     v.keepsakes = ["qa_old_keepsake"]; v.flavorStock = { mint: 21.5, double_apple: 6 };

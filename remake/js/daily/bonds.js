@@ -16,6 +16,7 @@ import { TOURNAMENT_DAY } from "../core/rules.js";
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
+import { questionComplete, questionDoneKey } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
@@ -65,7 +66,6 @@ export const BOND_QUESTIONS = {
 /** 隠し恋愛値（恋愛寄りに答えた数）。プレイヤーには見せない */
 export const romanceValue = (id) => state.romance?.[id] || 0;
 const answers = (id) => Object.values(state.romanceChoices || {}).filter((a) => a.char === id);
-const answered = (choiceId) => !!state.romanceChoices?.[choiceId];
 
 /** 選んだ答えを記録する（engine の onChoice から）。同じ選択肢 id は一度だけ＝再読で稼げない */
 export function recordRomanceChoice(line, choice) {
@@ -111,10 +111,9 @@ export async function afterStory(dialogueId, { bg = null, signal = null, deferSa
   if (hiyoriRoute().question?.host && dialogueId === hiyoriRoute().question.host) return playHiyoriQuestion({ bg, signal, deferSave });
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
     if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
-    await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
-    releaseAffinity(id);
-    save();
+    return playQuestionVisit(id, { bg, signal, deferSave });
   }
+  return true;
 }
 
 /** 保存済みの実回答から反応へ戻す。友人のvalue:0も回答で、再選択・再加算しない。 */
@@ -146,8 +145,9 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
   const answer = state.romanceChoices[q.choice];
   const owner = state;
   const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
-  if (state !== owner || signal?.aborted || result?.cancelled || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
+  if (state !== owner || signal?.aborted || (!result || result.cancelled) || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
   state.flags[q.flag] = true;
+  releaseAffinity("hiyori");
   if (!deferSave) save();
   return true;
 }
@@ -156,7 +156,9 @@ const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
-  return !!q && !!DB.dialogues[q.dialogue] && !answered(q.choice) && !state.finales?.[id] && !isLover(id) && !state.flags[`_friend_${id}`];
+  const answer = state.romanceChoices?.[q?.choice];
+  return !!q && !!DB.dialogues[q.dialogue]?.lines?.length && !questionComplete(state, id)
+    && (!answer || answer.char === id && Number.isFinite(answer.value) && answer.value >= 0);
 };
 const hostSeen = (id) => {
   if (id === "minto") return !!(state.flags._minto_private_done || state.flags._minto_fifth_done);
@@ -170,11 +172,26 @@ export const questionVisitDue = (id) => (BOND_QUESTIONS[id]?.when === "visit" ||
   && questionOpen(id) && hostSeen(id);
 
 /** 訪問の中で質問の場面を出す（通い訪問の小会話の代わり） */
-export async function playQuestionVisit(id, { bg = null } = {}) {
-  const q = BOND_QUESTIONS[id];
-  await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
-  releaseAffinity(id);
-  save();
+const questionsInFlight = new WeakMap();
+export async function playQuestionVisit(id, { bg = null, signal = null, deferSave = false } = {}) {
+  if (id === "hiyori") return playHiyoriQuestion({ bg, signal, deferSave });
+  if (!questionOpen(id) || signal?.aborted) return false;
+  const q = BOND_QUESTIONS[id], owner = state;
+  const active = questionsInFlight.get(owner) || new Set();
+  if (active.has(id)) return false;
+  questionsInFlight.set(owner, active); active.add(id);
+  try {
+    const scene = DB.dialogues[q.dialogue];
+    const script = resumeChoice(scene, q.choice, state.romanceChoices?.[q.choice]);
+    const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+    const answer = state.romanceChoices?.[q.choice];
+    if (state !== owner || signal?.aborted || (!result || result.cancelled)
+      || answer?.char !== id || !Number.isFinite(answer.value) || answer.value < 0) return false;
+    state.flags[questionDoneKey(id)] = true;
+    releaseAffinity(id);
+    if (!deferSave) save();
+    return true;
+  } finally { active.delete(id); }
 }
 
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
@@ -184,7 +201,8 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "same
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
-  : storyCount(id) >= (VISIT_SEQ[id] || []).length;
+  : storyCount(id) >= (VISIT_SEQ[id] || []).length
+    && (!AFFINITY_GATE_CHOICES[id] || questionComplete(state, id));
 
 /**
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。
@@ -227,10 +245,10 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
     branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;
   const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
-  if (state !== owner || result?.cancelled || signal?.aborted) return false;
+  if (state !== owner || (!result || result.cancelled) || signal?.aborted) return false;
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
   if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
-  if (state !== owner) return false;
+  if (state !== owner || signal?.aborted) return false;
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
   if (def.flag) state.flags[def.flag] = true;

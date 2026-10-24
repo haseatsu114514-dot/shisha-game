@@ -17,7 +17,7 @@ async function setup(page, { restore = false } = {}) {
     else {
       const s = K.core.newGame();
       Object.assign(s, { chapter: 2, phase: "daily", day: 1, slot: 0, money: 100000 });
-      Object.assign(s.flags, { _intro_samechan: true });
+      Object.assign(s.flags, { _intro_samechan: true, _samechan_first_encounter: true, _samechan_nickname_known: true });
     }
     K.ch1.setupHooks(); K.vn.vnTest.turbo = true;
     K.vn.vnTest.choose = () => 0;
@@ -38,7 +38,7 @@ await suite("samechan-entry", async check => {
       await check(`${mode}-${value ? "romance" : "friend"}-sequence`, async page => {
         await setup(page);
         const r = await page.evaluate(async value => {
-          const s = K.core.state, events = [];
+          const s = K.core.state, events = []; s.affinity.samechan = 32;
           const enter = K.vn.hooks.onEnter;
           K.vn.hooks.onEnter = (id, scene) => { events.push(id); enter?.(id, scene); };
           K.vn.vnTest.choose = id => id === "samechan_shop_bond_question" ? 1 - value : value;
@@ -71,7 +71,7 @@ await suite("samechan-entry", async check => {
         assert(r.afterQuestion.flags._samechan_bond_question_done);
         assert.equal(r.afterQuestion.romanceChoices.bond_q1_samechan.value, value);
         assert.equal(r.afterQuestion.romance.samechan || 0, value);
-        assert.equal(r.afterQuestion.flags._samechan_affinity_released_pts, 15);
+        assert.equal(r.afterQuestion.flags._samechan_affinity_stage_released_pts, 90);
         assert(r.afterQuestion.affinity.samechan >= 48);
         assert.equal(r.afterQuestion.money, 100000 - 7 * 3000);
         assert(r.replay); assert.deepEqual(r.repeated, r.afterQuestion);
@@ -109,7 +109,7 @@ await suite("samechan-entry", async check => {
     await check(`${mode}-interrupted-visit-is-billed-once`, async page => {
       await setup(page);
       const before = await page.evaluate(() => {
-        const s = K.core.state; s.story.samechan = 3; s.money = 3000; s.stamina = 12; K.core.save();
+        const s = K.core.state; s.story.samechan = 3; s.affinity.samechan = 32; s.money = 3000; s.stamina = 12; K.core.save();
         K.vn.vnTest.turbo = false;
         K.running = K.samechan.visitSamechan(K.samechan.samechanSpot());
         return { money: s.money, affinity: s.affinity.samechan || 0, carry: s.affinityCarry.samechan || 0 };
@@ -157,7 +157,7 @@ await suite("samechan-entry", async check => {
       assert.equal(r.state.romanceChoices.bond_q1_samechan.value, 0);
       assert.equal(r.state.romance.samechan || 0, 0); assert(r.log.includes("友として"));
       assert(r.state.flags._samechan_bond_question_done);
-      assert.equal(r.state.flags._samechan_affinity_released_pts, 15);
+      assert.equal(r.state.flags._samechan_affinity_stage_released_pts, 40);
       assert.deepEqual(r.state.lovers, []); assert(!r.state.flags._friend_samechan);
     }, options);
 
@@ -167,7 +167,7 @@ await suite("samechan-entry", async check => {
         const s = K.core.state, spot = K.samechan.samechanSpot(); s.chapter = 1;
         const before = K.snapshot(), chapter1 = await K.samechan.visitSamechan(spot);
         const after = K.snapshot(); s.chapter = 2; s.story.samechan = 3;
-        const scene = K.data.DB.dialogues.samechan_shop_quiet_seat;
+        s.affinity.samechan = 32; const scene = K.data.DB.dialogues.samechan_shop_quiet_seat;
         delete K.data.DB.dialogues.samechan_shop_quiet_seat;
         const missingBefore = K.snapshot(), missing = await K.samechan.visitSamechan(spot);
         const missingAfter = K.snapshot(); K.data.DB.dialogues.samechan_shop_quiet_seat = scene;
