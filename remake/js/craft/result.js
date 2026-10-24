@@ -324,7 +324,13 @@ export function resultTable(cs, rank) {
     ]);
     showScreen("result", screen);
     if (cs.arcade?.total) countUp(score, 0, cs.arcade.total, 1400, (n) => String(n).padStart(6, "0"));
-    if (rank === 1) { SE.fanfare(); confetti(screen); }
+    if (rank === 1) {
+      SE.fanfare();
+      // 紙吹雪は画面の枠の中だけで降らせる（下へ抜けた分でスクロールを作らない）。
+      const sky = el("div.rt-confetti", { "aria-hidden": "true" });
+      screen.append(sky);
+      confetti(sky);
+    }
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });
 }
