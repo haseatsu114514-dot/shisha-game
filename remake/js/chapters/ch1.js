@@ -32,7 +32,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
-import { captureEntryResources, restoreEntryResources } from "./tournament-resources.js";
+import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "./tournament-resources.js";
 import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
@@ -459,6 +459,7 @@ async function tournamentDay() {
   }
   showHud(false);
   restoreEntryResources(state);
+  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
@@ -514,8 +515,9 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   await waitBenchReady(cs);
   bc.block(cs, "pull");
-  await runPull(cs);
+  if (await runPull(cs) === false) return;
   if (cs.failed) return failedOut(cs.failed);
+  await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);

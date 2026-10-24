@@ -45,3 +45,20 @@ node --experimental-vm-modules remake/test/bgm_gain.mjs
 node remake/test/browser/trpg_main.mjs
 node remake/test/browser/axe_bgm_788.mjs   # 斧投げBAR・ひよりの斧投げで開始・終了・中断・再入場
 ```
+
+## プリクラ（2026-10-24追加採用・#948）
+
+オーナー添付「プリクラ A｜平成ユーロビート.mp3」を採用。`assets/audio/bgm/bgm_purikura.bgm`へ既存のゲーム用形式で保存。元MP3とカバー画像は再圧縮・改変せず内包する。出典はユーザー添付、作者・外部配布ページの記入はない。
+
+48 kHz、ステレオ、189.84秒、4,605,022 bytes。元音源SHA-256は `6c92ac5296b732dffb2d197e7301c987fd30426fc3955f04628fef5071232c40`。FFmpeg ebur128で −14.8 LUFS、True Peak −3.2 dBFS、曲別倍率1.0。BGM設定・ミュートは既存処理を使う。
+
+プリクラ演出a/bの開始からシールを渡す直前まで再生し、終了時に元の店舗曲へ戻す。SKIP・動き軽減で演出を省く場合は曲も変えない。LOADで新しい場面へ移った場合、その曲を戻さない。復元SHAと再生・終了・中断は `bgm_packaged.mjs` / `purikura_motion.mjs` で検証。
+
+追加添付B「渋谷系バブルガム・ポップ」とD「懐かしいプリクラ機・ゲーセン風」も採用。撮影ごとにA/B/Dの3曲から等確率で1曲だけ選ぶ。同曲が続く場合もある。演出a/bの選択とは独立で、セーブに曲順を加えない。
+
+| 曲 | 保存先 | 長さ | 元bytes | SHA-256 | LUFS / peak |
+|---|---|---:|---:|---|---|
+| B | `bgm_purikura_b.bgm` | 151.632秒 | 3,622,466 | `d348ce8a91d7cad1da14c71b51870ea2c20f44c379f5277213d80f0eac6e805e` | −15.2 / −2.6 dBFS |
+| D | `bgm_purikura_d.bgm` | 139.584秒 | 3,441,265 | `4848a6ffbccf9f3bc4911ef1043cd3143fbaf73a6f789d5181137477dcb899dc` | −15.0 / −4.1 dBFS |
+
+追加曲もユーザー添付・既存ゲーム用形式・再圧縮なし・曲別倍率1.0。3曲の音量差は0.4 LUFS以内。

@@ -509,7 +509,7 @@
     "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
     "display_name": "神崎竜二",
     "role": "rival_ch2",
-    "age": 39,
+    "age": 53,
     "nationality": "Japan",
     "affiliation": "神崎煙草店（表向き）",
     "play_style": "「スジを通す煙」",
@@ -523,15 +523,14 @@
       "notes": "力と威圧感で自分を保っていたが、はじめの『相手を否定しない』姿勢に触れ、いつの間にか若衆の失敗を怒鳴るのではなく、静かに煙を分かち合って諭すような度量を持っていた。"
     },
     "visual_concepts": [
-      "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
-      "former bōsōzoku turned yakuza, stern expression, wearing a dark luxurious patterned silk shirt, intricate japanese tattoos visible on forearms, holding silver tongs with extreme care, cinematic lighting in a VIP room"
+      "53歳の日本人男性。細め〜普通の中年体格、短い黒白髪、険しい眉間と口ひげ、色付き眼鏡。白系大柄チェックのダブルスーツ、黒シャツ、紫のネクタイとポケットチーフ。小指はポケットや身体で自然に隠し有無を断定しない。"
     ],
     "spriteScale": 1.06,
     "intro_cutin": {
-      "title": "シーシャ組長",
+      "title": "水煙の龍",
       "line": "回し飲みはな、盃と同じだ",
       "face": "normal",
-      "color": "#d23a3a"
+      "color": "#b6a4cf"
     },
     "voice": {
       "first_person": "俺"

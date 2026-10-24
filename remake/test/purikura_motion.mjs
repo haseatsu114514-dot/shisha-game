@@ -7,9 +7,10 @@ import vm from "node:vm";
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
 const source = read("../js/motions/purikura.js");
 
-async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false } = {}) {
-  const context = vm.createContext({ console });
-  const made = [], anims = [], sounds = {};
+async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0 } = {}) {
+  const context = vm.createContext({ console, Math: Object.assign(Object.create(Math), { random: () => random }) });
+  const made = [], anims = [], sounds = {}, music = [];
+  let musicNow = "sweets_or_sweets", during = false;
   let disconnected = false, staged = 0, root = null;
   function el(selector, attrs = {}, children = []) {
     if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
@@ -20,11 +21,14 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
   }
   const owner = { flags: {} }, loaded = { flags: {} };
   const values = {
-    "util.js": { el, sleep: async () => {} },
+    "util.js": { el, sleep: async () => {
+      if (during && interruptMusic) { stateModule.setExport("state", loaded); musicNow = "bgm_map"; }
+      if (during && throwDuring) throw new Error("interrupted");
+    } },
     "state.js": { state: owner },
     "data.js": { cgUrl: (id) => (typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
     "ui.js": { imageReady: async () => { if (loadDuring) stateModule.setExport("state", loaded); return true; } },
-    "audio.js": { SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
+    "audio.js": { preloadBgm: async () => true, currentBgm: () => musicNow, playBgm: (key) => { music.push(key); musicNow = key; during = key?.startsWith("bgm_purikura"); }, SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
     "transition-kit.js": { svg: el, move: async (node, frames, ms, opt = {}) => { anims.push({ node, frames, ms, ...opt }); } },
     "mg-kit.js": { MG_EASE: { out: "out", in: "in", inOut: "inOut", back: "back" } },
     "stage.js": {
@@ -47,15 +51,17 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
     return m;
   });
   await module.evaluate();
-  await module.namespace[variant]();
+  let error;
+  try { await module.namespace[variant](); } catch (e) { if (!throwDuring) throw e; error = e; }
   const find = (selector) => made.filter((n) => n.selector === selector);
-  return { made, anims, sounds, disconnected, staged, root, find, plans: module.namespace.PLANS };
+  return { made, anims, sounds, music, musicNow, error, disconnected, staged, root, find, plans: module.namespace.PLANS };
 }
 
 // a: 毎回3・2・1、盛りを選ぶ／b: 撮影はさっと、スタンプ多め
 for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   const f = await fixture({ variant });
   assert.equal(f.staged, 1);
+  assert.deepEqual(f.music, ["bgm_purikura", "sweets_or_sweets"]);
   assert(f.disconnected, "resize observer cleanup");
   const scene = f.find("div.mo-pk-scene")[0];
   assert.equal(scene.style.width, "1280px");
@@ -130,6 +136,22 @@ for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   const f = await fixture({ loadDuring: true });
   assert.equal(f.staged, 0);
   assert.equal(Object.keys(f.sounds).length, 0);
+}
+
+for (const [random, expected] of [[0, "bgm_purikura"], [.4, "bgm_purikura_b"], [.999, "bgm_purikura_d"]]) {
+  const f = await fixture({ random });
+  assert.deepEqual(f.music, [expected, "sweets_or_sweets"], "each random bucket plays one track and restores music");
+}
+for (const opts of [{ interruptMusic: true }, { throwDuring: true }]) {
+  const f = await fixture(opts);
+  assert(f.disconnected);
+  if (opts.interruptMusic) {
+    assert.deepEqual(f.music, ["bgm_purikura"]);
+    assert.equal(f.musicNow, "bgm_map", "LOAD's new music must survive cleanup");
+  } else {
+    assert.equal(f.error?.message, "interrupted");
+    assert.deepEqual(f.music, ["bgm_purikura", "sweets_or_sweets"], "error restores shop music");
+  }
 }
 
 // 会話: ギャル友の回の最後に一度だけ呼び、秘密を知っているかで締めの心の声が変わる

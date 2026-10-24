@@ -24,6 +24,7 @@ try {
       window.R = { core: await import('./js/core/state.js'), map: await import('./js/daily/map.js'), hud: await import('./js/daily/hud.js') };
       R.core.config.bgmVolume = 0; R.hud.initHud({}); R.hud.showHud(true);
       Object.assign(R.core.newGame(), { phase: 'daily', day: 3, seed: 131, weatherSeed: 4 });
+      R.core.state.limeRead.push('lime_tsumugi_fortune_rumor'); // #780: 占い師はつむぎの噂を読んでから出る
       R.shown = 0;
       R.phaseObserver = new MutationObserver(records => {
         if (records.some(r => r.target.dataset.revealPhase === 'pause')) R.pauseAt = performance.now();
@@ -97,8 +98,13 @@ try {
       R.core.state.chapter = 2; R.core.state.flags._axe_bar_rumor_done = true;
       await reopen();
     });
+    await page.locator('[data-test="pin-shishark"].newly-revealed').waitFor();
+    assert.equal(await page.locator('[data-test="pin-trpg_bar"]').count(), 0, 'chapter 2 alone does not introduce the TRPG bar');
+    assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['axe_bar', 'shishark']);
+    await page.waitForFunction(() => !document.querySelector('.newly-revealed'));
+    await page.evaluate(async () => { R.core.state.flags._rei_trpg_introduced = true; await reopen(); });
     await page.locator('[data-test="pin-trpg_bar"].newly-revealed').waitFor();
-    assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['axe_bar', 'shishark', 'trpg_bar']);
+    assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['trpg_bar']);
     await page.evaluate(async () => { R.core.newGame(); await reopen(); });
     await page.locator('.map:not(.done)').waitFor();
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'history leaked to a new game');

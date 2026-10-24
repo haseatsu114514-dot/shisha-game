@@ -1,4 +1,5 @@
 // 路上占い師（旧版 F11 / J2-J3）。週2日（7日周期の3・6日目）だけアーケード脇に出る。
+// つむぎの噂を聞くまでは出ない。雨の日は休み、晴れる日へ繰り越す（#780）。
 // 深いローブの老婆のタロット占い。相性占い3,000円・1日1回・時間は使わない。
 // 指名した相手と「次に会ったとき」だけ好感度の伸びが1.5倍（一度きり。stats.js の gainAffinity で消費）
 import { DB, displayName } from "../core/data.js";
@@ -6,12 +7,15 @@ import { state, markMet, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
+import { isRainy } from "./weather.js";
+import { fortuneRumorHeard, fortuneOpenOn } from "./fortune-schedule.js";
 import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable } from "../core/fortune-effects.js";
 
 export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
 
-export const fortuneToday = () => !!state && [1, 2].includes(state.chapter) && (state.day % 7 === 3 || state.day % 7 === 6);
+export { FORTUNE_RUMOR_ID, fortuneRumorHeard } from "./fortune-schedule.js";
+export const fortuneToday = () => !!state && [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
 
 /** 占い師の出店に寄る（時間は使わない）。戻り値=占ってもらったか */
 export async function doFortune() {
