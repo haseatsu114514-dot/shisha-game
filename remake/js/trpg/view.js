@@ -7,6 +7,8 @@ import { checkForecast, rerollOdds } from "./feedback.js";
 const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const PHASES = ["listen", "explore", "prepare", "serve", "ending"];
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
+const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
+const STAR_MARKS = [["insight", "見立てが的中", ""], ["plan", "提案が届いた", "物語の本来の結末にたどり着いた"], ["dice", "サイコロが味方", "判定で2回以上うまくいった"]];
 const ICONS = {
   sound: '<path d="M4 9v6h4l5 4V5L8 9H4Zm13-1a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
   log: '<path d="M4 4h16v12H9l-5 4V4Zm4 4h8m-8 4h5"/>',
@@ -16,7 +18,7 @@ const ICONS = {
 };
 
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
-export function mountTrpg(host, { scenario, characters, manifest, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
+export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, seed, profileId = null, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {} }) {
   const session = new TrpgSession(scenario, { seed, profileId });
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
@@ -311,6 +313,9 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       scene.append(el("div.trpg-ending", [
         el("div.trpg-kicker", { text: presentation.endingKicker }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
         el("p", { text: ending.line }),
+        el("div.trpg-ending-rating", { dataset: { test: "trpg-ending-rating" } }, [stars(result.rating),
+          el("strong", { text: result.rating.title }),
+          el("small", { text: STAR_MARKS.map(([key, label]) => (result.rating.marks[key] ? "★" : "☆") + label).join(" · ") })]),
       ]));
       actions.append(button("この卓を振り返る", "trpg-recap", openRecap, { disabled: busy }), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
         { disabled: busy })] : []), button(closeLabel, "trpg-finish", () => finish(result), { class: "primary", disabled: busy }));
@@ -504,6 +509,12 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
         el("strong", { text: "合計 " + result.total }), el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
       ]),
     );
+    pop.box.dataset.special = result.special || "";
+    if (result.special) body.append(el("p.trpg-roll-special", { dataset: { test: "trpg-roll-special", special: result.special } }, [
+      el("strong", { text: SPECIALS[result.special] }),
+      el("span", { text: result.special === "critical" ? session.snapshot().teamwork < 2 ? "物語を続けると、連携札が1枚戻る" : "連携札は満タン。卓が沸いた"
+        : result.special === "fumble" ? "それでも物語は続く。卓は笑いに包まれた" : "揃った出目に、卓が少しざわめく" }),
+    ]));
     if (result.helper) body.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
       [seatMark(result.helper), name(result.helper) + "の助力 ＋2 · 札 使用済"]));
     if (result.rerolled) {
@@ -526,7 +537,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     audio.play(result.grade);
     if (result.hypothesisBonus) body.append(el("p.trpg-roll-insight", { text: "見立てが合っていた · 仕掛けに ＋" + result.hypothesisBonus }));
     if (presentation.theme === "shark") body.append(el("p.trpg-roll-consequence", { text: result.grade === "success" ? "危機を進めず、次の場面へ" : "危機 ＋" + session.rules.checkPressure[result.grade] + " · 全員で次の場面へ" }));
-    if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+    if (result.special === "critical") body.append(el("p.trpg-roll-trump", { text: "最高の出目。切り札は温存しよう" }));
+    else if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
       body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
@@ -537,7 +549,7 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(
         seatMark(session.rerollActor),
         el("strong", { text: (i + 1) + "個目（" + result.dice[i] + "）を振り直す" }),
-        el("small", { text: "振り直した後の成功 約" + rerollOdds(result.dice, result.bonus, i).success + "%" }),
+        el("small", { text: rerollText(rerollOdds(result.dice, result.bonus, i)) }),
       ));
       body.append(el("p.trpg-reroll-warning", { text: "新しい出目を採用します。今より低い出目になることもあります。" }));
     } else body.append(el("p.trpg-roll-trump", { text: "振り直しには、未使用の切り札と連携札1枚が必要です。" }));
@@ -563,9 +575,18 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
       };
       const responses = (session.flow[settled.kind] || []).map(field =>
         scenario.options[field].find(o => o.id === session.snapshot().plan[field])?.response);
-      talk(sequence(...responses, scenario.checks[settled.kind][settled.grade]), continuation);
+      const chatter = settled.special && tableTalk?.["trpg_talk_" + gm + "_" + (settled.special === "critical" && !settled.inspired ? "critical_full" : settled.special)];
+      talk(sequence(chatter && chatter.every(line => cast[line.speaker]) ? chatter : [], ...responses, scenario.checks[settled.kind][settled.grade]), continuation);
     }, { class: "primary" }));
     actions.querySelector("button").focus({ preventScroll: true });
+  }
+  function rerollText(odds) {
+    return odds.success ? "振り直した後の成功 約" + odds.success + "%"
+      : "成功には届かない · ひと手間以上 約" + (odds.mixed) + "%";
+  }
+  function stars(rating) {
+    return el("span.trpg-stars", { "aria-label": "卓の評価 星" + rating.stars + "つ", dataset: { test: "trpg-stars", stars: String(rating.stars) } },
+      [0, 1, 2].map(i => el("i", { text: i < rating.stars ? "★" : "☆", class: i < rating.stars ? "lit" : "", "aria-hidden": "true" })));
   }
   function openNotes() {
     let pop;
@@ -593,7 +614,16 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     pop = modal("この卓の記録", [
       el("div.trpg-recap-heading", [el("small", { text: scenario.title }),
         el("h3", { text: scenario.endings[result.ending].title }),
-        el("p", { text: "手がかり " + result.clues.length + "個 · 判定 " + result.checks.length + "回 · 使った連携札 " + (2 - state.teamwork) + "枚" })]),
+        el("p", { text: "手がかり " + result.clues.length + "個 · 判定 " + result.checks.length + "回 · 使った連携札 " + Object.values(state.used).filter(Boolean).length + "枚" })]),
+      el("section.trpg-recap-rating", { dataset: { test: "trpg-recap-rating" } }, [
+        el("h3", [el("span", { text: "卓の評価 · " + result.rating.title + " " }), stars(result.rating)]),
+        el("ul", STAR_MARKS.map(([key, label, detail]) => el("li", { dataset: { lit: String(result.rating.marks[key]) } }, [
+          el("strong", { text: (result.rating.marks[key] ? "★ " : "☆ ") + label }),
+          el("span", { text: key === "insight" ? "見立て「" + hypothesis.label + "」 · " + (result.rating.marks.insight ? "的中" : "真相は別にあった")
+            : key === "plan" ? (result.rating.marks.plan ? detail : "別の結末へ。手がかりを読み直すと、もう一つの扉がある")
+            : "成功 " + result.checks.filter(c => c.grade === "success").length + "/3" + (result.rating.marks.dice ? " · " + detail : "") }),
+        ]))),
+      ]),
       el("div.trpg-recap-grid", [
         el("section", [el("h3", { text: "みんなで選んだこと" }),
           el("p.trpg-recap-hypothesis", { text: "見立て：" + hypothesis.label }), planSummary()]),
@@ -602,7 +632,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
             el("strong", { text: scenario.checks[check.kind].title }),
             el("span", { text: check.dice.join(" ＋ ") + " ＋ 補正" + check.bonus + " ＝ " + check.total + " · " + LABELS[check.grade] }),
             el("small", { text: [check.helper ? name(check.helper) + "の助力" : "",
-              check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : ""].filter(Boolean).join(" · ") || "基本の判定" }),
+              check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : "",
+              check.special ? SPECIALS[check.special] + (check.inspired ? "連携札＋1" : "") : ""].filter(Boolean).join(" · ") || "基本の判定" }),
           ])),
         ]),
       ]),
@@ -623,7 +654,8 @@ export function mountTrpg(host, { scenario, characters, manifest, seed, profileI
     pop = modal("この卓の遊び方", [
       el("p", { text: presentation.help }),
       el("p", { text: "判定はサイコロ二つの合計に＋1。10以上は成功、7〜9はひと手間、6以下は思わぬ出来事。どの結果でも物語は続きます。" }),
-      el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。" }),
+      el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。6のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
+      el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
       el("p", { text: "クリック・タップで操作。会話はEnter／Spaceでも進みます。Tabでボタンを選び、Enterで決定できます。" }),

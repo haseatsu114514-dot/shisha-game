@@ -87,7 +87,8 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       best: newBest ? entry : previous.best };
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
-    toast(`斧崎マキ「${DB.dialogues[reply]?.lines?.[0]?.text || ""}」`, { kind: "good" });
+    const goals = (result.challenges || []).filter(goal => goal.state === "done").length;
+    toast(`斧崎マキ「${DB.dialogues[reply]?.lines?.[0]?.text || ""}」` + (result.rank ? ` RANK ${result.rank}・チャレンジ ${goals}/${result.challenges.length}` : ""), { kind: "good" });
     return true;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);

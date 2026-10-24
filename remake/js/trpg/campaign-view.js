@@ -155,6 +155,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         copy.append(el("div.trpg-campaign-memory", { dataset: { test: "trpg-memory-" + book.id } }, [
           el("strong", { text: memory.endingTitle || scenario.endings[memory.ending]?.title || memory.ending }),
           el("p", { text: `CH.${memory.chapter} · DAY ${chapterDay(memoryClock)} / ${memory.participants.map(name).join("・")}` }),
+          Number.isInteger(memory.stars) ? el("span.trpg-campaign-stars", { text: "★".repeat(memory.stars) + "☆".repeat(3 - memory.stars),
+            "aria-label": "卓の評価 星" + memory.stars + "つ", dataset: { test: "trpg-memory-stars" } }) : null,
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
         ]));
       } else if (!stocked && !owned) {

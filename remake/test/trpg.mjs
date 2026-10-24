@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 const scenario = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_ordinary.json", import.meta.url), "utf8"));
 const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.json", import.meta.url), "utf8"));
 const catalogScenarios = [scenario, shark];
@@ -197,4 +197,49 @@ test("a matching shark hypothesis improves preparation, and an unknown plan fiel
   s.interpret("scent"); const before = s.snapshot();
   assert.throws(() => s.plan("aroma", "citrus"));
   assert.deepEqual(s.snapshot(), before);
+});
+
+test("doubles are table events: a critical returns one card up to two, never changing the grade", () => {
+  assert.equal(specialOf([6, 6]), "critical"); assert.equal(specialOf([1, 1]), "fumble");
+  assert.equal(specialOf([3, 3]), "double"); assert.equal(specialOf([2, 5]), null);
+  for (let seed = 1; seed < 400; seed++) {
+    const session = new TrpgSession(scenario, { profileId: "quiet", seed });
+    session.start();
+    session.state.teamwork = 1;
+    const rolled = session.beginCheck("listen");
+    const settled = session.settleCheck();
+    assert.equal(settled.grade, rolled.grade);
+    assert.equal(settled.special, specialOf(rolled.dice));
+    assert.equal(session.snapshot().teamwork, settled.special === "critical" ? 2 : 1);
+    assert.equal(!!settled.inspired, settled.special === "critical");
+  }
+  const full = new TrpgSession(scenario, { profileId: "quiet", seed: 1 });
+  full.start();
+  full.state.pending = { kind: "listen", dice: [6, 6], bonus: 1, hypothesisBonus: 0, helper: null, rerolled: false };
+  const capped = full.settleCheck();
+  assert.equal(capped.special, "critical"); assert.equal(capped.inspired, false); assert.equal(full.snapshot().teamwork, 2);
+});
+
+test("the three-star rating reads the hypothesis, the true ending and two successful checks", () => {
+  const best = complete();
+  const rating = best.result().rating;
+  assert.equal(rating.marks.insight, true); assert.equal(rating.marks.plan, true);
+  assert.equal(rating.marks.dice, best.snapshot().checks.filter(c => c.grade === "success").length >= 2);
+  assert.equal(rating.stars, Object.values(rating.marks).filter(Boolean).length);
+  const wrong = complete({ profileId: "home", aroma: "spice", seat: "window", approach: "quiet" }).result().rating;
+  assert.equal(wrong.marks.insight, false); assert.equal(wrong.marks.plan, false);
+  assert(["にぎやかな卓", "よい卓", "名卓", "伝説の卓"].includes(wrong.title));
+});
+
+test("table chatter files only use the GM seats and the required player", async () => {
+  const talk = JSON.parse(await readFile(new URL("../../data/" + catalog.tableTalk, import.meta.url), "utf8"));
+  const gms = new Set(catalogScenarios.map(s => s.cast.find(c => c.part === "GM").id));
+  for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double"]) {
+    const block = talk.dialogues.find(d => d.dialogue_id === "trpg_talk_" + gm + "_" + kind);
+    assert(block?.lines.length, gm + kind);
+    for (const line of block.lines) {
+      assert([gm, "hajime"].includes(line.speaker));
+      assert(Array.from(line.text).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, line.text);
+    }
+  }
 });

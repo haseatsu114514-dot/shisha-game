@@ -1,6 +1,11 @@
 // Short tabletop stories: isolated, deterministic sessions with scenario-owned rules.
 const copy = value => structuredClone(value);
 
+export const TEAMWORK_MAX = 2;
+/** Doubles are table events: 6-6 critical, 1-1 fumble, any other pair a cheer. */
+export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === 6 ? "critical" : dice[0] === 1 ? "fumble" : "double";
+const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
+
 export class TrpgSession {
   constructor(scenario, { seed = Date.now(), profileId = null } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
@@ -93,7 +98,7 @@ export class TrpgSession {
     const p = this.state.pending;
     if (!p) throw new Error("No pending check");
     const total = p.dice[0] + p.dice[1] + p.bonus;
-    return { ...copy(p), total, grade: total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble" };
+    return { ...copy(p), total, grade: total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble", special: specialOf(p.dice) };
   }
 
   reroll(index) {
@@ -108,11 +113,27 @@ export class TrpgSession {
 
   settleCheck() {
     const result = this.checkResult();
+    // A critical returns one shared card. It never changes the grade the dice already gave.
+    if (result.special === "critical") {
+      result.inspired = this.state.teamwork < TEAMWORK_MAX;
+      if (result.inspired) this.state.teamwork++;
+    }
     this.state.checks.push(result);
     this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
     this.state.pending = null;
     this.state.phase = { listen: "explore", prepare: "serve", serve: "ending" }[result.kind];
     return copy(result);
+  }
+
+  /** Three public stars, revealed with the ending: reading the traveler, the plan, and the dice. */
+  rating(ending = null) {
+    const marks = {
+      insight: this.state.hypothesis === this.profile.id,
+      plan: (ending ?? this.result().ending) === this.profile.ending,
+      dice: this.state.checks.filter(check => check.grade === "success").length >= 2,
+    };
+    const stars = Object.values(marks).filter(Boolean).length;
+    return { stars, marks, title: RATING_TITLES[stars] };
   }
 
   result() {
@@ -122,7 +143,7 @@ export class TrpgSession {
       n + (this.profile.likes[field].includes(value) ? (this.scenario.fitWeights?.[field] || 1) : 0), 0);
     const ending = fit >= 3 ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
     return {
-      scenarioId: this.state.scenarioId, version: this.state.version, ending,
+      scenarioId: this.state.scenarioId, version: this.state.version, ending, rating: this.rating(ending),
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), checks: copy(this.state.checks),

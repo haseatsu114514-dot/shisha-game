@@ -583,3 +583,32 @@
   .trpg-root.trpg-cinematic .trpg-stage-pockets .trpg-table-clue { width: 28px; height: 35px; font-size: 0; }
   .trpg-root.trpg-cinematic .trpg-table-clue::before { content: '✓'; font-size: 15px; }
 }
+
+/* Doubles, the three-star table rating and recap. Presentation only. */
+.trpg-root.trpg-cinematic .trpg-roll-special { display: grid; justify-items: center; gap: 2px; margin: 0 auto 10px; padding: 7px 18px; width: fit-content; border: 1px solid #e8cf8d; border-radius: 6px; background: #2b23128c; text-align: center; animation: trpg-special-in .5s cubic-bezier(.2,1.4,.4,1) both; }
+.trpg-root.trpg-cinematic .trpg-roll-special strong { color: #ffe39a; font-size: 24px; letter-spacing: .12em; }
+.trpg-root.trpg-cinematic .trpg-roll-special span { color: #efe2c2; font-size: 13px; }
+.trpg-root.trpg-cinematic .trpg-roll-special[data-special="critical"] { border-color: #ffd36e; box-shadow: 0 0 26px #ffcf6a66; background: #3a2a0ca8; }
+.trpg-root.trpg-cinematic .trpg-roll-special[data-special="fumble"] { border-color: #a9b6c9; background: #1a2230b0; }
+.trpg-root.trpg-cinematic .trpg-roll-special[data-special="fumble"] strong { color: #c7d4e6; }
+.trpg-root.trpg-cinematic .trpg-roll-stage[data-special="critical"] .trpg-die { box-shadow: 0 0 22px #ffd36e; }
+@keyframes trpg-special-in { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+.trpg-stars { display: inline-flex; gap: 3px; }
+.trpg-stars i { font-style: normal; color: #77705f; }
+.trpg-stars i.lit { color: #ffd776; text-shadow: 0 0 10px #ffcf6a99; }
+.trpg-root.trpg-cinematic .trpg-ending-rating { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 2px; }
+.trpg-root.trpg-cinematic .trpg-ending-rating .trpg-stars { font-size: 30px; }
+.trpg-root.trpg-cinematic .trpg-ending-rating strong { color: #f6e3b2; font-size: 22px; font-weight: 500; letter-spacing: .08em; }
+.trpg-root.trpg-cinematic .trpg-ending-rating small { flex-basis: 100%; color: #d6d0bd; font-size: 13px; letter-spacing: .04em; }
+.trpg-recap-rating { margin: 12px 0; padding: 10px 14px; border: 1px solid #c9ad74; border-radius: 6px; background: #f6ead0; }
+.trpg-recap-rating .trpg-stars i { color: #b7ad97; }
+.trpg-recap-rating .trpg-stars i.lit { color: #c48a14; text-shadow: none; }
+.trpg-recap-rating h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; }
+.trpg-recap-rating ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.trpg-recap-rating li { display: grid; grid-template-columns: 9.5em 1fr; gap: 10px; font-size: 13px; }
+.trpg-recap-rating li[data-lit="true"] strong { color: #9a6a0c; }
+.trpg-recap-rating li[data-lit="false"] strong { color: #8d8676; }
+.trpg-campaign-stars { display: block; color: #ffd776; letter-spacing: .1em; }
+/* Keep the seat rail below the explore hotspots while the table is idle. */
+.trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-table { bottom: 14px; }
+@media (prefers-reduced-motion: reduce) { .trpg-root.trpg-cinematic .trpg-roll-special { animation: none; } }

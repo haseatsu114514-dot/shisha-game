@@ -83,7 +83,8 @@ hostの既存DOMを消さず一時画面を重ね、終了・AbortSignal・host�
 そのIDの立ち絵を使う。固定の旧IDをコードへ追加せず、改名前／改名後の目録に対応する。
 画像の実デコードを待ってから操作を開き、失敗時は再読込／中断ができる。
 
-返り値は {completed, cancelled, throws, total, grade, ruleset, mode, opponent, throwCount, maximum}。
+返り値は {completed, cancelled, throws, total, grade, ruleset, mode, opponent, throwCount, maximum, challenges, rank, title}。
+challengesは `{id,label,short,state:"done"|"failed"|"open",value,goal,end}` の配列（レッスンは空）。rank・titleは完走時だけ。
 各投は aim / baseAim / sway / power / called / landing / rotation / stuck / score / outcome / dropReason を持つ。
 全投の結果を見て「終了」した時だけ completed=true。中断は completed=false、grade=null。
 呼び出し元がcompletedを確認して後段VNを再生し、正式台本読了後だけ物語や報酬を処理する。
@@ -94,6 +95,15 @@ hostの既存DOMを消さず一時画面を重ね、終了・AbortSignal・host�
 `js/daily/hiyori-axe.js` が前段VN→本機能3投→後段VNを呼び、台本を最後まで読んだ時だけcallerが正式な行動・報酬を処理する。本編の後半章への接続は未実装。
 生成済みのボード・背景・ひより差分（素材PR #478）を参照し、旧画像は変更しない。横見本の斧PNG/WebPも保存し、正面投擲の描画は厚みのある3D形状を使う。
 素材登録のminigame_connected=falseは#477登録時点の履歴で、現在は練習ページと本編ひよりイベントで使っている。
+
+## チャレンジ・連続・ランク（2026-10-24）
+
+`axe-challenges.js` は解決済みの投だけを読む表示層で、得点・ひよりの計画・保存を変えない。
+- 毎回3つのチャレンジを、狙い・制御・持久の段から1つずつ選ぶ。3投練習は易しい表、10投と対戦は難しい表。`seed` 指定時は同じ組み合わせ。もう一度でも同じ3つに挑める。
+- 達成した投で「CHALLENGE CLEAR」、最後の一投の前に「LAST THROW」（対戦は点差の案内つき）。落下ゼロ・全投グリーンは完走時に確定する。
+- 5点以上が続くと「連続 ×N」。見守り役の反応も連続・最終投・成績別のまとめに変わる。
+- 終了時にRANK S（8割以上）〜D と、良かった点を表す称号を表示する。斧投げBarの完走通知にもランクとチャレンジ数を出す。
+- 回帰は `node --test remake/test/axe_challenges.mjs`。
 
 ## ゲージと投擲の見える関係（#537）
 
