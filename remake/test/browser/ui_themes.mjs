@@ -24,6 +24,20 @@ await suite("ui-themes-preview", async check => {
         });
         assert(painted.heights.every(h=>h>=44));
         layouts.push(painted.layout); colors.push(painted.color); frames.push(painted.frame);
+        await page.selectOption("#preview-scene","twolines");
+        await page.locator(".vn-next.show").waitFor();
+        const twoLines = await page.locator(".vn-text").evaluate(el => {
+          const range = document.createRange(); range.selectNodeContents(el);
+          const rows = [...range.getClientRects()].filter(r=>r.width>0);
+          const tops = [...new Set(rows.map(r=>Math.round(r.top)))];
+          const controls = document.querySelector(".vn-controls").getBoundingClientRect();
+          const text = el.getBoundingClientRect();
+          return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1),
+            overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
+        });
+        assert.equal(twoLines.count,2,"two full lines render in every theme");
+        assert(twoLines.contained,"both lines fit inside the text area");
+        assert(!twoLines.overlap,"controls do not cover either text line");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
         assert.equal(await page.locator(".vn-name").evaluate(el=>getComputedStyle(el).display),"none");

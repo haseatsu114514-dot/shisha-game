@@ -82,6 +82,9 @@ async function start() {
   Object.assign(config, { textSpeed: 4, mute: true });
   const scenes = {
     hiyori: { ...DB.dialogues.hiyori_shop_repeat_0, lines: DB.dialogues.hiyori_shop_repeat_0.lines.slice(1) },
+    twolines: { dialogue_id: "ui-preview-two-lines", lines: [
+      { speaker: "hiyori", face: "smile", text: "……また見つかっちゃった。\n今日はここで、ゆっくりしていってね。" },
+    ] },
     names: { dialogue_id: "ui-preview-names", lines: [
       { speaker: "adam", face: "normal", text: "名前が切り替わっても、同じ会話ウインドウで表示します。" },
       { speaker: "hajime", text: "本文の送り方や操作は、本編と同じです。" },
