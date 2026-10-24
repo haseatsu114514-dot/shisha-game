@@ -60,6 +60,19 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.equal(storage.get("suien_remake_gallery"), '["cg_minto_cheki"]', "seen CGs stay untouched");
   core.loadFromSlot(slot); core.loadFromSlot(otherSlot);
   assert.deepEqual(copy(g.readGalleryProgress()), kept, "repeated older LOADs neither revoke nor duplicate records");
+  seed();
+  // Parseable old JSON may contain an unusable ID. Only the legacy import is best effort.
+  storage.set(core.SAVE_KEY, JSON.stringify({ chapter: 2, day: 19, phase: "daily", flags: {},
+    keepsakes: [{ toString: null, valueOf: null }] }));
+  const previousOwner = core.state;
+  assert.doesNotThrow(() => core.loadFromSlot(slot), "malformed old collection must not abort a valid LOAD");
+  assert.notEqual(core.state, previousOwner);
+  const written = JSON.parse(storage.get(core.SAVE_KEY));
+  assert.deepEqual([written.day, written.money, written.stamina], [2, 12345, 61],
+    "valid LOAD must replace the old autosave even if legacy collection import throws");
+  assert.equal(storage.get(slot), JSON.stringify(earlier), "malformed legacy import cannot rewrite the source slot");
+  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
+    "malformed collection IDs cannot manufacture unlocks");
   seed(); storage.set(core.SAVE_KEY, "{broken");
   assert.doesNotThrow(() => core.loadFromSlot(slot));
   assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
