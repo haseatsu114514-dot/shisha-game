@@ -100,6 +100,11 @@ await suite("ds-overlay-layers", async check => {
         assert(!hiddenHud.intercepted, "Hidden MENU covers the dialogue");
         await page.touchscreen.tap(hiddenHud.x, hiddenHud.y);
         assert.equal(await page.locator(".menu-modal").count(), 0);
+        // 会話中のタッチバーは会話の操作（AUTO/SKIP/LOG/用語）が使う。そこが開いたら閉じて続ける。
+        if (await page.locator(".glossary-modal").count()) {
+          await page.locator(".glossary-modal .modal-actions button").first().tap();
+          await page.locator(".glossary-modal").waitFor({ state: "detached" });
+        }
         for (let i = 0; i < 8 && await page.locator("body.vn-open").count(); i++) {
           await page.locator("#vn.active .vn-box").tap({ force: true });
           await page.waitForTimeout(80);
@@ -199,6 +204,10 @@ await suite("ds-overlay-layers", async check => {
           && title.top < toolbar.bottom && title.bottom > toolbar.top;
         assert(!overlaps, `Display toolbar covers chapter-clear title: ${JSON.stringify({ title, toolbar })}`);
         await reachable(page.locator(".end-title"));
+        // 切替の選択肢は「表示」を開くと出る。
+        await reachable(page.locator('[data-test="game-layout-settings"]'));
+        if (!(await page.locator(".game-layout-toolbar").evaluate(n => n.open)))
+          await page.locator('[data-test="game-layout-settings"]').tap();
         for (const control of ["game-layout-normal", "game-layout-ds", "game-layout-recover"])
           await reachable(page.locator(`[data-test="${control}"]`));
         await page.screenshot({ path: path.join(out, "ds-overlay-landscape-clear.png") });

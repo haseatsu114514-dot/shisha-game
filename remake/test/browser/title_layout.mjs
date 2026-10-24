@@ -61,6 +61,9 @@ async function gameIsDS(p) {
   assert.equal(panels.length, 2);
   assert(panels.every(n => !n.hidden && n.w > 0 && n.h > 0));
   assert(Math.abs(panels[0].w-panels[1].w) < 1 && Math.abs(panels[0].h-panels[1].h) < 1);
+  // 表示切替は「表示」から開く（DS風ではヒンジの小さなボタン）。
+  assert.equal(await button(p, "game-layout-settings").isVisible(), true);
+  if (!(await p.locator(".game-layout-toolbar").evaluate(n => n.open))) await button(p, "game-layout-settings").click();
   assert.equal(await button(p, "game-layout-normal").isVisible(), true);
 }
 async function check(name, options, run, setup = null) {
@@ -97,7 +100,10 @@ try {
         if (mode === "ds") {
           const rects = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => { const r = n.getBoundingClientRect(); return { x:r.x, y:r.y, w:r.width, h:r.height }; }));
           assert(Math.abs(rects[0].w - rects[1].w) < 1 && Math.abs(rects[0].h - rects[1].h) < 1, "panels must have equal dimensions");
-          assert(device === "phone" ? rects[1].y > rects[0].y + rects[0].h : rects[1].x > rects[0].x + rects[0].w);
+          // 縦長の画面は上下（端末を縦に持つ形）、背の低い横長だけ左右に並ぶ。
+          const stacked = await p.evaluate(() => document.documentElement.dataset.dsLayout === "stacked");
+          assert(stacked ? rects[1].y > rects[0].y + rects[0].h : rects[1].x > rects[0].x + rects[0].w);
+          if (device === "phone") assert(stacked, "phone portrait must stack the two screens");
           for (const size of await p.locator(".title-item").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().height))) assert(size >= 44);
         }
         await p.reload(); await ready(p);
