@@ -138,11 +138,11 @@ await suite("affinity-gates", async check => {
           const rescued = G.stats.releaseAffinity(id);
           legacy.push({ id, points, unchanged, carry, held, rescued, after: s.affinity[id], level: G.stats.affinityLevel(id) });
         }
-        let s = G.fresh(); s.affinity.rin = 66; s.flags._friend_rin = true;
+        let s = G.fresh(); s.story.rin = 0; s.affinity.rin = 66; s.flags._friend_rin = true;
         G.stats.gainAffinity("rin", 10); G.core.save(); G.core.load();
         const oldFriend = { points: G.core.state.affinity.rin, friend: G.core.state.flags._friend_rin,
           waiting: G.stats.affinityGateWaiting("rin"), answer: G.core.state.romanceChoices.bond_q1_rin ?? null };
-        s = G.fresh(); G.stats.ensureAffinityLevel("minto", 5);
+        s = G.fresh(); s.story.minto = 0; G.stats.ensureAffinityLevel("minto", 5);
         const guarantee = s.flags._minto_affinity_waiting_pts;
         G.stats.ensureAffinityLevel("minto", 5);
         const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts };
