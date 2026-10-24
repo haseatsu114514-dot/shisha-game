@@ -10,8 +10,8 @@
 .vn-box, .vn-controls { translate: 0 2px; }
 :root {
   --vn-dialogue-width: 1216px;
-  --vn-dialogue-height: 248px;
-  --vn-dialogue-bottom: 24px;
+  --vn-dialogue-height: 188px;
+  --vn-dialogue-bottom: 28px;
   --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
   --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
   --vn-lounge-narration: url("../img/ui/vn-lounge/narration.svg");

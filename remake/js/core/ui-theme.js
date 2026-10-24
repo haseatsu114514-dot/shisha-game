@@ -8,6 +8,13 @@ export const UI_THEMES = Object.freeze([
   { id: "classic", label: "これまでのゴージャス", note: "墨紫・真鍮の装飾枠" },
 ]);
 export const DEFAULT_UI_THEME = "smoke";
+const FRAME_ART = Object.freeze({
+  smoke:"img/ui/vn-faithful/smoke.webp", "smoke-purple":"img/ui/vn-faithful/smoke-purple.webp",
+  "cut-paper":"img/ui/vn-calm/paper.webp", amber:"img/ui/vn-lounge/amber.svg",
+  tissue:"img/ui/vn-faithful/tissue.webp", classic:"img/ui/vn-lounge/narration.svg",
+  "heisei-blue":"img/ui/blue-preview/panel.webp",
+});
+export function uiThemeFrame(value) { return FRAME_ART[value] || FRAME_ART[DEFAULT_UI_THEME]; }
 export function normalizeUiTheme(value) {
   return UI_THEMES.some(theme => theme.id === value) ? value : DEFAULT_UI_THEME;
 }

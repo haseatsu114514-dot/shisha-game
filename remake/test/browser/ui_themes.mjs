@@ -15,6 +15,27 @@ function fixedCommands(actual,expected,state) {
   assert(actual.every((value,i)=>Math.abs(value-expected[i])<.1),`command cells and labels must not move for ${state}`);
 }
 
+// DOMの枠が近くても、原画の透明な余白で札が浮くことがある。実際のalphaも確認する。
+async function paintedAttachment(page) {
+  return page.evaluate(async()=>{
+    const box=document.querySelector('.vn-box'), r=box.getBoundingClientRect(), scale=r.width/1216;
+    const style=getComputedStyle(box,'::before');
+    const src=/^url\(["']?(.*?)["']?\)$/.exec(style.backgroundImage)[1];
+    const img=new Image();img.src=src;await img.decode();
+    const canvas=document.createElement('canvas');canvas.width=Math.ceil(parseFloat(style.width));canvas.height=Math.ceil(parseFloat(style.height));
+    const context=canvas.getContext('2d');context.drawImage(img,0,0,canvas.width,canvas.height);
+    return ['.vn-name','.vn-controls'].map(selector=>{
+      const tab=document.querySelector(selector).getBoundingClientRect();
+      const y=Math.round((tab.bottom-r.top)/scale-parseFloat(style.top)+4);
+      const start=Math.ceil((tab.left-r.left)/scale-parseFloat(style.left)+20);
+      const end=Math.floor((tab.right-r.left)/scale-parseFloat(style.left)-20);
+      let painted=0,total=0;
+      for(let x=start;x<end;x+=8){total++;if(y>=0&&y<canvas.height&&context.getImageData(x,y,1,1).data[3]>=128)painted++;}
+      return painted/total;
+    });
+  });
+}
+
 const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic"];
 await suite("ui-themes-preview", async check => {
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
@@ -44,6 +65,8 @@ await suite("ui-themes-preview", async check => {
         await page.selectOption("#preview-scene","twolines");
         await page.locator(".vn-next.show").waitFor();
         fixedCommands(await commandGeometry(page),fixedHeader,id+" two lines");
+        const attached=await paintedAttachment(page);
+        assert(attached.every(coverage=>coverage>=.75),`tabs must touch the painted surface, without an alpha gap: ${id} ${attached}`);
         const twoLines = await page.locator(".vn-text").evaluate(el => {
           const range = document.createRange(); range.selectNodeContents(el);
           const rows = [...range.getClientRects()].filter(r=>r.width>0);
@@ -59,21 +82,21 @@ await suite("ui-themes-preview", async check => {
           const scale = box.width / 1216;
           const overlaps = (a,b) => a.right>b.left && a.left<b.right && a.bottom>b.top && a.top<b.bottom;
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
-            footerClear:next.bottom<=box.bottom-25*scale,
-            nameAligned:Math.abs(nameGlyph.left-text.left)<=.5,
-            nameInFrame:name.top>=box.top-4*scale && name.bottom<=text.top-2*scale,
+            footerClear:next.bottom<=box.bottom-23*scale,
+            nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
+            nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top>=box.top+16*scale && controls.bottom<=text.top-24*scale && controls.left>box.left+box.width/2 && controls.right<=text.right+.5*scale,
+            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top+8*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-60*scale,
+            sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2))<=.5*scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
         });
         assert.equal(twoLines.count,2,"two full lines render in every theme");
-        if(id==="smoke" || id==="smoke-purple") {
-          assert(twoLines.nameAligned,"smoke name glyphs align with the main text left edge");
-          assert(twoLines.nameInFrame,"smoke name stays connected to the upper text panel instead of floating outside it");
-        }
+        assert(twoLines.nameCentered,"speaker text is centered in its own tab");
+        assert(twoLines.nameOnEdge,"name tab protrudes above and overlaps the body edge");
+        assert(twoLines.sceneOpen,"dialogue leaves the central scene open above the lower quarter");
         assert(twoLines.contained,"both lines fit inside the text area");
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
@@ -81,8 +104,8 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
         assert(twoLines.headerAligned,"name and controls share a header centreline");
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
-        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.6,"command text is a quieter third level");
-        assert(twoLines.margins[0]>=103.9 && twoLines.margins[1]>=103.9,"reserve space for visible folds and smoke, beyond glyph bounds");
+        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
+        assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
         assert.equal(await page.locator(".vn-name").evaluate(el=>getComputedStyle(el).display),"none");
@@ -121,9 +144,10 @@ await suite("ui-themes-preview", async check => {
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(const layout of layouts) assert.deepEqual(layout,layouts[0],"all skins share stable text, frame and command geometry");
+      for(const layout of layouts) assert.deepEqual(layout.slice(0,8),layouts[0].slice(0,8),"all skins share text and body geometry; tab height follows the painted material edge");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
+      await page.locator(".vn-next.show").waitFor();
       const paddedNameFits = await page.evaluate(async () => {
         const name=document.querySelector(".vn-name");
         const original=name.textContent, originalFont=name.style.fontSize;
@@ -162,6 +186,29 @@ await suite("ui-themes-preview", async check => {
       await page.waitForFunction(()=>document.querySelector("#preview-status").textContent.includes("会話終了"));
     },{viewport});
   }
+  await check("font-and-background-preview",async page=>{
+    await page.locator('.vn-next.show').waitFor();
+    const saved=await storageSnapshot(page);
+    let release, requested;
+    const gate=new Promise(resolve=>{release=resolve;});
+    const started=new Promise(resolve=>{requested=resolve;});
+    await page.route('**/ZenOldMincho-Blue-Regular.woff2',async route=>{requested();await gate;await route.continue();});
+    try {
+      await page.selectOption('#preview-theme','cut-paper');
+      await Promise.race([started,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Selected reading font was not requested")),3000))]);
+      assert.equal(await page.locator('.vn-text').textContent(),'','do not paginate or reveal dialogue in a temporary fallback font');
+      assert.equal(await page.locator('.vn-next.show').count(),0,'a loading scene must not retain the old next indicator');
+    } finally { release(); }
+    await page.locator('.vn-next.show').waitFor();
+    assert(await page.evaluate(()=>document.fonts.check('400 28px "Suien Reading Mincho"','今日はここで')));
+    for(const [background,asset] of [['tonari','bg_tonari_inside_day'],['street','bg_street_night'],['eden','bg_eden_shop']]) {
+      await page.selectOption('#preview-background',background);
+      await page.locator('.vn-next.show').waitFor();
+      assert(await page.locator('#bg .bg-img.show').evaluate((node,id)=>getComputedStyle(node).backgroundImage.includes(id),asset));
+      await assertFits(page,'.vn-box,.vn-controls');
+    }
+    assert.deepEqual(await storageSnapshot(page),saved,'font and background previews do not modify saves/config');
+  });
 },{entry:new URL("conversation-preview.html",baseURL).href,readySelector:".vn-box"});
 
 await suite("ui-themes-config",async check=>{

@@ -22,7 +22,8 @@ for(const {id,label} of [...UI_THEMES,{id:"heisei-blue",label:"R2 平成の青�
   const option=document.createElement("option"); option.value=id; option.textContent=label; themeSelect.append(option);
 }
 themeSelect.value=theme;
-themeSelect.addEventListener("change",()=>applyPreviewTheme(themeSelect.value));
+themeSelect.disabled=true;
+themeSelect.addEventListener("change",()=>{applyPreviewTheme(themeSelect.value);start();});
 themeSelect.id = "preview-theme";
 document.querySelector("#preview-restart").before(themeSelect);
 const characterSelect=document.createElement("select");
@@ -36,6 +37,17 @@ if(previewQuery.has("character")) selector.value="characters";
 characterSelect.hidden=selector.value!=="characters";
 characterSelect.disabled=true;
 themeSelect.after(characterSelect);
+const backgroundSelect=document.createElement("select");
+backgroundSelect.id="preview-background";
+backgroundSelect.setAttribute("aria-label","比較する背景");
+const backgrounds={eden:["Eden・暖色","res://assets/backgrounds/bg_eden_shop.png"],tonari:["となり・昼","res://assets/backgrounds/bg_tonari_inside_day.png"],street:["街・夜","res://assets/backgrounds/bg_street_night.png"]};
+for(const [id,[label]] of Object.entries(backgrounds)){
+  const option=document.createElement("option");option.value=id;option.textContent=label;backgroundSelect.append(option);
+}
+backgroundSelect.value=Object.hasOwn(backgrounds,previewQuery.get("background"))?previewQuery.get("background"):"eden";
+backgroundSelect.disabled=true;
+backgroundSelect.addEventListener("change",start);
+characterSelect.after(backgroundSelect);
 const kit = document.createElement("aside");
 kit.className = "ui-samples";
 kit.hidden = true;
@@ -133,7 +145,7 @@ async function start() {
     ] },
   };
   status.textContent = "画面をクリックで会話送り · セーブへの影響なし";
-  await play(scenes[selector.value], { bg: "res://assets/backgrounds/bg_eden_shop.png", signal });
+  await play(scenes[selector.value], { bg: backgrounds[backgroundSelect.value][1], signal });
   if (!signal.aborted) status.textContent = "会話終了 ·「もう一度」で再生できます";
 }
 selector.addEventListener("change", start);
@@ -144,6 +156,8 @@ try {
   await Promise.all([document.fonts.load('700 24px "Suien Name"', "ひよりアダム"), document.fonts.load('500 32px "Suien Gothic"')]);
   selector.disabled = false;
   characterSelect.disabled = false;
+  themeSelect.disabled = false;
+  backgroundSelect.disabled = false;
   if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Blue Mincho"',"みんとあげはつむぎ時間帯");
   document.querySelector("#preview-restart").disabled = false;
   await start();

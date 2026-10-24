@@ -17,7 +17,7 @@ await suite("conversation-ui", async check => {
       });
       assert(geometry.aligned<=4,"name and commands share the attached header centreline");
       assert(geometry.font.includes("Suien Name"));
-      assert.equal(geometry.nameTop, 22);
+      assert.equal(geometry.nameTop, -36);
       assert(geometry.buttons.every(height => height >= 44));
       await page.locator('[data-test="vn-auto"]').click();
       assert(await page.locator('[data-test="vn-auto"]').evaluate(el => el.classList.contains("on")));
