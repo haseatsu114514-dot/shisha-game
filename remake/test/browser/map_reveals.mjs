@@ -24,6 +24,7 @@ try {
       window.R = { core: await import('./js/core/state.js'), map: await import('./js/daily/map.js'), hud: await import('./js/daily/hud.js') };
       R.core.config.bgmVolume = 0; R.hud.initHud({}); R.hud.showHud(true);
       Object.assign(R.core.newGame(), { phase: 'daily', day: 3, seed: 131, weatherSeed: 4 });
+      R.core.state.limeRead.push('lime_tsumugi_fortune_rumor'); // #780: 占い師はつむぎの噂を読んでから出る
       R.shown = 0;
       R.phaseObserver = new MutationObserver(records => {
         if (records.some(r => r.target.dataset.revealPhase === 'pause')) R.pauseAt = performance.now();

@@ -60,6 +60,7 @@ try {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
+          s.limeRead.push('lime_tsumugi_fortune_rumor'); // #780: 占い師はつむぎの噂を読んでから出る
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }
