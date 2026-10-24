@@ -86,6 +86,7 @@
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
         "node --test remake/test/trpg_feedback.mjs",
+        "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs"
