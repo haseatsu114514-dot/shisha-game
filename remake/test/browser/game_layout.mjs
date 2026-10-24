@@ -193,6 +193,19 @@ try {
           branches:{done:[{speaker:"sumi",face:"normal",text:"選択できた。"}]}},{bg:"res://assets/backgrounds/bg_tonari_inside.png"});
       });
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
+      for(const theme of ["smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
+        await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
+        const toolbar=await p.evaluate(()=>{
+          const visual=document.querySelector(".game-ds-visual").getBoundingClientRect();
+          const ctl=document.querySelector(".vn-controls").getBoundingClientRect();
+          const text=document.querySelector(".vn-text").getBoundingClientRect();
+          return { inside:ctl.left>=visual.left && ctl.right<=visual.right && ctl.top>=visual.top && ctl.bottom<visual.bottom,
+            clearText:!(ctl.right>text.left && ctl.left<text.right && ctl.bottom>text.top && ctl.top<text.bottom), upperRight:visual.right-ctl.right<12 && ctl.top-visual.top<12,
+            sizes:[...document.querySelectorAll(".vn-ctl")].map(n=>n.getBoundingClientRect().height) };
+        });
+        assert(toolbar.inside && toolbar.clearText && toolbar.upperRight,"DS toolbar remains in scene upper right for "+theme);
+        assert(toolbar.sizes.every(h=>h>=44),"DS controls keep 44px touch targets");
+      }
       if(!touch){
         const before=await p.evaluate(()=>JSON.stringify(__remake.state));
         await button(p,"game-layout-normal").focus();await p.keyboard.press("Enter");

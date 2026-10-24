@@ -8,13 +8,15 @@ export function createNameFit(element) {
     if (!element.isConnected || element.closest('body.game-ds') || !element.textContent) return;
     const width = element.clientWidth;
     const box = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    const available = width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
     if (!width || !box.width) return;
     const range = document.createRange();
     range.selectNodeContents(element);
     const textWidth = range.getBoundingClientRect().width * width / box.width;
-    if (textWidth <= width) return;
+    if (textWidth <= available) return;
     const fontSize = parseFloat(getComputedStyle(element).fontSize);
-    const fitted = Math.max(14, Math.floor(fontSize * (width - 1) / textWidth * 1000) / 1000);
+    const fitted = Math.max(14, Math.floor(fontSize * (available - 1) / textWidth * 1000) / 1000);
     element.style.setProperty('--vn-name-fit-size', `${fitted}px`);
   }
   const observer = new ResizeObserver(fit);

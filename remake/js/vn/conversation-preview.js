@@ -45,6 +45,7 @@ function fit() {
 }
 fit();
 addEventListener("resize", fit);
+new ResizeObserver(fit).observe(document.querySelector(".preview-tools"));
 initLayers();
 const lightButton = document.createElement("button");
 lightButton.id = "preview-light";
@@ -83,7 +84,7 @@ async function start() {
   const scenes = {
     hiyori: { ...DB.dialogues.hiyori_shop_repeat_0, lines: DB.dialogues.hiyori_shop_repeat_0.lines.slice(1) },
     twolines: { dialogue_id: "ui-preview-two-lines", lines: [
-      { speaker: "hiyori", face: "smile", text: "……また見つかっちゃった。\n今日はここで、ゆっくりしていってね。" },
+      { speaker: "hiyori", face: "smile", text: "今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。" },
     ] },
     names: { dialogue_id: "ui-preview-names", lines: [
       { speaker: "adam", face: "normal", text: "名前が切り替わっても、同じ会話ウインドウで表示します。" },

@@ -2181,6 +2181,8 @@
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
+        "remake/css/vn-lounge.css",
+        "remake/js/vn/name-fit.js",
         "remake/js/core/ui-theme.js",
         "remake/js/core/state.js",
         "remake/js/scenes/title.js",

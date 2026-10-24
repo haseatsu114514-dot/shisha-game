@@ -51,6 +51,8 @@
 <link rel="stylesheet" href="css/ui-themes.css">
 <style>
 #viewport{top:48px} .preview-tools{position:fixed;inset:0 0 auto;height:48px;display:flex;align-items:center;gap:12px;padding:4px 16px;background:#15111b;color:#f4ede0;z-index:1000;font:14px var(--font)}.preview-tools select,.preview-tools button{font:inherit;color:inherit;background:#241d2c;border:1px solid #8a7147;padding:7px 12px;border-radius:3px;min-height:36px}.preview-tools select:focus-visible,.preview-tools button:focus-visible{outline:2px solid #e8c27a;outline-offset:2px}#preview-status{font-size:12px;color:#c8bdab}@media(max-width:700px){#preview-status{display:none}.preview-tools{gap:8px;padding:4px 8px}.preview-tools b{font-size:12px}}
+@media(max-width:1000px){.preview-tools b,#preview-status{display:none}.preview-tools select,.preview-tools button{white-space:nowrap}.preview-tools{gap:8px}.preview-tools .ui-theme-select{max-width:36vw}}
+@media(max-width:700px){.preview-tools{height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:88px}.preview-tools select,.preview-tools .ui-theme-select{min-width:0;width:100%;max-width:100%}}
 </style></head><body data-screen="preview"><nav class="preview-tools" aria-label="会話UIプレビュー"><b>本編 会話UI</b><select id="preview-scene" aria-label="表示する場面" disabled><option value="hiyori">ひより・日常会話</option><option value="twolines">本文2行</option><option value="names">話者の切り替え</option><option value="narration">地の文・心の声</option><option value="choices">選択肢</option></select><button id="preview-restart" disabled>もう一度</button><span id="preview-status" role="status">読み込み中…</span></nav>
 <div id="viewport">
   <div id="stage">

@@ -1,4 +1,4 @@
-/* 会話枠に合わせたゲーム全体の素材・配色。寸法、判定色、クリック領域は既存のまま。 */
+/* 会話枠に合わせたゲーム全体の素材・配色。組版と操作位置はvn-lounge.cssで共有する。 */
 :root:where([data-ui-theme]:not([data-ui-theme="classic"])) {
   --gold: #bde5dc; --gold-hi: #e4fff7; --text: #f4f4ef; --text-dim: #bdc9c5;
   --ink: #0b1015; --ink-2: #151c24; --panel: #101820f5; --panel-edge: #a3d5c477;
@@ -91,9 +91,9 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.ui-heart,.gc-hearts i)::
   background: linear-gradient(to top,#ffa9c0 var(--fill,0%),transparent var(--fill,0%));
 }
 
-/* 会話の本文幅・高さと名前の領域、操作バーとの5px間隔は保持する。 */
-html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box::before { inset: -41px -20px -12px; background-size: 100% 100%; }
-html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box:is(.narration,.thought)::before { inset: -41px -20px -12px; }
+/* 各素材の見える縁は、共通の本文安全領域の外側に置く。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box::before { inset: -24px -16px -4px; background-size: 100% 100%; }
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-box:is(.narration,.thought)::before { inset: -24px -16px -4px; }
 html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-name {
   color: var(--vn-lounge-name); background: transparent; border: 0; border-radius: 0; box-shadow: none;
 }
@@ -112,7 +112,7 @@ html[data-ui-theme="cut-paper"] .vn-name::after { content: none; }
 html[data-ui-theme][data-ui-theme="cut-paper"] :is(.btn,.vn-choice,.vn-controls .vn-ctl) { border-radius: 0; }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls {
   background: linear-gradient(160deg,#392040,#1b1029); border-top:3px solid #c579de;
-  clip-path:polygon(7% 0,96% 0,100% 100%,0 100%); padding:5px 12px;
+  clip-path:polygon(7% 0,96% 0,100% 100%,0 100%); border-right:3px solid #c579de; padding:5px 12px;
 }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls .vn-ctl { background:none; border:0; box-shadow:none; }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls .vn-ctl + .vn-ctl::before { content:""; background:#d8c5dd99; }
@@ -149,7 +149,7 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-controls { b
 html[data-ui-theme]:not([data-ui-theme="classic"]) body.game-ds .vn-box .vn-name { border-width: 0; }
 /* 生成素材は本文面そのもの。SVG試作にあった上端の空白を足さない。 */
 html[data-ui-theme]:is([data-ui-theme="cut-paper"],[data-ui-theme="tissue"]) .vn-box::before,
-html[data-ui-theme]:is([data-ui-theme="cut-paper"],[data-ui-theme="tissue"]) .vn-box:is(.narration,.thought)::before { inset:-4px -20px -12px; }
+html[data-ui-theme]:is([data-ui-theme="cut-paper"],[data-ui-theme="tissue"]) .vn-box:is(.narration,.thought)::before { inset:-12px -16px -8px; }
 /* 動きの試作はプレビューの明示ONのみ。本編や端末設定へ勝手に持ち越さない。 */
 .vn-light-overlay { display:none; position:absolute; inset:-41px -20px -12px; width:calc(100% + 40px); height:calc(100% + 53px); overflow:visible; pointer-events:none; z-index:-1; }
 html[data-ui-motion="on"]:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) .vn-light-overlay { display:block; }
@@ -157,28 +157,24 @@ html[data-ui-motion="on"]:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purpl
 .vn-light-overlay path + path { animation-delay:-9s; opacity:.4; }
 @keyframes vn-edge-light { from{stroke-dashoffset:1200} to{stroke-dashoffset:0} }
 @media(prefers-reduced-motion:reduce) { .vn-light-overlay { display:none!important; } }
-/* 原案11・28の操作は右下。二行本文の下に44pxの操作域を確保する。 */
-html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"],[data-ui-theme="tissue"]) body:not(.game-ds) .vn-controls { bottom:20px; }
-html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"],[data-ui-theme="tissue"]) body:not(.game-ds) .vn-box.has-inner { height:224px; }
 /* 紙の本文面は画像の微小なalphaにも背景を透かさない。 */
 html[data-ui-theme="tissue"] .vn-box { background:linear-gradient(#29292b,#29292b) center / calc(100% - 96px) calc(100% - 60px) no-repeat; }
 html[data-ui-theme="cut-paper"] .vn-box { background:linear-gradient(#20132a,#20132a) center / calc(100% - 96px) calc(100% - 60px) no-repeat; }
 
-html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"],[data-ui-theme="tissue"]) body:not(.game-ds) .vn-next { right:-10px; }
-/* 16: 一枚の生成素材をさらに切り抜かず、原案の折り返しを別面として描く。
-   名前札の後ろの薄い紙も残す。本文の計測幅・二行領域は共通のまま。 */
+/* 16: 黒と紫の非対称なカット面。尖りと網点は本文安全領域の外へ。 */
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-box::before,
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-box:is(.narration,.thought)::before {
-  inset:-28px -26px 8px;
+  inset:-12px -16px -8px;
   clip-path:none;
-  background-image:url("../img/ui/vn-lounge/cut-paper-traced.svg");
+  background-image:url("../img/ui/vn-lounge/cut-paper-rebel.svg");
 }
 html[data-ui-theme][data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box .vn-name {
-  left:12px; top:-64px; width:280px; height:78px; line-height:62px;
-  padding:0 20px 0 46px;
-  clip-path:polygon(10% 22%,85% 0,100% 89%,0 100%);
-  background:linear-gradient(170deg,#d58bea,#c678dd);
-  font-family:var(--font); font-weight:800; letter-spacing:.06em;
+  left:28px; top:-68px; width:300px; height:72px; line-height:66px;
+  padding:0 38px 0 52px;
+  clip-path:polygon(8% 14%,89% 0,100% 82%,4% 100%,0 72%);
+  background:#dca6ff; rotate:-3deg;
+  font-family:var(--font); font-weight:900; letter-spacing:.04em;
+  font-size:var(--vn-name-fit-size,clamp(14px,calc(216px / var(--vn-name-length,4)),36px));
   text-align:center;
 }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-name::before {
@@ -202,15 +198,8 @@ html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-d
 }
 
 html[data-ui-theme][data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::after {
-  content:""; position:absolute; left:4px; top:-70px; width:288px; height:80px;
-  clip-path:polygon(13% 20%,85% 0,100% 90%,0 100%);
-  background:#352040; z-index:-1; pointer-events:none;
+  content:""; position:absolute; left:20px; top:-76px; width:326px; height:88px;
+  clip-path:polygon(7% 18%,86% 0,100% 82%,8% 100%,0 72%);
+  background:#09070f; rotate:-3deg; z-index:-1; pointer-events:none;
 }
-html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls {
-  clip-path:polygon(7% 0,96% 0,100% 100%,0 100%); border-right:3px solid #c579de;
-}
-html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls .vn-ctl + .vn-ctl::before {
-  content:""; background:#e2d3e888;
-}
-html[data-ui-theme][data-ui-theme="cut-paper"] .vn-next { bottom:36px; }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-text { font-weight:700; }

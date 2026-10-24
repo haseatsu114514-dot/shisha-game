@@ -1,4 +1,4 @@
-/* 採用した墨紫と真鍮の会話枠。本文の幅・改ページ・入力処理は既存のまま。 */
+/* 会話枠の共通組版。テーマは装飾を変え、本文・操作の安全領域を共有する。 */
 @font-face {
   font-family: "Suien Name";
   src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
@@ -6,9 +6,12 @@
   font-weight: 700;
   font-display: swap;
 }
-/* 会話枠と操作バーを一緒に2px下げ、内部組版と5pxの間隔を保つ。 */
+/* 会話枠と操作バーを一緒に2px下げる。間隔は共通組版で定める。 */
 .vn-box, .vn-controls { translate: 0 2px; }
 :root {
+  --vn-dialogue-width: 1216px;
+  --vn-dialogue-height: 208px;
+  --vn-dialogue-bottom: 24px;
   --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
   --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
   --vn-lounge-narration: url("../img/ui/vn-lounge/narration.svg");
@@ -110,12 +113,35 @@
 .vn-controls .vn-ctl:focus-visible { outline: 2px solid #f0cd82; outline-offset: -3px; }
 .vn-next { right: 32px; bottom: 13px; color: #edca82; }
 
+/* 画面の左右32pxまで広げる。本文は左右の折り返しや煙の輪郭から離す。
+   操作バーは上方、次送りは本文の右下に分離する。 */
+body:not(.game-ds) .vn-box {
+  width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
+  bottom:var(--vn-dialogue-bottom); padding:36px 84px 28px 100px;
+}
+body:not(.game-ds) .vn-controls {
+  right:48px; width:400px; height:54px;
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 12px);
+}
+body:not(.game-ds) .vn-next { right:44px; bottom:44px; font-size:24px; }
+body:not(.game-ds) .vn-choices,
+body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 12px + 54px + 16px);
+}
+
 /* DS表示でも同じ素材。本文と選択肢の領域・44pxの操作範囲を維持。 */
 body.game-ds .vn-box { --vn-frame-overhang: 20px; overflow: visible; border-image: none; }
 body.game-ds .vn-box .vn-name {
   left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
   font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
 }
-body.game-ds .vn-controls { gap: 0; padding: 3px 5px; height: 50px; }
+/* 2画面表示も操作バーを背景側の右上へ。本文側の▼と交差させない。 */
+body.game-ds .vn-controls {
+  width:min(400px,calc(var(--ds-vw) - 16px));
+  left:calc(var(--ds-vx) + var(--ds-vw) - min(400px,calc(var(--ds-vw) - 16px)) - 8px);
+  top:calc(var(--ds-vy) + 8px); bottom:auto;
+  gap:0; padding:3px 5px; height:50px;
+}
+body.game-ds :is(.vn-text,.vn-inner) { margin-right:24px; }
 body.game-ds .vn-controls .vn-ctl { font-size: 14px; padding: 0 5px; }
 body.game-ds .vn-next { right: 16px; bottom: 5px; }
