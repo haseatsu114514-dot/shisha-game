@@ -4,9 +4,11 @@ import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
 
 export const TOURNAMENT_STORY_STEPS = new Map([[0, "opening"], [3, "packed"], [7, "waiting"]]);
 const PACKING = { fluffy: "ふんわり詰め", normal: "均等な詰め方", firm: "デンスパック" };
+// 共通工程のうち、上園が話す行だけ第3章の審査員エミルへ切り替える。
+const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
 
 export function tournamentStoryDialogue(cs, event, random = Math.random) {
-  const chapter = cs.chapter === 2 ? 2 : 1;
+  const chapter = [1, 2, 3].includes(cs.chapter) ? cs.chapter : 1;
   const ingredients = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const flavors = ingredients.map(([id, g]) => `${DB.flavorById[id]?.short_name || id} ${g}g`).join("、");
   const ids = [];
@@ -28,7 +30,8 @@ export function tournamentStoryDialogue(cs, event, random = Math.random) {
   return {
     dialogue_id: `tournament_craft_${chapter}_${event}`,
     lines: ids.flatMap(id => {
-      const scene = DB.dialogues[`tournament_craft_${id}`];
+      const sceneId = chapter === 3 && NATIONAL_JUDGE_SCENES.has(id) ? `${id}_3` : id;
+      const scene = DB.dialogues[`tournament_craft_${sceneId}`];
       if (!scene) throw new Error(`大会演出の台本がありません: ${id}`);
       return scene.lines.map(line => ({ ...line, text: line.text
         .replaceAll("{flavors}", flavors).replaceAll("{packing}", PACKING[cs.pack] || PACKING.normal) }));

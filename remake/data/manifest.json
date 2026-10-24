@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-24 20:43 UTC",
+ "generated": "2026-10-24 21:16 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -291,6 +291,15 @@
    "b": 0.0258,
    "ax": 0.5755,
    "aspect": 0.7467
+  },
+  "steve": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.98,
+   "b": 0.0117,
+   "ax": 0.4986,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -304,6 +313,7 @@
   "bg_cafe_day.png",
   "bg_cafe_night.png",
   "bg_cafe_overcast_day.png",
+  "bg_ch3_hotel_night.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
   "bg_eden_shop.png",
@@ -324,6 +334,7 @@
   "bg_shishark.png",
   "bg_shishark_preparing_night.png",
   "bg_shop.png",
+  "bg_steve_shop.png",
   "bg_street_day.png",
   "bg_street_night.png",
   "bg_street_overcast_day.png",
@@ -337,6 +348,7 @@
   "bg_tonari_inside_overcast_night.png",
   "bg_tonari_opening_coal.png",
   "bg_tournament_stage.png",
+  "bg_volk_shop.png",
   "bg_yohaku_shop.png",
   "bg_yuzugaya_aquarium.webp",
   "bg_yuzugaya_c_station.webp",
@@ -1839,6 +1851,7 @@
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
   "backgrounds/bg_cafe_overcast_day.png",
+  "backgrounds/bg_ch3_hotel_night.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
@@ -1859,6 +1872,7 @@
   "backgrounds/bg_shishark.png",
   "backgrounds/bg_shishark_preparing_night.png",
   "backgrounds/bg_shop.png",
+  "backgrounds/bg_steve_shop.png",
   "backgrounds/bg_street_day.png",
   "backgrounds/bg_street_night.png",
   "backgrounds/bg_street_overcast_day.png",
@@ -1872,6 +1886,7 @@
   "backgrounds/bg_tonari_inside_overcast_night.png",
   "backgrounds/bg_tonari_opening_coal.png",
   "backgrounds/bg_tournament_stage.png",
+  "backgrounds/bg_volk_shop.png",
   "backgrounds/bg_yohaku_shop.png",
   "backgrounds/eden.png",
   "backgrounds/kemurikusa.png",
@@ -1985,6 +2000,7 @@
   "sprites/characters/samechan/chr_samechan_smile.png",
   "sprites/characters/samechan/chr_samechan_surprise.png",
   "sprites/characters/samechan/chr_samechan_ventriloquism.png",
+  "sprites/characters/steve/chr_steve_normal.png",
   "sprites/characters/sumi/chr_sumi_normal.png",
   "sprites/characters/sumi/chr_sumi_serious.png",
   "sprites/characters/sumi/chr_sumi_smile.png",

@@ -53,7 +53,9 @@ function defer(cs, fn, delay) {
 
 /** 同じ種類のコメントを n 本、少しずつずらして流す */
 export function burst(cs, kind, n = null) {
-  const pool = cs?.chapter === 2 && kind === "rival"
+  const pool = cs?.chapter === 3 && kind === "rival"
+    ? DB.broadcast?.chapter3?.rivalComments || []
+    : cs?.chapter === 2 && kind === "rival"
     ? ["あげはの一台、気になる", "神崎選手、手が落ち着いてる", "REI選手も仕上げてる", "4人とも型が違って面白い"]
     : DB.broadcast?.nico?.[kind] || [];
   if (!live(cs) || !pool.length) return;
@@ -82,7 +84,7 @@ export function block(cs, step) {
   burst(cs, "block", 1);
   const sp = bc.step?.[step];
   if (sp?.length) defer(cs, () => comment(cs, pick(sp)), 900);
-  const feed = cs.chapter === 2 ? [
+  const feed = cs.chapter === 3 ? bc.chapter3?.rivalFeed || [] : cs.chapter === 2 ? [
     "あげは、パッキングを終えました。台には最後まで同じ一台です",
     "神崎選手は炭の位置を確かめています",
     "REI選手、蒸らしに入りました",

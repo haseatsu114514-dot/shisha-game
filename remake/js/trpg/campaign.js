@@ -145,6 +145,8 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     chapter: state.chapter, day: state.day, gm: current.gm, participants: [...current.participants],
     ending: result.ending, endingTitle: scenario.endings[result.ending].title,
     variant: result.variant, plan: clone(result.plan), version: scenario.version,
+    ...(Number.isInteger(result.rating?.stars) ? { stars: result.rating.stars } : {}),
+    ...(Number.isInteger(result.heat?.value) ? { heat: result.heat.value, night: result.heat.night } : {}),
   };
   state.slot++;
   return true;

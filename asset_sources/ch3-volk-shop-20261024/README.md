@@ -23,4 +23,4 @@
 
 ## Integration note
 
-This asset is prepared for Volk's Chapter 3 visit. The runtime asset manifest and scene reference will be updated when the visit is connected to the game.
+The background is registered in `remake/data/manifest.json` and used for Volk's Chapter 3 shop visit. The runtime image and Volk's portrait were checked together in the VN scene.

@@ -65,7 +65,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -617,6 +617,34 @@
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
+      ]
+    },
+    {
+      "id": "ch3-tournament",
+      "title": "Chapter 3 national tournament",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 10,
+      "paths": [
+        "remake/index.html",
+        "remake/js/chapters/ch3*.js",
+        "remake/js/chapters/retry-assist.js",
+        "remake/js/chapters/tournament-resources.js",
+        "remake/js/craft/**",
+        "remake/js/core/state.js",
+        "remake/js/core/data.js",
+        "remake/js/scenes/saves.js",
+        "remake/css/craft.css",
+        "remake/css/ch2-tournament.css",
+        "remake/data/broadcast.json",
+        "data/dialogue/ch3_main.json",
+        "data/dialogue/tournament_craft.json",
+        "data/characters.json",
+        "remake/data/manifest.json",
+        "remake/test/browser/ch3_tournament.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch3_tournament.mjs"
       ]
     },
     {
@@ -2110,6 +2138,7 @@
       "paths": [
         "data/dialogue/trpg_ordinary.json",
         "data/dialogue/trpg_shark.json",
+        "data/dialogue/trpg_table_talk.json",
         "data/dialogue/trpg_club.json",
         "data/trpg_catalog.json",
         "remake/img/backgrounds/trpg_*.webp",

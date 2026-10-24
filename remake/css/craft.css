@@ -1029,6 +1029,9 @@
 .audience-single .audience-person { width: 82px; }
 .audience-single .audience-face { height: 82px; border-radius: 5px; border: 1px solid #93816e26; background: #0e0b14; }
 .audience-face img.audience-icon { width: 82px !important; height: 82px; left: 0 !important; top: 0 !important; }
+.audience-face-label { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+  color: #cbd8f2; font-size: 15px; letter-spacing: .04em; background: linear-gradient(145deg, #172134, #111018); }
+.audience-face-label[hidden] { display: none; }
 .audience-person figcaption { display: none; }
 .audience-single .audience-heading { display: flex; margin-bottom: 5px; }
 .audience-name { font-size: 12px; letter-spacing: .10em; font-weight: 700; color: #bfb0b6; }

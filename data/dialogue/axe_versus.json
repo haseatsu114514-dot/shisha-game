@@ -73,6 +73,26 @@
         "id": "draw",
         "speaker": "hiyori",
         "text": "……引き分けだね。楽しかった"
+      },
+      {
+        "id": "last",
+        "speaker": "hiyori",
+        "text": "……私のラスト。儚く……いや、全力でいく"
+      },
+      {
+        "id": "player-last",
+        "speaker": "hiyori",
+        "text": "……あなたの最後の一投。どこを狙う？"
+      },
+      {
+        "id": "big-ahead",
+        "speaker": "hiyori",
+        "text": "……ふふ、だいぶ離したね。消える前に逃げ切るよ"
+      },
+      {
+        "id": "big-behind",
+        "speaker": "hiyori",
+        "text": "……点差、開いちゃった。ここから巻き返すから"
       }
     ]
   }
