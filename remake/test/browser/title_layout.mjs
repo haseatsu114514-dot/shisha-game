@@ -63,7 +63,7 @@ async function gameIsDS(p) {
   assert(Math.abs(panels[0].w-panels[1].w) < 1 && Math.abs(panels[0].h-panels[1].h) < 1);
   // 表示切替は「表示」から開く（DS風ではヒンジの小さなボタン）。
   assert.equal(await button(p, "game-layout-settings").isVisible(), true);
-  await button(p, "game-layout-settings").click();
+  if (!(await p.locator(".game-layout-toolbar").evaluate(n => n.open))) await button(p, "game-layout-settings").click();
   assert.equal(await button(p, "game-layout-normal").isVisible(), true);
 }
 async function check(name, options, run, setup = null) {

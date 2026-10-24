@@ -312,9 +312,12 @@ body.game-ds #modal .modal-backdrop { background: #0b0812e6; backdrop-filter: no
 body.game-ds #modal .modal-box { min-width: 0; width: calc(var(--ds-cw) - 16px); max-height: calc(var(--ds-ch) - 16px); padding: 16px; }
 body.game-ds #modal .cfg { min-width: 0; }
 body.game-ds #modal .cfg-row { flex-wrap: wrap; }
-/* 背の低い端末では説明を潰さず、箱ごとスクロールする。 */
-body.game-ds #modal .modal-box { overflow: auto; overscroll-behavior: contain; }
-body.game-ds #modal .modal-body { flex: none; overflow: visible; }
+body.game-ds #modal .modal-body { flex: 1 1 auto; min-height: 48px; overflow: auto; overscroll-behavior: contain; }
+/* 背の低い端末（下画面が低い）では、メニューやステータスは上下2画面ぶんを使う。ボタンは常に見える位置。 */
+@media (max-height: 740px) {
+  :root[data-ds-layout="stacked"] body.game-ds #modal { top: var(--ds-vy); height: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-vy)); }
+  :root[data-ds-layout="stacked"] body.game-ds #modal .modal-box { max-height: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-vy) - 16px); }
+}
 /* 会話中など、HUDが消えている間はタッチバーも押せない。 */
 body.game-ds.vn-open .hud-right, body.game-ds #hud:not(.show) .hud-right { pointer-events: none; }
 body.game-ds .phone-overlay { inset: 0; backdrop-filter: none; background: #0b0812e6; }
