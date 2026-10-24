@@ -157,3 +157,45 @@ for (const [width, height, size] of [[1280, 720, '10px'], [1001, 720, '10px'], [
     assert.equal(styles.background, '#eaddbb');
   });
 }
+
+// Exercise the real preview resize callback and existing readiness predicate.
+// No DOM layout/rendering: the stage-width port models only scale reflection.
+test('seat rail measurement waits for preview resize outputs', async () => {
+  const browserTest = await readFile(new URL('./browser/trpg_tabletop.mjs', import.meta.url), 'utf8');
+  const seatLoop = browserTest.slice(browserTest.indexOf('// Adopted table presentation:'), browserTest.indexOf('// Reach the real preparation check'));
+  assert.match(seatLoop, /await p\.setViewportSize\(\{width,height\}\);\s*await settledPreview\(p\);\s*const seats=/);
+  assert.match(seatLoop, /assert\(seats\.visible&&seats\.inside,/);
+  const previewSource = await readFile(new URL('../js/trpg/preview.js', import.meta.url), 'utf8');
+  const listeners = {}, styles = new Map();
+  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k) },
+    getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
+  const rotate = { hidden: true };
+  const port = vm.createContext({ URL, URLSearchParams,
+    innerWidth: 1280, innerHeight: 720,
+    document: { getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
+    window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
+    matchMedia: () => ({ matches: true }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
+  const preview = new vm.SourceTextModule(previewSource, { context: port });
+  await preview.link(() => new vm.SyntheticModule(['mountTrpgCollection'], function () {
+    this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
+  }, { context: port }));
+  await preview.evaluate();
+  const { settledPreview } = await import('./browser/trpg_layout.mjs');
+  let readiness;
+  await settledPreview({ waitForFunction: async predicate => { readiness = predicate; } });
+  const ready = () => vm.runInContext('(' + readiness.toString() + ')()', port);
+  // Browser global visualViewport is optional, so explicitly model its absence.
+  port.visualViewport = undefined;
+  assert.equal(ready(), true);
+  port.innerWidth = 844; port.innerHeight = 390;
+  assert.equal(ready(), false, 'new viewport with old scale must not be measured');
+  listeners.resize();
+  assert.equal(Number(styles.get('--k')), 390 / 720);
+  assert.equal(ready(), true, 'real fit callback supplies the expected scale');
+  port.innerWidth = 390; port.innerHeight = 844;
+  assert.equal(ready(), false);
+  listeners.resize();
+  assert.equal(Number(styles.get('--k')), 390 / 1280);
+  assert.equal(rotate.hidden, false);
+  assert.equal(ready(), true);
+});

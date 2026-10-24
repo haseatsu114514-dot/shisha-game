@@ -126,13 +126,14 @@ try{
   // Adopted table presentation: check real CSS/viewport separately from DOM ports.
   for (const [width,height] of [[1280,720],[844,390],[390,844]]) {
    await p.setViewportSize({width,height});
+   await settledPreview(p);
    const seats=await p.locator('.trpg-table').evaluate(n=>{
-    const r=n.getBoundingClientRect();return {pointer:getComputedStyle(n).pointerEvents,visible:n.checkVisibility(),
+    const r=n.getBoundingClientRect(),stage=document.getElementById('stage'),style=getComputedStyle(n);return {box:r.toJSON(),stage:stage.getBoundingClientRect().toJSON(),scale:stage.style.getPropertyValue('--k'),viewport:{width:innerWidth,height:innerHeight,visualWidth:visualViewport?.width,visualHeight:visualViewport?.height},css:{width:style.width,height:style.height,gap:style.gap,font:style.fontSize,top:style.top,bottom:style.bottom,transform:style.transform},pointer:style.pointerEvents,visible:n.checkVisibility(),
      inside:r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1,
      active:n.querySelectorAll('.trpg-table-person.active').length,
      speaking:n.querySelector('.trpg-table-person.active .trpg-seat-speaking')?.textContent};
    });
-   assert(seats.visible&&seats.inside, 'Seat rail fits '+width+'x'+height);
+   assert(seats.visible&&seats.inside, 'Seat rail fits '+width+'x'+height+' '+JSON.stringify(seats));
    assert.equal(seats.pointer,'none');assert.equal(seats.active,1);assert.equal(seats.speaking,'話者');
   }
   await p.setViewportSize({width:1280,height:720});
