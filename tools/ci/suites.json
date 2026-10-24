@@ -83,6 +83,7 @@
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_tournament.mjs",
+        "node remake/test/ch3_tournament_state.mjs",
         "node remake/test/tournament_story.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
