@@ -159,7 +159,7 @@ export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
-  if (id) return storyCount(charId) <= affinityLevel(charId) && storyAvailable(id);
+  if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
 }
 
