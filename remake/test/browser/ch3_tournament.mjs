@@ -31,6 +31,70 @@ async function seed(page, auto = "good") {
 }
 
 await suite("ch3-tournament", async check => {
+  await check("abandoned-pull-keeps-the-vote-and-recovers-the-step", async page => {
+    await seed(page);
+    await page.locator(t("entry")).waitFor();
+    await page.locator(t("start")).click();
+    await page.locator(t("ready")).waitFor();
+    await page.locator(t("craft-start")).click();
+    await page.locator(t("votes")).waitFor();
+    const before = await get(page);
+    assert.equal(before.flags._ch3_tournament.step, 8);
+    assert.equal(before.flags._ch3_tournament.voted, 1);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = null; });
+    await page.locator(t("continue")).click();
+    await page.locator(".pull-play").waitFor();
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      state.stamina -= 7;
+      state.flavorStock.double_apple -= 1;
+      document.querySelector(".pull-play").remove();
+    });
+    await page.locator(t("error")).waitFor();
+    const after = await get(page), p = after.flags._ch3_tournament;
+    assert.equal(p.stage, "craft");
+    assert.equal(p.step, 8);
+    assert.equal(p.voted, 1);
+    assert.equal(p.attempts, before.flags._ch3_tournament.attempts);
+    assert.equal(after.day, before.day);
+    assert.equal(after.slot, before.slot);
+    assert.deepEqual(p.votes, before.flags._ch3_tournament.votes);
+    assert.deepEqual(p.craft, before.flags._ch3_tournament.craft);
+    assert.equal(p.rollback, null);
+    assert.equal(after.stamina, before.stamina);
+    assert.deepEqual(after.flavorStock, before.flavorStock);
+    assert.equal(p.result, null);
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
+    assert.equal(saved.flags._ch3_tournament.step, 8);
+    assert.equal(saved.flags._ch3_tournament.voted, 1);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(t("reload")).click();
+    await page.locator(t("votes")).waitFor();
+    const retried = await get(page);
+    assert.equal(retried.flags._ch3_tournament.step, 9);
+    assert.equal(retried.flags._ch3_tournament.voted, 2);
+    assert.equal(retried.flags._ch3_tournament.attempts, before.flags._ch3_tournament.attempts);
+    assert.deepEqual(retried.flavorStock, before.flavorStock);
+  }, { reducedMotion: "reduce" });
+  await check("burned-pull-still-counts-as-a-loss", async page => {
+    await seed(page, "burn");
+    await page.locator(t("entry")).waitFor();
+    await page.locator(t("start")).click();
+    await page.locator(t("ready")).waitFor();
+    await page.locator(t("craft-start")).click();
+    for (let round = 0; round < 4; round++) {
+      await page.locator(`${t("votes")}, ${t("defeat")}, ${t("result")}`).first().waitFor();
+      if (await page.locator(t("defeat")).count()) break;
+      assert.equal(await page.locator(t("result")).count(), 0);
+      await page.locator(t("continue")).click();
+    }
+    await page.locator(t("defeat")).waitFor();
+    const p = (await get(page)).flags._ch3_tournament;
+    assert(p.failure, "A failed shisha must take the defeat path");
+    assert.equal(p.losses, 1);
+    assert.equal(p.history.length, 0);
+    assert.equal(p.rollback, null);
+  }, { reducedMotion: "reduce" });
   await check("four-person-craft-votes-and-win-boundary", async page => {
     await seed(page);
     await page.locator(t("entry")).waitFor();

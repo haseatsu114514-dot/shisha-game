@@ -359,8 +359,16 @@ async function drive(owner) {
       beginStep(state);
       save();
       broadcast.block(cs, STEP_IDS[p.step]);
-      await STEPS[p.step](cs);
+      const completed = await STEPS[p.step](cs);
       if (!live(owner)) return;
+      if (completed === false) {
+        // 吸い出しの画面離脱は敗北ではない。工程前の資源と制作保存地点へ戻す。
+        recoverStep(state);
+        owner.cs = null;
+        save();
+        renderError(owner);
+        return;
+      }
       if (p.step === 8 && !cs.failed) {
         cs.tournamentStory ||= { seen: [] };
         cs.tournamentStory.servedAroma = computeShisha(cs).aroma;

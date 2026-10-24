@@ -87,6 +87,49 @@ async function reload(page,slot=0,touch=false) {
   await press(dt(`slot-${slot}`));
 }
 await suite('ch2-tournament',async check=>{
+  await check('abandoned-pull-keeps-the-vote-and-recovers-the-step',async page=>{
+    await seed(page,{stage:'ready',auto:'good'});
+    await page.locator(t('ready')).waitFor();
+    await page.locator(t('craft-start')).click();
+    await page.locator(t('votes')).waitFor();
+    const before=await get(page);
+    assert.equal(before.flags._ch2_tournament.step,8);
+    assert.equal(before.flags._ch2_tournament.voted,1);
+    await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto=null;});
+    await page.locator(t('continue')).click();
+    await page.locator('.pull-play').waitFor();
+    await page.evaluate(async()=>{
+      const {state}=await import('./js/core/state.js');
+      state.stamina-=7;
+      state.flavorStock.double_apple-=1;
+      document.querySelector('.pull-play').remove();
+    });
+    await page.locator(t('error')).waitFor();
+    const after=await get(page),p=after.flags._ch2_tournament;
+    assert.equal(p.stage,'craft');
+    assert.equal(p.step,8);
+    assert.equal(p.voted,1);
+    assert.equal(p.attempts,before.flags._ch2_tournament.attempts);
+    assert.equal(after.day,before.day);
+    assert.equal(after.slot,before.slot);
+    assert.deepEqual(p.votes,before.flags._ch2_tournament.votes);
+    assert.deepEqual(p.craft,before.flags._ch2_tournament.craft);
+    assert.equal(p.rollback,null);
+    assert.equal(after.stamina,before.stamina);
+    assert.deepEqual(after.flavorStock,before.flavorStock);
+    assert.equal(p.result,null);
+    const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('suien_remake_save')));
+    assert.equal(saved.flags._ch2_tournament.step,8);
+    assert.equal(saved.flags._ch2_tournament.voted,1);
+    await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});
+    await page.locator(t('reload')).click();
+    await page.locator(t('votes')).waitFor();
+    const retried=await get(page);
+    assert.equal(retried.flags._ch2_tournament.step,9);
+    assert.equal(retried.flags._ch2_tournament.voted,2);
+    assert.equal(retried.flags._ch2_tournament.attempts,before.flags._ch2_tournament.attempts);
+    assert.deepEqual(retried.flavorStock,before.flavorStock);
+  },{reducedMotion:'reduce'});
   await check('vote-reason-low-holes-uses-actual-step-label',async page=>{
     await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
     const before=await page.evaluate(async()=>{
