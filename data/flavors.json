@@ -1884,6 +1884,37 @@
       "ng_flavors": [],
       "maker": "afsahr",
       "family": "mint"
+    },
+    {
+      "id": "afsahr_strawberry",
+      "name": "アフサール ストロベリー",
+      "short_name": "アフサール ストロベリー",
+      "category": "fruit",
+      "price": 1750,
+      "description": "アフサールの新作。華やかな苺の香りが早く立ち、早く抜ける。熱に弱く、炭を急ぐと香りが荒れる。第2章の県大会で課題として支給される。",
+      "heat_tolerance": 0.8,
+      "smoke_weight": 0.85,
+      "steam_bias": 0.4,
+      "chapter_min": 2,
+      "not_for_sale": true,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 3,
+        "refreshing": 5,
+        "sweet_natural": 7,
+        "sweet_confection": 5,
+        "cooling": 1,
+        "assertiveness": 5,
+        "acquired_taste": 1,
+        "smoke_body": 4,
+        "sourness": 3,
+        "spiciness": 1,
+        "floral": 3,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "strawberry"
     }
   ]
 }
