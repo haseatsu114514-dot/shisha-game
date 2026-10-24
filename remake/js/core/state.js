@@ -4,6 +4,7 @@
 
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
 import { emit } from "./bus.js";
+import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -296,6 +297,7 @@ export function newGame() {
 
 export function save() {
   if (!state) return;
+  recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
@@ -376,6 +378,7 @@ export function consumeResumeOnBoot() {
 }
 
 export function wipeSave() {
+  recordGalleryProgress(peekSave());
   try { localStorage.removeItem(SAVE_KEY); } catch { /* noop */ }
 }
 

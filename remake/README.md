@@ -533,3 +533,28 @@ Intlは品詞解析ではなく、同音・固有名詞・慣用句の意味の�
 通常24単位では約48書記素＋タグまでを先読みし、候補評価O(NW)、保存O(N+W)です
 （Nはトークン数、Wは一行内候補数）。文字列連結・実測には文字列長に応じたコストが加わります。
 極端に大きい指定上限・タグ列では候補評価も最悪O(N²)になるため、任意長入力の定時間保証ではありません。
+
+## タイトルのメディアギャラリー
+
+GALLERYの「すべて／スチル／チェキ／プリクラ／漫画／ムービー」から閲覧する。
+見たCGと受取済みの写真を残し、漫画・ムービーは正式採用と章クリアを条件にする。
+今回制作した漫画は未採用、ムービーは準備中。`data/gallery.json` の `items` は空で、候補画像を本編へ登録していない。
+
+採用後は `remake/data/gallery.json` の `items` へ、次の形で1作品ずつ追加する（下記は形式例であり未登録）。
+
+```json
+[
+  { "id": "comic_example", "kind": "comic", "title": "作品名", "approved": true, "requiredChapter": 3, "pages": ["img/comics/example-01.webp", "img/comics/example-02.webp"] },
+  { "id": "movie_example", "kind": "movie", "title": "作品名", "approved": true, "requiredChapter": 2, "src": "movies/example.webm" }
+]
+```
+
+- `approved: true` と `requiredChapter`（1〜5）が必須。未採用作品は一覧へ出さない。
+- 複数章の人物や内容を含む場合は最も遅い必要章を指定する。複数の漫画を画像1枚にまとめる場合も、全話に必要な章で解放する。
+- 配信画像は `img/`、動画は `movies/`、または採用した `../assets/` 内の素材を指定する。原画保管用の `asset_sources/` は参照しない。漫画はPNG/WebP/JPEG、動画はWebM/MP4。
+- 未クリアの作品は題名・絵を隠し、必要なクリア章だけを案内する。漫画のページは指定順。画像の左右反転はしない。
+- 章クリア・受取写真の端末内記録は `suien_remake_gallery_progress`。既存の見たCG記録 `suien_remake_gallery` を保持し、保存枠からの補完は読取だけで行う。
+- 漫画はページ送りと拡大スクロール、動画は操作して再生。閉じると動画の読み込み・再生を止め、元のBGMへ戻す。
+
+検証: `node --experimental-vm-modules remake/test/gallery.mjs` と `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/gallery.mjs`。
+ブラウザ検証の漫画・短い映像はテスト内だけの仮素材であり、本編の作品採用とは分けている。
