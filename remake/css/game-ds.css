@@ -268,6 +268,8 @@ body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right {
   left: var(--ds-cx); top: var(--ds-cy); width: var(--ds-cw); height: var(--ds-ch); right: auto; bottom: auto;
   padding: 10px; overflow: auto; touch-action: pan-y;
 }
+/* 家の練習などHUDが出ている間は、タッチバーの上で止める（決定ボタンを覆わない）。 */
+body.game-ds:has(#hud.show) .bench-right, body.game-ds:has(#hud.show) .bench[data-step] .bench-right { height: calc(var(--ds-ch) - var(--ds-touchbar)); }
 body.game-ds .bench-head { flex: none; gap: 8px; }
 body.game-ds .bench-title, body.game-ds .bench[data-step] .bench-title { font-size: 20px; }
 body.game-ds .bench-hint { font-size: 13px; }
