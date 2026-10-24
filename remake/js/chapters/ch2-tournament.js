@@ -20,6 +20,7 @@ import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
+import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues, ROOMS } from "./ch2-city-data.js";
@@ -198,23 +199,20 @@ export function voteReason(p, cs, final = false) {
 function renderVotes(owner, final = false) {
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
-  const row = value => el("li.ch2-contest-rival", { dataset: { contestant: value.id } }, [
-    el("b", { text: String(value.rank) }), contestantAvatar(value.id),
-    el("span", { text: displayName(value.id, state) }), el("strong", { text: `${value.points} pt` }),
+  const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, { dataset: { contestant: value.id, rank: String(value.rank) } }, [
+    el("b.rank-medal", { text: String(value.rank) }), contestantAvatar(value.id),
+    el("span", { text: displayName(value.id, state) }), voteStack(p.votes, value.id, "ch2-contest-stack", JUDGES),
+    el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
-  const judges = el("div.ch2-contest-judges", JUDGES.map(judge => {
-    const spent = Object.values(p.votes[judge]).reduce((sum, n) => sum + n, 0);
-    return el("div", { dataset: { judge, spent } }, [el("b", { text: displayName(judge, state) }),
-      el("span", { text: `投入 ${spent} ／ 保留 ${10 - spent}` }),
-      el("small", { text: CONTESTANTS.map(c => `${displayName(c, state)} ${p.votes[judge][c]}`).join(" ・ ") })]);
-  }));
+  const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
   card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員3人、それぞれの10点が出揃いました。` : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。", "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
-    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, reason.map(text => el("p", { text }))) : null,
-      el("ol.ch2-contest-ranking", rows.map(row)), judges,
+    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null,
+      el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は制作の総合評価で順位を決めます。" })]);
 }
 function renderDefeat(owner) {
