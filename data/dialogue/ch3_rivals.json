@@ -14,6 +14,10 @@
           "text": "入口の大会ポスターには、「久世朔」の名があった。"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_kuze"
+        },
+        {
           "speaker": "kuze",
           "face": "normal",
           "text": "いらっしゃい。吸う？　座るだけでもいいよ"

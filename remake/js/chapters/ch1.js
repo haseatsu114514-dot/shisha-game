@@ -185,6 +185,7 @@ async function openingPart() {
 export async function resumeGame() {
   setupHooks();
   if (state.chapter === 2) return (await import("./ch2.js")).resumeChapterTwo();
+  if (state.chapter === 3) return (await import("./ch3.js")).resumeChapterThree();
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
@@ -671,7 +672,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "隣町への訪問から、県大会とその後まで遊べます。第3章の本編は準備中です。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "隣町への訪問から県大会まで遊べます。第3章は東京での導入と久世との交流まで続きます。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),

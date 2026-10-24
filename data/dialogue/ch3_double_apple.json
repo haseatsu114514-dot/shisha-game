@@ -28,6 +28,10 @@
           "text": "俺はムカイ。うちも皿洗いから。分からないことは、聞いてくれ"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_mukai_master"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "カウンターの奥で、同い年くらいの女の子が小さく手を上げた。"
@@ -36,6 +40,10 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "ましろです。僕も、ここで働いてるの。よろしくねぇ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_mashiro"
         },
         {
           "speaker": "hajime",

@@ -230,7 +230,10 @@ function renderDefeat(owner) {
 }
 function renderComplete(owner) {
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
+    button(owner, "第三章・東京へ", "chapter-three", async () => {
+      await (await import("./ch3.js")).beginChapterThree();
+    }, true),
+    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
 }
