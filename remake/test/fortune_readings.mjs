@@ -235,7 +235,8 @@ console.log('PASS fortune: 56 approved readings, 2-cycle nonrepeat, legacy mask 
 {
   assert.equal(fortuneRumorHeard({ limeRead: [] }), false);
   assert.equal(fortuneRumorHeard({ flags: { _fortune_met: true }, limeRead: [] }), false, 'Meeting before does not fake the rumor');
-  assert.equal(fortuneRumorHeard({ limeRead: [FORTUNE_RUMOR_ID] }), true);
+  assert.equal(fortuneRumorHeard({ limeRead: [FORTUNE_RUMOR_ID] }), false, "Legacy morning LIME alone cannot unlock");
+  assert.equal(fortuneRumorHeard({ flags: { _fortune_rumor_heard: true }, limeRead: [] }), true, "Completed face-to-face rumor unlocks");
   const days = rain => Array.from({ length: 21 }, (_, i) => i + 1).filter(d => fortuneOpenOn(d, d => rain.includes(d)));
   assert.deepEqual(days([]), [3, 6, 10, 13, 17, 20], 'Sunny weeks keep the weekly 3rd/6th days');
   assert.deepEqual(days([3]), [4, 6, 10, 13, 17, 20], 'Rain on day 3 moves it to day 4');

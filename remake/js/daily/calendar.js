@@ -523,7 +523,7 @@ async function performSpotAction(spot) {
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
-    else await tonariCustomer();
+    else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitSamechan(spot);
