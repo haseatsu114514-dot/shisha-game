@@ -27,12 +27,14 @@ function wrapNote(note) {
 }
 
 export function audienceFor(mode, chapter) {
-  if (mode === "tournament") return [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
+  if (mode === "tournament") return chapter === 3 ? ["nagumo", "emil", "dr_kemuri"]
+    : [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
 const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
+const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "nagumo" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
@@ -47,7 +49,7 @@ const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinki
 
 /** 今この一台を見ている人と実況の、実際に使う表情だけ。 */
 export function audienceAssetUrls(cs) {
-  const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
+  const ids = cs.audienceIds || audienceFor(cs.mode, cs.chapter ?? state.chapter);
   if (!ids.length) return [];
   return [...new Set([...ids, ...(cs.mode === "tournament" ? ["pakki"] : [])].flatMap(id =>
     ["watch", "nod", "concern", "think"].flatMap(mood => ["just", "good"].map(kind =>
@@ -55,12 +57,13 @@ export function audienceAssetUrls(cs) {
 }
 
 export function buildAudience(cs) {
-  const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
+  const ids = cs.audienceIds || audienceFor(cs.mode, cs.chapter ?? state.chapter);
   if (!ids.length) return null;
   const image = el("img", { alt: "", draggable: false, decoding: "async" });
+  const fallbackName = el("span.audience-face-label", { hidden: true });
   const name = el("figcaption");
   const speaker = el("b.audience-name");
-  const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image]), name]);
+  const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image, fallbackName]), name]);
   const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
   const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
   const note = el("p.audience-note", { dataset: { test: "craft-feedback" } });
@@ -78,6 +81,7 @@ export function buildAudience(cs) {
     root.dataset.voice = id === "hajime" ? "inner" : id === "pakki" ? "mc" : "audience";
     person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
     if (portrait) {
+      fallbackName.hidden = true;
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
       const crop = FACE_CROPS[portrait.folder];
       const width = crop ? 80 / crop[2] : 380;
@@ -88,6 +92,8 @@ export function buildAudience(cs) {
       const fallback = faceIconUrl(id, state); image.hidden = !fallback;
       if (fallback) image.src = fallback;
       image.classList.add("audience-icon");
+      fallbackName.hidden = !!fallback;
+      fallbackName.textContent = label;
     }
   };
   audienceAssetUrls(cs).forEach(url => imageReady(url, 15000, { keep: true }));
@@ -96,7 +102,8 @@ export function buildAudience(cs) {
     root,
     setStep(hint, id) {
       step = id;
-      primary = ids.includes(STEP_JUDGE[id]) ? STEP_JUDGE[id] : ids[0];
+      const judge = cs.chapter === 3 ? STEP_JUDGE_CH3[id] : STEP_JUDGE[id];
+      primary = ids.includes(judge) ? judge : ids[0];
       showPerson(primary, "watch");
       mark.hidden = true; caption.textContent = active === "hajime" ? "心の声" : ""; delete root.dataset.tone;
       setNote(active === "hajime" ? innerVoiceLine(step, "watch") : cs.mode === "tutorial" && active === "sumi"
