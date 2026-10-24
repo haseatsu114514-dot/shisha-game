@@ -139,11 +139,12 @@ export function castVotes(p, round, performance, prefByJudge = null) {
       || CONTESTANTS.reduce((sum, id) => sum + row[id], 0) + SPEND[round] > 10) {
       throw new Error("審査員の持ち点が不足しています");
     }
-    const tactic = tastingEffect(plan[judge], judge);
+    // 最初の票は吸い出し・提供前の手元評価。残り香は一口目以降だけ効く。
+    const tactic = round === 0 ? null : tastingEffect(plan[judge], judge);
     const scoreOf = id => {
       const pref = id === "hajime" ? boundedPref(prefByJudge?.[judge]) : 0;
       const citrus = id === "kuze" ? profile.citrus : 0;
-      const contrast = id === tactic.affected ? tactic.delta : 0;
+      const contrast = id === tactic?.affected ? tactic.delta : 0;
       return bounded(quality[id] + 20 * profile.prefWeight * pref + citrus + contrast);
     };
     const order = [...CONTESTANTS].sort((a, b) => scoreOf(b) - scoreOf(a) || a.localeCompare(b));

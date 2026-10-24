@@ -218,6 +218,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(s.stamina,assist?max:30,'assist recovers to the current maximum; declining keeps the entry stamina');
     assert.equal(s.flags._ch2_tournament.entry.stamina,30,'the entry snapshot is not rewritten');
     assert.equal(s.flags._ch2_tournament.craft.retryAssist,assist);
+    assert.equal(s.flags._ch2_tournament.craft.condition.health,assist?'green':'red',
+      'The craft condition must reflect the recovered starting stamina');
   });
   await check('missing-dialogue-preflight-retry-keeps-save',async page=>{
     let bad=true;await page.route('**/ch2_tournament.json',async route=>{

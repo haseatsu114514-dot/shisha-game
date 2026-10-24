@@ -190,11 +190,13 @@ function renderReady(owner) {
     button(owner, "制作を始める", "craft-start", async () => {
       const p = progress();
       if (p.entry) restoreResources(state, p.entry);
+      const assisted = p.retryAssist === true;
+      startAttempt(state, null);
+      applyAssistRecovery(state, assisted, maxStamina());
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: NATIONAL TOKYO";
-      owner.cs.retryAssist = p.retryAssist === true;
-      startAttempt(state, owner.cs);
-      applyAssistRecovery(state, p.retryAssist, maxStamina());
+      owner.cs.retryAssist = assisted;
+      p.craft = clone(owner.cs);
       save();
       await drive(owner);
     }, true),
@@ -359,19 +361,24 @@ async function drive(owner) {
       if (cs.failed) { save(); continue; }
       if (MILESTONES.has(p.step)) {
         broadcast.clearComments();
-        const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
         p.craft = clone(cs);
-        if (!castVotes(p, round, quality)) throw new Error("全国大会の投票地点を確認できません");
-        p.stage = p.step === STEPS.length ? "tasting"
-          : p.step === 9 ? "national_craft" : p.step === 10 ? "national_adjustment" : "votes";
-        if (p.stage === "tasting") recordResult(state, cs.total);
+        if (p.step === 9) p.stage = "national_craft";
+        else if (p.step === 10) p.stage = "national_adjustment";
+        else {
+          const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+          if (!castVotes(p, round, quality)) throw new Error("全国大会の投票地点を確認できません");
+          p.stage = p.step === STEPS.length ? "tasting" : "votes";
+          if (p.stage === "tasting") recordResult(state, cs.total);
+        }
       }
       save();
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
+      if (!castVotes(p, 1, partialQuality(p.craft, 1))) throw new Error("全国大会の提供後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
+      if (!castVotes(p, 2, partialQuality(p.craft, 2))) throw new Error("全国大会の調整後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);

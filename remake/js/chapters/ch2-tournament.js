@@ -146,11 +146,14 @@ function renderReady(owner) {
     button(owner, "制作を始める", "craft-start", async () => {
       const p = progress();
       if (p.entry) restoreResources(state, p.entry);
+      const assisted = p.retryAssist === true;
+      startAttempt(state, null);
+      applyAssistRecovery(state, assisted, maxStamina());
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: OPEN CLOUD";
-      owner.cs.retryAssist = p.retryAssist === true; // 救済は次の一台だけ（#590）
-      startAttempt(state, owner.cs);
-      applyAssistRecovery(state, p.retryAssist, maxStamina()); save();
+      owner.cs.retryAssist = assisted; // 救済は次の一台だけ（#590）
+      p.craft = clone(owner.cs);
+      save();
       await drive(owner);
     }, true),
   ]);

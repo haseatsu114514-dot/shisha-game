@@ -58,12 +58,16 @@ assert(plans.some(plan => plan.waterAfterKuze));
 assert(plans.some(plan => !plan.waterAfterKuze));
 const withWater = startAttempt(makeState(), craft);
 const withoutWater = startAttempt(makeState(), craft);
-withWater.tastingPlan[0].dr_kemuri = { ...direct, waterAfterKuze: true };
-withoutWater.tastingPlan[0].dr_kemuri = direct;
+withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterKuze: true };
+withoutWater.tastingPlan[1].dr_kemuri = direct;
 castVotes(withWater, 0, 83);
 castVotes(withoutWater, 0, 83);
+assert.deepEqual(withWater.votes, withoutWater.votes, "The pre-service poll cannot taste Kuze's aroma");
+assert(JUDGES.every(judge => withWater.lastVotes[judge].tactic === null));
+castVotes(withWater, 1, 83);
+castVotes(withoutWater, 1, 83);
 assert.equal(withWater.votes.dr_kemuri.hajime, 0);
-assert.equal(withoutWater.votes.dr_kemuri.hajime, 1);
+assert.equal(withoutWater.votes.dr_kemuri.hajime, 2);
 
 // 4回の票は各審査員10点。投票の再呼出し、JSON保存・再開でも加算しない。
 let prior = copy(p.votes);

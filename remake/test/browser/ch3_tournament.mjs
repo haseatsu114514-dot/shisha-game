@@ -17,7 +17,7 @@ async function seed(page, auto = "good") {
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] },
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
-    value.stats = { technique: 100, sense: 100, guts: 100, charm: 100, insight: 100 };
+    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     for (const who of ["hajime", "pakki", "kuze", "steve", "volk", "dr_kemuri", "nagumo"])
       value.met[who] = true;
     for (const who of Object.keys(value.met)) value.flags[`_intro_${who}`] = true;
@@ -82,7 +82,7 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     assert.equal(result.careHistory.length, 2);
     assert.equal(result.win, result.rank === 1);
-    assert.equal(result.rank, 1, "The high-skill good craft fixture should win on its actual votes");
+    assert.equal(result.rank, 1, "A Chapter 2 level character should be able to win with a well-made craft");
     assert.equal(state.flags._ch3_tournament_won, undefined,
       "Winning result cannot clear the match before reading its result scene");
     const voteSum = Object.values(result.votes).map(row => Object.values(row).reduce((sum, points) => sum + points, 0));
@@ -170,5 +170,31 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     assert.equal(state.flags._ch3_tournament.voted, 0);
     assert.equal(state.flags._ch3_tournament_won, undefined);
+  }, { reducedMotion: "reduce" });
+  await check("third-loss-assist-sets-starting-craft-condition", async page => {
+    await seed(page);
+    await page.locator(t("entry")).waitFor();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const model = await import("./js/chapters/ch3-tournament-state.js");
+      const p = model.tournamentProgress(core.state);
+      p.stage = "defeat"; p.attempts = 3; p.losses = 2; p.lastLossAttempt = 2; p.failure = "burnt";
+      p.entry = model.resources(core.state); p.entry.stamina = 25; core.state.stamina = 25;
+      (await import("./js/craft/session.js")).craftTest.auto = null;
+      core.save();
+      void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
+    });
+    await page.locator(t("defeat")).waitFor();
+    await page.locator(t("retry")).click();
+    await page.locator('[data-test="retry-assist-yes"]').click();
+    await page.locator(t("ready")).waitFor();
+    await page.locator(t("craft-start")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_tournament.attempts === 4);
+    const value = await get(page), p = value.flags._ch3_tournament;
+    const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
+    assert.equal(value.stamina, maximum);
+    assert.equal(p.entry.stamina, 25);
+    assert.equal(p.craft.retryAssist, true);
+    assert.equal(p.craft.condition.health, "green", "Recovery must precede the craft condition snapshot");
   }, { reducedMotion: "reduce" });
 });
