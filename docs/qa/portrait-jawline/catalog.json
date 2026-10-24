@@ -1,0 +1,1402 @@
+[
+  {
+    "character": "adam",
+    "name": "アダム / 吾妻 大夢（あづま だいむ）",
+    "expression": "intense",
+    "source": "assets/sprites/characters/adam/chr_adam_intense.png",
+    "runtime": "remake/img/sprites/characters/adam/chr_adam_intense.webp",
+    "crop": [
+      347,
+      138,
+      517,
+      318
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "adam",
+    "name": "アダム / 吾妻 大夢（あづま だいむ）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/adam/chr_adam_normal.png",
+    "runtime": "remake/img/sprites/characters/adam/chr_adam_normal.webp",
+    "crop": [
+      347,
+      138,
+      517,
+      318
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "adam",
+    "name": "アダム / 吾妻 大夢（あづま だいむ）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/adam/chr_adam_serious.png",
+    "runtime": "remake/img/sprites/characters/adam/chr_adam_serious.webp",
+    "crop": [
+      347,
+      138,
+      517,
+      318
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "adam",
+    "name": "アダム / 吾妻 大夢（あづま だいむ）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/adam/chr_adam_smile.png",
+    "runtime": "remake/img/sprites/characters/adam/chr_adam_smile.webp",
+    "crop": [
+      347,
+      138,
+      517,
+      318
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "adam",
+    "name": "アダム / 吾妻 大夢（あづま だいむ）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/adam/chr_adam_surprise.png",
+    "runtime": "remake/img/sprites/characters/adam/chr_adam_surprise.webp",
+    "crop": [
+      347,
+      138,
+      517,
+      318
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "ageha",
+    "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_normal.webp",
+    "crop": [
+      415,
+      260,
+      585,
+      440
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "ageha",
+    "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "expression": "sad",
+    "source": "assets/sprites/characters/ageha/chr_ageha_sad.png",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_sad.webp",
+    "crop": [
+      415,
+      260,
+      585,
+      440
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "ageha",
+    "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/ageha/chr_ageha_serious.png",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_serious.webp",
+    "crop": [
+      415,
+      260,
+      585,
+      440
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "ageha",
+    "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_smile.webp",
+    "crop": [
+      415,
+      260,
+      585,
+      440
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "ageha",
+    "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/ageha/chr_ageha_surprise.png",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_surprise.webp",
+    "crop": [
+      415,
+      260,
+      585,
+      440
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "dr_kemuri",
+    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "expression": "evil",
+    "source": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+    "runtime": "remake/img/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.webp",
+    "crop": [
+      323,
+      126,
+      493,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "dr_kemuri",
+    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+    "runtime": "remake/img/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.webp",
+    "crop": [
+      323,
+      126,
+      493,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "dr_kemuri",
+    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
+    "runtime": "remake/img/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.webp",
+    "crop": [
+      323,
+      126,
+      493,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "dr_kemuri",
+    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
+    "runtime": "remake/img/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.webp",
+    "crop": [
+      323,
+      126,
+      493,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "dr_kemuri",
+    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+    "runtime": "remake/img/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.webp",
+    "crop": [
+      323,
+      126,
+      493,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hajime",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+    "runtime": "remake/img/sprites/characters/hajime/chr_hajime_normal.webp",
+    "crop": [
+      451,
+      202,
+      621,
+      382
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hajime",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
+    "expression": "sad",
+    "source": "assets/sprites/characters/hajime/chr_hajime_sad.png",
+    "runtime": "remake/img/sprites/characters/hajime/chr_hajime_sad.webp",
+    "crop": [
+      451,
+      202,
+      621,
+      382
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hajime",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/hajime/chr_hajime_serious.png",
+    "runtime": "remake/img/sprites/characters/hajime/chr_hajime_serious.webp",
+    "crop": [
+      451,
+      202,
+      621,
+      382
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hajime",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/hajime/chr_hajime_smile.png",
+    "runtime": "remake/img/sprites/characters/hajime/chr_hajime_smile.webp",
+    "crop": [
+      451,
+      202,
+      621,
+      382
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hajime",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/hajime/chr_hajime_surprise.png",
+    "runtime": "remake/img/sprites/characters/hajime/chr_hajime_surprise.webp",
+    "crop": [
+      451,
+      202,
+      621,
+      382
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "axe_laugh",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_laugh.webp",
+    "crop": [
+      287,
+      218,
+      457,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "axe_normal",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_normal.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "axe_shout",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_shout.webp",
+    "crop": [
+      287,
+      218,
+      457,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "axe_throw",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_axe_throw.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_throw.webp",
+    "crop": [
+      451,
+      218,
+      621,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "love_blush",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "normal",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_normal.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "office_mukii",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_office_mukii.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_office_mukii.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "sad",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_sad.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "serious",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_serious.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "smile",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_smile.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "student_smile",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_student_smile.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_surprise.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "hiyori",
+    "name": "朝霧ひより",
+    "expression": "tears",
+    "source": "assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+    "runtime": "remake/img/sprites/characters/hiyori/chr_hiyori_tears.webp",
+    "crop": [
+      355,
+      218,
+      525,
+      398
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "excited",
+    "source": "assets/sprites/characters/samechan/chr_samechan_excited.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_excited.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "normal",
+    "source": "assets/sprites/characters/samechan/chr_samechan_normal.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_normal.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "serious",
+    "source": "assets/sprites/characters/samechan/chr_samechan_serious.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_serious.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "smile",
+    "source": "assets/sprites/characters/samechan/chr_samechan_smile.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_smile.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/samechan/chr_samechan_surprise.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_surprise.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "samechan",
+    "name": "samechan",
+    "expression": "ventriloquism",
+    "source": "assets/sprites/characters/samechan/chr_samechan_ventriloquism.png",
+    "runtime": "remake/img/sprites/characters/samechan/chr_samechan_ventriloquism.webp",
+    "crop": [
+      371,
+      298,
+      541,
+      478
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maezono",
+    "name": "上園 文太郎",
+    "expression": "excited",
+    "source": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+    "runtime": "remake/img/sprites/characters/maezono/chr_maezono_excited.webp",
+    "crop": [
+      303,
+      94,
+      473,
+      274
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maezono",
+    "name": "上園 文太郎",
+    "expression": "normal",
+    "source": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+    "runtime": "remake/img/sprites/characters/maezono/chr_maezono_normal.webp",
+    "crop": [
+      355,
+      94,
+      525,
+      274
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maezono",
+    "name": "上園 文太郎",
+    "expression": "serious",
+    "source": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+    "runtime": "remake/img/sprites/characters/maezono/chr_maezono_serious.webp",
+    "crop": [
+      355,
+      94,
+      525,
+      274
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maezono",
+    "name": "上園 文太郎",
+    "expression": "smile",
+    "source": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+    "runtime": "remake/img/sprites/characters/maezono/chr_maezono_smile.webp",
+    "crop": [
+      355,
+      94,
+      525,
+      274
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maezono",
+    "name": "上園 文太郎",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+    "runtime": "remake/img/sprites/characters/maezono/chr_maezono_surprise.webp",
+    "crop": [
+      355,
+      94,
+      525,
+      274
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "normal",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_normal.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "sad",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_sad.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_sad.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "serious",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_serious.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "sleep",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_sleep.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_sleep.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "smile",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_smile.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+    "runtime": "remake/img/sprites/characters/mashiro/chr_mashiro_surprise.webp",
+    "crop": [
+      355,
+      334,
+      525,
+      514
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/minto/chr_minto_normal.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_normal.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "sad",
+    "source": "assets/sprites/characters/minto/chr_minto_sad.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_sad.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/minto/chr_minto_smile.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/minto/chr_minto_surprise.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_surprise.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "ura_normal",
+    "source": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_ura_normal.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "ura_sad",
+    "source": "assets/sprites/characters/minto/chr_minto_ura_sad.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_ura_sad.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "ura_smile",
+    "source": "assets/sprites/characters/minto/chr_minto_ura_smile.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_ura_smile.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "ura_smug",
+    "source": "assets/sprites/characters/minto/chr_minto_ura_smug.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_ura_smug.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "ura_surprise",
+    "source": "assets/sprites/characters/minto/chr_minto_ura_surprise.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_ura_surprise.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "minto",
+    "name": "みんと / 緑川 栞（みどりかわ しおり）",
+    "expression": "wink",
+    "source": "assets/sprites/characters/minto/chr_minto_wink.png",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_wink.webp",
+    "crop": [
+      411,
+      274,
+      581,
+      454
+    ],
+    "classification": "描かれた黒線"
+  },
+  {
+    "character": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+    "runtime": "remake/img/sprites/characters/nagumo/chr_nagumo_normal.webp",
+    "crop": [
+      331,
+      86,
+      501,
+      266
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+    "runtime": "remake/img/sprites/characters/nagumo/chr_nagumo_serious.webp",
+    "crop": [
+      331,
+      86,
+      501,
+      266
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+    "runtime": "remake/img/sprites/characters/nagumo/chr_nagumo_smile.webp",
+    "crop": [
+      331,
+      86,
+      501,
+      266
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+    "runtime": "remake/img/sprites/characters/nagumo/chr_nagumo_surprise.webp",
+    "crop": [
+      331,
+      86,
+      501,
+      266
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
+    "expression": "thinking",
+    "source": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+    "runtime": "remake/img/sprites/characters/nagumo/chr_nagumo_thinking.webp",
+    "crop": [
+      331,
+      86,
+      501,
+      266
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/naru/chr_naru_normal.png",
+    "runtime": "remake/img/sprites/characters/naru/chr_naru_normal.webp",
+    "crop": [
+      379,
+      158,
+      549,
+      338
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "expression": "sad",
+    "source": "assets/sprites/characters/naru/chr_naru_sad.png",
+    "runtime": "remake/img/sprites/characters/naru/chr_naru_sad.webp",
+    "crop": [
+      379,
+      158,
+      549,
+      338
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/naru/chr_naru_serious.png",
+    "runtime": "remake/img/sprites/characters/naru/chr_naru_serious.webp",
+    "crop": [
+      379,
+      158,
+      549,
+      338
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/naru/chr_naru_smile.png",
+    "runtime": "remake/img/sprites/characters/naru/chr_naru_smile.webp",
+    "crop": [
+      379,
+      158,
+      549,
+      338
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "naru",
+    "name": "鳴切 亮太（なるぎれ りょうた / なる）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/naru/chr_naru_surprise.png",
+    "runtime": "remake/img/sprites/characters/naru/chr_naru_surprise.webp",
+    "crop": [
+      379,
+      158,
+      549,
+      338
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "pakki",
+    "name": "パッキー",
+    "expression": "angry",
+    "source": "assets/sprites/characters/pakki/chr_pakki_angry.png",
+    "runtime": "remake/img/sprites/characters/pakki/chr_pakki_angry.webp",
+    "crop": [
+      296,
+      480,
+      696,
+      840
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "pakki",
+    "name": "パッキー",
+    "expression": "normal",
+    "source": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+    "runtime": "remake/img/sprites/characters/pakki/chr_pakki_normal.webp",
+    "crop": [
+      296,
+      480,
+      696,
+      840
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "pakki",
+    "name": "パッキー",
+    "expression": "smile",
+    "source": "assets/sprites/characters/pakki/chr_pakki_smile.png",
+    "runtime": "remake/img/sprites/characters/pakki/chr_pakki_smile.webp",
+    "crop": [
+      296,
+      480,
+      696,
+      840
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "pakki",
+    "name": "パッキー",
+    "expression": "smoke",
+    "source": "assets/sprites/characters/pakki/chr_pakki_smoke.png",
+    "runtime": "remake/img/sprites/characters/pakki/chr_pakki_smoke.webp",
+    "crop": [
+      296,
+      480,
+      696,
+      840
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "pakki",
+    "name": "パッキー",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/pakki/chr_pakki_surprise.png",
+    "runtime": "remake/img/sprites/characters/pakki/chr_pakki_surprise.webp",
+    "crop": [
+      296,
+      480,
+      696,
+      840
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/rin/chr_rin_normal.png",
+    "runtime": "remake/img/sprites/characters/rin/chr_rin_normal.webp",
+    "crop": [
+      327,
+      210,
+      497,
+      390
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "expression": "sad",
+    "source": "assets/sprites/characters/rin/chr_rin_sad.png",
+    "runtime": "remake/img/sprites/characters/rin/chr_rin_sad.webp",
+    "crop": [
+      327,
+      210,
+      497,
+      390
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/rin/chr_rin_serious.png",
+    "runtime": "remake/img/sprites/characters/rin/chr_rin_serious.webp",
+    "crop": [
+      327,
+      210,
+      497,
+      390
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/rin/chr_rin_smile.png",
+    "runtime": "remake/img/sprites/characters/rin/chr_rin_smile.webp",
+    "crop": [
+      327,
+      210,
+      497,
+      390
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rin",
+    "name": "匂坂 凛（さぎさか りん）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/rin/chr_rin_surprise.png",
+    "runtime": "remake/img/sprites/characters/rin/chr_rin_surprise.webp",
+    "crop": [
+      327,
+      210,
+      497,
+      390
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sumi",
+    "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+    "runtime": "remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+    "crop": [
+      355,
+      126,
+      525,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sumi",
+    "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
+    "expression": "serious",
+    "source": "assets/sprites/characters/sumi/chr_sumi_serious.png",
+    "runtime": "remake/img/sprites/characters/sumi/chr_sumi_serious.webp",
+    "crop": [
+      355,
+      126,
+      525,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sumi",
+    "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
+    "expression": "smile",
+    "source": "assets/sprites/characters/sumi/chr_sumi_smile.png",
+    "runtime": "remake/img/sprites/characters/sumi/chr_sumi_smile.webp",
+    "crop": [
+      355,
+      126,
+      525,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sumi",
+    "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
+    "runtime": "remake/img/sprites/characters/sumi/chr_sumi_surprise.webp",
+    "crop": [
+      355,
+      126,
+      525,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sumi",
+    "name": "スミさん / 墨田 丈一郎（すみだ じょういちろう）",
+    "expression": "thinking",
+    "source": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+    "runtime": "remake/img/sprites/characters/sumi/chr_sumi_thinking.webp",
+    "crop": [
+      355,
+      126,
+      525,
+      306
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "bow",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_bow.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "evil",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_evil.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "normal",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "sad",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_sad.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "serious",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_serious.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "smile",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_smile.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "tsumugi",
+    "name": "つむぎ",
+    "expression": "surprise",
+    "source": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+    "runtime": "remake/img/sprites/characters/tsumugi/chr_tsumugi_surprise.webp",
+    "crop": [
+      347,
+      338,
+      517,
+      518
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "kumicho",
+    "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+    "runtime": "remake/img/sprites/characters/kumicho/chr_kumicho_normal.webp",
+    "crop": [
+      379,
+      18,
+      549,
+      198
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "rei",
+    "name": "零-REI- / 田中 健太（たなか けんた）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/rei/chr_rei_normal.png",
+    "runtime": "remake/img/sprites/characters/rei/chr_rei_normal.webp",
+    "crop": [
+      363,
+      26,
+      533,
+      206
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "volk",
+    "name": "ヴォルク / ヴォルク・イヴァノフ",
+    "expression": "normal",
+    "source": "assets/sprites/characters/volk/chr_volk_normal.png",
+    "runtime": "remake/img/sprites/characters/volk/chr_volk_normal.webp",
+    "crop": [
+      375,
+      6,
+      545,
+      186
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "sai",
+    "name": "六角 サイ（ろっかく さい）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/sai/chr_sai_normal.png",
+    "runtime": "remake/img/sprites/characters/sai/chr_sai_normal.webp",
+    "crop": [
+      359,
+      26,
+      529,
+      206
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "maki",
+    "name": "斧崎 マキ（おのざき まき）",
+    "expression": "normal",
+    "source": "assets/sprites/characters/maki/chr_maki_normal.png",
+    "runtime": "remake/img/sprites/characters/maki/chr_maki_normal.webp",
+    "crop": [
+      371,
+      14,
+      541,
+      194
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "salaryman",
+    "name": "サラリーマン",
+    "expression": "normal",
+    "source": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+    "runtime": "remake/img/sprites/characters/salaryman/chr_salaryman_normal.webp",
+    "crop": [
+      355,
+      114,
+      525,
+      294
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "salaryman",
+    "name": "サラリーマン",
+    "expression": "smile",
+    "source": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+    "runtime": "remake/img/sprites/characters/salaryman/chr_salaryman_smile.webp",
+    "crop": [
+      355,
+      114,
+      525,
+      294
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  },
+  {
+    "character": "uranaishi",
+    "name": "路上占い師",
+    "expression": "normal",
+    "source": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
+    "runtime": "remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.webp",
+    "crop": [
+      428,
+      108,
+      598,
+      288
+    ],
+    "classification": "正常な輪郭・影（一次判定）"
+  }
+]
