@@ -54,6 +54,43 @@
 - ドラゴンフルーツは上下余白不足を記録。既存グアバとの重複ではありません。
 - **Rei新3案は未生成**。S1/S3/S6は新Rei確定待ち。アマバースト修正版もこの一覧には未制作として扱います。
 
+
+## 大会UI 15案（未採用・数値は架空サンプル）
+
+採点5・途中順位5・最終結果5。15原画を無加工保存し個別目視QA済み。実ゲーム/PC・touch受入は未実施、採用0。参照待ちカットイン10案・CONTINUE10案とは別です。
+
+### 採点5案
+
+![採点5案](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/tournament-ui/contactsheet-SCORE.jpg)
+
+### 途中順位5案
+
+![途中順位5案](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/tournament-ui/contactsheet-RANK.jpg)
+
+### 最終結果5案
+
+![最終結果5案](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/tournament-ui/contactsheet-FINAL.jpg)
+
+|案|QA区分|比較ポイント|注意|
+|---|---|---|---|
+|[SCORE-01](./tournament-ui/originals/SCORE-01.png)|要修正|台帳型。品質85/100と今回+3pt、80/90、3審査員の2/8と配分を区別。|工程名に味の広がり等の架空項目。文字量が多い。背景に器具が残る。|
+|[SCORE-02](./tournament-ui/originals/SCORE-02.png)|比較候補|中央85円環と+3チップ、80/90、3審査員2/8の階層。|背景器具が残る。円環の量的正確さ、下段細字のtouch可読性は未測定。|
+|[SCORE-03](./tournament-ui/originals/SCORE-03.png)|要修正|縦3審査員と品質欄を分離。2/8と今回配分は確認。|炭ボウルの新規描写と架空工程名あり。配分脇の順位風数字も曖昧。|
+|[SCORE-04](./tournament-ui/originals/SCORE-04.png)|比較候補|斜めに品質85/100と投票+3を分離。工程名と2/8、配分を確認。|投入/保留の繰返しが多い。小文字と斜め境界の狭い表示は未検証。|
+|[SCORE-05](./tournament-ui/originals/SCORE-05.png)|比較候補|白地で85/100対+3pt。80/90と審査員2/8を確認。|細い罫線や脚注の縮小可読性、コントラストは未測定。|
+|[RANK-01](./tournament-ui/originals/RANK-01.png)|要修正|4行順位9/4/2/0、提供後2/4、合計15を確認。|南雲→はじめ4は2回の投入2/3で一人最大3の実経路と不整合。合計一致だけでは合格不可。|
+|[RANK-02](./tournament-ui/originals/RANK-02.png)|比較候補|浅い表彰台3枠＋4位行。9/4/2/0、2/4、各投入5/保留5。|途中なのに月桂冠と表彰台が確定優勝に見える懸念。総計15の独立表示なし。|
+|[RANK-03](./tournament-ui/originals/RANK-03.png)|要修正|2x2人物名カード＋審査員sidebar。合計順位9/4/2/0と工程を確認。|内訳列計は上園5/博士4/南雲6でsidebar各5と不一致。南雲→はじめ4も不可能。|
+|[RANK-04](./tournament-ui/originals/RANK-04.png)|要修正|左から0/2/4/9、右ほど上位。途中2/4、各5/5を確認。|棒高が得点比例でなく0にも高さあり。審査員脇1/2/3が順位に見える。|
+|[RANK-05](./tournament-ui/originals/RANK-05.png)|比較候補|左に首位9、右に4/2/0。工程と投入/保留5/5を確認。|大きい冠が途中首位を優勝と誤認させる懸念。総計15欄なし。MENUは機能未実装。|
+|[FINAL-01](./tournament-ui/originals/FINAL-01.png)|比較候補|優勝章＋一覧18/8/4/0。審査員6/4/0/0、6/4/0/0、6/0/4/0と各10/0は一致。|審査員内訳の1〜4徽章は総合順位か個別順位か曖昧。情報繰返しが多い。|
+|[FINAL-02](./tournament-ui/originals/FINAL-02.png)|比較候補|白地紙面で18と8/4/0、各内訳と10/0が一致。|総投票30の独立表示なし。下段人物名が小さい。|
+|[FINAL-03](./tournament-ui/originals/FINAL-03.png)|比較候補|左から0/4/8/18、右ほど上位。全30と各内訳が一致。|バー幅は得点に厳密比例しない。下段表の縮小可読性は未測定。|
+|[FINAL-04](./tournament-ui/originals/FINAL-04.png)|要修正|本人18と総投票30を別枠にし、順位と各内訳が一致。|内訳の識別が同形の色ダイヤのみ。名前/形の併記が必要。|
+|[FINAL-05](./tournament-ui/originals/FINAL-05.png)|要修正|空の会場左と結果右。18/8/4/0、総30、各内訳10/0が一致。|内訳が色ダイヤのみ。左の会場が幅を使い下段が小さい。|
+
+[QA一覧](./tournament-ui/QA-RESULTS.json)／[生成・原画SHA記録](./tournament-ui/GENERATION-RECORDS.json)。主な要修正: 架空工程・追加器具、審査員内訳の不一致、棒高と点数の不一致、色だけに依存する人物識別。未採用のまま保持し、本編・得点・manifest・SAVEは変更していません。
+
 ## 案一覧
 
 |分類|案|大きさ|採否|
