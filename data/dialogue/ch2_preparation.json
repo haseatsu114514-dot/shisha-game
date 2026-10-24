@@ -348,7 +348,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "物を置く場所から、考えてみたいです。店に戻ったら、手を動かして確かめます"
+          "text": "物を置く場所は、だいぶ決まってきました。次は片付けの順番です"
         },
         {
           "speaker": "kumicho",
@@ -358,12 +358,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。一度並べたら終わりだと、思ってました"
+          "text": "はい。決めた場所も、使いながら直していきます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "神崎さんが、ソファの空いた方を指した。今日は迷わず、そこへ座れた。"
+          "text": "神崎さんが、ソファの空いた方を指した。今日も迷わず、そこへ座れた。"
         }
       ]
     },
@@ -543,6 +543,81 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_kumicho_revisit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒革のソファに座ると、机の端に小さなトレーが置いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前に来た時には、なかったものだ。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、小僧。店の卓、試したか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。トングを置く場所を決めたら、手が迷わなくなりました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そうか。……そいつは、お前の手が見つけた場所だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "このトレー、前はなかったですよね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "お前の話を聞いて、俺も一つ足した。客のグラスを置く場所だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "神崎さんも、変えたんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "教えたら終いじゃねえ。こっちも、使って確かめる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんはトレーを指で少しずらし、こちらへ向けた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "今日はお前が置いてみろ。どこがいいと思う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ソファから手を伸ばして、迷わない所。ここです"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……ああ。悪くねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トレーは、そのまま俺が置いた場所に残った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_rei_followup",
       "lines": [
         {
@@ -614,6 +689,76 @@
           "speaker": "rei",
           "face": "normal",
           "text": "……うん。気になったら、聞いて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_revisit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、カウンターにCDが一枚だけ、伏せて置いてあった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……来た。これ、選んでおいた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺に、ですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……前に、ほかの話も聞きたいって言ってたから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ジャケットは、夜明け前みたいな薄い青。前の一枚より、音が少なそうに見えた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……この人たち、音を減らして、間を広げてる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "店でかける前に、誰かに聴いてほしかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店の曲、REIさんが選んでるんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。煙が濃い夜は、これくらいがいい気がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "吸ったあとに、少し余白が残る感じですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……そう。それ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……今度、店で流す。その夜に来たら、感想を聞かせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。煙と一緒に聴いてみます"
         }
       ]
     }

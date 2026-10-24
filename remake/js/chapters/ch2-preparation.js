@@ -65,9 +65,13 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !followup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
-  const scene = story || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
+  // 神崎・REIは続編のあと一度だけ、前の話を覚えていて少し進む再訪（#952）。その後はいつもの会話。
+  const revisitId = `remake_ch2_${id}_revisit`;
+  const revisit = !first && !followup && !story && !state.flags._ch2_revisit_done?.[id] && !!DB.dialogues[revisitId];
+  const deferred = followup || revisit;
+  const scene = story || (revisit ? revisitId : `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`);
   const dialogue = DB.dialogues[scene];
-  if (!dialogue?.lines?.length || followup && !dialogue.lines.every(line => line && !line.type
+  if (!dialogue?.lines?.length || deferred && !dialogue.lines.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
     toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
@@ -98,8 +102,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   }
   if (id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha, spot)) return { used: false, exerted: false };
   addMoney(-spot.cost); addStamina(spot.stamina);
-  if (followup) {
-    (state.flags._ch2_followup_done ||= {})[id] = true;
+  if (deferred) {
+    (state.flags[followup ? "_ch2_followup_done" : "_ch2_revisit_done"] ||= {})[id] = true;
   }
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   const talks = state.flags._ch2_talks ||= {};

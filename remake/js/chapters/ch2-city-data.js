@@ -53,6 +53,7 @@ export async function loadChapterTwoDialogues() {
 
 export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+  required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
@@ -61,7 +62,7 @@ export async function loadPreparationDialogues() {
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
     if (file === "ch2_preparation") {
-      for (const id of ids.filter(id => id.endsWith("_followup"))) {
+      for (const id of ids.filter(id => id.endsWith("_followup") || id.endsWith("_revisit"))) {
         if (!dialogues[id].lines.every(line => line && !line.type && typeof line.text === "string"
           && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
           throw new Error(`${file}: 続編台本の形式を確認してください ${id}`);
