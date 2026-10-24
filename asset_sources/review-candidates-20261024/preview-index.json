@@ -270,6 +270,24 @@
       "sha256": "4fbf36fabff865c32cc35c7bb5c1f96d22c31082bc504326fec69f9cc535fd4c",
       "sourceSHA256": "6f861837c7298bb926c94e18a89d1a855f1e9701484b45edcf809120d87977cb",
       "bytes": 76889
+    },
+    {
+      "number": 31,
+      "name": "プリクラ v1（規格未達）",
+      "original": "asset_sources/review-candidates-20261024/purikura/31-strip-v1.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-31.jpg",
+      "sha256": "b2e5a21d97674fcbbdafdc86bca83183b5c3d4696962bd05d978c3a48f83643e",
+      "sourceSHA256": "af73284b1b452c207db44211d361856f1593d2c76174d8c0c50e25c24694e408",
+      "bytes": 101482
+    },
+    {
+      "number": 32,
+      "name": "プリクラ v2（規格未達）",
+      "original": "asset_sources/review-candidates-20261024/purikura/32-strip-v2.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-32.jpg",
+      "sha256": "0dbc123a2409191da5da5f34903a65202b25d03b6e950875306bec57170e9dfa",
+      "sourceSHA256": "e99cdb0e407b02fb660efeb29a3fee20675c6e17c7b2f352ea878a8aea8e92f0",
+      "bytes": 100728
     }
   ],
   "sheets": [
@@ -361,6 +379,20 @@
       "members": [
         4,
         15
+      ]
+    },
+    {
+      "name": "purikura-strip",
+      "path": "asset_sources/review-candidates-20261024/previews/purikura-strip.jpg",
+      "bytes": 271646,
+      "dimensions": [
+        920,
+        900
+      ],
+      "sha256": "df04d7ead95f7bb1442dbceaf0ca387291140a2c410e4f04ea43252459d29d63",
+      "members": [
+        31,
+        32
       ]
     }
   ]

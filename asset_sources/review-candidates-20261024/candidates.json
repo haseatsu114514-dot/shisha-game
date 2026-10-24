@@ -421,6 +421,34 @@
       "file": "dialogue/15-dialogue-15.png",
       "adoption": "未採用",
       "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "purikura",
+      "id": "issue947-v1",
+      "name": "プリクラ v1（規格未達）",
+      "bytes": 2671464,
+      "dimensions": [
+        965,
+        1629
+      ],
+      "sha256": "af73284b1b452c207db44211d361856f1593d2c76174d8c0c50e25c24694e408",
+      "file": "purikura/31-strip-v1.png",
+      "adoption": "未採用・受入合格0",
+      "quality_notes": "指定3語各1回・人物と1列2写真は目視確認済み。640×1080未達、帯/写真/余白の厳密配置未達、24px装飾安全域未保証。本編未接続。原画無加工。"
+    },
+    {
+      "group": "purikura",
+      "id": "issue947-v2",
+      "name": "プリクラ v2（規格未達）",
+      "bytes": 2571123,
+      "dimensions": [
+        965,
+        1630
+      ],
+      "sha256": "e99cdb0e407b02fb660efeb29a3fee20675c6e17c7b2f352ea878a8aea8e92f0",
+      "file": "purikura/32-strip-v2.png",
+      "adoption": "未採用・受入合格0",
+      "quality_notes": "指定3語各1回・人物と1列2写真は目視確認済み。640×1080未達、帯/写真/余白の厳密配置未達、24px装飾安全域未保証。本編未接続。原画無加工。"
     }
   ],
   "Rei": "新デザイン3案は未生成。旧本編画像を新候補と表示しない。",

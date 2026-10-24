@@ -1,6 +1,6 @@
 # 2026-10-24 画像候補の比較一覧
 
-**全30枚は未採用の比較候補です。本編の画像・コード・保存データは変更していません。**
+**原画32枚は未採用の比較候補です。本編の画像・コード・保存データは変更していません。**
 
 下の比較シートと各案の画像は、折り畳まず表示します。クリックすると原画を拡大できます。初稿と修正版は両方保持し、品質課題を隠しません。GitHubの画像表示は原画確認用で、実ゲームのPC/横タッチ/LOAD受入とは別です。
 
@@ -27,6 +27,24 @@
 ### 新フレーバー 2候補
 
 ![flavors 比較シート](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/previews/flavors.jpg)
+
+## 追加：#947 縦長プリクラシール（2候補・受入合格0）
+
+初稿と余白修正版を保全しています。3語は各1回読め、人物と1列2写真は確認済みですが、**最終640×1080、区画比率、24px安全域は未達**です。未採用・本編未接続。縮小シートは画像を切り抜かず、原画の縦横比を維持しています。
+
+![プリクラ2候補の比較](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/previews/purikura-strip.jpg)
+
+### プリクラ v1（規格未達）
+
+実寸 965×1629。原画は無加工。
+
+[![プリクラ v1（規格未達）](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/previews/thumb-31.jpg)](./purikura/31-strip-v1.png)
+
+### プリクラ v2（規格未達）
+
+実寸 965×1630。原画は無加工。
+
+[![プリクラ v2（規格未達）](https://media.githubusercontent.com/media/haseatsu114514-dot/shisha-game/codex/review-images-20261024-task5/asset_sources/review-candidates-20261024/previews/thumb-32.jpg)](./purikura/32-strip-v2.png)
 
 ## 判断前の注意
 
@@ -338,4 +356,4 @@
 | [90年代OVAスタディと旧タイトル試作](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/retro-ova-study-519/README.md) | 履歴。最新の「人物は元の既存デザイン、背景の90年代方向は維持」という本人方針に従う。旧キャラ案を新しい採用案とは扱わない。 |
 | [ショップ画像の既存採用・旧候補](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/shop-art-issue586/README.md) | 現行採用と旧Draftの履歴が同居。実在アマボーストを参考にする新版は未生成で、この一覧から代替採用しない。 |
 
-会話ウインドウ15案は本ページの上段にあります。Rei新3案は未生成。#947の縦長プリクラシールは制作再開待ちで、既存4コマ参照CG自体を新作として掲載しません。
+会話ウインドウ15案は本ページの上段にあります。Rei新3案は未生成。#947は2候補を本ページへ追加しましたが、規格未達・受入合格0です。既存4コマ参照CG自体を新作として掲載していません。
