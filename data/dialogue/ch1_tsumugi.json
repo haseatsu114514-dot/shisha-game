@@ -170,6 +170,15 @@
         ],
         "serve_call": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_tsumugi_contest_research",
+            "next_true": "serve_call_known",
+            "next_false": "serve_call_new"
+          }
+        ],
+        "serve_call_new": [
+          {
             "speaker": "hajime",
             "face": "normal",
             "text": "お待たせしました。ラベンダーです"
@@ -189,6 +198,28 @@
             "face": "",
             "text": "まるで、画面を見られたくないように。"
           }
+        ],
+        "serve_call_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "お待たせ。ラベンダーです"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……ありがとうございます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さな声。タブレットを抱えたまま、少しだけ頭を下げた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "描いている途中は、いつもこのくらいの声だ。"
+          }
         ]
       }
     },
@@ -203,7 +234,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターで、別のお客さんの一台に火を入れていた。"
+          "text": "客席で、自分で詰めた一台に火を入れた。"
         },
         {
           "speaker": "",
@@ -233,7 +264,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "炭を替えに行くついでに、少しだけ覗いてみた。"
+          "text": "炭を替えに立ったついでに、少しだけ覗いてみた。"
         },
         {
           "speaker": "",
@@ -389,7 +420,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シフト中、炭を替えに行った。つむぎは、いつもの席でタブレットを傾けている。"
+          "text": "自分の炭を替えに立つと、つむぎがいつもの席でタブレットを傾けていた。"
         },
         {
           "type": "condition",
@@ -548,7 +579,7 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……あなた、最初の日……そっと置いてくれた人"
+            "text": "……最初にここで運んでくれた時、そっと置いてくれましたね"
           },
           {
             "speaker": "hajime",
@@ -872,12 +903,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店作業をしていると、つむぎが立っていた。"
+          "text": "帰り支度をしていると、つむぎが立っていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "いつもの席ではない。カウンターの前。タブレットを両手で持って、はじめの方を向いている。"
+          "text": "いつもの席ではない。俺の席の横。タブレットを両手で持って、こちらを向いている。"
         },
         {
           "speaker": "tsumugi",
@@ -887,7 +918,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "つむぎちゃん？ 今日はもう閉店だけど……"
+          "text": "つむぎちゃん？ そろそろ閉店だけど……"
         },
         {
           "speaker": "tsumugi",
@@ -1194,7 +1225,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "バイト中、つむぎのテーブルにシーシャを運んだ。いつものラベンダー。"
+          "text": "スミさんに断って、つむぎの一台を作らせてもらった。いつものラベンダー。"
         },
         {
           "speaker": "",
