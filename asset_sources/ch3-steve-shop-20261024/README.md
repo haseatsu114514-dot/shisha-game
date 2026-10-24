@@ -22,4 +22,4 @@
 
 ## Integration note
 
-The game-sized background is stored at `assets/backgrounds/bg_steve_shop.png`. This asset PR stores the source and background only. A later Chapter 3 gameplay PR will add the manifest entry and scene background reference after PR #980 is integrated.
+The game-sized background is stored at `assets/backgrounds/bg_steve_shop.png`, registered in `remake/data/manifest.json`, and used for Steve's Chapter 3 visit. The runtime image and Steve's portrait were checked together in the VN scene.
