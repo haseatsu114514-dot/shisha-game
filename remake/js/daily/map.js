@@ -115,7 +115,7 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -141,7 +141,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     };
 
     const freeGuide = (s) => isFreeGuide(s, guide);
-    const availability = (s) => spotAvailability(s, { guide });
+    const availability = (s) => spotAvailability(s, { guide, visitBlock });
 
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
@@ -309,7 +309,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
-      const people = locked ? [] : spotPeople(s);
+      const people = locked ? [] : spotPeople(s, { visitBlock });
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null

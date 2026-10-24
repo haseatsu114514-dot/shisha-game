@@ -44,6 +44,7 @@
         "node --experimental-vm-modules remake/test/daily_consistency.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
+        "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
