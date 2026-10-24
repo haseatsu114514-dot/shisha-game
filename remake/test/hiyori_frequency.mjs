@@ -12,7 +12,7 @@ const context = vm.createContext({ Math, Set, Promise, console });
 const mocks = {
   "core/data.js": { DB },
   "core/state.js": { state, save: () => saves++ },
-  "core/stats.js": { gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
+  "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
   "daily/bonds.js": { afterStory: async () => {}, hiyoriQuestionReady: () => false, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
   "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked },

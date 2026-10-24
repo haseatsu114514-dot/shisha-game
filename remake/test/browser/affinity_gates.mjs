@@ -16,6 +16,8 @@ async function setup(page) {
         s.met[id] = true; s.flags[`_intro_${id}`] = true;
       }
       s.flags._minto_identity_revealed = true;
+      // #814: 固有会話を読み終えた状態から始め、♥3の質問ゲートだけを確かめる（会話待ちの上限は別のテスト）。
+      Object.assign(s.story, { tsumugi: 6, minto: 5, rin: 3 }); // みんとは最後の1本を残し、早すぎる締めくくりを確かめる
       return s;
     };
     G.readGate = async id => {
@@ -64,6 +66,7 @@ await suite("affinity-gates", async check => {
           s.story[id] = G.spots.VISIT_SEQ[id].length; // explicit completed-history fixture for the finale
           G.stats.releaseAffinity(id); // only the newly completed stages free the remaining earned bank
           G.stats.gainAffinity(id, 22);
+
           if (id === "tsumugi") s.flags._tsumugi_contest_submitted = true; // DAY11 fixed story is the chapter-1 relationship beat
           const ready = G.bonds.finaleDue(id);
           await G.bonds.playFinale(id);
@@ -99,6 +102,7 @@ await suite("affinity-gates", async check => {
         for (const id of ["tsumugi", "minto", "rin"]) {
           const s = G.fresh(); s.affinity[id] = 20;
           s.story[id] = id === "rin" ? 3 : 4;
+
           if (id === "minto") Object.assign(s.flags, { _minto_private_done: true, _minto_name_known: true });
           await G.bonds.afterStory(G.bonds.BOND_QUESTIONS[id].host);
           const early = !!s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]], pendingEarly = G.bonds.questionVisitDue(id);

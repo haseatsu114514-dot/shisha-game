@@ -25,8 +25,9 @@ const values = {
   "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
   "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
-  "stats.js": { addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
+  "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
+
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
   "engine.js": { isPlaying: () => false, play: async (scene) => { plays.push(scene); return {id: typeof scene === "string" ? scene : scene.dialogue_id, visited: []}; }, dialogueSequence: (run) => run() },
   "story-knowledge.js": { syncMintoKnowledge() {} },
@@ -110,6 +111,7 @@ reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(mone
 // 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
 reset({ story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
 reset({ slot: 1, story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
 assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));
 assert.equal(handoff.lines[0].speaker, "minto");
@@ -127,7 +129,7 @@ assert(JSON.stringify(sumi.find((s) => s.dialogue_id === "ch1_sumi_eve")).includ
 const spots = mods.get("spots.js").namespace;
 const peopleModule = await load("spot-people.js"); await peopleModule.evaluate();
 for (const [day, slot, present] of [[6, 0, false], [6, 1, true], [8, 0, true], [8, 1, false], [11, 0, false], [11, 1, false]]) {
-  reset({ day, slot, story: { tsumugi: 1 }, visits: {}, contacts: [], visitedDay: { tonari_baito: day } });
+  reset({ day, slot, story: { tsumugi: 1 }, hearts: { tsumugi: 1 }, visits: {}, contacts: [], visitedDay: { tonari_baito: day } }); // #814: 2本目は♥1で開く
   db.dialogues = { ch1_tsumugi_second: { lines: [] } };
   assert.equal(peopleModule.namespace.spotPeople({ id: "tonari", kind: "tonari" }).some(p => p.id === "tsumugi"), present);
   assert.equal(spots.hasNewEvent({ id: "tonari", kind: "tonari" }), present);
@@ -140,7 +142,7 @@ for (const [day, slot, present] of [[6, 0, false], [6, 1, true], [8, 0, true], [
   assert.equal(selected() === "baito_baito_tsumugi_rain", present);
 }
 // #782 P2: DAY8昼の実来店で個別会話3→4へ進んでも、その日の夜に再登場しない。
-reset({ day: 8, slot: 0, story: { tsumugi: 3 }, visits: {}, contacts: [],
+reset({ day: 8, slot: 0, story: { tsumugi: 3 }, hearts: { tsumugi: 3 }, visits: {}, contacts: [],
   visitedDay: { tonari_baito: 8, tonari_customer: 8 } });
 db.dialogues = { ch1_tsumugi_fourth: { lines: [] } };
 await tonari.tonariCustomer();
@@ -154,7 +156,7 @@ plays.length = 0; rainy = true; db.baito = [byid.baito_tsumugi_rain];
 await tonari.doBaito();
 assert.equal(selected(), undefined, "昼に会ったつむぎが夜の接客候補へ戻った");
 // 後半の夜専用会話はDAY12夜に引き続き到達できる。
-reset({ day: 12, slot: 1, story: { tsumugi: 4 }, visits: {}, contacts: [],
+reset({ day: 12, slot: 1, story: { tsumugi: 4 }, hearts: { tsumugi: 4 }, visits: {}, contacts: [],
   flags: { _tsumugi_contest_submitted: true }, visitedDay: {} });
 db.dialogues = { ch1_tsumugi_fifth: { lines: [] } };
 await tonari.tonariCustomer();

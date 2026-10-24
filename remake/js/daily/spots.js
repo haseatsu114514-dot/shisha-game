@@ -3,7 +3,8 @@
 import { state, markMet } from "../core/state.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
-import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, affinityGateWaiting, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
+
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
@@ -117,7 +118,39 @@ const NIGHT_STORIES = new Set([
   "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
-const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
+/**
+ * #814 ハートと会話イベントの連動（第1章の固有会話がある人物）。
+ * k番目（0始まり）の会話は ♥k 以上で開く。読んだ会話の数より多いハートには上がらない。
+ * 全部読んだら上限なし。第2章以降・恋人・固有会話の無い人物は対象外。
+ */
+// 師匠の修業回は進行の柱なので、ハートでは止めない。
+const HEART_STORY_EXEMPT = new Set(["sumi"]);
+const heartStoryTarget = (id, s) => !!VISIT_SEQ[id] && !HEART_STORY_EXEMPT.has(id)
+  && s?.chapter === 1 && !(s.lovers || []).includes(id);
+export function storyAffinityCap(id, s = state) {
+  if (!heartStoryTarget(id, s)) return Infinity;
+  const read = s.story?.[id] || 0;
+  if (read >= VISIT_SEQ[id].length || read + 1 >= AFFINITY_RANK_PTS.length) return Infinity;
+  return AFFINITY_RANK_PTS[read + 1] - 1;
+}
+setStoryAffinityCap(storyAffinityCap);
+/**
+ * 会話 dialogueId を今のハートで開けるか（第1章の固有会話だけ）。
+ * ♥3の質問待ち（affinityGateWaiting）で止まっている間は♥3で足りる。質問へ進む会話を塞がない。
+ */
+export function storyHeartReady(charId, index, s = state) {
+  if (!heartStoryTarget(charId, s)) return true;
+  const need = Math.min(index, affinityGateWaiting(charId) ? 3 : AFFINITY_RANK_PTS.length - 1);
+  return affinityLevel(charId) >= need;
+}
+const storyAvailable = (id) => (!NIGHT_STORIES.has(id) || state.slot >= 1) && storyOpenByHeart(id);
+function storyOpenByHeart(id) {
+  for (const [charId, seq] of Object.entries(VISIT_SEQ)) {
+    const at = seq.indexOf(id);
+    if (at >= 0) return storyHeartReady(charId, at);
+  }
+  return true;
+}
 /** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
@@ -249,7 +282,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
       if (!await playQuestionVisit(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, 5);
-    } else if (idx < seq.length && idx <= affinityLevel(charId) && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
+    } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
       if (!await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg })) return false;
       state.story[charId] = idx + 1;
       gainAffinity(charId, 10);
@@ -285,6 +318,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     await maybeRecruitTrpgMember(charId);
     return live();
   } finally { active.delete(charId); }
+
 
 }
 

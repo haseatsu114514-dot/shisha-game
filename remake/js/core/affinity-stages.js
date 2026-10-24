@@ -19,7 +19,7 @@ export function questionComplete(s, id) {
 export function pendingAffinityStage(s, id, db = {}) {
   const stages = [];
   const flags = s.flags || {};
-  const seq = VISIT_SEQ[id];
+  const seq = id === "sumi" ? null : VISIT_SEQ[id];
   if (seq) seq.forEach((scene, level) => stages.push({ level, scene, done: (s.story?.[id] || 0) > level }));
   if (["tsumugi", "minto", "rin"].includes(id)) stages.push({ level: 3, scene: `ch1_${id}_bond_question`, done: questionComplete(s, id) });
   if (id === "samechan") stages.push(

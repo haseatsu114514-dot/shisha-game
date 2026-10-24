@@ -52,7 +52,7 @@ await schedule.link(() => { throw Error("Unexpected schedule import"); });
 await schedule.evaluate();
 const mocks = {
   "state.js": { state, save: () => saves.push(JSON.stringify(state)) },
-  "stats.js": { ensureAffinityLevel: (id, level) => { levels.push([id, level]); return 0; } },
+  "stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, ensureAffinityLevel: (id, level) => { levels.push([id, level]); return 0; } },
   "engine.js": { play: async id => plays.push(id) },
   "spots.js": { hasContact: () => true },
 };

@@ -57,6 +57,8 @@ try {
     await T.spots.visitChar("minto");
     const afterThird = !!state.flags._minto_identity_revealed;
     await T.spots.visitChar("minto");
+    // #814: 次の会話は次のハートまで開かないので、♥1を待つ通常訪問が1回入る。
+    if (T.spots.hearts("minto") < 3) await T.spots.visitChar("minto");
     const heart3Waiting = {
       hearts: T.spots.hearts("minto"),
       known: !!state.flags._minto_identity_revealed,
@@ -80,8 +82,8 @@ try {
     await T.bonds.afterStory("ch1_minto_private_1");
     const secondOuting = T.vn.backlog().map((l) => l.text);
     const answerCount = Object.keys(state.romanceChoices).length;
+    state.affinity.minto = 90; // #814: 最後の夜の会話は♥5で開く
     await T.spots.visitChar("minto"); // 夜の固有会話も読み終える
-    state.affinity.minto = 90;
     Object.assign(state, { day: 12, slot: 0 });
     const finaleInvite = T.phone.morningMessages({ fixedNight: () => false }).find((m) => m.origin_id === "lime_minto_bond_finale");
     const workdayFinale = finaleInvite && { slot: finaleInvite.time_slot, after: finaleInvite.after_close };
@@ -130,6 +132,7 @@ try {
   const legacy = await page.evaluate(async () => {
     const state = T.fresh();
     state.story.minto = 4;
+    state.affinity.minto = 66; // #814: 残り2本（♥4・♥5の会話）を開ける旧セーブ
     state.limeRead.push("rumor_minto_late_night");
     await T.spots.visitChar("minto");
     await T.spots.visitChar("minto");
@@ -137,6 +140,7 @@ try {
     const lines = T.vn.backlog().map((l) => l.text);
     const fresh = T.fresh();
     fresh.story.minto = 4;
+    fresh.affinity.minto = 66;
     fresh.inbox.push({ id: "rumor_minto_late_night", read: false });
     await T.spots.visitChar("minto");
     return { known, lines, unread: !!fresh.flags._minto_phantom_shared };

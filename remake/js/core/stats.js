@@ -151,6 +151,11 @@ export function affinityGateWaiting(id) {
     && !questionComplete(state, id);
 }
 
+// PR970の公開portと保存済み保留値を保ち、精算は同じ台帳へ集約する。
+let storyAffinityCap = () => Infinity;
+export function setStoryAffinityCap(fn) { storyAffinityCap = typeof fn === "function" ? fn : () => Infinity; }
+export function releaseStoryAffinity(id) { return releaseAffinity(id); }
+
 export function affinityLevel(id) {
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
   const pts = state.affinity[id] || 0;
@@ -187,6 +192,12 @@ export function ensureAffinityLevel(id, level) {
 
 /** 元の獲得履歴と旧救済量を保持し、未消費分だけ解放。倍率・占い・端数は再適用しない。 */
 export function releaseAffinity(id) {
+  const legacyKey = `_${id}_story_waiting_pts`;
+  const legacy = Math.max(0, Number(state.flags[legacyKey]) || 0);
+  if (legacy) {
+    state.flags[waitingKey(id)] = (Number(state.flags[waitingKey(id)]) || 0) + legacy;
+    delete state.flags[legacyKey];
+  }
   if ((state.lovers || []).includes(id)) return 0;
   const prevPts = state.affinity[id] || 0, before = affinityLevel(id);
   const held = Math.max(0, (Number(state.flags[waitingKey(id)]) || 0) - releasedPoints(id));
@@ -328,6 +339,7 @@ export function gainAffinity(id, pts, opts = {}) {
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
   const applied = Math.min(got, Math.max(0, affinityPointCap(id) - prevPts));
+
   if (applied < got) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + got - applied;
   state.affinity[id] = prevPts + applied;
   if (!applied) return 0;

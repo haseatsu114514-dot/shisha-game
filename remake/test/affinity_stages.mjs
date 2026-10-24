@@ -61,8 +61,8 @@ async function check(name,run) {
 }
 const done = { id:'port-scene',visited:[] };
 const close = (a,b) => assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-await check('all six shop routes: each unread stage caps earned points, completing it releases once', async f => {
-  for (const [id,seq] of Object.entries(f.spots.VISIT_SEQ)) for (let stage=0;stage<seq.length;stage++) {
+await check('five social shop routes: each unread stage caps earned points, completing it releases once', async f => {
+  for (const [id,seq] of Object.entries(f.spots.VISIT_SEQ).filter(([id]) => id !== "sumi")) for (let stage=0;stage<seq.length;stage++) {
     const s=f.fresh(); s.story[id]=stage;
     if (stage>3) s.flags[f.stages.questionDoneKey(id)]=true;
     s.affinity[id]=f.stats.AFFINITY_RANK_PTS[stage];
@@ -78,6 +78,20 @@ await check('all six shop routes: each unread stage caps earned points, completi
       assert.equal(f.stats.releaseAffinity(id),0);
     }
   }
+});
+await check('Sumi lessons remain outside social heart caps', async f => {
+  const s=f.fresh(); s.affinity.sumi=0;
+  assert.equal(f.stages.pendingAffinityStage(s,'sumi'),null);
+  assert.equal(f.stats.gainAffinity('sumi',100),85);
+  assert.equal(s.affinity.sumi,85);
+});
+await check('PR970 saved story bank migrates and releases once', async f => {
+  const s=f.fresh(); s.story.naru=6; s.affinity.naru=10;
+  s.flags._naru_story_waiting_pts=17;
+  assert.equal(f.stats.releaseStoryAffinity('naru'),17);
+  assert.equal(s.affinity.naru,27);
+  assert.equal(s.flags._naru_story_waiting_pts,undefined);
+  assert.equal(f.stats.releaseStoryAffinity('naru'),0);
 });
 for (const outcome of ['cancel','missing','throw','abort','load']) await check(`visitChar public caller: ${outcome} cannot complete/reward`, async f => {
   const s=f.core.state; s.affinity.naru=0;
