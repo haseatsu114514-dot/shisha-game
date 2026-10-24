@@ -128,7 +128,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const pins = el("div.map-pins");
     // DS風の上画面：街の全体図に行き先の点を打つ（表示だけ。操作は下画面のカード）。通常版ではCSSで出さない。
     const markers = el("div.ds-map-markers", { "aria-hidden": "true" });
-    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.spot === id));
+    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.marker === id));
     let selected = null;
     const owner = state;
     let stationTrip = null;
@@ -354,7 +354,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       pins.append(btn);
       markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
-        dataset: { spot: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
+        dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
       if (freshPins.length) {
         revealing = true;
