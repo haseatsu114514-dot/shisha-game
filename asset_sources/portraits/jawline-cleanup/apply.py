@@ -1,4 +1,5 @@
-"""Reapply ONLY the reviewed jaw patches; never regenerate or recolor whole sprites."""
+"""Reproduce the REJECTED experiment in an explicit directory, never in game assets."""
+import argparse
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -10,6 +11,15 @@ PATCHES = [
 ]
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output-dir', required=True, type=Path,
+                        help='Directory for rejected experiment previews only')
+    args = parser.parse_args()
+    output = args.output_dir.resolve()
+    for protected in ('assets', 'remake'):
+        if output == ROOT / protected or ROOT / protected in output.parents:
+            parser.error('Rejected experiments must not overwrite game assets')
+    output.mkdir(parents=True, exist_ok=True)
     for character, face, points in PATCHES:
         stem = f'{character}-{face}'
         source = Image.open(HERE / f'{stem}-before.png').convert('RGBA')
@@ -21,5 +31,5 @@ if __name__ == '__main__':
         mask = mask.filter(ImageFilter.GaussianBlur(.65))
         result = Image.composite(patch, source.convert('RGB'), mask).convert('RGBA')
         result.putalpha(source.getchannel('A'))
-        mask.save(HERE / f'{stem}-mask.png')
-        result.save(ROOT / f'assets/sprites/characters/{character}/chr_{character}_{face}.png')
+        mask.save(output / f'{stem}-mask.png')
+        result.save(output / f'{stem}-rejected.png')
