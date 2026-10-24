@@ -297,6 +297,8 @@ export function newGame() {
 
 export function save() {
   if (!state) return;
+  // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
+  recordGalleryProgress(peekSave());
   recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
