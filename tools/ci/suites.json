@@ -65,7 +65,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -2110,6 +2110,7 @@
       "paths": [
         "data/dialogue/trpg_ordinary.json",
         "data/dialogue/trpg_shark.json",
+        "data/dialogue/trpg_table_talk.json",
         "data/dialogue/trpg_club.json",
         "data/trpg_catalog.json",
         "remake/img/backgrounds/trpg_*.webp",
