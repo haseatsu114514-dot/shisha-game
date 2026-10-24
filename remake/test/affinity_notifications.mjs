@@ -27,6 +27,8 @@ try {
     T.core.newGame();
     T.core.state.met.minto = true;
     T.core.state.met.naru = true;
+    T.core.state.story.minto = 3; // notification arithmetic is tested after the preceding conversations
+    T.core.state.story.naru = 1;
     T.bus.on("affinity-gain", (event) => T.events.push(event));
     T.vn.vnTest.turbo = true;
     T.vn.hooks.contextChar = "minto";

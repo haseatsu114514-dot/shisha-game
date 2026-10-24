@@ -54,6 +54,12 @@
       ]
     },
     {
+      "id": "affinity-stages",
+      "title": "Completed conversations and affinity stage boundaries",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/affinity_stages.mjs"]
+    },
+    {
       "id": "game-logic",
       "title": "Game logic without a browser",
       "kind": "quick",

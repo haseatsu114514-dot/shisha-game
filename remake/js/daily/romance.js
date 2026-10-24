@@ -8,7 +8,7 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
+import { gainAffinity, releaseLoveAffinity, privateBondScope, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
@@ -197,23 +197,24 @@ export function loverMilestoneDue(id) {
 }
 
 /** 実際に会った私的な場面の読了後、未読の節目を一つだけ読む。読了前の保存では未読のまま。 */
-export async function playLoverMilestone(id) {
+export async function playLoverMilestone(id, { signal = null } = {}) {
   if (milestonePlaying || isPlaying()) return false;
-  if (id === "samechan") return playSamechanMilestone();
+  if (id === "samechan") return playSamechanMilestone({ signal });
   const eventId = loverMilestoneDue(id);
   if (!eventId) return false;
-  const owner = state, previousPrivate = bond.private;
+  const owner = state, restorePrivate = privateBondScope();
   milestonePlaying = true;
-  bond.private = true;
   try {
-    await play(eventId);
-    if (state !== owner) return false;
+    if (signal?.aborted) return false;
+    const result = await play(eventId, { signal });
+    if (state !== owner || signal?.aborted || (!result || result.cancelled)) return false;
     state.loverEventsSeen ||= [];
     if (!state.loverEventsSeen.includes(eventId)) state.loverEventsSeen.push(eventId);
+    releaseLoveAffinity(id);
     save();
     return true;
   } finally {
-    bond.private = previousPrivate;
+    restorePrivate();
     milestonePlaying = false;
   }
 }

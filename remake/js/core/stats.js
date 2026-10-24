@@ -1,6 +1,8 @@
 // ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは★で表す。
 import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
+import { DB } from "./data.js";
+import { pendingAffinityStage, pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
 import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
@@ -146,7 +148,7 @@ export function affinityGateWaiting(id) {
   if (id === "hiyori") return !state.flags._hiyori_tonari_return_done;
   // 完了済みの旧関係は維持。未回答の選択肢を埋めることはしない。
   return !state.flags[`_friend_${id}`] && !state.finales?.[id]
-    && !state.romanceChoices?.[AFFINITY_GATE_CHOICES[id]];
+    && !questionComplete(state, id);
 }
 
 export function affinityLevel(id) {
@@ -157,43 +159,61 @@ export function affinityLevel(id) {
   return lv;
 }
 
-/** 読み終えた物語の節目で最低限の親しさを保証する。既存の好感度・端数・恋人の絆は減らさない。 */
+/** 旧値は下げず、新たな獲得分だけ未読段階の次の閾値直前で保留する。 */
+export function affinityPointCap(id) {
+  const stage = pendingAffinityStage(state, id, DB);
+  const cap = stage && stage.level < 5 ? AFFINITY_RANK_PTS[stage.level + 1] - 1 : Infinity;
+  return Math.max(state.affinity[id] || 0, Math.min(cap, affinityGateWaiting(id) ? AFFINITY_RANK_PTS[3] : Infinity));
+}
+const releasedPoints = id => (Number(state.flags[`_${id}_affinity_released_pts`]) || 0)
+  + (Number(state.flags[`_${id}_affinity_stage_released_pts`]) || 0);
+
+/** 読み終えた物語の最低値保証。既存846の呼出し・端数・恋人の絆はそのまま。 */
 export function ensureAffinityLevel(id, level) {
-  let target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
+  const target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
   if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
   releaseAffinity(id);
-  const before = affinityLevel(id);
-  const prevPts = state.affinity[id] || 0;
-  if (affinityGateWaiting(id) && target > Math.max(prevPts, AFFINITY_RANK_PTS[3])) {
-    const cap = Math.max(prevPts, AFFINITY_RANK_PTS[3]);
-    // 最低値の保証を何度呼んでも、同じ保証分を積み増さない。
-    state.flags[waitingKey(id)] = Math.max(state.flags[waitingKey(id)] || 0, target - cap);
-    target = cap;
-  }
-  if (prevPts >= target) return 0;
-  state.affinity[id] = target;
-  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before, prevPts, pts: target });
-  return target - prevPts;
+  const before = affinityLevel(id), prevPts = state.affinity[id] || 0;
+  const next = Math.max(prevPts, Math.min(target, affinityPointCap(id)));
+  // 既に保留中の保証分も数えるので、再入しても積み増さない。
+  const pending = Math.max(0, (state.flags[waitingKey(id)] || 0) - releasedPoints(id));
+  const held = Math.max(0, target - next - pending);
+  if (held) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + held;
+  if (next === prevPts) return 0;
+  state.affinity[id] = next;
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before, prevPts, pts: next });
+  return next - prevPts;
 }
 
-/** 待っていた実獲得量を、既存イベントの後に一度だけ・次のハートまで救済する。 */
+/** 元の獲得履歴と旧救済量を保持し、未消費分だけ解放。倍率・占い・端数は再適用しない。 */
 export function releaseAffinity(id) {
-  const releasedKey = `_${id}_affinity_waiting_released`;
-  if (id === "hiyori" && !state.flags._hiyori_tonari_return_done) return 0;
-  if (!hasAffinityGate(id) || affinityGateWaiting(id) || state.flags[releasedKey]) return 0;
-  state.flags[releasedKey] = true;
   if ((state.lovers || []).includes(id)) return 0;
-  const prevPts = state.affinity[id] || 0;
-  const before = affinityLevel(id);
-  const next = AFFINITY_RANK_PTS[before + 1] ?? prevPts;
-  const got = Math.min(Math.max(0, Number(state.flags[waitingKey(id)]) || 0),
-    AFFINITY_RANK_PTS[4] - AFFINITY_RANK_PTS[3], Math.max(0, next - prevPts));
-  // 元の獲得記録は残す。倍率・占い・端数処理をもう一度かけない。
-  state.flags[`_${id}_affinity_released_pts`] = got;
+  const prevPts = state.affinity[id] || 0, before = affinityLevel(id);
+  const held = Math.max(0, (Number(state.flags[waitingKey(id)]) || 0) - releasedPoints(id));
+  const got = Math.min(held, Math.max(0, affinityPointCap(id) - prevPts));
   if (!got) return 0;
+  const key = `_${id}_affinity_stage_released_pts`;
+  state.flags[key] = (state.flags[key] || 0) + got;
   state.affinity[id] = prevPts + got;
-  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before,
-    prevPts, pts: state.affinity[id] });
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before, prevPts, pts: state.affinity[id] });
+  return got;
+}
+
+/** 私的な絆も最初の未読段階を越えない。旧高値・loveLevelは減らさない。 */
+function lovePointCap(id) {
+  const level = pendingLoveStage(state, id, DB);
+  return Math.max(state.lovePts[id] || 0, level && level < 5 ? AFFINITY_RANK_PTS[level + 1] - 1 : Infinity);
+}
+export function releaseLoveAffinity(id) {
+  if (!(state.lovers || []).includes(id)) return 0;
+  const key = `_${id}_love_waiting_pts`, prevPts = state.lovePts[id] || 0;
+  const got = Math.min(state.flags[key] || 0, Math.max(0, lovePointCap(id) - prevPts));
+  if (!got) return 0;
+  state.flags[key] -= got;
+  state.lovePts[id] = prevPts + got;
+  const before = state.loveLevel[id] || 1;
+  state.loveLevel[id] = Math.max(before, rankOf(state.lovePts[id]));
+  queueAffinityGain({ id, level: state.loveLevel[id], levelUp: state.loveLevel[id] > before, prevPts, pts: state.lovePts[id], bond: true });
   return got;
 }
 
@@ -207,7 +227,18 @@ const rankOf = (pts) => {
 };
 
 /** 恋人の絆はプライベート（デート・恋愛イベント・恋人とのLIME）でだけ深まる（master_spec #24） */
-export const bond = { private: false };
+let privateOwner = null, privateValue = false, privateRevision = 0;
+export const bond = {
+  get private() { return privateOwner === state && privateValue; },
+  set private(value) { privateOwner = state; privateValue = !!value; privateRevision++; },
+};
+/** LOAD後の旧finallyが、新しい私的会話のスコープを閉じない。 */
+export function privateBondScope() {
+  const owner = state, previous = bond.private;
+  bond.private = true;
+  const revision = privateRevision;
+  return () => { if (privateRevision === revision) bond.private = state === owner && previous; };
+}
 
 /** 普通の好感度は従来の加算量の85%（HF01）。恋人の絆は従来の半分 */
 export const AFFINITY_PACE = 0.85;
@@ -264,6 +295,7 @@ export function gainAffinity(id, pts, opts = {}) {
   let mult = 1 + 0.2 * tier01("charm");
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
+    releaseLoveAffinity(id);
     mult *= fortuneMult(id);
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
@@ -271,13 +303,18 @@ export function gainAffinity(id, pts, opts = {}) {
     const value = Math.round(pts * mult) * BOND_PACE + (state.loveCarry[id] || 0);
     const got = Math.floor(value + 1e-9);
     state.loveCarry[id] = Math.max(0, value - got);
-    state.lovePts[id] = prevPts + got;
-    if (!got) return 0;
+    const applied = Math.min(got, Math.max(0, lovePointCap(id) - prevPts));
+    if (applied < got) {
+      const key = `_${id}_love_waiting_pts`;
+      state.flags[key] = (state.flags[key] || 0) + got - applied;
+    }
+    state.lovePts[id] = prevPts + applied;
+    if (!applied) return 0;
     const before = state.loveLevel[id] || 1;
     const after = Math.max(before, rankOf(state.lovePts[id]));
     state.loveLevel[id] = after;
     queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
-    return got;
+    return applied;
   }
   releaseAffinity(id);
   mult *= fortuneMult(id);
@@ -290,7 +327,7 @@ export function gainAffinity(id, pts, opts = {}) {
   const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
-  const applied = affinityGateWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
+  const applied = Math.min(got, Math.max(0, affinityPointCap(id) - prevPts));
   if (applied < got) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + got - applied;
   state.affinity[id] = prevPts + applied;
   if (!applied) return 0;
