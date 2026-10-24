@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // シーシャくじ（master_spec #25）。正本データは data/kuji.json（旧版と共通）。
 // ボックス制・上位集約。リセマラ防止: 箱の並びは作った時点で確定して保存し、引くたびに先頭から出す。
 // 引いた直後に保存するので、結果を見てからのロードでは変わらない。
@@ -89,11 +90,11 @@ export function kujiRows(rerender) {
     const drawn = box.drawn, order = box.order;
     const button = el("button.btn.small", {
       text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
-      disabled: empty || state.money < g.price || null,
+      disabled: empty || spendableMoney(state) < g.price || null,
       dataset: { test: `kuji-${g.id}` },
       onclick: async () => {
         if (!live(button) || boxes[g.id] !== box || box.order !== order || box.drawn !== drawn
-          || empty || state.money < g.price || layers.modal.classList.contains("show")) return;
+          || empty || spendableMoney(state) < g.price || layers.modal.classList.contains("show")) return;
         if (purchaseLock?.session === session
           && (purchaseLock.committing || purchaseLock.overlay?.isConnected)) return;
         const lock = purchaseLock = { session, committing: true, overlay: null };
@@ -127,7 +128,7 @@ export function kujiRows(rerender) {
 }
 
 async function draw(g, box) {
-  if (box.drawn >= box.order.length || state.money < g.price) return;
+  if (box.drawn >= box.order.length || spendableMoney(state) < g.price) return;
   addMoney(-g.price);
   const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;

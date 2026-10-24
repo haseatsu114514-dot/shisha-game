@@ -11,7 +11,7 @@ prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(()=>structuredClone(window.__remake.state));
-async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
+async function seed(page, { known = false, stage = '', auto = 'good', progress = null } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js'); const s = core.newGame();
@@ -25,6 +25,7 @@ async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
     if(opts.known) for(const who of ['ageha','kumicho','rei'])s.met[who]=true;
     for(const who of ['ageha','kumicho','rei','pakki','maezono','dr_kemuri','nagumo','hajime','sumi'])s.flags[`_intro_${who}`]=true;
     if(opts.stage) (await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s).stage=opts.stage;
+    if(opts.progress) Object.assign((await import('./js/chapters/ch2-tournament-state.js')).tournamentProgress(s),opts.progress);
     Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});core.saveConfig();core.save();
     const vn=await import('./js/vn/engine.js'); (await import('./js/chapters/ch1.js')).setupHooks();
     vn.vnTest.turbo=true; vn.vnTest.choose=()=>0;
@@ -32,7 +33,7 @@ async function seed(page, { known = false, stage = '', auto = 'good' } = {}) {
     vn.hooks.onLine=(id,line)=>{if(window.__trace.at(-1)!==id)window.__trace.push(id);if(line.text)window.__texts.push(line.text);};
     (await import('./js/craft/session.js')).craftTest.auto=opts.auto;
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, {known,stage,auto});
+  }, {known,stage,auto,progress});
 }
 async function phone(page,touch=false) {
   await page.locator(dt('phone-next')).waitFor();
@@ -47,6 +48,12 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     assert.deepEqual(await page.locator('[data-contestant]').evaluateAll(ns=>ns.map(n=>n.dataset.contestant).sort()),['ageha','hajime','kumicho','rei']);
     for(const row of Object.values(s.flags._ch2_tournament.votes))assert(Object.values(row).reduce((a,b)=>a+b,0)<=10);
     await assertFits(page,'.ch2-contest .btn, .ch2-contest-rival, .ch2-contest-judges>div');
+    // #909: 票が動いた理由。実際の「この回の票」と同じ点数・人を言う。
+    const reason=await page.locator(t('vote-reason')).innerText();
+    const last=s.flags._ch2_tournament.lastVotes,got=Object.values(last).reduce((a,v)=>a+(v.points.hajime||0),0);
+    if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason,/上位2人にも入らなかった/);
+    assert.match(reason,/いちばん低いのは「(アルミ穴あけ|炭の温度|蒸らしと吸い出し|一度目の調整)」/);
+    await assertFits(page,'.ch2-contest-reason p');
     if(reloadCare && round===3) {
       assert.equal(s.flags._ch2_tournament.craft.careHistory.length,1);
       const votes=structuredClone(s.flags._ch2_tournament.votes);
@@ -80,6 +87,25 @@ async function reload(page,slot=0,touch=false) {
   await press(dt(`slot-${slot}`));
 }
 await suite('ch2-tournament',async check=>{
+  await check('vote-reason-low-holes-uses-actual-step-label',async page=>{
+    await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
+    const before=await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      const model=await import('./js/chapters/ch2-tournament-state.js');
+      const p=model.startAttempt(core.state,{holes:{score:20},heat:{score:90},pack:'normal',careHistory:[]});
+      model.castVotes(p,0,55);p.stage='votes';core.save();
+      const snapshot=structuredClone(p),stamina=core.state.stamina;
+      await (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();
+      return {snapshot,stamina};
+    });
+    await page.locator(t('votes')).waitFor();
+    const reason=await page.locator(t('vote-reason')).innerText();
+    assert.match(reason,/いちばん低いのは「アルミ穴あけ」（20点）/);
+    assert(!reason.includes('パッキング'));
+    const after=await get(page);assert.deepEqual(after.flags._ch2_tournament,before.snapshot);
+    assert.equal(after.stamina,before.stamina);
+  });
+
   await check('pc-old-morning-win-complete-and-idempotent-load',async page=>{
     await seed(page);await page.locator(t('entry')).waitFor();const before=await get(page);
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
@@ -174,6 +200,24 @@ await suite('ch2-tournament',async check=>{
     await page.locator(t('defeat')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
+  });
+  // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
+  for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{
+    const entry={flavorStock:{double_apple:40,mint:12},stamina:30,equip:null,recipes:{},stats:{technique:42,sense:42,guts:42,charm:42,insight:42}};
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'burnt',entry}});
+    await page.evaluate(async e=>{const c=await import('./js/core/state.js');e.equip=structuredClone(c.state.equip);c.state.flags._ch2_tournament.entry=e;c.save();},entry);
+    await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();
+    await page.locator(dt(assist?'retry-assist-yes':'retry-assist-no')).click();
+    await page.locator(t('ready')).waitFor();
+    let s=await get(page);assert.equal(s.flags._ch2_tournament.losses,3);assert.equal(s.flags._ch2_tournament.retryAssist,assist);
+    await page.locator(t('craft-start')).click();
+    await confirmAppearanceSetup(page,{touch:false});
+    await page.waitForFunction(()=>window.__remake?.state?.flags?._ch2_tournament?.attempts===4);
+    s=await get(page);
+    const max=await page.evaluate(async()=>(await import('./js/core/stats.js')).maxStamina());
+    assert.equal(s.stamina,assist?max:30,'assist recovers to the current maximum; declining keeps the entry stamina');
+    assert.equal(s.flags._ch2_tournament.entry.stamina,30,'the entry snapshot is not rewritten');
+    assert.equal(s.flags._ch2_tournament.craft.retryAssist,assist);
   });
   await check('missing-dialogue-preflight-retry-keeps-save',async page=>{
     let bad=true;await page.route('**/ch2_tournament.json',async route=>{

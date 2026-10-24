@@ -1,5 +1,9 @@
+import { storeLogo } from "../core/store-logos.js";
+import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
+import { CITY_BACKGROUNDS } from "../core/city-locations.js";
+import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME } from "./shop-catalogs.js";
 import { el, yen } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -44,7 +48,7 @@ export function ownedFlavorIds() {
 }
 
 /** 店に並べる機材か（第1章の品揃え。贈り物などの非売品は並べない） */
-export const forSale = (e) => !!e && SHOP_EQUIP_TYPES.includes(e.type) && (e.chapter_min || 1) <= 1 && !e.not_for_sale;
+export const forSale = (e, chapter = 1) => !!e && SHOP_EQUIP_TYPES.includes(e.type) && (e.chapter_min || 1) <= chapter && !e.not_for_sale;
 /** 売れる機材か（贈り物は売れない・装備中も売れない） */
 export const sellable = (e) => !!e && !e.unsellable && !Object.values(state.equip || {}).includes(e.id);
 
@@ -98,21 +102,25 @@ function productArt(item, flavor, size = 66) {
   const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
     el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
   ]);
-  const botanical = () => windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
-    [1774, 887], size, "botanical", textArt);
+  const botanical = () => SHOP_FLAVORS.includes(item.id) ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
+    [1774, 887], size, "botanical", textArt) : textArt();
   const generated = flavor && (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]);
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", botanical);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
   return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();
 }
-function shopHeader(sub, money) {
-  return el("header.shop-head", [el("h2", { text: "Dr.fookah" }), el("span.shop-sub", { text: sub }), money]);
+function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
+  return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
 const rinUnavailable = () => rinVisitReason(state);
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
+  if (opts.branch === "widehanga") {
+    if (state.chapter < 2) return null;
+    return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop });
+  }
   if (!opts.errand) {
     const destination = await chooseShopFloor();
     if (destination !== "shop") return destination;
@@ -153,13 +161,13 @@ function chooseShopFloor() {
 }
 
 /** 1階物販。数量選択だけでは支払わず、確定時に価格・在庫・経費を再確認する。 */
-function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag = "_errand_mint_expensed" } = {}) {
+function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag = "_errand_mint_expensed", flavorIds = SHOP_FLAVORS, stockChapter = 1, shopName = "Dr.fookah", background = null } = {}) {
   return new Promise((resolve) => {
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
     const firstErrand = errand === "mint" && expense && expenseFlag === "_errand_mint_expensed" && !session.flags._errand_shop_done;
-    setBg(bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
+    setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });
@@ -187,13 +195,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       }
       return button;
     };
-    const lookup = (id) => SHOP_FLAVORS.includes(id) ? { item: DB.flavorById[id], flavor: true } : { item: DB.equipById[id], flavor: false };
+    const lookup = (id) => flavorIds.includes(id) ? { item: DB.flavorById[id], flavor: true } : { item: DB.equipById[id], flavor: false };
     const order = () => {
       const rows = [];
       for (const [id, quantity] of cart) {
         const { item, flavor } = lookup(id);
         if (!item || !Number.isInteger(quantity) || quantity < 1 || quantity > (flavor ? 99 : 1)
-          || !flavor && (!forSale(item) || state.owned.includes(id))) { cart.delete(id); continue; }
+          || !flavor && (!forSale(item, stockChapter) || state.owned.includes(id))) { cart.delete(id); continue; }
         const free = flavor && onExpense(id);
         rows.push({ item, flavor, quantity, free, cost: (flavor ? item.price : item.buy_price) * (quantity - (free ? 1 : 0)) });
       }
@@ -203,7 +211,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (!live()) return;
       if (firstErrand && delta > 0 && id !== "mint") { refuseOtherPurchase(); return; }
       const { item, flavor } = lookup(id);
-      if (!item || !flavor && (!forSale(item) || state.owned.includes(id))) return;
+      if (!item || !flavor && (!forSale(item, stockChapter) || state.owned.includes(id))) return;
       const n = Math.max(0, Math.min(flavor ? 99 : 1, (cart.get(id) || 0) + delta));
       if (n) cart.set(id, n); else cart.delete(id);
       SE.click(); render(`${delta < 0 && n ? "minus" : "buy"}-${id}`);
@@ -277,7 +285,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     function render(focusTest = null) {
       if (finished || state !== session) return;
       const scroll = body.scrollTop, rows = order(), count = rows.reduce((n, r) => n + r.quantity, 0), total = rows.reduce((n, r) => n + r.cost, 0);
-      money.replaceChildren(el("small", { text: "所持金" }), el("span", { text: priceText(state.money) }));
+      money.replaceChildren(el("small", { text: stockChapter === 2 ? "所持金（帰りの200円を確保）" : "所持金" }), el("span", { text: priceText(state.money) }));
       if (errandBox) {
         const done = flavorStock(errand) >= minStock;
         errandBox.classList.toggle("done", done);
@@ -300,13 +308,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       filters.hidden = tab !== "flavor";
       filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
         pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
-      body.replaceChildren(...(tab === "flavor" ? groupShopFlavors(SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category))).map((f) => productRow(f, true))
-        : tab === "equip" ? DB.equipment.filter(forSale).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
+      body.replaceChildren(...(tab === "flavor" ? groupShopFlavors(flavorIds.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category))).map((f) => productRow(f, true))
+        : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
-      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: state.money >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - state.money)}` }));
+      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
       summary.disabled = !count;
       summary.setAttribute("aria-label", `選択した${count}点の内容を確認。合計${yen(total)}`);
-      checkout.disabled = !count || total > state.money;
+      checkout.disabled = !count || total > spendableMoney(state);
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
       pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
@@ -321,7 +329,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
       if (firstErrand && rows.some(r => !r.flavor || r.item.id !== "mint")) { refuseOtherPurchase(); return; }
-      if (state.money < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
+      if (spendableMoney(state) < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);
       for (const { item, flavor, quantity, free } of rows) {
@@ -367,7 +375,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     filters.append(el("span", { text: `1箱 ${FLAVOR_BOX_GRAMS}g` }));
     const leaveButton = el("button.shop-back", { text: "← 店を出る", dataset: { test: "shop-leave" }, onclick: leave });
     const root = showScreen("shop", el("section.shop.shop-paper", { "aria-label": "Dr.fookah ショップ" }, [
-      shopHeader("1F ショップ", money), errandBox, tabs, filters, body,
+      shopHeader(stockChapter === 2 ? "柚ヶ谷店・県大会の仕入れ" : "1F ショップ", money, shopName, stockChapter === 2), errandBox, tabs, filters, body,
       el("footer.shop-foot", [leaveButton, summary, checkout]),
     ]));
     // 過去の画面のイベントが、新しくロードしたセーブや閉店後の状態へ届かないようにする。

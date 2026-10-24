@@ -21,7 +21,8 @@ try {
         stats: await import("./js/core/stats.js"), phone: await import("./js/daily/phone.js"), vn: await import("./js/vn/engine.js") };
       QA.core.newGame();
       const s = QA.core.state;
-      s.phase = "daily"; s.met.naru = true; s.affinity.naru = 17;
+      // #814: LIMEを交換した2本目まで読んでいる（読まずに♥1を超えない）。
+      s.phase = "daily"; s.met.naru = true; s.story.naru = 2; s.affinity.naru = 17;
       // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
       s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。

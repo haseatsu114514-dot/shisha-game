@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-24 21:26 UTC",
+ "generated": "2026-10-24 21:34 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -217,11 +217,15 @@
   },
   "kumicho": {
    "faces": [
-    "normal"
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
    ],
-   "h": 0.9792,
-   "b": 0.0117,
-   "ax": 0.4831,
+   "h": 0.9508,
+   "b": 0.0217,
+   "ax": 0.4997,
    "aspect": 0.7467
   },
   "rei": {
@@ -325,7 +329,13 @@
   "bg_tournament_stage.png",
   "eden.png",
   "kemurikusa.png",
-  "peppermint.png"
+  "peppermint.png",
+  "bg_yuzugaya_trpg.webp",
+  "bg_yuzugaya_aquarium.webp",
+  "bg_yuzugaya_sento.webp",
+  "bg_yuzugaya_shop.webp",
+  "bg_yuzugaya_kumicho.webp",
+  "bg_yuzugaya_c_station.webp"
  ],
  "cgs": [
   "cg_ageha_first_purikura.png",
@@ -342,7 +352,9 @@
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
   "cg_tsumugi_confession.png",
-  "cg_tsumugi_smoke_color.png"
+  "cg_tsumugi_smoke_color.png",
+  "cg_ageha_first_purikura.png",
+  "cg_ryuji_purikura.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -360,7 +372,8 @@
   "face_pakki.png",
   "face_rin.png",
   "face_sumi.png",
-  "face_tsumugi.png"
+  "face_tsumugi.png",
+  "face_kumicho.png"
  ],
  "making": [
   "bench_base.png",
@@ -1247,6 +1260,52 @@
      "top": -159.22
     }
    }
+  },
+  "kumicho": {
+   "color": "#b6a4cf",
+   "secondary": "#eee4bf",
+   "shadow": "#221a29",
+   "background": "ui/character_intros/kumicho.png",
+   "frames": {
+    "normal": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "smile": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "serious": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "surprise": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    },
+    "sad": {
+     "width": 896,
+     "left": -106,
+     "top": 5
+    }
+   }
+  },
+  "rei": {
+   "color": "#b0102a",
+   "secondary": "#eadcc0",
+   "shadow": "#210c17",
+   "background": "ui/character_intros/rei.png",
+   "frames": {
+    "normal": {
+     "width": 1000,
+     "left": -180,
+     "top": -12
+    }
+   }
   }
  },
  "titleArts": [
@@ -1747,6 +1806,9 @@
  "bgm": [
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_purikura.bgm",
+  "bgm_purikura_b.bgm",
+  "bgm_purikura_d.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_trpg.bgm",
@@ -2025,6 +2087,13 @@
   "cgs/cg_minto_confession.png",
   "cgs/cg_rin_confession.png",
   "cgs/cg_tsumugi_confession.png",
-  "cgs/cg_ageha_first_purikura.png"
+  "ui/character_intros/kumicho.png",
+  "ui/character_intros/rei.png",
+  "cgs/cg_ageha_first_purikura.png",
+  "cgs/cg_ryuji_purikura.png",
+  "sprites/characters/kumicho/chr_kumicho_smile.png",
+  "sprites/characters/kumicho/chr_kumicho_serious.png",
+  "sprites/characters/kumicho/chr_kumicho_surprise.png",
+  "sprites/characters/kumicho/chr_kumicho_sad.png"
  ]
 }

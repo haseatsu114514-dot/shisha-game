@@ -1,0 +1,460 @@
+{
+  "date": "2026-10-24",
+  "status": "未採用の比較候補。本編・manifest・SAVE参照変更なし。",
+  "items": [
+    {
+      "group": "assets",
+      "id": "bg_ch4_dubai_airport_arrivals_day_v1",
+      "name": "bg_ch4_dubai_airport_arrivals_day_v1",
+      "bytes": 2372560,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "432e31e9a4593b57c0f8b1f8e974384c51b9a8a601c5e0ddaf8c71c0fd17a370",
+      "file": "assets/01-dubai-airport-arrivals-day.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"viewed_saved_image\": true, \"information_board\": true, \"exit_visible\": true, \"central_dialogue_space\": true, \"no_people_or_legible_text\": true, \"no_shop_hardware_copied\": true, \"limits\": [\"Generic contemporary Gulf terminal proposal, exact Dubai terminal accuracy unverified\", \"Exterior warm daylight is proposed staging, not canon time\", \"VN compositing and text contrast not tested in runtime\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "tetsuko-A-v1",
+      "name": "tetsuko-A-v1",
+      "bytes": 1107400,
+      "dimensions": [
+        1084,
+        1451
+      ],
+      "sha256": "e752ac250bcb44d24e83a3779277a13a2e24333761459a0b1f1e6e6f37b603b8",
+      "file": "assets/02-direction-A.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"actually_viewed_saved_file\": true, \"brown_white_hachiware\": true, \"folded_ears\": true, \"suko_sitting\": true, \"no_smoke_or_human_accessories\": true, \"visible_ears_paws_tail_inside\": true, \"alpha_exists\": true, \"limits\": [\"Low-alpha fringe pixels reach canvas edges; visible alpha>16 subject retains margins. Not cleaned or cropped.\", \"No runtime scale/character interaction/adoption QA.\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "tetsuko-B-v1",
+      "name": "tetsuko-B-v1",
+      "bytes": 1325828,
+      "dimensions": [
+        1084,
+        1451
+      ],
+      "sha256": "5fe2187d19f31c0fcbb700747e9e4b773fda01c89e229eab982f48875ba5af12",
+      "file": "assets/03-direction-B.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"actually_viewed_saved_file\": true, \"brown_white_hachiware\": true, \"folded_ears\": true, \"suko_sitting\": true, \"no_smoke_or_human_accessories\": true, \"visible_ears_paws_tail_inside\": true, \"alpha_exists\": true, \"limits\": [\"Low-alpha fringe pixels reach canvas edges; visible alpha>16 subject retains margins. Not cleaned or cropped.\", \"No runtime scale/character interaction/adoption QA.\", \"B requested10percent margin not fully met on tail side; visible tail remains inside frame.\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "flavor-guava-v1",
+      "name": "flavor-guava-v1",
+      "bytes": 1508942,
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "02485783423f235073e9c8e29d81341c7f94cfd10aabb0cea65f09bb81aef43f",
+      "file": "assets/04-source.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"actually_viewed_saved_file\": true, \"whole_and_half_guava\": true, \"green_skin_pink_flesh_seed_core\": true, \"no_logo_wing_halo_or_text\": true, \"transparent_alpha\": true, \"visible_carton_uncut\": true, \"limits\": [\"Generic unbranded package proposal, not an approved replacement for manufacturer identity\", \"Brushstroke composition remains close to existing carton visual language; no exact independence or legal clearance claimed\", \"No runtime66px/112px readability test or adoption\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "mukai-A-v1",
+      "name": "mukai-A-v1",
+      "bytes": 847327,
+      "dimensions": [
+        1084,
+        1451
+      ],
+      "sha256": "128d296da93ef41b554f74f75c8e499f84419ab71a4fc7ca102356b7a401f1a2",
+      "file": "assets/05-direction-A.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"generated_inline_viewed\": true, \"saved_file_view_attempted\": true, \"saved_view_result\": \"保存ファイルview_imageはMukai/robotで黒い像、Dubaiで不完全な小像に見え、生成inlineと異なる。原因未特定。保存画像表示PASSとしない。元出力とのbytes/SHA一致とPNG画素読込は別途確認。ブラウザ/別profileでの迂回なし。\", \"byte_identical_to_builtin_file\": true, \"observed_inline\": [\"one full-body bearded hat-wearing man\", \"hat/hands/shoes visibly within generated image\", \"clean game-compatible linework\", \"no cigar/weapon/text or second character\"], \"alpha_exists\": true, \"direction_difference\": \"A tailored espresso jacket/waistcoat and open hand; B longer slate cardigan/tobacco trousers and hands together\", \"limits\": [\"Requested 10% vertical margin not met: visible subject ~16–19px from top and bottom, not clipped in inline view\", \"Low-alpha fringe reaches canvas bottom; no cleanup/crop performed\", \"Exact age impression/owner design choice and in-game scale unapproved\", \"B overlapping hands hide individual finger counts; not strict anatomy PASS\", \"Saved-image local rendering remains unverified; HTML not opened due known browser restriction\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "mukai-B-v1",
+      "name": "mukai-B-v1",
+      "bytes": 890087,
+      "dimensions": [
+        1084,
+        1451
+      ],
+      "sha256": "5a1466b415422eccfb4be714a845adc01bcc2c345f96ebc0be6d03ff8476b29d",
+      "file": "assets/06-direction-B.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"generated_inline_viewed\": true, \"saved_file_view_attempted\": true, \"saved_view_result\": \"保存ファイルview_imageはMukai/robotで黒い像、Dubaiで不完全な小像に見え、生成inlineと異なる。原因未特定。保存画像表示PASSとしない。元出力とのbytes/SHA一致とPNG画素読込は別途確認。ブラウザ/別profileでの迂回なし。\", \"byte_identical_to_builtin_file\": true, \"observed_inline\": [\"one full-body bearded hat-wearing man\", \"hat/hands/shoes visibly within generated image\", \"clean game-compatible linework\", \"no cigar/weapon/text or second character\"], \"alpha_exists\": true, \"direction_difference\": \"A tailored espresso jacket/waistcoat and open hand; B longer slate cardigan/tobacco trousers and hands together\", \"limits\": [\"Requested 10% vertical margin not met: visible subject ~16–19px from top and bottom, not clipped in inline view\", \"Low-alpha fringe reaches canvas bottom; no cleanup/crop performed\", \"Exact age impression/owner design choice and in-game scale unapproved\", \"B overlapping hands hide individual finger counts; not strict anatomy PASS\", \"Saved-image local rendering remains unverified; HTML not opened due known browser restriction\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "robot-A-v1",
+      "name": "robot-A-v1",
+      "bytes": 2034851,
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "f890e9be6e98c79c68b85606e141f273709d370b47b9eebd3cd7502b01b1d602",
+      "file": "assets/07-direction-A.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"generated_inline_viewed\": true, \"saved_file_view_attempted\": true, \"saved_view_result\": \"保存ファイルview_imageはMukai/robotで黒い像、Dubaiで不完全な小像に見え、生成inlineと異なる。原因未特定。保存画像表示PASSとしない。元出力とのbytes/SHA一致とPNG画素読込は別途確認。ブラウザ/別profileでの迂回なし。\", \"byte_identical_to_builtin_file\": true, \"observed_inline\": [\"single chrome/violet machine, cyan and violet eye sensors\", \"A: complete slim two-legged body; B: broad pedestal base and two utility arms\", \"no typography/weapon/other character\", \"fingers and feet/base visible as design concept, exact mechanical feasibility not verified\"], \"limits\": [\"Requested10% blank padding not met, A head/feet and B arms/base close to canvas edges\", \"Visible soft violet field in inline output; alpha exists but clean isolated cutout/halo-free contour NOT approved\", \"Sharp pointed panels remain despite no-spikes preference; friendliness/noncombat impression requires owner judgment\", \"Not adopted SHISHA-9000 identity or body design; new body proportions are exploratory\", \"Dark-detail legibility at VN scale and exact anatomy/mechanics not tested\", \"Saved-file display QA incomplete; no cleanup or regeneration\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "robot-B-v1",
+      "name": "robot-B-v1",
+      "bytes": 2739046,
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "f2b6f5bc13a4cec7a81f26e52ba2fd6314ba6aaa80fdd934ce2725019e93a364",
+      "file": "assets/08-direction-B.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"generated_inline_viewed\": true, \"saved_file_view_attempted\": true, \"saved_view_result\": \"保存ファイルview_imageはMukai/robotで黒い像、Dubaiで不完全な小像に見え、生成inlineと異なる。原因未特定。保存画像表示PASSとしない。元出力とのbytes/SHA一致とPNG画素読込は別途確認。ブラウザ/別profileでの迂回なし。\", \"byte_identical_to_builtin_file\": true, \"observed_inline\": [\"single chrome/violet machine, cyan and violet eye sensors\", \"A: complete slim two-legged body; B: broad pedestal base and two utility arms\", \"no typography/weapon/other character\", \"fingers and feet/base visible as design concept, exact mechanical feasibility not verified\"], \"limits\": [\"Requested10% blank padding not met, A head/feet and B arms/base close to canvas edges\", \"Visible soft violet field in inline output; alpha exists but clean isolated cutout/halo-free contour NOT approved\", \"Sharp pointed panels remain despite no-spikes preference; friendliness/noncombat impression requires owner judgment\", \"Not adopted SHISHA-9000 identity or body design; new body proportions are exploratory\", \"Dark-detail legibility at VN scale and exact anatomy/mechanics not tested\", \"Saved-file display QA incomplete; no cleanup or regeneration\"]}"
+    },
+    {
+      "group": "assets",
+      "id": "dubai-market-v1",
+      "name": "dubai-market-v1",
+      "bytes": 2781110,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "1dd48a06287c7b9c15d279b9d8625c1703d773055139f6fa3e620b632b25bed9",
+      "file": "assets/09-dubai-market-shade.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"generated_inline_viewed\": true, \"saved_file_view_attempted\": true, \"saved_view_result\": \"保存ファイルview_imageはMukai/robotで黒い像、Dubaiで不完全な小像に見え、生成inlineと異なる。原因未特定。保存画像表示PASSとしない。元出力とのbytes/SHA一致とPNG画素読込は別途確認。ブラウザ/別profileでの迂回なし。\", \"byte_identical_to_builtin_file\": true, \"observed_inline\": [\"market passage at left and shaded table/two chairs at right\", \"fallen paper cup visible near left foreground\", \"no people/readable shop logo or title text\", \"sun/shade contrast and room for future sprites\"], \"limits\": [\"Plausible Gulf old-quarter-style proposal; real Dubai market geography/period accuracy not verified\", \"Daylight/architecture are staging, not newly asserted canon\", \"Table and chair foreground may conflict with future sprites, runtime compositing untested\", \"RGB opaque file; saved-file local preview incomplete\"]}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "S2",
+      "name": "ch2_naru_confrontation",
+      "bytes": 2045979,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "f66c6c3cdbe031aacd17e8553e4aa22bf45d6ea2d0979a335cfeacabaeeb5dee",
+      "file": "stills-flavor/01-ch2-naru-confrontation.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"observed\": [\"なるの銀髪・琥珀眼・白黒ジャケットと橙裏地、二重ネックレスを保持\", \"主人公は右手前の帽子/後頭部/肩のみ、顔露出なし\", \"なるの口を閉じた静かな硬い表情、笑顔/殴打/和解なし\", \"両手が布と一個の中央funnel穴のボウルを保持、火/炭なし\", \"スマホは右下の膝上で画面が上向き\", \"緑壁/木材/真鍮色灯/瓶棚、場面場所の主要語彙を保持\"], \"limitations\": [\"重要なスマホが画像下端90%付近、実台詞枠で隠れる可能性。PCtouch実合成未実施\", \"棚瓶の小ラベルに文字状の線が残る。読める本文やUIではないが文字完全ゼロ条件は厳密未達\", \"参照CGより滑らかな線と塗り、画風統一は本人確認待ち\", \"画面外/重なる手指と器具の厳密型式・実寸は未検証\", \"最新main画像blob一致と未公開候補の全所在網羅は未確認\"], \"status\": \"生成保存成功・本人確認候補・用途QA一部未達、未採用\"}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "S2",
+      "name": "ch2_naru_confrontation",
+      "bytes": 1926474,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "ab768721b869c090f3482a761e53675ee33b881d3ec17cc0ce803ad31595f301",
+      "file": "stills-flavor/02-ch2-naru-confrontation.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"status\": \"生成保存成功・修正1回終了・本人確認候補、用途QA一部未達\", \"observed\": [\"棚ラベルは無記入の四角へ、読める文字なし\", \"主人公の顔非表示を保持、なるの静かな硬い表情を保持\", \"なるの手/布/中央穴ボウルは画面中央約40〜55%高さ\", \"スマホは画面上向きで膝上、初稿より広く確認可能\", \"2人物のみ、和解/怒鳴り/暴力/選択後のスマホ伏せなし\", \"店内の緑・木材・暖灯と白黒ジャケット識別を保持\"], \"limitations\": [\"スマホは約x57〜65%, y75〜83%。指定の完全y77%以内は未達、下22%の実台詞枠と重なる懸念が残る\", \"主人公膝上の配置と読む視線は成立するが、実ゲームoverlay未合成\", \"指の重なり/ボウル実寸型式は厳密未検証\", \"画風は参照CGより滑らか。本人確認/PCtouch実表示/最新main画像blob一致は未了\"], \"further_regeneration_this_unit\": false}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "S7",
+      "name": "ch2_tournament_tasteless",
+      "bytes": 1939606,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "efbf3a09861d9f479a649847f0cd28fe8f6f8910aef5fc59229fdf06949224db",
+      "file": "stills-flavor/03-ch2-tournament-tasteless.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"status\": \"生成保存成功・本人確認候補・未採用\", \"observed\": [\"主人公顔/反射顔はなく第一人称の黒袖と両手のみ\", \"他人物/観客/人影/トロフィー/順位表示/祝福ポーズはなし\", \"スマホは中央約x42〜59%,y22〜62%、親指は約y40〜47%で下22%から離れた配置\", \"画面は淡青白の無文字面、ロゴ/台詞/UI/枠なし\", \"木台/空席/4制作台/格子/青紫会場の識別語彙、左端に普通の灰色煙のみ\", \"両手とスマホに明白な断裂/重複親指は見当たらないが隠れた指全数は未検証\"], \"limitations\": [\"会場の青紫ネオンが想定した残作業灯より強く、静かな終了後より現役ステージらしく見える\", \"手元台の位置が空席越しの観客側/審査卓にも見える。本人制作台と会場の厳密位置関係は不確か\", \"顔を出さないため疲労/喜びを受け取れない感情は手の停止と台詞に依存、画像だけで断定できない\", \"既存CGより滑らかな線。黒袖にフード/zipを全表示しておらず衣装同一性は見える範囲のみ\", \"PCtouch実台詞枠/ゲーム合成/縮小視認性未実施。最新main画像blob一致未検証\"], \"regeneration_calls_this_unit\": 0}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "S4",
+      "name": "ch2_sofa_burn",
+      "bytes": 2125154,
+      "dimensions": [
+        1672,
+        940
+      ],
+      "sha256": "46542d56ed9167e14adeedaec15902d0c51ceb2db7cb98af62a436a72452567c",
+      "file": "stills-flavor/04-ch2-sofa-burn-contained.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"status\": \"生成保存成功・本人確認候補・未採用、用途QA一部未達\", \"observed\": [\"回収済みの単一炭が金属皿内にあり、ソファ上/床/布/木台への残炭は見当たらない\", \"トングは金属皿から木台上へ支持、布と別位置に見える\", \"スミは帽子/眼鏡/短髭/黒シャツ/茶エプロン、冷静な表情\", \"白布を小さな黒い焦げ跡へ押し当てている\", \"はじめは右手前の黒袖肩/止まった手のみ、顔なし\", \"事故炎/火花/煙/可視の負傷者/ギャグなし。背景の通常キャンドル灯は事故火と区別\", \"tonariの暖灯/モザイク灯/夜窓/木材/緑ソファを保持、文字やUIなし\"], \"limitations\": [\"スミ帽子が画像上端で切れている\", \"皿/トングは約y69〜81%、上72%以内指定は未達で台詞枠遮蔽リスクが残る\", \"濡れ布の湿潤状態は静止画だけでは明瞭でない\", \"ソファは採用背景同様の緑張地だが、台詞の「革」の材質が布地にも見え曖昧\", \"手の重なり/金属皿耐熱性/トングの型式や実寸は未検証\", \"客は画面外。無傷という台詞を全員の画素確認済みにしない\", \"参照CGより滑らかな線。PCtouch実合成/縮小/最新main画像blob一致未確認\"], \"targeted_revision_count\": 0}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "S4",
+      "name": "ch2_sofa_burn",
+      "bytes": 2156645,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "c52bf6c4fddb6176c77be366af7422d18f2a853fc53b3a41018e82e07eaaf137",
+      "file": "stills-flavor/05-ch2-sofa-burn-contained.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"status\": \"生成保存成功・本人確認候補・未採用、用途QA一部未達\", \"observed\": [\"回収済みの単一炭が金属皿内にあり、ソファ上/床/布/木台への残炭は見当たらない\", \"トングは金属皿から木台上へ支持、布と別位置に見える\", \"スミは帽子/眼鏡/短髭/黒シャツ/茶エプロン、冷静な表情\", \"白布を小さな黒い焦げ跡へ押し当てている\", \"はじめは右手前の黒袖肩/止まった手のみ、顔なし\", \"事故炎/火花/煙/可視の負傷者/ギャグなし。背景の通常キャンドル灯は事故火と区別\", \"tonariの暖灯/モザイク灯/夜窓/木材/緑ソファを保持、文字やUIなし\", \"帽子全体が画面内、上端余白約8%を確保\"], \"limitations\": [\"皿/トングは約y69〜81%、上72%以内指定は未達で台詞枠遮蔽リスクが残る\", \"濡れ布の湿潤状態は静止画だけでは明瞭でない\", \"ソファは採用背景同様の緑張地だが、台詞の「革」の材質が布地にも見え曖昧\", \"手の重なり/金属皿耐熱性/トングの型式や実寸は未検証\", \"客は画面外。無傷という台詞を全員の画素確認済みにしない\", \"参照CGより滑らかな線。PCtouch実合成/縮小/最新main画像blob一致未確認\"], \"targeted_revision_count\": 1}"
+    },
+    {
+      "group": "stills-flavor",
+      "id": "dragonfruit",
+      "name": "dragonfruit",
+      "bytes": 1380122,
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "f11749db8200ece32734fcf2411ec6d1c8a5426f8f1e120e9a63055737bff76a",
+      "file": "stills-flavor/06-source.png",
+      "adoption": "未採用",
+      "quality_notes": "{\"saved_file_viewed\": true, \"status\": \"生成保存成功・未採用候補、余白仕様未達\", \"observed\": [\"黒carton1個、全体が画面内\", \"白い果肉/細かい黒種/ピンク皮/緑鱗でドラゴンフルーツの識別\", \"文字/ブランドlogo/翼haloなし、guavaやstrawberryの複製ではない\", \"RGBA alpha0〜255、透明背景あり\"], \"alpha_gt16_bbox\": [252, 128, 1003, 1114], \"margins_px_LTRB\": [252, 128, 251, 140], \"margins_percent_LTRB\": [20.1, 10.21, 20.02, 11.16], \"limitations\": [\"15%各辺余白指定に対し上10.21%/下11.16%で未達\", \"果物は立体感が強く、carton印刷と現物の前置きの区別は曖昧\", \"果実の鮮やかさが「穏やかな甘み」を伝えるか本人判断。味や数値を画像で保証しない\", \"alpha存在のみで綺麗な切抜き縁/背景合成PASSとはしない\", \"66/112px実縮小、PCtouch実ゲーム表示、最新main参照一致は未実施\"], \"regeneration_count\": 0}"
+    },
+    {
+      "group": "dialogue",
+      "id": "01",
+      "name": "紫・切り紙エディトリアル",
+      "bytes": 2042112,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "1fd5acdea59dbb0d1547076309635917353a3d7638129b50cd5ed54911b87b25",
+      "file": "dialogue/01-dialogue-01.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "02",
+      "name": "紫・煙の絹",
+      "bytes": 2123690,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "a6d9d62583cdb33a05c8f1cdecd19c4b49b09a87f72b6fdb3e5815b855299017",
+      "file": "dialogue/02-dialogue-02.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "03",
+      "name": "紫・夜行メトロ",
+      "bytes": 1954341,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "a6dada077ade562b108afbbafe35c031c7b876ba7b2b9746c21ca07d961ca68b",
+      "file": "dialogue/03-dialogue-03.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "04",
+      "name": "紫・アメジストガラス",
+      "bytes": 1988407,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "b4e80cc50d2aa5c7debaac7dab586ade5b1763ff592e7b7e4fa93eb3cddac53f",
+      "file": "dialogue/04-dialogue-04.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "05",
+      "name": "紫・深夜のチケット",
+      "bytes": 2250601,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "6ffaa38da7a36ef753fe66a48b20e72a6a96d7240cbb94451e01b2da4fcacec1",
+      "file": "dialogue/05-dialogue-05.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "06",
+      "name": "非紫・生成りZINE",
+      "bytes": 2336504,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "f224ef5eb682ebe22deaddabe168b34ca3192d3162aa24cb31d575c7ed18bf6a",
+      "file": "dialogue/06-dialogue-06.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "07",
+      "name": "非紫・深緑HMDメタル",
+      "bytes": 2057487,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "cfb98395ada46a9e9472e5db6a6a57cc31d94ba77a0a31ff13097f309e5104a9",
+      "file": "dialogue/07-dialogue-07.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "08",
+      "name": "非紫・朱のグラフィック",
+      "bytes": 2086909,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "8e73588062d8b11188c1734607c94efe13875ef68f5a001000d4e69e650c7405",
+      "file": "dialogue/08-dialogue-08.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "09",
+      "name": "非紫・コバルト計器",
+      "bytes": 1997202,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "6484df9a6acc64d8f300f8846889edb5e2481bc07712bf2345a25f26781cc077",
+      "file": "dialogue/09-dialogue-09.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "10",
+      "name": "非紫・琥珀ラウンジ",
+      "bytes": 2014457,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "2faecf22aba2a6e9170fcb584100de6f33a61fb8dd28fb0492fd2186c97f802d",
+      "file": "dialogue/10-dialogue-10.png",
+      "adoption": "未採用",
+      "quality_notes": "pending own pixel review"
+    },
+    {
+      "group": "dialogue",
+      "id": "11",
+      "name": "実験・煙だけの輪郭",
+      "bytes": 2048313,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "390805d3590501432cc287519de335324422008df7269031f6141f7d076b9dbd",
+      "file": "dialogue/11-dialogue-11.png",
+      "adoption": "未採用",
+      "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "dialogue",
+      "id": "12",
+      "name": "実験・横長レシート",
+      "bytes": 2188594,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "5c9e088dfa3ac77c71919c92369984c53f82b846bd65c3ffbf6f6d47755f3e5d",
+      "file": "dialogue/12-dialogue-12.png",
+      "adoption": "未採用",
+      "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "dialogue",
+      "id": "13",
+      "name": "実験・重なる薄紙",
+      "bytes": 2189576,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "474de00d8b11f23d66bba3df5e95965fce4f077a54b35924c47fc626945f8be4",
+      "file": "dialogue/13-dialogue-13.png",
+      "adoption": "未採用",
+      "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "dialogue",
+      "id": "14",
+      "name": "実験・モジュールタイル",
+      "bytes": 2094521,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "27a0a78ea5b71cd57fbeeae0163fa989378ae9363e4c4e82112ad0d41a2f2621",
+      "file": "dialogue/14-dialogue-14.png",
+      "adoption": "未採用",
+      "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "dialogue",
+      "id": "15",
+      "name": "実験・光だまりの弧",
+      "bytes": 2158650,
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "6f861837c7298bb926c94e18a89d1a855f1e9701484b45edcf809120d87977cb",
+      "file": "dialogue/15-dialogue-15.png",
+      "adoption": "未採用",
+      "quality_notes": "own pixel review completed; candidate only"
+    },
+    {
+      "group": "purikura",
+      "id": "issue947-v1",
+      "name": "プリクラ v1（規格未達）",
+      "bytes": 2671464,
+      "dimensions": [
+        965,
+        1629
+      ],
+      "sha256": "af73284b1b452c207db44211d361856f1593d2c76174d8c0c50e25c24694e408",
+      "file": "purikura/31-strip-v1.png",
+      "adoption": "未採用・受入合格0",
+      "quality_notes": "指定3語各1回・人物と1列2写真は目視確認済み。640×1080未達、帯/写真/余白の厳密配置未達、24px装飾安全域未保証。本編未接続。原画無加工。"
+    },
+    {
+      "group": "purikura",
+      "id": "issue947-v2",
+      "name": "プリクラ v2（規格未達）",
+      "bytes": 2571123,
+      "dimensions": [
+        965,
+        1630
+      ],
+      "sha256": "e99cdb0e407b02fb660efeb29a3fee20675c6e17c7b2f352ea878a8aea8e92f0",
+      "file": "purikura/32-strip-v2.png",
+      "adoption": "未採用・受入合格0",
+      "quality_notes": "指定3語各1回・人物と1列2写真は目視確認済み。640×1080未達、帯/写真/余白の厳密配置未達、24px装飾安全域未保証。本編未接続。原画無加工。"
+    }
+  ],
+  "Rei": "新デザイン3案は未生成。旧本編画像を新候補と表示しない。",
+  "held_stills": [
+    "S1",
+    "S3",
+    "S6"
+  ]
+}

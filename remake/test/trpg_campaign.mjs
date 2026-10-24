@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const json = async path => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
-const module = async path => import("data:text/javascript;base64," + Buffer.from(await readFile(new URL(path, import.meta.url), "utf8")).toString("base64"));
+const module = async path => import(new URL(path, import.meta.url).href);
 const rules = await module("../js/trpg/campaign.js");
 const { scheduleChapterTwoTrpgNight } = await module("../js/chapters/ch2-progress.js");
 const { CH2_NIGHTS } = await module("../js/chapters/ch2-story-data.js");

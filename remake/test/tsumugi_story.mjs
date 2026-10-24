@@ -110,7 +110,8 @@ try {
 
   const early = await page.evaluate(async () => {
     const s = T.fresh(); s.day = 2;
-    await T.spots.visitChar("tsumugi"); await T.spots.visitChar("tsumugi");
+    // #814: 2本目の会話は♥1で開く。間にハートが上がった状態を作る（ペースは別テスト）。
+    await T.spots.visitChar("tsumugi"); s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, 9); await T.spots.visitChar("tsumugi");
     const first = T.lines(); T.vn.backlog().length = 0;
     await T.story.playTsumugiStory(1);
     return { first, later: T.lines(), stories: s.story.tsumugi, hasContact: T.spots.hasContact("tsumugi") };
@@ -126,7 +127,11 @@ try {
       await T.story.playTsumugiStory(12); T.vn.backlog().length = 0;
       T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => friend
         ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|２人|想いを伝え|付き合/.test(l)));
-      for (let i = 0; i < 6; i++) await T.spots.visitChar("tsumugi");
+      // #814: k本目は♥k で開く。各回の前にそのハートへ届いた状態を作る（読む順と内容を検査する）。
+      for (let i = 0; i < 6; i++) {
+        s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, T.stats.AFFINITY_RANK_PTS[Math.min(5, s.story.tsumugi || 0)]);
+        await T.spots.visitChar("tsumugi");
+      }
       const visits = T.lines();
       s.affinity.tsumugi = 80; s.slot = 2; s.day = 13;
       await T.bonds.playFinale("tsumugi");
@@ -161,6 +166,54 @@ try {
   assert(!intro.lines.some(t => /みんと|コンカフェ|ケムリクサへ偵察/.test(t)));
   await opening.close();
   console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
+
+  // #815: 客席の固有会話は客の視点。取材・連絡先交換の後は、初回でも初対面の態度へ戻らない。
+  const seat = await open();
+  for (const researched of [true, false]) {
+    const visit = await seat.evaluate(async researched => {
+      const s = T.fresh(); s.day = 2;
+      if (researched) await T.story.playTsumugiStory(1);
+      T.vn.backlog().length = 0;
+      T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("一声かけて")));
+      for (let i = 0; i < 6; i++) {
+        s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, T.stats.AFFINITY_RANK_PTS[Math.min(5, s.story.tsumugi || 0)]); // #814
+        await T.spots.visitChar("tsumugi");
+      }
+      return { lines: T.lines(), research: !!s.flags._tsumugi_contest_research };
+    }, researched);
+    assert.equal(visit.research, true);
+    assert(!visit.lines.some(t => /シフト中|バイト中|閉店作業|別のお客さんの一台|あなた、最初の日/.test(t)));
+    assert.equal(visit.lines.includes("……どうも"), !researched, "Known regular returned to a first meeting");
+    assert.equal(visit.lines.includes("……ありがとうございます"), researched);
+  }
+  await seat.close();
+  console.log("[tsumugi story] PASS: customer-seat scenes, known after the interview, first meeting kept before it");
+
+  // #814: ハートと会話イベントの連動（第1章の固有会話）。実際の spots/stats を使う。
+  const gate = await open();
+  const g = await gate.evaluate(async () => {
+    const s = T.fresh(); s.day = 4; s.slot = 0; s.met.naru = true;
+    const lv = () => T.stats.affinityLevel("naru");
+    await T.spots.visitChar("naru");
+    const first = { story: s.story.naru, lv: lv(), open: T.spots.hasNewStory("naru") };
+    T.stats.gainAffinity("naru", 30); // LIMEや贈り物で大きく増えても、2本目を読むまで♥2にはならない
+    const capped = { pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_story_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
+    T.vn.backlog().length = 0;
+    await T.spots.visitChar("naru");
+    const second = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_story_waiting_pts || 0,
+      read: T.lines().length > 0 };
+    // 第2章では連動しない（第1章の会話が無いため）
+    const ch2 = T.fresh(); ch2.chapter = 2; ch2.met.naru = true; T.stats.gainAffinity("naru", 60);
+    return { first, capped, second, ch2: T.stats.affinityLevel("naru") };
+  });
+  assert.deepEqual(g.first, { story: 1, lv: 0, open: false }, "2nd talk waits for ♥1");
+  assert.equal(g.capped.lv, 1); assert.equal(g.capped.pts, 19, "Capped just below ♥2 until the 2nd talk");
+  assert(g.capped.waiting > 0, "The excess is kept, not lost"); assert.equal(g.capped.open, true, "♥1 opens the 2nd talk");
+  assert.equal(g.second.story, 2); assert.equal(g.second.lv, 2, "Reading the talk releases the kept points up to the next cap");
+  assert(g.second.pts <= 32 && g.second.waiting < g.capped.waiting);
+  assert(g.ch2 >= 3, "Chapter 2 is not gated by chapter 1 talks");
+  await gate.close();
+  console.log("[tsumugi story] PASS: #814 heart opens the next talk, talks cap the next heart, kept points released, chapter 2 free");
 
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
   for (const day of [3, 11, 13]) {

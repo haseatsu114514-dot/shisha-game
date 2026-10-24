@@ -50,4 +50,12 @@ REVIEW_OTHER_CHARACTERS=1 node docs/qa/portrait-jawline/check-runtime.cjs
 
 `asset_sources/portraits/jawline-cleanup/apply.py` は不採用実験の再現専用。ゲーム素材へは書き込まない。今回もこの細帯合成は使っていない。
 
-GitHub照会はこの環境から `Forbidden`。push・PR作成・公開反映は未実施。作業branch `fix/portrait-jawline` に保存。
+以前の作業時はGitHub照会が `Forbidden` だったが、ユーザーのゲーム反映指示時に接続復旧を確認。最新mainを統合し、作業branch `fix/portrait-jawline` から公開用PRへ進めた。公開の最終状態はPRとチャットの終了報告を参照。
+
+## 公開向けの統合確認
+
+ユーザー「ゲームにも反映していって」で最新mainのゲーム機能を保持して統合。みんと通常・あげは5表情・会社員smileの位置補正を反映対象とし、みんとsmileは元の傾いた笑顔、ましろ全6表情は既存画像を維持した。
+
+基礎検査 `node tools/ci/run.mjs --kind quick` は7/7成功。PC1280×720、横スマホ844×390、縦スマホ390×844の対象4キャラ全23表情は [公開用の実VN確認](release-runtime-review/browser-check.json) を参照。以前の実画面記録は当時のUIであり、最新mainの縦画面表示は今回確認した。
+
+縦持ちのDS風表示でも、みんとsmile・あげはsadの実画面と画像読込を追加確認した（[DS表示の記録](release-ds-review/browser-check.json)）。

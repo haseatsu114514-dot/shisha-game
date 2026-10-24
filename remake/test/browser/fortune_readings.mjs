@@ -14,6 +14,8 @@ try{
    window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js')};
    Q.chapter.setupHooks();Q.vn.vnTest.turbo=true;
    Object.assign(Q.core.newGame(),{phase:'daily',day:3,slot:1,seed:131,money:13000});Q.core.state.met.naru=true;Q.core.state.affinity.naru=6;
+   // #780: 対面の噂を完読した状態。旧LIME既読では解放しない。晴れの種は維持。
+   Q.core.state.flags._fortune_rumor_heard=true;Q.core.state.weatherSeed=2;
   });
   const night=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);const av=Q.access.spotAvailability(Q.spots.spotById('fortune'));const result=await Q.fortune.doFortune();return {av,result,unchanged:before===JSON.stringify(Q.core.state)};});
   assert.equal(night.result,false);assert(night.unchanged);assert.equal(night.av.tag,'昼のみ営業');
@@ -61,7 +63,7 @@ try{
    // Chapter 2 before and after Naru confrontation (rift).
    const naruSpot=Q.spots.spotById('naru');
    Object.assign(Q.core.state,{chapter:2,day:27,slot:0,fortuneDay:0,money:13000,met:{naru:true,adam:true},affinity:{naru:30,adam:20}});
-   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true};
+   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true,_fortune_rumor_heard:true};
    const beforeRiftOpen=Q.access.spotAvailability(naruSpot).ok;
    Q.core.state.day=24; // 24 % 7 === 3 (regular weekly holiday before rift)
    const beforeRiftHoliday=Q.access.spotAvailability(naruSpot).tag;

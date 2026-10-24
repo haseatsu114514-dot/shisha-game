@@ -16,6 +16,7 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,
       _lime_opened: true, _lime_tut: 1, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+    if (opts.slot === 2) s.flags._ch2_morning_departed = s.day; // 夜の途中から再開する保存
     if (opts.day <= 3) delete s.flags._ch2_naru_warm_done;
     s.owned.push('home_rig_set'); // 第1章DAY7で受け取り済みの現行保存
     s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true };
@@ -47,6 +48,8 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
 }
 async function state(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
 async function atMap(page, day, slot) {
+  await page.locator(`${map}, ${t('ch2-morning-home')}`).first().waitFor();
+  if (await page.locator(t('ch2-morning-home')).isVisible()) await page.locator(t('ch2-morning-home')).click();
   await page.waitForFunction(([day, slot]) => window.__remake.state.day === day + 14
     && window.__remake.state.slot === slot && document.querySelector('[data-destination-selection]:not(.done)')
     && !document.querySelector('#modal.show') && !document.querySelector('.map[data-revealing="true"]'), [day, slot]); // #780: 新ピンの解錠演出中は選択を受け付けない
@@ -57,6 +60,8 @@ async function rest(page, touch = false) {
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #780: 新ピンの解錠演出中は選択を受け付けない
   await click(t('pin-rest')); await click(t('map-go'));
   await page.waitForFunction(v => window.__remake.state.day > v.day || window.__remake.state.slot > v.slot, before);
+  await page.locator(`${map}, ${end}, ${t('ch2-morning-home')}`).first().waitFor();
+  if (await page.locator(t('ch2-morning-home')).isVisible()) await page.locator(t('ch2-morning-home')).click();
   await page.locator(`${map}, ${end}`).first().waitFor();
 }
 async function reload(page) {
@@ -160,13 +165,14 @@ await suite('ch2-story', async check => {
   await check('legacy-volk-records-kept-without-chapter2-entrance', async page => {
     await seed(page, { legacyVolk: true }); await atMap(page, 4, 0);
     await travelToCity(page,'widehanga');
-    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 3);
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 5);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
-      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station'].sort());
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
+    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for REI introduction');
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
-    }); assert.deepEqual(logos, [768,768,768]);
+    }); assert.equal(logos.length, 5); assert(logos.every(width => width > 0), "All five adopted store logos must decode");
     await reload(page); await page.locator(map).waitFor();
     const s = await state(page); assert.equal(s.visits.volk, 2); assert.equal(s.affinity.volk, 12); assert(s.met.volk);
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);

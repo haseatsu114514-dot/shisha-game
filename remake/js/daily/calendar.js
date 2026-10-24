@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired } from "../core/ui.js";
@@ -17,7 +18,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -103,6 +104,7 @@ export async function runDaily(def) {
       state.flags._delivery_schedule_v2 = true;
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
     }
+    await chapterDef.morningDeparture?.();
     while (state.slot < 2) {
       const delivery = dueDelivery();
       if (delivery) await deliver(delivery);
@@ -262,7 +264,7 @@ async function day1Errands() {
     await bannersIdle();
   }
   const naru = spotById("naru");
-  if (!naru || (!f._errand_naru_visited && (isClosed(naru) || state.money < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
+  if (!naru || (!f._errand_naru_visited && (isClosed(naru) || spendableMoney(state) < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
   if (!f._errand_scout_told) {
     await play("remake_day1_errand_scout", { bg: TONARI_BG });
     f._errand_scout_told = true;
@@ -458,9 +460,8 @@ async function takeAction() {
   const [baseId] = String(spotId).split(":");
   const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
-  const facility = ["kannon", "choizap"].includes(spot.id);
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
-    ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
+    ...facilityGrowth(spot),
     consumed: (result) => result.used && spot.kind === "spot",
   });
   if (!used) return;
@@ -518,7 +519,7 @@ async function performSpotAction(spot) {
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
-    else await tonariCustomer();
+    else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitSamechan(spot);
@@ -575,7 +576,7 @@ async function performSpotAction(spot) {
 
 function postponeUnaffordableInvitation(inv) {
   const cost = invitationCost(inv.event);
-  if (state.money >= cost) return false;
+  if (spendableMoney(state) >= cost) return false;
   rescheduleInvitation(inv, "所持金が足りなかったため、約束を別の日に改めることにした");
   toast(`約束の店には${yen(cost)}必要です。今日は見送り、別の日に改めます`, { kind: "warn" });
   save();
@@ -730,6 +731,7 @@ async function endDay({ returnedToTonari = false } = {}) {
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
   const confessed = await maybeConfession(beat, { busyNight: metTonight || rested, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
+  await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
   if (!athome) {

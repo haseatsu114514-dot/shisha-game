@@ -56,10 +56,12 @@ try {
         const s = F.core.newGame();
         Object.assign(s, { chapter: scenario === 'chapter2' ? 2 : 1, phase: 'daily', day: 3,
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
+        if (scenario === 'chapter2') s.flags._rei_trpg_introduced = true;
         if (scenario !== 'locked') {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
+          s.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }
@@ -113,7 +115,13 @@ try {
             a.x+a.width <= b.x+1 || b.x+b.width <= a.x+1 || a.y+a.height <= b.y+1 || b.y+b.height <= a.y+1), `${pin.id} overlaps another destination: ${JSON.stringify(pins.map(p => [p.id,p.target]))}`);
         }
       }
-      const wanted = { ...expected, ...(scenario === 'chapter2' ? { trpg_bar: 'trpg_bar' } : {}) };
+      const wanted = { ...expected };
+      if (scenario === 'chapter2') {
+        const trpg = pins.find(p => p.id === 'trpg_bar');
+        assert(trpg, 'REI-introduced TRPG bar must appear');
+        assert.equal(trpg.logo, 'trpg_bar', 'TRPG bar uses the adopted store logo');
+        assert.equal(trpg.facility, null, 'store logo replaces the generic facility sticker');
+      }
       for (const [id, facility] of Object.entries(wanted)) {
         const pin = pins.find(p => p.id === id);
         if (!pin) {
@@ -176,7 +184,7 @@ try {
       assert.equal(await page.evaluate(() => window.mapFlow), 'axe_bar', 'legacy axe destination changed');
     }
     const contacts = [];
-    if (!baseline) for (const id of [...Object.keys(expected), 'trpg_bar']) {
+    if (!baseline) for (const id of Object.keys(expected)) {
       const saved = await page.evaluate(async id => {
         if (window.mapFlow) { F.map.interruptMap(null); await window.mapFlow; }
         Object.assign(F.core.state, { chapter: id === 'trpg_bar' ? 2 : 1, day: 3, slot: id === 'axe_bar' ? 1 : 0 });
@@ -202,6 +210,20 @@ try {
           clip: { x: r.x-16, y: r.y-16, width: r.width+32, height: r.height+32 } });
       }
       contacts.push({ id, delta, stateUnchanged: true });
+    }
+    if (!baseline) {
+      const saved = await page.evaluate(async () => {
+        F.map.interruptMap(null); await window.mapFlow;
+        F.core.state.chapter = 2; F.core.state.flags._rei_trpg_introduced = true;
+        const before = JSON.stringify(F.core.state);
+        window.mapFlow = F.map.chooseSpot({ eventPin: 'trpg_bar' });
+        return before;
+      });
+      const pin = page.locator('[data-test="pin-trpg_bar"]');
+      await pin.locator('[data-store-logo="trpg_bar"] img').evaluate(i => i.decode());
+      assert.equal(await pin.locator('.evt-badge').count(), 1, 'TRPG logo retains its event marker');
+      assert.equal(await pin.locator('.facility-icon').count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), saved);
     }
     assert.equal(await page.evaluate(() => localStorage.getItem('qa-facility-sentinel')), '579');
     assert.deepEqual(errors, []); assert.deepEqual(resources, []);

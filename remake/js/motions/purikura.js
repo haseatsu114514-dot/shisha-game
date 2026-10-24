@@ -9,12 +9,14 @@ import { el, sleep } from "../core/util.js";
 import { state } from "../core/state.js";
 import { cgUrl, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
-import { SE } from "../core/audio.js";
+import { SE, playBgm, currentBgm, preloadBgm } from "../core/audio.js";
 import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
 export const PURIKURA_CG = "cg_ageha_first_purikura";
+// 撮影ごとに3曲から等確率で一つ。日常の乱数・保存状態には触れない。
+export const PURIKURA_BGM = ["bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"];
 // 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
 export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
 // 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
@@ -347,10 +349,13 @@ function schedule(ui, plan) {
 
 export async function shoot(variant = "a") {
   const owner = state;
+  const music = PURIKURA_BGM[Math.floor(Math.random() * PURIKURA_BGM.length)];
   const plan = PLANS[variant] || PLANS.a;
   const strip = cgUrl(PURIKURA_STRIP), sheetCg = strip ? null : cgUrl(PURIKURA_CG);
   const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
   const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
+  // 画像と並行して用意する。取得に失敗しても撮影を止めない。
+  void preloadBgm(music);
   await Promise.all(urls.map((u) => imageReady(u, 3000)));
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
@@ -367,6 +372,8 @@ export async function shoot(variant = "a") {
     fit();
     const resize = new ResizeObserver(fit);
     resize.observe(node);
+    const previousMusic = currentBgm();
+    playBgm(music);
     try {
       const T = schedule(ui, plan);
       // 音（予約した動きと同じ時刻に鳴らす）
@@ -389,6 +396,8 @@ export async function shoot(variant = "a") {
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 420, { fill: "forwards" });
     } finally {
       resize.disconnect();
+      // LOADや別場面への切替で鳴り始めた曲は上書きしない。
+      if (state === owner && currentBgm() === music) playBgm(previousMusic);
     }
   });
 }

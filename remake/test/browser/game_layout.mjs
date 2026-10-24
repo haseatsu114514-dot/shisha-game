@@ -17,6 +17,10 @@ const activate = async (p, id, touch) => {
   if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
     && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
     await activate(p, "title-layout-settings", touch);
+  // 本編の表示切替も「表示」を開いてから選ぶ（DS風ではヒンジの小さなボタン）。
+  if (["game-layout-normal", "game-layout-ds", "game-layout-recover"].includes(id)
+    && !(await p.locator(".game-layout-toolbar").evaluate(node => node.open)))
+    await activate(p, "game-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
 };
@@ -67,8 +71,10 @@ async function dsGeometry(p) {
   assert(Math.abs(rects[0].w-rects[1].w)<1&&Math.abs(rects[0].h-rects[1].h)<1);
   assert(rects[1].x>=rects[0].x+rects[0].w+9||rects[1].y>=rects[0].y+rects[0].h+9,"two panels overlap or gap missing");
   if (await p.locator("body").getAttribute("data-ds-view")==="map") {
-    const menu=await button(p,"hud-menu").boundingBox();
-    assert(menu && menu.x>=rects[0].x && menu.x+menu.width<=rects[0].x+rects[0].w+1,"MENU clipped outside scene panel");
+    // MENUは下画面（触る画面）のタッチバーにある。
+    const menu=await button(p,"hud-menu").boundingBox(), touchPanel=rects[1];
+    assert(menu && menu.x>=touchPanel.x-1 && menu.x+menu.width<=touchPanel.x+touchPanel.w+1
+      && menu.y>=touchPanel.y-1 && menu.y+menu.height<=touchPanel.y+touchPanel.h+1,"MENU clipped outside touch panel");
   }
 }
 async function normalGeometry(p) {
@@ -195,9 +201,13 @@ try {
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
       if(!touch){
         const before=await p.evaluate(()=>JSON.stringify(__remake.state));
-        await button(p,"game-layout-normal").focus();await p.keyboard.press("Enter");
+        const keyboardSwitch=async id=>{
+          if(!(await p.locator(".game-layout-toolbar").evaluate(n=>n.open))){await button(p,"game-layout-settings").focus();await p.keyboard.press("Enter");}
+          await button(p,id).focus();await p.keyboard.press("Enter");
+        };
+        await keyboardSwitch("game-layout-normal");
         await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
-        await button(p,"game-layout-ds").focus();await p.keyboard.press("Enter");await dsGeometry(p);
+        await keyboardSwitch("game-layout-ds");await dsGeometry(p);
         assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),before);
         assert.equal(await p.locator(".vn-choices.show button").count(),3);
       }
@@ -242,11 +252,14 @@ try {
     // The fixture's completion screen uses the normal portrait rotate hint;
     // enter the DS map before testing its real touch controls.
     await button(p,"ch2-main-next-day").evaluate(n=>n.click());
+    await activate(p,"ch2-morning-home",true);
     await p.locator('[data-destination-selection]:not(.done)').waitFor();
     await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));
     await activate(p,"station-open",true);
     await activate(p,"station-destination-widehanga",true);
-    assert((await p.locator("#viewport").evaluate(n=>n.scrollTop))>0,"Station choice did not scroll the short viewport");
+    // DS風では行き先の一覧が下画面の中でスクロールする。決定ボタンが画面内に見えていればよい。
+    const confirm=await button(p,"station-confirm").boundingBox(), view=p.viewportSize();
+    assert(confirm&&confirm.y>=0&&confirm.y+confirm.height<=view.height,"Station confirm is offscreen on the short viewport");
     await activate(p,"station-confirm",true);
     await button(p,"pin-ch2_rei").waitFor();
     await p.waitForFunction(()=>document.querySelector("#viewport").scrollTop===0);

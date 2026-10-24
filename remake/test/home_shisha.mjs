@@ -197,12 +197,28 @@ assert.equal(state.statXp.charm, 0.75);
 
 // 場面の台本: 全角48字以内・手動改行なし・心の声は（）で閉じる
 const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0);
-for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) {
-  const d = home.homeShishaDialogue({ taste, stat: "insight" }, { id }, () => pick);
+for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) for (const distant of [false, true]) {
+  const d = home.homeShishaDialogue({ taste, stat: "insight" }, { id }, () => pick, { distant });
   for (const l of d.lines) {
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
     if (l.speaker === "hajime") assert(l.text.startsWith("（") && l.text.endsWith("）"), l.text);
   }
 }
 
+// #952: 第2章の味覚不調中は、出来の良し悪しは残しつつ「舌では受け取れない」主観に。評価・成長・消費は同じ。
+{
+  const lines = taste => ({ normal: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0).lines[1].text,
+    distant: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }).lines[1].text });
+  for (const taste of ["great", "fine", "meh"]) {
+    const { normal, distant } = lines(taste);
+    assert.notEqual(normal, distant);
+    assert(!/美味しい/.test(distant), "Distant taste does not claim the flavour was received");
+  }
+  assert.match(lines("great").distant, /遠い/);
+  const s = newGame();
+  assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
+  s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");
+  s.flags._ch2_taste_distant = true; assert.equal(home.tasteDistant(s), true, "During the chapter 2 slump");
+  s.chapter = 3; assert.equal(home.tasteDistant(s), false, "Later chapters own their own recovery scenes");
+}
 console.log("[home shisha] PASS: rigs, kuji from ch1, lowest stat, offer rules, recipe mix, taste, 12g/-6/no slot, 0.5P vs 0.75P, lines");

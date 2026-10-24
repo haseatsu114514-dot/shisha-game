@@ -2,7 +2,7 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
@@ -21,7 +21,7 @@ import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
 import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
-import { STATION_FARE, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
+import { STATION_FARE, WALK_HOME_STAMINA, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
 function peopleRow(people) {
@@ -126,6 +126,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
+    // DS風の上画面：街の全体図に行き先の点を打つ（表示だけ。操作は下画面のカード）。通常版ではCSSで出さない。
+    const markers = el("div.ds-map-markers", { "aria-hidden": "true" });
+    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.marker === id));
     let selected = null;
     const owner = state;
     let stationTrip = null;
@@ -212,6 +215,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       stationTrip?.cancel(); stationTrip = null;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
+      markSelected(s.id);
       SE.click();
       renderInfo(s);
     };
@@ -222,6 +226,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       if (moving || revealing || !stationActive()) return;
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
+      markSelected(null);
       const cancel = () => { stationTrip?.cancel(); stationTrip = null; idleInfo(); };
       const destinations = stationDestinations(state, regions || [], region?.id);
       const choose = (item) => {
@@ -229,35 +234,41 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         stationTrip?.cancel();
         const trip = stationTrip = prepareStationTrip(state, regions, item.id);
         if (!trip) return;
-        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
-          dataset: { test: "station-confirm" }, disabled: state.money < trip.fare,
-          onclick: async () => {
+        const depart = (walk) => async () => {
             if (moving || !stationActive()) return;
-            moving = true; confirm.disabled = true;
+            moving = true; confirm.disabled = true; if (walkHome) walkHome.disabled = true;
             try {
-              if (!trip.commit(state, { active: stationActive(), persist: save })) {
+              if (!trip.commit(state, { active: stationActive(), persist: save, walk })) {
                 openStationAfterFailure(); return;
               }
               region = item; selected = null; root.dataset.region = item.id;
               onRegionChange?.(item.id);
               SE.select(); updateHud();
-              await trainRide(() => stationArrival(trip, async () => {
+              const arrive = () => stationArrival(trip, async () => {
                 if (!stationActive()) return;
                 await setMapBackground();
                 if (!stationActive()) return;
                 root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
                 renderPins(); idleInfo();
-              }), { from: trip.from, to: trip.to });
+              });
+              // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
+              if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った（体力−${WALK_HOME_STAMINA}）`); }
+              else await trainRide(arrive, { from: trip.from, to: trip.to });
               if (!stationActive()) return;
               // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
               // 到着後は新しい街の上画面（HUDと地図）から見せる。
               if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
             } finally { moving = false; }
-          } });
-        info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),
+          };
+        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
+        const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: `歩いて帰る（体力−${WALK_HOME_STAMINA}）`,
+          dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
+        info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
-          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.fare ? " ／ 残金が足りません" : ""}` }),
-          confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
+          walkHome ? el("p.mi-desc", { text: `電車に乗れないので、歩いて帰れる。お金は使わず、体力をかなり使う（今の体力 ${state.stamina}）。時間は進まない。` }) : null,
+          walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
       };
       const openStationAfterFailure = () => {
         info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),
@@ -294,6 +305,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     function renderPins() {
       stopReveal();
       pins.replaceChildren();
+      markers.replaceChildren();
       const freshPins = [];
       const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
@@ -304,7 +316,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -312,7 +324,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
@@ -341,6 +353,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         freshPins.push({ btn, spot: s, index: revealIndex });
       }
       pins.append(btn);
+      markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
+        dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
       if (freshPins.length) {
         revealing = true;
@@ -384,6 +398,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const rainy = isRainy();
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
+      markers,
       pins,
       stationDestinations(state, regions || [], region?.id).length && !guide
         ? el("nav.map-regions", { "aria-label": "駅から街移動" }, [el("button", {

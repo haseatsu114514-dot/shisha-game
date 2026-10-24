@@ -1,7 +1,7 @@
 // 採用済みの店ロゴ。元PNGの採用部分だけを表示し、文字・配色・透明度を保持する。
 import { el } from "./util.js";
 
-export const STORE_LOGOS = Object.freeze({
+const BASE_LOGOS = {
   tonari: { name: "tonari", file: "tonari", sheet: [2172, 724], frame: [812, 15, 551, 684] },
   naru: { name: "KEMURIKUSA", file: "kemurikusa", sheet: [2172, 724], frame: [45, 240, 736, 248] },
   adam: { name: "EDEN", file: "eden", sheet: [1960, 802], frame: [36, 53, 605, 719] },
@@ -12,6 +12,13 @@ export const STORE_LOGOS = Object.freeze({
   ch2_ageha: { name: "MELTY PUFF", file: "melty-puff", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_kumicho: { name: "神崎煙草店", file: "kanzaki", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_rei: { name: "零-ZERO-", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+};
+export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
+  ch2_shop: { ...BASE_LOGOS.shop, name: "Dr.fookah 柚ヶ谷店" },
+  ch2_c_station: { ...BASE_LOGOS.c_station, name: "C.STATION 柚ヶ谷店" },
+  ch2_aquarium: { name: "都市型水族館", file: "ch2-aquarium", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch2_sento: { name: "銭湯・サウナ", file: "ch2-sento", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  trpg_bar: { name: "ボドゲカフェ / TRPG BAR", file: "trpg-bar", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
 });
 
 export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, id);

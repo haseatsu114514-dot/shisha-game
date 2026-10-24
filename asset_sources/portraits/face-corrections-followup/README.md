@@ -1,3 +1,5 @@
+ユーザー「ゲームにも反映していって」によりGitHub接続復旧を確認し、最新mainと統合して公開用PRへ進めた。以下のForbidden・ローカルのみの記載は制作時点の履歴。最新の表示確認は [公開用確認](../../../docs/qa/portrait-jawline/release-runtime-review/browser-check.json) を参照。
+
 # 目・顎の追加修正
 
 ユーザーの「この調子で他のキャラも直す必要あるのとか表情があればやっていて」に沿って、全22キャラ100表情の点検で残った候補を修正した。2026-10-24、`fix/portrait-jawline` へローカル反映。GitHub照会がForbiddenのためpush・PR・公開反映は未実施。

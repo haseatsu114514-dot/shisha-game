@@ -1,0 +1,16 @@
+[
+  {
+    "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-21/agy-783/docs/qa/ch2-tournament/pc-result.png",
+    "bytes": 239069,
+    "sha256": "47249bef711c66d26e190caef535e9de7eec1eda753e1b116ddf05d38227d8cd",
+    "viewed": true,
+    "role": "existing actual historical game screenshot/layout, not proof of latest build; ignore ALL faces/old Rei/Kanzaki"
+  },
+  {
+    "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-21/agy-783/remake/img/backgrounds/bg_tournament_stage.webp",
+    "bytes": 161380,
+    "sha256": "f8d3f35d5f84ecf4746025c48b4ac9716c3385d91fcc4e3a041fc603975406a6",
+    "viewed": true,
+    "role": "adopted hall architecture/color only"
+  }
+]
