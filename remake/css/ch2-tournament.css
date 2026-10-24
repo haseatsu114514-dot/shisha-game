@@ -6,6 +6,9 @@
 .ch2-contest-header p { color:#ded0a8; font-size:17px; }
 .ch2-contest-description { line-height:1.5; }
 .ch2-contest-note { color:#ded0b2; font-size:17px; line-height:1.5; }
+.ch2-contest-reason { display:grid; gap:2px; padding:8px 14px; border-left:3px solid #e8c27a; background:#e8c27a14; }
+.ch2-contest-reason p { margin:0; font-size:17px; line-height:1.5; color:#f4ede0; }
+.ch2-contest-reason p + p { color:#e2c593; }
 .ch2-contest-actions { margin-top:auto; display:flex; gap:16px; }
 .ch2-contest .btn { min-height:52px; padding:10px 24px; font-size:21px; }
 .ch2-contest-ranking { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
