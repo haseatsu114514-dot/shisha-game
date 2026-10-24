@@ -1,124 +1,116 @@
-/* 会話の構図: 本文 > 名前 > 操作。各素材の見える上辺に合わせた接続位置を共有する。 */
+/* ひとつの静かな窓。見出しと本文を独立した領域に置き、会話の種類で動かさない。 */
 html:root[data-ui-theme] {
-  --vn-header-y:6px; --vn-name-y:6px;
-  --vn-control-width:352px; --vn-control-inset:40px;
-  --vn-header-face:#0b1016; --vn-header-edge:#b8ddda70;
+  --vn-caption-top:22px; --vn-body-top:92px; --vn-body-side:104px;
+  --vn-command-width:352px; --vn-command-inset:104px;
 }
-html:root[data-ui-theme="smoke-purple"] { --vn-header-face:#170e24; --vn-header-edge:#cfafea70; }
-html:root[data-ui-theme="cut-paper"] {
-  --vn-header-y:-14px; --vn-name-y:-10px;
-  --vn-control-width:372px; --vn-control-inset:34px;
-}
-html:root[data-ui-theme="amber"] { --vn-header-y:-8px; --vn-name-y:-8px; --vn-header-face:#241306; --vn-header-edge:#d4a25280; }
-html:root[data-ui-theme="tissue"] { --vn-header-y:-10px; --vn-name-y:-10px; --vn-header-face:#29292b; --vn-header-edge:#e0d1b380; }
-html:root[data-ui-theme="classic"] { --vn-header-y:-36px; --vn-name-y:-36px; --vn-header-face:#180f24; --vn-header-edge:#ccac6970; }
-html:root[data-ui-theme="heisei-blue"] { --vn-header-y:6px; --vn-name-y:0px; --vn-control-inset:36px; }
-
 html:root[data-ui-theme] body:not(.game-ds) .vn-box {
   width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
-  bottom:var(--vn-dialogue-bottom); padding:64px 92px 28px 100px;
+  bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 28px;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-text {
-  font-size:30px; line-height:1.5; min-height:90px; letter-spacing:.02em;
+  font-size:30px; font-weight:500; line-height:1.6; min-height:96px; letter-spacing:.025em;
 }
-html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:45px; }
-html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:1.5; margin-top:10px; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:48px; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:1.5; margin-top:12px; }
+/* 名前がない場合も見出し段の高さを予約する。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-box .vn-name {
-  left:88px; top:var(--vn-name-y); width:224px; height:40px;
-  padding:0 12px; display:flex; align-items:center; justify-content:flex-start;
-  font-size:var(--vn-name-fit-size,24px); line-height:36px; letter-spacing:.06em;
+  left:var(--vn-body-side); top:var(--vn-caption-top); width:224px; height:44px;
+  padding:0; display:flex; align-items:center; justify-content:flex-start;
+  background:none; border:0; box-shadow:none; border-radius:0; clip-path:none; rotate:none;
+  font-size:var(--vn-name-fit-size,24px); font-weight:700; line-height:36px; letter-spacing:.06em;
+  color:var(--vn-lounge-name); text-shadow:0 1px 3px #0008;
 }
-html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-name {
-  font-family:var(--font); font-weight:700;
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"],[data-ui-theme="cut-paper"]) body:not(.game-ds) .vn-name { font-family:var(--font); }
+html:root[data-ui-theme] body:not(.game-ds) .vn-box:is(.narration,.thought) .vn-name { display:none; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-name::before,
+html:root[data-ui-theme] body:not(.game-ds) .vn-name::after { content:none; }
+/* 淡い罫線で見出しをまとめ、本文との間を空ける。 */
+html:root[data-ui-theme] body:not(.game-ds) .vn-box::after {
+  content:""; position:absolute; left:var(--vn-body-side); right:var(--vn-body-side); top:78px; height:1px;
+  width:auto; background:linear-gradient(90deg,var(--panel-edge),var(--panel-edge) 75%,transparent);
+  opacity:.48; clip-path:none; rotate:none; z-index:0; pointer-events:none;
 }
+/* 名前・本文・本心・地の文に関係なく、同じ右上の4列。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
-  right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-control-inset));
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-header-y) - 44px);
-  width:var(--vn-control-width); height:44px; padding:0; gap:0;
-  background:var(--vn-header-face); border:0;
-  box-shadow:inset 1px 0 var(--vn-header-edge),inset -1px 0 var(--vn-header-edge),inset 0 1px var(--vn-header-edge);
-  border-radius:10px 10px 0 0; clip-path:none; isolation:isolate;
+  right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-command-inset));
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 44px);
+  width:var(--vn-command-width); height:44px; padding:0; gap:0;
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+  background:none; border:0; box-shadow:none; border-radius:0; clip-path:none;
 }
-/* 操作の背景を本文の墨色に揃え、上辺に接続する。装飾でヒット領域を押し広げない。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls::after { content:none; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl {
-  min-height:44px; height:44px; padding:0 9px; border:0; border-radius:0;
-  font-family:var(--font); font-size:16px; font-weight:700; line-height:1.2;
-  letter-spacing:.03em; background:none; box-shadow:none; color:var(--text);
+  position:relative; min-width:0; min-height:44px; height:44px; padding:0 9px;
+  border:0; border-radius:6px; font-family:var(--font); font-size:16px; font-weight:500;
+  line-height:1.2; letter-spacing:.03em; background:none; box-shadow:none; color:var(--text-dim);
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before {
-  content:""; position:absolute; left:0; top:15px; bottom:15px; width:1px;
-  background:var(--vn-header-edge);
+  content:""; position:absolute; left:0; top:16px; bottom:16px; width:1px;
+  background:var(--panel-edge); opacity:.5;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover,:focus-visible,.on) {
-  color:var(--gold-hi); background:#ffffff0a; box-shadow:inset 0 -2px 0 var(--gold);
+  color:var(--gold-hi); background:#ffffff08; box-shadow:inset 0 -1px 0 var(--gold);
 }
-html:root[data-ui-theme] body:not(.game-ds) .vn-next { right:60px; bottom:50px; font-size:20px; }
+/* AUTO/SKIPの印を通常の文字組みから外し、ラベルを横へ押さない。 */
+html:root[data-ui-theme] .vn-controls .vn-ctl.on::after {
+  content:"·"; position:absolute; right:5px; top:50%; transform:translateY(-50%); margin:0;
+  color:var(--gold-hi); pointer-events:none;
+}
+html:root[data-ui-theme] body:not(.game-ds) .vn-next { right:60px; bottom:30px; font-size:20px; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices,
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 96px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 32px);
 }
-
-/* P5を参照して画像生成した一体の輪郭。名前も操作も原画の空欄へ重ねる。 */
+/* 材料の描画は文章の内容で差し替えない。名前札・操作欄を画像へ焼き込まない。 */
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box::before,
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-48px -16px -12px; }
+html:root[data-ui-theme="amber"] body:not(.game-ds) .vn-box::before,
+html:root[data-ui-theme="amber"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-38px -16px -10px; }
+html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-box::before,
+html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-32px -16px -12px; }
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before {
-  inset:-80px -16px -16px; background:url("../img/ui/vn-polish/cut-paper.webp") center / 100% 100% no-repeat;
-  clip-path:none;
+  inset:-52px -16px -16px;
+  background:url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
 }
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box {
-  background:linear-gradient(#050507,#050507) center / calc(100% - 200px) calc(100% - 100px) no-repeat;
+  background:linear-gradient(#251e2d,#251e2d) center / calc(100% - 150px) calc(100% - 40px) no-repeat;
 }
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::after,
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-name::before,
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-name::after { content:none; }
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box .vn-name {
-  left:120px; width:200px; padding:0 12px; justify-content:center;
-  background:none; color:#100b18; font-family:var(--font); font-weight:900;
-  rotate:-9deg; clip-path:none; text-shadow:none;
-}
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-controls {
-  display:grid; grid-template-columns:188fr 170fr 142fr 142fr;
-  background:none; border:0; border-radius:0; box-shadow:none;
-}
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-controls::after,
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { content:none; }
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-controls .vn-ctl { font-weight:700; padding:0 4px; }
-
-/* 各素材の名前欄。文字の大きさと位置決めは上の共通書式を使う。 */
-html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box .vn-name { left:40px; width:210px; justify-content:center; }
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-box .vn-name {
-  left:60px; width:224px; height:56px; padding:0 16px 0 32px; justify-content:center;
-  font-size:var(--vn-name-fit-size,26px); font-family:"Suien Blue Mincho",serif;
-}
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls {
-  background:url("../img/ui/blue-preview/controls.webp") center / 100% 100% no-repeat; border:0; box-shadow:none;
-}
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls::after,
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { content:none; }
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl {
-  font-family:"Suien Blue Mincho",serif; font-weight:400;
-}
-
-html:root:is([data-ui-theme="heisei-blue"],[data-ui-theme="amber"],[data-ui-theme="tissue"],[data-ui-theme="classic"]) body:not(.game-ds) .vn-name::after { content:none; }
-
-/* 名前のない文章では、名前札と人物へ向かう尾を外した原画を使う。 */
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before {
-  background-image:url("../img/ui/vn-polish/cut-paper-narration.webp");
-}
-html:root:is([data-ui-theme="amber"],[data-ui-theme="tissue"]) body:not(.game-ds) .vn-box .vn-name {
-  width:clamp(140px,calc(var(--vn-name-length,4) * 25px + 48px),240px);
-  justify-content:center;
+/* 従来の金枠も、空の名前札を残さない一枚の枠へ。 */
+html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box::before,
+html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before {
+  inset:-2px -10px -2px; background-image:var(--vn-lounge-narration);
 }
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-controls {
-  background:var(--vn-lounge-controls) center / 100% 100% no-repeat; border:0; border-radius:0; box-shadow:none;
+  background:var(--vn-lounge-controls) center / 100% 100% no-repeat;
 }
-html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-controls::after { content:none; }
-
-html:root[data-ui-theme] body:not(.game-ds) .vn-box:is(.narration,.thought) .vn-name { display:none; }
-/* 地の文用の原画は操作欄が僅かに広い。同じ原画内の区切りに文字を合わせる。 */
-html:root[data-ui-theme="cut-paper"]:has(.vn-box:is(.narration,.thought)) {
-  --vn-control-width:386px; --vn-control-inset:35px;
+/* 青い窓の装飾は見出し段に納め、操作位置は共通のままにする。 */
+html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-box .vn-name {
+  left:80px; top:16px; height:56px; padding:0 16px 0 32px; justify-content:center;
+  background:url("../img/ui/blue-preview/name.webp") center / 100% 100% no-repeat;
+  font-family:"Suien Blue Mincho",serif; font-weight:400;
 }
-html:root[data-ui-theme="cut-paper"] body:not(.game-ds) #vn:has(.vn-box:is(.narration,.thought)) .vn-controls {
-  grid-template-columns:191fr 173fr 148fr 154fr;
+html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls {
+  background:url("../img/ui/blue-preview/controls.webp") center / 100% 100% no-repeat;
 }
+html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl { font-family:"Suien Blue Mincho",serif; font-weight:400; color:#f4f3ff; }
+html:root:is([data-ui-theme="heisei-blue"],[data-ui-theme="classic"]) body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { content:none; }
+/* 2画面の16も同じ穏やかな素材へ。進行・操作の配置は既存の2画面を維持する。 */
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box::before,
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box:is(.narration,.thought)::before {
+  inset:-20px 0 0; background:url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
+}
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box .vn-name {
+  background:none; clip-path:none; rotate:none; color:var(--vn-lounge-name); text-shadow:0 1px 3px #0008;
+}
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-name::before,
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-name::after { content:none; }
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-controls {
+  background:var(--panel); border:1px solid var(--ui-edge); border-radius:10px; clip-path:none;
+}
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box .vn-name {
+  left:24px; top:2px; height:24px; line-height:22px;
+  background:radial-gradient(ellipse,#251e2dd9,transparent 75%);
+}
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-controls { padding:2px 4px; }
+html:root[data-ui-theme="cut-paper"] body.game-ds .vn-next { bottom:16px; }

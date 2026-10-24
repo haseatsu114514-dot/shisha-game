@@ -17,7 +17,7 @@ await suite("conversation-ui", async check => {
       });
       assert(geometry.aligned<=4,"name and commands share the attached header centreline");
       assert(geometry.font.includes("Suien Name"));
-      assert.equal(geometry.nameTop, -36);
+      assert.equal(geometry.nameTop, 22);
       assert(geometry.buttons.every(height => height >= 44));
       await page.locator('[data-test="vn-auto"]').click();
       assert(await page.locator('[data-test="vn-auto"]').evaluate(el => el.classList.contains("on")));
@@ -85,13 +85,11 @@ await suite("conversation-ui", async check => {
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……また見つかっちゃった");
       await page.locator(".vn-next.show").waitFor();
       const dialogue = await frameStyle();
-      assert(dialogue.frame.includes("dialogue.svg"), "Speech must restore the named frame");
+      assert.equal(dialogue.frame,narration.frame,"speaker visibility does not replace or resize the panel");
       assert.equal(dialogue.nameHidden, false);
       assert.equal(dialogue.height, narration.height, "Switching frames must preserve text layout");
-      assert(Math.abs(dialogue.paintedHeight / 451 - narration.paintedHeight / 370) < .001,
-        "Named and nameless artwork must use the same vertical scale");
-      assert(Math.abs(parseFloat(dialogue.top) + dialogue.paintedHeight - parseFloat(narration.top) - narration.paintedHeight) < .02,
-        "Named and nameless artwork must share the bottom edge");
+      assert.equal(dialogue.paintedHeight,narration.paintedHeight,"speech and narration retain the same painted height");
+      assert.equal(dialogue.top,narration.top,"speech and narration retain the same top edge");
     }, { viewport });
   }
 }, { entry: new URL("conversation-preview.html?theme=classic", baseURL).href, readySelector: ".vn-box" });

@@ -1,6 +1,20 @@
 import assert from "node:assert/strict";
 import { suite, baseURL, storageSnapshot, assertFits } from "./support.mjs";
 
+async function commandGeometry(page) {
+  return page.evaluate(()=>{
+    const stage=document.querySelector("#stage").getBoundingClientRect(), scale=stage.width/1280;
+    const controls=document.querySelector(".vn-controls"), buttons=[...controls.querySelectorAll(".vn-ctl")];
+    const labels=buttons.map(button=>{const r=document.createRange();r.selectNodeContents(button);return r.getBoundingClientRect();});
+    return [controls.getBoundingClientRect(),...buttons.map(b=>b.getBoundingClientRect()),...labels]
+      .flatMap(r=>[(r.left-stage.left)/scale,(r.top-stage.top)/scale,r.width/scale,r.height/scale]);
+  });
+}
+function fixedCommands(actual,expected,state) {
+  assert.equal(actual.length,expected.length);
+  assert(actual.every((value,i)=>Math.abs(value-expected[i])<.1),`command cells and labels must not move for ${state}`);
+}
+
 const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic"];
 await suite("ui-themes-preview", async check => {
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
@@ -25,9 +39,11 @@ await suite("ui-themes-preview", async check => {
             heights:[...document.querySelectorAll(".vn-ctl")].map(b=>parseFloat(getComputedStyle(b).minHeight)) };
         });
         assert(painted.heights.every(h=>h>=44));
+        const fixedHeader=await commandGeometry(page);
         layouts.push(painted.layout); colors.push(painted.color); frames.push(painted.frame);
         await page.selectOption("#preview-scene","twolines");
         await page.locator(".vn-next.show").waitFor();
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" two lines");
         const twoLines = await page.locator(".vn-text").evaluate(el => {
           const range = document.createRange(); range.selectNodeContents(el);
           const rows = [...range.getClientRects()].filter(r=>r.width>0);
@@ -43,12 +59,12 @@ await suite("ui-themes-preview", async check => {
           const scale = box.width / 1216;
           const overlaps = (a,b) => a.right>b.left && a.left<b.right && a.bottom>b.top && a.top<b.bottom;
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
-            footerClear:next.bottom<=box.bottom-45*scale,
+            footerClear:next.bottom<=box.bottom-25*scale,
             nameAligned:Math.abs(nameGlyph.left-text.left)<=.5,
             nameInFrame:name.top>=box.top-4*scale && name.bottom<=text.top-2*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top>=box.top-44*scale && controls.bottom<=text.top-8*scale && controls.left>box.left+box.width/2,
-            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2))<=4*scale,
+            headerAttached:controls.top>=box.top+16*scale && controls.bottom<=text.top-24*scale && controls.left>box.left+box.width/2 && controls.right<=text.right+.5*scale,
+            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2))<=.5*scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -66,13 +82,24 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.headerAligned,"name and controls share a header centreline");
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
         assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.6,"command text is a quieter third level");
-        assert(twoLines.margins[0]>=99.9 && twoLines.margins[1]>=91.9,"reserve space for visible folds and smoke, beyond glyph bounds");
+        assert(twoLines.margins[0]>=103.9 && twoLines.margins[1]>=103.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
         assert.equal(await page.locator(".vn-name").evaluate(el=>getComputedStyle(el).display),"none");
-        if(id==="cut-paper") assert((await page.locator(".vn-box").evaluate(el=>getComputedStyle(el,"::before").backgroundImage)).includes("cut-paper-narration.webp"),"narration uses artwork without an empty speaker tab");
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" narration");
+        if(id==="cut-paper") assert((await page.locator(".vn-box").evaluate(el=>getComputedStyle(el,"::before").backgroundImage)).includes("vn-calm/paper.webp"),"speech and narration share one unlabelled soft panel");
+        await page.locator(".vn-next.show").waitFor();
+        await page.waitForTimeout(350);
+        await page.locator(".vn-text").click();
+        await page.locator(".vn-box.thought").waitFor();
+        await page.locator(".vn-next.show").waitFor();
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" thought");
         await page.selectOption("#preview-scene","hiyori");
         await page.locator(".vn-next.show").waitFor();
+        await page.locator('[data-test="vn-auto"]').click();
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" AUTO on (including label centering)");
+        await page.locator('[data-test="vn-auto"]').click();
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" AUTO off");
         await page.waitForTimeout(350);
         await page.locator(".vn-text").click();
         await page.locator(".vn-box.has-inner .vn-inner:not([hidden])").waitFor();
@@ -90,10 +117,11 @@ await suite("ui-themes-preview", async check => {
           return rows.every(r=>r.bottom<box.bottom-12 && r.left>=box.left && r.right<=box.right && !overlaps(r,next) && !overlaps(r,controls));
         });
         assert(innerFits,"main and inner voice glyphs stay inside the frame and clear of controls/next");
+        fixedCommands(await commandGeometry(page),fixedHeader,id+" inner voice");
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(const layout of layouts) assert.deepEqual(layout.slice(0,8),layouts[0].slice(0,8),"skins share the safe text and frame geometry; header anchors follow their artwork");
+      for(const layout of layouts) assert.deepEqual(layout,layouts[0],"all skins share stable text, frame and command geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
       const paddedNameFits = await page.evaluate(async () => {
@@ -120,11 +148,13 @@ await suite("ui-themes-preview", async check => {
       await page.click("#preview-light");
       assert.deepEqual(await storageSnapshot(page),saved,"light prototype does not persist settings");
       await page.click("#preview-kit");
+      const choiceHeader=await commandGeometry(page);
       await page.selectOption("#preview-scene","choices");
       await page.locator(".vn-next.show").waitFor();
       await page.waitForTimeout(350);
       await page.locator(".vn-text").click();
       await page.locator('[data-test="choice-0"]').waitFor();
+      fixedCommands(await commandGeometry(page),choiceHeader,"choices");
       assert(await page.locator(".vn-choices").evaluate(el => el.getBoundingClientRect().bottom <= document.querySelector(".vn-controls").getBoundingClientRect().top - 4),"choices leave a gap above toolbar");
       await page.locator('[data-test="choice-0"]').click();
       await page.locator(".vn-next.show").waitFor();
@@ -165,12 +195,14 @@ await suite("blue-window-character-preview",async check=>{
     await check(String(viewport.width),async page=>{
       await page.locator(".vn-next.show").waitFor();
       const saved=await storageSnapshot(page);
+      const fixedHeader=await commandGeometry(page);
       assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"heisei-blue");
       for(const [id,name] of [["minto","みんと"],["ageha","あげは"],["tsumugi","つむぎ"],["hiyori","ひより"]]) {
         await page.selectOption("#preview-character",id);
         await page.locator(".vn-next.show").waitFor();
         await page.evaluate(()=>document.fonts.ready);
         assert.equal(await page.locator(".vn-name").textContent(),name);
+        fixedCommands(await commandGeometry(page),fixedHeader,"blue character "+id);
         const rendered=await page.evaluate(()=>{
           const text=document.querySelector(".vn-text"),name=document.querySelector(".vn-name"),sprite=document.querySelector("img.portrait");
           const rect=sel=>document.querySelector(sel).getBoundingClientRect();
@@ -188,6 +220,10 @@ await suite("blue-window-character-preview",async check=>{
         assert(rendered.portrait?.includes("/"+id+"/"),"use the official character sprite");
         assert(rendered.font.includes("Suien Blue Mincho"));
       }
+      await page.locator('[data-test="vn-auto"]').click();
+      fixedCommands(await commandGeometry(page),fixedHeader,"blue AUTO on");
+      await page.locator('[data-test="vn-auto"]').click();
+      fixedCommands(await commandGeometry(page),fixedHeader,"blue AUTO off");
       assert.deepEqual(await storageSnapshot(page),saved,"character comparison never writes saves/config");
       await page.selectOption("#preview-theme","smoke");
       assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"smoke");

@@ -1,4 +1,4 @@
-/* 会話枠に合わせたゲーム全体の素材・配色。組版と操作位置はvn-lounge.cssで共有する。 */
+/* 会話枠に合わせたゲーム全体の素材・配色。組版と操作位置はvn-composition.cssで共有する。 */
 :root:where([data-ui-theme]:not([data-ui-theme="classic"])) {
   --gold: #bde5dc; --gold-hi: #e4fff7; --text: #f4f4ef; --text-dim: #bdc9c5;
   --ink: #0b1015; --ink-2: #151c24; --panel: #101820f5; --panel-edge: #a3d5c477;
@@ -17,12 +17,12 @@ html[data-ui-theme="smoke-purple"] {
   --vn-lounge-frame: url("../img/ui/vn-faithful/smoke-purple.webp"); --vn-lounge-narration: url("../img/ui/vn-faithful/smoke-purple.webp");
 }
 html[data-ui-theme="cut-paper"] {
-  --gold: #d68bea; --gold-hi: #f3c3ff; --text-dim: #c9b7d0;
-  --ink: #120c1d; --ink-2: #25172f; --panel: #1d1229; --panel-edge: #d68bea99;
-  --inner-edge: #d68bea55; --inner-face: #ce8feb09; --inner-hover: #ce8feb19; --inner-active: #ce8feb2c;
-  --ui-radius: 0; --ui-button-radius: 2px; --ui-edge: #c579de; --ui-shadow: 5px 5px 0 #9947b266, 0 8px 24px #0006;
-  --ui-button: linear-gradient(120deg,#382044,#1b1029); --vn-lounge-name: #f6d2ff;
-  --vn-lounge-frame: url("../img/ui/vn-faithful/cut-paper.webp"); --vn-lounge-narration: url("../img/ui/vn-faithful/cut-paper.webp");
+  --gold:#c5b1d2; --gold-hi:#f0e5f1; --text:#f4edf2; --text-dim:#c8bdcc;
+  --ink:#18141d; --ink-2:#292230; --panel:#221c2b; --panel-edge:#bfa6c170;
+  --inner-edge:#bda4ca55; --inner-face:#cab6db0b; --inner-hover:#cab6db18; --inner-active:#cab6db28;
+  --ui-radius:14px; --ui-button-radius:10px; --ui-edge:#bda4ca70; --ui-shadow:0 8px 24px #0005;
+  --ui-button:linear-gradient(145deg,#393040,#211c29); --vn-lounge-name:#f0e5f1;
+  --vn-lounge-frame:url("../img/ui/vn-calm/paper.webp"); --vn-lounge-narration:url("../img/ui/vn-calm/paper.webp");
 }
 html[data-ui-theme="amber"] {
   --gold: #efb455; --gold-hi: #ffe2a6; --text: #fff1da; --text-dim: #cdb48e;
@@ -109,7 +109,7 @@ html[data-ui-theme="cut-paper"] .vn-box .vn-name {
   background: linear-gradient(165deg,#d88def,#c475dd); color: #210e2e; clip-path: polygon(8% 8%,86% 0,100% 92%,0 100%); text-shadow: none;
 }
 html[data-ui-theme="cut-paper"] .vn-name::after { content: none; }
-html[data-ui-theme][data-ui-theme="cut-paper"] :is(.btn,.vn-choice,.vn-controls .vn-ctl) { border-radius: 0; }
+html[data-ui-theme][data-ui-theme="cut-paper"] :is(.btn,.vn-choice,.vn-controls .vn-ctl) { border-radius:var(--ui-button-radius); }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-controls {
   background: linear-gradient(160deg,#392040,#1b1029); border-top:3px solid #c579de;
   clip-path:polygon(7% 0,96% 0,100% 100%,0 100%); border-right:3px solid #c579de; padding:5px 12px;

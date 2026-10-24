@@ -2,7 +2,7 @@
 export const UI_THEMES = Object.freeze([
   { id: "smoke", label: "11 煙だけの輪郭", note: "透ける墨色と、淡い煙の線" },
   { id: "smoke-purple", label: "11 煙だけの輪郭・紫", note: "墨紫とラベンダーの光" },
-  { id: "cut-paper", label: "16 紫・切り紙エディトリアル", note: "黒と紫の非対称カット、重なる紙と網点" },
+  { id: "cut-paper", label: "16 紫・ペーパーラウンジ", note: "温かな墨紫と、柔らかく重なる紙" },
   { id: "amber", label: "25 琥珀ラウンジ", note: "深い茶色と、琥珀の灯り" },
   { id: "tissue", label: "28 重なる薄紙", note: "生成りの薄紙と、静かな金の線" },
   { id: "classic", label: "これまでのゴージャス", note: "墨紫・真鍮の装飾枠" },
