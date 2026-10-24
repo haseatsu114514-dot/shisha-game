@@ -567,7 +567,7 @@
 .trpg-root.trpg-cinematic .trpg-seat-ability { font-size: 10px; }
 .trpg-root.trpg-cinematic .trpg-seat-ability[data-spent="true"] { border-bottom: 1px solid currentColor; }
 .trpg-root.trpg-cinematic .trpg-table-clues { display: flex; gap: 3px; pointer-events: none; }
-.trpg-root.trpg-cinematic .trpg-table-clue {
+.trpg-root.trpg-cinematic .trpg-stage-pockets .trpg-table-clue {
   display: block; width: 44px; height: 52px; overflow: hidden; padding: 5px 3px;
   border: 1px solid #d8c49a; border-radius: 2px; background: #eaddbb; color: #273d3a;
   font-size: 10px; line-height: 1.3; text-shadow: none;
@@ -580,6 +580,6 @@
   .trpg-root.trpg-cinematic .trpg-table { width: 700px; gap: 4px; padding: 5px 8px; }
   .trpg-root.trpg-cinematic .trpg-seat-ability { display: none; }
   .trpg-root.trpg-cinematic .trpg-table-person { font-size: 15px; }
-  .trpg-root.trpg-cinematic .trpg-table-clue { width: 28px; height: 35px; font-size: 0; }
+  .trpg-root.trpg-cinematic .trpg-stage-pockets .trpg-table-clue { width: 28px; height: 35px; font-size: 0; }
   .trpg-root.trpg-cinematic .trpg-table-clue::before { content: '✓'; font-size: 15px; }
 }

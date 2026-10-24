@@ -114,3 +114,46 @@ for (const scenario of scenarios) {
     assert.deepEqual(Array.from(root.querySelectorAll('.trpg-table-clue'), n => n.dataset.clue), Array.from(api.snapshot().clues).slice(0, 3)); api.destroy();
   });
 }
+
+// Static cascade regression for the actual card and existing pocket-span rules.
+// This is selector/media evidence, not a browser/computed-style or pixel test.
+const stageCss = await readFile(new URL('../css/trpg-stage.css', import.meta.url), 'utf8');
+function cardDeclarations(width, height) {
+  const stack = [], rules = []; let start = 0;
+  const css = stageCss.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (let i = 0; i < css.length; i++) {
+    if (css[i] === '{') { stack.push(css.slice(start, i).trim()); start = i + 1; }
+    else if (css[i] === '}') {
+      const selector = stack.pop();
+      if (selector && !selector.startsWith('@') &&
+          (selector.endsWith(' .trpg-table-clue') || selector.endsWith(' .trpg-stage-pockets :is(small, span)'))) {
+        const active = stack.every(context => !context.startsWith('@media') || context.slice(6).split(',').some(part => {
+          const constraints = [...part.matchAll(/\(max-(width|height):\s*(\d+)px\)/g)];
+          assert(constraints.length, 'Unexpected media around card rules: ' + context);
+          return constraints.every(([, axis, max]) => (axis === 'width' ? width : height) <= Number(max));
+        }));
+        if (active) {
+          // :is(small,span) contributes one type selector, not both arguments.
+          const simple = selector.replace(':is(small, span)', 'span');
+          const specificity = [(simple.match(/#[\w-]+/g) || []).length,
+            (simple.match(/\.[\w-]+/g) || []).length, (simple.match(/(?:^|\s)(?:small|span)(?=\s|$)/g) || []).length];
+          rules.push({ specificity, declarations: Object.fromEntries(css.slice(start, i).split(';').filter(x => x.includes(':')).map(x => {
+            const at = x.indexOf(':'); return [x.slice(0, at).trim(), x.slice(at + 1).trim()];
+          })) });
+        }
+      }
+      start = i + 1;
+    }
+  }
+  assert(rules.length >= 2, 'Card and existing pocket rule must both participate');
+  rules.sort((a, b) => { for (let i = 0; i < 3; i++) if (a.specificity[i] !== b.specificity[i]) return a.specificity[i] - b.specificity[i]; return 0; });
+  return Object.assign({}, ...rules.map(r => r.declarations));
+}
+for (const [width, height, size] of [[1280, 720, '10px'], [1001, 720, '10px'], [1000, 720, '0'], [844, 390, '0'], [390, 844, '0']]) {
+  test(`clue card cascade ${width}x${height}`, () => {
+    const styles = cardDeclarations(width, height);
+    assert.equal(styles.color, '#273d3a', 'Dark card text must beat inherited pocket text');
+    assert.equal(styles['font-size'], size, 'Narrow card text must collapse without changing other pockets');
+    assert.equal(styles.background, '#eaddbb');
+  });
+}
