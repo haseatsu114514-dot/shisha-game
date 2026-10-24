@@ -1,0 +1,367 @@
+{
+  "method": "Pillow proportional downscale only; no crop, no image_gen; alpha shown on neutral preview background, labels outside source image; originals preserved",
+  "thumbnails": [
+    {
+      "number": 1,
+      "name": "空港・到着ロビー",
+      "original": "asset_sources/review-candidates-20261024/assets/01-dubai-airport-arrivals-day.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-01.jpg",
+      "sha256": "2f113eda4811c191d8eeed1b8d3e2b57e5b0ec14dbb6c3a385d31efefab8c686",
+      "sourceSHA256": "432e31e9a4593b57c0f8b1f8e974384c51b9a8a601c5e0ddaf8c71c0fd17a370",
+      "bytes": 81435
+    },
+    {
+      "number": 2,
+      "name": "てつこ A",
+      "original": "asset_sources/review-candidates-20261024/assets/02-direction-A.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-02.jpg",
+      "sha256": "e6b35480fd586fd2f1544d247b5cfbf6bbeecd886bc672d2b8eda34331c41706",
+      "sourceSHA256": "e752ac250bcb44d24e83a3779277a13a2e24333761459a0b1f1e6e6f37b603b8",
+      "bytes": 19831
+    },
+    {
+      "number": 3,
+      "name": "てつこ B",
+      "original": "asset_sources/review-candidates-20261024/assets/03-direction-B.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-03.jpg",
+      "sha256": "385c97e8d93953beb224d44b5aa7de988da121a7ae82791afd51d74b797cb511",
+      "sourceSHA256": "5fe2187d19f31c0fcbb700747e9e4b773fda01c89e229eab982f48875ba5af12",
+      "bytes": 24534
+    },
+    {
+      "number": 4,
+      "name": "グアバ",
+      "original": "asset_sources/review-candidates-20261024/assets/04-source.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-04.jpg",
+      "sha256": "575375e8b3fbfed96b8c857e30d4cea295655bf0bb13e26b0240d77bfa0680c4",
+      "sourceSHA256": "02485783423f235073e9c8e29d81341c7f94cfd10aabb0cea65f09bb81aef43f",
+      "bytes": 37292
+    },
+    {
+      "number": 5,
+      "name": "ムカイさん A",
+      "original": "asset_sources/review-candidates-20261024/assets/05-direction-A.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-05.jpg",
+      "sha256": "dee3f34734fd284e29d5f8f3360f5e4660a59e961bf30a8baddbc8c6071c753c",
+      "sourceSHA256": "128d296da93ef41b554f74f75c8e499f84419ab71a4fc7ca102356b7a401f1a2",
+      "bytes": 17936
+    },
+    {
+      "number": 6,
+      "name": "ムカイさん B",
+      "original": "asset_sources/review-candidates-20261024/assets/06-direction-B.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-06.jpg",
+      "sha256": "8cf1592af594c65a00dca9af267dd36c6fbd5ce6f05df365af5ce34de5f24d71",
+      "sourceSHA256": "5a1466b415422eccfb4be714a845adc01bcc2c345f96ebc0be6d03ff8476b29d",
+      "bytes": 18482
+    },
+    {
+      "number": 7,
+      "name": "ロボット A",
+      "original": "asset_sources/review-candidates-20261024/assets/07-direction-A.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-07.jpg",
+      "sha256": "91de159b93995498b2ec982e550462584b29b0ae117f2336091ac8f68836884f",
+      "sourceSHA256": "f890e9be6e98c79c68b85606e141f273709d370b47b9eebd3cd7502b01b1d602",
+      "bytes": 29631
+    },
+    {
+      "number": 8,
+      "name": "ロボット B",
+      "original": "asset_sources/review-candidates-20261024/assets/08-direction-B.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-08.jpg",
+      "sha256": "3801b2a66a4e4417b18a5376ff325d1ca9696c732362cc654fa38c0aa5253623",
+      "sourceSHA256": "f2b6f5bc13a4cec7a81f26e52ba2fd6314ba6aaa80fdd934ce2725019e93a364",
+      "bytes": 46374
+    },
+    {
+      "number": 9,
+      "name": "ドバイ市場",
+      "original": "asset_sources/review-candidates-20261024/assets/09-dubai-market-shade.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-09.jpg",
+      "sha256": "8ba12ccaa0b7ed788d005b85fab583f1f6c85a86351475a35065f93270dc966c",
+      "sourceSHA256": "1dd48a06287c7b9c15d279b9d8625c1703d773055139f6fa3e620b632b25bed9",
+      "bytes": 95025
+    },
+    {
+      "number": 10,
+      "name": "S2 なるとの対峙・初稿",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/01-ch2-naru-confrontation.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-10.jpg",
+      "sha256": "43abd4c53323d13f9f2236224a72ddb6de88a8c682f2471d5658cac495691f91",
+      "sourceSHA256": "f66c6c3cdbe031aacd17e8553e4aa22bf45d6ea2d0979a335cfeacabaeeb5dee",
+      "bytes": 71569
+    },
+    {
+      "number": 11,
+      "name": "S2 なるとの対峙・修正版",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/02-ch2-naru-confrontation.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-11.jpg",
+      "sha256": "d54c1279c4dd6378ff2fdd1847d6b89be68dc12697bffeeea4e74c0c34047037",
+      "sourceSHA256": "ab768721b869c090f3482a761e53675ee33b881d3ec17cc0ce803ad31595f301",
+      "bytes": 66928
+    },
+    {
+      "number": 12,
+      "name": "S7 優勝後の味覚不調",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/03-ch2-tournament-tasteless.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-12.jpg",
+      "sha256": "f17eeb4cb3abc66779813cde6d25a67ba8e63578797ebe613a6a85cf5e5e4ff2",
+      "sourceSHA256": "efbf3a09861d9f479a649847f0cd28fe8f6f8910aef5fc59229fdf06949224db",
+      "bytes": 66676
+    },
+    {
+      "number": 13,
+      "name": "S4 炭の事故後・初稿",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/04-ch2-sofa-burn-contained.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-13.jpg",
+      "sha256": "6e62884b764830c68ea4bd5c15bf38ca7a48553ce707b4df21b5a57a8c8a393d",
+      "sourceSHA256": "46542d56ed9167e14adeedaec15902d0c51ceb2db7cb98af62a436a72452567c",
+      "bytes": 75250
+    },
+    {
+      "number": 14,
+      "name": "S4 炭の事故後・修正版",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/05-ch2-sofa-burn-contained.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-14.jpg",
+      "sha256": "639002207bc8001e4bd68061ad8873010fa8fd9065eda0305a3734f28791e5da",
+      "sourceSHA256": "c52bf6c4fddb6176c77be366af7422d18f2a853fc53b3a41018e82e07eaaf137",
+      "bytes": 79279
+    },
+    {
+      "number": 15,
+      "name": "ドラゴンフルーツ",
+      "original": "asset_sources/review-candidates-20261024/stills-flavor/06-source.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-15.jpg",
+      "sha256": "0cea08801d52371342bec59d7f8d4fcf06df5f15c7a1dffbb153112c63147844",
+      "sourceSHA256": "f11749db8200ece32734fcf2411ec6d1c8a5426f8f1e120e9a63055737bff76a",
+      "bytes": 37519
+    },
+    {
+      "number": 16,
+      "name": "紫・切り紙エディトリアル",
+      "original": "asset_sources/review-candidates-20261024/dialogue/01-dialogue-01.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-16.jpg",
+      "sha256": "88dbf01b0f5cc7d937bdc522b74bff439d8cd58ec5638e955ea408412252925e",
+      "sourceSHA256": "1fd5acdea59dbb0d1547076309635917353a3d7638129b50cd5ed54911b87b25",
+      "bytes": 71650
+    },
+    {
+      "number": 17,
+      "name": "紫・煙の絹",
+      "original": "asset_sources/review-candidates-20261024/dialogue/02-dialogue-02.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-17.jpg",
+      "sha256": "12b0673138fce7d36d1685dea75335bcda5b6db6051969d7f78361dcef7c39b6",
+      "sourceSHA256": "a6d9d62583cdb33a05c8f1cdecd19c4b49b09a87f72b6fdb3e5815b855299017",
+      "bytes": 75662
+    },
+    {
+      "number": 18,
+      "name": "紫・夜行メトロ",
+      "original": "asset_sources/review-candidates-20261024/dialogue/03-dialogue-03.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-18.jpg",
+      "sha256": "62858559358a1739d8e332ac20929c53af06a1c52c81b94e3206111f9eebdab2",
+      "sourceSHA256": "a6dada077ade562b108afbbafe35c031c7b876ba7b2b9746c21ca07d961ca68b",
+      "bytes": 73021
+    },
+    {
+      "number": 19,
+      "name": "紫・アメジストガラス",
+      "original": "asset_sources/review-candidates-20261024/dialogue/04-dialogue-04.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-19.jpg",
+      "sha256": "66324a1922f2ec098624cc226c7636fa930d6896d9002f8b2730c72433f6cfad",
+      "sourceSHA256": "b4e80cc50d2aa5c7debaac7dab586ade5b1763ff592e7b7e4fa93eb3cddac53f",
+      "bytes": 75862
+    },
+    {
+      "number": 20,
+      "name": "紫・深夜のチケット",
+      "original": "asset_sources/review-candidates-20261024/dialogue/05-dialogue-05.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-20.jpg",
+      "sha256": "b363fe04fff72838a8f56042a53ad7bcb725606b13d7e996f08b3747e63bbd65",
+      "sourceSHA256": "6ffaa38da7a36ef753fe66a48b20e72a6a96d7240cbb94451e01b2da4fcacec1",
+      "bytes": 74616
+    },
+    {
+      "number": 21,
+      "name": "非紫・生成りZINE",
+      "original": "asset_sources/review-candidates-20261024/dialogue/06-dialogue-06.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-21.jpg",
+      "sha256": "bd6610126782e35b984526363e8cb55257ad5f9d0f581531a54ea26c52a37c7f",
+      "sourceSHA256": "f224ef5eb682ebe22deaddabe168b34ca3192d3162aa24cb31d575c7ed18bf6a",
+      "bytes": 79285
+    },
+    {
+      "number": 22,
+      "name": "非紫・深緑HMDメタル",
+      "original": "asset_sources/review-candidates-20261024/dialogue/07-dialogue-07.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-22.jpg",
+      "sha256": "fb7517acf7af06983ea95c7ffd6e78381eb3efe93f20fa8f943f843bd1453326",
+      "sourceSHA256": "cfb98395ada46a9e9472e5db6a6a57cc31d94ba77a0a31ff13097f309e5104a9",
+      "bytes": 76125
+    },
+    {
+      "number": 23,
+      "name": "非紫・朱のグラフィック",
+      "original": "asset_sources/review-candidates-20261024/dialogue/08-dialogue-08.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-23.jpg",
+      "sha256": "325f7463afa4f3efb0a32c024473c37e0ab75adcb9452df4a421c0e6d8bfc6e6",
+      "sourceSHA256": "8e73588062d8b11188c1734607c94efe13875ef68f5a001000d4e69e650c7405",
+      "bytes": 74242
+    },
+    {
+      "number": 24,
+      "name": "非紫・コバルト計器",
+      "original": "asset_sources/review-candidates-20261024/dialogue/09-dialogue-09.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-24.jpg",
+      "sha256": "3a790af61c741c50634cf5e813f926151fae3cc90740eeed840eb021badba244",
+      "sourceSHA256": "6484df9a6acc64d8f300f8846889edb5e2481bc07712bf2345a25f26781cc077",
+      "bytes": 74699
+    },
+    {
+      "number": 25,
+      "name": "非紫・琥珀ラウンジ",
+      "original": "asset_sources/review-candidates-20261024/dialogue/10-dialogue-10.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-25.jpg",
+      "sha256": "0a60c3e586a98d35866357e6919d78ace714960bbdc8a76922b5411b6dc8a6d2",
+      "sourceSHA256": "2faecf22aba2a6e9170fcb584100de6f33a61fb8dd28fb0492fd2186c97f802d",
+      "bytes": 75061
+    },
+    {
+      "number": 26,
+      "name": "実験・煙だけの輪郭",
+      "original": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-26.jpg",
+      "sha256": "b2ea1417e1c33bc90d98f83fa5eb0508a0304c99634d789f6a90e9cf09fcc04f",
+      "sourceSHA256": "390805d3590501432cc287519de335324422008df7269031f6141f7d076b9dbd",
+      "bytes": 76043
+    },
+    {
+      "number": 27,
+      "name": "実験・横長レシート",
+      "original": "asset_sources/review-candidates-20261024/dialogue/12-dialogue-12.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-27.jpg",
+      "sha256": "03fa3d889e25bc2e3cc11e92c435cba3d9745ec01a7eb97cb940cab1f0132feb",
+      "sourceSHA256": "5c9e088dfa3ac77c71919c92369984c53f82b846bd65c3ffbf6f6d47755f3e5d",
+      "bytes": 73810
+    },
+    {
+      "number": 28,
+      "name": "実験・重なる薄紙",
+      "original": "asset_sources/review-candidates-20261024/dialogue/13-dialogue-13.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-28.jpg",
+      "sha256": "087a67bb7dccc34d3c9fe266b4741d43fc892baf3bd3f6eb7fbc7a1a3f346697",
+      "sourceSHA256": "474de00d8b11f23d66bba3df5e95965fce4f077a54b35924c47fc626945f8be4",
+      "bytes": 77463
+    },
+    {
+      "number": 29,
+      "name": "実験・モジュールタイル",
+      "original": "asset_sources/review-candidates-20261024/dialogue/14-dialogue-14.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-29.jpg",
+      "sha256": "9733b1eb4783a9ebbb90951668dbdf917af56a791c02b17d73b21083d1a1f018",
+      "sourceSHA256": "27a0a78ea5b71cd57fbeeae0163fa989378ae9363e4c4e82112ad0d41a2f2621",
+      "bytes": 71468
+    },
+    {
+      "number": 30,
+      "name": "実験・光だまりの弧",
+      "original": "asset_sources/review-candidates-20261024/dialogue/15-dialogue-15.png",
+      "thumbnail": "asset_sources/review-candidates-20261024/previews/thumb-30.jpg",
+      "sha256": "4fbf36fabff865c32cc35c7bb5c1f96d22c31082bc504326fec69f9cc535fd4c",
+      "sourceSHA256": "6f861837c7298bb926c94e18a89d1a855f1e9701484b45edcf809120d87977cb",
+      "bytes": 76889
+    }
+  ],
+  "sheets": [
+    {
+      "name": "dialogue-all",
+      "path": "asset_sources/review-candidates-20261024/previews/dialogue-all.jpg",
+      "bytes": 676433,
+      "dimensions": [
+        1500,
+        1750
+      ],
+      "sha256": "d1e222d1946de62b8b88a5586edd3df53a91732c8b8e6409501a1d6dce83e97a",
+      "members": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    },
+    {
+      "name": "characters",
+      "path": "asset_sources/review-candidates-20261024/previews/characters.jpg",
+      "bytes": 186439,
+      "dimensions": [
+        1122,
+        1142
+      ],
+      "sha256": "b89b5a7ab33861516f15e2b7cb9a56c9c68fd29a8d173e8a9fe73b4af59c1753",
+      "members": [
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "backgrounds",
+      "path": "asset_sources/review-candidates-20261024/previews/backgrounds.jpg",
+      "bytes": 156133,
+      "dimensions": [
+        1274,
+        480
+      ],
+      "sha256": "f929cc1a728fa638694c764e5df61ac2fa81d071c556a6a98702a83e4c0f8e46",
+      "members": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "stills",
+      "path": "asset_sources/review-candidates-20261024/previews/stills.jpg",
+      "bytes": 337499,
+      "dimensions": [
+        1274,
+        1300
+      ],
+      "sha256": "4d6a77e1fa8875662d8d7a7dc05f207ef4e3a5d5c422034799577a94bacee4ad",
+      "members": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "name": "flavors",
+      "path": "asset_sources/review-candidates-20261024/previews/flavors.jpg",
+      "bytes": 72364,
+      "dimensions": [
+        1054,
+        536
+      ],
+      "sha256": "a77e1e416db579b5c65422b8b6d738da533cebd0fb11600e36a1737cd4fe966b",
+      "members": [
+        4,
+        15
+      ]
+    }
+  ]
+}
