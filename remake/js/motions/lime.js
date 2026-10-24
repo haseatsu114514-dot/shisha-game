@@ -7,7 +7,7 @@ import { SE } from "../core/audio.js";
 import { move, svg, stageSvg } from "../core/transition-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
-export async function exchange(charId, context = null) {
+export async function exchange(charId, context = null, { still = false } = {}) {
   const owner = state;
   const name = displayName(charId, state, { context });
   const face = faceIconUrl(charId, state, { context });
@@ -40,6 +40,12 @@ export async function exchange(charId, context = null) {
     const resize = new ResizeObserver(fit);
     resize.observe(node);
     try {
+      if (still) {
+        // 動きを減らす設定: 完成した画面をそのまま見せて消す。
+        SE.phone();
+        await sleep(1500);
+        return;
+      }
       await Promise.all([
         move(own, [{ transform: "translateX(-180px) rotate(-8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),
         move(other, [{ transform: "translateX(180px) rotate(8deg)", opacity: 0 }, { transform: "none", opacity: 1 }], 620),

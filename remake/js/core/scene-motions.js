@@ -17,12 +17,13 @@ const sketch = () => import("../motions/sketch.js");
 const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
 
+// 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
+// 動かないカードで見せる。省くと二度と見られない（#833）。
 export async function limeExchange(charId, context = null) {
-  if (skipMotion()) return;
   const owner = state;
   const mod = await lime().catch((e) => { console.error(e); return null; });
   if (state !== owner) return; // 読み込み中のLOADから、前のセーブの交換を始めない。
-  await mod?.exchange(charId, context);
+  await mod?.exchange(charId, context, { still: reducedMotion() });
 }
 
 const skipMotion = () => reducedMotion() || document.body.classList.contains("vn-skip");
