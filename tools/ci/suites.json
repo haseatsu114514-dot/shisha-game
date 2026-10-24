@@ -620,6 +620,34 @@
       ]
     },
     {
+      "id": "ch3-tournament",
+      "title": "Chapter 3 national tournament",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 10,
+      "paths": [
+        "remake/index.html",
+        "remake/js/chapters/ch3*.js",
+        "remake/js/chapters/retry-assist.js",
+        "remake/js/chapters/tournament-resources.js",
+        "remake/js/craft/**",
+        "remake/js/core/state.js",
+        "remake/js/core/data.js",
+        "remake/js/scenes/saves.js",
+        "remake/css/craft.css",
+        "remake/css/ch2-tournament.css",
+        "remake/data/broadcast.json",
+        "data/dialogue/ch3_main.json",
+        "data/dialogue/tournament_craft.json",
+        "data/characters.json",
+        "remake/data/manifest.json",
+        "remake/test/browser/ch3_tournament.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch3_tournament.mjs"
+      ]
+    },
+    {
       "id": "ch2-followups",
       "title": "Chapter 2 browser suite ch2_followups",
       "kind": "browser",
