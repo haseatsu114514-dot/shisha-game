@@ -121,15 +121,16 @@ python3 tools/pixelize.py sheet.png --char volk --slice 3x2 \
 
 ---
 
-## ナンディ・カルダモン（nandi）— ch3 ライバル
+## 久世朔（kuze）— ch3 ライバル（正式絵未採用）
 
 ### ①マスター1枚
 
 ```
 ゲームの立ち絵用キャラクターイラストを1枚。
-【キャラ】31歳のインド人男性。深く精神的な落ち着きのある表情、長い黒髭。
-美しい柄の伝統的なクルタを着用。優雅な手振りで煙を操る。
-本場の中東・南アジアのクラシックスタイルを重んじる職人の雰囲気。
+【キャラ】27歳の日本人男性。東京の小さなシーシャ店「余白」の店主。
+客には穏やかで話しかけやすい表情だが、目は相手の反応をよく見ている。
+飾りすぎない私服に店のエプロン、手元に使い込んだ小さなメモ帳。
+親切な接客と勝負師の鋭さが、同じ人物の表情として見える。
 【構図】全身、正面やや斜め、直立。
 【画風】レトロJRPG風のアニメ調ピクセルアート。輪郭は濃くはっきり。
 【背景】完全な単色マゼンタ(#FF00FF)。キャラの影や光を背景に落とさないこと。
@@ -141,15 +142,15 @@ python3 tools/pixelize.py sheet.png --char volk --slice 3x2 \
 ```
 添付画像とまったく同一の人物・画風・服装・頭身で、表情だけを変えた
 バストアップを 横3×縦2 のグリッドで1枚の画像にまとめてください。
-【表情の順番】左上から → ①普通(normal) ②笑顔・穏やかな笑み(smile) ③悲しい(sad)
-④真剣・瞑想的な目つき(serious) ⑤驚き(surprise) ⑥は①と同じでよい
+【表情の順番】左上から → ①普通(normal) ②笑顔・楽しそうな笑み(smile) ③悲しい・敗北を悔しがる(sad)
+④真剣・相手の手元を読む目つき(serious) ⑤驚き・予想を外した喜び(surprise) ⑥は①と同じでよい
 【条件】各マスで顔の位置と大きさを揃える。マスの区切り線は入れない。
 背景は全マス単色マゼンタ(#FF00FF)。文字を入れない。
 ```
 
 ```bash
-python3 tools/pixelize.py master.png --char nandi
-python3 tools/pixelize.py sheet.png --char nandi --slice 3x2 \
+python3 tools/pixelize.py master.png --char kuze
+python3 tools/pixelize.py sheet.png --char kuze --slice 3x2 \
     --names normal,smile,sad,serious,surprise
 ```
 
