@@ -205,3 +205,6 @@ html[data-ui-theme][data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::after
 }
 html[data-ui-theme][data-ui-theme="cut-paper"] .vn-text { font-weight:700; }
 
+
+/* ラベルの罫線は内側へ描き、既存のピン寸法と隣接地点の間隔を保つ。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .spot-pin .sub-label { border-width:0; box-shadow:inset 0 0 0 1px var(--ui-edge); }

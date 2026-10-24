@@ -22,6 +22,8 @@ try {
       QA.core.newGame();
       const s = QA.core.state;
       s.phase = "daily"; s.met.naru = true; s.affinity.naru = 17;
+      // 通知の配置試験は、♥2を獲得できる既読段階から正式返信を行う。
+      s.story.naru = 2;
       // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
       s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。
@@ -90,7 +92,7 @@ try {
             return b.top >= r.top && b.bottom <= r.bottom - 19 * scale && n.scrollWidth <= n.clientWidth + 1;
           }) };
       });
-      assert.equal(geometry.height, 178);
+      assert.equal(geometry.height, 208); // 共通会話枠の新しい固定高
       assert(geometry.contained, JSON.stringify(geometry));
       if (geometry.inner) {
         innerPages++;
