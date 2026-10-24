@@ -96,3 +96,9 @@ test("returned forecasts are independent and malformed roll inputs are rejected"
   for (const dice of [[0, 6], [1, 7], [1.5, 2], [1], null]) assert.throws(() => rerollOdds(dice, 1, 0), RangeError);
   assert.throws(() => rerollOdds([1, 6], 1, 2), RangeError);
 });
+
+test("table momentum is part of the public forecast", () => {
+  const forecast = checkForecast(ordinary, { hypothesis: null, momentum: 2 }, "listen");
+  assert.equal(forecast.momentum, 2); assert.equal(forecast.baseBonus, 3);
+  assert.deepEqual(forecast.odds, rollOdds(3));
+});

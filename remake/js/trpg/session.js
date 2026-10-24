@@ -5,6 +5,11 @@ export const TEAMWORK_MAX = 2;
 /** Doubles are table events: 6-6 critical, 1-1 fumble, any other pair a cheer. */
 export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === 6 ? "critical" : dice[0] === 1 ? "fumble" : "double";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
+/** Table excitement. Each tier reached once gives momentum: +1 to the next roll (up to +2). */
+export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
+  names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
+  nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
+export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
 
 export class TrpgSession {
   constructor(scenario, { seed = Date.now(), profileId = null } = {}) {
@@ -24,7 +29,7 @@ export class TrpgSession {
       scenarioId: scenario.id, version: scenario.version, seed: Number(seed) >>> 0, phase: "cover",
       profileId: profile.id, clues: [], consulted: [], hypothesis: null,
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
-      pressure: this.rules.initialPressure, teamwork: 2,
+      pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
       checks: [], pending: null,
     };
@@ -36,6 +41,16 @@ export class TrpgSession {
     return this.rng = x >>> 0;
   }
   die() { return this.next() % 6 + 1; }
+  /** Moments the whole table enjoys. Never rolls dice, so the seeded story is unchanged. */
+  cheer(amount, reason) {
+    const before = this.state.heat;
+    this.state.heat = Math.min(HEAT.max, before + amount);
+    const gained = this.state.heat - before;
+    if (!gained) return;
+    const tiers = heatTier(this.state.heat) - heatTier(before);
+    this.state.momentum = Math.min(HEAT.momentumMax, this.state.momentum + tiers);
+    this.state.heatLog.push({ amount: gained, reason, heat: this.state.heat, tier: tiers ? heatTier(this.state.heat) : 0 });
+  }
   snapshot() { return copy(this.state); }
   require(phase) {
     if (this.state.phase !== phase || this.state.pending) throw new Error("Action unavailable in this phase");
@@ -58,7 +73,7 @@ export class TrpgSession {
   consult(id) {
     this.require("explore");
     if (!this.scenario.consult[id]) throw new Error("Unknown participant");
-    if (!this.state.consulted.includes(id)) this.state.consulted.push(id);
+    if (!this.state.consulted.includes(id)) { this.state.consulted.push(id); this.cheer(1, "仲間に相談"); }
     return copy(this.scenario.consult[id]);
   }
 
@@ -68,6 +83,7 @@ export class TrpgSession {
     if (!this.scenario.hypotheses.some(h => h.id === id)) throw new Error("Unknown hypothesis");
     this.state.hypothesis = id;
     this.state.phase = "prepare";
+    this.cheer(1, "みんなで見立てを話した");
   }
 
   plan(field, value) {
@@ -87,10 +103,13 @@ export class TrpgSession {
     if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
     if (support) { this.state.used[helper] = true; this.state.teamwork--; }
     const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus : 0;
+    const momentum = this.state.momentum;
+    this.state.momentum = 0;
     this.state.pending = {
-      kind, dice: [this.die(), this.die()], bonus: 1 + hypothesisBonus + (support ? 2 : 0), hypothesisBonus,
+      kind, dice: [this.die(), this.die()], bonus: 1 + hypothesisBonus + (support ? 2 : 0) + momentum, hypothesisBonus, momentum,
       helper: support ? helper : null, rerolled: false,
     };
+    if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();
   }
 
@@ -108,6 +127,7 @@ export class TrpgSession {
     this.state.teamwork--;
     p.rerolled = true;
     p.dice[index] = this.die();
+    this.cheer(1, "ひらめきの振り直し");
     return this.checkResult();
   }
 
@@ -119,6 +139,10 @@ export class TrpgSession {
       if (result.inspired) this.state.teamwork++;
     }
     this.state.checks.push(result);
+    const lift = { critical: [3, "クリティカル！"], fumble: [2, "ファンブルに大笑い"], double: [1, "ゾロ目"] }[result.special];
+    if (lift) this.cheer(lift[0], lift[1]);
+    else if (result.grade === "success") this.cheer(1, "判定がうまくいった");
+    else if (result.grade === "trouble") this.cheer(1, "思わぬ出来事に卓がざわつく");
     this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
     this.state.pending = null;
     this.state.phase = { listen: "explore", prepare: "serve", serve: "ending" }[result.kind];
@@ -144,6 +168,7 @@ export class TrpgSession {
     const ending = fit >= 3 ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
     return {
       scenarioId: this.state.scenarioId, version: this.state.version, ending, rating: this.rating(ending),
+      heat: { value: this.state.heat, max: HEAT.max, night: HEAT.nights[heatTier(this.state.heat)] },
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), checks: copy(this.state.checks),

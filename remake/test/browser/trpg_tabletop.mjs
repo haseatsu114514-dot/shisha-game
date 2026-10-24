@@ -157,7 +157,8 @@ try{
     await p.setViewportSize({width,height});await fit(p,`${scenario}-aid-${width}x${height}`);
     await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);await ctl(p,'trpg-details-toggle').press('Space');
     await ctl(p,'trpg-support-'+helper).press('Space');assert(await ctl(p,'trpg-support-'+helper).isChecked());
-    assert.match(await ctl(p,'trpg-bonus').textContent(),/3/);await ctl(p,'trpg-support-'+helper).press('Space');
+    const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the shown bonus
+    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(3+momentum));await ctl(p,'trpg-support-'+helper).press('Space');
   }
   await ctl(p,'trpg-support-'+helper).check();await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
   assert((await p.evaluate(()=>__trpg.snapshot())).used[helper]);assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'Spent teamwork and used reroll cannot offer another reroll');

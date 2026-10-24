@@ -612,3 +612,27 @@
 /* Keep the seat rail below the explore hotspots while the table is idle. */
 .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-table { bottom: 14px; }
 @media (prefers-reduced-motion: reduce) { .trpg-root.trpg-cinematic .trpg-roll-special { animation: none; } }
+
+/* Table excitement meter, pops and the night's name. */
+.trpg-heat { display: inline-flex; align-items: center; gap: 6px; margin-left: 12px; color: #e9dcbc; font-size: 11px; letter-spacing: .04em; vertical-align: middle; }
+.trpg-heat[hidden] { display: none; }
+.trpg-heat-pips { display: inline-flex; gap: 2px; }
+.trpg-heat-pips i { width: 7px; height: 12px; border-radius: 2px; background: #ffffff24; transition: background .3s, box-shadow .3s; }
+.trpg-heat-pips i.tier { margin-right: 3px; }
+.trpg-heat-pips i.lit { background: linear-gradient(#ffd27a, #f0873c); box-shadow: 0 0 6px #f39a4b99; }
+.trpg-heat[data-tier="3"] .trpg-heat-pips i.lit { background: linear-gradient(#fff0a6, #ff7a3c); box-shadow: 0 0 9px #ff9a4bcc; }
+.trpg-heat-name { color: #f3c98c; font-size: 11px; }
+.trpg-heat-momentum { padding: 1px 7px; border: 1px solid #ffcf7a; border-radius: 999px; background: #5a33128c; color: #ffe2a6; font-size: 11px; font-weight: 700; }
+.trpg-heat-pop { position: absolute; z-index: 90; left: 50%; top: 92px; transform: translateX(-50%); display: grid; justify-items: center; gap: 1px; padding: 6px 18px; border: 1px solid #f0b35d; border-radius: 8px; background: #2a1708e6; color: #ffe2b0; text-align: center; pointer-events: none; animation: trpg-heat-pop 1.5s ease-out both; }
+.trpg-heat-pop strong { font-size: 16px; letter-spacing: .08em; color: #ffd27a; }
+.trpg-heat-pop span { font-size: 12px; color: #f2e3c4; }
+.trpg-heat-pop:not([data-tier="0"]) { top: 120px; padding: 10px 26px; border-color: #ffd27a; box-shadow: 0 0 30px #ff9a4b88; animation-duration: 2.2s; }
+.trpg-heat-pop:not([data-tier="0"]) strong { font-size: 26px; }
+@keyframes trpg-heat-pop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.9); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.03); } 80% { opacity: 1; transform: translate(-50%, -4px); } 100% { opacity: 0; transform: translate(-50%, -14px); } }
+.trpg-root.trpg-cinematic .trpg-ending-heat { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; font-size: 15px; }
+.trpg-root.trpg-cinematic .trpg-ending-heat strong { color: #ffcf86; font-size: 20px; font-weight: 500; }
+.trpg-root.trpg-cinematic .trpg-ending-heat span { color: #d6d0bd; font-size: 13px; }
+.trpg-root.trpg-cinematic .trpg-momentum-receipt { color: #ffd9a2; }
+.trpg-campaign-night { display: block; color: #f3c98c; }
+@keyframes trpg-heat-fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"]) { animation-name: trpg-heat-fade; } }

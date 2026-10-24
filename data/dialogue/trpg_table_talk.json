@@ -1,66 +1,244 @@
 {
-  "_comment": "短編TRPG共通の卓のざわめき。ゾロ目の判定直後に流す。話者はGMと必須参加のはじめだけ。物語・関係・報酬は進めない。",
+  "_comment": "短編TRPG共通の卓のざわめき。ゾロ目の判定直後と、盛り上がりが「沸いてきた」「最高潮」に届いた時に流す。話者はGMと必須参加のはじめだけ。物語・関係・報酬は進めない。",
   "dialogues": [
     {
       "dialogue_id": "trpg_talk_hiyori_critical",
       "lines": [
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "surprise", "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "surprise", "text": "6が二つ……！ 卓の空気が変わったな" },
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "smile", "text": "……ご褒美。連携札を1枚、返してあげる" }
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "6が二つ……！ 卓の空気が変わったな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ご褒美。連携札を1枚、返してあげる"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_hiyori_critical_full",
       "lines": [
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "surprise", "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "surprise", "text": "6が二つ……！ 卓の空気が変わったな" },
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "smile", "text": "……札はもう満タンだね。じゃあ、拍手だけ" }
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "6が二つ……！ 卓の空気が変わったな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……札はもう満タンだね。じゃあ、拍手だけ"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_hiyori_fumble",
       "lines": [
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "surprise", "text": "……1ゾロ。ファンブル、だね" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "sad", "text": "サイコロに嫌われたか……" },
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "smile", "text": "……大丈夫。物語は、ちゃんと続くから" }
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……1ゾロ。ファンブル、だね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "サイコロに嫌われたか……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……大丈夫。物語は、ちゃんと続くから"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_hiyori_double",
       "lines": [
-        { "speaker": "hiyori", "role": "GM／卓の会話", "face": "normal", "text": "……ゾロ目。ちょっとだけ、卓がざわついたね" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "smile", "text": "揃うと、なんか嬉しいんだよな" }
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……ゾロ目。ちょっとだけ、卓がざわついたね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "揃うと、なんか嬉しいんだよな"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_samechan_critical",
       "lines": [
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "excited", "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "surprise", "text": "出た……！ これ、流れが来てるよな" },
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "smile", "text": "褒美じゃ。連携札を1枚、返してやるぞ" }
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "出た……！ これ、流れが来てるよな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "褒美じゃ。連携札を1枚、返してやるぞ"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_samechan_critical_full",
       "lines": [
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "excited", "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "surprise", "text": "出た……！ これ、流れが来てるよな" },
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "smile", "text": "札は満タンか。ならば、わしの拍手を受け取るがよい" }
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "出た……！ これ、流れが来てるよな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "札は満タンか。ならば、わしの拍手を受け取るがよい"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_samechan_fumble",
       "lines": [
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "surprise", "text": "1ゾロ……ファンブルじゃな。サメが笑っておるぞ" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "sad", "text": "サメ映画なら、ここは盛り上がる場面か……" },
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "smile", "text": "安心せい。全員生還は約束じゃ" }
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "1ゾロ……ファンブルじゃな。サメが笑っておるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "サメ映画なら、ここは盛り上がる場面か……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "安心せい。全員生還は約束じゃ"
+        }
       ]
     },
     {
       "dialogue_id": "trpg_talk_samechan_double",
       "lines": [
-        { "speaker": "samechan", "role": "GM／卓の会話", "face": "smile", "text": "ゾロ目じゃな。卓が少し沸いたぞ" },
-        { "speaker": "hajime", "role": "PL／卓の会話", "face": "smile", "text": "揃うと、なんか嬉しいんだよな" }
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ゾロ目じゃな。卓が少し沸いたぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "揃うと、なんか嬉しいんだよな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_heat_up",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……なんだか、卓があったまってきたね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "みんなノッてきたな。次、いける気がする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_heat_max",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "ちょっ、盛り上がりすぎ！ ……こほん。最高潮、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "この空気なら、次のサイコロも味方してくれる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_heat_up",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "卓が温まってきたのう。わしの語りにも熱が入るぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "みんなノッてきたな。次、いける気がする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_heat_max",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "最高潮じゃ！ サメも思わず跳ねておるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "この空気なら、次のサイコロも味方してくれる"
+        }
       ]
     }
   ]

@@ -1,5 +1,5 @@
 import { el } from "../core/util.js";
-import { TrpgSession } from "./session.js";
+import { TrpgSession, HEAT, heatTier } from "./session.js";
 import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
@@ -47,6 +47,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
+  const heatMeter = el("div.trpg-heat", { dataset: { test: "trpg-heat" }, role: "meter", "aria-valuemin": "0", "aria-valuemax": String(HEAT.max) });
+  let heatSeen = 0, heatChatter = [];
   const tableStatus = el("div.trpg-table-status", { dataset: { test: "trpg-table-status" }, "aria-label": "卓の進行と残りの札" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
   const sound = button(audio.enabled ? "音 ON" : "音 OFF", "trpg-audio", async () => {
@@ -62,7 +64,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   ]);
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [el("small", { text: "小さな卓の冒険 / " + presentation.number }),
-      el("strong", { text: scenario.title }), teamwork]), tools,
+      el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
   ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
 
@@ -140,7 +142,40 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return `${step + 1}/5 ${label} · 判定 ${state.checks.length}/3 · 連携札 ${state.teamwork}/2`
       + (presentation.theme === "shark" ? ` · 危機 ${state.pressure}/${session.rules.pressureMax}` : "");
   }
+  /** Header meter plus one short pop per new moment. Tier 2/3 queue GM chatter for the next talk. */
+  function syncHeat() {
+    const state = session.snapshot(), tier = heatTier(state.heat);
+    heatMeter.hidden = state.phase === "cover";
+    heatMeter.dataset.tier = String(tier);
+    heatMeter.setAttribute("aria-valuenow", String(state.heat));
+    heatMeter.setAttribute("aria-label", "卓の盛り上がり " + state.heat + "/" + HEAT.max + " · " + HEAT.names[tier]);
+    heatMeter.replaceChildren(el("span.trpg-heat-label", { text: "盛り上がり" }),
+      el("span.trpg-heat-pips", { "aria-hidden": "true" }, Array.from({ length: HEAT.max }, (_, i) =>
+        el("i", { class: [i < state.heat ? "lit" : "", HEAT.tiers.includes(i + 1) ? "tier" : ""].filter(Boolean).join(" ") }))),
+      el("small.trpg-heat-name", { text: HEAT.names[tier] }),
+      state.momentum && state.phase !== "ending" ? el("b.trpg-heat-momentum", { text: "勢い＋" + state.momentum, dataset: { test: "trpg-momentum" } }) : null);
+    const fresh = state.heatLog.slice(heatSeen);
+    heatSeen = state.heatLog.length;
+    const top = Math.max(0, ...fresh.map(entry => entry.tier));
+    if (fresh.length) heatPop({ tier: top, amount: fresh.reduce((n, entry) => n + entry.amount, 0), reason: fresh.at(-1).reason });
+    if (top >= 2) {
+      const lines = tableTalk?.["trpg_talk_" + gm + "_" + (top >= 3 ? "heat_max" : "heat_up")];
+      if (lines?.every(line => cast[line.speaker])) heatChatter = lines;
+    }
+  }
+  function heatPop(entry) {
+    if (disposed) return;
+    audio.play(entry.tier ? "success" : "clue");
+    const pop = el("div.trpg-heat-pop", { "aria-hidden": "true", dataset: { tier: String(entry.tier) } }, [
+      el("strong", { text: entry.tier ? HEAT.names[entry.tier] + "！" : "盛り上がり ＋" + entry.amount }),
+      el("span", { text: entry.tier ? "次の判定に 勢い＋1" : entry.reason }),
+    ]);
+    root.querySelectorAll(".trpg-heat-pop").forEach(old => old.remove());
+    pop.addEventListener("animationend", () => pop.remove());
+    root.append(pop);
+  }
   function syncResources() {
+    syncHeat();
     tableStatus.hidden = session.snapshot().phase === "cover";
     tableStatus.textContent = resourceText();
     root.querySelectorAll(".trpg-roll-context").forEach(node => { node.textContent = resourceText(); });
@@ -154,7 +189,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
   function talk(lines, callback, focusTest = null) {
-    frames = sequence(lines); cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
+    syncHeat();
+    frames = sequence(lines, heatChatter); heatChatter = []; cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
     root.classList.remove("trpg-idle"); next.hidden = false; next.disabled = false;
     renderBody();
     showFrame();
@@ -313,6 +349,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       scene.append(el("div.trpg-ending", [
         el("div.trpg-kicker", { text: presentation.endingKicker }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
         el("p", { text: ending.line }),
+        el("p.trpg-ending-heat", { dataset: { test: "trpg-ending-heat", tier: String(heatTier(result.heat.value)) } },
+          [el("strong", { text: result.heat.night }), el("span", { text: "盛り上がり " + result.heat.value + "/" + result.heat.max })]),
         el("div.trpg-ending-rating", { dataset: { test: "trpg-ending-rating" } }, [stars(result.rating),
           el("strong", { text: result.rating.title }),
           el("small", { text: STAR_MARKS.map(([key, label]) => (result.rating.marks[key] ? "★" : "☆") + label).join(" · ") })]),
@@ -444,7 +482,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
       forecast.replaceChildren(el("div.trpg-forecast-head", [
-        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d6 ＋ 基本1" + (support?.checked ? " ＋ 助力2" : "") }),
+        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d6 ＋ 基本1" + (support?.checked ? " ＋ 助力2" : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum : "") }),
       ]), el("div.trpg-odds", [
         ["success", "10以上", "うまくいく"], ["mixed", "7〜9", "ひと手間"], ["trouble", "6以下", "思わぬ出来事"],
       ].map(([grade, threshold, label]) => el("div", { dataset: { grade } }, [
@@ -515,6 +553,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span", { text: result.special === "critical" ? session.snapshot().teamwork < 2 ? "物語を続けると、連携札が1枚戻る" : "連携札は満タン。卓が沸いた"
         : result.special === "fumble" ? "それでも物語は続く。卓は笑いに包まれた" : "揃った出目に、卓が少しざわめく" }),
     ]));
+    if (result.momentum) body.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "卓の勢い ＋" + result.momentum + " · 盛り上がりが後押し" }));
     if (result.helper) body.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
       [seatMark(result.helper), name(result.helper) + "の助力 ＋2 · 札 使用済"]));
     if (result.rerolled) {
@@ -614,7 +653,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal("この卓の記録", [
       el("div.trpg-recap-heading", [el("small", { text: scenario.title }),
         el("h3", { text: scenario.endings[result.ending].title }),
-        el("p", { text: "手がかり " + result.clues.length + "個 · 判定 " + result.checks.length + "回 · 使った連携札 " + Object.values(state.used).filter(Boolean).length + "枚" })]),
+        el("p", { text: "手がかり " + result.clues.length + "個 · 判定 " + result.checks.length + "回 · 使った連携札 " + Object.values(state.used).filter(Boolean).length + "枚 · " + result.heat.night + "（盛り上がり " + result.heat.value + "/" + result.heat.max + "）" })]),
       el("section.trpg-recap-rating", { dataset: { test: "trpg-recap-rating" } }, [
         el("h3", [el("span", { text: "卓の評価 · " + result.rating.title + " " }), stars(result.rating)]),
         el("ul", STAR_MARKS.map(([key, label, detail]) => el("li", { dataset: { lit: String(result.rating.marks[key]) } }, [
@@ -655,6 +694,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: presentation.help }),
       el("p", { text: "判定はサイコロ二つの合計に＋1。10以上は成功、7〜9はひと手間、6以下は思わぬ出来事。どの結果でも物語は続きます。" }),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。6のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
+      el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い＋1（最大＋2）。" }),
       el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
