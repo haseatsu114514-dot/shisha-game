@@ -1,6 +1,7 @@
 // 駅の確定処理。演出や待機より先に、運賃と既存の現在地を一緒に保存する。
-export const STATION_FARE = 200;
-/** 帰りの運賃が足りないときの徒歩（#951）。体力をかなり使う。40は提案値。 */
+import { CITY_TRAIN_FARE as STATION_FARE } from "../core/travel-budget.js";
+export { STATION_FARE };
+/** 運賃不足時の帰宅手段（旧セーブ等）。 */
 export const WALK_HOME_STAMINA = 40;
 const CONNECTED_CITIES = new Set(["home", "widehanga"]);
 
@@ -18,7 +19,7 @@ export function prepareStationTrip(value, regions, destination) {
   let consumed = false;
   const canWalk = (current) => destination === "home" && !(Number(current.money) >= STATION_FARE);
   return {
-    from, to: destination, fare: STATION_FARE, walkStamina: WALK_HOME_STAMINA,
+    from, to: destination, fare: STATION_FARE, required: STATION_FARE * (destination === "widehanga" ? 2 : 1),
     /** 地元へ帰る便で運賃が足りないときだけ。体力が少なくても帰宅自体は拒否しない。 */
     walkable: () => canWalk(value),
     cancel() { consumed = true; },
@@ -26,7 +27,7 @@ export function prepareStationTrip(value, regions, destination) {
       if (consumed || !active || current !== value || current.chapter !== chapter
         || current.day !== day || current.slot !== slot || current.flags._ch2_region !== from
         || !stationDestinations(current, regions, from).some(r => r.id === destination)) return false;
-      if (walk ? !canWalk(current) : !Number.isFinite(current.money) || current.money < STATION_FARE) return false;
+      if (walk ? !canWalk(current) : !Number.isFinite(current.money) || current.money < STATION_FARE * (destination === "widehanga" ? 2 : 1)) return false;
       consumed = true;
       // 同期区間。中断後に再開しても、保存済み現在地から再徴収しない。
       if (walk) current.stamina = Math.max(0, (Number(current.stamina) || 0) - WALK_HOME_STAMINA);

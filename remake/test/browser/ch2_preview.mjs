@@ -159,9 +159,10 @@ async function manualToMap(page, { watch = null, captureUnknown = null, inside =
     assert(frame.textFits, `Production VN text was clipped: ${JSON.stringify(frame)}`);
     if (!observed.some(old => old.name === frame.name && old.text === frame.text && old.met === frame.met)) observed.push(frame);
     if (captureUnknown && frame.name === "？？？") { await screenshot(page, captureUnknown); captureUnknown = null; }
-    if (captureRoom && await page.evaluate(id => {
+    if (captureRoom && await page.evaluate(async id => {
+      const { ROOMS } = await import("./js/chapters/ch2-city-data.js");
       const portrait = document.querySelector(`.vn-portraits img[data-speaker="${id}"].active`);
-      return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(`bg_ch2_${id}_entry.webp`) && portrait?.complete && portrait.naturalWidth > 0;
+      return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(ROOMS[id].split("/").at(-1)) && portrait?.complete && portrait.naturalWidth > 0;
     }, watch)) {
       const portrait = await page.locator(`.vn-portraits img[data-speaker="${watch}"].active`).evaluate(node => ({ src: node.getAttribute("src"), width: node.naturalWidth, height: node.naturalHeight }));
       if (watch !== "ageha") assert(portrait.src.endsWith(`/chr_${watch}_normal.webp`), `Wrong normal portrait: ${JSON.stringify(portrait)}`);
