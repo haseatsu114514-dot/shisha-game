@@ -515,8 +515,9 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   await waitBenchReady(cs);
   bc.block(cs, "pull");
-  await runPull(cs);
+  if (await runPull(cs) === false) return;
   if (cs.failed) return failedOut(cs.failed);
+  await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);

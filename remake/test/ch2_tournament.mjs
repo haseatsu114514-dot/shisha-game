@@ -24,8 +24,17 @@ assert.equal(committed.flavorStock.double_apple, 31); assert.equal(committed.sta
 assert.equal(tournamentProgress(committed).step, 1);
 let previous = copy(p.votes);
 for (const [round, quality] of [95,30,98,96].entries()) {
+  const prior = copy(p.votes);
   assert(castVotes(p, round, quality));
-  const once = copy(p.votes); assert.equal(castVotes(p,round,quality),false); assert.deepEqual(p.votes,once);
+  // #909: 表示用の「この回の票」は実際の増分と完全に一致する（1位・2位の2人だけ）。
+  for (const judge of JUDGES) {
+    const gained = Object.fromEntries(Object.entries(p.votes[judge]).map(([c, n]) => [c, n - prior[judge][c]]).filter(([, n]) => n > 0));
+    const last = p.lastVotes[judge];
+    assert.deepEqual(last.points, gained); assert.notEqual(last.first, last.second);
+    assert(last.points[last.first] >= last.points[last.second]);
+  }
+  const once = copy(p.votes), onceLast = copy(p.lastVotes); assert.equal(castVotes(p,round,quality),false);
+  assert.deepEqual(p.votes,once); assert.deepEqual(p.lastVotes,onceLast);
   for (const judge of JUDGES) {
     assert(Object.values(p.votes[judge]).reduce((a,b)=>a+b,0)<=10);
     for(const id of Object.keys(previous[judge])) assert(p.votes[judge][id]>=previous[judge][id]);

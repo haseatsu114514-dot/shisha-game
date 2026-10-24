@@ -169,8 +169,35 @@ function contestantAvatar(who) {
     left: `${18 - portrait.ax * 171}px`, top: `${2.7 - (1 - portrait.h - portrait.b) * 171 / portrait.aspect}px`, position: "absolute" });
   return el("span.ch2-contest-avatar", [image]);
 }
+/** 工程の得点。partialQuality と同じ順・同じ値（表示用の名前だけ足す）。 */
+const PART_LABELS = ["アルミ穴あけ", "炭の温度", "蒸らしと吸い出し", "一度目の調整", "二度目の調整"];
+function partScores(cs, round) {
+  if (!cs) return [];
+  const parts = [cs.holes?.score, cs.heat?.score];
+  if (round >= 1) parts.push(computeShisha(cs).craftQuality);
+  if (round >= 2) parts.push(cs.careHistory?.[0]?.score);
+  if (round >= 3) parts.push(cs.careHistory?.[1]?.score);
+  return parts.map((score, i) => ({ label: PART_LABELS[i], score })).filter(part => Number.isFinite(part.score));
+}
+/** #909: 票が動いた理由を、実際の票と工程の得点だけから2行で。記録の無い旧保存では出さない。 */
+export function voteReason(p, cs, final = false) {
+  const last = p.lastVotes;
+  if (!last) return null;
+  const got = JUDGES.reduce((sum, j) => sum + (last[j]?.points?.hajime || 0), 0);
+  const names = list => list.map(j => displayName(j, state)).join("・");
+  const firsts = JUDGES.filter(j => last[j]?.first === "hajime"), seconds = JUDGES.filter(j => last[j]?.second === "hajime");
+  const who = [firsts.length ? `${names(firsts)}が一番に` : "", seconds.length ? `${names(seconds)}が二番手に` : ""].filter(Boolean).join("、");
+  const lines = [got > 0 ? `今回 +${got}点。${who}推した。` : "今回は、どの審査員の上位2人にも入らなかった。"];
+  const parts = partScores(cs, p.voted - 1);
+  if (parts.length) {
+    const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);
+    lines.push(final ? `いちばん低かったのは「${weakest.label}」（${Math.round(weakest.score)}点）。` : `いちばん低いのは「${weakest.label}」（${Math.round(weakest.score)}点）。ここを上げると、次の票が動きやすい。`);
+  }
+  return lines;
+}
 function renderVotes(owner, final = false) {
   const p = progress(), rows = final ? p.result.rows : standings(p);
+  const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
   const row = value => el("li.ch2-contest-rival", { dataset: { contestant: value.id } }, [
     el("b", { text: String(value.rank) }), contestantAvatar(value.id),
     el("span", { text: displayName(value.id, state) }), el("strong", { text: `${value.points} pt` }),
@@ -186,7 +213,8 @@ function renderVotes(owner, final = false) {
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
-    ], [el("ol.ch2-contest-ranking", rows.map(row)), judges,
+    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, reason.map(text => el("p", { text }))) : null,
+      el("ol.ch2-contest-ranking", rows.map(row)), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は制作の総合評価で順位を決めます。" })]);
 }
 function renderDefeat(owner) {

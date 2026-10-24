@@ -97,12 +97,20 @@ const TASTE_LINES = {
   fine: "（普通に吸える。悪くはないけど、もう一歩だな）",
   meh: "（……イマイチだ。どこで噛み合わなかったんだろう）",
 };
+/** 第2章の味覚不調中（#952）。配合の出来は手と温度で分かるが、舌では受け取れない。評価・成長は変えない */
+const DISTANT_TASTE_LINES = {
+  great: "（手順はきれいに噛み合った。……なのに、香りが遠い）",
+  fine: "（悪くない手応えはある。でも、味の輪郭まで届かない）",
+  meh: "（どこかで噛み合わなかった。……舌だけでは確かめられない）",
+};
+/** 物語の味覚不調（DAY5で始まり、第2章の間は戻らない）。第3章以降の扱いはその章の物語に任せる */
+export const tasteDistant = (s = state) => s.chapter === 2 && !!s.flags?._ch2_taste_distant;
 
 /** 場面の台本（地の文＋はじめの心の声）。全角48字以内・手動改行なし */
-export function homeShishaDialogue(result, rig, random = Math.random) {
+export function homeShishaDialogue(result, rig, random = Math.random, { distant = false } = {}) {
   const intros = INTROS[rig.id] || INTROS.home_rig_set;
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
-    { speaker: "hajime", face: "normal", text: TASTE_LINES[result.taste] }];
+    { speaker: "hajime", face: "normal", text: (distant ? DISTANT_TASTE_LINES : TASTE_LINES)[result.taste] }];
   if (result.stat) lines.push({ speaker: "hajime", face: "normal", text: `（煙を眺めていたら、苦手な${STAT_JA[result.stat]}のことが浮かんできた）` });
   return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG }, lines };
 }
@@ -183,7 +191,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   save();
   if (result.found) toast(`📖 レシピ帳に書き加えた「${result.found.name}」`, { kind: "good" });
   if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good" });
-  await play(homeShishaDialogue(result, rig));
+  await play(homeShishaDialogue(result, rig, Math.random, { distant: tasteDistant() }));
   if (state !== owner) return true;
   if (result.stat && !got) emit("notice", { text: `寝る前に一服した。苦手な【${STAT_JA[result.stat]}】に、手がかりが見えた` });
   save();

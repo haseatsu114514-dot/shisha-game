@@ -48,6 +48,12 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     assert.deepEqual(await page.locator('[data-contestant]').evaluateAll(ns=>ns.map(n=>n.dataset.contestant).sort()),['ageha','hajime','kumicho','rei']);
     for(const row of Object.values(s.flags._ch2_tournament.votes))assert(Object.values(row).reduce((a,b)=>a+b,0)<=10);
     await assertFits(page,'.ch2-contest .btn, .ch2-contest-rival, .ch2-contest-judges>div');
+    // #909: 票が動いた理由。実際の「この回の票」と同じ点数・人を言う。
+    const reason=await page.locator(t('vote-reason')).innerText();
+    const last=s.flags._ch2_tournament.lastVotes,got=Object.values(last).reduce((a,v)=>a+(v.points.hajime||0),0);
+    if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason,/上位2人にも入らなかった/);
+    assert.match(reason,/いちばん低いのは「(アルミ穴あけ|炭の温度|蒸らしと吸い出し|一度目の調整)」/);
+    await assertFits(page,'.ch2-contest-reason p');
     if(reloadCare && round===3) {
       assert.equal(s.flags._ch2_tournament.craft.careHistory.length,1);
       const votes=structuredClone(s.flags._ch2_tournament.votes);
@@ -81,6 +87,25 @@ async function reload(page,slot=0,touch=false) {
   await press(dt(`slot-${slot}`));
 }
 await suite('ch2-tournament',async check=>{
+  await check('vote-reason-low-holes-uses-actual-step-label',async page=>{
+    await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
+    const before=await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      const model=await import('./js/chapters/ch2-tournament-state.js');
+      const p=model.startAttempt(core.state,{holes:{score:20},heat:{score:90},pack:'normal',careHistory:[]});
+      model.castVotes(p,0,55);p.stage='votes';core.save();
+      const snapshot=structuredClone(p),stamina=core.state.stamina;
+      await (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();
+      return {snapshot,stamina};
+    });
+    await page.locator(t('votes')).waitFor();
+    const reason=await page.locator(t('vote-reason')).innerText();
+    assert.match(reason,/いちばん低いのは「アルミ穴あけ」（20点）/);
+    assert(!reason.includes('パッキング'));
+    const after=await get(page);assert.deepEqual(after.flags._ch2_tournament,before.snapshot);
+    assert.equal(after.stamina,before.stamina);
+  });
+
   await check('pc-old-morning-win-complete-and-idempotent-load',async page=>{
     await seed(page);await page.locator(t('entry')).waitFor();const before=await get(page);
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);

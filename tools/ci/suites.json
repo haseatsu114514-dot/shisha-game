@@ -50,6 +50,7 @@
         "node --experimental-vm-modules remake/test/reel_hints.mjs",
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
+        "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs"
       ]
     },
@@ -89,8 +90,10 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
+        "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
         "node --test remake/test/trpg_feedback.mjs",
+        "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs"
