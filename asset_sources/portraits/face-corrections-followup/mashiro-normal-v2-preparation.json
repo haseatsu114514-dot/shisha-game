@@ -1,0 +1,32 @@
+{
+  "character": "mashiro",
+  "expression": "normal",
+  "version": 2,
+  "source": "mashiro-normal-v2-source.png",
+  "source_sha256": "417d28b8202bf3f9835f7ef0ba1718e133a5ebbf7adbb112345636db8a555d56",
+  "source_size": [
+    1084,
+    1451
+  ],
+  "source_visible_height": 1423,
+  "scale": 0.617709065354884,
+  "translation": [
+    1,
+    0
+  ],
+  "preview": "mashiro-normal-v2-preview.png",
+  "preview_sha256": "358e31b4c33b00e844d199edbbc29e97b26b93262edea3bd3eabcedc2559c53e",
+  "before_metrics": {
+    "top": 0.2475,
+    "bottom": 0.98,
+    "ax": 0.5019103076013014,
+    "aspect": 0.7466666666666667
+  },
+  "after_metrics": {
+    "top": 0.2475,
+    "bottom": 0.98,
+    "ax": 0.5021367466187368,
+    "aspect": 0.7466666666666667
+  },
+  "operation": "uniform downscale and feet-aligned canvas placement; no face compositing"
+}

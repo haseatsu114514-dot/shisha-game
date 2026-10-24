@@ -1,0 +1,49 @@
+{
+  "applied": 5,
+  "unresolved_originals_preserved": 2,
+  "changed_game_portraits": [
+    "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "assets/sprites/characters/ageha/chr_ageha_serious.png",
+    "assets/sprites/characters/ageha/chr_ageha_smile.png",
+    "assets/sprites/characters/ageha/chr_ageha_surprise.png",
+    "assets/sprites/characters/minto/chr_minto_smile.png"
+  ],
+  "canvas_and_clear_border_pass": true,
+  "png_webp_rgba_equal": true,
+  "sprite_scales_unchanged": true,
+  "unrelated_manifest_entries_unchanged": true,
+  "changed_style_references_verified": 10,
+  "preexisting_unrelated_style_reference_hash_mismatches": [
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+    "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+    "../../../../assets/sprites/characters/samechan/chr_samechan_normal.png",
+    "../../../../assets/sprites/characters/samechan/chr_samechan_smile.png",
+    "../../../../assets/sprites/characters/samechan/chr_samechan_serious.png",
+    "../../../../assets/sprites/characters/samechan/chr_samechan_surprise.png",
+    "../../../../assets/sprites/characters/samechan/chr_samechan_excited.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+    "../../../../assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+    "../../../../assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+    "../../../../assets/sprites/characters/salaryman/chr_salaryman_smile.png"
+  ],
+  "browser_checks": 40,
+  "after_expression_checks": 30,
+  "browser_errors": [],
+  "icon": "assets/ui/face_icons/face_ageha.png",
+  "icon_size": [
+    160,
+    160
+  ],
+  "notes": [
+    "Scoped portrait builder does not update continuePortraits; refreshed the two affected families using the existing continue_portraits function.",
+    "Face icons are served directly as PNG; the attempted WebP write found no runtime icon directory, no file was created."
+  ]
+}

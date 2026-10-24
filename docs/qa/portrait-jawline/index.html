@@ -5,9 +5,9 @@
 body{font:15px system-ui;margin:24px;background:#eee;color:#222}header{position:sticky;top:0;background:#eee;padding:12px;z-index:2}select{font:inherit;margin:6px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px}article{background:white;padding:12px;overflow:auto}h2{font-size:17px;margin:4px 0}a{display:block;overflow-wrap:anywhere;font-size:12px}.images{display:flex;gap:12px;align-items:start}figure{margin:8px 0}canvas{display:block}figcaption{font-size:12px}small{display:block}#status{padding:8px}
 </style>
 <header><h1>立ち絵のフェイスライン比較</h1>
-<p>22キャラ100表情を個別点検。みんと通常v4・あげは悲しみv1の先行2枚をローカル反映済みです。みんとは顔を正面寄りに変更。公開反映と最終の見た目確認は未了です。各画像に判定理由を記録しています。</p>
+<p>22キャラ100表情を個別点検。先行2枚に加え、みんと笑顔・あげはの残り4表情を修正し計7枚をローカル反映済みです。ましろ2枚は候補に頭身差が生じたため元画像を保持しています。みんとは顔を正面寄りに変更。公開反映と最終の見た目確認は未了です。各画像に判定理由を記録しています。</p>
 <label>キャラ<select id="character"><option value="">全員</option></select></label>
-<label>対象<select id="priority"><option value="">全表情</option><option value="candidates">残る修正・調整候補</option><option value="corrected">先行修正済み</option><option value="low">濃さを経過確認</option></select></label>
+<label>対象<select id="priority"><option value="">全表情</option><option value="candidates">残る修正・調整候補</option><option value="corrected">修正済み</option><option value="low">濃さを経過確認</option></select></label>
 <label>背景<select id="background"><option value="#888888">灰</option><option value="#ffffff">白</option><option value="#16121c">暗</option></select></label>
 <label>倍率<select id="scale"><option value="1">原寸 100%</option><option value=".5">縮小 50%（比較用）</option><option value="2">拡大 200%</option></select></label>
 <p>左：現在の素材PNG／右：ゲーム用WebP。縮小倍率は比較用で、実ゲームは画面サイズ・シーンで変わります。目視点検の範囲と残課題はREADME、修正前の全表情はaudit/の連絡シートに保存しています。パペットで隠れる顔は判定対象外です。</p>

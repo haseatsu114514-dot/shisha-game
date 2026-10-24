@@ -67,9 +67,14 @@
     "reviewed_source_sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
     "reviewed_runtime_sha256": "9135aefab7e11d4e0fbd986da8d5c286649a986536db88de66f5e9e7223dfdc4",
     "audit_sheet": "faces-006-010.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
-    "priority": "high",
-    "note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。"
+    "classification": "修正済み（ローカル反映・公開未反映）",
+    "priority": "corrected",
+    "note": "顎の黒白二重縁を弱め、肌と首を連続して再描画。小さな笑みと腰へ添えた手を保持。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "previous_classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
+    "previous_priority": "high",
+    "previous_note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。",
+    "resolved_source_sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe",
+    "resolved_runtime_sha256": "3197f1f53030ec073c821e9b90cf461b3dd498a2ec0c9e54dfa1465db0bf2af9"
   },
   {
     "character": "ageha",
@@ -92,9 +97,14 @@
     "reviewed_source_sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932",
     "reviewed_runtime_sha256": "af23bbcc85ad17bef558cb814b5baaeaba40f1980e2481fc93bac5473d67163e",
     "audit_sheet": "faces-006-010.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
-    "priority": "high",
-    "note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。"
+    "classification": "修正済み（ローカル反映・公開未反映）",
+    "priority": "corrected",
+    "note": "顎の二重縁を弱め、真剣な眉・目とジャケットへ添えた手を保持。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "previous_classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
+    "previous_priority": "high",
+    "previous_note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。",
+    "resolved_source_sha256": "87f44e4fe7033a4af9b32cea84f716dac6731f4aaaa30b8eada2c61b794798f5",
+    "resolved_runtime_sha256": "a403ecfe7993d22f1f5b3e8779788ead02c95cc168dad3cee5d5a33e57e2a5a4"
   },
   {
     "character": "ageha",
@@ -104,9 +114,14 @@
     "reviewed_source_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
     "reviewed_runtime_sha256": "6f19618a803c7b1413cc80ada08cebda692b78e0e968ed68094515d46108eaa9",
     "audit_sheet": "faces-006-010.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
-    "priority": "high",
-    "note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。"
+    "classification": "修正済み（ローカル反映・公開未反映）",
+    "priority": "corrected",
+    "note": "顎の二重縁を弱め、両目を閉じた笑顔を保持。閉じ目を不具合として開いていない。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "previous_classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
+    "previous_priority": "high",
+    "previous_note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。",
+    "resolved_source_sha256": "fd0b09bc80802616dfb44c1f70def0c4791748080b4904c6f9a22e7528e2513b",
+    "resolved_runtime_sha256": "01f0e0bd2752abb9cefa4c2b645b502d18a46a0aa0d1530e5984d34e471ee28d"
   },
   {
     "character": "ageha",
@@ -116,9 +131,14 @@
     "reviewed_source_sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd",
     "reviewed_runtime_sha256": "6cccf9688ab73179efa95e783638e5197236269b4b851d64dde94a04c1002e85",
     "audit_sheet": "faces-006-010.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
-    "priority": "high",
-    "note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。"
+    "classification": "修正済み（ローカル反映・公開未反映）",
+    "priority": "corrected",
+    "note": "顎の二重縁を弱め、両眼を開く驚きと両手を上げたポーズを保持。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "previous_classification": "描かれた輪郭の濃さ・明るい縁：修正候補",
+    "previous_priority": "high",
+    "previous_note": "顎に濃い線と明るい縁が描かれ、切り抜きのように見える。チョーカーとは別。",
+    "resolved_source_sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774",
+    "resolved_runtime_sha256": "3d74d763e690053e9e61ad6f2cec491cdabdc4117b971dfae264cc65d42a1e0c"
   },
   {
     "character": "dr_kemuri",
@@ -538,7 +558,7 @@
     "audit_sheet": "faces-041-045.webp",
     "classification": "描かれた輪郭の濃さ・明るい縁：調整候補",
     "priority": "medium",
-    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。"
+    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。 追加候補を生成したが白縁の改善不足または頭身不整合で不採用。元素材を維持。"
   },
   {
     "character": "mashiro",
@@ -562,7 +582,7 @@
     "audit_sheet": "faces-046-050.webp",
     "classification": "描かれた輪郭の濃さ・明るい縁：調整候補",
     "priority": "medium",
-    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。"
+    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。 追加候補を生成したが白縁の改善不足または頭身不整合で不採用。元素材を維持。"
   },
   {
     "character": "mashiro",
@@ -633,9 +653,14 @@
     "reviewed_source_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
     "reviewed_runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf",
     "audit_sheet": "faces-051-055.webp",
-    "classification": "目の開きの左右差＋描かれた輪郭：修正候補",
-    "priority": "high",
-    "note": "顎に濃い輪郭と明るい縁が残る。各表情の目の開きを別々に確認。画面右の目が左より横長で開きが小さい。通常と同型の修正候補。"
+    "classification": "修正済み（ローカル反映・公開未反映）",
+    "priority": "corrected",
+    "note": "通常v4を基準に正面寄りの顔・両眼の幅と開きを統一。笑顔・指を頬へ添えるポーズを保持。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "previous_classification": "目の開きの左右差＋描かれた輪郭：修正候補",
+    "previous_priority": "high",
+    "previous_note": "顎に濃い輪郭と明るい縁が残る。各表情の目の開きを別々に確認。画面右の目が左より横長で開きが小さい。通常と同型の修正候補。",
+    "resolved_source_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
+    "resolved_runtime_sha256": "c6d8eb86e5264a2e2731fa6dd4d831ff670dd637da394db95b35480fdd6159b2"
   },
   {
     "character": "minto",
