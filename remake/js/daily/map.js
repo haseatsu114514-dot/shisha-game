@@ -247,7 +247,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
                 if (!stationActive()) return;
                 root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
                 renderPins(); idleInfo();
-              }));
+              }), { from: trip.from, to: trip.to });
               if (!stationActive()) return;
               // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
               // 到着後は新しい街の上画面（HUDと地図）から見せる。

@@ -2,10 +2,12 @@
 
 電車の乗車演出は紫で統一し、220msのフェードイン＋1秒の車内＋280msのフェードアウトでつなぎます。
 第2章導入・帰路と、駅で地元／隣町を選ぶ移動に共通です。背景と地図のピンは車内が不透明な間に交換します。
-第2章以降は、面識のあるサメちゃん・ひより・みんと（私服）・あだむ・つむぎの一人がときどき紫のシルエットで混ざります。なるは候補に含めません。
-出現は既存の `weatherSeed` と章・日・時間帯で固定し、保存・好感度・在店予定を更新しません。
+第2章以降、地元→隣町では面識のあるサメちゃん・ひより・みんと（私服）・あだむ・つむぎ、隣町→地元ではアゲハ・組長・零の一人がときどき紫のシルエットで混ざります。なるは候補に含めません。
+出現は既存の `weatherSeed` と章・日・時間帯で固定します。描画と抽選は保存・好感度を更新しません。
+隣町→地元の客は、アゲハがぺぱーみんと、組長がEDEN、零がtonariへ一服に来ます。地図の在店表示と同じ予定で会え、初回／再訪の短い会話を通常の訪問に添えます。追加の料金・行動・能力報酬はなく、一日の読了後だけ既存flagsへ保存します。未面識・閉店・予定の重複・会話中断・別セーブへのLOADでは読了にしません。
+来店台本 `data/dialogue/ch2_city_guests.json` は必要な時だけ読み込み、第1章の起動通信には含めません。
 ハロウィンの開催日は未定です。第2章のイベント側で `state.flags._ch2_halloween_active` を `true`／`false` に切り替えると、魔女帽子・角の仮装客を出し分けられます。
-確認は `__remake.dev.motion("train")`、`"train-halloween"`、`"train-samechan"`（末尾は上記5人のID）。
+確認は `__remake.dev.motion("train")`、`"train-home"`（隣町→地元）、`"train-widehanga"`（地元→隣町）、`"train-halloween"`、`"train-ageha"`（末尾は上記8人のID）。
 回帰は `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/motion_endings.mjs --train-only` と `node --experimental-vm-modules remake/test/station_travel.mjs`。
 
 本リポジトリの現行版。ESモジュールで工程ごとに実装し、共有JSONを直接読む。
@@ -228,6 +230,8 @@ remake/
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
 **トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りてDAYと残り日数がめくれる（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+
+**LIME交換**（#931）: 連絡先を交換した直後に、はじめのスマホの画面で「友だち追加→『追加』をタップ→友だち一覧に1行増える」を見せる（`js/motions/lime.js`・`css/motions/lime.css`）。端末・緑・アカウント名はゲーム内のLIMEと同じで、友だち一覧は演出の中だけの画面。a はアイコンが一覧へ飛んで収まる、b は画面ごと横にスライドする（採用待ち。既定は a、`?movar=b` で比べる）。`__remake.dev.motion("lime")`・`"lime-adam"`・`"lime-minto-private"`（栞の私用アカウント）で再生。SKIP中も見せ、動きを減らす設定では追加し終えた画面だけを見せる（#833）。
 
 **初登場カットイン**（`vn/intro.js`）: キャラが名乗った直後（または名前を知っていて初めて喋る台詞の前）に一度だけ、
 呼び名・二つ名・一言を全画面で出す。名前は会話の名前欄と同じ呼び名のみ。本名の括弧表記は廃止し、物語の名乗りに残す。

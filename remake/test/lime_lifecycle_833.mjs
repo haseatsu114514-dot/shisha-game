@@ -52,11 +52,11 @@ async function fixture({ waitAt = null, faceReady = true } = {}) {
     'ui.js': { imageReady: async () => { counters.images++; await wait('image'); return faceReady; } },
     'audio.js': { SE: { phone() { counters.phones++; } } },
     'transition-kit.js': {
-      reducedMotion: () => false, move: async () => {}, svg: el, stageSvg: children => el('svg', {}, children),
+      reducedMotion: () => false, move: async () => {}, svg: el,
       holdKeys: () => { counters.held++; return () => { counters.released++; }; },
     },
     'transitions.js': { holdCover: () => { throw Error('LIME must use the existing key hold'); } },
-    'mg-kit.js': { motionVariant: () => 'a' },
+    'mg-kit.js': { motionVariant: () => 'a', MG_EASE: { out: 'out', in: 'in', inOut: 'inOut', back: 'back' } },
   };
   const modules = new Map(Object.entries(values).map(([name, exports]) => [name,
     new vm.SyntheticModule(Object.keys(exports), function () {
@@ -96,7 +96,7 @@ for (const faceReady of [true, false]) {
   const f = await fixture({ faceReady });
   await f.run();
   assert.equal(f.counters.scenes, 1, 'current save must show the exchange even without a face image');
-  assert.deepEqual(f.labels, ['はじめ', 'なる']);
+  assert.equal(f.labels[0], 'なる', 'the new friend is the top row');
   assert.equal(f.counters.phones, 1);
   assert.equal(f.counters.observed, 1);
   assert.equal(f.counters.disconnected, 1);

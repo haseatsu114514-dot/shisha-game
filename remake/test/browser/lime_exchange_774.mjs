@@ -103,15 +103,15 @@ try {
       if (await page.locator('.mo-lime').count()) break;
       await page.keyboard.press('Enter'); await page.waitForTimeout(100);
     }
-    await page.locator('.mo-lime-title').waitFor({ state: 'visible' });
-    await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.mo-lime-title')).opacity) > .99);
+    await page.locator('.mo-lime-toast').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.mo-lime-toast')).opacity) > .99);
     const boxes = await page.evaluate(() => {
       const rect = el => { const r = el.getBoundingClientRect(); return { x:r.x, y:r.y, w:r.width, h:r.height }; };
-      return { stage:rect(document.querySelector('.mo-lime')), title:rect(document.querySelector('.mo-lime-title')),
-        cards:[...document.querySelectorAll('.mo-lime-card')].map(rect) };
+      return { stage:rect(document.querySelector('.mo-lime')), toast:rect(document.querySelector('.mo-lime-toast')),
+        phone:rect(document.querySelector('.mo-lime-phone')), rows:[...document.querySelectorAll('.mo-lime-row')].map(rect) };
     });
     await page.screenshot({ path: path.join(out, label + '-exchange.png') });
-    for (const r of [boxes.title, ...boxes.cards]) {
+    for (const r of [boxes.toast, boxes.phone, ...boxes.rows]) {
       assert(r.x >= boxes.stage.x - 1 && r.y >= boxes.stage.y - 1);
       assert(r.x + r.w <= boxes.stage.x + boxes.stage.w + 1);
       assert(r.y + r.h <= boxes.stage.y + boxes.stage.h + 1);

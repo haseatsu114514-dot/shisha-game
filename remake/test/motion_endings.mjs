@@ -205,13 +205,15 @@ async function checkScene(name, viewport, label, variant = null, stallPenFrames 
 async function checkTrains() {
   const cases = [
     ["normal", { width: 1280, height: 720 }, { cameo: null, tone: "night" }],
-    ...["samechan", "hiyori", "minto", "adam", "tsumugi"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
+    ...["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
     ["halloween", { width: 844, height: 390 }, { halloween: true, cameo: "samechan" }],
     ["portrait", { width: 390, height: 844 }, { halloween: true, cameo: "hiyori" }],
     ["slow-arrival", { width: 1280, height: 720 }, { cameo: null, delay: 1300 }],
     ["missing-crowd", { width: 1280, height: 720 }, { cameo: null, unavailable: true }],
   ];
-  for (const [name, viewport, options] of cases.filter(c => !process.env.TRAIN_CASE_FILTER || c[0] === process.env.TRAIN_CASE_FILTER)) {
+  const selectedCases = cases.filter(c => !process.env.TRAIN_CASE_FILTER || c[0] === process.env.TRAIN_CASE_FILTER);
+  assert(selectedCases.length, "TRAIN_CASE_FILTER matched no case");
+  for (const [name, viewport, options] of selectedCases) {
     const { page, context } = await open(viewport, `train-${name}`);
     try {
       if (options.unavailable) await page.route("**/ui/transitions/train/crowd_*.webp", route => route.fulfill({ status: 404, body: "test missing image" }));
@@ -259,17 +261,24 @@ async function checkTrains() {
       if (name === "normal") {
         const policy = await page.evaluate(async () => {
           const { trainPassengers } = await import("./js/motions/train-passengers.js");
-          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "naru"].map(id => [id, true])) };
-          const before = JSON.stringify(value), seen = new Set();
-          for (let weatherSeed = 0; weatherSeed < 500; weatherSeed++) seen.add(trainPassengers({ ...value, weatherSeed }).cameo);
+          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei", "naru"].map(id => [id, true])) };
+          const before = JSON.stringify(value), seen = new Set(), inbound = new Set();
+          for (let weatherSeed = 0; weatherSeed < 500; weatherSeed++) {
+            seen.add(trainPassengers({ ...value, weatherSeed }, { from: "home", to: "widehanga" }).cameo);
+            inbound.add(trainPassengers({ ...value, weatherSeed }, { from: "widehanga", to: "home" }).cameo);
+          }
           const selected = trainPassengers(value);
-          return { seen: [...seen].filter(Boolean).sort(), occasional: seen.has(null), stable: JSON.stringify(selected) === JSON.stringify(trainPassengers(value)),
+          return { seen: [...seen].filter(Boolean).sort(), inbound: [...inbound].filter(Boolean).sort(),
+            invalidRoute: trainPassengers(value, { from: "home", to: "home" }).cameo,
+            invalidCity: trainPassengers(value, { from: "other", to: "home" }).cameo,
+            unknownInbound: trainPassengers({ ...value, met: {} }, { from: "widehanga", to: "home" }).cameo,
+            occasional: seen.has(null), stable: JSON.stringify(selected) === JSON.stringify(trainPassengers(value)),
             chapter1: trainPassengers({ ...value, chapter: 1 }).cameo, unknown: trainPassengers({ ...value, met: {} }).cameo,
             seasonal: trainPassengers({ ...value, flags: { _ch2_halloween_active: true } }).halloween,
             ordinary: selected.halloween, chapter3: trainPassengers({ ...value, chapter: 3, flags: { _ch2_halloween_active: true } }).halloween,
             unchanged: before === JSON.stringify(value) };
         });
-        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], occasional: true, stable: true,
+        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "rei"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
           chapter1: null, unknown: null, seasonal: true, ordinary: false, chapter3: false, unchanged: true });
       }
       console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, fade/cover/cleanup/save`);
