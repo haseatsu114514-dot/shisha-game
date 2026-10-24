@@ -107,6 +107,14 @@
       ]
     },
     {
+      "id": "vn-cg-lifetime",
+      "title": "VN CG callbacks respect dialogue lifetime",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/vn_cg_lifetime.mjs"
+      ]
+    },
+    {
       "id": "tools",
       "title": "Repository tools and CI planner",
       "kind": "quick",

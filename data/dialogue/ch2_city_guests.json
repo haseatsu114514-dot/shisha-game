@@ -1,0 +1,210 @@
+{
+  "comment": "第2章以降、面識のある隣町の3人が地元の店へ私用で来る短い会話。日程・料金・読了保存は呼出側。秘密や大会結果、恋愛の進行を先取りしない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_city_guest_ageha_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥のソファから、見覚えのあるデコケータイが振られた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち！ うち、今日はこっちで遊ぶ日"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アゲハさんも、ぺぱーみんとに？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "買い物で歩きすぎたー。ちょっと動けないや"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "じゃあ、ゆっくりしてって。甘めのミント、できたよ♡"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、これ好き。冷たくて、あとから甘いの来る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもの店とは、逆の席ですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ。今日はうちが作ってもらう番！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_ageha_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが買い物袋を足元に寄せ、隣を空けてくれた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちも休憩？ こっち座りなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は何を吸ってるんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "みんとちゃんにお任せ。次のひと口、当ててみて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_kumicho_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENの客席で、神崎さんが大きな体をソファに預けていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。お前も一服か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、今日はこっちなんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "休みぐらい、他人の作った煙でのんびりしてえだろ"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "原点には、いつでも戻ってこられる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "大きく出たな、……うめえじゃねえか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのダブルアップル、いい香りですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。今日は炭を触らねえと決めてきた。座れよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_kumicho_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが隣の席を指した。テーブルには冷たい水が並んでいる。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "来たか。水、飲むか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。今日はゆっくりできてますか？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "おう。次の電車まで、もう少しここにいるつもりだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_rei_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、零さんがスマホの選曲画面を伏せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "零さん？ こっちで会うと、ちょっと新鮮ですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……お邪魔してます。電車、一本早いのに乗れたんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "好きな席で休んでいきな。今日は何にする？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "お任せで。自分で選ばない日も、たまにはいいかなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、隣に座っていいですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……どうぞ。今、ちょうど誰かと話したかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_rei_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "零さんがヘッドホンを首に下ろし、軽く手を上げた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……また会いましたね。ここの席、落ち着くんで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっき、何を聴いてたんですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "ちょっと古い曲です。気になります？"
+        }
+      ]
+    }
+  ]
+}

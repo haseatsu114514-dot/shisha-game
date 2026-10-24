@@ -114,7 +114,7 @@ await suite("ch1-opening-resume", async check => {
     assert(result.entries.includes("ch1_tsumugi_research"));
     assert(result.entries.includes("remake_tutorial_offer"));
     assert(result.entries.includes("ch1_tutorial_oneesan"));
-    assert.equal(result.choices.length, 1);
+    assert.equal(result.choices.length, 0, "旧セーブの再開も一択メニューを挟まない");
     assert(!result.state.flags._tutorial_skipped);
     assert.equal(practiceCount(result.state), 1);
   });
@@ -131,19 +131,19 @@ await suite("ch1-opening-resume", async check => {
     assert(!result.state.flags._tutorial_skipped);
     assert.equal(result.state.flags._ch1_opening.tutorialChoice, "practice");
     assert.equal(practiceCount(result.state), 1);
-    assert.deepEqual(result.choices, [["一台作る"]]);
+    assert.deepEqual(result.choices, [], "手順のおさらいへ一択メニューを挟まず進む");
     assert(result.state.flags._ch1_opening.firstBrew.guided);
   });
 
   for (const choice of ["practice"]) {
-    await check(`choice-${choice}-saved-before-branch-finished`, async page => {
+    await check(`interrupted-offer-${choice}-replays-before-lesson`, async page => {
       await setup(page, { choice, pauseAt: "remake_tutorial_offer",
         pauseText: choice === "practice" ? "お願いします" : "今日はこのまま" });
       await page.evaluate(() => O.run("new"));
       await page.waitForFunction(() => O.paused);
       const interrupted = await page.evaluate(() => O.snapshot());
       assert.equal(interrupted.saved.phase, "opening");
-      assert.equal(interrupted.saved.flags._ch1_opening.tutorialChoice, choice);
+      assert(!interrupted.saved.flags._ch1_opening.firstBrew, "おさらい未完の保存から再開する");
       assert(!interrupted.saved.flags._ch1_opening.offerDone);
       // 再開後の自動選択を反対にしても、保存した方針を守る。
       await reloadAndResume(page, { choice: choice === "skip" ? "practice" : "skip" });

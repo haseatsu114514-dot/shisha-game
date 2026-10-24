@@ -34,6 +34,12 @@ await suite("ch1-presentation", async check => {
       }
       await page.evaluate(() => V.vn.hooks.onLine("other-scene", { text: "1年前" }));
       assert.equal(await page.locator(".cold-open.out").count(), 0);
+      await page.evaluate(() => {
+        const line = V.data.DB.dialogues.ch1_cold_open.lines.find(l => l.text?.includes("あの頃、tonariで"));
+        if (!line) throw new Error("Missing flashback cue");
+        V.vn.hooks.onLine("ch1_cold_open", line);
+      });
+      assert.equal(await page.locator(".cold-open.out").count(), 1);
       const after = await page.evaluate(() => { V.scene.stop(); return { restored: V.vn.hooks.onLine === V.previous, state: JSON.stringify(V.core.state) === V.before }; });
       assert(after.restored && after.state); await page.waitForTimeout(1000);
       assert.equal(await page.locator(".cold-open").count(), 0);
@@ -64,7 +70,7 @@ await suite("ch1-presentation", async check => {
       await select(page, '[data-test="opt-normal"]', touch);
       await select(page, '[data-test="pack-confirm"]', touch); await page.evaluate(() => V.running);
       assert.deepEqual(await page.evaluate(() => V.cs.mix), { double_apple: 10, mint: 2 });
-      assert.equal(await page.evaluate(() => V.core.state.flavorStock.double_apple), 50);
+      assert.equal(await page.evaluate(() => V.core.state.flavorStock.double_apple ?? 0), 0);
     }, options);
     await check(`${device}-many-flavors-and-regulation`, async page => {
       await setup(page);

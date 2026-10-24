@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 18; // 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 19; // 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -43,8 +43,8 @@ export function newState() {
     visitedDay: {},            // スポット -> 最後に訪れた日（同じ店は1日1回）
     owned: STARTER_EQUIPMENT.slice(),
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
-    flavors: ["double_apple"], // 一度でも手に入れたフレーバー（図鑑的な記録）。使えるかどうかは flavorStock で決まる
-    flavorStock: { double_apple: 50 }, // フレーバーの在庫（g）。1箱50g。大会で詰んだ分だけ減る（課題フレーバーは主催支給）
+    flavors: [], // 一度でも手に入れたフレーバー（図鑑的な記録）。使えるかどうかは flavorStock で決まる
+    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。大会で詰んだ分だけ減る（課題フレーバーは主催支給）
     weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
@@ -259,6 +259,9 @@ function migrate(s) {
     s.equip.pipe = "harry_the_moon";
   }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 旧版は冒頭で50gを所持していた。消費済み・売却済みの分も渡し直さず、
+  // 現在の在庫と進行を保つ。新規19の受取は home-rig.js で一度だけ確定する。
+  if (oldSchema < 19) s.flags._sumi_double_apple_received = true;
   // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
   const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
   if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
