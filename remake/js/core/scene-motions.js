@@ -42,7 +42,10 @@ export async function chekiShot(url, placeCg = null) {
 
 /** あげはの店のプリクラ（#939）。会話の {"type": "motion", "id": "purikura"} から呼ぶ */
 export async function purikuraShot() {
-  const run = skipMotion() ? null : await variant("purikura", purikura);
+  if (skipMotion()) return;
+  const owner = state;
+  const run = await variant("purikura", purikura);
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブのプリクラを始めない。
   if (run) await run();
 }
 

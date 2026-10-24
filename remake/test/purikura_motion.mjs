@@ -119,7 +119,39 @@ const cond = story.lines.find((l) => l.type === "condition" && l.flag === "_ch2_
 assert(cond && story.branches[cond.next_true]?.length && story.branches[cond.next_false]?.length);
 const engine = read("../js/vn/engine.js");
 assert(/purikura: \(\) => purikuraShot\(\)/.test(engine), "engine runs the purikura motion line");
-const wrapper = read("../js/core/scene-motions.js");
-assert(/export async function purikuraShot\(\) \{\n  const run = skipMotion\(\) \? null/.test(wrapper), "SKIP and reduced motion skip the purikura");
+// 入口（scene-motions.js の purikuraShot）: SKIP中と動きを減らす設定では読み込まず、読み込み中にLOADされたら始めない
+async function wrapperCase({ skip = false, reduce = false, loadDuringImport = false } = {}) {
+  const context = vm.createContext({ console, document: { body: { classList: { contains: () => skip } } } });
+  const owner = { flags: {} }, loaded = { flags: {} };
+  let imported = 0, played = 0, stateModule;
+  const motion = new vm.SyntheticModule(["a", "b"], function () {
+    this.setExport("a", async () => { played++; });
+    this.setExport("b", async () => { played++; });
+  }, { context });
+  await motion.link(() => {}); await motion.evaluate();
+  const wrapper = new vm.SourceTextModule(read("../js/core/scene-motions.js"), {
+    context,
+    importModuleDynamically: async (specifier) => {
+      assert.equal(specifier, "../motions/purikura.js");
+      imported++;
+      if (loadDuringImport) stateModule.setExport("state", loaded);
+      return motion;
+    },
+  });
+  const imports = { "state.js": { state: owner }, "data.js": { DB: {} }, "transition-kit.js": { reducedMotion: () => reduce }, "mg-kit.js": { motionVariant: () => "a" } };
+  await wrapper.link(async (path) => {
+    const name = path.split("/").at(-1), values = imports[name];
+    const m = new vm.SyntheticModule(Object.keys(values), function () { for (const [k, v] of Object.entries(values)) this.setExport(k, v); }, { context });
+    if (name === "state.js") stateModule = m;
+    return m;
+  });
+  await wrapper.evaluate();
+  await wrapper.namespace.purikuraShot();
+  return { imported, played };
+}
+assert.deepEqual(await wrapperCase(), { imported: 1, played: 1 });
+assert.deepEqual(await wrapperCase({ skip: true }), { imported: 0, played: 0 }, "SKIP skips the purikura");
+assert.deepEqual(await wrapperCase({ reduce: true }), { imported: 0, played: 0 }, "reduced motion skips the purikura");
+assert.deepEqual(await wrapperCase({ loadDuringImport: true }), { imported: 1, played: 0 }, "LOAD during the lazy import does not start the old purikura");
 
-console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard, dialogue hook");
+console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP/reduced motion, dialogue hook");
