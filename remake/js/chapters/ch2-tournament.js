@@ -170,7 +170,7 @@ function contestantAvatar(who) {
   return el("span.ch2-contest-avatar", [image]);
 }
 /** 工程の得点。partialQuality と同じ順・同じ値（表示用の名前だけ足す）。 */
-const PART_LABELS = ["パッキング", "炭の温度", "蒸らしと吸い出し", "一度目の調整", "二度目の調整"];
+const PART_LABELS = ["アルミ穴あけ", "炭の温度", "蒸らしと吸い出し", "一度目の調整", "二度目の調整"];
 function partScores(cs, round) {
   if (!cs) return [];
   const parts = [cs.holes?.score, cs.heat?.score];
