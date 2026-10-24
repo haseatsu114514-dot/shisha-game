@@ -1,6 +1,7 @@
 // 表示だけの試作。既存のDOM・入力・進行・保存処理をそのまま使う。
 import { el } from "../core/util.js";
 import { readTitleLayout, TITLE_LAYOUT_KEY } from "./title-layout.js";
+import { installDsGeometry } from "./ds-geometry.js";
 
 export function initGameLayout() {
   const body = document.body, stage = document.querySelector("#stage"), viewport = document.querySelector("#viewport");
@@ -19,15 +20,19 @@ export function initGameLayout() {
           history.replaceState(null, "", url);
         }
       } catch { /* 保存できない環境はreadTitleLayoutが通常版に戻す。 */ }
+      toolbar.open = false;
       update();
     },
   }));
   const recovery = new URL(location.href); recovery.searchParams.set("titleLayout", "normal");
-  const toolbar = el("nav.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true,
+  // DS風では画面を覆わないよう「表示」の折りたたみにする。開くと通常版/DS風/開き直しを選べる。
+  const summary = el("summary", { text: "表示", dataset: { test: "game-layout-settings" } });
+  const toolbar = el("details.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true,
     onkeydown: e => { if (["Enter", " "].includes(e.key) && e.target.closest("button,a")) e.stopPropagation(); },
-  }, [
+  }, [summary, el("nav.game-layout-options", [
     ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "game-layout-recover" } }), note,
-  ]);
+  ])]);
+  Object.assign(summary.style, { minHeight: "44px", padding: "12px", cursor: "pointer", boxSizing: "border-box" });
   // DS専用CSSが届かなくても、復旧入口を画面外に隠さない。
   Object.assign(toolbar.style, { position: "fixed", top: "8px", right: "10px", zIndex: "1100",
     maxWidth: "calc(100% - 20px)", backgroundColor: "#1b1023", color: "#f6dfaf" });
@@ -60,20 +65,10 @@ export function initGameLayout() {
     note.textContent = mode !== "ds" ? "" : !ready ? "表示準備ができないため通常表示" : !view ? "この画面は通常表示です" : "";
     measure();
   }
-  function measure() {
-    const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
-    const portrait = w <= 760 && h > w;
-    const x = 12, y = 0, header = 64, gap = 10;
-    const pw = portrait ? w - 24 : (w - 24 - gap) / 2;
-    const ph = portrait ? Math.max(300, (h - header - 12 - gap) / 2) : h - header - 12;
-    const values = { vx: x, vy: y, vw: pw, vh: ph, cx: portrait ? x : x + pw + gap,
-      cy: portrait ? y + ph + gap : y, cw: pw, ch: ph };
-    for (const [key, value] of Object.entries(values)) stage.style.setProperty(`--ds-${key}`, `${value}px`);
-  }
+  // 上下2画面の寸法はタイトルと共通（ds-geometry.js が :root に --ds-* を置く）。
+  function measure() { installDsGeometry(); }
   // DOMを移動・複製しない。シーン変更と会話の開始/終了を表示に反映するだけ。
   new MutationObserver(update).observe(body, { attributes: true, attributeFilter: ["data-screen", "class"] });
   window.addEventListener("display-layout-change", update);
-  window.addEventListener("resize", measure);
-  window.visualViewport?.addEventListener("resize", measure);
   update();
 }

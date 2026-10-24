@@ -126,6 +126,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
+    // DS風の上画面：街の全体図に行き先の点を打つ（表示だけ。操作は下画面のカード）。通常版ではCSSで出さない。
+    const markers = el("div.ds-map-markers", { "aria-hidden": "true" });
+    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.spot === id));
     let selected = null;
     const owner = state;
     let stationTrip = null;
@@ -212,6 +215,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       stationTrip?.cancel(); stationTrip = null;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
+      markSelected(s.id);
       SE.click();
       renderInfo(s);
     };
@@ -222,6 +226,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       if (moving || revealing || !stationActive()) return;
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
+      markSelected(null);
       const cancel = () => { stationTrip?.cancel(); stationTrip = null; idleInfo(); };
       const destinations = stationDestinations(state, regions || [], region?.id);
       const choose = (item) => {
@@ -300,6 +305,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     function renderPins() {
       stopReveal();
       pins.replaceChildren();
+      markers.replaceChildren();
       const freshPins = [];
       const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
@@ -347,6 +353,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         freshPins.push({ btn, spot: s, index: revealIndex });
       }
       pins.append(btn);
+      markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
+        dataset: { spot: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
       if (freshPins.length) {
         revealing = true;
@@ -390,6 +398,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     const rainy = isRainy();
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
+      markers,
       pins,
       stationDestinations(state, regions || [], region?.id).length && !guide
         ? el("nav.map-regions", { "aria-label": "駅から街移動" }, [el("button", {

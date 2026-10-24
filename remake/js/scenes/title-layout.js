@@ -1,5 +1,6 @@
 // タイトル専用の表示設定。ゲームのセーブ・configには触れない。
 import { el } from "../core/util.js";
+import { installDsGeometry } from "./ds-geometry.js";
 
 export const TITLE_LAYOUT_KEY = "suien_title_layout";
 export const isNormalTitleForced = () => new URL(location.href).searchParams.get("titleLayout") === "normal";
@@ -57,6 +58,7 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
   const hint = document.querySelector("#rotate-hint");
   const hintDisplay = hint?.style.display;
   function apply(mode) {
+    if (mode === "ds") installDsGeometry(); // 本編と同じ上下2画面の寸法
     root.dataset.layout = mode;
     summary.textContent = `表示設定：${mode === "ds" ? "DS風" : "通常版"}`;
     if (hint) hint.style.display = mode === "ds" ? "none" : hintDisplay;
