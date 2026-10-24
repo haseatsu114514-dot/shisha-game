@@ -1,7 +1,8 @@
 // 路上占い師の出店日（#780）。画面や保存に依存しない判定だけを置く。
-/** 出現の前提：つむぎから占い師の噂（LIME）を実際に読んだこと。既読記録だけを根拠にする。 */
+/** 出現の前提：自主的な客席訪問で、つむぎの噂を最後まで聞いたこと。旧LIME履歴は残すが解放根拠にしない。 */
 export const FORTUNE_RUMOR_ID = "lime_tsumugi_fortune_rumor";
-export const fortuneRumorHeard = (s) => !!s?.limeRead?.includes(FORTUNE_RUMOR_ID);
+export const FORTUNE_RUMOR = "_fortune_rumor_heard";
+export const fortuneRumorHeard = (s) => !!s?.flags?.[FORTUNE_RUMOR];
 /** 本来の出店日（7日周期の3・6日目） */
 export const fortuneScheduled = (day) => day % 7 === 3 || day % 7 === 6;
 /**

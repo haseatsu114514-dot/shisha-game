@@ -14,8 +14,8 @@ try{
    window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js')};
    Q.chapter.setupHooks();Q.vn.vnTest.turbo=true;
    Object.assign(Q.core.newGame(),{phase:'daily',day:3,slot:1,seed:131,money:13000});Q.core.state.met.naru=true;Q.core.state.affinity.naru=6;
-   // #780: つむぎの噂を読んだ状態。使う日（3・6・24・27日目）が晴れる天気の種に固定する。
-   Q.core.state.limeRead.push(Q.fortune.FORTUNE_RUMOR_ID);Q.core.state.weatherSeed=2;
+   // #780: 対面の噂を完読した状態。旧LIME既読では解放しない。晴れの種は維持。
+   Q.core.state.flags._fortune_rumor_heard=true;Q.core.state.weatherSeed=2;
   });
   const night=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);const av=Q.access.spotAvailability(Q.spots.spotById('fortune'));const result=await Q.fortune.doFortune();return {av,result,unchanged:before===JSON.stringify(Q.core.state)};});
   assert.equal(night.result,false);assert(night.unchanged);assert.equal(night.av.tag,'昼のみ営業');
