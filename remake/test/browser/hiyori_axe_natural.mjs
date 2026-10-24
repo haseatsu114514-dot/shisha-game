@@ -64,7 +64,10 @@ try {
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
         const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
-        const { spotAvailability } = await import('./js/daily/spot-access.js');
+        const { spotAvailability: baseAvailability } = await import('./js/daily/spot-access.js');
+        const { fixedNightVisitBlock } = await import('./js/daily/night-events.js');
+        const { NIGHT_EVENTS } = await import('./js/chapters/ch1.js');
+        const spotAvailability = spot => baseAvailability(spot, { visitBlock: item => fixedNightVisitBlock(NIGHT_EVENTS, item) });
         window.Q = { core, vn, spots, hiyori, spotAvailability, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
