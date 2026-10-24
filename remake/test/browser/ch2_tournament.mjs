@@ -47,6 +47,12 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     assert.deepEqual(await page.locator('[data-contestant]').evaluateAll(ns=>ns.map(n=>n.dataset.contestant).sort()),['ageha','hajime','kumicho','rei']);
     for(const row of Object.values(s.flags._ch2_tournament.votes))assert(Object.values(row).reduce((a,b)=>a+b,0)<=10);
     await assertFits(page,'.ch2-contest .btn, .ch2-contest-rival, .ch2-contest-judges>div');
+    // #909: 票が動いた理由。実際の「この回の票」と同じ点数・人を言う。
+    const reason=await page.locator(t('vote-reason')).innerText();
+    const last=s.flags._ch2_tournament.lastVotes,got=Object.values(last).reduce((a,v)=>a+(v.points.hajime||0),0);
+    if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason,/上位2人にも入らなかった/);
+    assert.match(reason,/いちばん低いのは「(パッキング|炭の温度|蒸らしと吸い出し|一度目の調整)」/);
+    await assertFits(page,'.ch2-contest-reason p');
     if(reloadCare && round===3) {
       assert.equal(s.flags._ch2_tournament.craft.careHistory.length,1);
       const votes=structuredClone(s.flags._ch2_tournament.votes);
