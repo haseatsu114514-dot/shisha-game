@@ -1,7 +1,81 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 
+async function prepareCityGuest(page, id) {
+  return page.evaluate(async id => {
+    const core = await import("./js/core/state.js"), data = await import("./js/core/data.js");
+    const guests = await import("./js/daily/city-guests.js"), spots = await import("./js/daily/spots.js");
+    const people = await import("./js/daily/spot-people.js"), engine = await import("./js/vn/engine.js");
+    const map = await import("./js/daily/map.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 2, phase: "daily", day: 17, slot: 0, money: 15000, stamina: 90 });
+    value.met = Object.fromEntries(["ageha", "kumicho", "rei", "sumi", "adam", "minto"].map(id => [id, true]));
+    for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+    for (let seed = 0; seed < 10000; seed++) {
+      value.weatherSeed = seed;
+      if (guests.cityGuestVisit()?.id === id) break;
+    }
+    const visit = guests.cityGuestVisit(), spot = spots.spotById(visit.spotId);
+    window.C = { core, data, guests, spots, people, engine, map, visit, spot, trace: [] };
+    engine.vnTest.turbo = true;
+    engine.hooks.onLine = (scene,line) => C.trace.push({ scene, speaker: line.speaker });
+    core.save();
+    return { id: visit.id, spot: spot.id };
+  }, id);
+}
+
 await suite("map-guests", async check => {
+  for (const id of ["ageha", "kumicho", "rei"]) {
+    await check(`city-${id}-schedule-first-repeat`, async page => {
+      const chosen = await prepareCityGuest(page, id);
+      assert.equal(chosen.id, id);
+      const result = await page.evaluate(async () => {
+        const resources = () => JSON.stringify([C.core.state.money, C.core.state.stamina, C.core.state.slot, C.core.state.affinity]);
+        const before = resources(), snapshot = JSON.stringify(C.core.state);
+        const people = C.people.spotPeople(C.spot);
+        const readOnly = snapshot === JSON.stringify(C.core.state);
+        const first = await C.guests.visitCityGuestAtShop(C.spot, { scheduledVisit: C.visit });
+        const firstTrace = C.trace.map(x => x.scene);
+        const saved = C.core.peekSave();
+        const sameDay = await C.guests.visitCityGuestAtShop(C.spot, { scheduledVisit: C.visit });
+        const unchangedResources = before === resources();
+        C.core.state.day = 18;
+        for (let seed = 0; seed < 10000; seed++) {
+          C.core.state.weatherSeed = seed;
+          if (C.guests.cityGuestVisit()?.id === C.visit.id) break;
+        }
+        C.trace = [];
+        const repeat = await C.guests.visitCityGuestAtShop(C.spot);
+        return { people: people.map(p=>({id:p.id,role:p.role,known:p.known})), readOnly, first, sameDay, unchangedResources,
+          firstTrace, repeat, repeatTrace:C.trace.map(x=>x.scene), savedDay:saved.flags._city_guest_day, savedSeen:saved.flags[`_city_guest_seen_${C.visit.id}`] };
+      });
+      assert(result.people.some(p=>p.id===id&&p.role==='guest'&&p.known));
+      assert(result.readOnly&&result.first&&result.repeat&&result.unchangedResources);
+      assert.equal(result.sameDay,false); assert.equal(result.savedDay,'2:17'); assert.equal(result.savedSeen,true);
+      assert(result.firstTrace.includes(`ch2_city_guest_${id}_first`));
+      assert(result.repeatTrace.includes(`ch2_city_guest_${id}_repeat`));
+    });
+  }
+  await check('city-invalid-dialogue-retry',async page=>{
+    await prepareCityGuest(page,'ageha');
+    await page.route('**/data/dialogue/ch2_city_guests.json',route=>route.fulfill({status:200,contentType:'application/json',body:'{}'}));
+    assert.equal(await page.evaluate(()=>C.guests.visitCityGuestAtShop(C.spot)),false);
+    assert.equal(await page.evaluate(()=>C.core.state.flags._city_guest_day),undefined);
+    await page.unroute('**/data/dialogue/ch2_city_guests.json');
+    assert.equal(await page.evaluate(()=>C.guests.visitCityGuestAtShop(C.spot)),true);
+  });
+  await check('city-load-cancels-unread',async page=>{
+    await prepareCityGuest(page,'rei');
+    await page.evaluate(()=>{
+      C.engine.vnTest.turbo=false; C.result=null;
+      C.pending=C.guests.visitCityGuestAtShop(C.spot).then(value=>C.result=value);
+    });
+    await page.waitForFunction(()=>C.engine.isPlaying());
+    await page.evaluate(()=>C.core.setState(C.core.newState()));
+    await page.waitForFunction(()=>C.result===false);
+    assert.deepEqual(await page.evaluate(()=>({old:C.visit.owner.flags._city_guest_day,new:C.core.state.flags._city_guest_day,
+      playing:C.engine.isPlaying()})),{old:undefined,new:undefined,playing:false});
+  });
   for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["narrow", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
     await check(`${device}-silhouette-schedule-save`, async page => {
