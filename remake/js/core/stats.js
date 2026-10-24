@@ -149,6 +149,28 @@ export function affinityGateWaiting(id) {
     && !state.romanceChoices?.[AFFINITY_GATE_CHOICES[id]];
 }
 
+/**
+ * #814 ハートと会話イベントの連動。人物ごとの「読んだ固有会話の数で決まる上限（pts）」を返す関数を
+ * spots.js が登録する（循環importを避ける）。上限を超えた分は保留し、次の会話を読んだ後に戻す。
+ */
+let storyAffinityCap = () => Infinity;
+export function setStoryAffinityCap(fn) { storyAffinityCap = typeof fn === "function" ? fn : () => Infinity; }
+const storyWaitingKey = (id) => `_${id}_story_waiting_pts`;
+/** 会話を読んで上限が上がった後に、保留していた分を新しい上限まで戻す。既存の値は減らさない。 */
+export function releaseStoryAffinity(id) {
+  if (!id || (state.lovers || []).includes(id)) return 0;
+  const waiting = Math.max(0, Number(state.flags[storyWaitingKey(id)]) || 0);
+  if (!waiting) return 0;
+  const prevPts = state.affinity[id] || 0, before = affinityLevel(id);
+  const got = Math.min(waiting, Math.max(0, storyAffinityCap(id) - prevPts));
+  if (!got) return 0;
+  state.flags[storyWaitingKey(id)] = waiting - got;
+  if (!state.flags[storyWaitingKey(id)]) delete state.flags[storyWaitingKey(id)];
+  state.affinity[id] = prevPts + got;
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: affinityLevel(id) > before, prevPts, pts: state.affinity[id] });
+  return got;
+}
+
 export function affinityLevel(id) {
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
   const pts = state.affinity[id] || 0;
@@ -290,8 +312,14 @@ export function gainAffinity(id, pts, opts = {}) {
   const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
-  const applied = affinityGateWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
+  let applied = affinityGateWaiting(id) ? Math.min(got, Math.max(0, AFFINITY_RANK_PTS[3] - prevPts)) : got;
   if (applied < got) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + got - applied;
+  // #814: 次の会話を読むまで、次のハートへは上がらない（超えた分は保留）。
+  const allowed = Math.max(0, storyAffinityCap(id) - prevPts);
+  if (applied > allowed) {
+    state.flags[storyWaitingKey(id)] = (state.flags[storyWaitingKey(id)] || 0) + applied - allowed;
+    applied = allowed;
+  }
   state.affinity[id] = prevPts + applied;
   if (!applied) return 0;
   const after = affinityLevel(id);
