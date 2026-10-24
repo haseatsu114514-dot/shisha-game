@@ -16,7 +16,7 @@ function winningSave() {
     stamina: 41, flavorStock: { mint: 8.5, double_apple: 4 } });
   value.flags = {
     _ch3_intro: { startDay: 29, stage: 18, titleSeen: true },
-    _ch3_tournament: { result: { rank: 1, votes: { nagumo: { hajime: 10 } } } },
+    _ch3_tournament: { stage: "complete", result: { rank: 1, win: true, votes: { nagumo: { hajime: 10 } } } },
     _ch3_tournament_won: true,
   };
   value.lovers = ["minto"];
@@ -28,6 +28,9 @@ for (const change of [
   value => { value.chapter = 2; },
   value => { delete value.flags._ch3_tournament_won; },
   value => { value.flags._ch3_tournament_won = false; },
+  value => { value.flags._ch3_tournament.result.rank = 4; },
+  value => { value.flags._ch3_tournament.result.win = false; },
+  value => { value.flags._ch3_tournament.stage = "victory"; },
 ]) {
   const invalid = winningSave(); change(invalid);
   const prior = structuredClone(invalid);

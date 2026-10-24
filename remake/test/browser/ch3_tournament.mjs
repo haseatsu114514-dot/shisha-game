@@ -67,10 +67,6 @@ await suite("ch3-tournament", async check => {
           (await import("./js/craft/session.js")).craftTest.auto = "good";
         });
         await page.locator('[data-test="slot-1"]').click();
-        // The parent chapter router in this worktree predates the tournament connection.
-        await page.locator(`${t("votes")}, [data-test="ch3-intro-complete"]`).first().waitFor();
-        if (await page.locator('[data-test="ch3-intro-complete"]').count())
-          await page.evaluate(async () => { void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament(); });
         await page.locator(t("votes")).waitFor();
         const resumed = await get(page);
         assert.equal(resumed.flags._ch3_tournament.voted, 1, "The first poll must not run twice after LOAD");
@@ -106,6 +102,34 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_cleared, undefined, "Post-win Tokyo scenes still remain");
     assert.equal(state.money, before.money);
     assert.deepEqual(state.lovers, before.lovers);
+    await page.locator(t("aftermath")).click();
+    const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;
+    const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile",
+      "ch3_home_customer", "ch3_ageha_reunion"];
+    for (const [index, scene] of scenes.entries()) {
+      await page.locator(aftermath(scene)).waitFor();
+      await page.locator('[data-test="ch3-aftermath-continue"]').click();
+      if (index === 0) {
+        await page.locator(aftermath(scenes[1])).waitFor();
+        await page.reload();
+        await page.locator('[data-test="title-load"]').click();
+        await page.evaluate(async () => {
+          const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
+        });
+        await page.locator('[data-test="slot-0"]').click();
+        await page.locator(aftermath(scenes[1])).waitFor();
+        assert.equal((await get(page)).flags._ch3_aftermath.stage, 1,
+          "Reload must resume after the hotel scene without replaying the win");
+      }
+    }
+    await page.locator('[data-test="ch3-aftermath-complete"]').waitFor();
+    state = await get(page);
+    assert.equal(state.flags._ch3_cleared, true);
+    assert.equal(state.phase, "cleared");
+    assert.equal(state.flags._ch3_tournament.history.length, 1);
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章・DAY 17.*第3章クリア/);
   }, { reducedMotion: "reduce" });
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);

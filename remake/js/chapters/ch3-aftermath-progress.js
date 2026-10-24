@@ -8,7 +8,10 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
 ]);
 
 export const canRunChapterThreeAftermath = value => !!value && value.chapter === 3
-  && value.flags?._ch3_tournament_won === true;
+  && value.flags?._ch3_tournament_won === true
+  && value.flags?._ch3_tournament?.stage === "complete"
+  && value.flags._ch3_tournament.result?.rank === 1
+  && value.flags._ch3_tournament.result.win === true;
 
 /** 全国優勝が確定した保存から一度だけ後日談を始める。 */
 export function beginChapterThreeAftermath(value) {
