@@ -8,6 +8,7 @@ import { addMoney, addStamina, applyStats, star, currentCondition } from "../cor
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
+import { hearFortuneRumor } from "./fortune-rumor.js";
 import { DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
@@ -47,10 +48,17 @@ export function tonariMenu() {
 }
 
 export async function tonariCustomer() {
+  const owner = state;
   addStamina(-10);
-  await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
+  const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
+  if (state !== owner || !greeting || greeting.cancelled) return false;
   await meetHiyoriAtTonari();
-  if (tsumugiAtTonari(state)) await visitChar("tsumugi");
+  if (state !== owner) return false;
+  if (tsumugiAtTonari(state)) {
+    if (!await visitChar("tsumugi") || state !== owner) return false;
+    if (!await hearFortuneRumor()) return false;
+  }
+  return state === owner;
 }
 
 // ---------------------------------------------------------------- バイト

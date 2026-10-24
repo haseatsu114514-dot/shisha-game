@@ -11,9 +11,12 @@ try{
   await page.addInitScript(layout=>localStorage.setItem('suien_title_layout',layout),layout);
   await page.goto(process.env.BASE_URL||'http://127.0.0.1:8123/remake/');await page.locator('[data-test="title-new"]').waitFor({timeout:45000});await page.locator('#boot').waitFor({state:'detached'});
   await page.evaluate(async()=>{
-   window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js')};
+   window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),discovery:await import('./js/core/fortune-discovery.js'),weather:await import('./js/daily/weather.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js')};
    Q.chapter.setupHooks();Q.vn.vnTest.turbo=true;
-   Object.assign(Q.core.newGame(),{phase:'daily',day:3,slot:1,seed:131,money:13000});Q.core.state.met.naru=true;Q.core.state.affinity.naru=6;
+   Object.assign(Q.core.newGame(),{phase:'daily',day:3,slot:1,seed:131,weatherSeed:1,money:13000});Q.core.state.met.naru=true;Q.core.state.affinity.naru=6;
+   // Existing readings tests start after hearing the rumor; the actual visit/cancel path is covered by fortune_rumor.mjs.
+   Q.knownRumorFixture=()=>{Q.core.state.flags._fortune_rumor_heard=true;delete Q.core.state.flags._fortune_schedule;Q.discovery.syncFortuneSchedule(Q.core.state,Q.weather.isRainy);};
+   Q.knownRumorFixture();
   });
   const night=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);const av=Q.access.spotAvailability(Q.spots.spotById('fortune'));const result=await Q.fortune.doFortune();return {av,result,unchanged:before===JSON.stringify(Q.core.state)};});
   assert.equal(night.result,false);assert(night.unchanged);assert.equal(night.av.tag,'昼のみ営業');
@@ -54,14 +57,14 @@ try{
    const snap=JSON.stringify(Q.core.state);
    // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
    Object.assign(Q.core.state,{chapter:1,day:6,slot:0,fortuneDay:0,money:13000,met:{naru:true},affinity:{naru:10}});
-   Q.core.state.flags._fortune_trivia_seen_naru=31;
+   Q.core.state.flags._fortune_trivia_seen_naru=31;Q.knownRumorFixture();
    const newDone=await Q.fortune.doFortune();
    const newLines=Q.vn.backlog().map(x=>x.text);
    const newMatched=Q.data.DB.fortuneTrivia.characters.naru.filter(x=>newLines.includes(x.teller)).map(x=>x.id);
    // Chapter 2 before and after Naru confrontation (rift).
    const naruSpot=Q.spots.spotById('naru');
    Object.assign(Q.core.state,{chapter:2,day:27,slot:0,fortuneDay:0,money:13000,met:{naru:true,adam:true},affinity:{naru:30,adam:20}});
-   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true};
+   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true};Q.knownRumorFixture();
    const beforeRiftOpen=Q.access.spotAvailability(naruSpot).ok;
    Q.core.state.day=24; // 24 % 7 === 3 (regular weekly holiday before rift)
    const beforeRiftHoliday=Q.access.spotAvailability(naruSpot).tag;

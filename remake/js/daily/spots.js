@@ -18,6 +18,7 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
+import { fortunePresent } from "../core/fortune-discovery.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -168,6 +169,7 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  if (spot.kind === "fortune") return fortunePresent(state, isRainy());
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
   // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。

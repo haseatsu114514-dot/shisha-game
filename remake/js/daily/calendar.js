@@ -19,6 +19,7 @@ import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
+import { syncFortuneSchedule } from "../core/fortune-discovery.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
@@ -70,6 +71,7 @@ export async function runDaily(def) {
   if (state !== owner) return;
   syncSamechanKnowledge();
   syncNightQueue(chapterDef.nightEvents);
+  syncFortuneSchedule(state, isRainy);
   expireInvitations({ fixedNight });
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
@@ -120,6 +122,7 @@ export async function runDaily(def) {
 
 async function morning() {
   refreshWeather();
+  syncFortuneSchedule(state, isRainy);
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
@@ -518,7 +521,7 @@ async function performSpotAction(spot) {
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
-    else await tonariCustomer();
+    else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitSamechan(spot);

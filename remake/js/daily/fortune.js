@@ -6,12 +6,14 @@ import { state, markMet, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
+import { fortunePresent } from "../core/fortune-discovery.js";
+import { isRainy } from "./weather.js";
 import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable } from "../core/fortune-effects.js";
 
 export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
 
-export const fortuneToday = () => !!state && [1, 2].includes(state.chapter) && (state.day % 7 === 3 || state.day % 7 === 6);
+export const fortuneToday = () => fortunePresent(state, isRainy());
 
 /** 占い師の出店に寄る（時間は使わない）。戻り値=占ってもらったか */
 export async function doFortune() {

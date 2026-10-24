@@ -87,7 +87,8 @@
         "node --test remake/test/trpg_feedback.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
-        "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs"
+        "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
+        "node --experimental-vm-modules remake/test/fortune_rumor.mjs"
       ]
     },
     {
