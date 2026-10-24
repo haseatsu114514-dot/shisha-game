@@ -86,6 +86,57 @@ async function reload(page,slot=0,touch=false) {
   await page.evaluate(()=>{window.__remake.vnTest.turbo=true;window.__remake.vnTest.choose=()=>0;});
   await press(dt(`slot-${slot}`));
 }
+// play() の入口で、実VNと同じ名乗り・カットインの副作用を作ってから制御を止める。
+// onLine で throw すると非同期表示側の拒否となり、play() の失敗を再現できない。
+async function installChapterThreeMeetingFault(page) {
+  await page.route('**/js/vn/engine.js',async route=>{
+    const response=await route.fetch();
+    const source=await response.text();
+    const marker='export function play(idOrDlg, opts = {}) {';
+    assert(source.includes(marker),'VN play entry changed; update the interruption fixture');
+    const injected=marker+`
+  const fault=window.__ch3MeetingFault;
+  const sceneId=typeof idOrDlg==='string'?idOrDlg:idOrDlg?.dialogue_id;
+  if(fault?.scene===sceneId){
+    window.__ch3MeetingFault=null;
+    for(const who of fault.people){
+      state.flags['_met_'+who]=true;
+      markMet(who);
+      markIntroSeen(who);
+    }
+    state.flags._ch3_unrelated_meeting_test=true;
+    window.__ch3FaultTriggered=true;
+    if(fault.mode==='throw')throw new Error('controlled VN interruption after meeting');
+    if(fault.mode==='cancel')return Promise.resolve({id:sceneId,visited:[],cancelled:true});
+    return new Promise(resolve=>{window.__ch3ResolveFault=()=>{
+      resolve({id:sceneId,visited:[],cancelled:true});
+      return new Promise(done=>setTimeout(done,0));
+    };});
+  }
+`;
+    await route.fulfill({response,body:source.replace(marker,injected)});
+  });
+  await page.reload();
+  await page.locator(dt('title-new')).waitFor();
+}
+async function seedChapterThreeMeeting(page,sceneId,known=[]) {
+  page.setDefaultTimeout(30000);
+  await page.evaluate(async({sceneId,known})=>{
+    const core=await import('./js/core/state.js');
+    const {CH3_INTRO_SCENES}=await import('./js/chapters/ch3-progress.js');
+    const stage=CH3_INTRO_SCENES.findIndex(scene=>scene.id===sceneId);
+    if(stage<0)throw new Error(`Unknown Chapter 3 scene: ${sceneId}`);
+    const scene=CH3_INTRO_SCENES[stage],s=core.newGame();
+    Object.assign(s,{chapter:3,day:28+scene.day,slot:scene.slot,phase:'daily'});
+    s.flags={_elapsed_calendar:true,_ch3_intro:{startDay:29,stage,titleSeen:true}};
+    for(const who of known){s.met[who]=true;s.flags['_met_'+who]=true;s.flags['_intro_'+who]=true;}
+    Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
+    core.saveConfig();core.save();
+    const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+    void (await import('./js/chapters/ch3.js')).resumeChapterThree();
+  },{sceneId,known});
+  await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
+}
 await suite('ch2-tournament',async check=>{
   await check('abandoned-pull-keeps-the-vote-and-recovers-the-step',async page=>{
     await seed(page,{stage:'ready',auto:'good'});
@@ -391,5 +442,104 @@ await suite('ch2-tournament',async check=>{
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor();
     const entered=await get(page);
     assert.equal(entered.chapter,3);assert.equal(entered.day,29);assert.equal(entered.flags._ch3_intro.stage,0);
+  });
+  await check('chapter-three-kuze-throw-error-menu-save-rolls-back-meeting',async page=>{
+    await installChapterThreeMeetingFault(page);
+    await seedChapterThreeMeeting(page,'ch3_kuze_first');
+    await page.evaluate(()=>{window.__ch3MeetingFault={scene:'ch3_kuze_first',people:['kuze'],mode:'throw'};});
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.locator(dt('ch3-intro-error')).waitFor();
+    let s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,12);
+    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
+    assert.equal(s.flags._ch3_unrelated_meeting_test,true,'Unrelated state must survive the local rollback');
+    await page.locator(dt('ch3-intro-menu')).click();
+    await page.locator(dt('ch3-intro-save')).click();
+    await page.locator(dt('slot-1')).click();
+    const saved=await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      return core.readSlot(core.SAVE_SLOTS[1].key);
+    });
+    assert.equal(saved.flags._ch3_intro.stage,12,'The error MENU must save the unread scene');
+    for(const value of [saved.met.kuze,saved.flags._met_kuze,saved.flags._intro_kuze])assert.equal(value,undefined);
+    assert.equal(saved.flags._ch3_unrelated_meeting_test,true);
+    await page.locator(dt('ch3-intro-reload')).click();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_advice"]').waitFor();
+    s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,13);
+    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,true);
+  });
+  await check('chapter-three-real-vn-abort-rolls-back-kuze-intro',async page=>{
+    await seedChapterThreeMeeting(page,'ch3_kuze_first');
+    await page.evaluate(async()=>{
+      const vn=await import('./js/vn/engine.js');
+      vn.hooks.onLine=(id,line)=>{
+        if(id==='ch3_kuze_first'&&line.speaker==='hajime'&&line.text?.includes('お茶'))vn.vnTest.turbo=false;
+      };
+    });
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.waitForFunction(()=>{
+      const s=window.__remake.state;
+      return s.met.kuze&&s.flags._met_kuze&&s.flags._intro_kuze&&document.querySelector('#vn.active .vn-text')?.textContent.includes('お茶');
+    });
+    await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
+    const s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,12);
+    for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
+  });
+  await check('chapter-three-mukai-cancel-preserves-loaded-owner',async page=>{
+    await installChapterThreeMeetingFault(page);
+    await seedChapterThreeMeeting(page,'ch3_mukai_arrival',['mashiro']);
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js'),s=core.state;
+      s.met.mukai_master=true;s.flags._met_mukai_master=true;s.flags._intro_mukai_master=true;
+      s.flags._new_loaded_owner='keep';
+      core.saveToSlot(core.SAVE_SLOTS[1].key);
+      delete s.met.mukai_master;delete s.flags._met_mukai_master;delete s.flags._intro_mukai_master;
+      delete s.flags._new_loaded_owner;core.save();
+      window.__ch3MeetingFault={scene:'ch3_mukai_arrival',people:['mukai_master','mashiro'],mode:'cancel'};
+    });
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.waitForFunction(()=>window.__ch3FaultTriggered);
+    let s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,1);
+    for(const value of [s.met.mukai_master,s.flags._met_mukai_master,s.flags._intro_mukai_master])assert.equal(value,undefined);
+    for(const value of [s.met.mashiro,s.flags._met_mashiro,s.flags._intro_mashiro])assert.equal(value,true);
+    await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_mukai_arrival"]').waitFor();
+    await page.evaluate(()=>{
+      window.__ch3FaultTriggered=false;
+      window.__ch3MeetingFault={scene:'ch3_mukai_arrival',people:['mukai_master','mashiro'],mode:'defer'};
+    });
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.waitForFunction(()=>typeof window.__ch3ResolveFault==='function');
+    await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_mukai_arrival"]').waitFor();
+    await page.evaluate(async()=>{await window.__ch3ResolveFault();window.__ch3ResolveFault=null;});
+    s=await get(page);
+    for(const value of [s.met.mukai_master,s.flags._met_mukai_master,s.flags._intro_mukai_master])assert.equal(value,undefined);
+    for(const value of [s.met.mashiro,s.flags._met_mashiro,s.flags._intro_mashiro])assert.equal(value,true);
+    await page.evaluate(()=>{
+      window.__ch3FaultTriggered=false;
+      window.__ch3MeetingFault={scene:'ch3_mukai_arrival',people:['mukai_master','mashiro'],mode:'defer'};
+    });
+    await page.locator(dt('ch3-intro-continue')).click();
+    await page.waitForFunction(()=>typeof window.__ch3ResolveFault==='function');
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      if(!core.loadFromSlot(core.SAVE_SLOTS[1].key))throw new Error('manual LOAD failed');
+      void (await import('./js/chapters/ch3.js')).resumeChapterThree();
+    });
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_mukai_arrival"]').waitFor();
+    await page.evaluate(async()=>{await window.__ch3ResolveFault();window.__ch3ResolveFault=null;});
+    s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,1);
+    for(const value of [s.met.mukai_master,s.flags._met_mukai_master,s.flags._intro_mukai_master,
+      s.met.mashiro,s.flags._met_mashiro,s.flags._intro_mashiro])assert.equal(value,true);
+    assert.equal(s.flags._new_loaded_owner,'keep','The old owner must not revert a different LOAD state');
+    assert.equal(s.flags._ch3_unrelated_meeting_test,undefined);
   });
 });

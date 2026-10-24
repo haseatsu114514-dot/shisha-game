@@ -99,6 +99,36 @@ async function loadIntroDialogues() {
   }
 }
 
+// VNの名乗りと初登場カットインは読了前に書かれる。未完時はこの場面で名乗る人物の
+// identityだけ戻し、選択・好感度など別の成果には触れない。
+function meetingCheckpoint(dialogue) {
+  const metIds = new Set(), introIds = new Set();
+  const collect = lines => {
+    for (const line of lines || []) {
+      const id = /^_met_(.+)$/.exec(line.flag || "")?.[1];
+      if (line.type === "set_flag" && id) { metIds.add(id); introIds.add(id); }
+      if (typeof line.speaker === "string" && line.speaker) introIds.add(line.speaker);
+      if (typeof line.portrait === "string" && line.portrait) introIds.add(line.portrait);
+      if (line.type === "intro" && line.char_id) introIds.add(line.char_id);
+    }
+  };
+  collect(dialogue.lines);
+  for (const lines of Object.values(dialogue.branches || {})) collect(lines);
+  const metNames = [...metIds], introNames = [...introIds];
+  const trackedFlag = key => metNames.some(id => key === `_met_${id}`)
+    || introNames.some(id => key === `_intro_${id}` || key.startsWith(`_intro_${id}_`));
+  const met = Object.fromEntries([...metIds].filter(id => Object.hasOwn(state.met, id)).map(id => [id, state.met[id]]));
+  const flags = Object.fromEntries(Object.entries(state.flags).filter(([key]) => trackedFlag(key)));
+  return () => {
+    for (const id of metIds) {
+      if (Object.hasOwn(met, id)) state.met[id] = met[id];
+      else delete state.met[id];
+    }
+    for (const key of Object.keys(state.flags)) if (trackedFlag(key)) delete state.flags[key];
+    Object.assign(state.flags, flags);
+  };
+}
+
 export function beginChapterThree() {
   if (!canAdvanceToChapterThree(state)) return false;
   return openChapter(true);
@@ -118,8 +148,8 @@ export function resumeChapterThree() {
 }
 
 async function openChapter(advance) {
-  if (session) { session.active = false; session.controller?.abort(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  if (session) { session.active = false; session.controller?.abort(); session.rollbackMeeting?.(); }
+  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null, rollbackMeeting: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament");
   document.body.classList.add("ch3-intro");
   hud(owner);
@@ -127,7 +157,7 @@ async function openChapter(advance) {
     el("h1", { text: "第三章・嘘つきたちの夜" }),
     el("p", { role: "status", text: "東京の場面を準備しています…" }),
   ]));
-  window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
+  window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); owner.rollbackMeeting?.(); }, { once: true });
   await perform(owner, async () => {
     // 台本不足のまま第2章のクリアセーブを進めない。
     await loadIntroDialogues();
@@ -159,6 +189,7 @@ async function readScene(owner, scene) {
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
   // 旧台本に仮置きされた tonari 等の metadata.bg は、東京の場面へ持ち込まない。
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
+  const restoreMeeting = meetingCheckpoint(dialogue);
   const background = bgUrl(scene.bg);
   await setBg(background, { instant: true });
   if (!current(owner)) return false;
@@ -167,19 +198,32 @@ async function readScene(owner, scene) {
   hud(owner);
   const controller = new AbortController();
   owner.controller = controller;
+  const startStage = state.flags?._ch3_intro?.stage;
+  let finished = false, restored = false;
+  const rollbackMeeting = () => {
+    if (restored || finished || owner.state !== state || state.flags?._ch3_intro?.stage !== startStage) return;
+    restoreMeeting();
+    restored = true;
+  };
+  owner.rollbackMeeting = rollbackMeeting;
   let strategyChoice = null;
   const previousOnChoice = hooks.onChoice;
-  if (scene.id === "ch3_strategy") hooks.onChoice = (...args) => {
+  const choiceHook = scene.id === "ch3_strategy" ? (...args) => {
     previousOnChoice?.(...args);
     if (args[0] === "ch3_strategy" && args[1] === "ch3_strategy_choice") strategyChoice = args[2];
-  };
-  let result;
-  try { result = await play(dialogue, { signal: controller.signal }); }
-  finally { hooks.onChoice = previousOnChoice; }
-  if (owner.controller === controller) owner.controller = null;
-  const finished = current(owner) && !!result && !result.cancelled;
-  if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
-  return finished;
+  } : null;
+  if (choiceHook) hooks.onChoice = choiceHook;
+  try {
+    const result = await play(dialogue, { signal: controller.signal });
+    finished = current(owner) && !!result && !result.cancelled;
+    if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
+    return finished;
+  } finally {
+    if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;
+    if (owner.controller === controller) owner.controller = null;
+    rollbackMeeting();
+    if (owner.rollbackMeeting === rollbackMeeting) owner.rollbackMeeting = null;
+  }
 }
 
 async function renderStage(owner) {
