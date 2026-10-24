@@ -63,7 +63,7 @@ try{
    // Chapter 2 before and after Naru confrontation (rift).
    const naruSpot=Q.spots.spotById('naru');
    Object.assign(Q.core.state,{chapter:2,day:27,slot:0,fortuneDay:0,money:13000,met:{naru:true,adam:true},affinity:{naru:30,adam:20}});
-   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true};
+   Q.core.state.flags={_ch2_day1:{startDay:15},_fortune_met:true,_fortune_rumor_heard:true};
    const beforeRiftOpen=Q.access.spotAvailability(naruSpot).ok;
    Q.core.state.day=24; // 24 % 7 === 3 (regular weekly holiday before rift)
    const beforeRiftHoliday=Q.access.spotAvailability(naruSpot).tag;
