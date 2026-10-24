@@ -249,6 +249,7 @@ await suite('ch2-tournament',async check=>{
     assert.equal((await get(page)).flags._ch3_intro.stage,1);
     // 1場面を確定後にロード。冒頭が再生されず、次の場面から続く。
     await page.reload();await page.locator(dt('title-load')).click();
+    assert.match(await page.locator(dt('slot-0')).innerText(),/第3章・DAY 1/);
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
       window.__chapterThreeTrace=[];
@@ -286,6 +287,8 @@ await suite('ch2-tournament',async check=>{
         assert.match(await page.locator('#vn.active .vn-name').textContent(),/久世/);
         assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_yohaku_shop')),
           'Kuze must appear inside 余白');
+        assert.equal(await page.locator(dt('ch3-intro-menu')).count(),0,
+          'Saving during Kuze dialogue could commit his name before the first scene completes');
         await page.waitForTimeout(500);
         await capture(page,'ch3-kuze-first');
         await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});

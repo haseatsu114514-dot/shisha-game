@@ -154,7 +154,8 @@ async function readScene(owner, scene) {
   await setBg(background, { instant: true });
   if (!current(owner)) return false;
   showScreen("none", null);
-  hud(owner, true);
+  // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
+  hud(owner);
   const controller = new AbortController();
   owner.controller = controller;
   const result = await play(dialogue, { signal: controller.signal });
