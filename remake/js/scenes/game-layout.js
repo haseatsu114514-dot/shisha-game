@@ -28,7 +28,7 @@ export function initGameLayout() {
   // DS風では画面を覆わないよう「表示」の折りたたみにする。開くと通常版/DS風/開き直しを選べる。
   const summary = el("summary", { text: "表示", dataset: { test: "game-layout-settings" } });
   const toolbar = el("details.game-layout-toolbar", { "aria-label": "本編の見た目", hidden: true,
-    onkeydown: e => { if (["Enter", " "].includes(e.key) && e.target.closest("button,a")) e.stopPropagation(); },
+    onkeydown: e => { if (["Enter", " "].includes(e.key) && e.target.closest("button,a,summary")) e.stopPropagation(); },
   }, [summary, el("nav.game-layout-options", [
     ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "game-layout-recover" } }), note,
   ])]);
