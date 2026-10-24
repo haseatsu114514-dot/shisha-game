@@ -351,35 +351,18 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "[warn]制限時間60分[/warn]。4人が同時にシーシャを作り、審査員に提出する。"
-        },
-        {
           "type": "show_cg",
           "cg_id": "cg_ch1_tournament_battle"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "フレーバーの袋を開ける。甘い香りが手元から立ち上る。"
+          "text": "蒸らしを終えた一台から、甘い香りがゆっくり立ち上る。"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（落ち着け。いつもと同じだ。炭を切って、詰めて、出す。それだけだ）"
-        },
-        {
-          "speaker": "pakki",
-          "face": "excited",
-          "text": "おーっと！ 各選手、フレーバー選択完了！ パッキングに入りますッ！"
-        },
-        {
-          "type": "condition",
-          "stat": "technique",
-          "threshold": 30,
-          "next_true": "tech_high",
-          "next_false": "tech_low"
+          "text": "（落ち着け。いつもと同じだ。……吸い出して、届けよう）"
         },
         {
           "speaker": "",
@@ -399,11 +382,6 @@
           "next_false": "insight_low"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "炭をコンロに乗せる。赤くなるのを待つ。"
-        },
-        {
           "speaker": "pakki",
           "face": "smile",
           "text": "あれあれ〜？ はじめ選手、ちょっと手が止まってますよ？ 大丈夫ですか〜♪"
@@ -417,18 +395,6 @@
           "speaker": "",
           "face": "",
           "text": "でも、パッキーの声で妙に力が抜けた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "炭を置く。蒸らす。蒸気がゆっくり立ち上る。甘い香りが自分のステーションを包む。"
-        },
-        {
-          "type": "condition",
-          "stat": "sense",
-          "threshold": 30,
-          "next_true": "sense_high",
-          "next_false": "sense_low"
         },
         {
           "speaker": "pakki",
@@ -446,6 +412,39 @@
           "text": "ここだけは、tonariと同じ香りがした。"
         },
         {
+          "type": "hide_cg"
+        }
+      ],
+      "branches": {
+        "insight_high": [
+          {
+            "text": "南雲会長は腕を組んで目を閉じている。味に集中したいタイプか。"
+          },
+          {
+            "text": "上園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
+          },
+          {
+            "text": "（審査員の好みはバラバラだ。でも、全員に美味しいと思わせる『芯』が必要だ）",
+            "speaker": "hajime",
+            "face": "normal"
+          }
+        ],
+        "insight_low": [
+          {
+            "text": "南雲会長は無表情で、何を考えているか分からない。上園さんは……ただ笑ってるだけ？"
+          },
+          {
+            "text": "（どこを見ればいいんだ……？ とにかく、自分のベストを出すしかない）",
+            "speaker": "hajime",
+            "face": "normal"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_tournament_served",
+      "lines": [
+        {
           "speaker": "",
           "face": "",
           "text": "吸い出しの瞬間。ホースを口に当てて、ゆっくり吸い込む。"
@@ -459,9 +458,6 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（教わったことを、１つずつここまで練習した。……これが、今の俺の全力だ）"
-        },
-        {
-          "type": "hide_cg"
         },
         {
           "speaker": "pakki",
@@ -503,72 +499,7 @@
           "face": "",
           "text": "4つの水音が会場に静かに響く。"
         }
-      ],
-      "branches": {
-        "tech_high": [
-          {
-            "text": "指先が勝手に動く。練習した通りだ。フレーバーをふんわりと解して、ボウルに空気の通り道を作る。"
-          },
-          {
-            "text": "（よし……完璧なパッキングだ）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ],
-        "tech_low": [
-          {
-            "text": "指先が少し震える。フレーバーをこぼしそうになる。"
-          },
-          {
-            "text": "（落ち着け……一度深呼吸だ。焦るな、丁寧にやるんだ）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ],
-        "insight_high": [
-          {
-            "text": "南雲会長は腕を組んで目を閉じている。味に集中したいタイプか。"
-          },
-          {
-            "text": "上園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
-          },
-          {
-            "text": "（審査員の好みはバラバラだ。でも、全員に美味しいと思わせる『芯』が必要だ）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ],
-        "insight_low": [
-          {
-            "text": "南雲会長は無表情で、何を考えているか分からない。上園さんは……ただ笑ってるだけ？"
-          },
-          {
-            "text": "（どこを見ればいいんだ……？ とにかく、自分のベストを出すしかない）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ],
-        "sense_high": [
-          {
-            "text": "炭の熱が伝わってくる。今だ。このタイミングで配置を変える。"
-          },
-          {
-            "text": "（フレーバーが一番香り立つ温度帯。そこをキープする）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ],
-        "sense_low": [
-          {
-            "text": "炭の熱が少し読みづらい。会場の空調のせいか？"
-          },
-          {
-            "text": "（焦げないように、少し弱めでいこう。安全策だ）",
-            "speaker": "hajime",
-            "face": "normal"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "ch1_tournament_judging",
