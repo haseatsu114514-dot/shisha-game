@@ -102,6 +102,7 @@
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
+        "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
         "node remake/test/natural_wrap.mjs"
       ]

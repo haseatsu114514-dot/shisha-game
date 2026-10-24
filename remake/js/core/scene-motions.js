@@ -16,6 +16,7 @@ const shark = () => import("../motions/shark.js");
 const sketch = () => import("../motions/sketch.js");
 const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
+const purikura = () => import("../motions/purikura.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
 // 動かないカードで見せる。省くと二度と見られない（#833）。
@@ -37,6 +38,15 @@ const variant = async (scene, load) => {
 export async function chekiShot(url, placeCg = null) {
   const run = skipMotion() || !url ? null : await variant("cheki", cheki);
   if (run) await run(url, placeCg);
+}
+
+/** あげはの店のプリクラ（#939）。会話の {"type": "motion", "id": "purikura"} から呼ぶ */
+export async function purikuraShot() {
+  if (skipMotion()) return;
+  const owner = state;
+  const run = await variant("purikura", purikura);
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブのプリクラを始めない。
+  if (run) await run();
 }
 
 export async function tarotFlip(charId = state?.fortune?.char) {

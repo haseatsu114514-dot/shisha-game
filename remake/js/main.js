@@ -198,6 +198,16 @@ window.__remake = {
           return { fromDay: 3, day: 4, fromLeft: TOURNAMENT_DAY - 3, left: TOURNAMENT_DAY - 4, rain: weather === "rain", weather, sick: kind === "sick" };
         });
       }
+      // プリクラ（#939）: purikura は演出だけ、purikura-scene はあげはのギャル友の回を通しで
+      if (name.startsWith("purikura")) {
+        const { ROOMS, readDialogues } = await import("./chapters/ch2-city-data.js");
+        Object.assign(state, { chapter: 2, slot: 0 });
+        state.met.ageha = true;
+        await setBg(ROOMS.ageha);
+        if (name !== "purikura-scene") return motions.purikuraShot();
+        Object.assign(DB.dialogues, await readDialogues("ch2_ageha_story", ["remake_ch2_ageha_gyaru"]));
+        return play("remake_ch2_ageha_gyaru", { bg: ROOMS.ageha });
+      }
       if (name === "sketch") {
         const art = sceneBg(tonariNight, "night");
         await setBg(null);

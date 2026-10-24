@@ -243,6 +243,52 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（係にされた。……でも、悪い気はしなかった）"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ねえ、記念にプリ撮ってきなよ。入口のやつ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "それ！ ハジメっち、撮ろ撮ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、俺もですか？ プリクラなんて、撮ったことないです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "だいじょぶ、うちが盛ってあげる。ほら、早く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "腕を引かれて、入口のプリクラ機のカーテンをくぐった。"
+        },
+        {
+          "type": "motion",
+          "id": "purikura"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、ハジメっちの分。なくしたら泣くからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます。大事にします"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "purikura_known",
+          "next_false": "purikura_unknown"
         }
       ],
       "branches": {
@@ -277,6 +323,25 @@
             "speaker": "ageha",
             "face": "smile",
             "text": "それ！ うちはそこまで考えてないけど、たぶんそう"
+          }
+        ],
+        "purikura_known": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（ハートを描くペンが、途中で止まってた。……指、つらい日なのかな）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ギャル友の前だ。今は、何も聞かないでおこう）"
+          }
+        ],
+        "purikura_unknown": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（そういえば、あげはさん。ペンはすぐやめて、スタンプばかり押してたな）"
           }
         ]
       }
