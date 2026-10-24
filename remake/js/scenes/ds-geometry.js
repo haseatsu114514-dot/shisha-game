@@ -58,6 +58,8 @@ export function applyDsGeometry() {
   const g = dsGeometry(width, height, safeInsets());
   const root = document.documentElement;
   for (const key of ["vx", "vy", "vw", "vh", "cx", "cy", "cw", "ch", "hinge"]) root.style.setProperty(`--ds-${key}`, `${g[key]}px`);
+  // 760px基準の作業台（座標で操作する工程）を下画面の幅へ縮める倍率。単位なしの数で置く。
+  root.style.setProperty("--ds-k", String(Math.round(Math.max(.2, (g.cw - 20) / 760) * 10000) / 10000));
   root.dataset.dsLayout = g.layout;
   return g;
 }
