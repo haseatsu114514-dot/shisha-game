@@ -1,10 +1,10 @@
 {
-  "status": "review_candidate_not_applied",
+  "status": "normal_v4_applied_local_unpublished",
   "tool": "standard image_gen",
-  "production_unchanged": true,
+  "production_unchanged": false,
   "references": [
     {
-      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "path": "asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
       "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
     },
     {
@@ -32,7 +32,8 @@
       ],
       "visible_height": 1430,
       "sha256": "1fcc9e7f35d0f95bef359d5b0d1525c96faf4f3e878ea4f2e4a8d076ec1ca3f7",
-      "processing": "fit_portrait.py: uniform downscale and canvas placement only; no face or jaw compositing"
+      "processing": "fit_portrait.py: uniform downscale and canvas placement only; no face or jaw compositing",
+      "status": "rejected_eye_asymmetry"
     },
     {
       "version": 2,
@@ -49,8 +50,49 @@
       ],
       "visible_height": 1436,
       "sha256": "349204fc5299bf217e4946d9921ae23000a487e403bf7d81a46a54cbf2368e39",
-      "processing": "fit_portrait.py: uniform downscale and canvas placement only; no face or jaw compositing"
+      "processing": "fit_portrait.py: uniform downscale and canvas placement only; no face or jaw compositing",
+      "status": "rejected_eye_asymmetry"
+    },
+    {
+      "version": 3,
+      "source": "normal-v3-source.png",
+      "sha256": "c3d958f0e9884b266da3ce1bc5a6ea8ef29cff86cd7aceaa3a777585a75eadea",
+      "size": [
+        1085,
+        1450
+      ],
+      "visible_bbox": [
+        311,
+        7,
+        857,
+        1442
+      ],
+      "visible_height": 1435,
+      "prompt": "normal-v3-prompt.txt",
+      "status": "rejected_eye_aperture_asymmetry",
+      "processing": "uniform downscale and placement; v4 translated -3px to preserve feet; no face compositing"
+    },
+    {
+      "version": 4,
+      "source": "normal-v4-source.png",
+      "sha256": "0fb72a63db9506e7c431d00c7652c3fd6739d7a15e97807951f4eed73448ef86",
+      "size": [
+        1024,
+        1536
+      ],
+      "visible_bbox": [
+        278,
+        44,
+        774,
+        1506
+      ],
+      "visible_height": 1462,
+      "prompt": "normal-v4-prompt.txt",
+      "status": "applied_local_unpublished",
+      "processing": "uniform downscale and placement; v4 translated -3px to preserve feet; no face compositing"
     }
   ],
-  "lossless_webp_matches_preview": true
+  "lossless_webp_matches_preview": true,
+  "applied_version": 4,
+  "limitations": "v4 head now frontal/upright; eyes and cheeks look rounder; fine drawing somewhat smoother. User has not yet reviewed final v4."
 }

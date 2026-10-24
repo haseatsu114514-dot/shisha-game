@@ -13,8 +13,9 @@
         {
           "label": "通常",
           "expression": "normal",
-          "path": "../../../../assets/sprites/characters/minto/chr_minto_normal.png",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+          "path": "../../../../asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "note": "Initial style reference retained; runtime corrected in eye/jaw review."
         },
         {
           "label": "笑顔",
@@ -76,8 +77,9 @@
         {
           "label": "悲しみ",
           "expression": "sad",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_sad.png",
-          "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3"
+          "path": "../../../../asset_sources/portraits/jawline-cleanup/ageha-sad-before.png",
+          "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3",
+          "note": "Initial style reference retained; runtime corrected in eye/jaw review."
         }
       ]
     },
@@ -1341,6 +1343,26 @@
           "expression": "smile",
           "path": "../../../../assets/sprites/characters/salaryman/chr_salaryman_smile.png",
           "sha256": "eb715b9f3c06419436ac119c0dbea6c89a21cb03d2c672a39fc78f1114cb9253"
+        }
+      ]
+    },
+    {
+      "id": "eye-jaw-correction-20261024",
+      "title": "みんと通常・あげは悲しみ：目と顎の修正",
+      "status": "applied_local_unpublished",
+      "role": "指定修正。初期の画風基準は上書きしない。最終見た目のユーザー確認は未了。",
+      "images": [
+        {
+          "label": "minto normal corrected",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+        },
+        {
+          "label": "ageha sad corrected",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_sad.png",
+          "sha256": "65502dd68c9de1518d9f32369f68b38d3e9f9d0c4d664d78a06f5df94ccbd383"
         }
       ]
     }

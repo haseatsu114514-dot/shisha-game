@@ -1,8 +1,13 @@
-# フェイスラインの調査：修正案は不採用・素材復元済み
+# 目とフェイスラインの修正・全表情点検
 
-追加指示による、みんとの目・顎を含む全身再生成は [新しい比較候補](../../../asset_sources/portraits/minto-eye-jaw-review/README.md) に分けて保存。以下の不採用の局所合成とは別工程で、本番素材は引き続き変更していない。
+みんと通常v4・あげは悲しみv1の先行2枚をローカルへ反映。目の左右差と顎の黒白二重縁を、標準image_genによる連続した再描画で調整した。足元を合わせ、PNG・可逆WebP・みんとの顔アイコンを更新。公開反映・最終版へのユーザーの見た目確認は未了。
 
-ユーザーから「肌色部分にも歪みがあり、満足いく修正ではない」と指摘されたため、先行2枚の修正は不採用。あげは `sad` とみんと `normal` のPNG／WebPを、作業前 `1ce4527b` とバイト単位で同一の状態へ戻した。現在、採用済みの修正はない。残り13表情への展開も行っていない。
+- [みんとの修正前後](../../../asset_sources/portraits/minto-eye-jaw-review/normal-v4-face-compare.png)：顔を正面寄りに変更し両眼を揃えた。元より目と頬が丸く、頭の傾きも変わる。
+- [あげはの修正前後](../../../asset_sources/portraits/ageha-jaw-review/sad-v1-face-compare.png)：顎線と明るい縁を弱めた。顔の描線・陰影は少し滑らかになる。
+- [22キャラ100表情の点検結果](audit/README.md)：全表情に個別の判定理由を保存。みんと笑顔、あげはの残り4表情、ましろ通常・真剣を修正／調整候補として記録。
+- [現在のPNG/WebP比較ビューアー](index.html)、[統合確認](integration-check.json)、[実VNの表示確認](runtime-review/browser-check.json)。
+
+以下は**不採用となった旧局所合成の履歴**。ユーザーの肌の歪みの指摘後、2枚とも作業前 `1ce4527b` へ一度バイト一致で戻した。その後、今回の再描画を適用した。`rollback-check.json` は復元当時の記録であり、今回の修正後を示すものではない。
 
 ## 失敗の原因と検証の訂正
 
@@ -28,20 +33,18 @@
 - 話者の立ち絵は `filter: none; image-rendering: auto`。顎へ線を追加するCSS処理はない。
 - 濃さ・ギザつきの調整が課題であり、黒い部分すべてを不要な線と断定しない。チョーカー・髪・自然な首の影は保持する。
 
-## 顔アップ一覧
+## 顔アップ一覧・再現
 
-現行manifestの22キャラ100表情を `catalog.json` に対応付けた。キャラ名・表情・元PNG・WebP・顔の切り出し座標を記録。`index.html` で背景（白／灰／暗）と倍率（100%／50%／200%）を選べる。現在は復元後のゲーム素材を表示する。
-
-`faces-*.jpg` は一覧の補助で、評価には元PNG／WebPを使う。他85表情の「正常な輪郭・影」は一覧による一次判定であり、全背景・実ゲームまで精査済みではない。修正候補の有無を決める前に個別確認する。
+現在の顔アップと判定は `index.html` / `catalog.json`。以前の他85表情の一律の一次判定は、今回の [100表情の個別点検](audit/README.md) に置き換えた。`faces-*.jpg` は現在素材の一覧補助、`audit/faces-*.webp` は今回修正直前の比較。
 
 ```sh
 python3 remake/tools/serve_preview.py --port 8123
 # http://127.0.0.1:8123/docs/qa/portrait-jawline/
 python3 docs/qa/portrait-jawline/build_catalog.py
+node docs/qa/portrait-jawline/check-runtime.cjs
+REVIEW_OTHER_CHARACTERS=1 node docs/qa/portrait-jawline/check-runtime.cjs
 ```
 
-`asset_sources/portraits/jawline-cleanup/apply.py` は不採用実験の再現専用。`--output-dir` を必須にし、ゲーム素材への書き込みは禁止した。原画とマスクは比較資料としてのみ保存。
+`asset_sources/portraits/jawline-cleanup/apply.py` は不採用実験の再現専用。ゲーム素材へは書き込まない。今回もこの細帯合成は使っていない。
 
-次の候補も1枚だけで、元の顎位置・肌色の連続性・線の濃さを確認する。広いマスクに変えるだけでも形状変更を採用してしまうので解決にはならない。見た目が改善していない候補を、技術検査の成功だけで採用しない。
-
-GitHub照会はこの環境から `Forbidden`。push・PR作成・公開反映は未実施。
+GitHub照会はこの環境から `Forbidden`。push・PR作成・公開反映は未実施。作業branch `fix/portrait-jawline` に保存。
