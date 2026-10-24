@@ -1,0 +1,26 @@
+{
+  "character": "kuze",
+  "tool": "image_gen.imagegen",
+  "transparent_background": true,
+  "references": ["normal-first-pass.png"],
+  "source": {
+    "path": "asset_sources/portraits/kuze-original-20261024/normal-source.png",
+    "size": [1086, 1448],
+    "mode": "RGBA",
+    "sha256": "e3c33c8891de00962e85a87fae863ae2ac0864d65fb062728e778b6cae59896e"
+  },
+  "first_pass": {
+    "path": "asset_sources/portraits/kuze-original-20261024/normal-first-pass.png",
+    "size": [1086, 1448],
+    "mode": "RGBA",
+    "sha256": "5392157b9fb4d04a9e20aa77ff523d491264f9870c7c002faba727bc62d8c4c8"
+  },
+  "runtime": {
+    "path": "assets/sprites/characters/kuze/chr_kuze_normal.png",
+    "size": [896, 1200],
+    "mode": "RGBA",
+    "sha256": "15374119bb2c02edba283283459d623d5c69f2fa7e44956618d3e59528f341b5"
+  },
+  "conversion": "ImageMagick: alpha > 10% maximum connected component, dilated 2px for antialiased outline; multiply source alpha by this mask, erode outline 2px, mask highly saturated edge pixels and localized red artifact at left forearm/apron gap; aspect-preserving resize into 896x1160 and transparent center extent 896x1200.",
+  "visual_qa": "Full face, hair, both shoes, left hand, right thumb and apron pocket, notebook, pen, clothing and cleaned transparent edge inspected on a neutral background. No shisha equipment present."
+}

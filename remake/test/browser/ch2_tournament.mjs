@@ -129,7 +129,7 @@ await suite('ch2-tournament',async check=>{
     let s=await get(page);assert(s.flags._ch2_tokyo_invitation);assert(s.flags._ch2_taste_distant);assert(!s.flags.ch2_taste_recovered);assert.equal(s.phase,'cleared');assert.equal(s.day,28);assert.equal(s.slot,1);
     for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],before[key],key);
     assert.deepEqual(s.inbox[0],before.inbox[0]);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
-    assert.equal(await page.getByRole('button',{name:/第三章|第3章/}).count(),0);
+    assert.equal(await page.getByRole('button',{name:'第三章・東京へ'}).count(),1);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
     // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
@@ -226,5 +226,103 @@ await suite('ch2-tournament',async check=>{
     await seed(page);await page.locator(t('error')).waitFor();let s=await get(page);
     assert.equal(s.day,28);assert.equal(s.stamina,100);assert.equal(s.flavorStock.double_apple,40);assert(!s.flags._ch2_tournament);
     bad=false;await page.locator(t('reload')).click();await page.locator(t('entry')).waitFor();s=await get(page);assert.equal(s.flavorStock.double_apple,40);
+  });
+  await check('chapter-three-kuze-entry-resume-and-day-spacing',async page=>{
+    page.setDefaultTimeout(30000);
+    await seed(page,{stage:'complete'});
+    await page.locator(t('complete')).waitFor();
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      core.state.phase='cleared';core.state.flags._ch2_cleared=true;core.save();
+    });
+    const before=await get(page);
+    await page.locator(t('chapter-three')).click();
+    const scene=id=>`[data-test="ch3-intro-scene"][data-scene="${id}"]`;
+    const continueButton=dt('ch3-intro-continue');
+    await page.locator(scene('ch3_opening')).waitFor();
+    let s=await get(page);
+    assert.equal(s.chapter,3);assert.equal(s.day,29);assert.equal(s.flags._ch3_intro.stage,0);
+    for(const key of ['money','stamina','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
+      assert.deepEqual(s[key],before[key],`Chapter 3 entry changed ${key}`);
+    await page.locator(continueButton).click();
+    await page.locator(scene('ch3_mukai_arrival')).waitFor();
+    assert.equal((await get(page)).flags._ch3_intro.stage,1);
+    // 1場面を確定後にロード。冒頭が再生されず、次の場面から続く。
+    await page.reload();await page.locator(dt('title-load')).click();
+    await page.evaluate(async()=>{
+      const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+      window.__chapterThreeTrace=[];
+      window.__pausedChapterThree={};
+      vn.hooks.onLine=(id,line)=>{
+        if(window.__chapterThreeTrace.at(-1)!==id)window.__chapterThreeTrace.push(id);
+        const key=id==='ch3_double_apple_incident'?'mukai':id==='ch3_kuze_first'&&line.speaker==='kuze'?'kuze':null;
+        if(key&&!window.__pausedChapterThree[key]){window.__pausedChapterThree[key]=true;vn.vnTest.turbo=false;}
+      };
+    });
+    await page.locator(dt('slot-0')).click();
+    await page.locator(scene('ch3_mukai_arrival')).waitFor();
+    assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),[]);
+    const ordered=await page.evaluate(async()=>
+      (await import('./js/chapters/ch3-progress.js')).CH3_INTRO_SCENES.map(({id,day,slot})=>({id,day,slot})));
+    for(const {id,day,slot} of ordered.slice(1)) {
+      await page.locator(scene(id)).waitFor();
+      s=await get(page);
+      assert.equal(s.day,28+day,`Wrong elapsed day before ${id}`);
+      assert.equal(s.slot,slot,`Wrong time slot before ${id}`);
+      await page.locator(continueButton).click();
+      if(id==='ch3_double_apple_incident'){
+        await page.waitForFunction(()=>window.__pausedChapterThree.mukai&&document.querySelector('#vn.active .vn-text')?.textContent.includes('mukai'));
+        assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_mukai_shop')),
+          'Tokyo mukai must not show the old tonari interior');
+        await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
+        await page.keyboard.press('Enter');
+      }
+      if(id==='ch3_kuze_first'){
+        const portrait=page.locator('.vn-portraits img[data-speaker="kuze"].active');
+        await portrait.waitFor();
+        await page.waitForFunction(()=>document.querySelector('#vn.active .vn-text')?.textContent.includes('いらっしゃい'));
+        assert(await portrait.evaluate(async node=>{await node.decode();return node.naturalWidth>0;}),
+          'Kuze portrait must decode in his first conversation');
+        assert.match(await page.locator('#vn.active .vn-name').textContent(),/久世/);
+        assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_yohaku_shop')),
+          'Kuze must appear inside 余白');
+        await page.waitForTimeout(500);
+        await capture(page,'ch3-kuze-first');
+        await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
+        await page.keyboard.press('Enter');
+      }
+    }
+    await page.locator(dt('ch3-intro-complete')).waitFor();
+    s=await get(page);
+    assert.equal(s.flags._ch3_intro.stage,ordered.length);
+    assert.equal(s.chapter,3);assert.equal(s.day,39);assert.notEqual(s.phase,'cleared');
+    assert.equal(s.flags._ch3_cleared,undefined);
+    assert(s.met.kuze,'Kuze must be known after the first visit');
+    assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).map(scene=>scene.id));
+    assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
+    for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
+      assert.deepEqual(s[key],before[key],`Intro scene changed ${key}`);
+  });
+  await check('chapter-three-missing-dialogue-keeps-chapter-two-save',async page=>{
+    let bad=true;
+    await page.route('**/ch3_rivals.json',async route=>{
+      if(!bad)return route.continue();
+      const response=await route.fetch();const body=await response.json();
+      body.dialogues=body.dialogues.filter(d=>d.dialogue_id!=='ch3_kuze_advice');
+      await route.fulfill({response,json:body});
+    });
+    await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      core.state.phase='cleared';core.state.flags._ch2_cleared=true;core.save();
+    });
+    const prior=await get(page);
+    await page.locator(t('chapter-three')).click();
+    await page.locator(dt('ch3-intro-error')).waitFor();
+    assert.deepEqual(await get(page),prior,'Missing later Kuze dialogue must not advance the chapter or consume resources');
+    bad=false;await page.locator(dt('ch3-intro-reload')).click();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor();
+    const entered=await get(page);
+    assert.equal(entered.chapter,3);assert.equal(entered.day,29);assert.equal(entered.flags._ch3_intro.stage,0);
   });
 });

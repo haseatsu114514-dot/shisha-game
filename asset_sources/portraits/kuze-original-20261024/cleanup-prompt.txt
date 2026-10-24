@@ -1,0 +1,3 @@
+Input: normal-first-pass.png
+
+Clean up this exact full-body character sprite for production. Preserve the same adult Japanese man's face, dark wavy hair, warm watchful expression, ivory rolled-sleeve shirt, dark navy apron with pocket notebook and pen, muted amber apron tie, charcoal pants, dark shoes, body proportions and pose. Keep BOTH feet and all body parts fully visible. Make the background genuinely clean transparent alpha with no isolated stray dots anywhere, no colored fringe or rough colored pixels along the outline, no cast shadow. Keep crisp polished mature 2D Japanese anime visual novel style and natural details. Do not add objects, text, background, logo or other characters. Do not change identity or expression. Output one clean full-body standing sprite.
