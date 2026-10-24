@@ -76,7 +76,14 @@ for (const id of ids) {
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
     assert.equal(saves, 1, "Visit must not insert an early save before calendar settlement");
     if (first) { await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_followup`); }
+    if (id !== "ageha") {
+      // #952: 続編のあと一度だけ、前の話を覚えて少し進む再訪。正常終了でだけ請求・既読。
+      const money = state.money; await visit(id);
+      assert.equal(played.at(-1), `remake_ch2_${id}_revisit`); assert.equal(state.flags._ch2_revisit_done[id], true);
+      assert.equal(state.money, money - 3000);
+    }
     await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`);
+    await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "The revisit is read only once");
   }
   for (const failure of ["cancel", "undefined", "throw", "bad-image", "bad-dialogue", "missing-dialogue", "guard"]) {
     await setup(); mode = failure;
@@ -86,6 +93,15 @@ for (const id of ids) {
     if (failure === "throw") await assert.rejects(visit(id), /injected/);
     else assert.equal((await visit(id, failure !== "guard")).used, false);
     assert.deepEqual(state, before, `${id}: ${failure} must leave the entire action state unchanged`);
+  }
+  if (id !== "ageha") for (const failure of ["cancel", "undefined", "replace-state"]) {
+    await setup(); await visit(id); mode = failure;
+    const old = state, before = structuredClone(state);
+    assert.equal((await visit(id)).used, false);
+    // 続編の既読（VM内で作られたオブジェクト）を含むため、値だけをJSONで比べる。
+    assert.equal(JSON.stringify(old), JSON.stringify(before), `${id}: ${failure} during the revisit leaves money/stamina/read state unchanged`);
+    assert.equal(old.flags._ch2_revisit_done?.[id], undefined);
+    mode = "ok";
   }
   await setup(); mode = "pending";
   const before = structuredClone(state), pending = visit(id);

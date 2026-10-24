@@ -41,9 +41,13 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !followup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
-  const scene = story || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
+  // 神崎・REIは続編のあと一度だけ、前の話を覚えていて少し進む再訪（#952）。その後はいつもの会話。
+  const revisitId = `remake_ch2_${id}_revisit`;
+  const revisit = !first && !followup && !story && !state.flags._ch2_revisit_done?.[id] && !!DB.dialogues[revisitId];
+  const deferred = followup || revisit;
+  const scene = story || (revisit ? revisitId : `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`);
   const dialogue = DB.dialogues[scene];
-  if (!dialogue?.lines?.length || followup && !dialogue.lines.every(line => line && !line.type
+  if (!dialogue?.lines?.length || deferred && !dialogue.lines.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
     toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
@@ -62,14 +66,14 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   }
   // 新しい続編には制御行・報酬を持たせず、正常終端まで請求を保留する。
   // cancelled/途中LOAD/例外で費用だけがRAMや保存に残らない。既存chat/repeatの順序は保持。
-  if (!followup) { addMoney(-spot.cost); addStamina(spot.stamina); }
+  if (!deferred) { addMoney(-spot.cost); addStamina(spot.stamina); }
   await setBg(ROOMS[id], { instant: true });
   if (state !== owner) return { used: false, exerted: false };
   const result = await play(scene);
   if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
-  if (followup) {
+  if (deferred) {
     addMoney(-spot.cost); addStamina(spot.stamina);
-    (state.flags._ch2_followup_done ||= {})[id] = true;
+    (state.flags[followup ? "_ch2_followup_done" : "_ch2_revisit_done"] ||= {})[id] = true;
   }
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   const talks = state.flags._ch2_talks ||= {};
