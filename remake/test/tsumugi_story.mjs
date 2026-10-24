@@ -162,6 +162,25 @@ try {
   await opening.close();
   console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
 
+  // #815: 客席の固有会話は客の視点。取材・連絡先交換の後は、初回でも初対面の態度へ戻らない。
+  const seat = await open();
+  for (const researched of [true, false]) {
+    const visit = await seat.evaluate(async researched => {
+      const s = T.fresh(); s.day = 2;
+      if (researched) await T.story.playTsumugiStory(1);
+      T.vn.backlog().length = 0;
+      T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("一声かけて")));
+      for (let i = 0; i < 6; i++) await T.spots.visitChar("tsumugi");
+      return { lines: T.lines(), research: !!s.flags._tsumugi_contest_research };
+    }, researched);
+    assert.equal(visit.research, true);
+    assert(!visit.lines.some(t => /シフト中|バイト中|閉店作業|別のお客さんの一台|あなた、最初の日/.test(t)));
+    assert.equal(visit.lines.includes("……どうも"), !researched, "Known regular returned to a first meeting");
+    assert.equal(visit.lines.includes("……ありがとうございます"), researched);
+  }
+  await seat.close();
+  console.log("[tsumugi story] PASS: customer-seat scenes, known after the interview, first meeting kept before it");
+
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
   for (const day of [3, 11, 13]) {
     const calendar = await open();

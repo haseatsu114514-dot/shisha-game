@@ -9,15 +9,16 @@ import { CH2_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
 async function readStep(step) {
   const owner = state;
   const flag = `_ch2_read_${step.id}`;
-  if (owner.flags[flag]) return;
+  if (owner.flags[flag] || (step.when && !step.when(owner))) return;
   if (!DB.dialogues[step.id]) throw new Error(`台本がありません: ${step.id}`);
-  if (["remake_ch2_eve_arrival", "ch2_pre_tournament_realisation"].includes(step.id)) {
+  if (["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id)) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
     await setBg(MAP.night, { instant: true });
   }
-  if (step.room) {
-    if (!await imageReady(ROOMS[step.room], 15000)) throw new Error(`店内を読み込めませんでした: ${step.room}`);
-    await setBg(ROOMS[step.room], { instant: true });
+  const place = step.bg || (step.room && ROOMS[step.room]);
+  if (place) {
+    if (!await imageReady(place, 15000)) throw new Error(`場面の背景を読み込めませんでした: ${step.bg || step.room}`);
+    await setBg(place, { instant: true });
   }
   syncAgehaVibes(owner.flags);
   const result = await play(step.id);

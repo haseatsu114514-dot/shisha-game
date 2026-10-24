@@ -1,5 +1,3 @@
-// Follow the actual appearance confirmation added to ordinary setup.
-// Do not bypass the chooser, synthesize state, or ignore a missing catalog.
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -29,8 +27,21 @@ export function prepareAppearanceCatalog(root = repositoryRoot) {
   fs.writeFileSync(target, text, { flag: "wx" });
 }
 
-export async function confirmAppearanceSetup(page, { touch = false } = {}) {
-  const confirm = page.locator('[data-test="appearance-confirm"]');
+// Setup now continues directly to water/mix. A missing next step is still an error.
+export async function waitForSetupContinuation(page) {
+  await page.locator('.bench [data-test="water-confirm"], .bench [data-test="mix-ok"]').first().waitFor({ state: "visible" });
+  if (await page.locator('.bench [data-test="appearance-confirm"]').count()) {
+    throw new Error("Appearance must not block ordinary crafting");
+  }
+}
+
+// Compatibility for callers in pending craft-test PRs (#870/#886).
+export const confirmAppearanceSetup = waitForSetupContinuation;
+
+// Manual full-craft callers must also operate the real water step before mix.
+export async function confirmSetupWater(page, { touch = false } = {}) {
+  await waitForSetupContinuation(page);
+  const confirm = page.locator('.bench [data-test="water-confirm"]');
   await confirm.waitFor({ state: "visible" });
   await confirm.scrollIntoViewIfNeeded();
   if (touch) await confirm.tap(); else await confirm.click();

@@ -201,7 +201,110 @@ async function checkScene(name, viewport, label, variant = null, stallPenFrames 
   }
 }
 
+// 電車は実際のアニメーションを通常速度で測る。紫・遮蔽・任意の乗客・保存不変を確認。
+async function checkTrains() {
+  const cases = [
+    ["normal", { width: 1280, height: 720 }, { cameo: null, tone: "night" }],
+    ...["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
+    ["halloween", { width: 844, height: 390 }, { halloween: true, cameo: "samechan" }],
+    ["portrait", { width: 390, height: 844 }, { halloween: true, cameo: "hiyori" }],
+    ["slow-arrival", { width: 1280, height: 720 }, { cameo: null, delay: 1300 }],
+    ["missing-crowd", { width: 1280, height: 720 }, { cameo: null, unavailable: true }],
+  ];
+  const selectedCases = cases.filter(c => !process.env.TRAIN_CASE_FILTER || c[0] === process.env.TRAIN_CASE_FILTER);
+  assert(selectedCases.length, "TRAIN_CASE_FILTER matched no case");
+  for (const [name, viewport, options] of selectedCases) {
+    const { page, context } = await open(viewport, `train-${name}`);
+    try {
+      if (options.unavailable) await page.route("**/ui/transitions/train/crowd_*.webp", route => route.fulfill({ status: 404, body: "test missing image" }));
+      if (name === "normal") await page.evaluate(async () => (await import("./js/core/mg-kit.js")).setMotionPalette("free"));
+      await page.evaluate(options => {
+        T.core.state.chapter = 2;
+        window.trainAudit = { mid: 0, opacity: null, fades: [], done: false, before: JSON.stringify(T.core.state), start: performance.now() };
+        const animate = Element.prototype.animate;
+        Element.prototype.animate = function (frames, timing) {
+          if (this.matches(".mo-train")) trainAudit.fades.push({ frames, duration: timing.duration });
+          return animate.call(this, frames, timing);
+        };
+        window.trainRun = T.motions.trainRide(async () => {
+          trainAudit.mid++;
+          const node = document.querySelector(".mo-train");
+          trainAudit.opacity = Number(getComputedStyle(node).opacity);
+          trainAudit.covering = T.transitions.isCovering();
+          if (options.delay) await new Promise(r => setTimeout(r, options.delay));
+          document.getElementById("bg").style.backgroundColor = "rgb(9, 7, 19)";
+        }, options).then(() => {
+          trainAudit.elapsed = performance.now() - trainAudit.start;
+          trainAudit.unchanged = trainAudit.before === JSON.stringify(T.core.state);
+          trainAudit.done = true;
+        });
+      }, options);
+      await page.waitForFunction(() => window.trainAudit.opacity === 1);
+      await page.keyboard.press("Enter");
+      const visible = await page.evaluate(() => ({
+        guests: document.querySelectorAll(".train-guest").length,
+        costumes: document.querySelectorAll(".train-costume").length,
+        backdrop: document.querySelector(".mo-train .mo-back").style.backgroundColor,
+        keys: audit.keys,
+      }));
+      assert.deepEqual(visible, { guests: options.cameo ? 1 : 0, costumes: options.halloween ? 2 : 0, backdrop: "rgb(21, 14, 48)", keys: 0 });
+      if (options.unavailable) assert.equal(await page.locator('.mo-train image[href*="/transitions/train/"]').count(), 0);
+      if (shots) await page.screenshot({ path: `${shots}/train-${name}-covered.png` });
+      await page.waitForFunction(() => trainAudit.done);
+      const result = await page.evaluate(() => ({ ...trainAudit,
+        overlays: document.querySelectorAll(".mo-train").length, coveringAfter: T.transitions.isCovering() }));
+      assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
+      assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
+      assert.deepEqual(result.fades.map(f => [f.frames[0].opacity, f.frames.at(-1).opacity, f.duration]), [[0, 1, 220], [1, 0, 280]]);
+      assert(result.elapsed < 2800, `${name}: ${result.elapsed}ms took too long`);
+      await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
+      if (name === "normal") {
+        const policy = await page.evaluate(async () => {
+          const { trainPassengers } = await import("./js/motions/train-passengers.js");
+          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei", "naru"].map(id => [id, true])) };
+          const before = JSON.stringify(value), seen = new Set(), inbound = new Set();
+          for (let weatherSeed = 0; weatherSeed < 500; weatherSeed++) {
+            seen.add(trainPassengers({ ...value, weatherSeed }, { from: "home", to: "widehanga" }).cameo);
+            inbound.add(trainPassengers({ ...value, weatherSeed }, { from: "widehanga", to: "home" }).cameo);
+          }
+          const selected = trainPassengers(value);
+          return { seen: [...seen].filter(Boolean).sort(), inbound: [...inbound].filter(Boolean).sort(),
+            invalidRoute: trainPassengers(value, { from: "home", to: "home" }).cameo,
+            invalidCity: trainPassengers(value, { from: "other", to: "home" }).cameo,
+            unknownInbound: trainPassengers({ ...value, met: {} }, { from: "widehanga", to: "home" }).cameo,
+            occasional: seen.has(null), stable: JSON.stringify(selected) === JSON.stringify(trainPassengers(value)),
+            chapter1: trainPassengers({ ...value, chapter: 1 }).cameo, unknown: trainPassengers({ ...value, met: {} }).cameo,
+            seasonal: trainPassengers({ ...value, flags: { _ch2_halloween_active: true } }).halloween,
+            ordinary: selected.halloween, chapter3: trainPassengers({ ...value, chapter: 3, flags: { _ch2_halloween_active: true } }).halloween,
+            unchanged: before === JSON.stringify(value) };
+        });
+        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "rei"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
+          chapter1: null, unknown: null, seasonal: true, ordinary: false, chapter3: false, unchanged: true });
+      }
+      console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, fade/cover/cleanup/save`);
+    } finally { await context.close(); }
+  }
+  if (process.env.TRAIN_CASE_FILTER) return;
+  for (const mode of ["skip", "reduced", "turbo", "exception"]) {
+    const { page, context } = await open({ width: 1280, height: 720 }, `train-${mode}`, mode === "reduced" ? "reduce" : "no-preference");
+    try {
+      const result = await page.evaluate(async mode => {
+        if (mode === "skip") document.body.classList.add("vn-skip");
+        if (mode === "turbo") window.__remake.vnTest.turbo = true;
+        let mid = 0, rejected = false;
+        try { await T.motions.trainRide(() => { mid++; if (mode === "exception") throw Error("expected train failure"); }); }
+        catch (e) { if (e.message !== "expected train failure") throw e; rejected = true; }
+        return { mid, rejected, overlays: document.querySelectorAll(".mo-train").length, covering: T.transitions.isCovering() };
+      }, mode);
+      assert.deepEqual(result, { mid: 1, rejected: mode === "exception", overlays: 0, covering: false });
+      console.log(`PASS train ${mode}`);
+    } finally { await context.close(); }
+  }
+}
+
 try {
+  await checkTrains();
+  if (!process.argv.includes("--train-only")) {
   const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
   const { page: auditPage, context: auditContext } = await open(desktop, "pen-audit");
   try {
@@ -250,4 +353,6 @@ try {
   } finally { await context.close(); }
   assert.deepEqual(errors, []);
   console.log(`PASS motion endings: ${alternatesOnly ? 3 : 22} normal-speed scenes (including dropped frames), marker audit, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
+  }
+  assert.deepEqual(errors, []);
 } finally { await browser.close(); }

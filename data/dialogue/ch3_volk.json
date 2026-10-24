@@ -43,9 +43,11 @@
           "text": "（……無愛想。というか、まず顔を向けてくれない）"
         },
         {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "（向き直り、淡々と）大会の参加者か。初めて見る顔だ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_seen",
+          "next_true": "seen_in_ch2",
+          "next_false": "unseen"
         },
         {
           "speaker": "hajime",
@@ -141,7 +143,44 @@
           "face": "normal",
           "text": "やってみろ。次の一台で違えば、また書き直す"
         }
-      ]
+      ],
+      "branches": {
+        "unseen": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "（向き直り、淡々と）大会の参加者か。初めて見る顔だ"
+          }
+        ],
+        "seen_in_ch2": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "（向き直り、淡々と）県大会の優勝者か。顔は知っている"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……あ。試煙会の奥の席にいた人だ。前の夜の搬入口にも、客席の後ろにも"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "偵察だ。軍にいた頃に叩き込まれた。相手を知らずに、勝負の場には立たない"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "怪しまれるのには慣れている。調べるのが癖なだけだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……それだけ、だったんだ）"
+          }
+        ]
+      },
+      "comment": "#929: 第2章では名乗らない「？？？」として試煙会・大会前夜・県大会の客席に現れる（_ch2_scout_seen）。見ていた保存では、ここで軍で身につけた偵察と情報収集を徹底していただけと分かる。"
     },
     {
       "dialogue_id": "ch3_volk_second",
@@ -162,7 +201,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "前回、室温は22度だった。今日は──（壁の計器を一瞥して）25度。湿度も高い"
+          "text": "前回、室温は22度だった。今日は、（壁の計器を一瞥して）25度。湿度も高い"
         },
         {
           "speaker": "hajime",
@@ -319,7 +358,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "お前の煙は、計算式で説明できない。だが──お前の煙を吸った客の顔が変わる"
+          "text": "お前の煙は、計算式で説明できない。だが、お前の煙を吸った客の顔が変わる"
         },
         {
           "speaker": "volk",
@@ -402,7 +441,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "軍では、精度が全てだった。ブレることは、失敗だった。だが──"
+          "text": "軍では、精度が全てだった。ブレることは、失敗だった。だが……"
         },
         {
           "speaker": "volk",
@@ -494,7 +533,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "精度は完璧だった。だが──俺の煙は、お前の煙に対して『反応』しなかった"
+          "text": "精度は完璧だった。だが、俺の煙は、お前の煙に対して『反応』しなかった"
         },
         {
           "speaker": "hajime",

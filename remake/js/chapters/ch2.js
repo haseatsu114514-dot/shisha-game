@@ -146,7 +146,7 @@ async function continueDayOne() {
         acceptChapterTwoDeliveries(state); save();
       }
       // 電車で隣町へ。車内が通り過ぎる間に駅前へ替える（駅前の絵が遅いときは地図の昼）
-      await trainRide(async () => { await setBg(await imageReady(STATION, 15000) ? STATION : MAP.day, { instant: true }); }, { tone: "day" });
+      await trainRide(async () => { await setBg(await imageReady(STATION, 15000) ? STATION : MAP.day, { instant: true }); }, { from: "home", to: "widehanga" });
       if (!current(owner)) return;
       await checkpoint("arrival");
     } else if (stage === "arrival") {
@@ -161,7 +161,7 @@ async function continueDayOne() {
       return;
     } else if (stage === "return") {
       if (!await scene("ch2_city_return", "地元へ帰る列車", MAP.night)) return;
-      await trainRide(() => setBg(bgUrl("bg_tonari_inside", "night"), { instant: true }), { tone: "night" });
+      await trainRide(() => setBg(bgUrl("bg_tonari_inside", "night"), { instant: true }), { from: "widehanga", to: "home" });
       if (!current(owner)) return;
       state.slot = 1;
       await checkpoint("tonari");

@@ -106,10 +106,16 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.getByRole('button',{name:/第三章|第3章/}).count(),0);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
-    assert.match(afterText,/理由は、聞かないで/);assert.match(afterText,/味の輪郭は戻らない/);
+    // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
+    assert.doesNotMatch(afterText,/理由は、聞かないで|扉の向こうへ消えた/);assert.match(afterText,/おめでと、ハジメっち/);assert.match(afterText,/次は、うちの店ね/);
+    assert.match(afterText,/スジの通った一台/);assert.match(afterText,/味の輪郭は戻らない/);
+    // #929: 章の最後に、はじめのいない店であげはの心の声。読了を記録し、再読込で繰り返さない
+    assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
+    assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
+    assert(!/ズルいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');
     await assertFits(page,'.ch2-contest .btn');
     await capture(page,'pc-complete');
   });
@@ -131,20 +137,23 @@ await suite('ch2-tournament',async check=>{
     await seed(page,{stage:'ready',auto:null});await press(t('craft-start'));
     await confirmAppearanceSetup(page, { touch });
     await confirmWaterSetup(page, { touch });
-    await page.locator(dt('mix-plus-strawberry')).waitFor();
+    await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     assert.match(await page.locator('.bench-mode').textContent(),/HAZE: OPEN CLOUD/);
     assert.match(await page.locator(dt('mix-taste')).textContent(),/つかめない/);
+    // #929: 課題の支給葉は試煙会で吸ったアフサールの新作。旧AFストロベリーの行は持ち込みが無ければ出さない
+    assert.match(await page.locator('.flavor-row[data-flavor="afsahr_strawberry"]').textContent(),/アフサール ストロベリー[\s\S]*課題（支給）/);
+    assert.equal(await page.locator('.flavor-row[data-flavor="strawberry"]').count(),0);
     assert.match(await page.locator('.worker-scene-tag').textContent(),/HAZE: OPEN CLOUD/);
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
     await assertFits(page,'.bench-top > *, .bench-phase-copy b');
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
-    for(let n=0;n<3;n++)await press(dt('mix-plus-strawberry'));
+    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     const before=await get(page);
     await press(t('menu'));await press(t('save'));await press(dt('slot-1'));
-    await reload(page,1,touch);await page.locator(dt('mix-plus-strawberry')).waitFor();
+    await reload(page,1,touch);await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     let s=await get(page);assert.deepEqual(s.flavorStock,before.flavorStock);assert.equal(s.flags._ch2_tournament.step,1);
-    for(let n=0;n<3;n++)await press(dt('mix-plus-strawberry'));
+    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     await assertFits(page,dt('mix-ok'));await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});
     await press(dt('mix-ok'));await page.locator(t('votes')).waitFor();

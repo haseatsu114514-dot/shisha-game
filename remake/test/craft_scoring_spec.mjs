@@ -28,7 +28,7 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー5社・表記統一・禁止語チェック
-assert.equal(flavors.length, 64);
+assert.equal(flavors.length, 65); // #929: アフサール新作ストロベリー（第2章の県大会支給葉）を追加
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",

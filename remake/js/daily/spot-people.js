@@ -7,6 +7,7 @@ import { rinUnavailable } from "./spot-hours.js";
 import { hiyoriShopEncounterDue, hiyoriAtTonari } from "./hiyori.js";
 import { hiyoriFirstMeetingReady } from "../core/axe-bar-discovery.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
+import { cityGuestAtShop } from "./city-guests.js";
 // 今後のゲストはここへ独立した登場条件を追加する。好感度の変化は表示側で起こさない。
 const GUESTS = [
   { id: "kumicho", present: spot => spot.id === "ch2_ageha" && ryujiAtMeltyPuff(state) },
@@ -28,6 +29,8 @@ export function spotPeople(spot) {
   const ids = [];
   if (spot.face && (spot.face !== "rin" || !rinUnavailable(state))) ids.push(spot.face);
   for (const guest of GUESTS) if (guest.present(spot)) ids.push(guest.id);
+  const visiting = cityGuestAtShop(spot);
+  if (visiting) ids.push(visiting.id);
   return [...new Set(ids)].map(id => {
     const known = id === "sumi" || !!state.met[id]
       || id === "tsumugi" && !!(state.flags._met_tsumugi || state.story.tsumugi > 0);

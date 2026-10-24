@@ -59,14 +59,36 @@ await suite('early-contacts-705',async check=>{
           if(options.hasTouch)await page.locator('.vn-box').tap();else await page.keyboard.press('Enter');
           await page.waitForFunction(prior=>!!document.querySelector('.mo-lime')||document.querySelector('.vn-text')?.textContent!==prior,prior);
         }
-        await page.locator('.mo-lime-title').waitFor();
-        await page.waitForFunction(()=>getComputedStyle(document.querySelector('.mo-lime-title')).opacity==='1');
-        assert.match(await page.locator('.mo-lime').innerText(),id==='naru'?/なる.*連絡先がつながった/s:/アダム.*連絡先がつながった/s);
+        await page.locator('.mo-lime-toast').waitFor();
+        await page.waitForFunction(()=>getComputedStyle(document.querySelector('.mo-lime-toast')).opacity==='1');
+        assert.match(await page.locator('.mo-lime').innerText(),id==='naru'?/なる.*友だちに追加しました/s:/アダム.*友だちに追加しました/s);
         await page.screenshot({path:`${process.env.ARTIFACT_DIR||'.codex/artifacts/remake-browser'}/${device}-${id}-exchange.png`});
         await page.locator('.mo-lime').waitFor({state:'detached'});await page.evaluate(()=>E.run);
         assert.equal(await page.evaluate(id=>E.spots.hasContact(id),id),true);
         assert.equal(await page.evaluate(id=>E.core.state.contacts.filter(x=>x===id).length,id),1);
       },options);
     }
+  }
+  // #833: 実際の初回訪問を最初から送る。SKIP中・動きを減らす設定でも、初めての交換は一度だけ見せる。
+  for(const [mode,options] of [['skip',{}],['reduced-motion',{reducedMotion:'reduce'}]]) {
+    await check(`naru-first-visit-${mode}-shows-exchange-once`,async page=>{
+      await page.evaluate(async()=>{
+        const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),spots=await import('./js/daily/spots.js');
+        core.newGame();Object.assign(core.state,{phase:'daily',day:1,slot:0});
+        Object.assign(core.config,{textSpeed:0,bgmVolume:0,seVolume:0});vn.vnTest.turbo=false;
+        window.E={core,spots,lime:0,done:false};
+        new MutationObserver(()=>{if(document.querySelector('.mo-lime'))E.lime=1;}).observe(document.body,{childList:true,subtree:true});
+        spots.visitChar('naru').then(()=>{E.done=true;});
+      });
+      if(mode==='skip'){await page.locator('#vn.active').waitFor();await page.getByText('SKIP',{exact:true}).first().click();}
+      for(let i=0;i<600&&!(await page.evaluate(()=>E.done));i++){
+        const choice=page.locator('.vn-choices.show button:not(:disabled)');
+        if(await choice.count())await choice.first().click({timeout:1000}).catch(()=>{});
+        else if(mode!=='skip')await page.keyboard.press('Enter');
+        await page.waitForTimeout(100);
+      }
+      const r=await page.evaluate(()=>({done:E.done,lime:E.lime,shown:!!E.core.state.flags._lime_exchange_shown_naru,contact:E.spots.hasContact('naru')}));
+      assert.deepEqual(r,{done:true,lime:1,shown:true,contact:true});
+    },options);
   }
 });

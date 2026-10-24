@@ -2,8 +2,9 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
+import { trainRide } from "../core/scene-motions.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -20,7 +21,7 @@ import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
 import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
-import { STATION_FARE, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
+import { STATION_FARE, WALK_HOME_STAMINA, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
 
 /** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
 function peopleRow(people) {
@@ -228,31 +229,41 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         stationTrip?.cancel();
         const trip = stationTrip = prepareStationTrip(state, regions, item.id);
         if (!trip) return;
-        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
-          dataset: { test: "station-confirm" }, disabled: state.money < trip.required,
-          onclick: async () => {
+        const depart = (walk) => async () => {
             if (moving || !stationActive()) return;
-            moving = true; confirm.disabled = true;
+            moving = true; confirm.disabled = true; if (walkHome) walkHome.disabled = true;
             try {
-              if (!trip.commit(state, { active: stationActive(), persist: save })) {
+              if (!trip.commit(state, { active: stationActive(), persist: save, walk })) {
                 openStationAfterFailure(); return;
               }
               region = item; selected = null; root.dataset.region = item.id;
               onRegionChange?.(item.id);
               SE.select(); updateHud();
-              await stationArrival(trip, () => setMapBackground());
+              const arrive = () => stationArrival(trip, async () => {
+                if (!stationActive()) return;
+                await setMapBackground();
+                if (!stationActive()) return;
+                root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
+                renderPins(); idleInfo();
+              });
+              // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
+              if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った（体力−${WALK_HOME_STAMINA}）`); }
+              else await trainRide(arrive, { from: trip.from, to: trip.to });
               if (!stationActive()) return;
-              root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
-              renderPins(); idleInfo();
               // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
               // 到着後は新しい街の上画面（HUDと地図）から見せる。
               if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
             } finally { moving = false; }
-          } });
-        info.replaceChildren(el("div.mi-banner", { text: "乗車の確認" }),
+          };
+        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
+        const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: `歩いて帰る（体力−${WALK_HOME_STAMINA}）`,
+          dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
+        info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
           el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
-          confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+          walkHome ? el("p.mi-desc", { text: `電車に乗れないので、歩いて帰れる。お金は使わず、体力をかなり使う（今の体力 ${state.stamina}）。時間は進まない。` }) : null,
+          walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
       };
       const openStationAfterFailure = () => {
         info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),

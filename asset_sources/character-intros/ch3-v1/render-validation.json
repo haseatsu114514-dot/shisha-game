@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "id": "mashiro",
+      "text": {
+        "name": {
+          "text": "ましろ",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "w": 402.7911376953125,
+          "h": 177.7352294921875,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        },
+        "title": {
+          "text": "mukaiの眠たげな同期",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "w": 301.86932373046875,
+          "h": 68.75770568847656,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        },
+        "quote": {
+          "text": "「……今日は、お茶でもいいよぉ」",
+          "x": 634,
+          "y": 556,
+          "w": 580,
+          "h": 51.671875,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        }
+      },
+      "portraitLoaded": true,
+      "backgroundLoaded": true,
+      "filter": "none",
+      "full": ""
+    },
+    {
+      "id": "volk",
+      "text": {
+        "name": {
+          "text": "ヴォルク",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "w": 524.3990478515625,
+          "h": 186.2388916015625,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        },
+        "title": {
+          "text": "誤差ゼロの職人",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "w": 219.94439697265625,
+          "h": 63.02894592285156,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        },
+        "quote": {
+          "text": "「ブレは、許さない」",
+          "x": 634,
+          "y": 556,
+          "w": 580,
+          "h": 51.671875,
+          "font": "\"Chapter Intro Gothic\", sans-serif"
+        }
+      },
+      "portraitLoaded": true,
+      "backgroundLoaded": true,
+      "filter": "none",
+      "full": ""
+    },
+    {
+      "phone": {
+        "stage": {
+          "x": 168.6666717529297,
+          "y": 0,
+          "w": 506.66668701171875,
+          "h": 285
+        },
+        "controls": {
+          "y": 285,
+          "h": 105
+        },
+        "width": 844,
+        "height": 390
+      }
+    }
+  ],
+  "errors": [],
+  "animationPhases": [
+    0,
+    400,
+    1600
+  ],
+  "reducedMotion": true,
+  "standaloneOffline": true
+}

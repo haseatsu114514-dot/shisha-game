@@ -105,7 +105,7 @@ await suite("play-spots", async runCheck => {
     await hit(page, "axe-action"); await page.locator(map).waitFor();
     const after = await value(page);
     assert.equal(after.money, before.money - 3000); assert.equal(after.stamina, before.stamina - 10 + 14, "Night play is followed by one sleep recovery");
-    assert.equal(after.day, 6); assert.equal(after.slot, 0); assert.equal(after.axeVisited, 5); assert.equal(after.stats.guts, before.stats.guts + 1);
+    assert.equal(after.day, 6); assert.equal(after.slot, 0); assert.equal(after.axeVisited, 5); assert.equal(after.stats.guts, before.stats.guts + 2, "#784: the axe bar grows guts by 2P like other facilities");
     assert.equal(after.records[mode].plays, 1); assert.equal(after.records[mode].last.throws.length, count);
     assert.equal(after.records[mode].last.total, after.records[mode].last.throws.reduce((sum, shot) => sum + shot.score, 0));
     assert.deepEqual(after.records[mode].best, after.records[mode].last);

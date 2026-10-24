@@ -217,9 +217,15 @@ await suite("home-rig-backgrounds", async check => {
         const worker = (await import("./js/craft/worker.js")).buildWorkerScene({ mode: "drill", venue: "home" });
         HQ.ui.showScreen("home", worker.root); await worker.ready;
       });
-      assert.deepEqual(await rigs(page, ".bench-worker-stage"), variants[3], "Home practice uses the same scene art");
-      await page.evaluate(() => HQ.core.newGame());
-      assert.deepEqual(await rigs(page, ".bench-worker-stage"), [], "Practice backdrop also clears on NEW GAME");
+      // #873: 制作中は大会用の台だけ。家の練習窓・作業台の背景に所持品の台を置かない。
+      assert.deepEqual(await rigs(page, ".bench-worker-stage"), [], "Home practice window shows only the tournament rig");
+      assert.equal(await page.locator(".bench-worker-stage .scene-art, .bench-worker-stage [data-home-scene]").count(), 0);
+      await page.evaluate(async () => HQ.ui.setBg(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { instant: true, homeRigs: false }));
+      assert.deepEqual(await rigs(page), [], "Craft bench background has no owned rigs");
+      assert.deepEqual(await page.evaluate(() => HQ.art.sceneArtUrls(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { homeRigs: false }).length), 1);
+      // 制作を終えて家の場面へ戻れば、所持品の台はそのまま出る。
+      await page.evaluate(async () => HQ.ui.setBg(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { instant: true }));
+      assert.deepEqual(await rigs(page), variants[3], "Home scene keeps the owned rigs after crafting");
     }, opts);
 
     await check(`${label}-real-night-to-morning`, async page => {

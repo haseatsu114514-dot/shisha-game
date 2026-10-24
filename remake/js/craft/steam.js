@@ -1,7 +1,7 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
 // 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉と物体）を心(♥)で避け続ける。被弾が少ないほど良い。
 import { state } from "../core/state.js";
-import { hasAttackTraining, ATTACK_LOCK_REASON } from "./attack-training.js";
+import { hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
@@ -73,7 +73,8 @@ export async function runSteamDodge(cs) {
     el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
-  const slashLock = el("span.slash-lock", { text: ATTACK_LOCK_REASON, dataset: { test: "slash-lock" } });
+  const slashLock = el("span.slash-lock", { text: "🔒", "aria-hidden": "true",
+    style: { fontSize: "20px", lineHeight: "28px" }, dataset: { test: "slash-lock" } });
   const slashControl = el("div.slash-control", [slashBtn, slashFeedback, slashLock]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
@@ -182,10 +183,10 @@ export async function runSteamDodge(cs) {
     const learned = hasAttackTraining(state.flags);
     slashBtn.dataset.locked = String(!learned);
     slashLock.hidden = learned;
-    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : ATTACK_LOCK_REASON;
+    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可";
     if (!learned) {
       slashBtn.disabled = true;
-      slashBtn.setAttribute("aria-label", `アタック。${ATTACK_LOCK_REASON}`);
+      slashBtn.setAttribute("aria-label", "アタック。使用不可");
     }
     slashBtn.dataset.cutWords = String(wordsCut);
     slashBtn.dataset.totalWordsCut = String(totalWordsCut);
@@ -252,7 +253,7 @@ export async function runSteamDodge(cs) {
     ["X", (e) => { if (!e.repeat) refresh(); }],
     ["z", (e) => { if (!e.repeat) slash(); }],
     ["Z", (e) => { if (!e.repeat) slash(); }],
-  ]));
+  ]), { actionSpace: true });
   listen(window, "keyup", (e) => keysDown.delete(direction[e.key]));
 
   const addBullet = (type, x, y, angle, speed) => {

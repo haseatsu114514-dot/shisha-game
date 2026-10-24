@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-23 13:45 UTC",
+ "generated": "2026-10-24 08:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -338,6 +338,7 @@
   "bg_yuzugaya_c_station.webp"
  ],
  "cgs": [
+  "cg_ageha_first_purikura.png",
   "cg_ch1_dr_kemuri_hook.png",
   "cg_ch1_minto_casual_reveal.png",
   "cg_ch1_nagumo_smile.png",

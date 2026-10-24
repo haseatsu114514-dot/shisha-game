@@ -1,0 +1,87 @@
+/* LIME交換（remake/js/motions/lime.js・#931）。端末と色はゲーム内のLIME（daily.css の .phone）に合わせる。
+   位置の数値は lime.js の ICON・ROW_ICON・ROW_H と同じ。DOMの初期値は「友だちに追加し終えた画面」 */
+.mo-lime { --lime: #169a3e; --lime-hi: #21b24e; }
+.mo-lime .mo-back { backdrop-filter: blur(3px); }
+.mo-lime-phone {
+  position: absolute; left: 96px; top: 24px; width: 368px; height: 672px;
+  overflow: hidden; background: #8da3bd; border: 7px solid #14101c; border-radius: 40px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  font-family: var(--font); color: #1d2433;
+}
+.mo-lime-notch { position: absolute; left: 50%; top: 0; width: 120px; height: 16px; margin-left: -60px; background: #14101c; border-radius: 0 0 12px 12px; z-index: 4; }
+.mo-lime-status {
+  position: absolute; left: 0; right: 0; top: 0; height: 37px; padding: 16px 20px 0;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #1d2433;
+}
+.mo-lime-status span:last-child { text-align: right; letter-spacing: 1px; }
+.mo-lime-pages { position: absolute; left: 0; right: 0; top: 37px; bottom: 0; overflow: hidden; background: #fff; }
+.mo-lime-page { position: absolute; inset: 0; background: #fff; }
+.mo-lime-page.profile { opacity: 0; }
+.mo-lime-bar {
+  position: relative; z-index: 1; height: 48px; padding: 0 14px;
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(180deg, var(--lime-hi), var(--lime)); color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  font-size: 19px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap;
+}
+.mo-lime-back { font-size: 32px; line-height: 1; margin-top: -4px; }
+.mo-lime-logo { flex: none; padding: 2px 8px; font-weight: 900; font-size: 14px; letter-spacing: 0.18em; color: var(--lime); background: rgba(255, 255, 255, 0.94); border-radius: 6px; }
+/* 友だち追加の画面 */
+.mo-lime-cover {
+  position: absolute; left: 0; right: 0; top: 48px; height: 190px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 2px, transparent 2.5px) 0 0 / 22px 22px,
+    linear-gradient(160deg, #5cdc80, var(--lime-hi) 55%, #129036);
+}
+.mo-lime-icon {
+  position: absolute; left: 109px; top: 170px; width: 136px; height: 136px; z-index: 2;
+  border-radius: 50%; border: 5px solid #fff; object-fit: cover; image-rendering: pixelated;
+  background: #1a1422; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28); opacity: 0;
+}
+.mo-lime-icon.blank, .mo-lime-face.blank { display: grid; place-items: center; color: #fff; font-weight: 700; background: linear-gradient(160deg, #5d6f86, #394559); }
+.mo-lime-icon.blank { font-size: 56px; }
+.mo-lime-ring { position: absolute; left: 87px; top: 148px; width: 180px; height: 180px; border-radius: 50%; border: 4px solid #fff; opacity: 0; }
+.mo-lime-spark {
+  position: absolute; width: 22px; height: 22px; opacity: 0;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+.mo-lime-name { position: absolute; left: 0; right: 0; top: 322px; text-align: center; font-size: 30px; font-weight: 700; white-space: nowrap; }
+.mo-lime-name > span { display: inline-block; }
+.mo-lime-add {
+  position: absolute; left: 36px; top: 470px; width: 282px; height: 60px; overflow: hidden;
+  display: grid; grid-template: 1fr / 1fr; place-items: center; border-radius: 30px;
+  background: linear-gradient(180deg, var(--lime-hi), var(--lime)); color: #fff;
+  box-shadow: 0 4px 12px rgba(22, 154, 62, 0.35);
+  font-size: 24px; font-weight: 700; letter-spacing: 0.2em;
+}
+.mo-lime-add > :not(.mo-lime-ripple) { grid-area: 1 / 1; }
+.mo-lime-add-label { padding-left: 0.2em; }
+.mo-lime-check { width: 34px; height: 34px; overflow: visible; }
+.mo-lime-ripple { position: absolute; left: 50%; top: 50%; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; background: #fff; opacity: 0; }
+/* 友だち一覧 */
+.mo-lime-count { display: inline-grid; height: 1.3em; overflow: hidden; vertical-align: bottom; line-height: 1.3em; }
+.mo-lime-count > span { grid-area: 1 / 1; }
+.mo-lime-count .old { transform: translateY(-100%); }
+.mo-lime-rows { position: absolute; left: 0; right: 0; top: 48px; bottom: 0; overflow: hidden; }
+.mo-lime-row {
+  position: relative; height: 76px; padding: 0 16px;
+  display: flex; align-items: center; gap: 14px;
+  background: #fff; border-bottom: 1px solid #eef0f3;
+}
+.mo-lime-row.new { z-index: 1; background: #f1faf3; }
+.mo-lime-face { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 2px solid #e3e7ec; object-fit: cover; image-rendering: pixelated; background: #1a1422; }
+.mo-lime-face.blank { font-size: 22px; }
+.mo-lime-row b { flex: 1; min-width: 0; font-size: 22px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-lime-new { flex: none; padding: 3px 10px; font-size: 15px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: var(--lime-hi); border-radius: 999px; }
+.mo-lime-toast {
+  position: absolute; left: 0; right: 0; bottom: 30px; z-index: 3; width: fit-content; margin: 0 auto;
+  padding: 10px 22px; border-radius: 999px; background: rgba(29, 36, 51, 0.82); color: #fff;
+  font-size: 20px; font-weight: 700; white-space: nowrap;
+}
+/* 指先（画面の外の器に置く） */
+.mo-lime-finger {
+  position: absolute; left: 248px; top: 536px; width: 64px; height: 64px; z-index: 5; opacity: 0;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.5); border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}

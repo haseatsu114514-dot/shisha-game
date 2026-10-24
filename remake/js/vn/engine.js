@@ -16,7 +16,7 @@ import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { chekiShot, tarotFlip, limeExchange } from "../core/scene-motions.js";
+import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -363,7 +363,7 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context) }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot() }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;
@@ -508,6 +508,7 @@ async function showCg(id, effect = "") {
   if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
+    if (running !== r) return;
     dom.cg.dataset.cg = id;
     dom.cg.style.backgroundImage = `url("${url}")`;
     if (instant) dom.cg.style.transition = "none";
@@ -518,6 +519,7 @@ async function showCg(id, effect = "") {
   if (running !== r) return;
   if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
   if (!vnTest.turbo) await visualSettled(dom.cg);
+  if (running !== r) return;
   if (hooks.onCg) hooks.onCg(id);
 }
 

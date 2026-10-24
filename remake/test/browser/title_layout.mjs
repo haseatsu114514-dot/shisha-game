@@ -31,7 +31,12 @@ async function seed(p) {
   });
   await p.reload(); await ready(p);
 }
+async function openLayoutControls(p) {
+  if (!(await p.locator(".title-layout-toolbar").evaluate(n => n.open)))
+    await button(p, "title-layout-settings").click();
+}
 async function layout(p, mode) {
+  await openLayoutControls(p);
   await button(p, `title-layout-${mode}`).click();
   assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
 }
@@ -79,6 +84,9 @@ try {
       await check(`${device}-${mode}-menus-and-reload`, options, async p => {
         assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal", "fresh default must remain normal");
         await seed(p); const before = await snapshot(p);
+        assert.equal(await button(p, "title-layout-normal").isVisible(), false, "Display choices start folded");
+        await button(p, "title-layout-settings").focus(); await p.keyboard.press("Enter");
+        assert.equal(await button(p, "title-layout-normal").isVisible(), true, "Keyboard opens display settings");
         const artBefore = await p.locator(".title-art").getAttribute("data-art");
         if (mode === "ds") await p.screenshot({ path: path.join(dir, `${device}-same-art-normal.png`) });
         await layout(p, mode);
@@ -112,9 +120,9 @@ try {
               return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
             };
             return { close: hit(document.querySelector(".gal-close")),
-              layoutChoices: [...document.querySelectorAll(".title-layout-toolbar button, .title-layout-toolbar a")].every(hit) };
+              settingsHidden: getComputedStyle(document.querySelector(".title-layout-toolbar")).visibility === "hidden" };
           });
-          assert.deepEqual(reachable, { close: true, layoutChoices: true }, "Gallery close and display controls must remain reachable");
+          assert.deepEqual(reachable, { close: true, settingsHidden: true }, "Gallery close must remain reachable without display settings overlapping");
           await p.screenshot({ path: path.join(dir, "normal-gallery-landscape-open.png") });
         }
         await button(p, "gallery-close").click();
@@ -176,7 +184,7 @@ try {
     assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
     assert.deepEqual(await snapshot(p), before);
     await layout(p, "ds"); assert.equal(new URL(p.url()).searchParams.has("titleLayout"), false);
-    await button(p, "title-layout-recover").click(); await ready(p);
+    await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
     assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
   });
   await check("invalid-preference", sizes.pc, async p => {
@@ -186,12 +194,12 @@ try {
   for (const operation of ["getItem", "setItem"]) {
     await check(`storage-${operation}-failure`, sizes.phone, async p => {
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-      await button(p, "title-layout-ds").click();
+      await openLayoutControls(p); await button(p, "title-layout-ds").click();
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
       await p.setViewportSize({ width: 844, height: 390 });
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
       await p.locator("#modal.show .modal-actions button").click();
-      await button(p, "title-layout-recover").click(); await ready(p);
+      await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
       assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
     }, p => p.addInitScript(operation => {
       // 保存済みDS設定がある端末でも、読み書き不能なら通常版へ戻す。
@@ -213,8 +221,8 @@ try {
     }, p => p.route(/(?:title_arts\/|bg_title|ui_title_logo_rich)/, route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid-image" })));
   }
   await check("missing-ds-style", sizes.phone, async p => {
-    await button(p, "title-layout-ds").click(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-    await button(p, "title-layout-recover").click(); await ready(p);
+    await openLayoutControls(p); await button(p, "title-layout-ds").click(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
+    await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
   }, p => p.route("**/css/title-ds.css", r => r.fulfill({ status: 200, contentType: "text/css", body: "" })));
   await check("small-phone-equal-panels-and-scroll", { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true }, async p => {
     await seed(p);

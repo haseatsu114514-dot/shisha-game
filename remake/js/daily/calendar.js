@@ -18,7 +18,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -33,6 +33,7 @@ import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
+import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 
@@ -459,9 +460,8 @@ async function takeAction() {
   const [baseId] = String(spotId).split(":");
   const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
-  const facility = ["kannon", "choizap"].includes(spot.id);
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
-    ...(facility ? { budget: 1, points: 2, primary: spot.stat } : {}),
+    ...facilityGrowth(spot),
     consumed: (result) => result.used && spot.kind === "spot",
   });
   if (!used) return;
@@ -481,6 +481,7 @@ async function takeAction() {
 
 async function performSpotAction(spot) {
   const scheduledGuestSpot = hiyoriShopLocation();
+  const scheduledCityVisit = cityGuestAtShop(spot);
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
   if (spot.kind === "axe") {
     // 直接呼び出された入口にも、地図と同じ発見条件を適用する。
@@ -568,6 +569,7 @@ async function performSpotAction(spot) {
     return { used: false, exerted };
   }
   if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
+  if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
   return { used, exerted, slotsUsed };
 }
 

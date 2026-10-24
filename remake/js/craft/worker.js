@@ -62,11 +62,11 @@ export function buildWorkerScene(cs) {
     el("i.worker-breath", { "aria-hidden": "true" }),
     el("span.worker-scene-tag", { text: benchPlaceTag(cs) }),
   ]);
-  // 家の練習窓も、本編・マップと同じ所持品の背景を使う。作業中の台は従来どおり。
+  // 家の練習窓は家の背景を使うが、所持品の台は描かない。作業中に見せる台は大会用だけ（#873）。
   const homeBg = benchBgRef(cs) === "bg_home" ? bgUrl("bg_home", timeOfDay()) : null;
   if (homeBg) {
     const backdrop = el("div", { style: { position: "absolute", inset: "0", zIndex: "-1", pointerEvents: "none", backgroundSize: "cover", backgroundPosition: "35% center" } });
-    renderSceneArt(backdrop, homeBg);
+    renderSceneArt(backdrop, homeBg, { homeRigs: false });
     stage.prepend(backdrop);
   }
   // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
@@ -107,7 +107,7 @@ export function buildWorkerScene(cs) {
       stage.setAttribute("aria-label", calm ? "はじめが目を閉じて精神を集中し、蒸らしを待つ" : fatigue === 2 && mental === "steady" ? "蒸らしを待つはじめの目元に疲れが出ている" : mental !== "steady" ? "蒸らしを待つはじめの目元に動揺が出ている" : "はじめが集中して蒸らしを待つ");
     }
   };
-  const ready = Promise.all([actions.ready, holes.ready, warmFaces, ...sceneArtUrls(homeBg).map(url => imageReady(url, 15000))]).then(async () => {
+  const ready = Promise.all([actions.ready, holes.ready, warmFaces, ...sceneArtUrls(homeBg, { homeRigs: false }).map(url => imageReady(url, 15000))]).then(async () => {
     facesChecked = true;
     applyFace();
     if (actor && !actor.hidden && !await readyWorkerImage(actor, actor.getAttribute("src"))) {

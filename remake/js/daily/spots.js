@@ -98,6 +98,11 @@ export const SPOT_PREVIEW = {
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
+/** 好感度の上がらない施設（#621・#784）。自分で選んだ1回の行動で、主な能力1つに2P。
+ *  それ以外の行動は従来どおり最大2能力に各1P。 */
+export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe", "axe_bar"]);
+export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
+  ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot()].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
@@ -342,11 +347,13 @@ async function maybeCafeIdea(spot, visit) {
 }
 
 export async function restAtHome(spot, { fullDay = false } = {}) {
+  const owner = state;
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  await play(fullDay ? "remake_rest_day" : "remake_rest");
+  const result = await play(fullDay ? "remake_rest_day" : "remake_rest");
+  if (state === owner && owner.chapter === 2 && result && !result.cancelled) owner.flags._ch2_rest_taken = true;
 }
 
 /** 好感度の段階（♥の数） */

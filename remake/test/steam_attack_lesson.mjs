@@ -55,6 +55,10 @@ await suite('attack-lesson', async check => {
       }
       await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
       assert(await button.isDisabled()); await assertFits(page,'[data-test="slash-lock"]');
+      assert.equal(await page.locator('[data-test="slash-lock"]').innerText(),'🔒');
+      assert.equal(await page.locator('[data-test="slash-lock"]').getAttribute('aria-hidden'),'true');
+      assert.equal(await button.getAttribute('title'),'アタック：使用不可');
+      assert.equal(await button.getAttribute('aria-label'),'アタック。使用不可');
       await page.keyboard.press('z');
       await button.dispatchEvent('pointerdown'); await button.dispatchEvent('click',{detail:0});
       if(mobile) { const r=await button.boundingBox(); await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2); }
@@ -97,6 +101,8 @@ await suite('attack-lesson', async check => {
     await button.waitFor();
     await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
     assert(await page.locator('[data-test="slash-lock"]').isHidden());
+    assert.match(await button.getAttribute('title'),/Z／ボタン/);
+    assert.doesNotMatch(await button.getAttribute('aria-label'),/使用不可/);
     await page.evaluate(()=>A.padPressed=true); await page.waitForTimeout(150);
     assert.equal(await button.getAttribute('data-uses'),'1');
     await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);

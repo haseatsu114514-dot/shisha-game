@@ -104,6 +104,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
   if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
   const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);

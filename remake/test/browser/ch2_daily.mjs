@@ -7,9 +7,9 @@ const evidence = (process.env.COMPARISON_DIR || fileURLToPath(new URL('../../../
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
-async function setup(page, { money = 36000, unknown = false, reel = false } = {}) {
+async function setup(page, { money = 36000, unknown = false, reel = false, guest = null } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ money, unknown, reel }) => {
+  await page.evaluate(async ({ money, unknown, reel, guest }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina: 100, weatherSeed: 7 });
@@ -25,6 +25,14 @@ async function setup(page, { money = 36000, unknown = false, reel = false } = {}
     value.reel.installed = reel;
     if (reel) Object.assign(value.reel, { introDone: true, settingGuideDone: true });
     for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
+    if (guest) {
+      const { trainPassengers } = await import('./js/motions/train-passengers.js');
+      for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {
+        if (trainPassengers({ ...value, day: 16, slot: 0, weatherSeed }, { from: 'widehanga', to: 'home' }).cameo === guest) {
+          value.weatherSeed = weatherSeed; break;
+        }
+      }
+    }
     core.save();
     for (let i=1;i<=3;i++) localStorage.setItem(`suien_remake_slot${i}`, JSON.stringify({ ...value, money: 1000+i }));
     window.__remake.vnTest.turbo = true;
@@ -33,7 +41,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false } = {}
     const vn = await import('./js/vn/engine.js');
     vn.hooks.onLine = (id,line) => { if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id); };
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, { money, unknown, reel });
+  }, { money, unknown, reel, guest });
   await page.locator(t('ch2-main-complete')).waitFor();
 }
 async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
@@ -74,6 +82,23 @@ async function reloadSave(page, slot = 0) {
 async function capture(page,file) { await page.waitForTimeout(700); await page.screenshot({path:evidence+file}); }
 
 await suite('ch2-daily',async check=>{
+  await check('city-guest-paid-visit-and-reload',async page=>{
+    await setup(page,{guest:'ageha'}); await begin(page); await settled(page);
+    const guestNames=await page.locator(t('pin-minto')).locator('.pin-person').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('title')));
+    assert(guestNames.some(name=>name?.includes('アゲハ')||name?.includes('あげは')), `Missing guest marker: ${guestNames}`);
+    const before=await value(page);
+    // 通常の初回訪問には有料チェキの選択もある。今回は見送り、基本の一服だけを比較する。
+    await page.evaluate(()=>{ window.__remake.vnTest.choose=(_id,choices)=>Math.max(0,choices.indexOf('今日は見送る')); });
+    await act(page,'minto');
+    const after=await value(page);
+    assert((await page.evaluate(()=>window.__dailyTrace)).includes('ch2_city_guest_ageha_first'));
+    assert.equal(after.flags._city_guest_seen_ageha,true); assert.equal(after.flags._city_guest_day,'2:16');
+    assert.equal(after.money,before.money-3000); assert.equal(after.slot,before.slot+1);
+    assert.equal(after.affinity.ageha,before.affinity.ageha);
+    await reloadSave(page);
+    const loaded=await value(page); assert.equal(loaded.flags._city_guest_seen_ageha,true);
+    assert.equal(loaded.flags._city_guest_day,'2:16'); assert.equal(loaded.money,after.money);
+  });
   await check('next-day-region-switch-and-autosave',async page=>{
     await setup(page,{reel:true}); await begin(page);
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,110);

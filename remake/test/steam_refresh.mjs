@@ -135,6 +135,31 @@ try {
   const full=await page.evaluate(()=>consume('x'));
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());await finish();
+  // 実際のfocusとkeydown/keyupを使う。windowへの合成dispatchだけでは、
+  // Spaceが精密ボタンの既定clickに奪われる不具合を検出できない。
+  await page.evaluate(()=>startSteam(10));
+  await button.waitFor();
+  await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
+  const precision=page.locator('[data-test="dodge-precision"]');
+  await precision.focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await precision.getAttribute('aria-pressed'),'true','Enter must activate the focused precision control');
+  await page.keyboard.down('Space');
+  await page.keyboard.down('Space'); // repeat must neither spend twice nor toggle precision
+  await page.keyboard.up('Space');
+  assert.equal(await button.getAttribute('data-remaining'),'0','Focused action swallowed Space refresh');
+  assert.equal(await precision.getAttribute('aria-pressed'),'true','Space also activated the focused button');
+  await page.keyboard.press('x');
+  assert.equal(await button.getAttribute('data-remaining'),'0');
+  await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled,null,{timeout:10000});
+  await precision.focus(); await page.keyboard.press('X');
+  assert.equal(await button.getAttribute('data-remaining'),'0','Focused action swallowed X refresh');
+  await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled,null,{timeout:10000});
+  await button.click();
+  assert.equal(await button.getAttribute('data-remaining'),'0','Pointer refresh failed after keyboard use');
+  const focusedResult=await finish();
+  assert.equal(focusedResult.stats.refreshesUsed,3,'Focus/native click or repeat caused duplicate/missing uses');
+  console.log('[refresh] PASS: focused Space/X, Enter activation, repeat/cooldown guards and pointer recharge; exactly three uses');
   assert.deepEqual(errors,[]);
   console.log('[refresh] PASS: one charge at a time; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
 } finally {await browser.close();}

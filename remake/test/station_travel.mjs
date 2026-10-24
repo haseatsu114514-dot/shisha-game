@@ -34,16 +34,19 @@ class Element {
 const screen = new Element(), storage = new Map();
 const noop = () => {}, yes = () => true;
 let backgrounds = 0, transitionRelease = null;
-const document = { body: { classList: { contains: () => false } }, hidden: false, querySelector: s => screen.querySelector(s), getElementById: () => null };
+let rides = 0, lastRide = null;
+const toasts = [];
+const document = { hidden: false, body: new Element("body"), querySelector: s => screen.querySelector(s), getElementById: () => null };
 const context = vm.createContext({ console, document, setTimeout, clearTimeout, localStorage: {
   getItem: k => storage.get(k) || null, setItem: (k, v) => storage.set(k, v),
   removeItem: () => { throw Error("existing saves must not be deleted"); },
 } });
 const mocks = {
+  "core/scene-motions.js": { trainRide: async (mid, opts) => { rides++; lastRide = opts; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
   "core/ui.js": { showScreen: (_, node) => screen.replaceChildren(node), setBg: async () => { backgrounds++; if (transitionRelease) await transitionRelease.promise; },
-    retire: n => n.classList.add("done"), uiArtReady: noop, imageReady: yes, layers: { fx: new Element() } },
+    retire: n => n.classList.add("done"), uiArtReady: noop, imageReady: yes, layers: { fx: new Element() }, toast: t => toasts.push(t) },
   "core/transitions.js": { cueTransition: noop }, "core/scene-art.js": { renderSceneArt: noop, sceneArtUrls: () => [] },
   "core/audio.js": { SE: { click: noop, select: noop } }, "core/stats.js": { STAMINA_LOW: 20 },
   "daily/spots.js": { allSpots: () => [], SPOT_PREVIEW: {}, isUnlocked: yes, hasNewEvent: noop, spotDetailLabel: s => s.label },
@@ -119,7 +122,12 @@ await test("stale state, date, slot and interrupted screen rejected", () => {
 await test("map destination selection, fare confirmation, cancel and funds guard", async () => {
   fresh(); await open(); assert.equal(button("map-region-widehanga"), null); choose();
   assert.match(button("station-confirm").textContent, /200円/); button("station-cancel").click(); assert.equal(core.state.money, 1000);
-  choose(); await button("station-confirm").click(); assert.equal(core.state.money, 800); assert.equal(screen.children[0].dataset.region, "widehanga");
+  choose(); const beforeRides = rides; await button("station-confirm").click();
+  assert.equal(rides, beforeRides + 1); assert.equal(core.state.money, 800); assert.equal(screen.children[0].dataset.region, "widehanga");
+  assert.deepEqual(JSON.parse(JSON.stringify(lastRide)), { from: "home", to: "widehanga" });
+  button("station-open").click(); button("station-destination-home").click(); await button("station-confirm").click();
+  assert.deepEqual(JSON.parse(JSON.stringify(lastRide)), { from: "widehanga", to: "home" });
+  assert.equal(core.state.money, 600); assert.equal(core.state.flags._ch2_region, "home");
   map.interruptMap("__lime__"); screen.replaceChildren(); fresh(199); await open(); choose();
   assert.equal(button("station-confirm").disabled, true); button("station-confirm").click(); assert.equal(core.state.money, 199);
   map.interruptMap("__lime__"); screen.replaceChildren();
@@ -144,3 +152,45 @@ await test("chapter1 map has no station control", async () => {
   await new Promise(r => setTimeout(r, 0)); assert.equal(button("station-open"), null); map.interruptMap("done"); await pending;
 });
 console.log(`PASS 8 station travel acceptance groups; backgrounds=${backgrounds}. Browser layout remains separately unverified.`);
+
+// #951: 帰りの運賃が足りなければ、体力を使って歩いて地元へ帰れる。お金は増えない・使わない。
+await test("walk home: only home-bound and short of fare; stamina clamps at 0; one-shot", () => {
+  const away = (money, stamina) => { const s = fresh(money); s.flags._ch2_region = "widehanga"; s.stamina = stamina; return s; };
+  for (const [money, stamina, after] of [[0, 90, 50], [199, 40, 0], [0, 1, 0], [0, 0, 0], [199, 39, 0]]) {
+    const s = away(money, stamina), t = travel.prepareStationTrip(s, regions, "home");
+    assert.equal(t.walkable(), true);
+    assert.equal(t.commit(s, { walk: true }), true);
+    assert.deepEqual([s.money, s.stamina, s.flags._ch2_region], [money, after, "home"]);
+    assert.equal(t.commit(s, { walk: true }), false, "Second callback must not walk again");
+    assert.equal(s.stamina, after);
+  }
+  const rich = away(200, 90), t = travel.prepareStationTrip(rich, regions, "home");
+  assert.equal(t.walkable(), false); assert.equal(t.commit(rich, { walk: true }), false);
+  assert.deepEqual([rich.money, rich.stamina, rich.flags._ch2_region], [200, 90, "widehanga"]);
+  const out = fresh(0), outbound = travel.prepareStationTrip(out, regions, "widehanga");
+  assert.equal(outbound.walkable(), false, "Walking is only the way back home");
+  assert.equal(outbound.commit(out, { walk: true }), false);
+  const cancelled = away(0, 80), c = travel.prepareStationTrip(cancelled, regions, "home"); c.cancel();
+  assert.equal(c.commit(cancelled, { walk: true }), false); assert.equal(cancelled.stamina, 80);
+  const stale = away(0, 80), st = travel.prepareStationTrip(stale, regions, "home"); stale.slot++;
+  assert.equal(st.commit(stale, { walk: true }), false); assert.equal(stale.stamina, 80);
+  const ch1 = away(0, 80); ch1.chapter = 1; assert.equal(travel.prepareStationTrip(ch1, regions, "home"), null);
+});
+await test("walk home on the map: saved with location, no train ride, no money", async () => {
+  const s = fresh(150); s.flags._ch2_region = "widehanga"; s.stamina = 70; core.save();
+  await open(); button("station-open").click(); button("station-destination-home").click();
+  assert.equal(button("station-confirm"), null, "The disabled train button is replaced by walking");
+  assert.match(button("station-walk").textContent, /体力−40/);
+  const beforeRides = rides; await button("station-walk").click();
+  assert.equal(rides, beforeRides, "Walking does not play the train");
+  assert.deepEqual([core.state.money, core.state.stamina, core.state.flags._ch2_region], [150, 30, "home"]);
+  const raw = core.peekSave(); assert.deepEqual([raw.money, raw.stamina, raw.flags._ch2_region], [150, 30, "home"]);
+  assert.match(toasts.at(-1), /歩いて/);
+  await button("station-walk")?.onclick?.(); assert.equal(core.state.stamina, 30);
+  map.interruptMap("__lime__"); screen.replaceChildren();
+  const rich = fresh(500); rich.flags._ch2_region = "widehanga"; await open();
+  button("station-open").click(); button("station-destination-home").click();
+  assert.equal(button("station-walk"), null); assert.equal(button("station-confirm").disabled, false);
+  map.interruptMap("__lime__"); screen.replaceChildren();
+});
+console.log("[station] PASS: walking home when the fare is short");

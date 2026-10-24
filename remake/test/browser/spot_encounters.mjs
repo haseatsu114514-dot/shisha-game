@@ -53,7 +53,7 @@ async function setup(page, { load = false } = {}) {
     E.facility = id => {
       const spot = E.spots.spotById(id);
       return E.stats.paidAction(() => E.spots.visitSpot(spot), {
-        ...(["kannon", "choizap"].includes(id) ? { budget: 1, points: 2, primary: spot.stat } : {}),
+        ...E.spots.facilityGrowth(spot),
         consumed: () => true,
       });
     };
@@ -71,8 +71,10 @@ await suite("spot-encounters", async check => {
     const r = await page.evaluate(async () => {
       const before = E.relationship(), rows = [];
       for (let n = 1; n <= 8; n++) {
-        E.clear(); const money = E.core.state.money; await E.facility("cafe");
-        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money });
+        E.clear(); const money = E.core.state.money, stats = { ...E.core.state.stats }; await E.facility("cafe");
+        const grown = Object.entries(E.core.state.stats).filter(([key, value]) => value > stats[key])
+          .map(([key, value]) => [key, value - stats[key]]);
+        rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown });
       }
       return { rows, unchanged: before === E.relationship(), met: E.core.state.met.maezono,
         seen: E.core.state.flags._spot_seen_cafe_maezono_break };
@@ -85,6 +87,24 @@ await suite("spot-encounters", async check => {
     assert(r.rows[3].lines.some(t => t.includes("HOOKAH PRESSというサイト")));
     for (const n of [2, 4, 6, 7]) assert(!/naru|maezono|master/.test(r.rows[n].trace[0]));
     assert(r.rows.every(row => row.cost === 800));
+    // #784: 好感度の上がらない施設は、主な能力（喫茶はセンス）1つに2P。
+    for (const row of r.rows) assert.deepEqual(row.grown, [["sense", 2]], JSON.stringify(row));
+  });
+
+  await run("axe-bar-facility-growth-is-one-ability-two-points", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const spot = E.spots.spotById("axe_bar"), before = { ...E.core.state.stats };
+      // 斧投げBarは完走時に根性の候補を1つ置く（axe-bar.js）。同じ施設設定で2Pになる。
+      await E.stats.paidAction(async () => { E.stats.earnStat("guts", 1); E.stats.addStamina(-10); }, E.spots.facilityGrowth(spot));
+      return { growth: E.spots.facilityGrowth(spot), cafe: E.spots.facilityGrowth(E.spots.spotById("cafe")),
+        tonari: E.spots.facilityGrowth(E.spots.spotById("tonari")),
+        grown: Object.entries(E.core.state.stats).filter(([key, value]) => value > before[key]).map(([key, value]) => [key, value - before[key]]) };
+    });
+    assert.deepEqual(r.growth, { budget: 1, points: 2, primary: null });
+    assert.deepEqual(r.cafe, { budget: 1, points: 2, primary: "sense" });
+    assert.deepEqual(r.tonari, {});
+    assert.deepEqual(r.grown, [["guts", 2]]);
   });
 
   await run("kannon-rain-defers-and-legacy-visits-do-not-fake-seen", async page => {
@@ -286,7 +306,7 @@ await suite("spot-encounters", async check => {
       assert.equal(r.error, undefined); assert(r.unchanged && r.seen);
       assert.equal(r.cost, ex.spot === "cafe" ? 800 : 0);
       assert.equal(r.stamina, ex.spot === "choizap" ? -8 : 12);
-      assert.equal(r.gain, ex.spot === "cafe" ? 1 : 2);
+      assert.equal(r.gain, 2); // #784: 喫茶こはくも観音堂・ジムと同じく主な能力に2P
       assert.equal(r.chosen, platform === "pc"); assert.equal(r.visits, 2); assert.equal(r.visitedToday, 8);
     }, options);
   }

@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { seeded } from "../js/core/util.js";
 import { conditionForRatio } from "../js/core/condition.js";
 const root = new URL("../", import.meta.url), dataRoot = new URL("../../", import.meta.url);
 const baitoData = JSON.parse(await fs.readFile(new URL("data/baito_events.json", dataRoot), "utf8"));
@@ -19,7 +20,7 @@ const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
   "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
-  "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
+  "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, bgUrl: () => "bg", displayName: id => id },
   "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
@@ -27,20 +28,20 @@ const values = {
   "stats.js": { addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, earnStat() {}, affinityLevel: () => 0 },
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
-  "engine.js": { play: async (scene) => plays.push(scene), dialogueSequence: (run) => run() },
+  "engine.js": { isPlaying: () => false, play: async (scene) => plays.push(scene), dialogueSequence: (run) => run() },
   "story-knowledge.js": { syncMintoKnowledge() {} },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
   "samechan.js": { samechanSpot: () => null },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
-  "bus.js": { emit() {}, on() {} },
+  "bus.js": { emit() {}, on: () => () => {} },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
-const context = vm.createContext({ Math, Set, Promise, console }); const mods = new Map();
+const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${["coals.js", "attack-training.js"].includes(name) ? "craft" : ["rules.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["rules.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
@@ -174,3 +175,55 @@ for (const event of events) {
   assert(Array.isArray(event.customers));
 }
 console.log("[remake daily] customer flags/chapter/weather/time, legacy one-off history, recurring families, four records, cameos, shift-time copy: PASS");
+
+// 隣町からの私用の客。実際の抽選・地図・読了記録を使い、料金や好感度は増やさない。
+const cityModule = await load("city-guests.js"); await cityModule.evaluate();
+const cityGuests = cityModule.namespace;
+const guestScript = JSON.parse(await fs.readFile(new URL("data/dialogue/ch2_city_guests.json", dataRoot), "utf8")).dialogues;
+const guestIds = ["ageha", "kumicho", "rei"];
+const guestSpots = { ageha: "minto", kumicho: "adam", rei: "tonari" };
+function guestState(id, day = 17, extra = {}) {
+  reset({ chapter: 2, phase: "daily", day, slot: 0, weatherSeed: 0, stamina: 90, money: 10000,
+    met: Object.fromEntries([...guestIds, "minto", "adam", "sumi"].map(id => [id, true])),
+    visits: {}, visitedDay: {}, contacts: [], ...extra });
+  db.dialogues = Object.fromEntries(guestScript.map(s => [s.dialogue_id, s]));
+  for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {
+    state.weatherSeed = weatherSeed;
+    if (cityGuests.cityGuestVisit()?.id === id) return;
+  }
+  throw Error("No guest seed for " + id);
+}
+for (const id of guestIds) {
+  guestState(id);
+  const spot = spots.SPOTS.find(s => s.id === guestSpots[id]);
+  // 17日はEDEN、PEPPERMINTとも定休日ではない。
+  const before = JSON.stringify(state);
+  const planned = cityGuests.cityGuestAtShop(spot);
+  assert.equal(planned?.id, id);
+  assert(peopleModule.namespace.spotPeople(spot).some(p => p.id === id && p.known && p.role === "guest"));
+  assert.equal(JSON.stringify(state), before, "Map must only read the schedule");
+  assert.equal(cityGuests.cityGuestAtShop({ ...spot, closedOn: state.day % 7 }), null);
+  assert.equal(cityGuests.cityGuestAtShop({ ...spot, unavailable: "準備中" }), null);
+  assert(!await cityGuests.visitCityGuestAtShop({ id: "wrong-shop" }, { scheduledVisit: planned }));
+  const resources = JSON.stringify([state.money, state.stamina, state.slot, state.stats, state.affinity, state.visits]);
+  assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: planned }));
+  assert(plays.includes(`ch2_city_guest_${id}_first`));
+  assert.equal(state.flags[`_city_guest_seen_${id}`], true);
+  assert.equal(state.flags._city_guest_day, "2:17");
+  assert.equal(cityGuests.cityGuestVisit(), null);
+  assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: planned }));
+  assert.equal(JSON.stringify([state.money, state.stamina, state.slot, state.stats, state.affinity, state.visits]), resources);
+  guestState(id, 18); state.flags[`_city_guest_seen_${id}`] = true;
+  const repeat = cityGuests.cityGuestAtShop(spot);
+  assert(repeat); assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: repeat }));
+  assert(plays.includes(`ch2_city_guest_${id}_repeat`));
+  guestState(id); const stale = cityGuests.cityGuestAtShop(spot); state.day++;
+  assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: stale }));
+  assert.equal(state.flags._city_guest_day, undefined);
+}
+guestState("ageha"); state.chapter = 1; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.met = {}; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.slot = 2; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.phase = "tournament"; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.pendingInvite = { sender: "ageha", day: state.day, slot: 1 }; assert.equal(cityGuests.cityGuestVisit(), null);
+console.log("[city guests] PASS: three matching map/shop schedules, known/closed/date guards, first/repeat, once daily, no added resources");

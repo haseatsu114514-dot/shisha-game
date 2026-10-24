@@ -115,6 +115,8 @@ const contexts = [
   { id: "closed-target-condition", guideOpen: false, target: condition, active: body },
   { id: "closed-target-body-focus-condition", guideOpen: false, target: body, active: condition },
   { id: "open-guide-target-body", guideOpen: true, target: body, active: body },
+  { id: "closed-target-action", guideOpen: false, target: makeEl(["dodge-action"]), active: body },
+  { id: "closed-target-timer", guideOpen: false, target: makeEl(["timer-button"]), active: body },
 ];
 
 const rows = [];
@@ -125,10 +127,12 @@ function check(row, actual, expected) {
 for (const c of contexts) {
   const inCondition = c.target === condition;
   const inGuide = c.target === guideSummary;
+  const inAction = !!c.target.closest(".dodge-action");
+  const inTimer = !!c.target.closest(".timer-button");
   // 契約: 閉じたguideでは方向キーを通す（summaryにfocusが残る場合も含む）。
   const expectMove = !c.guideOpen && !inCondition;
   // 契約: guide内・condition内・guide open中のSpace/Enterはミニゲームへ流さない。
-  const expectAction = !c.guideOpen && !inCondition && !inGuide;
+  const expectAction = !c.guideOpen && !inCondition && !inGuide && !inTimer;
   for (const key of Object.keys(MOVE)) {
     reset(c.guideOpen, c.active);
     try {
@@ -143,7 +147,7 @@ for (const c of contexts) {
     try {
       dispatchKey("keydown", key, c.target);
       if (key === " ") check({ context: c.id, key, probe: "refresh" }, calls.refresh > 0, expectAction);
-      else check({ context: c.id, key, probe: "enter-passthrough" }, calls.enter > 0, expectAction);
+      else check({ context: c.id, key, probe: "enter-passthrough" }, calls.enter > 0, expectAction && !inAction);
     } catch (err) {
       rows.push({ context: c.id, key, probe: key === " " ? "refresh" : "enter-passthrough", fixtureError: String(err) });
     }
@@ -172,6 +176,15 @@ check({ context: "remove-steam", probe: "enter-probe-remains" }, calls.enter, 1)
 removeEnterProbe();
 dispatchKey("keydown", "Enter", body);
 check({ context: "remove-enter-probe", probe: "no-second-call" }, calls.enter, 1);
+
+// 既存の呼び出しはopt-inしない限り、操作ボタンのSpaceを横取りしない。
+const removeDefaultProbe = keys({ " ": () => calls.refresh++ });
+reset(false, body);
+dispatchKey("keydown", " ", makeEl(["dodge-action"]));
+check({ context: "default-action-space", probe: "native-button-preserved" }, calls.refresh, 0);
+dispatchKey("keydown", " ", body);
+check({ context: "default-body-space", probe: "shortcut-preserved" }, calls.refresh, 1);
+removeDefaultProbe();
 
 const mismatches = rows.filter((r) => r.ok === false);
 const fixtureErrors = rows.filter((r) => r.fixtureError);

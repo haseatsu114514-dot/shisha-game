@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-24 JST",
+  "owner_request": "あとシーシャボトルの画像を生成したい　形は大会仕様の台のやつで　今後水入れとかで使いたい",
+  "status": "candidate-not-runtime-integrated",
+  "reference": "asset_sources/home-rigs-issue638/tournament-v3.png",
+  "reference_role": "approved tournament model silhouette, black/gold neck, bell glass, gold tendrils and three diamond accents",
+  "pre_generation": {
+    "character": "none",
+    "scene": "detached empty glass bottle before water filling and assembly",
+    "model": "approved tall silver tournament model, bottom bottle only",
+    "HMD": "none",
+    "charcoal": "none",
+    "hose": "none",
+    "mouthpiece": "none",
+    "composition": "single front-facing bottle, slightly above opening, portrait transparent PNG"
+  },
+  "generations": [
+    {
+      "path": "bottle-v1.png",
+      "prompt": "Create a single game-ready isolated EMPTY HOOKAH GLASS BOTTLE asset by editing the provided approved tournament hookah design. The attached image is the exact shape, color, ornament and game-art reference. Keep ONLY the detachable BOTTOM GLASS VASE from this model, enlarged and centered, and accurately preserve its recognizable silhouette: a modest-height narrow cylindrical black neck with two fine gold bands, curved/sloping clear-glass shoulders, a tall gently flared bell-shaped clear glass chamber, a broad gently rounded heavy glass foot, and the same delicate asymmetric flowing gold smoke-tendril decoration with three small diamond accents. This must be the bottle from the supplied silver tournament hookah, not a new generic round laboratory flask, not a spherical pumpkin bottle, not a blue tabletop model. Completely REMOVE the entire metal hookah stem, heart, tray, top connector, the internal downstem tube and all upper hardware: this is the detached vase alone before assembly, open at the top so water can be poured into it later. The black neck belongs to the bottle and must remain as a simple clean open cylindrical rim with visible glass wall thickness and a readable oval opening. Make the inside visibly EMPTY: no water, no liquid surface, no bubbles, no blue fill, no internal vertical pipe, no measuring lines or text. Preserve enough broad clear central glass area for a future animated water layer to show through. Crisp coherent glass contour and restrained warm silver/cream highlights, slight violet reflections consistent with the game's dark-purple-and-gold palette, fine painterly pixel-inspired fantasy visual-novel game rendering matching the reference; no photograph, no photoreal studio scene. Straight-on symmetric outer silhouette with a very slight view from above to reveal the open lip and the oval foot. Entire bottle fully in frame with comfortable margin, the bottle occupies roughly 80 percent of the portrait canvas height. TRUE transparent RGBA background, transparent glass interior, no floor, no background glow, no haze, no cast shadow outside the bottle. Exactly ONE bottle, no comparison sheet, no hands, no character, no faucet, no other props, no hose, no coals, no bowl, no labels, no logos, no UI. Output a clean high-resolution portrait transparent PNG suitable for later water-filling game compositing."
+    },
+    {
+      "path": "bottle-v2.png",
+      "prompt": "Refine this single isolated game asset without changing its bottle silhouette, open rim, clear bell-shaped glass, black-and-gold neck, two flowing gold lines or three diamond decorations. ONLY fix the alpha cutout and framing. Remove every bit of beige, grey, dark or luminous background haze/glow outside the physical glass outline, including the halo at the mouth and around the foot. Outside the bottle outline must be exactly RGBA alpha 0, no shadows or vignette or atmosphere whatsoever. Preserve the translucent clear-glass interior so an animated water layer can later show behind it, but make the actual gold ornaments, black neck bands, rim and physical glass edges appropriately solid and crisp. Keep the bottle completely empty with no liquid or inner metal tube. Center the complete bottle with at least 6% fully transparent margin on all four sides, especially under the heavy glass foot. Same 2D painterly pixel-inspired polished game-art look and same perspective. A true clean transparent PNG of the one existing bottle only; no background, no floor, no text or extra objects.",
+      "reference": "bottle-v1.png"
+    }
+  ],
+  "qa": {
+    "visual": "Open mouth, black/gold neck, bell silhouette, rounded foot, gold tendrils/three diamonds. No water, internal stem, upper hardware, hose, bowl, coals, character or text.",
+    "technical": "1024x1536 RGBA; alpha 0 corners, glass interior alpha 82 at pixel (500,600) in v2. Outer faint halo remains; not a final clean runtime cutout.",
+    "limitations": "No runtime registration, water mask, animation, game testing or automatic replacement of hookah_base. Current craft hookah_base is a different legacy sprite; this candidate follows the explicitly named approved tournament design in asset_sources."
+  },
+  "files": {
+    "bottle-v1.png": {
+      "bytes": 2068484,
+      "sha256": "5b5558ead291fe391917a58a7a4dba430ec5709937821cfd0d15457bdd40b5ae"
+    },
+    "bottle-v2.png": {
+      "bytes": 2000568,
+      "sha256": "668a4a1b4077899a6dd8db606adcc18520fac2e7cc2ce4bd573bfca8ec7d0ff2"
+    }
+  }
+}

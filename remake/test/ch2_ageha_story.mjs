@@ -1,19 +1,24 @@
-// 第2章のあげは（#626）: 強制の夜・店に通う回の順番・ダメな日・答え合わせ・試飲会の配合・LIME・控室の分岐。
+// 第2章のあげは（#626）: 強制の夜・店に通う回の順番・ダメな日・答え合わせ・試煙会の配合・LIME・控室の分岐。
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, agehaStoryScene, syncAgehaVibes } from "../js/chapters/ch2-story-data.js";
+import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, C_STATION_TASTING_BG, agehaStoryScene, syncAgehaVibes } from "../js/chapters/ch2-story-data.js";
 
 const read = (path) => JSON.parse(fs.readFileSync(new URL(`../../${path}`, import.meta.url), "utf8"));
 const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dialogues.map((d) => [d.dialogue_id, d]));
 
-// 強制の夜: 3日目（なるの祝福のあと）の偵察返し・9日目の試飲会・10日目のスランプ来店。
+// 強制の夜: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店。
 // 2日目と8日目（サメのTRPG）は自由に使える夜として空けたまま（#639）
 const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
 assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
 assert.equal(night(3).steps[1].contact, "ageha", "会っていなくても連絡先を交換する");
 assert(!night(2), "2日目は自由な夜");
 assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
-assert.equal(night(9).steps[0].room, "ageha");
+// 9日目はMELTY PUFFではなくC.STATION柚ヶ谷店の客席（#929）。旧IDのまま読了フラグを引き継ぐ
+assert.equal(night(9).pin, "ch2_c_station");
+assert.equal(night(9).steps[0].room, undefined);
+assert.equal(night(9).steps[0].bg, C_STATION_TASTING_BG);
+assert.match(C_STATION_TASTING_BG, /^\.\.\/assets\/backgrounds\/bg_c_station_night\.png$/, "C.STATIONの客席（画像の読み込みはブラウザの ch2_story で確認）");
+assert.doesNotMatch(night(9).label, /試飲|店長同士/);
 assert.deepEqual(night(10).steps.map((s) => s.id), ["ch2_sumi_silence", "remake_ch2_ageha_slump"]);
 assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);
@@ -29,7 +34,7 @@ for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
 assert.equal(agehaStoryScene(save, 9, story), null);
 assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければいつもの会話");
 
-// 答え合わせ: 2回当てたら試飲会で不安を話す
+// 答え合わせ: 2回当てたら試煙会で不安を話す
 const flags = { _ch2_vibes_hit_scout: true };
 assert.equal(syncAgehaVibes(flags), 1); assert(!flags._ch2_vibes_understood);
 flags._ch2_vibes_hit_magazine = true;
@@ -43,7 +48,7 @@ for (const id of ["remake_ch2_ageha_scout", ...AGEHA_VISITS]) {
   const marks = Object.entries(d.branches).filter(([, lines]) => lines.some((l) => l.type === "set_flag" && l.flag.startsWith("_ch2_vibes_hit_")));
   assert.deepEqual(marks.map(([k]) => k), ["hit"], id);
 }
-// ダメな日で秘密を知る。試飲会・スランプ・控室はそれで分岐する
+// ダメな日で秘密を知る。試煙会・スランプ・控室はそれで分岐する
 assert(story[AGEHA_BADDAY.id].lines.some((l) => l.type === "set_flag" && l.flag === "_ch2_ageha_secret"));
 for (const id of ["remake_ch2_ageha_tasting", "remake_ch2_ageha_slump"]) {
   assert(story[id].lines.some((l) => l.type === "condition" && l.flag === "_ch2_ageha_secret" && story[id].branches.secret), id);
@@ -51,10 +56,39 @@ for (const id of ["remake_ch2_ageha_tasting", "remake_ch2_ageha_slump"]) {
 const lobby = read("data/dialogue/ch2_tournament.json").dialogues.find((d) => d.dialogue_id === "ch2_tournament_lobby");
 assert(lobby.lines.some((l) => l.flag === "_ch2_ageha_secret") && lobby.branches.secret.length);
 
-// 試飲会の配合: こはくのひらめきと同じ印で「試したい配合」に入る
-const note = story.remake_ch2_ageha_tasting.lines.find((l) => l.type === "note");
+// 試煙会の配合: こはくのひらめきと同じ印で「試したい配合」に入る
+const tasting = story.remake_ch2_ageha_tasting;
+const note = tasting.lines.find((l) => l.type === "note");
 const recipe = read("data/recipes.json").recipes.find((r) => `idea_${r.id}` === note.note_id);
 assert.deepEqual(recipe?.flavors, ["mango", "peach", "mint"]);
+
+// 試煙会（#929）: 第1章・第2章のライバル6人とはじめが全員話す。会場・メーカー・課題の葉を本文で示し、旧会場を残さない
+const allLines = [...tasting.lines, ...Object.values(tasting.branches).flat()];
+const text = allLines.map((l) => l.text || "").join("\n");
+const mainSpeakers = new Set(tasting.lines.map((l) => l.speaker));
+for (const id of ["hajime", "naru", "adam", "minto", "ageha", "kumicho", "rei"]) assert(mainSpeakers.has(id), `試煙会で ${id} が話す`);
+assert.match(text, /C\.STATION柚ヶ谷店/); assert.match(text, /アフサール/); assert.match(text, /ストロベリー/);
+assert.doesNotMatch(text, /試飲会|店長同士|MELTY PUFFの客席|夜のMELTY PUFF/);
+for (const id of ["ageha", "kumicho", "rei"]) {
+  const cond = tasting.lines.find((l) => l.type === "condition" && l.condition_type === "met" && l.char_id === id);
+  assert(tasting.branches[cond.next_true] && tasting.branches[cond.next_false], `${id}: 面識あり／なし`);
+  assert(tasting.branches[cond.next_false].some((l) => l.type === "set_flag" && l.flag === `_met_${id}`), `${id}: 名乗ったら面識を記録`);
+  assert(!tasting.branches[cond.next_true].some((l) => l.type === "set_flag"), `${id}: 既知なら何も足さない`);
+}
+const turn = tasting.lines.find((l) => l.type === "choice");
+for (const c of turn.choices) assert(tasting.branches[c.next], c.next);
+assert(!allLines.some((l) => l.type === "apply"), "強制の夜に能力・好感度の報酬を付けない");
+assert(tasting.lines.some((l) => l.type === "set_flag" && l.flag === "_ch2_afsahr_tasting"));
+
+// 課題の葉: 支給はアフサールの新作。判定は苺の系統で、AFの持ち込みも数える（旧在庫を壊さない）
+const flavors = Object.fromEntries(read("data/flavors.json").flavors.map((f) => [f.id, f]));
+const steps = fs.readFileSync(new URL("../js/craft/steps.js", import.meta.url), "utf8");
+assert.match(steps, /2: \{ flavor: "strawberry", supply: "afsahr_strawberry"/);
+assert.equal(flavors.afsahr_strawberry.maker, "afsahr");
+assert.equal(flavors.afsahr_strawberry.family, "strawberry");
+assert.equal(flavors.afsahr_strawberry.name, "アフサール ストロベリー");
+assert(flavors.afsahr_strawberry.heat_tolerance < 1, "熱に弱い（試煙会の神崎の助言と一致）");
+assert.equal(flavors.strawberry.maker, "af", "既存のAFストロベリーは上書きしない");
 
 // 朝のLIME: 第2章の章内日で届く（4日目は感覚ある日、7日目はダメな日）。返信は19字まで
 const lime = read("data/lime_messages.json").messages;
@@ -63,4 +97,7 @@ for (const [id, day] of [["lime_ageha_ch2_goodday", 4], ["lime_ageha_ch2_badday"
   assert.equal(m.chapter, 2, id); assert.equal(m.trigger_day, day, id);
   for (const r of m.replies || []) assert([...r.text].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0) <= 19, r.text);
 }
-console.log("[ch2 ageha] PASS: forced nights, visit order, bad day, vibes, secret branches, tasting recipe, LIME");
+console.log("[ch2 ageha] PASS: forced nights, visit order, bad day, vibes, secret branches, C.STATION tasting, supplied strawberry, recipe, LIME");
+
+// 第2章の人間関係の改稿（#929）も同じquick検査で確かめる（tools/ci を変えると全ブラウザ検査が走るため、ここから実行する）
+await import("./ch2_relationships_929.mjs");

@@ -115,7 +115,8 @@ function waitForBenchAssets(b, task, assets = task) {
 export function openBench(cs, { steps = [] } = {}) {
   applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
-  const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
+  // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
+  const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls(), homeRigs: false });
   if (bench && bench.cs === cs && bench.root.isConnected) {
     const background = bg();
     bench.ready = waitForBenchAssets(bench, Promise.all([bench.ready, background]),

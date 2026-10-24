@@ -10,7 +10,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜、ケムリクサに寄った。──ドアを開けた瞬間、なるさんが両手を上げた。"
+          "text": "夜、ケムリクサに寄った。ドアを開けた瞬間、なるさんが両手を上げた。"
         },
         {
           "speaker": "naru",
@@ -48,9 +48,14 @@
           "text": "いいんだよ。お前が勝ち上がるほど、俺の負けの価値も上がるんでね"
         },
         {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "その代わり、大会が済んだら店の話も聞けよ。最近、いい常連がついたんだ"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "──この頃はまだ、二人で笑っていた。"
+          "text": "この頃はまだ、二人で笑っていた。"
         }
       ]
     },
@@ -59,6 +64,7 @@
       "metadata": {
         "bg": "res://assets/backgrounds/kemurikusa.png"
       },
+      "comment": "DAY11（#929）。なるが実際に店の話をしている最中に、はじめの目が採点表へ落ちる。なるは負けた嫉妬ではなく、話し相手まで点に換算されることに線を引く。listenは謝罪が届くが距離は残る。pushは強い衝突。どちらも即解決しない。",
       "lines": [
         {
           "speaker": "",
@@ -68,17 +74,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるはカウンターの中でボウルを磨いていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "なるさん、聞いてください。新しい試作、かなり手応えがあって"
+          "text": "なるはカウンターの中で、ボウルを磨いていた。"
         },
         {
           "speaker": "naru",
-          "face": "normal",
-          "text": "……なあ、はじめ。座れ"
+          "face": "smile",
+          "text": "おう、座れ。ちょうど、聞いてほしい話があってさ"
         },
         {
           "speaker": "",
@@ -87,43 +88,68 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
-          "text": "最近、お前と話してても、点の話ばっかりだな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "大会前ですから。いいところは全部取り入れたいんです"
+          "face": "smile",
+          "text": "今日、常連の親子が来たんだ。娘さんの誕生日に、苺の一台を出した"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "それはいい。俺から教わったことも使えよ"
+          "text": "バニラを少しだけ重ねて、ショートケーキに寄せてさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "帰りに、その子が「また来る」って言ってくれたんだよ"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "でも、さっきの話、聞いてたか？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……新しい詰め方の話ですか"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "店を続ける話だ。お前、途中で採点表を出しただろ"
+          "text": "店を続けるって、たぶん、そういう約束を一個ずつ守ることなんだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "膝の上には、開いたままのスマホがあった。"
+          "text": "膝の上で、スマホが光った。明日の練習の採点表を、開いたままだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が、数字の方へ落ちる。なるの声が、少しずつ遠くなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ、それなら。苺って、何gから香りが立ちますか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの手が止まった。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "うまくなってるよ。けど、話してる相手まで点で見なくていいだろ"
+          "text": "……今の話、点になるのか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "うまくなってるよ。俺が教えた手順も、どんどん使えばいい"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "でもな。話してる相手まで、点で見なくていいだろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの笑い方が、なるの顔から消えていた。"
         },
         {
           "type": "choice",
@@ -143,24 +169,39 @@
       "branches": {
         "listen": [
           {
+            "speaker": "",
+            "face": "",
+            "text": "スマホを裏返して、カウンターに置いた。"
+          },
+          {
             "speaker": "hajime",
-            "face": "normal",
-            "text": "……すみません。店の話、もう一度聞かせてください"
+            "face": "sad",
+            "text": "すみません。スマホ、置きます。……続き、聞かせてください"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは少し黙ってから、その子がケーキみたいだと笑った話を、最後までしてくれた。"
           },
           {
             "speaker": "naru",
             "face": "normal",
-            "text": "今は頭に入らないだろ。顔に出てる"
+            "text": "……聞いてくれて、ありがとな。でも、今日はここまでにしとく"
           },
           {
             "speaker": "naru",
             "face": "normal",
-            "text": "大会が終わったら、点のつかない話をしようぜ"
+            "text": "大会が済んだら、もう一回ちゃんと話そう。点のつかない話をさ"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "はい。俺から連絡します"
+            "text": "はい。終わったら、俺から連絡します"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り際、なるは見送りに出てこなかった。カウンターの灯りだけが、まだ点いていた。"
           },
           {
             "type": "set_flag",
@@ -171,7 +212,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "──勝ったのは、俺です"
+            "text": "……勝ったのは、俺です"
           },
           {
             "speaker": "",
@@ -181,17 +222,27 @@
           {
             "speaker": "naru",
             "face": "normal",
-            "text": "そうだな。けど今、勝ち負けの話はしてない"
+            "text": "そうだな。お前は勝った"
           },
           {
             "speaker": "naru",
-            "face": "normal",
-            "text": "今日は帰れ。俺も、言い方を考える"
+            "face": "serious",
+            "text": "……でも、勝ち負けの話はしてない"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "今夜は帰れ。このまま話すと、俺も言わなくていいことを言う"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道に謝った。返事を待つ画面から、目を離せなかった。"
+            "text": "チョコレートバニラは、半分も吸わないまま冷めていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道に、謝りのLIMEを送った。既読はついた。返事は来なかった。"
           },
           {
             "type": "set_flag",
@@ -259,7 +310,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとうございます。本番も、絶対──"
+          "text": "ありがとうございます。本番も、絶対……"
         },
         {
           "speaker": "minto",
@@ -299,9 +350,81 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──突き放されなかったことが、なぜだか少しだけ、こたえた。"
+          "text": "突き放されなかったことが、なぜだか少しだけ、こたえた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_naru_window",
+      "comment": "DAY12夜・みんとの店の帰り（#929の強制イベント）。DAY11の選択の記録がある時だけ読む。言い返した場合は、常連の親子が約束どおりまた来て、なるがあの夜はじめの前で消えた笑い方をしているのを窓越しに見る。聞いた場合は短く言葉を交わすが、前のようには肩を叩かれない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぺぱーみんとからの帰り道。商店街の途中で、ケムリクサの灯りが見えた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_hurt",
+          "next_true": "hurt",
+          "next_false": "listened"
+        }
+      ],
+      "branches": {
+        "hurt": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "窓の向こうで、なるが常連の親子に一台を出していた。約束どおり、また来たらしい。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "娘さんがケーキみたいだと笑い、なるも笑っていた。あの夜、俺の前で消えた笑い方だった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……入れない。謝ったきりで、返事も来てないのに）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ガラスに映った自分の顔から、目をそらして歩いた。"
+          }
+        ],
+        "listened": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ちょうど、なるが看板をしまいに外へ出てきた。目が合う。"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "……おう。明後日だな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……あの子、また来ましたか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "来たよ。昨日の今日でな。……話は、大会が終わってからだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは看板を抱えて店に戻った。前みたいに、肩は叩かれなかった。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_tsumugi_color",
