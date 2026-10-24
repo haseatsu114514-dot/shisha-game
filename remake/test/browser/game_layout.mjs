@@ -14,6 +14,9 @@ const browserOptions = { headless: true, ...(process.env.CHROME_EXECUTABLE_PATH 
 const results = [];
 const button = (p, id) => p.locator(`[data-test="${id}"]`);
 const activate = async (p, id, touch) => {
+  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
+    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
+    await activate(p, "title-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
 };
@@ -219,6 +222,39 @@ try {
     await activate(p,"game-layout-normal",true);await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));
     await normalGeometry(p);
     assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.scrollLeft,n.scrollTop]),[0,0]);
+  });
+  await check("small-phone-station-arrival-shows-map-top",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
+    await activate(p,"title-layout-ds",true);
+    await p.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),s=core.newGame();
+      Object.assign(s,{chapter:2,phase:"daily",day:15,slot:2,money:36000,stamina:100,weatherSeed:7});
+      s.flags={_ch1_cleared:true,_ch2_day1:{startDay:15,stage:"complete",titleSeen:true},
+        _ch2_city_visit_c_station:true,_lime_tut:1,_lime_opened:true,
+        _hiyori_meeting_done:true,_hiyori_message_delivered:true};
+      s.stats={technique:31,sense:31,guts:31,charm:31,insight:31};
+      s.flavorStock={mint:21.5,double_apple:6};
+      core.save();__remake.vnTest.turbo=true;
+      (await import("./js/chapters/ch1.js")).setupHooks();
+      void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
+    });
+    // The fixture's completion screen uses the normal portrait rotate hint;
+    // enter the DS map before testing its real touch controls.
+    await button(p,"ch2-main-next-day").evaluate(n=>n.click());
+    await p.locator('[data-destination-selection]:not(.done)').waitFor();
+    await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));
+    await activate(p,"station-open",true);
+    await activate(p,"station-destination-widehanga",true);
+    assert((await p.locator("#viewport").evaluate(n=>n.scrollTop))>0,"Station choice did not scroll the short viewport");
+    await activate(p,"station-confirm",true);
+    await button(p,"pin-ch2_rei").waitFor();
+    await p.waitForFunction(()=>document.querySelector("#viewport").scrollTop===0);
+    const layout=await p.evaluate(()=>{
+      const viewport=document.querySelector("#viewport").getBoundingClientRect();
+      const hud=document.querySelector(".hud-card").getBoundingClientRect();
+      return {visible:hud.top>=viewport.top&&hud.bottom<=viewport.bottom,region:document.querySelector(".map")?.dataset.region};
+    });
+    assert.equal(layout.region,"widehanga");assert(layout.visible,"Station arrival left the HUD offscreen");
+    await p.screenshot({path:path.join(dir,"small-phone-station-arrival.png")});
   });
   await check("old-auto-load-ds-conversation",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async p=>{
     await activate(p,"title-layout-ds",true);

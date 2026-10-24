@@ -2,10 +2,13 @@
 :root { --title-layout-ready: 1; }
 .title-layout-toolbar {
   position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right));
-  z-index: 110; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
+  z-index: 110;
   max-width: calc(100% - 20px); padding: 4px; border: 1px solid #b68d53; border-radius: 5px;
   background: #1b1023f2; color: #f6dfaf; font-size: 14px;
 }
+.title-layout-toolbar summary { font-size: 13px; }
+.title-layout-options { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 300px; }
+body[data-screen="title"]:has(#modal.show) .title-layout-toolbar { visibility: hidden; }
 .title-layout-toolbar button, .title-layout-toolbar a { padding: 10px 12px; min-height: 40px; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
 .title-layout-toolbar button[aria-pressed="true"] { background: #67422d; border-radius: 3px; }
 .title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
@@ -62,7 +65,16 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .mo
 }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg { min-width: 0; }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg-row { flex-wrap: wrap; }
-body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-overlay { top: 64px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { min-width: 0; min-height: 0; width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head { align-items: center; flex-wrap: wrap; gap: 8px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head h2 { font-size: clamp(18px, 6vw, 28px); letter-spacing: .2em; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-count { flex: none; white-space: nowrap; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-close { flex: none; min-height: 38px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { min-height: 0; }
+@media (max-width: 500px) {
+  body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) and (orientation: portrait) {
   .title[data-layout="ds"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(300px, 1fr)); padding-top: 66px; }
   .title[data-layout="ds"] .title-ds-controls { padding: 14px 18px; }

@@ -12,9 +12,9 @@ export function createChapterSample(base, id) {
   if (id === "rush") {
     const durations = [1700, 1700, 1200, 2600, 3400, 3500, 2600, 2600, 3600, 3700, 2600];
     data.frames.forEach((cut, i) => { cut.duration = durations[i]; cut.move = "still"; });
-    data.frames.find(cut => cut.id === "naru-confrontation").text = "話してる相手まで\n点で見なくていいだろ";
+    data.frames.find(cut => cut.id === "naru-confrontation").text = "……今の話、\n点になるのか？";
     data.frames.find(cut => cut.id === "minto-warning").text = "何があっても、\nわたしはここにいるから。";
-    data.frames.find(cut => cut.id === "empty-victory").text = "……俺、なんのために\n勝ったんだっけ。";
+    data.frames.find(cut => cut.id === "empty-victory").text = "……おめでとうが、\n届いてるのに。";
   }
   if (id === "quiet") {
     const durations = [3000, 3500, 1500, 4000, 4500, 4500, 5000, 4000, 6000, 4000, 4000];

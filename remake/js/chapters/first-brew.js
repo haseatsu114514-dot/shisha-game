@@ -26,7 +26,12 @@ export function firstBrewResponse(mix = {}) {
 }
 
 export function rememberFirstBrew(progress, cs, guided = true) {
-  progress.firstBrew = { mix: { ...cs.mix }, guided };
+  const pull = cs.pull;
+  // 吸い出し自身の判定を記録する。補助制作・旧セーブ・未完了からは推測しない。
+  const finish = guided && cs.pullDone && !cs.failed && !pull?.failed && Number.isFinite(pull?.temp)
+    ? pull.inZone ? "balanced" : pull.under ? "cool" : pull.over ? "hot" : null
+    : null;
+  progress.firstBrew = { mix: { ...cs.mix }, guided, finish };
   save();
 }
 
@@ -68,7 +73,11 @@ export async function serveFirstBrew(progress) {
   const serveAt = original.lines.findIndex(l => l.type === "show_cg" && l.cg_id === "cg_oneesan_first_smoke");
   if (serveAt < 0) throw new Error("First customer serving scene is missing");
   const lines = original.lines.slice(serveAt);
-  const reaction = DB.dialogues.remake_first_brew_response?.branches?.[firstBrewResponse(progress.firstBrew.mix)] || [];
+  const responses = DB.dialogues.remake_first_brew_response?.branches || {};
+  const reaction = responses[firstBrewResponse(progress.firstBrew.mix)] || [];
+  const finish = progress.firstBrew.guided && responses[`finish_${progress.firstBrew.finish}`];
+  const praiseAt = lines.findIndex(line => line.speaker === "oneesan");
+  if (finish?.length && praiseAt >= 0) lines.splice(praiseAt, 1, ...finish);
   const result = await play({ ...original, lines: [...lines.slice(0, 2), ...reaction, ...lines.slice(2)] }, { bg: TONARI });
   return !result?.cancelled && state === owner;
 }

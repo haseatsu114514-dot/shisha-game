@@ -3,6 +3,8 @@
    ============================================================ */
 #vn { opacity: 0; transition: opacity 0.25s ease; }
 #vn.active { opacity: 1; }
+/* 会話終了と同時に次画面が見えるため、前の文字と操作欄は残像にしない。 */
+#vn:not(.active) :is(.vn-box, .vn-choices, .vn-controls, .vn-log) { visibility: hidden; }
 
 .vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
   display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;

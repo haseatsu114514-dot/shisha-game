@@ -122,9 +122,10 @@ export function uiArtReady(ms = 2000) {
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
  * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
-export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true } = {}) {
   const host = layers.bg;
-  const key = `${url}|${tint || ""}|${sceneArtUrls(url).join("|")}`;
+  const art = { homeRigs };
+  const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   if (key === bgNow) {
     refreshWeather();
@@ -135,11 +136,11 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
-  bgAssetsReady = Promise.all([...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000)));
+  bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
   bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img");
-    renderSceneArt(next, url);
+    renderSceneArt(next, url, art);
     if (!url) next.classList.add("black");
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;

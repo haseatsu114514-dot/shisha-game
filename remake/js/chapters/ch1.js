@@ -652,7 +652,7 @@ export async function showClear() {
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   const owner = state;
   let playing = false;
-  const next = el("button.btn.primary", { text: "第2章の初日へ", dataset: { test: "end-chapter2" }, onclick: async () => {
+  const next = el("button.btn.primary", { text: "第2章へ進む", dataset: { test: "end-chapter2" }, onclick: async () => {
     if (playing || !root.isConnected || state !== owner) return;
     playing = true; next.disabled = true; replay.disabled = true;
     try {
@@ -669,7 +669,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "初日の隣町への街歩きを遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "隣町への訪問から、県大会とその後まで遊べます。第3章の本編は準備中です。" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),

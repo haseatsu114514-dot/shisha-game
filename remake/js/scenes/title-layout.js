@@ -43,17 +43,22 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     },
   }));
   const recovery = new URL(location.href); recovery.searchParams.set("titleLayout", "normal");
-  const toolbar = el("nav.title-layout-toolbar", { "aria-label": "タイトルの見た目" }, [
-    ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "title-layout-recover" } }), note,
+  const summary = el("summary", { text: "表示設定", dataset: { test: "title-layout-settings" } });
+  const toolbar = el("details.title-layout-toolbar", [summary,
+    el("nav.title-layout-options", { "aria-label": "タイトルの見た目" }, [
+      ...buttons, el("a", { text: "通常版で開き直す", href: recovery.href, dataset: { test: "title-layout-recover" } }), note,
+    ]),
   ]);
   // 専用CSSが欠落しても、復旧ボタンは画面の上端で操作できる。
   Object.assign(toolbar.style, { position: "fixed", top: "8px", right: "10px", zIndex: "1100",
     maxWidth: "calc(100% - 20px)", backgroundColor: "#1b1023", color: "#f6dfaf" });
+  Object.assign(summary.style, { minHeight: "44px", padding: "12px", cursor: "pointer", boxSizing: "border-box" });
   buttons.forEach(b => Object.assign(b.style, { minHeight: "44px", minWidth: "60px" }));
   const hint = document.querySelector("#rotate-hint");
   const hintDisplay = hint?.style.display;
   function apply(mode) {
     root.dataset.layout = mode;
+    summary.textContent = `表示設定：${mode === "ds" ? "DS風" : "通常版"}`;
     if (hint) hint.style.display = mode === "ds" ? "none" : hintDisplay;
     visual.hidden = controls.hidden = mode !== "ds";
     if (mode === "ds") {
