@@ -1,0 +1,50 @@
+[
+  {
+    "version": "current",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "substitutions": 0,
+    "errors": [],
+    "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp",
+    "naturalWidth": 896,
+    "displayedWidth": 845.703125
+  },
+  {
+    "version": "candidate",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "substitutions": 1,
+    "errors": [],
+    "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp",
+    "naturalWidth": 896,
+    "displayedWidth": 845.703125
+  },
+  {
+    "version": "current",
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "substitutions": 0,
+    "errors": [],
+    "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp",
+    "naturalWidth": 896,
+    "displayedWidth": 458.08917236328125
+  },
+  {
+    "version": "candidate",
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "substitutions": 1,
+    "errors": [],
+    "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp",
+    "naturalWidth": 896,
+    "displayedWidth": 458.08917236328125
+  }
+]
