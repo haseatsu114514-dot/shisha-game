@@ -195,7 +195,7 @@ export function releaseAffinity(id) {
   const legacyKey = `_${id}_story_waiting_pts`;
   const legacy = Math.max(0, Number(state.flags[legacyKey]) || 0);
   if (legacy) {
-    state.flags[waitingKey(id)] = (Number(state.flags[waitingKey(id)]) || 0) + legacy;
+    state.flags[waitingKey(id)] = Math.max(Number(state.flags[waitingKey(id)]) || 0, releasedPoints(id)) + legacy;
     delete state.flags[legacyKey];
   }
   if ((state.lovers || []).includes(id)) return 0;

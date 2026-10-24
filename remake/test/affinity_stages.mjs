@@ -93,6 +93,15 @@ await check('PR970 saved story bank migrates and releases once', async f => {
   assert.equal(s.flags._naru_story_waiting_pts,undefined);
   assert.equal(f.stats.releaseStoryAffinity('naru'),0);
 });
+await check('legacy rescue history cannot consume independent PR970 pending earnings', async f => {
+  const s=f.fresh(); s.story.naru=6; s.affinity.naru=33;
+  s.flags._naru_affinity_waiting_pts=5; s.flags._naru_affinity_released_pts=15;
+  s.flags._naru_story_waiting_pts=17;
+  assert.equal(f.stats.releaseStoryAffinity('naru'),17);
+  assert.equal(s.affinity.naru,50);
+  assert.equal(s.flags._naru_affinity_released_pts,15);
+  assert.equal(f.stats.releaseStoryAffinity('naru'),0);
+});
 for (const outcome of ['cancel','missing','throw','abort','load']) await check(`visitChar public caller: ${outcome} cannot complete/reward`, async f => {
   const s=f.core.state; s.affinity.naru=0;
   const controller=new AbortController();
