@@ -63,6 +63,8 @@ export function initGameLayout() {
       : { left: "50%", right: "auto", transform: "translateX(-50%)" });
     buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(mode === ["normal", "ds"][i])));
     note.textContent = mode !== "ds" ? "" : !ready ? "表示準備ができないため通常表示" : !view ? "この画面は通常表示です" : "";
+    // DS専用CSSが届かないときは、開き直しの入口を畳まずに見せる。
+    if (inGame && mode === "ds" && !ready && !toolbar.open) toolbar.open = true;
     measure();
   }
   // 上下2画面の寸法はタイトルと共通（ds-geometry.js が :root に --ds-* を置く）。
