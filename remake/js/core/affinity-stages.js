@@ -8,6 +8,7 @@ export const VISIT_SEQ = {
   rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"],
 };
 
+export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"];
 export const questionDoneKey = id => `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
 export function questionComplete(s, id) {
@@ -47,7 +48,7 @@ export function pendingAffinityStage(s, id, db = {}) {
   }
   if (["ageha", "kumicho", "rei"].includes(id)) {
     stages.push({ level: 0, done: !!flags._ch2_talks?.[id] }, { level: 1, done: !!flags._ch2_followup_done?.[id] });
-    if (id === "ageha") ["gyaru", "newcomer", "magazine"].forEach((key, i) => stages.push({ level: i + 2, scene: `remake_ch2_ageha_${key}`, done: !!flags[`_ch2_read_remake_ch2_ageha_${key}`] }));
+    if (id === "ageha") AGEHA_AFFINITY_VISITS.forEach((scene, i) => stages.push({ level: i + 2, scene, done: !!flags[`_ch2_read_${scene}`] }));
   }
   return stages.filter(e => !e.done).sort((a,b) => a.level - b.level)[0] || null;
 }

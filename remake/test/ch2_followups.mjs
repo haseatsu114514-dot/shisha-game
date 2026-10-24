@@ -7,7 +7,7 @@ const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
 const all = Object.fromEntries(preparation.dialogues.map(d => [d.dialogue_id, d]));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, options, played, saves, mode, resolvePlay;
+let state, options, played, saves, mode, resolvePlay, heartLevel = 1;
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
@@ -22,6 +22,7 @@ const mocks = {
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
+    affinityLevel: () => heartLevel,
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
   },
@@ -64,6 +65,7 @@ function fresh(count) {
 }
 async function setup(count) {
   if (!arguments.length) count = 1;
+  heartLevel = 1;
   state = fresh(count); states.setExport("state", state); played = []; saves = 0; mode = "ok";
   DB.dialogues = { ...all }; resolvePlay = null;
   await module.namespace.runChapterTwoPreparation();
@@ -104,6 +106,18 @@ for (const id of ids) {
   const old = state, oldBefore = structuredClone(state);
   assert.equal((await visit(id)).used, false);
   assert.deepEqual(old, oldBefore); assert.deepEqual(state, fresh(9), "LOAD target must receive no old action effects");
+}
+
+// ♥0の再訪はrepeatで正規報酬を得る。♥1になった時だけ既存followupへ。
+for (const id of ids) {
+  await setup(1); heartLevel = 0;
+  assert.equal((await visit(id)).used, true);
+  assert.equal(played.at(-1), `remake_ch2_${id}_repeat`);
+  assert.equal(state.flags._ch2_followup_done?.[id], undefined);
+  assert.deepEqual(state.affinity, [[id,5]]);
+  heartLevel = 1; await visit(id);
+  assert.equal(played.at(-1), `remake_ch2_${id}_followup`);
+  assert.equal(state.flags._ch2_followup_done[id], true);
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.

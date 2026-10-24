@@ -4,7 +4,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
 import { imageReady, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -61,10 +61,11 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
   const first = !state.flags._ch2_talks?.[id];
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
-  const followup = !first && !state.flags._ch2_followup_done?.[id];
+  const pendingFollowup = !first && !state.flags._ch2_followup_done?.[id];
+  const followup = pendingFollowup && affinityLevel(id) >= 1;
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
-  const story = id === "ageha" && !first && !followup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   const scene = story || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
   const dialogue = DB.dialogues[scene];
   if (!dialogue?.lines?.length || followup && !dialogue.lines.every(line => line && !line.type

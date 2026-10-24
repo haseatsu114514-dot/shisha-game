@@ -66,7 +66,6 @@ export const BOND_QUESTIONS = {
 /** 隠し恋愛値（恋愛寄りに答えた数）。プレイヤーには見せない */
 export const romanceValue = (id) => state.romance?.[id] || 0;
 const answers = (id) => Object.values(state.romanceChoices || {}).filter((a) => a.char === id);
-const answered = (choiceId) => !!state.romanceChoices?.[choiceId];
 
 /** 選んだ答えを記録する（engine の onChoice から）。同じ選択肢 id は一度だけ＝再読で稼げない */
 export function recordRomanceChoice(line, choice) {
@@ -202,7 +201,8 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "same
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
-  : storyCount(id) >= (VISIT_SEQ[id] || []).length;
+  : storyCount(id) >= (VISIT_SEQ[id] || []).length
+    && (!AFFINITY_GATE_CHOICES[id] || questionComplete(state, id));
 
 /**
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。

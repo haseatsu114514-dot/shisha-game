@@ -121,6 +121,12 @@ for (const outcome of ['missing','abort','load','throw']) await check(`question 
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
   assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined);
 });
+await check('Rin third story completes at heart2; question becomes due only at heart3',async f=>{
+  const s=f.core.state;s.story.rin=2;s.affinity.rin=20;
+  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rin'),true);
+  assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,28);assert.equal(f.bonds.questionVisitDue('rin'),false);
+  f.stats.gainAffinity('rin',6);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
+});
 await check('legacy current/carry/history stay intact; old rescued points never released twice across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
   s.flags._tsumugi_affinity_waiting_pts=34;s.flags._tsumugi_affinity_waiting_released=true;s.flags._tsumugi_affinity_released_pts=15;
