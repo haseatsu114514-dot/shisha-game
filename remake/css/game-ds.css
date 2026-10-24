@@ -344,3 +344,171 @@ body.game-ds .status-modal .st-row { min-width: 0; }
 body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy) + 36px); width: var(--ds-vw); height: calc(var(--ds-vh) - 36px); right: auto; bottom: auto; }
 /* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */
 body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4) !important; transform-origin: 50% 100%; }
+
+/* ---------------------------------------------------------------- 大会の中継グラフィック（中間投票・南雲の10点・カウント・結果）
+   上画面＝見せ場（見出し・順位・カットイン・カウント）、下画面＝読む情報と操作（持ち点・内訳・ボタン）。
+   2つの画面の地はそれぞれの枠に合わせて塗り、ヒンジは塗らない。 */
+body.game-ds :is(.standings.tournament-board, .nagumo-cut, .count-screen, .result-table) {
+  --ds-top: linear-gradient(160deg, #241634, #110c1a 70%);
+  --ds-bottom: linear-gradient(160deg, #1a1226, #0d0a15 70%);
+  background:
+    var(--ds-top) var(--ds-vx) var(--ds-vy) / var(--ds-vw) var(--ds-vh) no-repeat,
+    var(--ds-bottom) var(--ds-cx) var(--ds-cy) / var(--ds-cw) var(--ds-ch) no-repeat;
+  border: 0; box-shadow: none; border-radius: 0;
+}
+body.game-ds .standings.tournament-board::before { display: none; }
+
+/* 中間投票：上＝見出しと順位、下＝審査員の持ち点・制作の評価・速報 */
+body.game-ds .standings.tournament-board {
+  position: fixed; inset: 0; left: 0; top: 0; width: 100%; height: 100%; padding: 0; transform: none; overflow: hidden;
+  display: block;
+}
+body.game-ds .standings.tournament-board.show { transform: none; }
+body.game-ds .standings .sd-main { display: contents; }
+body.game-ds .standings .tournament-heading {
+  position: absolute; left: calc(var(--ds-vx) + 12px); top: calc(var(--ds-vy) + 10px); width: calc(var(--ds-vw) - 24px);
+  display: block; padding-bottom: 6px;
+}
+body.game-ds .standings .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .standings .tournament-heading h1 { margin-top: 2px; font-size: 26px; }
+body.game-ds .standings .tournament-heading p { display: none; }
+body.game-ds .standings .sd-board {
+  position: absolute; left: calc(var(--ds-vx) + 10px); top: calc(var(--ds-vy) + 70px); width: calc(var(--ds-vw) - 20px);
+  height: calc(var(--ds-vh) - 80px); justify-content: center; gap: 6px;
+}
+body.game-ds .standings .sd-rows { gap: 6px; }
+body.game-ds .standings .sd-row { grid-template-columns: 28px 34px minmax(0, 72px) minmax(0, 1fr) 46px; gap: 7px; min-height: 0; height: calc((var(--ds-vh) - 120px) / 4); max-height: 54px; padding: 4px 10px 4px 6px; }
+body.game-ds .standings .sd-rank { width: 28px; height: 28px; font-size: 14px; }
+body.game-ds .standings .sd-face { width: 34px; height: 34px; border-radius: 8px; }
+body.game-ds .standings .sd-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.game-ds .standings .sd-bar { height: 10px; }
+body.game-ds .standings .sd-points { font-size: 22px; }
+body.game-ds .standings .sd-points small { font-size: 10px; }
+body.game-ds .judge-legend { gap: 10px; font-size: 10px; }
+body.game-ds .standings .judge-panel {
+  position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+}
+body.game-ds .judge-chip { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 8px 6px 7px; row-gap: 3px; }
+body.game-ds .judge-chip::before { left: 8px; right: 8px; top: 0; bottom: auto; width: auto; height: 3px; }
+body.game-ds .judge-chip .judge-face { grid-row: auto; width: 34px; height: 34px; }
+body.game-ds .judge-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+body.game-ds .judge-pips { width: 100%; gap: 2px; }
+body.game-ds .judge-pips b { height: 7px; }
+body.game-ds .judge-left { font-size: 10px; }
+body.game-ds .judge-chip.held::after { right: 6px; top: 4px; font-size: 11px; }
+body.game-ds .standings .sd-status {
+  position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
+  top: calc(var(--ds-cy) + 140px); font-size: 12px; padding: 6px 10px;
+}
+body.game-ds .standings .sd-recognition {
+  position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
+  top: calc(var(--ds-cy) + 182px); max-height: 54px; overflow: hidden; font-size: 12px;
+}
+body.game-ds .standings .sd-feed {
+  position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
+  bottom: calc(100% - var(--ds-cy) - var(--ds-ch) + 10px); font-size: 12px;
+}
+body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 11px; }
+
+/* 南雲の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
+body.game-ds .nagumo-cut { padding: 0; display: block; }
+body.game-ds .nagumo-cut .nc-rays { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
+body.game-ds .nagumo-cut .tournament-heading {
+  position: absolute; left: calc(var(--ds-cx) + 12px); top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 24px); padding-bottom: 6px;
+}
+body.game-ds .nagumo-cut .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .nagumo-cut .tournament-heading h1 { margin-top: 2px; font-size: 24px; }
+body.game-ds .nagumo-cut .tournament-heading p { display: none; }
+body.game-ds .nagumo-cut .nc-bars {
+  position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 66px); width: calc(var(--ds-cw) - 20px); gap: 6px;
+}
+body.game-ds .nagumo-cut .nc-row { grid-template-columns: 28px 34px minmax(0, 72px) minmax(0, 1fr) 40px; gap: 7px; min-height: 0; height: min(54px, calc((var(--ds-ch) - 100px) / 4)); padding: 4px 12px 4px 6px; }
+body.game-ds .nagumo-cut .nc-rank { width: 28px; height: 28px; font-size: 14px; }
+body.game-ds .nagumo-cut .nc-face { width: 34px; height: 34px; border-radius: 8px; }
+body.game-ds .nagumo-cut .nc-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.game-ds .nagumo-cut .nc-bar { height: 12px; }
+body.game-ds .nagumo-cut .nc-pt { font-size: 24px; }
+body.game-ds .nagumo-cut .nc-cut { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); right: auto; bottom: auto; overflow: hidden; border-radius: 7px; }
+body.game-ds .nc-cut-art { inset: 0; clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%); }
+body.game-ds .nc-cut-art img { left: 22%; width: 86%; bottom: -10%; }
+body.game-ds .nc-cut-text { left: 0; bottom: 14px; padding: 8px 18px 10px 14px; }
+body.game-ds .nc-cut-text b { font-size: 22px; }
+body.game-ds .nc-cut-pt strong { font-size: 48px; }
+body.game-ds .nc-stamp { left: calc(var(--ds-vx) + var(--ds-vw) * .3); top: calc(var(--ds-vy) + var(--ds-vh) * .3); font-size: 44px; padding: 4px 18px; border-width: 4px; }
+
+/* カウント：上＝見出し・数字・リング、下＝4人のカード */
+body.game-ds .count-screen .tournament-heading { left: calc(var(--ds-vx) + 12px); top: calc(var(--ds-vy) + 10px); width: calc(var(--ds-vw) - 24px); }
+body.game-ds .count-screen .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .count-screen .tournament-heading h1 { font-size: 26px; }
+body.game-ds .count-screen .tournament-heading p { font-size: 12px; margin-top: 2px; }
+body.game-ds .count-screen::before { left: calc(var(--ds-vx) + var(--ds-vw) / 2); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); }
+body.game-ds .count-screen .rc-ring { left: calc(var(--ds-vx) + var(--ds-vw) / 2); top: calc(var(--ds-vy) + var(--ds-vh) * .58); width: min(220px, calc(var(--ds-vh) * .62)); height: min(220px, calc(var(--ds-vh) * .62)); }
+body.game-ds .count-screen .rc-num { left: calc(var(--ds-vx) + var(--ds-vw) / 2); top: calc(var(--ds-vy) + var(--ds-vh) * .58); font-size: min(120px, calc(var(--ds-vh) * .34)); }
+body.game-ds .count-screen .rc-cuts { position: absolute; left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); overflow: hidden; }
+body.game-ds .count-screen .rc-cut { font-size: 14px; padding: 5px 10px; }
+body.game-ds .count-screen .rc-pray {
+  left: calc(var(--ds-cx) + 10px); right: auto; width: calc(var(--ds-cw) - 20px); top: calc(var(--ds-cy) + 14px); bottom: auto;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+}
+body.game-ds .count-screen .rc-card { width: auto; padding: 10px; grid-template-columns: 40px minmax(0, 1fr); font-size: 15px; }
+body.game-ds .count-screen .rc-face { width: 40px; height: 40px; }
+body.game-ds .count-screen .rc-crt { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
+
+/* 結果発表：上＝エンブレムと最終順位、下＝あなたの一台とボタン */
+body.game-ds .result-table { display: block; padding: 0; overflow: hidden; }
+body.game-ds .result-table .rt-layout { display: contents; }
+body.game-ds .result-table .rt-rays { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
+body.game-ds .result-table .rt-confetti { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); inset: auto; }
+body.game-ds .result-table .rt-hero {
+  position: absolute; left: calc(var(--ds-vx) + 10px); top: calc(var(--ds-vy) + 8px); width: calc(var(--ds-vw) - 20px); height: 64px;
+  gap: 10px; border-bottom: 0;
+}
+body.game-ds .rt-emblem { width: 56px; height: 56px; }
+body.game-ds .rt-emblem b { font-size: 26px; }
+body.game-ds .rt-emblem small { font-size: 8px; }
+body.game-ds .result-table .tournament-eyebrow { font-size: 9px; letter-spacing: .12em; }
+body.game-ds .result-table .tournament-heading h1 { font-size: 30px; }
+body.game-ds .result-table .tournament-heading p { font-size: 11px; margin-top: 0; }
+body.game-ds .result-table .rt-ranking {
+  position: absolute; left: calc(var(--ds-vx) + 10px); top: calc(var(--ds-vy) + 78px); width: calc(var(--ds-vw) - 20px);
+  height: calc(var(--ds-vh) - 86px); padding: 8px 10px; overflow: hidden;
+}
+body.game-ds .rt-ranking-head { margin-bottom: 6px; }
+body.game-ds .rt-ranking h2 { font-size: 11px; }
+body.game-ds .result-table .rt-rows { gap: 5px; }
+body.game-ds .result-table .rt-row { grid-template-columns: 40px 34px minmax(0, 1fr) 52px; min-height: 0; height: min(58px, calc((var(--ds-vh) - 140px) / 4)); padding: 4px 10px 4px 4px; column-gap: 8px; row-gap: 2px; }
+body.game-ds .result-table .rt-rank { width: 38px; height: 38px; font-size: 12px; }
+body.game-ds .result-table .rt-face { width: 34px; height: 34px; }
+body.game-ds .result-table .rt-name { font-size: 14px; }
+body.game-ds .rt-votes { display: none; }
+body.game-ds .result-table .rt-bar { height: 8px; }
+body.game-ds .result-table .rt-pt { font-size: 18px; }
+body.game-ds .result-table .rt-detail {
+  position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
+  height: calc(var(--ds-ch) - 80px); padding: 10px; gap: 6px 8px; overflow: auto; overscroll-behavior: contain;
+}
+body.game-ds .result-table .rt-detail h4 { font-size: 12px; margin-bottom: 0; }
+body.game-ds .result-table .rt-part { padding: 5px 8px 6px; font-size: 12px; }
+body.game-ds .result-table .rt-part b { font-size: 22px; }
+body.game-ds .result-table .rt-part.score b { font-size: 22px; }
+body.game-ds .result-table .rt-detail > small { font-size: 11px; }
+body.game-ds .result-table > .btn {
+  position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); min-width: 0;
+  top: calc(var(--ds-cy) + var(--ds-ch) - 62px); min-height: 52px; font-size: 16px;
+}
+body.game-ds .rt-ranking-head { gap: 6px; }
+body.game-ds .rt-ranking-head h2 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.game-ds .rt-ranking-head .judge-legend { flex: none; gap: 6px; }
+body.game-ds .result-table .rt-row { height: min(58px, calc((var(--ds-vh) - 128px) / 4)); }
+/* 背の低い端末：結果表と順位の行を詰め、収まらない分は枠の中でスクロールする。 */
+body.game-ds .result-table .rt-ranking { overflow: auto; overscroll-behavior: contain; }
+@media (max-height: 640px) {
+  body.game-ds .result-table .rt-row { height: auto; grid-template-columns: 30px 28px minmax(0, 1fr) 44px; padding: 3px 8px 3px 2px; }
+  body.game-ds .result-table .rt-rank { width: 30px; height: 30px; font-size: 10px; }
+  body.game-ds .result-table .rt-face { width: 28px; height: 28px; }
+  body.game-ds .result-table .rt-name { font-size: 12px; }
+  body.game-ds .result-table .rt-bar { height: 6px; }
+  body.game-ds .result-table .rt-pt { font-size: 15px; }
+  body.game-ds .result-table .rt-rows { gap: 3px; }
+}
