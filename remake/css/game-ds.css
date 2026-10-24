@@ -332,3 +332,5 @@ body.game-ds .status-modal .st-row { min-width: 0; }
 }
 /* 通知カード・トーストは上画面に出す */
 body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy) + 36px); width: var(--ds-vw); height: calc(var(--ds-vh) - 36px); right: auto; bottom: auto; }
+/* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */
+body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4) !important; transform-origin: 50% 100%; }
