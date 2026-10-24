@@ -185,14 +185,16 @@ body.game-ds .map .spot-pin .shield {
 }
 body.game-ds .map .spot-pin .shield::before, body.game-ds .map .spot-pin .shield::after { display: none; }
 body.game-ds .map .spot-pin .ico { display: grid; place-items: center; overflow: hidden; border-radius: 6px; }
-body.game-ds .map .spot-pin .evt-badge { position: absolute !important; top: -6px !important; right: -6px !important; left: auto !important; bottom: auto !important; width: 18px; height: 18px; font-size: 12px; line-height: 18px; transform: none; z-index: 2; margin: 0; }
+body.game-ds .map .spot-pin:not(.facility-pin) .evt-badge { position: absolute !important; top: -6px !important; right: -6px !important; left: auto !important; bottom: auto !important; width: 18px; height: 18px; font-size: 12px; line-height: 18px; transform: none; z-index: 2; margin: 0; }
 body.game-ds .map .spot-pin .pin-people { position: absolute; right: 5px; bottom: 4px; left: auto; top: auto; display: flex; gap: 2px; transform: none; margin: 0; }
 body.game-ds .map .spot-pin .pin-person { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #fff6; }
-body.game-ds .map .spot-pin .ico { width: 40px !important; height: 40px !important; min-width: 0; min-height: 0; padding: 0; position: relative; }
+body.game-ds .map .spot-pin:not(.facility-location) .ico { width: 40px !important; height: 40px !important; min-width: 0; min-height: 0; padding: 0; position: relative; }
 body.game-ds .map .spot-pin .ico > :is(img, .pin-symbol) { width: 34px; height: 34px; object-fit: contain; }
 /* ロゴと施設アイコンは切り出し位置が絶対寸法なので、寸法は変えずに全体を縮める */
 body.game-ds .map .spot-pin .ico > .store-logo { zoom: .46; flex: none; }
-body.game-ds .map .spot-pin .ico > :is(.facility-icon, .map-facility-icon) { zoom: .34; flex: none; }
+body.game-ds .map .spot-pin:not(.facility-location) .ico > :is(.facility-icon, .map-facility-icon) { zoom: .34; flex: none; }
+/* 施設アイコンは facility-icons.css のDS寸法（56px・印は絵の縁）をそのまま使う。 */
+body.game-ds .map .spot-pin.facility-location .ico { overflow: visible; }
 body.game-ds .map .spot-pin .sub-label {
   position: static; transform: none; margin: 0; padding: 0; min-height: 0; display: block; text-align: left;
   font-size: 14px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; border: 0; box-shadow: none;
