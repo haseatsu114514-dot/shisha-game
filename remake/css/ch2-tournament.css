@@ -24,3 +24,33 @@
 .ch2-tournament .bench-top>.ch2-tournament-menu { margin-left:8px; min-width:86px; min-height:44px; font-size:18px; }
 /* 得点の数字の上下端も64px帯の中へ収める。 */
 .ch2-tournament .arcade-score { align-items:center; min-height:44px; }
+
+/* 投票・結果の画面は第1章と同じ中継グラフィック（部品は tournament.css / tournament-graphics.js）。 */
+.ch2-contest:has(> .ch2-contest-board) { display: grid; grid-template-columns: minmax(0, 1fr) 290px; align-content: start; column-gap: 22px; row-gap: 10px; inset: 18px 40px; padding: 20px 28px 18px; overflow: hidden; border-color: #e8c27a66; background: linear-gradient(135deg, #1b1228f7, #0d0a15f8 60%); box-shadow: 0 24px 80px #000c, inset 0 1px 0 #ffe7b322; }
+.ch2-contest:has(> .ch2-contest-board)::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #ff8db4, #f6c95e 50%, #5fe2cf); }
+.ch2-contest:has(> .ch2-contest-board) > * { grid-column: 1 / -1; }
+.ch2-contest:has(> .ch2-contest-board) > .ch2-contest-board { grid-column: 1; }
+.ch2-contest:has(> .ch2-contest-board) > .ch2-contest-judges { grid-column: 2; }
+.ch2-contest:has(> .ch2-contest-board) .ch2-contest-header { padding-bottom: 8px; border-bottom: 1px solid #e8c27a2e; }
+.ch2-contest:has(> .ch2-contest-board) .ch2-contest-header h1 { font-size: 36px; font-style: italic; letter-spacing: .04em; background: linear-gradient(180deg, #fff6dc, #e8c27a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ch2-contest:has(> .ch2-contest-board) .ch2-contest-description { font-size: 18px; color: #d9d1e2; }
+.ch2-contest-reason { position: relative; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; padding: 8px 14px; border: 1px solid #e8c27a44; border-left: 0; border-radius: 6px; background: linear-gradient(90deg, #e8c27a1f, #e8c27a08); }
+.ch2-contest-reason-tag { grid-row: 1 / 3; align-self: stretch; display: grid; place-items: center; margin: -8px 0 -8px -14px; padding: 0 14px; border-radius: 6px 0 0 6px; background: #d8304f; color: #fff; font-size: 14px; letter-spacing: .2em; }
+.ch2-contest-reason p { grid-column: 2; }
+.ch2-contest-board { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ch2-contest-board .ch2-contest-ranking { gap: 8px; }
+.ch2-contest-board .ch2-contest-rival { grid-template-columns: 40px 46px 120px minmax(0, 1fr) 78px; gap: 12px; min-height: 58px; padding: 6px 16px 6px 10px; border: 1px solid #ffffff12; border-radius: 8px; background: linear-gradient(90deg, #ffffff0d, #ffffff04); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+.ch2-contest-board .ch2-contest-rival.me { border-color: #e8c27a88; background: linear-gradient(90deg, #e8c27a33, #e8c27a0a); box-shadow: inset 4px 0 0 #f6c95e; }
+.ch2-contest-board .ch2-contest-rival > span { font-weight: 800; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch2-contest-board .ch2-contest-rival.me > span, .ch2-contest-board .ch2-contest-rival.me strong { color: #ffe2a6; }
+.ch2-contest-board .ch2-contest-avatar { width: 36px; height: 36px; margin: 0 5px; border-radius: 8px; background: #30283c; transform: scale(1.28); }
+.ch2-contest-stack { height: 16px; }
+.ch2-contest-board .ch2-contest-rival strong { font-size: 30px; font-weight: 900; font-style: italic; color: #fff; font-variant-numeric: tabular-nums; }
+.ch2-contest-board .ch2-contest-rival strong small { margin-left: 3px; font-size: 13px; font-style: normal; color: #b8afc2; }
+.ch2-contest-judges.judge-panel { display: flex; flex-direction: column; gap: 8px; }
+.ch2-contest-judges.judge-panel > .judge-chip { display: grid; padding: 8px 10px 8px 14px; border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); border-radius: 10px; }
+.judge-chip .ch2-contest-avatar.judge-face { grid-row: 1 / 4; align-self: center; width: 36px; height: 36px; margin: 4px; border-radius: 50%; box-shadow: 0 0 0 2px var(--c); transform: scale(1.2); }
+.ch2-contest-judges .judge-name { font-size: 16px; }
+.ch2-contest-judges .judge-left { font-size: 13px; color: #c8c0d1; }
+.ch2-contest:has(> .ch2-contest-board) .ch2-contest-note { font-size: 14px; color: #a9a1b3; }
+.ch2-contest:has(> .ch2-contest-board) .ch2-contest-actions { justify-content: flex-end; }
