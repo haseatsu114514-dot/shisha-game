@@ -1,0 +1,55 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-24",
+  "status": "texture reconstruction from approved reference; further geometry review remains",
+  "files": [
+    {
+      "source": "asset_sources/ui/vn-smoke-11/faithful/smoke-source.png",
+      "source_sha256": "1efe93af5065426d6c9aca760e27d64638263248919acb1b69f60affff901fd8",
+      "runtime": "remake/img/ui/vn-faithful/smoke.webp",
+      "crop": [
+        7,
+        94,
+        2172,
+        652
+      ],
+      "notes": "bounding box measured from alpha>=16 with 12px safety margin; no paint or alpha threshold applied to artwork"
+    },
+    {
+      "source": "asset_sources/ui/vn-smoke-11/faithful/smoke-purple-source.png",
+      "source_sha256": "59ea9c1bfa7255f8a68aa466e2704f0baca2e8c66af73237f1ec4572c6631f13",
+      "runtime": "remake/img/ui/vn-faithful/smoke-purple.webp",
+      "crop": [
+        7,
+        93,
+        2165,
+        653
+      ],
+      "notes": "bounding box measured from alpha>=16 with 12px safety margin; no paint or alpha threshold applied to artwork"
+    },
+    {
+      "source": "asset_sources/ui/vn-smoke-11/faithful/tissue-source.png",
+      "source_sha256": "f114629f3ce636671ef97c03c478460bccd40bf1412b70254c8a0f62972ac431",
+      "runtime": "remake/img/ui/vn-faithful/tissue.webp",
+      "crop": [
+        1,
+        106,
+        2172,
+        637
+      ],
+      "notes": "bounding box measured from alpha>=16 with 12px safety margin; no paint or alpha threshold applied to artwork"
+    },
+    {
+      "source": "asset_sources/ui/vn-smoke-11/faithful/cut-paper-source.png",
+      "source_sha256": "49485e66f9fb7310d2588acc4d2cd8acc00c38e6f0403124abb9a10062f378da",
+      "runtime": "remake/img/ui/vn-faithful/cut-paper.webp",
+      "crop": [
+        8,
+        290,
+        2038,
+        702
+      ],
+      "notes": "bounding box measured from alpha>=16 with 12px safety margin; no paint or alpha threshold applied to artwork"
+    }
+  ]
+}

@@ -46,6 +46,29 @@ function fit() {
 fit();
 addEventListener("resize", fit);
 initLayers();
+const lightButton = document.createElement("button");
+lightButton.id = "preview-light";
+lightButton.textContent = "光の試作 OFF";
+lightButton.setAttribute("aria-pressed", "false");
+lightButton.onclick = () => {
+  const on = document.documentElement.dataset.uiMotion !== "on";
+  document.documentElement.dataset.uiMotion = on ? "on" : "off";
+  lightButton.textContent = `光の試作 ${on ? "ON" : "OFF"}`;
+  lightButton.setAttribute("aria-pressed", String(on));
+};
+document.querySelector("#preview-kit").after(lightButton);
+function attachLight() {
+  const box = document.querySelector(".vn-box");
+  if (!box || box.querySelector(".vn-light-overlay")) return;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.classList.add("vn-light-overlay");
+  svg.setAttribute("viewBox", "0 0 1200 240");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = '<path d="M130 18 C60 0 20 42 25 80 C30 106 72 116 48 148 C24 180 72 211 220 217"/><path d="M1020 32 C1130 8 1178 47 1160 79 C1140 110 1200 121 1175 166 C1155 200 1100 218 1000 220"/>';
+  box.append(svg);
+}
+new MutationObserver(attachLight).observe(document.querySelector("#vn"), {childList:true});
 let controller;
 async function start() {
   controller?.abort();

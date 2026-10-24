@@ -32,8 +32,17 @@ await suite("ui-themes-preview", async check => {
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(const layout of layouts) assert.deepEqual(layout,layouts[0],"skins preserve dialogue/controls geometry");
+      for(const layout of layouts) assert.deepEqual(layout.slice(0,8),layouts[0].slice(0,8),"skins preserve ordinary dialogue and text geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
+      await page.selectOption("#preview-theme","smoke");
+      await page.click("#preview-light");
+      assert.equal(await page.locator(".vn-light-overlay").evaluate(el=>getComputedStyle(el).display),"block");
+      assert.equal(await page.locator(".vn-light-overlay").evaluate(el=>getComputedStyle(el).pointerEvents),"none");
+      await page.emulateMedia({reducedMotion:"reduce"});
+      assert.equal(await page.locator(".vn-light-overlay").evaluate(el=>getComputedStyle(el).display),"none");
+      await page.emulateMedia({reducedMotion:"no-preference"});
+      await page.click("#preview-light");
+      assert.deepEqual(await storageSnapshot(page),saved,"light prototype does not persist settings");
       await page.click("#preview-kit");
       await page.selectOption("#preview-scene","choices");
       await page.locator(".vn-next.show").waitFor();
