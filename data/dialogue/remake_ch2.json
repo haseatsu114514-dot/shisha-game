@@ -230,6 +230,84 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "remake_ch2_eve_rei",
+      "comment": "DAY13・大会前夜（#929の強制イベント）。あげはが搬入の確認へ行った間に、下見に来たREIがベンチの端に座る。顔の硬さに気づき、イヤホンの片方で一曲だけ聴かせる。味の遠さは残したまま、音の間は届く。報酬なし。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチの端に、黒い台のケースが置かれた。少し離れて、REIさんが腰を下ろす。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "rei",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……顔、硬い。一曲だけ、聴く？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたイヤホンの片方を、耳に入れた。静かなギターが、ゆっくり鳴る。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "最後の音が消えたあと、三秒くらい空白がある"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "そこが好き。何もないのに、まだ続いてる感じがして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味は遠いままだ。でも、音が消えたあとの静けさは、ちゃんと聞こえた）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……明日、いい煙にしよう。お互い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんはケースを持ち直して、搬入口の方へ歩いていった。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……下見？ 俺も"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……明日、隣の台。零-ZERO-の、REI"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_rei"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの蒸野はじめです。よろしくお願いします"
+          }
+        ]
+      }
     }
   ]
 }

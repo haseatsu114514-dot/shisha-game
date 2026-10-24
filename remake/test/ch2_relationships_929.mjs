@@ -2,6 +2,7 @@
 // 台本の構造で確かめる（表示・保存はブラウザの ch2_story / ch2_tournament / story_canon が確認する）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { CH2_NIGHTS } from "../js/chapters/ch2-story-data.js";
 
 const read = (name) => Object.fromEntries(JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url), "utf8"))
   .dialogues.map((d) => [d.dialogue_id, d]));
@@ -9,6 +10,7 @@ const all = (scene) => [...scene.lines, ...Object.values(scene.branches || {}).f
 const text = (scene) => all(scene).map((l) => l.text || "").join("\n");
 const isolation = read("ch2_isolation"), main = read("ch2_main"), tournament = read("ch2_tournament");
 const ch3 = read("ch3_main"), prep = read("ch2_preparation"), craft = read("tournament_craft"), echoes = read("ch2_choice_echoes");
+const remake = read("remake_ch2");
 
 // DAY11: なるの店の話を画面で読ませ、その最中にスマホの採点表へ目が落ちる。省略した会話を後から叱らない
 const naru = isolation.ch2_naru_confrontation;
@@ -61,4 +63,43 @@ assert.match(rei[0], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
 assert.match(ch3.ch3_naru_reconcile.lines[0].text, /自分から/);
 const reunion = text(ch3.ch3_ageha_reunion);
 assert.doesNotMatch(reunion, /逃げ|ごめん|怒ってる/); assert.match(reunion, /約束/);
-console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge");
+// 新しい強制イベント（#929）: DAY2・DAY8の自由夜は空けたまま、既存の夜に順序を守って足す
+const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
+assert(!night(2) && !night(8), "自由な夜を塞がない");
+const ids = (day) => night(day).steps.map((s) => s.id);
+assert.deepEqual(ids(5), ["ch2_kumicho_greeting", "ch2_slump_taste"]);
+assert.deepEqual(ids(12), ["ch2_minto_warning", "ch2_naru_window"]);
+assert.deepEqual(ids(13).slice(0, 3), ["ch2_tsumugi_color", "remake_ch2_eve_arrival", "remake_ch2_eve_rei"]);
+const when = (day, id, flags) => { const step = night(day).steps.find((s) => s.id === id); return !step.when || step.when({ flags }); };
+assert(when(5, "ch2_kumicho_greeting", {}) && !when(5, "ch2_kumicho_greeting", { _ch2_read_ch2_slump_taste: true }), "味の不調のあとに挨拶を戻さない");
+assert(!when(12, "ch2_naru_window", {}), "DAY11の記録がない旧セーブには足さない");
+assert(when(12, "ch2_naru_window", { _ch2_naru_listened: true }) && when(12, "ch2_naru_window", { _ch2_naru_hurt: true }));
+assert(!when(12, "ch2_naru_window", { _ch2_naru_hurt: true, _ch2_read_ch2_tsumugi_color: true }));
+assert(when(13, "remake_ch2_eve_rei", {}) && !when(13, "remake_ch2_eve_rei", { _ch2_read_ch2_pre_tournament_realisation: true }) && !when(13, "remake_ch2_eve_rei", { _ch2_eve_done: true }));
+const greeting = main.ch2_kumicho_greeting, window = isolation.ch2_naru_window, eveRei = remake.remake_ch2_eve_rei;
+for (const scene of [greeting, window, eveRei]) {
+  assert(!all(scene).some((l) => l.type === "apply" || l.type === "note"), `${scene.dialogue_id}: 強制の夜に報酬を付けない`);
+}
+const told = greeting.lines.findIndex((l) => l.speaker === "sumi" && /落とした/.test(l.text || ""));
+const advice = greeting.lines.findIndex((l) => l.speaker === "kumicho" && /根元/.test(l.text || ""));
+assert(told > 0 && advice > told, "神崎は事故を見ていない。スミから聞いてから助言する");
+assert.doesNotMatch(text(greeting), /ヤクザ|組長|極道/, "素性は大会の入場で本人が明かす");
+for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "rei"]]) {
+  const cond = scene.lines.find((l) => l.type === "condition" && l.char_id === id);
+  assert(scene.branches[cond.next_false].some((l) => l.flag === `_met_${id}`), `${id}: 初対面なら名乗って面識を記録`);
+}
+assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /笑い方/);
+assert.match(window.branches.listened.map((l) => l.text).join("\n"), /肩は叩かれなかった/);
+
+// 章の最後: はじめのいない場面で、あげはの心の声だけ。才能の壁は両側にあった（本人には言わない嫉妬）
+const heart = tournament.ch2_tournament_ageha_heart;
+assert(!all(heart).some((l) => l.speaker === "hajime"), "はじめはこの場にいない");
+const voice = heart.lines.filter((l) => l.speaker === "ageha").map((l) => l.text);
+assert(voice.length >= 4 && voice.every((t) => /^（.*）$/.test(t)), "あげはの台詞はすべて心の声");
+assert.match(voice.join("\n"), /崩れ/); assert.match(voice.at(-1), /こんなの、ズルいよ/);
+assert.doesNotMatch(heart.lines.map((l) => l.text || "").join("\n"), /震え/, "震えは秘密を知る保存だけ");
+assert.match(heart.branches.secret.map((l) => l.text).join("\n"), /震え/);
+assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));
+assert.match(craft.tournament_craft_waiting_2.lines.map((l) => l.text).join("\n"), /あげはの目が、こっちの手元/, "制作中の小さな伏線");
+
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice");

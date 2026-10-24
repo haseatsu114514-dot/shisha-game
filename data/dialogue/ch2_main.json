@@ -278,12 +278,133 @@
       "comment": "DAY4夜の固定場面。自由行動のバイトとは別に閉店前の手伝いを頼まれる。一度の事故からch2_abyss_baitoへ続く。"
     },
     {
+      "dialogue_id": "ch2_kumicho_greeting",
+      "comment": "DAY5夜・閉店前（#929の強制イベント）。神崎が同じ大会に出る店へ挨拶に来て、スミから前夜の炭の事故を聞く。人格を責めず、客を先に守ったことを認め、再発防止の手を自分で見せる。素性の暴露・報酬なし。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。ドアベルが鳴って、大きな影が入口をふさいだ。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kumicho",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "同じ大会に出る店だ。挨拶もなしじゃ、筋が通らねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ご丁寧に。まあ、座ってくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、ソファに目をやった。焦げ跡の上に、カバーがかかっている。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……炭か"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昨日、こいつが落とした。お客さんに、けがはなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "すみません。俺の不注意です"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "炭は落ちる。何十年やっても、落ちる時は落ちる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "店の格が出るのは、落ちたあとだ。客を先に守ったなら、それでいい"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ただ、同じ落とし方は二度するな。トングは先じゃなく、根元を持て"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは自分のトングを出し、持ち方を一度だけ見せた。指の置き場所に、迷いがない。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "疲れてる日の炭替えは、二人でやれ。恥じゃねえ、段取りだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。根元を持って、疲れてる日は声をかけます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "聞いたな。次から、うちの決まりだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "いい店だ。じゃあな、小僧。大会で会おう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは一服もせずに帰っていった。出がけに、ソファのカバーの端を一度だけ直して。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "おう、小僧。邪魔するぜ"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "夜分にすまねえ。神崎煙草店の神崎だ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_kumicho"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "県大会で、ここの若いのと並ぶと聞いてな"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch2_pre_tournament_realisation",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "大会前夜。会場の外のベンチで、明日の手順を何度も読み返していた。"
+          "text": "大会前夜。会場の外のベンチに残って、明日の手順を何度も読み返していた。"
         },
         {
           "speaker": "",

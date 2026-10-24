@@ -355,6 +355,78 @@
       ]
     },
     {
+      "dialogue_id": "ch2_naru_window",
+      "comment": "DAY12夜・みんとの店の帰り（#929の強制イベント）。DAY11の選択の記録がある時だけ読む。言い返した場合は、常連の親子が約束どおりまた来て、なるがあの夜はじめの前で消えた笑い方をしているのを窓越しに見る。聞いた場合は短く言葉を交わすが、前のようには肩を叩かれない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぺぱーみんとからの帰り道。商店街の途中で、ケムリクサの灯りが見えた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_hurt",
+          "next_true": "hurt",
+          "next_false": "listened"
+        }
+      ],
+      "branches": {
+        "hurt": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "窓の向こうで、なるが常連の親子に一台を出していた。約束どおり、また来たらしい。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "娘さんがケーキみたいだと笑い、なるも笑っていた。あの夜、俺の前で消えた笑い方だった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……入れない。謝ったきりで、返事も来てないのに）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ガラスに映った自分の顔から、目をそらして歩いた。"
+          }
+        ],
+        "listened": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ちょうど、なるが看板をしまいに外へ出てきた。目が合う。"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "……おう。明後日だな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……あの子、また来ましたか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "来たよ。昨日の今日でな。……話は、大会が終わってからだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは看板を抱えて店に戻った。前みたいに、肩は叩かれなかった。"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch2_tsumugi_color",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
