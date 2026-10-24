@@ -556,9 +556,9 @@
     "reviewed_source_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
     "reviewed_runtime_sha256": "4bf0784dba366e4f23c6246bf278c581aa38e97a4d4e7c8862a32e1ee1627567",
     "audit_sheet": "faces-041-045.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：調整候補",
-    "priority": "medium",
-    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。 追加候補を生成したが白縁の改善不足または頭身不整合で不採用。元素材を維持。"
+    "classification": "元画像を維持（明確な顔の破綻なし）",
+    "priority": "low",
+    "note": "両眼の半目は意図した表情。顎の白縁は見えるが、顔や肌の明確な破綻とは判断していない。ユーザーの維持方針に従い、頭身差の出る生成候補は採用せず元画像を保持。"
   },
   {
     "character": "mashiro",
@@ -580,9 +580,9 @@
     "reviewed_source_sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
     "reviewed_runtime_sha256": "2f5ca6ec4d7139b1f337a898dfb4f4c2cf784addd3980e297eddd208b1dd9ed1",
     "audit_sheet": "faces-046-050.webp",
-    "classification": "描かれた輪郭の濃さ・明るい縁：調整候補",
-    "priority": "medium",
-    "note": "丸い頬と顎の輪郭を確認。黒線を一律に削除する対象ではない。顎先まで続く白い縁と濃い茶黒線が切り抜きの印象。別AIでも調整候補。中央顎はα253で透過由来ではない。 追加候補を生成したが白縁の改善不足または頭身不整合で不採用。元素材を維持。"
+    "classification": "元画像を維持（明確な顔の破綻なし）",
+    "priority": "low",
+    "note": "両眼の半目は意図した表情。顎の白縁は見えるが、顔や肌の明確な破綻とは判断していない。ユーザーの維持方針に従い、頭身差の出る生成候補は採用せず元画像を保持。"
   },
   {
     "character": "mashiro",
@@ -653,14 +653,14 @@
     "reviewed_source_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
     "reviewed_runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf",
     "audit_sheet": "faces-051-055.webp",
-    "classification": "修正済み（ローカル反映・公開未反映）",
-    "priority": "corrected",
-    "note": "通常v4を基準に正面寄りの顔・両眼の幅と開きを統一。笑顔・指を頬へ添えるポーズを保持。 標準image_genで再描画、足元整列・可逆WebP更新。",
+    "classification": "元画像へ復元（頭の傾き・笑顔を保持）",
+    "priority": "low",
+    "note": "元の目は頭の傾き・顔向き・笑顔に沿う左右差。画面右の虹彩・ハイライト・白目が読み取れ、明確な潰れと判断しない。正面化を要求した前回の判定を撤回。 ユーザーの指摘で元素材へバイト一致で復元。",
     "previous_classification": "目の開きの左右差＋描かれた輪郭：修正候補",
     "previous_priority": "high",
     "previous_note": "顎に濃い輪郭と明るい縁が残る。各表情の目の開きを別々に確認。画面右の目が左より横長で開きが小さい。通常と同型の修正候補。",
-    "resolved_source_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
-    "resolved_runtime_sha256": "c6d8eb86e5264a2e2731fa6dd4d831ff670dd637da394db95b35480fdd6159b2"
+    "resolved_source_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+    "resolved_runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf"
   },
   {
     "character": "minto",

@@ -6,8 +6,9 @@ const root = path.resolve(__dirname, '../../..');
 const { chromium } = require(path.join(root, 'remake/test/browser/node_modules/playwright'));
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'remake/data/manifest.json')));
 const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, 'catalog.json')));
-const out = path.join(__dirname, 'followup-runtime-review');
-const crops = '/tmp/portrait-followup-crops';
+const restoreMinto = process.env.REVIEW_MINTO_SMILE_RESTORE === '1';
+const out = path.join(__dirname, restoreMinto ? 'minto-smile-restore-runtime' : 'followup-runtime-review');
+const crops = restoreMinto ? '/tmp/portrait-minto-restore-crops' : '/tmp/portrait-followup-crops';
 const otherCharacters = false;
 fs.mkdirSync(out, { recursive: true }); fs.mkdirSync(crops, { recursive: true });
 (async () => {
@@ -16,7 +17,7 @@ fs.mkdirSync(out, { recursive: true }); fs.mkdirSync(crops, { recursive: true })
  try {
   for (const viewport of otherCharacters ? [{ width: 844, height: 390 }] : [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
    // The VN intentionally hides the player (hajime); audit his five assets in the static gallery.
-   const jobs = otherCharacters ? Object.keys(manifest.portraits).filter(c=>!['minto','ageha','hajime'].includes(c)).map(c=>[c,'normal']) : [['minto', ['smile']], ['ageha', ['normal', 'serious', 'smile', 'surprise']]];
+   const jobs = restoreMinto ? [['minto', ['smile']]] : otherCharacters ? Object.keys(manifest.portraits).filter(c=>!['minto','ageha','hajime'].includes(c)).map(c=>[c,'normal']) : [['minto', ['smile']], ['ageha', ['normal', 'serious', 'smile', 'surprise']]];
    for (const [cid, changed] of jobs) {
     for (const version of otherCharacters ? ['after'] : ['before', 'after']) {
      const context = await browser.newContext({ viewport, serviceWorkers: 'block' });
@@ -24,7 +25,8 @@ fs.mkdirSync(out, { recursive: true }); fs.mkdirSync(crops, { recursive: true })
      page.on('pageerror', e => errors.push(e.message));
      if (version === 'before') for (const face of changed) await page.route(`**/img/sprites/characters/${cid}/chr_${cid}_${face}.webp`, async route => {
       substitutions++;
-      await route.fulfill({ path: path.join(root, `asset_sources/portraits/face-corrections-followup/previous/chr_${cid}_${face}.png`), contentType: 'image/png' });
+      const before = restoreMinto ? 'asset_sources/portraits/face-corrections-followup/minto-smile-v1-preview.png' : `asset_sources/portraits/face-corrections-followup/previous/chr_${cid}_${face}.png`;
+      await route.fulfill({ path: path.join(root, before), contentType: 'image/png' });
      });
      await page.goto('http://127.0.0.1:8123/remake/');
      await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });

@@ -1373,16 +1373,10 @@
     },
     {
       "id": "eye-jaw-followup-20261024",
-      "title": "目・顎の追加修正 5表情",
+      "title": "顎の追加修正 あげは4表情",
       "status": "applied-local-unpublished",
       "role": "今回修正した表情の本人参照。初期画風は上記の原画像を参照。",
       "images": [
-        {
-          "label": "minto smile",
-          "expression": "smile",
-          "path": "../../../../assets/sprites/characters/minto/chr_minto_smile.png",
-          "sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14"
-        },
         {
           "label": "ageha normal",
           "expression": "normal",
@@ -1406,6 +1400,21 @@
           "expression": "surprise",
           "path": "../../../../assets/sprites/characters/ageha/chr_ageha_surprise.png",
           "sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774"
+        }
+      ],
+      "note": "みんと笑顔v1はユーザー指摘で不採用、元の傾いた笑顔に復元。"
+    },
+    {
+      "id": "minto-smile-frontal-rejected",
+      "title": "みんと笑顔の正面化v1（不採用）",
+      "status": "rejected",
+      "role": "不採用履歴。本人参照や画風の基準に使用しない。",
+      "images": [
+        {
+          "label": "minto smile",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/minto-smile-v1-preview.png",
+          "sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14"
         }
       ]
     }

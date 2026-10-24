@@ -5,22 +5,34 @@
     "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_minto_smile.png",
     "target": "assets/sprites/characters/minto/chr_minto_smile.png",
     "before_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
-    "status": "applied-local",
-    "version": 1,
-    "preparation": "minto-smile-v1-preparation.json",
-    "after_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
+    "status": "restored-original-by-owner-feedback",
+    "after_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
     "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
-    "runtime_sha256": "c6d8eb86e5264a2e2731fa6dd4d831ff670dd637da394db95b35480fdd6159b2",
+    "runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf",
     "runtime_rgba_equal": true,
-    "review_note": "通常v4を基準に正面寄りの顔・両眼の幅と開きを統一。笑顔・指を頬へ添えるポーズを保持。",
-    "metrics": {
-      "top": 0.19833333333333333,
-      "bottom": 0.98,
-      "ax": 0.5762597616450507,
-      "aspect": 0.7466666666666667
-    },
-    "foot_drift_px": -0.08442144748759972,
-    "visible_height_drift_px": 2.000000000000013
+    "review_note": "ユーザー指摘で正面化したv1を不採用。元の頭の傾き・顔向き・笑顔へPNGバイト一致で復元。",
+    "foot_drift_px": 0,
+    "visible_height_drift_px": 0,
+    "rejected_revision": {
+      "character": "minto",
+      "expression": "smile",
+      "status": "applied-local",
+      "version": 1,
+      "preparation": "minto-smile-v1-preparation.json",
+      "after_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
+      "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
+      "runtime_sha256": "c6d8eb86e5264a2e2731fa6dd4d831ff670dd637da394db95b35480fdd6159b2",
+      "runtime_rgba_equal": true,
+      "review_note": "通常v4を基準に正面寄りの顔・両眼の幅と開きを統一。笑顔・指を頬へ添えるポーズを保持。",
+      "metrics": {
+        "top": 0.19833333333333333,
+        "bottom": 0.98,
+        "ax": 0.5762597616450507,
+        "aspect": 0.7466666666666667
+      },
+      "foot_drift_px": -0.08442144748759972,
+      "visible_height_drift_px": 2.000000000000013
+    }
   },
   {
     "character": "ageha",
@@ -120,8 +132,8 @@
     "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
     "target": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
     "before_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
-    "status": "unresolved-original-preserved",
-    "reason": "通常v1/v2は白縁の改善不足。v3/v4/v6は頭部が小さく、v5は大きくなる。真剣v1も小顔化。候補を不採用とし元画像を保持。"
+    "status": "original-retained-per-owner",
+    "reason": "ユーザー「ましろは破綻そんなしてないなら変えなくてもいい」。元の半目・顔形状に明確な破綻はなく、白縁の濃さは軽微な調整候補。元画像を維持し追加生成を中止。"
   },
   {
     "character": "mashiro",
@@ -129,7 +141,7 @@
     "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_serious.png",
     "target": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
     "before_sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
-    "status": "unresolved-original-preserved",
-    "reason": "通常v1/v2は白縁の改善不足。v3/v4/v6は頭部が小さく、v5は大きくなる。真剣v1も小顔化。候補を不採用とし元画像を保持。"
+    "status": "original-retained-per-owner",
+    "reason": "ユーザー「ましろは破綻そんなしてないなら変えなくてもいい」。元の半目・顔形状に明確な破綻はなく、白縁の濃さは軽微な調整候補。元画像を維持し追加生成を中止。"
   }
 ]

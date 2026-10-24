@@ -1,11 +1,11 @@
 # 目とフェイスラインの修正・全表情点検
 
-みんと通常v4・あげは悲しみv1の先行2枚に加え、みんと笑顔・あげはの残り4表情を追加でローカルへ反映。目の左右差と顎の黒白二重縁を、標準image_genによる連続した再描画で調整した。足元を合わせ、PNG・可逆WebP・みんとの顔アイコンを更新。公開反映・最終版へのユーザーの見た目確認は未了。
+みんと通常v4・あげは悲しみv1の先行2枚に加え、あげはの残り4表情を追加でローカルへ反映。みんと笑顔の正面化案はユーザー指摘で不採用にし、元の傾いた笑顔へ復元。目の左右差と顎の黒白二重縁を、標準image_genによる連続した再描画で調整した。足元を合わせ、PNG・可逆WebP・みんとの顔アイコンを更新。公開反映・最終版へのユーザーの見た目確認は未了。
 
 - [みんとの修正前後](../../../asset_sources/portraits/minto-eye-jaw-review/normal-v4-face-compare.png)：顔を正面寄りに変更し両眼を揃えた。元より目と頬が丸く、頭の傾きも変わる。
 - [あげはの修正前後](../../../asset_sources/portraits/ageha-jaw-review/sad-v1-face-compare.png)：顎線と明るい縁を弱めた。顔の描線・陰影は少し滑らかになる。
-- [22キャラ100表情の点検結果](audit/README.md)：全表情に個別の判定理由を保存。先行2枚＋追加5枚を修正。ましろ通常・真剣は生成候補に頭身差があり、元画像を保持して未解決と記録。
-- [今回の5枚の比較・ましろ候補の不採用理由](../../../asset_sources/portraits/face-corrections-followup/README.md)、[追加の実VN確認](followup-runtime-review/browser-check.json)。
+- [22キャラ100表情の点検結果](audit/README.md)：全表情に個別の判定理由を保存。先行2枚＋あげは追加4枚を修正。みんと笑顔は元へ復元。ましろ通常・真剣は明確な破綻がなく、ユーザーの方針に従って元を維持。
+- [追加修正の採否・みんと笑顔の復元](../../../asset_sources/portraits/face-corrections-followup/README.md)、[旧5枚の実VN確認](followup-runtime-review/browser-check.json)、[みんと復元後の実VN確認](minto-smile-restore-runtime/browser-check.json)。
 - [現在のPNG/WebP比較ビューアー](index.html)、[統合確認](integration-check.json)、[実VNの表示確認](runtime-review/browser-check.json)。
 
 追加の[全キャラのサイズ点検](../portrait-sizing/README.md)で会社員の笑顔を左4px・上3pxへ整列。目・顎の絵や縮尺は保持した。このサイズ点検ではその他の拡縮・再生成は実施していない。その後の今回の目・顎修正は上記の追加記録を参照。

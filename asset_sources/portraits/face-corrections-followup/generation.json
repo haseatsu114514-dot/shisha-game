@@ -23,7 +23,8 @@
       }
     ],
     "note": "Previous/ contains byte-identical originals used at generation time; references archived after source replacement.",
-    "status": "applied-local"
+    "status": "rejected-by-owner",
+    "review_note": "正面化により元の顔向きと表情が変わりすぎたため不採用。ゲームはprevious/の元画像へ戻した。"
   },
   {
     "id": "ageha-normal-v1",

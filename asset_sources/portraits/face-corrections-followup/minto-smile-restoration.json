@@ -1,0 +1,18 @@
+{
+  "status": "restored-original",
+  "source": "assets/sprites/characters/minto/chr_minto_smile.png",
+  "source_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+  "previous_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+  "source_byte_identical_to_original": true,
+  "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
+  "runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf",
+  "png_webp_rgba_equal": true,
+  "owner_feedback": "ミントの笑顔なんか正面になってたり変わりすぎでは。ましろは破綻そんなしてないなら変えなくてもいい",
+  "review": "元の目は頭の傾き・顔向き・笑顔に沿う左右差。画面右の虹彩・ハイライト・白目が読み取れ、明確な潰れと判断しない。正面化を要求した前回の判定を撤回。",
+  "additional_generation": false,
+  "mashiro_originals_unchanged": true,
+  "browser_checks": 22,
+  "browser_errors": [],
+  "test_setup_note": "初回はプレビューサーバーが停止していたため接続拒否。起動後に同じ確認を実施して22表示成功。",
+  "rejected_source": "minto-smile-v1-source.png"
+}
