@@ -22,7 +22,7 @@ async function setup(page, { chapter = 1, slot = 0 } = {}) {
       _axe_bar_sighting_day: s.day - 1, _axe_bar_sighting_chapter: chapter,
       _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" },
       _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
-    V.vn.vnTest.turbo = true; V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0;
+    s.flags._rei_trpg_introduced = true; V.vn.vnTest.turbo = true; V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0;
     (await import("./js/chapters/ch1.js")).setupHooks();
     V.ui.clearScreen(); V.hud.initHud({}); V.hud.showHud();
     V.openCafe = async () => {

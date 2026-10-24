@@ -16,7 +16,7 @@ export async function chooseRetryAssist(tournament) {
   if (!offersRetryAssist(tournament)) return false;
   const assisted = await modal({
     title: "コンティニュー",
-    body: "今回だけ難易度を下げますか？\n針がゆっくり動き、判定が広がります。蒸らしの雑念と、調整中の冷え方も穏やかになります。次の挑戦だけに適用します。",
+    body: "今回だけ難易度を下げますか？\n針がゆっくり動き、判定が広がります。蒸らしの雑念と、調整中の冷え方も穏やかになります。体力も最大まで回復します。次の挑戦だけに適用します。",
     options: [
       { label: "今回だけ下げる", value: true, primary: true, test: "retry-assist-yes" },
       { label: "そのまま挑戦する", value: false, test: "retry-assist-no" },

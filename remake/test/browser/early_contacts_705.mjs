@@ -8,7 +8,8 @@ async function setup(page, id, variant='new') {
     const spots=await import('./js/daily/spots.js'), data=await import('./js/core/data.js');
     core.newGame(); core.state.phase='daily'; core.state.day=2;
     core.state.flags['_intro_'+id]=true;
-    if(variant==='legacy') { core.state.met[id]=true;core.state.story[id]=id==='naru'?1:3; }
+    // #814: 読んだ会話の数に見合うハートも持つ旧セーブ（なる♥1・アダム♥3で次の会話が開く）。
+    if(variant==='legacy') { core.state.met[id]=true;core.state.story[id]=id==='naru'?1:3;core.state.affinity[id]=id==='naru'?9:33; }
     if(variant==='connected') { core.state.met[id]=true;core.state.contacts.push(id); }
     vn.vnTest.turbo=true;
     window.E={core,vn,spots,data,lines:[]};
@@ -40,6 +41,7 @@ await suite('early-contacts-705',async check=>{
           // New naru's second and adam's later exchange scene must not repeat it.
           await page.evaluate(id=>{
             E.core.state.story[id]=id==='naru'?1:3;
+            E.core.state.affinity[id]=Math.max(E.core.state.affinity[id]||0,id==='naru'?9:33);
           },id);
           await visit(page,id);
           assert.equal(await page.evaluate(()=>E.lines.filter(x=>/LIME.*交換|連絡先を交換/.test(x)).length),0);

@@ -34,7 +34,7 @@ const values = {
   "util.js": { el, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "ui.js": { layers }, "state.js": { state, save: noop, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
-  "stats.js": { gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
+  "stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "rules.js": { TOURNAMENT_DAY: 14 },
@@ -47,7 +47,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(`js/daily/${name}`, root), "utf8"), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "travel-budget.js" ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const phoneModule = await load("phone.js"); await phoneModule.evaluate();

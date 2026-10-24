@@ -48,7 +48,7 @@ const mocks = {
   "core/ui.js": { showScreen: (_, node) => screen.replaceChildren(node), setBg: async () => { backgrounds++; if (transitionRelease) await transitionRelease.promise; },
     retire: n => n.classList.add("done"), uiArtReady: noop, imageReady: yes, layers: { fx: new Element() }, toast: t => toasts.push(t) },
   "core/transitions.js": { cueTransition: noop }, "core/scene-art.js": { renderSceneArt: noop, sceneArtUrls: () => [] },
-  "core/audio.js": { SE: { click: noop, select: noop } }, "core/stats.js": { STAMINA_LOW: 20 },
+  "core/audio.js": { SE: { click: noop, select: noop } }, "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, STAMINA_LOW: 20 },
   "daily/spots.js": { allSpots: () => [], SPOT_PREVIEW: {}, isUnlocked: yes, hasNewEvent: noop, spotDetailLabel: s => s.label },
   "daily/hud.js": { updateHud: noop }, "daily/home-rig.js": { homeRig: noop }, "daily/reel.js": { mountReel: noop },
   "daily/weather.js": { isRainy: noop }, "daily/fortune.js": { fortuneToday: noop },
@@ -93,12 +93,15 @@ await test("chapter1, first-day and unreleased cities blocked", () => {
   assert.equal(travel.prepareStationTrip(s, [...regions, { id: "invented" }], "invented"), null);
   assert.equal(travel.prepareStationTrip(s, [regions[0], { ...regions[1], unlocked: false }], "widehanga"), null);
 });
-await test("cancel and insufficient funds do not charge; exact fare works", () => {
+await test("cancel and insufficient funds do not charge; outbound reserves the return fare", () => {
   let s = fresh(199), t = travel.prepareStationTrip(s, regions, "widehanga");
   assert.equal(t.commit(s), false); assert.equal(s.money, 199);
   s.money = 200; t.cancel(); assert.equal(t.commit(s), false); assert.equal(s.money, 200);
-  t = travel.prepareStationTrip(s, regions, "widehanga"); assert.equal(t.commit(s), true); assert.equal(s.money, 0);
+  t = travel.prepareStationTrip(s, regions, "widehanga"); assert.equal(t.commit(s), false);
+  s.money = 400; assert.equal(t.commit(s), true); assert.equal(s.money, 200);
   assert.equal(t.commit(s), false); assert.equal(s.flags._ch2_region, "widehanga");
+  const back = travel.prepareStationTrip(s, regions, "home");
+  assert.equal(back.commit(s), true); assert.equal(s.money, 0); assert.equal(s.flags._ch2_region, "home");
 });
 await test("fresh SAVE/LOAD keeps money and location together; slots preserved", () => {
   const s = fresh(); const untouched = "existing-slot-preserved"; storage.set("suien_remake_slot3", untouched);

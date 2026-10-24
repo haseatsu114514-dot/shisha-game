@@ -813,6 +813,64 @@
           "text": "それぞれの煙を楽しんで、帰り道で手を振った。営業を終えてからの、気負わない友人との時間だった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_fortune_rumor",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……占いって、信じます？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "占い？ たまに見るくらいかな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "私、かなり信じる方です。好きで、タロットも買いました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "前に、チャーハンとオムライス、どっちを食べるか迷って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それで、タロットを？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……引きました。ちゃんとカードに聞いてから決めたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好きな方を食べればいいのに……）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "アーケードの脇にも、タロットで見てくれる人がいるんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "お昼に、時々。雨の日はお休みみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そうなんだ。今度、通ったら見てみようかな"
+        }
+      ]
     }
   ]
 }

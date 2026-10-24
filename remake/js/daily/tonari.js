@@ -8,6 +8,7 @@ import { addMoney, addStamina, applyStats, star, currentCondition } from "../cor
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
+import { hearFortuneRumor } from "./fortune-rumor.js";
 import { DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
@@ -46,11 +47,24 @@ export function tonariMenu() {
   });
 }
 
-export async function tonariCustomer() {
-  addStamina(-10);
-  await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
-  await meetHiyoriAtTonari();
-  if (tsumugiAtTonari(state)) await visitChar("tsumugi");
+const customerVisits = new WeakSet();
+export async function tonariCustomer({ signal = null } = {}) {
+  const owner = state;
+  if (customerVisits.has(owner) || signal?.aborted) return false;
+  customerVisits.add(owner);
+  try {
+    const live = () => state === owner && !signal?.aborted;
+    addStamina(-10);
+    const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG, signal });
+    if (!live() || !greeting || greeting.cancelled) return false;
+    await meetHiyoriAtTonari();
+    if (!live()) return false;
+    if (tsumugiAtTonari(state)) {
+      if (!await visitChar("tsumugi") || !live()) return false;
+      if (!await hearFortuneRumor({ signal }) || !live()) return false;
+    }
+    return live();
+  } finally { customerVisits.delete(owner); }
 }
 
 // ---------------------------------------------------------------- バイト

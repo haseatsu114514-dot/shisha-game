@@ -12,6 +12,7 @@ import {
   fortuneTargets,
 } from '../js/core/fortune-effects.js';
 import { openingStatus, spotTimeNote } from '../js/daily/spot-hours.js';
+import { fortuneOpenOn, fortuneScheduled, fortuneRumorHeard, FORTUNE_RUMOR_ID } from '../js/daily/fortune-schedule.js';
 
 const triviaPath = new URL('../data/fortune-trivia.json', import.meta.url);
 const trivia = JSON.parse(fs.readFileSync(triviaPath, 'utf8'));
@@ -229,3 +230,20 @@ m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
 console.log('PASS fortune: 56 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+
+// #780: 噂を読むまで出ない。出店日が雨なら休み、晴れる日へ繰り越す（連続雨も保持、二重出店なし）。
+{
+  assert.equal(fortuneRumorHeard({ limeRead: [] }), false);
+  assert.equal(fortuneRumorHeard({ flags: { _fortune_met: true }, limeRead: [] }), false, 'Meeting before does not fake the rumor');
+  assert.equal(fortuneRumorHeard({ limeRead: [FORTUNE_RUMOR_ID] }), false, "Legacy morning LIME alone cannot unlock");
+  assert.equal(fortuneRumorHeard({ flags: { _fortune_rumor_heard: true }, limeRead: [] }), true, "Completed face-to-face rumor unlocks");
+  const days = rain => Array.from({ length: 21 }, (_, i) => i + 1).filter(d => fortuneOpenOn(d, d => rain.includes(d)));
+  assert.deepEqual(days([]), [3, 6, 10, 13, 17, 20], 'Sunny weeks keep the weekly 3rd/6th days');
+  assert.deepEqual(days([3]), [4, 6, 10, 13, 17, 20], 'Rain on day 3 moves it to day 4');
+  assert.deepEqual(days([3, 4, 5]), [6, 10, 13, 17, 20], 'Carried opening lands on the next scheduled day only once');
+  assert.deepEqual(days([6, 7, 8]), [3, 9, 10, 13, 17, 20], 'Consecutive rain keeps the postponement until it clears');
+  assert.deepEqual(days([10]), [3, 6, 11, 13, 17, 20]);
+  assert.equal(fortuneOpenOn(5, d => d === 4), false, 'Rain on a normal day carries nothing');
+  for (let d = 1; d <= 28; d++) assert.equal(fortuneScheduled(d), d % 7 === 3 || d % 7 === 6);
+}
+console.log('PASS: fortune rumor gate and rainy-day carryover');

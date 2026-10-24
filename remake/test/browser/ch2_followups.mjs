@@ -53,7 +53,9 @@ async function reload(page) {
 }
 function unchangedRecords(before, after) {
   for (const key of ["lovers", "loverSince", "relationshipMemories", "keepsakes", "flavorStock", "contacts", "equipment"]) {
-    assert.deepEqual(after[key], before[key], key);
+    const expected = key === "keepsakes" && after.flags._ageha_first_purikura && !before.flags._ageha_first_purikura
+      ? [...before[key], "ageha_first_purikura"] : before[key];
+    assert.deepEqual(after[key], expected, key);
   }
 }
 await suite("ch2-followups", async check => {

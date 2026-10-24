@@ -22,3 +22,13 @@ export function restoreEntryResources(value) {
   }
   // restDay.illnessHealth や金銭・日付・能力・交流・報酬・再戦補助には触れない。
 }
+
+/**
+ * #590 救済を選んだ挑戦だけ、開始資源を戻した直後に現在の最大体力まで回復する（全章共通）。
+ * 開始時点の保存（entry）は書き換えない。救済なし・取消は戻した値のまま。何度呼んでも同じ値。
+ */
+export function applyAssistRecovery(value, assisted, maximum) {
+  if (assisted !== true || !Number.isFinite(maximum) || maximum <= 0) return false;
+  value.stamina = maximum;
+  return true;
+}

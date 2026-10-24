@@ -26,7 +26,7 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      if (Object.keys(DB.manifest.introArt).length !== 15) throw new Error("登場背景が15種ではない");
+      if (Object.keys(DB.manifest.introArt).length !== 17) throw new Error("登場背景が17種ではない");
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });
@@ -134,6 +134,7 @@ try {
   const workerFaces = await page.evaluate(async () => {
     const w = T.worker.buildWorkerScene({ mode: "practice" });
     document.querySelector("#screen").replaceChildren(w.root);
+    await w.ready; // 表情の事前読み込みによるsrc変更が終わってからdecodeする。
     const result = [];
     for (const level of ["steady", "unsteady", "shaken"]) {
       w.setMental(level);
@@ -152,6 +153,8 @@ try {
     await page.evaluate((slot) => {
       T.core.state.phase = "daily"; T.core.state.day = 6; T.core.state.slot = slot;
       T.core.state.weatherSeed = 0;
+      for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
+      T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
       T.mapTask = T.map.chooseSpot();
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
@@ -159,7 +162,9 @@ try {
     await page.waitForFunction(() => !document.querySelector(".scene-curtain") && getComputedStyle(document.querySelector("#bg > div:last-child")).opacity === "1");
     for (const pin of pins) {
       const position = await page.locator(`.map [data-spot="${pin.id}"]`).evaluate((node) => ({ x: parseFloat(node.style.left), y: parseFloat(node.style.top) }));
-      assert.deepEqual(position, { x: pin.x_percent, y: pin.y_percent }, `${tod}:${pin.id}の座標が変わった`);
+      const moved = { cafe: { x: 72, y: 45 }, kannon: { x: 18, y: 57 }, choizap: { x: 20, y: 24 }, fortune: { x: 63, y: 69 }, rest: { x: 89, y: 44 } };
+      const expected = moved[pin.id] || { x: pin.x_percent, y: pin.y_percent }; // mainでHUDを避けて移動済みの施設を反映。
+      assert.deepEqual(position, expected, `${tod}:${pin.id}の座標が変わった`);
     }
     if (shots) await page.screenshot({ path: `${shots}/map_${tod}.png` });
     await page.evaluate(() => T.map.interruptMap("__test_done"));
