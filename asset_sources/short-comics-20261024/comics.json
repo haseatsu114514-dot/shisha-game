@@ -1,0 +1,247 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "series": "けむりのとなり",
+  "created_date_jst": "2026-10-24",
+  "scope": "シーシャゲームの人物を使った20本の描き下ろし。4コマ1本・2コマ19本。漫画見本の画風・キャラクター・既存ネタは流用しない。",
+  "character_authority": {
+    "base_sha": "9831dbff",
+    "profiles": "brand/character_profiles.md",
+    "data": "data/characters.json",
+    "ryuji": "53歳、短い黒白髪、口ひげ、色付き眼鏡、白系大柄チェックスーツ、黒シャツ、紫のネクタイとポケットチーフ。旧39歳・黒スーツは不採用。"
+  },
+  "source_hero": {
+    "range": "01",
+    "title": "01　店、間違えた？",
+    "cast": "りゅうじ・はじめ",
+    "layout": "A single FOUR-PANEL vertical yonkoma comic: one full-width horizontal panel per row, FOUR ROWS, top to bottom. Portrait about 3:4, high resolution. Exactly FOUR PANELS, no subpanels.",
+    "story": "PANEL 1 TOP: Over Hajime's shoulder as he opens a heavy door. Inside is Ryuji looming in his WHITE large-check double-breasted suit, black shirt, PURPLE tie, short SALT-AND-PEPPER hair, MOUSTACHE and tinted SUNGLASSES, gold folding screen, dark wood walls, wall shrine, black leather sofa. Two stern adult suited young men in the background. Low comedic noir dramatic framing. Hajime's tiny thought bubble: 「店、間違えた……」.\nPANEL 2: closer to very stern Ryuji leaning forward, hands folded carefully, eyebrow intimidating. He says 「苦手なもんはあるか。」 Hajime flinches and says 「えっ。」 Retain actual character appearances.\nPANEL 3: reveal Ryuji is politely presenting an ordinary flavor menu. He clarifies with the SAME rough-but-considerate personality, no keigo: 「フレーバーの話だ。」 Menu has tiny simple fruit pictograms, no gibberish long text. He sets a little glass of water on a coaster gently for Hajime. The OFFICE remains the same room but color light warms.\nPANEL 4 BOTTOM: Hajime visibly sinks into BLACK leather sofa in huge relief, shoulders dropping, both hands around water glass, thought bubble 「シーシャ屋だ……」. Ryuji stands beside him with reassuring stern smile, tiny service towel neatly folded over arm, saying 「ゆっくりしてけ。」 A small correctly constructed generic hookah is visible ON the low side table, glass base to HMD all connected, hose parked tidily on table; NO ONE is smoking or holding a hose. The intimidating young men are now politely offering a coaster and menu. Warm welcoming comedy, no final threat, no weapons, no cruel ridicule."
+  },
+  "source_sheets": [
+    {
+      "range": "02–05",
+      "ids": [
+        "hajime",
+        "kumicho",
+        "mashiro"
+      ],
+      "rows": [
+        [
+          "02　兄弟でも別",
+          "りゅうじ・はじめ",
+          "RIGHT setup: Ryuji gravely holds out an ornate small presentation box to Hajime, with a grand ritual-like atmosphere, saying 「兄弟の盃だ。」 No sake shown yet. LEFT payoff: inside the box are TWO SEPARATELY SEALED tiny disposable plastic hookah mouth-tips, held delicately in Ryuji's big hands, not a sake cup. Ryuji says 「吸い口は別な。」 Hajime relaxes and remarks 「そこは徹底。」 NO smoking, hose or whole hookah needed."
+        ],
+        [
+          "03　若衆の男泣き",
+          "りゅうじ・はじめ",
+          "RIGHT setup: a fearsome adult suited young man runs toward stern Ryuji in the yakuza-office shop, weeping huge tears, shouting 「組長ォ……！」 Hajime behind is alarmed, bracing for bad news. LEFT payoff: young man and Ryuji are now BOTH shedding passionate happy tears with hands over hearts; young man says 「うますぎます！」 Ryuji silently nods tearfully. Hajime in the edge of panel thinks 「平和な理由。」 Imply they enjoyed a shisha flavor, but do NOT draw anyone currently smoking or a hose; a water glass and fruit flavor menu on desk suffice."
+        ],
+        [
+          "04　消すのは匂い",
+          "りゅうじ・はじめ",
+          "RIGHT setup: stern Ryuji in the office shop says 「匂いは残すな。」 Hajime startles, tiny nervous bubble 「証拠……？」 LEFT payoff: Ryuji hands Hajime a normal simple laundry bottle clearly labeled 「無香料」 and points to a little clean staff towel, saying 「柔軟剤の話だ。」 Hajime has a huge relieved breath. No giant chemical laboratory, no violence, no hookah."
+        ],
+        [
+          "05　噂の本人",
+          "りゅうじ・はじめ・ましろ",
+          "RIGHT setup: Ryuji very gravely tells Hajime a rumor at the shop, saying 「シガーマン……化け物だ。」 A small vague thought silhouette of a gigantic scary smoking man behind Ryuji is CLEARLY a thought cloud, not an actual character. LEFT payoff: cut to completely different soft daylight cafe corner: petite ADULT gentle ash-blonde-braided Mashiro hears the same rumor from Hajime and trembles while holding her warm teacup, saying 「こわいねぇ……」. A small narrator arrow pointing at MASHIRO is labelled 「本人」. Hajime pauses, unsure. Do not draw smoking, hookahs or smoke in this episode; the narrator arrow is what makes the identity joke legible."
+        ]
+      ]
+    },
+    {
+      "range": "06–09",
+      "ids": [
+        "hajime",
+        "adam",
+        "minto",
+        "minto_ura"
+      ],
+      "rows": [
+        [
+          "06　選べるおすすめ",
+          "アダム・はじめ",
+          "RIGHT: customer Hajime studies an enormous elaborately presented flavor menu and asks 「おすすめは？」 Adam dramatically points at double-apple pictogram with confident flourish, saying 「ダブルアップル。」 LEFT: Hajime asks 「ほかには？」 Adam proudly presents TWO DISTINCT neat sample packs each showing two small apple pictograms, saying 「別メーカーの。」 He has no malicious expression, just boundless sincere enthusiasm. Keep hair screen-left red/screen-right green front view. No hookah needed."
+        ],
+        [
+          "07　専門外",
+          "アダム・はじめ",
+          "RIGHT: close to skilled Adam carefully studying a fine digital thermometer and a stopwatch at a neat equipment workbench, intensely precise. He says 「0.1℃の差だ。」 No hot coals or device need be visible. LEFT: later homey kitchenette, Adam in SAME black henley now confused and helpless, staring at the lid of an ordinary unopened INSTANT NOODLE CUP and holding a timer, asking 「何分だ？」 Hajime points at the lid saying 「フタに。」 An obvious large 「3分」 on the noodle lid, no real brand. Comic change from professional precision to mundane task."
+        ],
+        [
+          "08　人気ナンバーワン",
+          "みんと・はじめ",
+          "RIGHT: working Minto in black/NEON-GREEN devil cafe outfit proudly strikes an idol pose next to her own portrait on an award board, saying 「人気No.1♡」 Hajime impressed. LEFT: pull back reveals the entire staff roster board contains only ONE portrait, Minto; Hajime asks 「ほかのキャストは？」 Minto proudly holds up one finger, winks, and answers 「みんと♡」 No humiliation; she is visibly running her own little shop confidently. No hookah."
+        ],
+        [
+          "09　営業終了",
+          "みんと・はじめ",
+          "RIGHT: in PEPPERMINT shop, professionally playful Minto in green/black devil outfit waves at departing Hajime, saying 「また会いに来てね♡」 LEFT: AFTER WORK outside on a quiet street, same woman now in light beige CARDIGAN, white blouse and DARK LONG SKIRT, NO horns, SAME long BLACK hair and GREEN eyes. Hajime gently says to her 「また会いたいです。」 Her professional confidence vanishes into a shy blush, small response 「……うん。」 Tiny caption 「営業終了」 at corner emphasizes the gag; do not make this a different woman."
+        ]
+      ]
+    },
+    {
+      "range": "10–13",
+      "ids": [
+        "hajime",
+        "ageha",
+        "naru",
+        "rin",
+        "samechan"
+      ],
+      "rows": [
+        [
+          "10　バイブスのメモ",
+          "あげは・はじめ",
+          "RIGHT: in pink/leopard MELTY PUFF with a few white and pink bear plushies, adult gyaru Ageha enthusiastically gestures her intuitive three-step explanation 「ふわっ、きゅん、ずばっ！」 Hajime diligently listens with pen and notebook. No hookah or ingredients visible. LEFT: close enough to see Hajime's meticulous notebook contains the EXACT same three large words with numbered arrows 「ふわっ → きゅん → ずばっ」, as though serious technical notes. He gravely asks 「順番は？」 Ageha laughs warmly, saying 「そこじゃない〜！」 Preserve her twin ponytails, bear clips, leopard jacket and pink top."
+        ],
+        [
+          "11　全部見てけ",
+          "なる・はじめ",
+          "RIGHT: Hajime peeks at Naru's neatly arranged dessert-flavor research notebook and asks politely 「企業秘密ですか？」 Naru in silver hair and black/white streetwear smiles openly. LEFT: Naru enthusiastically pulls a chair up, opens MANY recipe notebooks, hands over a generous huge pile of teaching notes, saying 「全部見てけ。」 Hajime surprised but delighted, his little notebook already filled, says 「ノート足りない。」 Show friendly expertise, not arrogant lecturing. No hookah."
+        ],
+        [
+          "12　香りの感想",
+          "凛・はじめ",
+          "RIGHT: dark-blue-black-wolf-cut Rin in white shirt/black slacks offers Hajime a clipboard and a pen with a teasing half-smile, saying 「正直に書いてね。」 Workplace samples stay safely unopened in neat small packs on counter; no smoking or experiments. Hajime focuses very seriously. LEFT: reveal clipboard: Hajime's entire big handwritten answer is simply 「いい匂い」, taking most of the space, and he is proudly earnest. Rin, amused and affectionate rather than contemptuous, says 「語彙も貸そうか。」 No extra dialogue."
+        ],
+        [
+          "13　サメ映画",
+          "サメちゃん・はじめ",
+          "RIGHT: adult Samechan in black/blue shark-hood outfit sits on a couch beside Hajime watching an unseen generic shark movie, hugs crowned shark plush Korochan and claims 「怖くないのじゃ。」 Small fin-shadow ONLY on wall, no gore, no real film still. LEFT: she is hiding her entire eyes BEHIND the same crowned shark plush in her hands, obviously scared; a speech bubble from the plush says 「側近よ、目を開けろ。」 A little ventriloquism mouth mark subtly connects puppet voice to her, Hajime smiles kindly. NO change to her old-fashioned speech."
+        ]
+      ]
+    },
+    {
+      "range": "14–17",
+      "ids": [
+        "hajime",
+        "kumicho",
+        "mashiro",
+        "minto",
+        "tsumugi"
+      ],
+      "rows": [
+        [
+          "14　見た目と重さ",
+          "ましろ・りゅうじ",
+          "RIGHT: Ryuji in WHITE CHECK suit, tinted glasses, moustache and purple tie, meets gentle adult two-braided Mashiro at a cafe and asks kindly 「軽めか？」 Mashiro sweetly nods with a sleepy smile. She is beside her completed compact shisha with ONE connected dark hose resting in her hand, correct separate low open silver HMD with TWO tiny coals above ceramic bowl, thin tray, stem, clear glass base. LEFT: Mashiro has just EXHALED one enormous thick cloud from her MOUTH, comfortable and totally unbothered, and says 「僕は、いつもの〜。」 Ryuji at a distance is surprised, his moustache visible under glasses. He says 「それでか……」 Her rigid hand-held handle is away from mouth after exhale, ONE flexible dark hose clearly connected from stem side-port to handle base. No extra hoses, no smoke from bowl, no smoke magic. Match hardware photos structurally. Ryuji isn't inhaling her cloud; cloud goes away from him."
+        ],
+        [
+          "15　本日の一杯",
+          "ムカイさん・はじめ",
+          "RIGHT: dandy older Mukai, black fedora low over eyes, neat beard/moustache, dark tailored suit, is a noir silhouette leaning on cafe counter, saying with gravitas 「いつものを。」 Hajime stands taking order, assuming something very grown-up. LEFT: bright reveal of Mukai silently admiring a CUTE COFFEE LATTE topped with a little BEAR FACE of milk foam in a pastel mug, still completely hard-boiled in posture. He quietly specifies 「耳、大きめで。」 Hajime smiling dutifully, no teasing. No cigar or smoking. Mukai is a separate man from Ryuji and Sumi; no glasses, no white check, no newsboy cap."
+        ],
+        [
+          "16　覚えていたこと",
+          "みんと・はじめ",
+          "RIGHT: in cafe at closing, working Minto in black/green outfit blushes because Hajime has brought a blanket in response to her earlier comment that she was chilly. She holds the blanket, says 「覚えてたの？」 A sense of romance. LEFT: Hajime mistakes her rosy cheeks for uncomfortable room temperature and carefully reaches for the THERMOSTAT, asking 「暑かったですか？」 Minto wraps herself in blanket and turns even more red, tiny half-smile 「そういうとこ……」. No hookah, no fire or hot coals. Show the gag with thermostat rather than unsafe equipment adjustment."
+        ],
+        [
+          "17　似顔絵",
+          "つむぎ・はじめ",
+          "RIGHT: quiet adult artist Tsumugi with DARK BROWN short bob and PURPLE hoodie sketches at her cracked tablet. Hajime leans in with friendly excitement and asks 「俺も描いて。」 LEFT: tablet is turned toward us showing a charming LEAF-EARED CAT with smoky curl tail, wearing Hajime's BLACK BASEBALL CAP and BLACK HOODIE, unmistakably his fantastical portrait. Tsumugi quietly says 「似てます。」 Hajime beams, amused, and says 「猫になった。」 No magical transformation of actual Hajime, only an illustration."
+        ]
+      ]
+    },
+    {
+      "range": "18–20",
+      "ids": [
+        "hajime",
+        "hiyori",
+        "sai",
+        "sumi"
+      ],
+      "rows": [
+        [
+          "18　儚い仕事人",
+          "ひより・はじめ",
+          "RIGHT: Hiyori, adult 25, reddish brown ponytail over shoulder, ivory sleeveless blouse and black work pants, wistfully leans over a cafe laptop, posing like a tragic heroine, saying softly 「私、壊れてしまいそう……」 Hajime looks concerned. She IS genuinely tired, not acting a serious disease. LEFT: while still holding the same elegant weary pose with one hand at her cheek, her other hand efficiently taps send on a laptop whose screen shows three big clean check marks by 「議事録」「経費」「引継ぎ」. Hiyori calmly says 「全部、送信しました。」 Hajime impressed says 「仕事は速い。」 No screaming personality switch, no mockery of actual fatigue."
+        ],
+        [
+          "19　見学だけ",
+          "サイ・はじめ",
+          "RIGHT: gentle Sai in DARK GREEN vest and long charcoal apron, black side-parted hair, closed smiling narrow eyes, no glasses, welcomes Hajime at a boardgame cafe and offers 「見学だけでも。」 Hajime nods freely, curious. LEFT: slight time jump: Hajime finds himself with a fabric armband clearly labelled 「部長」 and carrying an exciting pile of TRPG game books and dice, still a friendly environment, NOT tied up or threatened. Sai, same genuine natural kind smile, says 「では、部長。」 Hajime surprised murmurs 「いつの間に？」 Comic accidental overcommitment; do not give Sai dark evil shadows, coercion or malicious face."
+        ],
+        [
+          "20　師匠の教え",
+          "スミさん・はじめ",
+          "RIGHT: Hajime has been earnestly studying a tower of notes and a laptop late after closing in tonari, eyes tired, asking his mentor 「勝つコツは？」 Sumi, newsboy cap, glasses, beard and brown waist apron, looks thoughtful and serious. LEFT: Sumi gently closes the laptop, slides a warm mug to him and points toward the door home, saying 「まず、寝ろ。」 Hajime finally notices he has been nodding off, relaxes and says 「はい。」 Warm comic ending. No smoking equipment needed, varied Turkish mosaic lamps in background, no identical generic plants."
+        ]
+      ]
+    }
+  ],
+  "generation_style": "Draw a FINISHED JAPANESE COMIC PAGE for the original indie adult shisha-shop game 「水煙前線 -EN:CODE-」. This is the user's OWN SHISHA GAME. Absolutely NO characters from 魔法少女ノ魔女裁判: no Hiro, Hanna, Arisa, Nanoka. The earlier user manga uploads are only an example of short comic pacing, NOT the cast and NOT an art-style reference. Only use the LOCAL character artwork attached to this call for character identity.\nART STYLE: create a different original playful deformed editorial cartoon, rounded 2.7-head-tall adult character proportions, simple expressive small eyes and eyebrows, matte flat gouache color, slightly irregular colored-pencil ink lines, warm ivory paper, restrained mustard/teal/cranberry accents, airy minimal backgrounds, clear lively silhouettes and strong visual comedy. No detailed glossy anime eyes, no pixel art, no copying the original uploaded manga artist. All human characters are ADULTS. Chibi bodies should preserve adult facial distinctions: grizzled older men versus young adults, adult women; not literal children.\nIDENTITY: references are for face/hair/outfit and recognizable features, not their pixel rendering style. Match the ADOPTED SPRITES rather than outdated generic text descriptions.\nHAJIME はじめ: 22-year-old ordinary friendly young man, short BLACK hair, BLACK baseball cap, BLACK zip hoodie with drawstrings, black trousers. Visually much smaller/slighter than tall broad Ryuji. Honest earnest observer, reacts without cruelly mocking friends.\nRYUJI りゅうじ / 神崎竜二: LATEST APPROVED DESIGN, 53-year-old Japanese yakuza boss, slim-to-average older male build, SHORT SALT-AND-PEPPER BLACK/GRAY HAIR, deeply furrowed brows, thick black/gray MOUSTACHE, brown-tinted SUNGLASSES, WHITE/CREAM large WINDOWPANE CHECK double-breasted SUIT, BLACK shirt, PURPLE tie and PURPLE pocket square. He is NOT the old young muscular dark-navy-suit man, not scar-faced bare-chested, not slick black hair without gray, not rolled tattooed sleeves. Keep his little fingers naturally obscured with pose, never imply missing or present as a plot point. First-person 俺; rough passionate gangster diction, never a keigo butler. Face and presence intimidating but incredibly delicate hands, thoughtful hospitality, proud artisan, tears easily when moved. Use assets/sprites/characters/kumicho/chr_kumicho_normal.png identity as supreme reference for him.\nSUMI スミさん: mature 46-year-old stocky mentor, BLACK newsboy cap (NOT baseball cap), square dark glasses, short dark full beard, charcoal rolled-sleeve shirt, BROWN waist apron, black trousers, relaxed kind competence.\nADAM アダム: 28-year-old stylish male with SHORT half-red half-green hair. HIS OWN RIGHT half is RED, his own LEFT half is GREEN; FRONT VIEW SCREEN LEFT RED, SCREEN RIGHT GREEN. Black Henley and dark waist apron. Grandiose double-apple specialist, genuinely skilled but comically helpless about ordinary life. No apple hats, no unrelated fantasy costume.\nMINTO みんと: adult 29-year-old woman with youthful face, straight long BLACK hair, GREEN eyes, little BLACK devil-horn and bat-wing hair accessories, BLACK and NEON GREEN frilly off-shoulder concept-cafe dress and heart choker, stockings, small fang, playful professional idol customer service; first-person みんと. PRIVATE: SAME black long hair and green eyes, no devil accessories, light beige cardigan, white blouse and dark long skirt, shy quiet voice, first-person 私. Do not make her private hair blonde.\nNARU なる: friendly adult 23-year-old man, short SILVER hair, black-and-white streetwear jacket over black clothing, rings and necklace, white sneakers; generous competitive expert in vanilla and baked-dessert flavor theory. Not an arrogant bully.\nAGEHA あげは: adult 22-year-old cheerful approachable gyaru, amber eyes, honey-blonde LONG TWIN PONYTAILS with pink bear hair clips, LEOPARD jacket over PINK heart crop top, BLACK short pleated skirt and thigh-high socks, chunky black/pink shoes, heart necklace. Sweet friendly round face, not aloof thick-makeup model. Speaks うち and calls protagonist ハジメっち. Uses intuitive sounds rather than numerical explanations.\nRIN 凛: adult 27-year-old languid attractive expert, long very dark slightly blue WOLF CUT with bangs and face-framing layers ending above waist, blue-gray half-lidded eyes, WHITE collared rolled-sleeve shirt, BLACK slacks, silver hoop earrings, clipboard. Teasing but responsible; never evil or experimenting dangerously.\nMASHIRO ましろ: adult 22-year-old soft sleepy young woman, PALE ASH BLONDE hair in TWO LONG BRAIDS, sleepy golden eyes, BEIGE loose cardigan, white blouse, LONG SAGE-GREEN skirt, brown shoes. First-person 僕. Secretly the legendary heavy-smoke artisan \"シガーマン\", but she herself fears the rumor without knowing it means her. Sweet, capable, no magic powers.\nMUKAI ムカイさん: 48-year-old gentleman with BLACK fedora pulled low, short beard and mustache, DARK tailored suit. Very cool hard-boiled exterior, low quiet voice, actually likes cute sweet drinks. No adopted sprite available for him: base ONLY on this description, do not change other characters to resemble him.\nTSUMUGI つむぎ: adult 21-year-old quiet art student, short DARK BROWN bob, PURPLE oversized hoodie, black short pleated skirt and black knee socks, cracked tablet and stylus. Draws fantastical leaf-eared smoky-tailed cats, calls Hajime はじめさん. Not generic silver-haired artist.\nHIYORI ひより: adult 25-year-old competent but genuinely tired office worker, long reddish-brown PONYTAIL swept over shoulder, cream sleeveless buttoned blouse, BLACK tailored ankle-length pants, small earrings, black shoulder bag. Chooses wistful tragic-heroine posing while still efficient. Don't turn her sick, helpless or loud.\nSAI サイ: adult 28-year-old slim man, neat BLACK side-parted hair, smiling narrow eyes, NO GLASSES, DARK GREEN waistcoat over ivory rolled-sleeve shirt, long charcoal apron, little hexagonal brass pin. Genuinely kind boardgame shop owner, never deliberately threatening. His calm smile is unintentionally hard to refuse.\nSAMECHAN サメちゃん: ADULT 20-year-old woman, BLACK hair with vivid BLUE streaks, BLUE eyes, blue-black SHARK-HOOD street/goth outfit, short layered black skirt, blue accents, jacket with teeth outline on hood, chunky blue/white sneakers. Holds crowned blue-and-white shark PLUSH コロちゃん. Speaks わし/お主/〜じゃ; plush puppet speaks 余/〜である/側近 and exposes her true feelings. Not a real shark, not a small child.\n\nSETTING: Ryuji's 神崎煙草店 interior is an obvious intimidating YAKUZA OFFICE: dark wood paneled walls, BLACK leather sofa, heavy executive desk, marble floor, shrine on wall and gold folding screen. The old rustic tobacco-shop background is outdated, do NOT copy it. No tatami, no taking shoes off, no open flavor containers in customer seating. No weapons or violence. tonari has varied Turkish mosaic pendant lamps, other shops have their own distinct decor rather than all identical plants/bars. No mandatory decorative houseplants.\nHOOKAH when visible: one coherent device, from bottom glass base with shallow water -> straight stem -> broad thin ash tray -> ceramic cup with narrow neck -> LOW SEPARATE METAL HMD, simple open silver cup about palm width and 3cm high, holding TWO fingertip-sized ashy cube coals. No lid, no chimney, no flames, no coals directly on foil. The ash tray is 2.5x HMD width. ONE flexible hose from stem SIDE PORT above base to BASE of a rigid hand-held handle, then short small detachable mouth-tip at mouth end. Never a forked, broken, floating or neck-attached hose. If reference neck pendant is reproduced it must have a small hollow mouthpiece BODY plus chain, never connect pendant chain to a hose. Smoke only from mouth on EXHALE, not from HMD or kettle. Do not add a hookah when story doesn't need one. Avoid whole equipment close-ups; no live hot devices held in bare hands. Attached real object photos are only structural reference, not style/logo/people to copy.\nTEXT and composition: short Japanese speech in generous bubbles, clean readable DARK horizontal lettering, EXACT quoted dialogue and titles below. No English translation. No fake copyright or real-world logos. Artist credit absent. Page header 「けむりのとなり」 and small subtitle 「水煙前線 -EN:CODE- 番外編」. Use gutters and thin gently drawn borders; no black screenshot frame. Titles and episode numbers clearly readable. Express personality through pose/action and actual before/after visual change, do not fill panels with exposition.\nIMPORTANT STYLE ENFORCEMENT: Actually simplify and DEFORM figures and faces into rounded 2.7-head proportions, small noses, simple dot/oval eyes, moustache and glasses for Ryuji; the source sprites must not force semi-realistic anatomical portraits. Consistent whimsical ink-and-gouache mini-comic throughout. Draw new poses and shot sizes. Keep readable Japanese and clear punchline.",
+  "originals": [
+    "01-ryuji-welcome.png",
+    "02-05-ryuji-gaps.png",
+    "06-09-adam-minto.png",
+    "10-13-friends.png",
+    "14-17-everyday.png",
+    "18-20-after-hours.png"
+  ],
+  "qa": {
+    "status": "all_six_pages_visually_reviewed",
+    "hero": "白チェックスーツ版を検品。旧りゅうじ版および他作品版は本フォルダへ採用しない。",
+    "runtime": "ゲーム本編・キャラ設定・正規立ち絵の置換は対象外。",
+    "mouthpieces": "02は小さな独立した使い捨てチップ、携帯/使用中の状態を混ぜない。",
+    "hookah": "01と14のみ必要な台を描く。完成台は低い別体HMD＋角炭2個、側面ポート→一本のホース→硬質ハンドル。写真は造形参考のみ。",
+    "inspected_pages": {
+      "01-ryuji-welcome.png": "4コマ・本文可読・53歳の白チェック/眼鏡/口ひげ/紫ネクタイを確認。最後の提供台は別体HMDと角炭2個、台側面からのホースがある。",
+      "02-05-ryuji-gaps.png": "4本8コマ・本文可読。りゅうじ本人性を全登場コマで確認。吸い口は箱内の別包装小物。ましろの噂オチは本人の矢印で伝える。",
+      "06-09-adam-minto.png": "4本8コマ・本文可読。07右のアダムに誤って付いた眼鏡と口ひげを画像生成ツールで除去し再検品。赤髪は本人右/正面画面左、緑髪は本人左/正面画面右。みんとの仕事/私服の同一性を確認。",
+      "10-13-friends.png": "4本8コマ・本文可読。あげはの正式顔・ツインテール・クマ・豹柄、なるの銀髪と親切、凛の白シャツ、サメちゃんの腹話術を確認。",
+      "18-20-after-hours.png": "3本6コマ・本文可読。ひよりの仕事の速さ、サイの自然な笑顔と部長の腕章、スミさんの帽子/眼鏡/ひげ/茶エプロンを確認。",
+      "14-17-everyday.png": "4本8コマ・本文可読。白チェックのりゅうじとましろの本人性、別人のムカイの帽子/ひげ、みんとの黒髪/緑眼、つむぎの茶ボブ/紫フーディーを確認。14上下積層を局所修正し、陶器ボウル＋細い脚＋別体低HMD＋角炭2個、一本の側面ホースと硬質ハンドル、口からの吐煙を両方向に目視確認。"
+    },
+    "corrections": [
+      "見本の作品を登場人物と取り違えた試作を除外。シーシャゲームの人物と正規資料で全20本を作成。",
+      "りゅうじの旧39歳・黒スーツ版を除外。最新mainの白チェック53歳版を参照して第01話を作り直し、以後の全登場を統一。",
+      "第07話のアダムに誤生成された眼鏡・口ひげを局所修正。",
+      "14–17ページの初回要求は参照5枚上限で生成されなかったため、正規立ち絵の確認用モンタージュを使い、実物写真を含む5枚以内へ整理して再実行。",
+      "第14話のHMDと陶器ボウルが詰まって見える上部を局所修正し、両コマで別体の陶器カップと細い脚が読める構造へ修正。"
+    ]
+  },
+  "image_manifest": [
+    {
+      "file": "01-ryuji-welcome.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 2874927,
+      "sha256": "1e05e9ba298ce66583d5d85d960f45efd9977ac78395a69d23a5cb6f014e4b6b"
+    },
+    {
+      "file": "02-05-ryuji-gaps.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 3085830,
+      "sha256": "72c514a4b2125e2b53357129e4edd1e0d3b4ab0b594a1f12c85e93b7431b326c"
+    },
+    {
+      "file": "06-09-adam-minto.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 2772260,
+      "sha256": "35b89d4bd1d6fa94ba6ec05d88363147617cbf8ed00c52e6f155908a2cbda7b3"
+    },
+    {
+      "file": "10-13-friends.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 3157409,
+      "sha256": "8999186de8924fe8aec920077b98b3a98d4b56d4d8f051bfc5ef234953892ae7"
+    },
+    {
+      "file": "14-17-everyday.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 2727851,
+      "sha256": "018fd063ab55957c1d45320c1ace728e24a62aff4f56f19aead651501dea976c"
+    },
+    {
+      "file": "18-20-after-hours.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 2863725,
+      "sha256": "e609366ff6afde9cef6168cec4f2736fc3e3a2396798c791d04d19d2475650e4"
+    }
+  ]
+}
