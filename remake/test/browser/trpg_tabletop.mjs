@@ -123,9 +123,29 @@ try{
   await ctl(p,'trpg-settle').waitFor();assert.equal(await p.locator('[role=status].trpg-dice-total').count(),1);await fit(p,scenario+'-result');
   if(await ctl(p,'trpg-reroll-0').count()){await ctl(p,'trpg-reroll-0').dblclick();assert.equal(await ctl(p,'trpg-reroll-0').count(),0);}
   await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');
+  // Adopted table presentation: check real CSS/viewport separately from DOM ports.
+  for (const [width,height] of [[1280,720],[844,390],[390,844]]) {
+   await p.setViewportSize({width,height});
+   const seats=await p.locator('.trpg-table').evaluate(n=>{
+    const r=n.getBoundingClientRect();return {pointer:getComputedStyle(n).pointerEvents,visible:n.checkVisibility(),
+     inside:r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1,
+     active:n.querySelectorAll('.trpg-table-person.active').length,
+     speaking:n.querySelector('.trpg-table-person.active .trpg-seat-speaking')?.textContent};
+   });
+   assert(seats.visible&&seats.inside, 'Seat rail fits '+width+'x'+height);
+   assert.equal(seats.pointer,'none');assert.equal(seats.active,1);assert.equal(seats.speaking,'話者');
+  }
+  await p.setViewportSize({width:1280,height:720});
+  assert.equal(await p.locator('.trpg-table-clue').count(),0);
   // Reach the real preparation check, retaining canonical helper and scene.
   const scenarioData=await p.evaluate(async id=>{const cat=await (await fetch('../data/trpg_catalog.json')).json();return (await fetch('../data/'+cat.scenarios.find(x=>x.id===id).file)).json();},scenario);
-  for(const spot of scenarioData.spots.slice(0,3)){await ctl(p,'trpg-spot-'+spot.id).click();await lines(p);}
+  for(const [index,spot] of scenarioData.spots.slice(0,3).entries()){
+   await ctl(p,'trpg-spot-'+spot.id).click();await lines(p);
+   assert.equal(await p.locator('.trpg-table-clue').count(),index+1);
+   const beforeMemo=await p.evaluate(()=>__trpg.snapshot());
+   await ctl(p,'trpg-compare-notes').tap();assert.equal(await p.locator('.trpg-note-card').count(),index+1);
+   await ctl(p,'trpg-notes-close').press('Enter');assert.deepEqual(await p.evaluate(()=>__trpg.snapshot()),beforeMemo);
+  }
   await ctl(p,'trpg-interpret').click();await ctl(p,'trpg-hypothesis-'+scenarioData.hypotheses[0].id).click();await lines(p);
   for(const field of scenarioData.flow?.prepare||['aroma','seat'])await ctl(p,'trpg-plan-'+field+'-'+scenarioData.options[field][0].id).click();
   await ctl(p,'trpg-prepare-open').click();

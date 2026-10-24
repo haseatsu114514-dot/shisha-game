@@ -28,8 +28,7 @@
 }
 .trpg-root.trpg-cinematic .trpg-room::after { z-index: 1; }
 .trpg-root.trpg-cinematic .trpg-room-title,
-.trpg-root.trpg-cinematic .trpg-room-sub,
-.trpg-root.trpg-cinematic .trpg-table { display: none; }
+.trpg-root.trpg-cinematic .trpg-room-sub { display: none; }
 .trpg-root.trpg-cinematic .trpg-side { display: contents; }
 .trpg-root.trpg-cinematic .trpg-side > :is(.trpg-kicker, h2, p, .trpg-evidence, .trpg-risk, .trpg-plan-summary, .trpg-hypothesis-note, .trpg-support, .trpg-budget) { display: none; }
 .trpg-root.trpg-cinematic .trpg-journey {
@@ -541,4 +540,46 @@
 @media (prefers-reduced-motion: reduce) {
   .trpg-root.trpg-cinematic .trpg-roll-fx { display: none; }
   .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-die,.trpg-dice-total) { animation: none !important; }
+}
+
+/* The existing cast becomes a quiet table edge, above dialogue and actions.
+   Seats are decoration; the existing memo button owns the clue cards. */
+.trpg-root.trpg-cinematic .trpg-table {
+  position: absolute; z-index: 24; top: auto; right: auto; left: 50%; bottom: 184px; transform: translateX(-50%);
+  display: flex; justify-content: center; gap: 10px; width: 740px; max-width: none; padding: 7px 12px;
+  border: 1px solid #b99a67; border-bottom: 5px solid #70563b; border-radius: 12px 12px 3px 3px;
+  background: linear-gradient(#123a35ed, #102d2dee); pointer-events: none;
+}
+.trpg-root.trpg-cinematic.trpg-idle .trpg-table { bottom: 128px; }
+.trpg-root.trpg-cinematic .trpg-table[hidden] { display: none; }
+.trpg-root.trpg-cinematic:has(.trpg-overlay) .trpg-table { visibility: hidden; }
+.trpg-root.trpg-cinematic .trpg-table-person {
+  display: flex; align-items: center; gap: 5px; min-width: 0; padding: 4px 7px;
+  border: 1px solid transparent; border-radius: 4px; font-size: 13px; color: #f0e6cd;
+}
+.trpg-root.trpg-cinematic .trpg-table-person.active { border-color: #fff2bd; background: #e4d8b41f; }
+.trpg-root.trpg-cinematic .trpg-seat-mark {
+  display: inline-grid; place-items: center; flex-shrink: 0; min-width: 20px; height: 20px;
+  margin-right: 3px; border: 1px solid currentColor; border-radius: 3px; font-size: 12px;
+  font-style: normal; line-height: 1; pointer-events: none;
+}
+.trpg-root.trpg-cinematic .trpg-seat-speaking { width: 2em; font-size: 11px; }
+.trpg-root.trpg-cinematic .trpg-seat-ability { font-size: 10px; }
+.trpg-root.trpg-cinematic .trpg-seat-ability[data-spent="true"] { border-bottom: 1px solid currentColor; }
+.trpg-root.trpg-cinematic .trpg-table-clues { display: flex; gap: 3px; pointer-events: none; }
+.trpg-root.trpg-cinematic .trpg-table-clue {
+  display: block; width: 44px; height: 52px; overflow: hidden; padding: 5px 3px;
+  border: 1px solid #d8c49a; border-radius: 2px; background: #eaddbb; color: #273d3a;
+  font-size: 10px; line-height: 1.3; text-shadow: none;
+}
+.trpg-root.trpg-cinematic .trpg-stage-pockets button:has(.trpg-table-clues)::before { display: none; }
+.trpg-root.trpg-cinematic .trpg-ability-receipt { display: flex; align-items: center; gap: 5px; }
+.trpg-root.trpg-cinematic .trpg-reroll-stamp { position: absolute; bottom: -26px; left: 0; width: 100%; font-size: 11px; white-space: nowrap; }
+.trpg-root.trpg-cinematic .trpg-rerolled-die { position: relative; margin-bottom: 26px; }
+@media (max-width: 1000px), (max-height: 600px) {
+  .trpg-root.trpg-cinematic .trpg-table { width: 700px; gap: 4px; padding: 5px 8px; }
+  .trpg-root.trpg-cinematic .trpg-seat-ability { display: none; }
+  .trpg-root.trpg-cinematic .trpg-table-person { font-size: 15px; }
+  .trpg-root.trpg-cinematic .trpg-table-clue { width: 28px; height: 35px; font-size: 0; }
+  .trpg-root.trpg-cinematic .trpg-table-clue::before { content: '✓'; font-size: 15px; }
 }
