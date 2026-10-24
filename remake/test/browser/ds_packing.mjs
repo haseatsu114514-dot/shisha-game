@@ -22,6 +22,9 @@ const expectedCSS = fs.readFileSync(report.overrideCSS || "remake/css/game-ds.cs
 report.cssSHA256 = hash(expectedCSS);
 const b = (p, id) => p.locator(`[data-test="${id}"]`);
 async function hit(p, id, touch) {
+  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
+    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
+    await hit(p, "title-layout-settings", touch);
   const n = b(p, id); await n.scrollIntoViewIfNeeded();
   if (touch) await n.tap(); else await n.click();
 }
