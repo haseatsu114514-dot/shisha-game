@@ -256,7 +256,10 @@ await suite('ch2-tournament',async check=>{
       window.__pausedChapterThree={};
       vn.hooks.onLine=(id,line)=>{
         if(window.__chapterThreeTrace.at(-1)!==id)window.__chapterThreeTrace.push(id);
-        const key=id==='ch3_double_apple_incident'?'mukai':id==='ch3_kuze_first'&&line.speaker==='kuze'?'kuze':null;
+        const key=id==='ch3_double_apple_incident'?'mukai'
+          :id==='ch3_kuze_first'&&line.speaker==='kuze'?'kuze'
+          :id==='ch3_steve_low_heat'&&line.speaker==='steve'?'steve'
+          :id==='ch3_volk_first'&&line.speaker==='volk'&&line.text?.includes('壁の計器')?'volk':null;
         if(key&&!window.__pausedChapterThree[key]){window.__pausedChapterThree[key]=true;vn.vnTest.turbo=false;}
       };
     });
@@ -291,6 +294,18 @@ await suite('ch2-tournament',async check=>{
           'Saving during Kuze dialogue could commit his name before the first scene completes');
         await page.waitForTimeout(500);
         await capture(page,'ch3-kuze-first');
+        await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
+        await page.keyboard.press('Enter');
+      }
+      if(id==='ch3_steve_low_heat'||id==='ch3_volk_first'){
+        const who=id==='ch3_steve_low_heat'?'steve':'volk';
+        await page.waitForFunction(who=>window.__pausedChapterThree[who],who);
+        const portrait=page.locator(`.vn-portraits img[data-speaker="${who}"].active`);
+        await portrait.waitFor();
+        assert(await portrait.evaluate(async node=>{await node.decode();return node.naturalWidth>0;}),
+          `${who} portrait must decode inside the rival's shop`);
+        assert(await page.locator('#bg > .bg-img').last().evaluate((node,name)=>node.style.backgroundImage.includes(name),
+          `bg_${who}_shop`),`${who} needs the matching shop background`);
         await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
         await page.keyboard.press('Enter');
       }

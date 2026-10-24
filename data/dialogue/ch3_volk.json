@@ -4,7 +4,7 @@
     {
       "dialogue_id": "ch3_volk_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -199,7 +199,7 @@
     {
       "dialogue_id": "ch3_volk_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -306,7 +306,7 @@
     {
       "dialogue_id": "ch3_volk_third",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -399,7 +399,7 @@
     {
       "dialogue_id": "ch3_volk_fourth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -516,7 +516,7 @@
     {
       "dialogue_id": "ch3_volk_after_ch3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -598,7 +598,7 @@
     {
       "dialogue_id": "ch3_volk_after_ch3_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
