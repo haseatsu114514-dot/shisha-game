@@ -4,7 +4,7 @@ import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { play } from "../vn/engine.js";
+import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
@@ -12,11 +12,12 @@ import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chap
 
 const FILES = {
   ch3_main: ["ch3_opening", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
-    "ch3_naru_contact_before_tournament", "ch3_naru_work"],
+    "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
     "ch3_daily_cup_1", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
-  ch3_rivals: ["ch3_kuze_first", "ch3_kuze_advice"],
+  ch3_rivals: ["ch3_kuze_first", "ch3_kuze_advice", "ch3_steve_low_heat"],
+  ch3_volk: ["ch3_volk_first"],
 };
 
 let session = null;
@@ -105,6 +106,14 @@ export function beginChapterThree() {
 
 export function resumeChapterThree() {
   if (state?.chapter !== 3) return false;
+  if (state.flags?._ch3_aftermath) {
+    import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
+    return true;
+  }
+  if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === CH3_INTRO_SCENES.length) {
+    import("./ch3-tournament.js").then(module => module.runChapterThreeTournament());
+    return true;
+  }
   return openChapter(false);
 }
 
@@ -158,9 +167,19 @@ async function readScene(owner, scene) {
   hud(owner);
   const controller = new AbortController();
   owner.controller = controller;
-  const result = await play(dialogue, { signal: controller.signal });
+  let strategyChoice = null;
+  const previousOnChoice = hooks.onChoice;
+  if (scene.id === "ch3_strategy") hooks.onChoice = (...args) => {
+    previousOnChoice?.(...args);
+    if (args[0] === "ch3_strategy" && args[1] === "ch3_strategy_choice") strategyChoice = args[2];
+  };
+  let result;
+  try { result = await play(dialogue, { signal: controller.signal }); }
+  finally { hooks.onChoice = previousOnChoice; }
   if (owner.controller === controller) owner.controller = null;
-  return current(owner) && !!result && !result.cancelled;
+  const finished = current(owner) && !!result && !result.cancelled;
+  if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
+  return finished;
 }
 
 async function renderStage(owner) {
@@ -168,10 +187,12 @@ async function renderStage(owner) {
   const progress = chapterThreeProgress(state);
   const scene = CH3_INTRO_SCENES[progress.stage];
   if (!scene) {
-    card(owner, "complete", "余白での約束", "久世は助言の答えを決めなかった。自分の一台を、もう一度確かめよう。", [
-      button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-      button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-    ], "全国大会へ続く場面は、今後の更新で追加されます。");
+    card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
+      button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
+        await (await import("./ch3-tournament.js")).runChapterThreeTournament();
+      }, true),
+      button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
+    ], "四人一斉に制作し、客席への提供と二度の調整まで競います。");
     return;
   }
   const background = bgUrl(scene.bg);

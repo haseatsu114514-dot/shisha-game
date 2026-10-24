@@ -295,15 +295,19 @@ await suite('ch2-tournament',async check=>{
         await page.keyboard.press('Enter');
       }
     }
-    await page.locator(dt('ch3-intro-complete')).waitFor();
+    await page.locator(dt('ch3-intro-ready')).waitFor();
     s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,ordered.length);
-    assert.equal(s.chapter,3);assert.equal(s.day,39);assert.notEqual(s.phase,'cleared');
+    assert.equal(s.chapter,3);assert.equal(s.day,42);assert.equal(s.phase,'tournament');
     assert.equal(s.flags._ch3_cleared,undefined);
     assert(s.met.kuze,'Kuze must be known after the first visit');
+    assert(s.met.steve,'Steve must be known after the low-heat visit');
+    assert(s.met.volk,'Volk must be known after his shop visit');
+    assert.equal(s.flags._ch3_strategy,'aroma','The chosen strategy must survive the eve checkpoint');
+    assert(s.relationshipMemories.includes('volk_measure'),'Volk’s measured hospitality should be remembered');
     assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).map(scene=>scene.id));
     assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
-    for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
+    for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','tournament'])
       assert.deepEqual(s[key],before[key],`Intro scene changed ${key}`);
   });
   await check('chapter-three-missing-dialogue-keeps-chapter-two-save',async page=>{

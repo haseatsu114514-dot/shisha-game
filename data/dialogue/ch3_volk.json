@@ -55,6 +55,20 @@
           "text": "はい。地方から来て、この辺のシーシャ屋を回っていて"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、名前を聞いてもいいですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ヴォルク。ここの店主だ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_volk"
+        },
+        {
           "speaker": "volk",
           "face": "normal",
           "text": "ふむ。そこに立て。動くな"

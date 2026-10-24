@@ -92,8 +92,9 @@ assert.deepEqual(ids, [
   "ch3_tokyo_shop_gap", "ch3_double_apple_incident", "ch3_rest_before_recovery",
   "ch3_daily_cup_1", "ch3_taste_return", "ch3_abyss_recovery",
   "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_kuze_first", "ch3_kuze_advice",
-], "Chapter 3 introduction must keep the canonical scene order");
-const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "ch3_rivals"].flatMap(name =>
+  "ch3_steve_low_heat", "ch3_volk_first", "ch3_strategy", "ch3_tournament_eve",
+], "Chapter 3 introduction must keep the canonical scene order through the tournament eve");
+const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "ch3_rivals", "ch3_volk"].flatMap(name =>
   JSON.parse(readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues.map(scene => scene.dialogue_id)));
 assert(ids.every(id => availableScenes.has(id)), "A Chapter 3 scene is absent from dialogue data");
 assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_first").day, 8);
@@ -112,8 +113,9 @@ for (let i = 0; i < ids.length; i++) {
   completeChapterThreeScene(tokyo, scene.id);
   assert.deepEqual(tokyo, completed, `Scene committed twice: ${scene.id}`);
 }
-assert.equal(tokyo.day, 39);
+assert.equal(tokyo.day, 42);
+assert.equal(chapterDay(tokyo), 14, "The national match must begin on DAY14");
 assert.equal(tokyo.chapter, 3);
-assert.notEqual(tokyo.phase, "cleared", "The introductory slice cannot clear the chapter");
+assert.equal(tokyo.phase, "tournament");
 assert.equal(tokyo.flags._ch3_cleared, undefined);
-console.log("PASS: Chapter 3 entrance preserves the save, Kuze returns on DAY11, and scenes checkpoint once");
+console.log("PASS: Chapter 3 entrance preserves the save, rival visits reach DAY14, and scenes checkpoint once");
