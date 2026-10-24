@@ -1,8 +1,8 @@
 import { ryujiGreetingDue, visitStamp as visitorStamp } from "../core/ryuji-visit.js";
 import { state, save } from "../core/state.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { DB, displayName, portraitInfo } from "../core/data.js";
-import { el } from "../core/util.js";
+import { DB, displayName } from "../core/data.js";
+import { stickerPhoto } from "../core/purikura-photo.js";
 import { modal } from "../core/ui.js";
 import { spotPeople } from "../daily/spot-people.js";
 import { play } from "../vn/engine.js";
@@ -31,19 +31,6 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
 const visitStamp = () => `${state.chapter}:${state.day}:${state.slot}`;
 export const purikuraGuests = spot => spotPeople(spot).filter(person => person.role === "guest" && person.known
   && person.id !== "ageha" && !!DB.characters[person.id]);
-
-function stickerPhoto(people, mode) {
-  const picture = el("div.purikura-photo", { dataset: { test: "purikura-photo", mode }, "aria-label": people.map(id => displayName(id, state)).join("と") + "のプリクラ" }, [
-    el("div.purikura-people", people.map(id => {
-      const face = portraitInfo(id, "smile");
-      return el("div.purikura-person", [face ? el("img", { src: face.src, alt: displayName(id, state) }) : null]);
-    })),
-    el("span.purikura-sparkles", { "aria-hidden": "true", text: "✦ ♡ ✧ ♡ ✦" }),
-    el("strong.purikura-doodle", { text: mode === "solo" ? "ソロぷり盛れすぎ♡" : "うちら優勝☆" }),
-    el("span.purikura-caption", { text: people.map(id => displayName(id, state)).join(" ＆ ") }),
-  ]);
-  return picture;
-}
 
 async function revisitPurikura(background, spot) {
   const owner = state, stamp = visitStamp();
@@ -74,7 +61,7 @@ async function revisitPurikura(background, spot) {
     const ryuji = people.includes("kumicho");
     const scene = await play(ryuji ? "remake_ch2_purikura_ryuji" : `remake_ch2_purikura_${mode}`, { bg: background });
     if (state !== owner || !scene || scene.cancelled) return false;
-    await modal({ title: mode === "solo" ? "一人で初挑戦！" : "今日のプリクラ", body: stickerPhoto(people, mode), options: [
+    await modal({ title: mode === "solo" ? "一人で初挑戦！" : "今日のプリクラ", body: stickerPhoto(people, mode, id => displayName(id, state)), options: [
       { label: "受け取る", value: true, test: "purikura-receive", primary: true },
     ] });
     if (state !== owner) return false;
