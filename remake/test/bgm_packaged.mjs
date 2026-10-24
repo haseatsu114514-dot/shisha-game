@@ -32,7 +32,7 @@ const context = vm.createContext({ Audio, window: { AudioContext }, document: { 
   performance: { now: () => now }, requestAnimationFrame: (fn) => frames.push(fn),
 });
 const module = new vm.SourceTextModule(await fs.readFile(new URL("../js/core/audio.js", import.meta.url), "utf8"), { context });
-const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe"]);
+const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe", "bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"]);
 const urlFor = (key) => `/assets/audio/bgm/${key}.${PACKED.has(key) ? "bgm" : "mp3"}`;
 await module.link((s) => {
   const exports = s.endsWith("state.js") ? { config } : { bgmUrl: urlFor };
@@ -63,6 +63,9 @@ assert.equal(stopped.paused, true);
 assert.equal(audio.currentBgm(), null);
 
 const adopted = [
+  ["bgm_purikura_b", 1, "d348ce8a91d7cad1da14c71b51870ea2c20f44c379f5277213d80f0eac6e805e"],
+  ["bgm_purikura_d", 1, "4848a6ffbccf9f3bc4911ef1043cd3143fbaf73a6f789d5181137477dcb899dc"],
+  ["bgm_purikura", 1, "6c92ac5296b732dffb2d197e7301c987fd30426fc3955f04628fef5071232c40"],
   ["bgm_tournament_edm", .51, "3ed10a23e30bada9814d9401371ac9643cce6825d66cb626997f4b14398920d1"],
   ["bgm_tournament_craft", .67, "fd9856eb18725aff6c91d25f90522d0e9be82ed3f9e09ea5c026e00fe577b050"],
   // #788 ユーザー採用曲（TRPG: Shared Discovery）。倍率は既定1.0。
