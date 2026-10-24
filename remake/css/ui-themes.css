@@ -183,8 +183,8 @@ html[data-ui-theme][data-ui-theme="cut-paper"] .vn-name::before {
 }
 /* 11: 名前を本文と同じ左端へ揃え、煙の本文面の上部に接続する。 */
 html:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box .vn-name {
-  left:88px; top:-2px; width:240px; height:34px; padding:0 12px;
-  line-height:32px; text-align:left;
+  left:88px; top:-14px; width:240px; height:46px; padding:0 12px;
+  line-height:44px; text-align:left;
   background:radial-gradient(ellipse at center,#080e16ed 0%,#080e16c9 48%,#080e1600 74%);
   color:var(--vn-lounge-name); text-shadow:0 2px 3px #000,0 0 8px #000;
 }

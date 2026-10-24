@@ -82,7 +82,19 @@ await suite("ch2-followups", async check => {
         assert.equal((await current(page)).flags._ch2_followup_done?.[id],undefined);
         assert.equal((await current(page)).money,before.money,"No charge before normal termination");
         await page.locator("#vn.active .vn-next.show").waitFor();
-        await assertFits(page,".vn-box");
+        // 枠の疑似要素は装飾として外へ張り出す。本文・名前・送り印の可読域を個別検査する。
+        await assertFits(page,".vn-box .vn-text, .vn-box .vn-next");
+        assert(await page.locator(".vn-box").evaluate(box => {
+          const r = box.getBoundingClientRect();
+          return r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1;
+        }), "Dialogue box remains inside the viewport");
+        assert(await page.locator(".vn-box .vn-name").evaluate(name => {
+          const r = name.getBoundingClientRect(), range = document.createRange();
+          range.selectNodeContents(name);
+          const t = range.getBoundingClientRect();
+          return r.left >= 0 && r.right <= innerWidth + 1 && r.top >= 0 && r.bottom <= innerHeight + 1
+            && t.left >= r.left - 1 && t.right <= r.right + 1 && t.top >= r.top - 1 && t.bottom <= r.bottom + 1;
+        }), "Speaker text fits its name plate and viewport");
         await page.screenshot({path:path.join(evidence,`${id}-line-${stop}-current-art.png`)});
         await reload(page); const after = await current(page);
         for (const key of ["money","stamina","stats","slot","visitedDay","visits"]) assert.deepEqual(after[key],before[key],key);
