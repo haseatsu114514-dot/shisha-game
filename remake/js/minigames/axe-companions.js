@@ -1,7 +1,9 @@
 // Practice dialogue only. No romance, real-self reveal or character progression.
 // Lists are picked by throw number, so a line never flickers between frames.
 export const COMPANIONS = {
+  // focus: face center per expression, in the 896x1200 sprite. The poses lean, so one crop would jump.
   hiyori: { name: "ひより", portraitKey: "hiyori", faces: ["axe_normal", "axe_laugh", "axe_shout"],
+    focus: { axe_normal: [432, 322], axe_laugh: [372, 322], axe_shout: [380, 322] },
     before: ["……横、縦、力の順。焦らず止めてみて", "青い小さな的、狙ってみる？ 宣言してからね", "……次、どう狙う？ 見てるね",
       "……肩の力、抜いて。斧に任せるくらいでいいの", "……白い刃先、揺れてるね。止まった瞬間がチャンス"],
     call: ["……キルショット。小さいけど、当たれば大きいね", "……青を宣言。見てるこっちまで息が止まりそう"],
@@ -17,6 +19,7 @@ export const COMPANIONS = {
       again: "……刺さる音、まだまだ聞きたいな。またやろう" } },
   // Read the registered owner of this adopted SHISHARK art, across ID renames.
   shark: { name: "サメちゃん", titleSuffix: "_01_shishark_test_run.png", faces: ["normal", "smile", "excited"],
+    focus: { normal: [458, 398], smile: [458, 398], excited: [452, 398] },
     before: ["お主の番じゃ。わしはここで見ておるぞ", "青い的は先に宣言するのじゃな。忘れるでないぞ", "どこを狙うのじゃ？ お主の好きなところでよいぞ",
       "肩に力が入っておるぞ。深呼吸じゃ、深呼吸", "揺れが止まる瞬間を待つのじゃ。サメも獲物を待つぞ"],
     call: ["おお、キルショットか！ わしもよく見ておくのじゃ", "青を狙うとは強気じゃのう。わしは好きじゃぞ"],
@@ -31,6 +34,11 @@ export const COMPANIONS = {
     summary: { great: "お主、見事じゃった！ わしは鼻が高いぞ", good: "お主と遊ぶのは楽しいのう。また付き合ってほしいのじゃ",
       again: "お主、気を落とすでないぞ。次はきっと刺さるのじゃ" } },
 };
+/** Fractions of the sprite that should sit at the icon's center. */
+export function portraitFocus(id, face) {
+  const [x, y] = COMPANIONS[id]?.focus?.[face] || [448, 330];
+  return { x: x / 896, y: y / 1200 };
+}
 const pick = (list, n) => Array.isArray(list) ? list[n % list.length] : list;
 
 /** context: { heat, last, grade } from the caller; all optional and read-only. */

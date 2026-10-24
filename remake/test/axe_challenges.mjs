@@ -46,7 +46,7 @@ test("heat counts the current run of 5+ points; rank and title read the whole se
 
 test("companion lines stay in voice, fit one bubble and react to streaks and the last throw", () => {
   for (const [id, c] of Object.entries(COMPANIONS)) {
-    const all = [...Object.entries(c).filter(([k]) => !["name", "portraitKey", "titleSuffix", "faces", "summary"].includes(k)).flatMap(([, v]) => v),
+    const all = [...Object.entries(c).filter(([k]) => !["name", "portraitKey", "titleSuffix", "faces", "focus", "summary"].includes(k)).flatMap(([, v]) => v),
       ...Object.values(c.summary)];
     for (const text of all) { assert.equal(typeof text, "string"); assert(text.length <= 30, text); assert(!text.endsWith("。"), text); }
     if (id === "shark") Object.values(c.summary).forEach(text => assert.match(text, /お主/));

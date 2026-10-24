@@ -18,7 +18,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 /* The lane stays visually quiet so the wood, moving sights and impact lead. */
 .axe-game {
   --axe-size: 1; --axe-amber: #edb76d; --axe-line: rgba(224,183,126,.22); --axe-muted: #aaa69d;
-  position: absolute; inset: 0; z-index: 70; display: grid; grid-template-rows: auto minmax(0,1fr) auto;
+  position: absolute; inset: 0; z-index: 70; display: grid; grid-template-rows: auto minmax(0,1fr);
   padding: clamp(16px,2.6vw,34px); gap: 16px; color: #f4eee3; font-size: 16px; pointer-events: auto;
   background: linear-gradient(90deg,rgba(10,13,14,.93),rgba(11,13,14,.79)),var(--axe-bg,url("../img/backgrounds/bg_axe_lounge_night.webp")) center/cover;
 }
@@ -66,9 +66,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-live-reason { grid-column: 1; color: #aaa99d; font-size: 10px; line-height: 1.5; }
 .axe-game[data-preview-outcome="killshot"] .axe-live-score strong { color: #a8dcf0; }
 .axe-game:is([data-preview-outcome="drop"],[data-preview-outcome="miss"],[data-preview-outcome="killshot-miss"]) .axe-live-score strong { color: #d8a78e; }
-.axe-call-help { padding: 11px 12px; border: 1px solid rgba(135,188,210,.25); border-radius: 8px; background: rgba(94,158,183,.06); color: #d0e0df; font-size: 12px; line-height: 1.65; }
-.axe-call-help p { margin: 0; }
-.axe-call-help .axe-call-limit { margin: 5px 0 0; color: #a6b7b5; font-size: 10px; }
 .axe-game:is([data-phase="choice"],[data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"]) .axe-note { display: none; }
 .axe-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
 .axe-steps li { padding: 9px 8px; border: 1px solid rgba(255,255,255,.1); border-radius: 7px; background: rgba(0,0,0,.15); font-size: 12px; }
@@ -84,8 +81,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-stick { position: absolute; top: 0; bottom: 0; background: #9c784b; border-inline: 1px solid #dcba7c; }
 .axe-sweet { position: absolute; top: 0; bottom: 0; background: #8db98c; border-inline: 2px solid #ddf0c2; }
 .axe-needle { position: absolute; left: 0; top: -5px; bottom: -5px; width: 3px; transform: translateX(-50%); border-radius: 2px; background: #fff8e8; box-shadow: 0 0 9px rgba(255,244,194,.6); }
-.axe-power-scale { display: flex; justify-content: space-between; gap: 4px; margin-top: 6px; color: var(--axe-muted); font-size: 10px; }
-.axe-power-scale span:nth-child(2) { color: #bad6ad; }
 .axe-timing[data-active="false"] { opacity: .42; }
 .axe-feedback { margin: 0; color: #b2c9b5; font-size: 11px; line-height: 1.5; }
 .axe-steadiness { margin: 0; color: #a9c1c5; font-size: 11px; line-height: 1.5; }
@@ -113,10 +108,8 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-call-status { margin: 0; color: #9fc5d2; font-size: 11px; line-height: 1.5; }
 .axe-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .axe-controls .axe-button { min-height: 44px; padding: 8px 5px; font-size: 12px; }
-.axe-help { margin: 0; color: var(--axe-muted); font-size: 11px; line-height: 1.65; }
 .axe-keyhint { margin: 0; color: #92988f; font-size: 10px; text-align: center; letter-spacing: .025em; }
 .axe-keyhint kbd { margin-inline: 2px; padding: 1px 5px; border: 1px solid #54594f; border-radius: 3px; font: inherit; color: #cccab8; }
-.axe-footer { margin: 0; color: #92968a; text-align: center; font-size: 11px; letter-spacing: .03em; }
 
 .axe-result-card { padding: 20px 12px; border: 1px solid rgba(233,184,111,.23); border-radius: 11px; background: radial-gradient(ellipse at 50% 30%,rgba(229,173,88,.1),transparent 80%); text-align: center; animation: axe-score-arrive .32s ease-out both; }
 .axe-result-label { display: block; color: #e7c795; font-size: 12px; font-weight: 700; letter-spacing: .15em; }
@@ -134,7 +127,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-game:is([data-phase="result"],[data-phase="summary"]) :is(.axe-steps,.axe-timing,.axe-feedback,.axe-steadiness,.axe-stability-meter,.axe-call-status,.axe-note) { display: none; }
 .axe-game[data-phase="summary"] .axe-match-records { grid-template-columns: 1fr 1fr; gap: 12px; }
 .axe-game[data-phase="choice"] :is(.axe-steps,.axe-feedback,.axe-timing) { display: none; }
-.axe-game:not([data-phase="choice"]) .axe-help { display: none; }
 .axe-game:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"]) .axe-call-status { display: none; }
 .axe-game .axe-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; pointer-events: none; }
 .axe-game [hidden] { display: none !important; }
@@ -236,8 +228,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-calls { gap: 5px; }
   .axe-calls .axe-button { min-height: 44px; font-size: 12px; }
   .axe-call-status { font-size: 10px; }
-  .axe-call-help { padding: 8px 9px; font-size: 11px; line-height: 1.6; }
-  .axe-call-help .axe-call-limit { margin-top: 4px; font-size: 9px; }
   .axe-live-score { padding: 4px 8px; column-gap: 8px; }
   .axe-live-label { font-size: 11px; }
   .axe-live-score strong { font-size: 24px; }
@@ -246,12 +236,11 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-steps span { margin: 0; font-size: 9px; }
   .axe-timing > span { margin-bottom: 5px; font-size: 10px; }
   .axe-gauge { height: 21px; }
-  .axe-power-scale { margin-top: 4px; font-size: 8px; }
   .axe-feedback, .axe-steadiness { font-size: 10px; }
   .axe-button { min-height: 44px; }
   .axe-primary { min-height: 49px; padding: 10px; font-size: 16px; }
   .axe-controls .axe-button { font-size: 11px; }
-  .axe-help, .axe-footer, .axe-keyhint { display: none !important; }
+  .axe-keyhint { display: none !important; }
   .axe-result-card { padding: 13px 10px; }
   .axe-result-label { font-size: 10px; }
   .axe-result-value { display: block; margin: 3px 0; font-size: 62px; }
@@ -326,7 +315,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-steps span { margin: 0; font-size: 9px; }
   .axe-timing > span { margin-bottom: 4px; font-size: 9px; }
   .axe-gauge { height: 18px; }
-  .axe-power-scale { margin-top: 3px; font-size: 8px; }
   .axe-feedback, .axe-steadiness { font-size: 9px; line-height: 1.35; }
   .axe-stability-meter { height: 2px; }
   .axe-primary { min-height: 44px; padding: 8px; font-size: 14px; }
@@ -334,13 +322,11 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-calls { gap: 4px; }
   .axe-calls .axe-button { min-height: 36px; padding: 5px 4px; font-size: 11px; }
   .axe-call-status { font-size: 10px; }
-  .axe-call-help { padding: 6px 8px; font-size: 10px; line-height: 1.5; }
-  .axe-call-help .axe-call-limit { margin-top: 3px; font-size: 9px; }
   .axe-live-score { padding: 1px 7px; column-gap: 7px; }
   .axe-live-label { font-size: 10px; }
   .axe-live-score strong { font-size: 22px; }
   .axe-live-reason { font-size: 9px; }
-  .axe-help, .axe-footer, .axe-keyhint { display: none !important; }
+  .axe-keyhint { display: none !important; }
   .axe-result-card { padding: 10px; }
   .axe-result-label { font-size: 10px; }
   .axe-result-value { display: block; margin: 3px 0; font-size: 54px; }
@@ -428,7 +414,6 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-result-value { font-size: 64px; margin: 2px 0; }
 .axe-impacts [data-scored="false"] { opacity: .55; }
 .axe-crosshair { color: #fff9dc; }
-.axe-footer { text-align: left; font-size: 10px; opacity: .7; }
 @container (min-width: 1000px) and (min-height: 600px) {
   .axe-body, .axe-in-stage .axe-body { grid-template-columns: minmax(0,1fr) minmax(310px,29%); gap: 24px; }
   .axe-header h1 { font-size: 24px; }
@@ -503,3 +488,7 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
   .axe-rank span { font-size: 11px; }
   .axe-game[data-phase="summary"] .axe-result-value { margin: 0; font-size: 36px; }
 }
+/* Companion icon: each expression's face center sits in the middle of the circle. */
+.axe-portrait-frame .axe-portrait { width: 450% !important; left: 50%; top: 50%; transform: translate(calc(var(--focus-x, .5) * -100%), calc(var(--focus-y, .28) * -100%)); }
+/* Secondary readouts kept for screen readers only; the board, gauge and result card show the same thing. */
+.axe-game .axe-quiet { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
