@@ -1,4 +1,5 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
+import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { DB } from "../core/data.js";
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY } from "./ch2-story-data.js";
 
@@ -13,7 +14,10 @@ export const STOPS = [
   { id: "rei", name: "零-ZERO-", x: 42, y: 78 },
   { id: "c_station", name: "県大会ホール", x: 85, y: 30 },
 ];
-export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
+export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, id === "kumicho" ? CITY_BACKGROUNDS.kumicho : `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
+const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
+const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
+const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).map((id) => `${id}_inside`), "return"].map((id) => `ch2_city_${id}`);
 
 export async function readDialogues(name, required) {
@@ -42,13 +46,14 @@ export async function loadChapterTwoDialogues() {
   const data = await Promise.all([
     readDialogues("ch2_city", CITY_IDS),
     readDialogues("remake_ch2", ["remake_ch2_departure", "remake_ch2_day1_night"]),
+    readDialogues("ch2_deliveries", ["remake_ch2_delivery_offer", "remake_ch2_delivery_report", ...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS, ...["ageha", "kumicho", "rei"].map(id => `remake_ch2_delivery_${id}`)]),
   ]);
   for (const dialogues of data) Object.assign(DB.dialogues, dialogues);
 }
 
 export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
-  const files = { ch2_preparation: required };
+  const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);

@@ -256,12 +256,12 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
             } finally { moving = false; }
           };
         const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
-          dataset: { test: "station-confirm" }, disabled: state.money < trip.fare, onclick: depart(false) });
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
         const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: `歩いて帰る（体力−${WALK_HOME_STAMINA}）`,
           dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
         info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
-          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.fare ? " ／ 残金が足りません" : ""}` }),
+          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
           walkHome ? el("p.mi-desc", { text: `電車に乗れないので、歩いて帰れる。お金は使わず、体力をかなり使う（今の体力 ${state.stamina}）。時間は進まない。` }) : null,
           walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
       };
@@ -310,7 +310,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const locked = av.why === "locked";
       const known = knowsOwner(s);
       const people = locked ? [] : spotPeople(s);
-      const facility = !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -318,7 +318,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,

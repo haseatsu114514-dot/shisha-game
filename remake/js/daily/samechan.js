@@ -104,11 +104,11 @@ export async function playSamechanEncounter({ signal = null } = {}) {
 export function samechanSpot() {
   if (!state || (state.chapter || 1) < (DB.samechan?.spot?.minChapter || 2)
     || !DB.samechan?.spot) return null;
-  const spot = { ...DB.samechan.spot };
+  const spot = { ...DB.samechan.spot, region: "home" };
   return spot;
 }
 
-/** 章2のランタイムが接続された時の訪問。現在の章1では準備中で呼ばれない。 */
+/** 章2のランタイムが接続された時の訪問。地元マップから入店し、読了時に訪問を確定する。 */
 export async function visitSamechan(spot, { signal = null } = {}) {
   if (!spot || spot.id !== "shishark" || spot.unavailable || (state.chapter || 1) < 2
     || visiting || isPlaying() || signal?.aborted) return false;

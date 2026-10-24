@@ -24,7 +24,7 @@ async function prepare(page, options = {}) {
     for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) { s.met[id] = true; s.affinity[id] = 66; }
     if (club) s.trpg.club = { founded: { chapter: 2, day: 1 }, members: Object.fromEntries(
       ["hiyori", "samechan", "tsumugi", "adam"].map(id => [id, { chapter: 2, day: 2 }])) };
-    s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
+    s.flags._rei_trpg_introduced = true; s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
     core.config.textSpeed = 4; core.config.bgmVolume = 0; core.saveConfig(); core.saveToSlot("suien_remake_slot1");
     localStorage.setItem("qa_unrelated", "keep"); sessionStorage.setItem("qa_unrelated", "keep");
   }, options);

@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
+import { spendableMoney } from '../js/core/travel-budget.js';
 const source=await fs.readFile(new URL('../js/daily/calendar.js',import.meta.url),'utf8');
 let state={};
 const calls=[], saves=[], closed=new Set(), locked=new Set();
@@ -10,7 +11,7 @@ let installProbe=async()=>{}, displayProbe=async()=>{};
 let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
 const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
-const overrides={state, DB:{flavorById:{mint:{}},dialogues:{},lime:[]},
+const overrides={spendableMoney,state, DB:{flavorById:{mint:{}},dialogues:{},lime:[]},
  save:()=>saves.push(structuredClone(state)),
  el:()=>({classList:{add:noop,remove:noop},remove:noop}), sleep:asyncNoop,
  layers:{fx:{append:noop},modal:{classList:{contains:()=>false}}},

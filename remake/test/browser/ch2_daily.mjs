@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { suite, assertFits } from './support.mjs';
-import { travelToCity, stationFares } from './station_helpers.mjs';
+import { travelToCity, stationFares, recordReturnFare } from './station_helpers.mjs';
 const evidence = (process.env.COMPARISON_DIR || fileURLToPath(new URL('../../../docs/qa/ch2-daily/', import.meta.url))).replace(/\/?$/, '/');
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
@@ -13,7 +13,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina: 100, weatherSeed: 7 });
-    value.flags = { _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
+    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
@@ -44,7 +44,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
   }, { money, unknown, reel, guest });
   await page.locator(t('ch2-main-complete')).waitFor();
 }
-async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(map).waitFor(); }
+async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
 async function value(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
 async function settled(page) { await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); } // #780: 新ピンの解錠演出中は選択を受け付けない
 async function wide(page, touch = false) {
@@ -61,8 +61,17 @@ async function go(page, id, touch = false) {
 async function act(page,id,{touch=false}={}) {
   const before = await value(page);
   await go(page,id,touch);
+  if (id === 'ch2_ageha' && before.flags._ageha_first_purikura) {
+    await page.locator(t('purikura-skip')).click();
+  }
   await page.waitForFunction(old => window.__remake.state.day > old.day || window.__remake.state.slot > old.slot,
     { day: before.day, slot: before.slot });
+  if (before.slot === 1) await page.waitForFunction(day => __remake.state.day > day, before.day);
+  const after = await value(page);
+  if (after.day > before.day) {
+    await page.locator(t('ch2-morning-home')).click();
+    recordReturnFare(page, before, await value(page));
+  }
   await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
 }
 async function reloadSave(page, slot = 0) {
@@ -103,10 +112,10 @@ await suite('ch2-daily',async check=>{
       });
     });
     for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
-    // mainの3店舗を保持し、今回追加するカフェだけを隣町へ接続する。
-    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),3);
+    // 既存3店舗と用品店、紹介済みTRPGバー。
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),5);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
-      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','pin-trpg_bar'].sort());
     await settled(page);await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{
@@ -131,7 +140,7 @@ await suite('ch2-daily',async check=>{
     let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,95);
     assert.equal(v.flags._ch2_talks.ageha,1);assert.equal(v.visits.ageha,1);assert(v.contacts.includes('ageha'));
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
-    await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
+    await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
     assert.equal(await page.locator(t('map-go')).count(),0);
     await travelToCity(page,'home');await act(page,'rest');
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
@@ -162,7 +171,10 @@ await suite('ch2-daily',async check=>{
   });
   await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
-    for(const id of ['ageha','kumicho','rei']) {await act(page,`ch2_${id}`,{touch:true});}
+    for(const id of ['ageha','kumicho','rei']) {
+      if ((await value(page)).flags._ch2_region === 'home') await wide(page, true);
+      await act(page,`ch2_${id}`,{touch:true});
+    }
     await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
     assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
@@ -176,12 +188,12 @@ await suite('ch2-daily',async check=>{
     await setup(page);await page.locator(t('ch2-main-next-day')).click();await page.locator(t('ch2-main-error')).waitFor();
     let v=await value(page);assert.equal(v.day,15);assert.equal(v.slot,2);assert(!v.flags._ch2_preparation_started);
     const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('suien_remake_save')));assert.equal(saved.day,15);
-    bad=false;await page.locator(t('ch2-main-retry')).click();await page.locator(map).waitFor();v=await value(page);assert.equal(v.day,16);assert.equal(v.money,36000);
+    bad=false;await page.locator(t('ch2-main-retry')).click();await page.locator(t('ch2-morning-home')).click();await page.locator(map).waitFor();v=await value(page);assert.equal(v.day,16);assert.equal(v.money,36000);
   });
   await check('reload-unread-paid-room-keeps-last-action-point',async page=>{
     await setup(page);await begin(page);await wide(page);
     await page.evaluate(()=>{window.__remake.vnTest.turbo=false;});await go(page,'ch2_kumicho');await page.locator('#vn.active .vn-box').waitFor();
-    assert.equal((await value(page)).money,33000-stationFares(page));
+    assert.equal((await value(page)).money,36000-stationFares(page), 'Unread conversations do not charge');
     await reloadSave(page);const v=await value(page);assert.equal(v.day,16);assert.equal(v.slot,0);assert.equal(v.money,36000-stationFares(page));assert.equal(v.flags._ch2_talks?.kumicho,undefined);
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);
     await act(page,'ch2_kumicho');assert.equal((await value(page)).money,33000-stationFares(page));
@@ -197,4 +209,72 @@ await suite('ch2-daily',async check=>{
     await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.rei,undefined);
     bad=false;await act(page,'ch2_rei');v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);
   });
+  for (const [id, flag, cost, recovery] of [
+    ['ch2_aquarium', '_ageha_aquarium_introduced', 1800, 0],
+    ['ch2_sento', '_kumicho_sento_introduced', 800, 25],
+  ]) await check(`${id}-completion-cost-and-no-stat-reward`, async page => {
+    await setup(page);
+    await page.evaluate(flag => { __remake.state.flags[flag] = true; }, flag);
+    await begin(page); await wide(page);
+    const before = await value(page);
+    await act(page, id);
+    const after = await value(page);
+    assert.equal(after.money, before.money - cost);
+    assert.equal(after.slot, 1); assert.equal(after.day, before.day);
+    assert.deepEqual(after.stats, before.stats);
+    assert.equal(after.stamina, Math.min(await page.evaluate(async () => (await import('./js/core/stats.js')).maxStamina()), before.stamina + recovery));
+    assert(after.flags[`_ch2_visited_${id}`]);
+    await reloadSave(page);
+    assert((await value(page)).flags[`_ch2_visited_${id}`]);
+  });
+
+  await check('morning-city-choice-and-reserved-return-money', async page => {
+    await setup(page, { money: 1950 });
+    await page.evaluate(() => { __remake.state.flags._kumicho_sento_introduced = true; });
+    await page.locator(t('ch2-main-next-day')).click();
+    await page.locator(t('ch2-morning-city')).waitFor();
+    await capture(page, 'morning-city-choice.png');
+    assert.equal((await value(page)).flags._ch2_region, 'home');
+    await page.locator(t('ch2-morning-city')).click();
+    await page.locator('.map[data-region="widehanga"]').waitFor();
+    let v = await value(page); assert.equal(v.money, 1750); assert.equal(v.slot, 0);
+    await go(page, 'ch2_shop'); await page.locator(t('buy-strawberry')).click();
+    await page.locator(t('shop-checkout')).click();
+    assert.equal((await value(page)).money, 200);
+    await page.locator(t('buy-strawberry')).click();
+    assert(await page.locator(t('shop-checkout')).isDisabled(), 'The reserved return fare cannot be spent');
+    await page.locator(t('shop-leave')).click(); await page.locator(t('shop-discard-leave')).click(); await page.locator(map).waitFor();
+    await settled(page); await page.locator(t('pin-ch2_sento')).click();
+    assert.equal(await page.locator(t('map-go')).count(), 0, 'Paid outings cannot use the return fare');
+    await reloadSave(page); assert.equal((await value(page)).money, 200);
+    assert.equal((await value(page)).flags._ch2_region, 'widehanga');
+  });
+  await check('city-night-buys-one-return-ticket-and-wakes-at-home', async page => {
+    await setup(page, { money: 5000 });
+    await page.evaluate(() => Object.assign(__remake.state.flags, { _ageha_aquarium_introduced: true, _kumicho_sento_introduced: true }));
+    await page.locator(t('ch2-main-next-day')).click();
+    await page.locator(t('ch2-morning-city')).click();
+    await page.locator('.map[data-region="widehanga"]').waitFor();
+    await act(page, 'ch2_aquarium');
+    await go(page, 'ch2_sento');
+    await page.locator(t('ch2-morning-home')).waitFor();
+    const v = await value(page);
+    assert.equal(v.day, 17); assert.equal(v.slot, 0); assert.equal(v.flags._ch2_region, 'home');
+    assert.equal(v.money, 2000, '5000 - outbound 200 - aquarium 1800 - sento 800 - return 200');
+    assert.equal((await page.evaluate(() => window.__dailyTrace)).filter(id => id === '__ch2_return_train').length, 1);
+    assert(await page.evaluate(() => [...document.querySelectorAll('#bg > div.show')].some(n => n.style.backgroundImage.includes('bg_home'))));
+    await page.locator(t('ch2-morning-home')).click(); await page.locator('.map[data-region="home"]').waitFor();
+    await reloadSave(page); assert.equal((await value(page)).money, 2000, 'Reload does not buy a second return ticket');
+  });
+  await check('chapter-two-home-city-shishark-is-visitable', async page => {
+    await setup(page); await begin(page);
+    await page.locator(t('pin-shishark')).waitFor();
+    const before = await value(page);
+    await act(page, 'shishark');
+    const after = await value(page);
+    assert.equal(after.money, before.money - 3000); assert.equal(after.slot, 1);
+    assert(after.met.samechan); assert.equal(after.story.samechan, 1);
+    assert((await page.evaluate(() => window.__dailyTrace)).includes('samechan_shop_first'));
+  });
+
 });

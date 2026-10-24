@@ -47,7 +47,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(`js/daily/${name}`, root), "utf8"), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "travel-budget.js" ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const phoneModule = await load("phone.js"); await phoneModule.evaluate();
