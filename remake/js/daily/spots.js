@@ -18,6 +18,7 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
+import { fortuneRumorHeard, fortuneOpenOn } from "./fortune-schedule.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -173,6 +174,7 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
   // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。
@@ -215,7 +217,7 @@ export async function visitChar(charId, { welcome = null } = {}) {
   let cancelled = false;
   const read = async (...args) => {
     const result = await play(...args);
-    cancelled ||= !!result?.cancelled;
+    cancelled ||= !result || !!result.cancelled;
     return result;
   };
   if (charId === "sumi") await meetHiyoriAtTonari();
@@ -246,8 +248,9 @@ export async function visitChar(charId, { welcome = null } = {}) {
     await playQuestionVisit(charId, { bg });
     gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
-    state.story[charId] = idx + 1;
     await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
+    if (state !== owner || cancelled) return false;
+    state.story[charId] = idx + 1;
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
   } else if (finaleAtVisit(charId)) {

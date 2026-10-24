@@ -1029,43 +1029,6 @@
       ]
     },
     {
-      "id": "lime_tsumugi_fortune_rumor",
-      "sender": "tsumugi",
-      "trigger_condition": "flag",
-      "trigger_flag": "_met_tsumugi",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "tsumugi",
-          "text": "おはようございます。……お店で、噂をひとつ聞きました"
-        },
-        {
-          "sender": "tsumugi",
-          "text": "アーケードの脇に、ときどき占いの人が出るそうです。週に2回くらい"
-        },
-        {
-          "sender": "tsumugi",
-          "text": "フードを深くかぶったおばあさんで、人との縁を見てくれるって"
-        },
-        {
-          "sender": "tsumugi",
-          "text": "……雨の日はお休みで、晴れた日にずれるらしいです"
-        }
-      ],
-      "replies": [
-        {
-          "text": "今度、寄ってみるよ",
-          "response": "……いい縁だと、いいですね",
-          "affinity": 1
-        },
-        {
-          "text": "占い、ちょっと気になる",
-          "response": "……私も、少しだけ。結果、聞かせてください",
-          "affinity": 1
-        }
-      ]
-    },
-    {
       "id": "lime_naru_day10",
       "sender": "naru",
       "trigger_day": 10,
