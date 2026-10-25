@@ -11,6 +11,7 @@ import { maybeRecruitTrpgMember } from "./trpg.js";
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
 export const SAMECHAN_BOND_CHOICE = "bond_q1_samechan";
 let visiting = false;
+const encountersInFlight = new WeakSet();
 
 const entryEvents = [
   { dialogue: "samechan_shop_quiet_seat", flag: "_samechan_quiet_seat_done" },
@@ -26,10 +27,11 @@ export function samechanVisitDialogue() {
     for (const event of entryEvents) {
       if (state.flags[event.flag]) continue;
       if (event.night && state.slot < 1) break;
+      if (affinityLevel("samechan") < (event.night ? 3 : 2)) break;
       return event.dialogue;
     }
     if (state.flags._samechan_closing_check_done && affinityLevel("samechan") >= 3
-      && !state.romanceChoices?.[SAMECHAN_BOND_CHOICE] && !state.finales?.samechan
+      && !state.flags._samechan_bond_question_done && !state.finales?.samechan
       && !state.flags._friend_samechan && !(state.lovers || []).includes("samechan")) {
       return "samechan_shop_bond_question";
     }
@@ -73,24 +75,30 @@ export function samechanEncounterDue({ hasNightEvent = false, hasAppointment = f
 
 export async function maybeSamechanEncounter(context = {}) {
   if (!samechanEncounterDue(context) || !DB.dialogues.samechan_first_encounter) return false;
-  await playSamechanEncounter();
-  return true;
+  return playSamechanEncounter();
 }
 
 /** 出会いの場面。水が満ちてサメが横切る間に店先の絵へ替え、泡がはじけて会話へ */
-export async function playSamechanEncounter() {
-  const front = sceneBg(DB.dialogues.samechan_first_encounter.metadata?.bg, timeOfDay());
-  await sharkSwim(async () => { if (front.url) await setBg(front.url, { tint: front.tint }); });
-  await play("samechan_first_encounter");
-  state.flags._samechan_first_encounter = true;
-  // 初対面を読み終えた一度きりの境界で♥1を保証する（中断・LOADでは到達しない）。
-  ensureAffinityLevel("samechan", 1);
-  state.flags._lime_contact_samechan = true;
-  // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
-  syncSamechanKnowledge();
-  gainAffinity("samechan", 1); // 好きでも少し怖くても、手伝ってもらった親近感は同じ。
-  save();
-  return true;
+export async function playSamechanEncounter({ signal = null } = {}) {
+  if (state.flags._samechan_first_encounter || signal?.aborted || encountersInFlight.has(state)) return false;
+  const owner = state;
+  encountersInFlight.add(owner);
+  try {
+    const front = sceneBg(DB.dialogues.samechan_first_encounter.metadata?.bg, timeOfDay());
+    await sharkSwim(async () => { if (state === owner && !signal?.aborted && front.url) await setBg(front.url, { tint: front.tint }); });
+    if (state !== owner || signal?.aborted) return false;
+    const result = await play("samechan_first_encounter", { signal });
+    if (state !== owner || signal?.aborted || (!result || result.cancelled)) return false;
+    state.flags._samechan_first_encounter = true;
+    // 初対面を読み終えた一度きりの境界で♥1を保証する（中断・LOADでは到達しない）。
+    ensureAffinityLevel("samechan", 1);
+    state.flags._lime_contact_samechan = true;
+    // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
+    syncSamechanKnowledge();
+    gainAffinity("samechan", 1); // 好きでも少し怖くても、手伝ってもらった親近感は同じ。
+    save();
+    return true;
+  } finally { encountersInFlight.delete(owner); }
 }
 
 export function samechanSpot() {
@@ -101,9 +109,9 @@ export function samechanSpot() {
 }
 
 /** 章2のランタイムが接続された時の訪問。地元マップから入店し、読了時に訪問を確定する。 */
-export async function visitSamechan(spot) {
+export async function visitSamechan(spot, { signal = null } = {}) {
   if (!spot || spot.id !== "shishark" || spot.unavailable || (state.chapter || 1) < 2
-    || visiting || isPlaying()) return false;
+    || visiting || isPlaying() || signal?.aborted) return false;
   const stamp = `${state.chapter}:${state.day}:${state.slot}`;
   const receipt = state.flags._samechan_visit;
   const pending = receipt?.stamp === stamp && !!DB.dialogues[receipt.dialogue]?.lines?.length;
@@ -120,9 +128,14 @@ export async function visitSamechan(spot) {
       save();
     }
     if (dialogue === "samechan_bond_finale") {
-      if (!await playFinale("samechan", { deferSave: true })) return false;
-    } else await play(visitScript(dialogue));
-    if (state !== owner) return false;
+      if (!await playFinale("samechan", { deferSave: true, signal })) return false;
+    } else {
+      const result = await play(visitScript(dialogue), { signal });
+      if ((!result || result.cancelled)) return false;
+    }
+    if (state !== owner || signal?.aborted) return false;
+    if (dialogue === "samechan_shop_bond_question"
+      && state.romanceChoices?.[SAMECHAN_BOND_CHOICE]?.char !== "samechan") return false;
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
@@ -133,6 +146,7 @@ export async function visitSamechan(spot) {
       releaseAffinity("samechan");
     }
     state.story.samechan = count + 1;
+    releaseAffinity("samechan");
     gainAffinity("samechan", count === 0 ? 2 : 1);
     earnStat("insight", 4);
     syncSamechanKnowledge();
