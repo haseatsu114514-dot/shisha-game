@@ -196,6 +196,8 @@ await suite("save-load", async check => {
     };
     // Same hit-testing as facility_map.mjs: no forced click through another pin.
     const pin = async id => {
+      // LOAD can show the map before its smoke wipe clears; a reveal also owns input.
+      await page.waitForFunction(() => !document.querySelector("#wipe.cover, #wipe.black, #screen .map[data-revealing='true']"));
       const target = page.locator(`[data-test="pin-${id}"]`);
       await target.scrollIntoViewIfNeeded();
       const point = await target.evaluate(node => {
