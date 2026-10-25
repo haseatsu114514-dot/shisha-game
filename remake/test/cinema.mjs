@@ -36,7 +36,7 @@ await module.link(id => {
   }, { context });
 });
 await module.evaluate();
-const { cinemaSpot, visitCinema } = module.namespace;
+const { cinemaSpot, visitCinema, readCinemaIntroduction } = module.namespace;
 assert(cinemaIntroductionDue(state));
 for (const patch of [{ chapter: 1 }, { phase: "story" }, { met: {} }, { flags: {} }]) {
   assert(!cinemaIntroductionDue({ ...game(), ...patch }), JSON.stringify(patch));
@@ -45,6 +45,25 @@ assert(!cinemaIntroductionDue({ ...game(), flags: { _samechan_quiet_seat_done: t
 assert(!cinemaDiscovered({ ...game(), story: { samechan: 999 }, spotVisits: { rojiura_cinema: 99 } }));
 assert(!cinemaDiscovered({ ...game(), chapter: 1, flags: { _samechan_cinema_introduced: true } }));
 assert.equal(CINEMA.region, "home");
+for (const value of [null, undefined, { cancelled: true }]) {
+  replace(game()); result = value; const before = structuredClone(state);
+  assert.equal(await readCinemaIntroduction(), false); assert.deepEqual(state, before);
+}
+replace(game()); result = { cancelled: false }; enter = async () => {};
+const beforeIntroduction = structuredClone(state);
+assert.equal(await readCinemaIntroduction(), true);
+assert.deepEqual(state, beforeIntroduction, "reading alone does not commit unlock or visit");
+replace(game()); enter = async () => replace(game());
+assert.equal(await readCinemaIntroduction(), false, "LOAD prevents introduction commit");
+replace(game()); enter = async () => { throw new Error("missing renderer"); };
+await assert.rejects(readCinemaIntroduction(), /missing renderer/);
+enter = async () => {}; assert.equal(await readCinemaIntroduction(), true, "exception releases guard");
+replace(game()); const introSignal = { aborted: false };
+enter = async () => { introSignal.aborted = true; };
+assert.equal(await readCinemaIntroduction({ signal: introSignal }), false);
+replace(game()); enter = async () => { assert.equal(await readCinemaIntroduction(), false); };
+assert.equal(await readCinemaIntroduction(), true, "introduction is not re-entrant");
+enter = async () => {};
 replace({ ...game(), chapter: 1 }); assert.equal(cinemaSpot(), null);
 replace(game()); assert.equal(cinemaSpot().id, CINEMA.id);
 assert.equal(await visitCinema(), false, "direct entry remains locked");

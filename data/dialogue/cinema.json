@@ -26,7 +26,7 @@
       "dialogue_id": "cinema_first_screening",
       "metadata": { "min_chapter": 2 },
       "lines": [
-        { "speaker": "", "face": "", "text": "サメの看板をくぐり、小さな上映室の赤い席に座った。" },
+        { "speaker": "", "face": "", "text": "電球の灯る看板をくぐり、小さな上映室の赤い席に座った。" },
         { "speaker": "hajime", "face": "normal", "text": "（今日の映画は、空からサメが降ってくるらしい）" },
         { "speaker": "", "face": "", "text": "吊り糸の見えるサメが現れた瞬間、客席のあちこちで笑いがこぼれた。" },
         { "speaker": "hajime", "face": "smile", "text": "（わかっていても、この間で来ると笑っちゃうな）" },

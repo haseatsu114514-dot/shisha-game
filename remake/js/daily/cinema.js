@@ -4,11 +4,25 @@ import { imageReady, toast } from "../core/ui.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { CINEMA, cinemaDiscovered } from "../core/cinema-discovery.js";
+import { CINEMA, CINEMA_INTRO, cinemaDiscovered, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 
 const active = new WeakSet();
+const introductions = new WeakSet();
 const stamp = game => `${game.chapter}:${game.day}:${game.slot}`;
 export const cinemaSpot = () => state?.chapter >= 2 ? CINEMA : null;
+
+/** 読了結果だけを返す。解放flag・料金・行動の確定は自主訪問callerに一緒に任せる。 */
+export async function readCinemaIntroduction({ signal = null } = {}) {
+  if (!cinemaIntroductionDue(state) || !DB.dialogues[CINEMA_INTRO]?.lines?.length
+    || signal?.aborted || isPlaying() || introductions.has(state)) return false;
+  const owner = state, before = stamp(owner);
+  introductions.add(owner);
+  try {
+    const result = await play(CINEMA_INTRO, { signal });
+    return state === owner && stamp(state) === before && !signal?.aborted
+      && !!result && !result.cancelled && cinemaIntroductionDue(state);
+  } finally { introductions.delete(owner); }
+}
 
 /** calendarのpaidAction内で呼ぶ。正常読了後だけ精算し、枠と保存はcalendarに返す。 */
 export async function visitCinema({ signal = null } = {}) {
