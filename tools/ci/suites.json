@@ -58,7 +58,10 @@
       "id": "affinity-stages",
       "title": "Completed conversations and affinity stage boundaries",
       "kind": "quick",
-      "run": ["node --experimental-vm-modules remake/test/affinity_stages.mjs"]
+      "run": [
+        "node --experimental-vm-modules remake/test/affinity_stages.mjs",
+        "node --experimental-vm-modules --test remake/test/lime_affinity_scale.mjs remake/test/lime_reply_once.mjs"
+      ]
     },
     {
       "id": "game-logic",
