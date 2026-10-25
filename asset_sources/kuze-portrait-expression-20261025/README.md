@@ -9,7 +9,7 @@
 | `smug-matte-source.png` | `assets/sprites/characters/kuze/chr_kuze_smug.png` | 大会で相手を読む顔 |
 | `wild-matte-source.png` | `assets/sprites/characters/kuze/chr_kuze_wild.png` | 相手の手が動いた瞬間の顔芸 |
 
-新しい四表情の原画は各1084×1451、透過。従来の `*-b-final-source.png` は前段階として保存。表示版は896×1200へ比率を保って縮小し、中央へ透過パディングした。WebPと立ち絵の計測値は `python3 remake/tools/build_manifest.py --portraits-only kuze` で生成。最初の `normal-source.png` / `smug-source.png` / `wild-source.png` はスカーフ付きの履歴、`*-v2-source.png` はスカーフを外して首をまっすぐにした中間版として保存。顔芸は大会の調整場面で、はじめの手が動く瞬間に接続。`childhood-flashback-source.png` から `assets/cgs/cg_kuze_mashiro_childhood.png` を制作し、幼なじみの公園の記憶として使用。
+新しい四表情の原画は各1084×1451、透過。従来の `*-b-final-source.png` は前段階として保存。表示版は896×1200へ比率を保って縮小し、中央へ透過パディングした。WebPと立ち絵の計測値は `python3 remake/tools/build_manifest.py --portraits-only kuze` で生成。最初の `normal-source.png` / `smug-source.png` / `wild-source.png` はスカーフ付きの履歴、`*-v2-source.png` はスカーフを外して首をまっすぐにした中間版として保存。顔芸は大会の調整場面で、はじめの手が動く瞬間に接続。`childhood-flashback-source.png` から `assets/cgs/cg_kuze_mashiro_childhood.png` を制作し、幼なじみが五歳と六歳だった保育園帰りの公園の記憶として使用。ましろは短いボブに小さな片編み、ふわふわのフード付き上着で、現在の長い二本編み・服とは変える。紙は一枚で表面にだけ絵がある。
 
 ## 通常時の衣装候補
 
