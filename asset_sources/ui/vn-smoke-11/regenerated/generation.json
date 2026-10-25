@@ -1,7 +1,7 @@
 {
   "date": "2026-10-25",
   "tool": "image_gen.imagegen",
-  "status": "six newly generated UI design candidates; not adopted in runtime",
+  "status": "rejected",
   "sources_unmodified": true,
   "preview": "original generated PNGs placed by browser CSS over an unchanged real-game scene; live HTML lettering; no frame clipping or crop; static composition study rather than gameplay integration",
   "scene": "scene.png",
@@ -42,7 +42,8 @@
         1671,
         1821,
         1973
-      ]
+      ],
+      "status": "rejected"
     },
     {
       "id": "smoke-purple",
@@ -79,7 +80,8 @@
         1616,
         1767,
         1932
-      ]
+      ],
+      "status": "rejected"
     },
     {
       "id": "paper",
@@ -116,7 +118,8 @@
         1677,
         1823,
         1970
-      ]
+      ],
+      "status": "rejected"
     },
     {
       "id": "amber",
@@ -153,7 +156,8 @@
         1677,
         1818,
         1961
-      ]
+      ],
+      "status": "rejected"
     },
     {
       "id": "tissue",
@@ -190,7 +194,8 @@
         1666,
         1817,
         1980
-      ]
+      ],
+      "status": "rejected"
     },
     {
       "id": "classic",
@@ -227,7 +232,8 @@
         1669,
         1816,
         1964
-      ]
+      ],
+      "status": "rejected"
     }
   ],
   "qa": {
@@ -237,5 +243,11 @@
     "source_files_unchanged_sha256": "6/6 passed",
     "quick_after_main_merge": "7/7 passed",
     "runtime_adopted": false
+  },
+  "rejection": {
+    "date": "2026-10-25",
+    "owner_instruction": "今やった新しいのは没",
+    "scope": "all six designs",
+    "use_as_design_reference": false
   }
 }
