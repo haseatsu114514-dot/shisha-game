@@ -45,6 +45,7 @@
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
+        "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -580,6 +581,8 @@
       "paths": [
         "remake/chapter2-preview.html",
         "remake/js/chapters/ch2*.js",
+        "remake/js/chapters/ch3*.js",
+        "remake/css/ch3-wayfinding.css",
         "remake/js/chapters/ch1.js",
         "remake/index.html",
         "remake/css/ch2-preview.css",

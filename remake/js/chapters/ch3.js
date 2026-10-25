@@ -10,6 +10,8 @@ import { readDialogues } from "./ch2-city-data.js";
 import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene } from "./ch3-progress.js";
 
+import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
+
 const FILES = {
   ch3_main: ["ch3_opening", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
@@ -86,6 +88,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
       menuButton(owner),
     ]),
     el("p.ch2-contest-description", { text: description }),
+    sceneId ? createChapterThreeWayfinding(state, CH3_INTRO_SCENES, sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", actions),
   ]));
