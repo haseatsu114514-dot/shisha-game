@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 15:17 UTC",
+ "generated": "2026-10-25 15:38 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -285,13 +285,14 @@
   },
   "kuze": {
    "faces": [
+    "nervous",
     "normal",
     "smug",
     "wild"
    ],
-   "h": 0.9817,
-   "b": 0.0133,
-   "ax": 0.5485,
+   "h": 0.9875,
+   "b": 0.0092,
+   "ax": 0.5461,
    "aspect": 0.7467
   },
   "steve": {
@@ -377,6 +378,7 @@
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
+  "cg_kuze_mashiro_childhood.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
@@ -2144,6 +2146,8 @@
   "cgs/cg_ch2_ageha_purikura_strip.png",
   "cgs/cg_ch2_ageha_purikura_strip_gal.png",
   "cgs/cg_ch2_ageha_purikura_strip_soft.png",
-  "sprites/characters/kuze/chr_kuze_wild.png"
+  "sprites/characters/kuze/chr_kuze_wild.png",
+  "sprites/characters/kuze/chr_kuze_nervous.png",
+  "cgs/cg_kuze_mashiro_childhood.png"
  ]
 }
