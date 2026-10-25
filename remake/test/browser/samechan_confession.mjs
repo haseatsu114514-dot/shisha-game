@@ -67,8 +67,8 @@ await suite("samechan-confession", async check => {
             final, loaded: K.snap(), events, log: K.vn.backlog().map(x => x.text).join(" ") };
         }, { q1, q2, reply });
         assert.equal(r.start, "samechan_shop_quiet_seat");
-        assert.deepEqual(r.events.slice(0, 4), ["samechan_shop_quiet_seat", "samechan_shop_closing_check",
-          "samechan_shop_bond_question", "samechan_bond_finale"]);
+        assert.deepEqual(r.events.slice(0, 5), ["samechan_shop_quiet_seat", "samechan_shop_closing_check",
+          "samechan_cinema_introduction", "samechan_shop_bond_question", "samechan_bond_finale"]);
         assert.equal(r.beforeFinale.romanceChoices.bond_q1_samechan.value, q1);
         assert(!r.beforeFinale.finales.samechan); assert.notEqual(r.noon, "samechan_bond_finale");
         assert.equal(r.finale.finales.samechan.route, q1 && q2 ? "romance" : "friend");

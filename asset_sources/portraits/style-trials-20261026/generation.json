@@ -1,0 +1,146 @@
+[
+  {
+    "id": "rei",
+    "name": "零（REI）",
+    "source": "rei/normal-source.png",
+    "source_sha256": "eed0fb938b4e341afd0052e1104884863e0a8fbfbb30332e59f63388d5831797",
+    "references": [
+      {
+        "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+        "sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "線と刺繍を整理。背景のにじみが残るため、採用前に透過を要修正。"
+  },
+  {
+    "id": "kumicho",
+    "name": "組長",
+    "source": "kumicho/normal-source.png",
+    "source_sha256": "0802fdf241304aedc075ac59d4efccd43a02ec61a21da2bb0fd2f0047a36fa30",
+    "references": [
+      {
+        "path": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+        "sha256": "6b79137e0a94abe335c6f137d34437933ed8ec5e899d637f218f107ff63edafc"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "スーツの質感と陰影を整理。顔の変化は控えめ。"
+  },
+  {
+    "id": "uranaishi",
+    "name": "路上占い師",
+    "source": "uranaishi/normal-source.png",
+    "source_sha256": "e90a9461ad6d65246e4d5a715ecb50e7bce06d383fbfea670a7fae9c7048bc62",
+    "references": [
+      {
+        "path": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
+        "sha256": "f2897a4feacb76c9353ea037251f34c4d787a16238d8e65991fe87b0fca1501f"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "布の粒状感を抑え、装飾を読みやすい形に整理。"
+  },
+  {
+    "id": "volk",
+    "name": "ヴォルク",
+    "source": "volk/normal-source.png",
+    "source_sha256": "b5ce0aafa5530acca9a6b8817e2de73391ea9accb5a8e0afae9f6ff784045dd5",
+    "references": [
+      {
+        "path": "assets/sprites/characters/volk/chr_volk_normal.png",
+        "sha256": "7d096196d6ad952694943299e3113244804d4b6fe33c246b34ec96046bbdc917"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "コートと顔をセル塗り寄りに整理。"
+  },
+  {
+    "id": "hiyori",
+    "name": "ひより",
+    "source": "hiyori/normal-source.png",
+    "source_sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2",
+    "references": [
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+        "sha256": "b5f0e3efab144381e76f488c2f30e72b319de20abe4a1e3ab76dd3d7b8a1cd36"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "髪・衣装の線と陰影を整理。元の絵に近い控えめな変化。"
+  },
+  {
+    "id": "dr_kemuri",
+    "name": "チャコール博士",
+    "source": "dr_kemuri/normal-source.png",
+    "source_sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce",
+    "references": [
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+        "sha256": "ae7627d22c4461657afdbacab04e39c0d49e9e98e5b53c424bfc18f182f15e38"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "status": "trial-unapproved",
+    "note": "白衣の汚れと布の陰影を整理。"
+  }
+]

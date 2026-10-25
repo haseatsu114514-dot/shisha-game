@@ -155,11 +155,15 @@ await suite("first-brew", async check => {
       window.running = T.pull.runCare(cs, { round: 1 });
     });
     await page.locator('[data-test="care-coal-0"]').click();
-    await page.waitForTimeout(3800); await guide(page).click(); await page.waitForTimeout(100);
+    // Wait for the actual countdown completion; CI frame scheduling can take
+    // longer than its nominal duration. Opening help earlier pauses startup.
+    await page.waitForFunction(() => !document.querySelector('[data-test="pull-stop"]').disabled);
+    await guide(page).click(); await page.waitForTimeout(100);
     const sample = () => page.locator('[data-test="pull-temperature"]').getAttribute("aria-valuenow");
     const before = await sample(); await page.waitForTimeout(1600);
     assert.equal(await sample(), before);
-    await guide(page).click(); await page.waitForTimeout(300);
+    await guide(page).click();
+    await page.waitForFunction(value => document.querySelector('[data-test="pull-temperature"]').getAttribute('aria-valuenow') !== value, before);
     assert.notEqual(await sample(), before);
     await page.locator('[data-test="pull-stop"]').click();
     await guide(page).click(); await page.waitForTimeout(100);
