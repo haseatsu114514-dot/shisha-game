@@ -105,6 +105,15 @@ test("visible release positions remain finite and legal at the edges", () => {
   assert.throws(()=>swayAt(-1),RangeError);assert.throws(()=>swayAt(1,.62,.5),RangeError);
   assert.throws(()=>releaseAimAt({x:2,y:0},1,.62,0,false),RangeError);
 });
+test("throws arrive within half a second and drops finish within three quarters without changing the shot", () => {
+  for (const power of [.1, .62, .95]) {
+    const result = shot(0, 0, power), before = structuredClone(result);
+    assert.equal(flightPose(result, 0).contact, false);
+    assert.equal(flightPose(result, 500).contact, true);
+    assert.equal(flightPose(result, 750).done, true);
+    assert.deepEqual(result, before);
+  }
+});
 test("flight shrinks toward the board and contacts the scored blade point without a pose jump", () => {
   for (const x of [-1.08,0,1.08]) for (const y of [-1.08,0,1.08]) for (const power of [.42,.62,.82]) {
     const result=shot(x,y,power),end=impactPose(result),arrival=flightPose(result,FLIGHT.travel);
