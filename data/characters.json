@@ -212,9 +212,10 @@
       "notes": "予想が外れた理由を捨てずに記録する。はじめが策を読んでも自分の一台を崩さず作り切った経験を、次の勝負の材料にする。"
     },
     "visual_concepts": [
-      "23 year old adult Japanese shisha shop owner with a youthful soft face, playful eyes, slightly oversized long sleeves and a practical apron, small worn notebook, warm approachable smile in his Tokyo shop",
-      "the same young adult competitor on stage, sleeves folded back, delighted unsettling grin and sharply observant eyes; his kindness remains real while he reads the opponent's next choice"
+      "23 year old adult Japanese shisha shop owner with a compact 6.5-head silhouette, uneven dark hair, large amber eyes, oversized ivory sleeves, asymmetric ink-blue vest and short apron, worn notebook and an inviting half smile",
+      "the same young adult competitor on stage, notebook raised beside his face, sly narrowed eyes and delighted unsettling grin; his kindness remains real while he reads the opponent's next choice"
     ],
+    "spriteScale": 0.93,
     "intro_cutin": {
       "title": "微笑む勝負師",
       "line": "助けたのも、勝ちたいのも本当",
