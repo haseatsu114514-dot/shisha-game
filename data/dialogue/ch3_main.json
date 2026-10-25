@@ -651,22 +651,87 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席から、ましろがノートをのぞき込む。"
+          "text": "客席から降りてきたましろが、温かいお茶を久世に差し出した。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔。離れてから、何を考えてるか分からなかった。でも、また話せる？"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "勝った負けたの話じゃなくて、今の朔のことも聞きたい"
+          "text": "朔。名前を聞いた時、懐かしかった。でも少し怖かった。勝ちたい時、無理をするから"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。今度は予想しないで聞くよ。福岡の話も、ましろの話も"
+          "text": "……あの顔まで見られたくなかったな。嫌になった？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "最初の一口は、正直、濃すぎてびっくりしたよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも後ろのお茶の香りは、ちゃんと朔が作った味だった"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "負けた僕にも、そう言うの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "勝ち負けで消える味じゃないよ。僕にはお茶。でも好き"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世がカップを受け取る。湯気の向こうで、眉が少しだけほどけた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……公園で言ったこと、覚えてたの？　僕のことも？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "忘れないよ。帰りに、絵を半分に折ってくれたでしょ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "どうせ忘れてるって、勝手に決めてた。僕の方が連絡しなかったのに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕も何て言えばいいか分からなかった。疎遠になったの、二人のことだよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "世界一はまだ諦めない。今度は、僕が作りたい一台で勝ちたい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。朔の話、もっと聞きたい。まずはお茶、冷める前に"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……大会が終わっても、電話していい？　福岡の話、聞いてほしい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "待ってるよぉ。僕の近況も、ちゃんと聞いてね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世はノートを閉じたまま、お茶を一口飲んだ。はじめは少し離れて、自分の道具を片づける。"
         },
         {
           "speaker": "steve",
