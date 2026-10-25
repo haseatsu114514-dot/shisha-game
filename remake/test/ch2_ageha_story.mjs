@@ -24,7 +24,7 @@ assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);
 
 // 店に通う回: 7日目より前はギャル友→初めての客→雑誌取材の順、7日目以降はダメな日が先。全部読んだら null
-const save = { flags: {} };
+const save = { flags: {}, affinity: {ageha:66} };
 assert.equal(agehaStoryScene(save, 3, story), AGEHA_VISITS[0]);
 assert.equal(agehaStoryScene(save, 7, story), AGEHA_BADDAY.id);
 for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
@@ -33,6 +33,15 @@ for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
 }
 assert.equal(agehaStoryScene(save, 9, story), null);
 assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければいつもの会話");
+
+// 各♥段階と次の実会話を対応させる。高値の旧保存も未読順を飛ばさない。
+for (const [index,id] of AGEHA_VISITS.entries()) {
+  const thresholds=[0,9,20,33,48,66], flags={};
+  for(const prev of AGEHA_VISITS.slice(0,index)) flags[`_ch2_read_${prev}`]=true;
+  assert.equal(agehaStoryScene({flags,affinity:{ageha:thresholds[index+2]-1}},3,story),null);
+  assert.equal(agehaStoryScene({flags,affinity:{ageha:thresholds[index+2]}},3,story),id);
+}
+assert.equal(agehaStoryScene({flags:{},affinity:{ageha:66}},3,{[AGEHA_VISITS[1]]:story[AGEHA_VISITS[1]]}),null,"欠落した前段を飛ばさない");
 
 // 答え合わせ: 2回当てたら試煙会で不安を話す
 const flags = { _ch2_vibes_hit_scout: true };

@@ -131,6 +131,15 @@ for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   assert.deepEqual([sheet.style.width, sheet.style.height], ["616px", "520px"], "two 640x1080 strips side by side");
   assert.equal(f.find("div.mo-pk-cutline")[0].style.left, "307px");
 }
+// 3種類から1枚を選び、半分こする左右には必ず同じ絵を使う。
+for (const [random, suffix] of [[0, ""], [.4, "_soft"], [.999, "_gal"]]) {
+  const ids = ["", "_soft", "_gal"].map((s) => `cg_ch2_ageha_purikura_strip${s}`);
+  const cg = Object.fromEntries(ids.map((id) => [id, `img/cgs/${id}.webp`]));
+  const f = await fixture({ random, cg });
+  const halves = f.made.filter((n) => n.selector.startsWith("div.mo-pk-half.cg.strip."));
+  assert.equal(halves.length, 2);
+  for (const half of halves) assert.equal(half.style.backgroundImage, `url("${cg[`cg_ch2_ageha_purikura_strip${suffix}`]}")`);
+}
 // 画像を待つ間にLOADされたら、前のセーブの演出を始めない
 {
   const f = await fixture({ loadDuring: true });

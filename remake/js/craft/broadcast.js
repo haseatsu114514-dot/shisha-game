@@ -1,7 +1,7 @@
 // 大会の生放送レイヤー（旧版 #24/#20/#26・N4）。本番（tournament）のときだけ出る。
 // ・ニコ動風コメント: 工程の出来に観客が反応して右から左へ流れる
 // ・点数は作業台の上の SCORE（総合スコア TH42）に一本化した。以前の「体感スコア」の札は出さない
-// ・MC の前振り＋ライバルの進行実況: 工程の頭でパッキーが煽り、ライバルの動きも順に流す
+// ・MC の前振りは固定の人物欄へ。流れるコメントは工程の結果確認中だけ出す
 // 文面は remake/data/broadcast.json。
 import { el, pick } from "../core/util.js";
 import { DB } from "../core/data.js";
@@ -12,6 +12,26 @@ const ROWS = 5;
 let nextRow = 0; // 行は順番に回して、同時に流れるコメントが重ならないようにする
 let generation = 0;
 const timers = new Set();
+// 一台の間だけ抽選履歴を保持。表示の消去では忘れず、セーブには書き込まない。
+const recentComments = new WeakMap();
+function pickFresh(cs, pool, count) {
+  const recent = recentComments.get(cs) || [];
+  const available = [...new Set(pool)];
+  const chosen = [];
+  while (chosen.length < count && available.length) {
+    let candidates = available.filter(text => !recent.includes(text));
+    if (!candidates.length) {
+      const oldest = Math.min(...available.map(text => recent.lastIndexOf(text)));
+      candidates = available.filter(text => recent.lastIndexOf(text) === oldest);
+    }
+    const text = pick(candidates);
+    chosen.push(text);
+    available.splice(available.indexOf(text), 1);
+    recent.push(text);
+  }
+  recentComments.set(cs, recent.slice(-24));
+  return chosen;
+}
 
 const live = (cs) => cs?.mode === "tournament";
 
@@ -61,7 +81,7 @@ export function burst(cs, kind, n = null) {
   if (!live(cs) || !pool.length) return;
   n = n ?? (kind === "perfect" ? 3 : 2);
   const cls = ["perfect", "miss", "rival"].includes(kind) ? kind : "";
-  for (let i = 0; i < n; i++) defer(cs, () => comment(cs, pick(pool), { cls }), i * 750);
+  pickFresh(cs, pool, n).forEach((text, i) => defer(cs, () => comment(cs, text, { cls }), i * 750));
 }
 
 /** 点数（0〜100）→ 観客の反応の段階 */
@@ -75,28 +95,33 @@ export function judge(cs, result) {
   if (lines?.length) tickerSay(`パッキー「${pick(lines)}」`);
 }
 
-/** 工程の頭: MC の前振り＋その工程らしい観客の声＋ライバルの進行をひとつ */
+/** 工程の頭では固定のMC欄だけを更新。観客コメントは完了時に出す。 */
 export function block(cs, step) {
   if (!live(cs)) return;
   clearComments();
   const bc = DB.broadcast || {};
   if (bc.mc?.[step]) tickerSay(`パッキー「${bc.mc[step]}」`);
-  burst(cs, "block", 1);
-  const sp = bc.step?.[step];
-  if (sp?.length) defer(cs, () => comment(cs, pick(sp)), 900);
-  const feed = cs.chapter === 3 ? bc.chapter3?.rivalFeed || [] : cs.chapter === 2 ? [
-    "あげは、パッキングを終えました。台には最後まで同じ一台です",
-    "神崎選手は炭の位置を確かめています",
-    "REI選手、蒸らしに入りました",
-    "あげは、吸い出しへ。ここから提供です",
-    "神崎選手、提供した一台を確かめています",
-    "REI選手、客席の一台を調整しています",
-  ] : bc.rivalFeed || [];
-  cs.feedIdx = cs.feedIdx || 0;
-  if (cs.feedIdx < feed.length) {
-    const r = feed[cs.feedIdx++];
-    defer(cs, () => { tickerSay(`パッキー「${r}」`); burst(cs, "rival", 1); }, 2700);
-  }
+}
+
+/** 結果を確認している間だけ、その工程の出来への反応を流す。 */
+export function completed(cs, step, score) {
+  if (!live(cs)) return;
+  clearComments();
+  const kind = judgeOf(score);
+  const label = { holes: "穴あけ", heat: "炭焼き", steam: "蒸らし", pull: "提供", care: "調整" }[step];
+  const genericKind = kind === "great" ? "perfect" : kind;
+  const cls = genericKind;
+  const specific = DB.broadcast?.completion?.[step]?.[kind] || [];
+  const generic = DB.broadcast?.nico?.[genericKind] || [];
+  const lines = specific.length
+    ? pickFresh(cs, specific, 2).map(text => `【${label || step}】${text}`)
+    : pickFresh(cs, generic, 2).map(text => label ? `${label}、${text}` : text);
+  // 工程らしい反応2本＋短い歓声1本。表示量や待ち時間は増やさない。
+  lines.push(...pickFresh(cs, generic, 1));
+  lines.forEach((text, i) => {
+    if (i === 0) comment(cs, text, { cls });
+    else defer(cs, () => comment(cs, text, { cls }), i * 750);
+  });
 }
 
 /** 結果発表の前に、流れているコメントを片付ける */

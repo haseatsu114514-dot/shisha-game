@@ -35,15 +35,23 @@ let saves=0;
 const deps={
  '../core/data.js':data,
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true,timeOfDay:()=> 'night'},
- '../core/ui.js':{setBg:async()=>{}},
+ '../core/ui.js':{imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
+ '../core/travel-budget.js':{spendableMoney:s=>s.money||0},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
- '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
+ '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };
 const samechanModule=new vm.SourceTextModule(await read('js/daily/samechan.js'),{context});
-await samechanModule.link(spec=>{const d=deps[spec];assert(d);return new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});});await samechanModule.evaluate();
+const modulePorts = new Map();
+await samechanModule.link(async spec=>{
+ if(modulePorts.has(spec))return modulePorts.get(spec);
+ let mod;
+ if(spec==='../core/cinema-discovery.js'||spec==='./cinema.js')mod=new vm.SourceTextModule(await read(spec==='./cinema.js'?'js/daily/cinema.js':'js/core/cinema-discovery.js'),{context});
+ else {const d=deps[spec];assert(d,spec);mod=new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});}
+ modulePorts.set(spec,mod);return mod;
+});await samechanModule.evaluate();
 const k=samechanModule.namespace;
 assert.equal(k.samechanSpot(),null);
 state.day=7;assert.equal(k.samechanEncounterDue(),false);state.day=8;

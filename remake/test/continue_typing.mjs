@@ -190,7 +190,7 @@ try {
         assert.equal((await read(page)).prefix, script.reactions[choice].text[0]);
         await tap('[data-test="continue-proceed"]');
         const second = await read(page); captionIsStatic(second);
-        assert.equal(second.text, script.reactions[choice].text[1]);
+        assert.equal(second.phase, "leaving", "one complete reaction exits on the next press");
         await page.clock.runFor(10000);
         assert.deepEqual((await read(page)).decisions, [choice], "Reaction leaves through the original route once");
       }

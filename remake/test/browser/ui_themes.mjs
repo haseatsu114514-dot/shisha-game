@@ -210,7 +210,7 @@ await suite("ui-themes-preview", async check => {
     }
     assert.deepEqual(await storageSnapshot(page),saved,'font and background previews do not modify saves/config');
   });
-},{entry:new URL("conversation-preview.html",baseURL).href,readySelector:".vn-box"});
+},{entry:new URL("conversation-preview.html?theme=smoke",baseURL).href,readySelector:".vn-box"});
 
 await suite("ui-themes-config",async check=>{
   await check("persist-and-revert",async page=>{
@@ -233,7 +233,7 @@ await suite("ui-themes-config",async check=>{
     await page.evaluate(()=>localStorage.setItem("suien_remake_config",JSON.stringify({uiTheme:"unknown-old-skin"})));
     await page.reload();
     await page.locator('[data-test="title-config"]').waitFor();
-    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"smoke","unknown skin safely uses the default");
+    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"classic","unknown skin safely uses the default");
   });
 });
 

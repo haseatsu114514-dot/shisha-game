@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-24 21:16 UTC",
+ "generated": "2026-10-25 11:39 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -285,20 +285,21 @@
   },
   "kuze": {
    "faces": [
-    "normal"
+    "normal",
+    "smug"
    ],
-   "h": 0.9525,
+   "h": 0.8275,
    "b": 0.0258,
-   "ax": 0.5755,
+   "ax": 0.4809,
    "aspect": 0.7467
   },
   "steve": {
    "faces": [
     "normal"
    ],
-   "h": 0.98,
-   "b": 0.0117,
-   "ax": 0.4986,
+   "h": 0.9925,
+   "b": 0.0033,
+   "ax": 0.5057,
    "aspect": 0.7467
   }
  },
@@ -330,6 +331,10 @@
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
+  "bg_rojiura_cinema.png",
+  "bg_rojiura_cinema_detective.png",
+  "bg_rojiura_cinema_monster.png",
+  "bg_rojiura_cinema_space.png",
   "bg_ryuji_shop.png",
   "bg_shishark.png",
   "bg_shishark_preparing_night.png",
@@ -368,16 +373,18 @@
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
+  "cg_ch2_ageha_purikura_strip.png",
+  "cg_ch2_ageha_purikura_strip_gal.png",
+  "cg_ch2_ageha_purikura_strip_soft.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
+  "cg_ryuji_purikura.png",
   "cg_tsumugi_confession.png",
-  "cg_tsumugi_smoke_color.png",
-  "cg_ageha_first_purikura.png",
-  "cg_ryuji_purikura.png"
+  "cg_tsumugi_smoke_color.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -1827,11 +1834,14 @@
   ]
  },
  "bgm": [
+  "bgm_aftermath.bgm",
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_judging.bgm",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
+  "bgm_taste_distant.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_trpg.bgm",
@@ -1868,6 +1878,10 @@
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
+  "backgrounds/bg_rojiura_cinema.png",
+  "backgrounds/bg_rojiura_cinema_detective.png",
+  "backgrounds/bg_rojiura_cinema_monster.png",
+  "backgrounds/bg_rojiura_cinema_space.png",
   "backgrounds/bg_ryuji_shop.png",
   "backgrounds/bg_shishark.png",
   "backgrounds/bg_shishark_preparing_night.png",
@@ -1948,6 +1962,7 @@
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
   "sprites/characters/kuze/chr_kuze_normal.png",
+  "sprites/characters/kuze/chr_kuze_smug.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -2124,6 +2139,9 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "cgs/cg_ch2_ageha_purikura_strip.png",
+  "cgs/cg_ch2_ageha_purikura_strip_gal.png",
+  "cgs/cg_ch2_ageha_purikura_strip_soft.png"
  ]
 }

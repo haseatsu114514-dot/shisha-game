@@ -1,0 +1,70 @@
+[
+  {
+    "label": "pc",
+    "printed": {
+      "count": 2,
+      "backgrounds": [
+        "url(\"http://127.0.0.1:8123/remake/img/cgs/cg_ch2_ageha_purikura_strip.webp\")",
+        "url(\"http://127.0.0.1:8123/remake/img/cgs/cg_ch2_ageha_purikura_strip.webp\")"
+      ],
+      "size": [
+        640,
+        1080
+      ],
+      "backgroundSizes": [
+        "100% 100%",
+        "100% 100%"
+      ],
+      "rects": [
+        {
+          "x": 323.237060546875,
+          "y": 103.27307891845703,
+          "width": 325.70819091796875,
+          "height": 530.2888793945312
+        },
+        {
+          "x": 631.0547485351562,
+          "y": 92.6763687133789,
+          "width": 325.70819091796875,
+          "height": 530.288818359375
+        }
+      ]
+    },
+    "errors": [],
+    "cleanup": true
+  },
+  {
+    "label": "touch",
+    "printed": {
+      "count": 2,
+      "backgrounds": [
+        "url(\"http://127.0.0.1:8123/remake/img/cgs/cg_ch2_ageha_purikura_strip.webp\")",
+        "url(\"http://127.0.0.1:8123/remake/img/cgs/cg_ch2_ageha_purikura_strip.webp\")"
+      ],
+      "size": [
+        640,
+        1080
+      ],
+      "backgroundSizes": [
+        "100% 100%",
+        "100% 100%"
+      ],
+      "rects": [
+        {
+          "x": 251.02902221679688,
+          "y": 71.27357482910156,
+          "width": 175.1832275390625,
+          "height": 286.53057861328125
+        },
+        {
+          "x": 417.7877197265625,
+          "y": 66.28366088867188,
+          "width": 175.1832275390625,
+          "height": 286.53057861328125
+        }
+      ]
+    },
+    "errors": [],
+    "cleanup": true
+  }
+]

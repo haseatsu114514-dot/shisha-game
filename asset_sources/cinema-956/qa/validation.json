@@ -1,0 +1,26 @@
+{
+  "issue": 956,
+  "art_pr": 993,
+  "feature_pr": 994,
+  "dependency_pr": 965,
+  "dependency_head": "ef720484104c934687d87adbfd98e74bff34a6e0",
+  "quick": "9/9 PASS",
+  "browser": "10/10 PASS; presentation wait refinement: PC/touch 2/2 PASS",
+  "dialogue_lint": "cinema: ERROR 0 WARN 0",
+  "independent_review": "not performed",
+  "runtime_art": {
+    "background": "owner approved 2026-10-25",
+    "icon": "owner requested retro revision after initial acceptance; no shark sign"
+  },
+  "scope": "Real Chromium PC and emulated landscape touch; no physical device acceptance",
+  "screenshots": [
+    {
+      "file": "touch-screening.png",
+      "sha256": "1015f01675dc8c203256b12c30e003011f554c9dc7bd59f7267bcb79cfa3d8cd"
+    },
+    {
+      "file": "pc-map.png",
+      "sha256": "14861b3e21d49d35361e1bfcd8e4ff78b8f5c45ed82a89cd0798545f38e9ab90"
+    }
+  ]
+}

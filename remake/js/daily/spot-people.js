@@ -24,7 +24,8 @@ const GUESTS = [
 ];
 
 /** ゲストの共通入口。名前は面識がある場合だけ返す。 */
-export function spotPeople(spot) {
+export function spotPeople(spot, { visitBlock = null } = {}) {
+  if (visitBlock?.(spot)) return [];
   if (!isUnlocked(spot) || isClosed(spot) || spot.unavailable) return [];
   const ids = [];
   if (spot.face && (spot.face !== "rin" || !rinUnavailable(state))) ids.push(spot.face);

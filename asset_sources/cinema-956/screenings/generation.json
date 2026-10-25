@@ -1,0 +1,47 @@
+{
+  "issue": 956,
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-25",
+  "reference": "assets/backgrounds/bg_rojiura_cinema.png",
+  "reference_sha256": "1f0e8cc8ce45463adc962c1bab5bdc3ed54b15b7840863f47ac6948dbb6d63ff",
+  "approval": "このチャットで本人が「3点とも採用する」と回答",
+  "runtime_registered_in": "PR #994",
+  "images": [
+    {
+      "kind": "space",
+      "file": "space-source.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "dfdb8ca68bb74c24f6da910440fbe8ea850a20967307e0b1cdeac5c578f8bc55",
+      "prompt": "space-prompt.txt",
+      "status": "owner-approved"
+    },
+    {
+      "kind": "monster",
+      "file": "monster-source.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "6a34df6557bdda5ec679820894d3f1a525e5ba1b720a26ff7b1c38e4d14c460c",
+      "prompt": "monster-prompt.txt",
+      "status": "owner-approved"
+    },
+    {
+      "kind": "detective",
+      "file": "detective-source.png",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "affce88cd04ad9c55e04848a0147d9f18306a043c0049be11d9d0aa85068b40f",
+      "prompt": "detective-prompt.txt",
+      "status": "owner-approved"
+    }
+  ]
+}

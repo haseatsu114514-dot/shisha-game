@@ -7,7 +7,7 @@ export const UI_THEMES = Object.freeze([
   { id: "tissue", label: "28 重なる薄紙", note: "生成りの薄紙と、静かな金の線" },
   { id: "classic", label: "これまでのゴージャス", note: "墨紫・真鍮の装飾枠" },
 ]);
-export const DEFAULT_UI_THEME = "smoke";
+export const DEFAULT_UI_THEME = "classic";
 const FRAME_ART = Object.freeze({
   smoke:"img/ui/vn-faithful/smoke.webp", "smoke-purple":"img/ui/vn-faithful/smoke-purple.webp",
   "cut-paper":"img/ui/vn-calm/paper.webp", amber:"img/ui/vn-lounge/amber.svg",

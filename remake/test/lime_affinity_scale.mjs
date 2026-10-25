@@ -14,7 +14,7 @@ test('LIME倍率は整数丸めの後・端数繰り越しの前に掛かる', (
 });
 
 test('LIME返信の呼び出しだけが source: "lime" を付ける', () => {
-  assert.match(phone, /gainAffinity\(m\.sender, points \* \(isLover\(m\.sender\) \? 3 : 1\), \{ source: "lime" \}\)/);
+  assert.match(phone, /gainAffinity\(m\.sender, points \* \(isLover\(m\.sender\) \? 3 : 1\), \{\s*source: "lime",/);
   assert.match(phone, /gainAffinity\(m\.sender, 1, \{ source: "lime" \}\)/);
   // 返信なしメッセージ（readReward）は従来どおり
   assert.match(phone, /gainAffinity\(m\.sender, 2\);/);

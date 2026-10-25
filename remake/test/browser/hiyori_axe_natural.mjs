@@ -64,7 +64,10 @@ try {
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'), vn = await import('./js/vn/engine.js');
         const spots = await import('./js/daily/spots.js'), hiyori = await import('./js/daily/hiyori.js');
-        const { spotAvailability } = await import('./js/daily/spot-access.js');
+        const { spotAvailability: baseAvailability } = await import('./js/daily/spot-access.js');
+        const { fixedNightVisitBlock } = await import('./js/daily/night-events.js');
+        const { NIGHT_EVENTS } = await import('./js/chapters/ch1.js');
+        const spotAvailability = spot => baseAvailability(spot, { visitBlock: item => fixedNightVisitBlock(NIGHT_EVENTS, item) });
         window.Q = { core, vn, spots, hiyori, spotAvailability, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
@@ -175,7 +178,15 @@ try {
           // DAY3's optional review can now open the same tonari drill menu.
           if (await click('[data-test="drill-heat"]')) continue;
           if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
-          const earn = snap.money < 6000 && !snap.flags._hiyori_real_self_known;
+          // Return -> followup -> afterwork has no night restriction. A real shift and
+          // its existing after-sumi choice can read those two talks in one action.
+          // Do this before axe/work, so later free-talk money invariants stay intact.
+          const catchUp = await page.evaluate(() => {
+            const s = Q.core.state, f = s.flags;
+            return f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done
+              && s.visitedDay.tonari_baito !== s.day;
+          });
+          const earn = catchUp || snap.money < 6000 && !snap.flags._hiyori_real_self_known;
           if (earn && await click('[data-test="tonari-baito"]')) continue;
           if (await click('[data-test="tonari-customer"]')) continue;
           if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
@@ -273,7 +284,9 @@ try {
       assert(!final.state.flags._confession_due);
       assert.deepEqual({ day: row.afterReply.day, slot: row.afterReply.slot, money: row.afterReply.money, affinity: row.afterReply.affinity }, row.beforeReply);
       assert(actions.some(a => a.affinity === 33 && a.held > 0), 'Natural paid visits must demonstrate holding affinity at ♥3');
-      assert(final.state.flags._hiyori_affinity_released_pts > 0 && final.state.flags._hiyori_affinity_released_pts <= 15);
+      const stageReleased = final.state.flags._hiyori_affinity_stage_released_pts || 0;
+      assert(stageReleased > 0 && stageReleased <= (final.state.flags._hiyori_affinity_waiting_pts || 0));
+      assert.equal(final.state.flags._hiyori_affinity_released_pts || 0, 0);
       assert(seen.has('intro'));
       assert.deepEqual(errors, []); assert.deepEqual(failedResources, []);
       await page.screenshot({ path: path.join(out, `${label}-complete-map.png`) });

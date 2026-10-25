@@ -24,6 +24,7 @@ await suite("lover-hidden-growth", async check => {
       s.affinity.tsumugi = 66;
       s.story.tsumugi = 99;
       s.romanceChoices.bond_q1_tsumugi = { char: "tsumugi", value: 1, day: 4 };
+      s.flags._tsumugi_affinity_question_done = true;
       const day8 = H.bonds.finaleDue("tsumugi");
       s.day = 11;
       const day11BeforeStory = H.bonds.finaleDue("tsumugi");
@@ -90,6 +91,9 @@ await suite("lover-hidden-growth", async check => {
         const before = await page.evaluate(({ points, level }) => {
           const s = H.fresh(); s.lovers = ["rin"]; s.lovePts.rin = points; s.loveLevel.rin = level;
           s.loveCarry.rin = .5; s.loverSince.rin = 3;
+          // 成長通知の対象レベルより前の恋人会話は実際に読了済み。
+          s.loverEventsSeen = Array.from({ length: points === 19 ? 1 : points === 66 ? 4 : 0 }, (_, i) => i + 1)
+            .flatMap(n => [`lover_rin_lv${n}`, `lover_rin_lv${n}_b`]);
           H.stats.bond.private = false; H.stats.gainAffinity("rin", 10);
           const publicPts = s.lovePts.rin;
           H.stats.bond.private = true; H.stats.gainAffinity("rin", 10); H.stats.bond.private = false;

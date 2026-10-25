@@ -81,7 +81,7 @@ try {
       const g = await measurements(); checkClassic(g);
       assert.equal(g.count, "20", "caption advance must not shorten classic deadline");
       assert.equal(g.echo.fontSize, 1000);
-      assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
+      assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
       const choice = index % 2 ? "quit" : "retry";
       await page.locator(choice === "retry" ? ".go-retry" : ".go-quit").click();
       await page.clock.runFor(8000);

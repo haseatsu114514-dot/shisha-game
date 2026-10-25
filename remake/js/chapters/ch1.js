@@ -1,3 +1,4 @@
+import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
@@ -267,10 +268,7 @@ export const NIGHT_EVENTS = {
   3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
     label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
-    run: async () => {
-      await playTsumugiStory(3);
-      if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
-    } },
+    run: earlyPractice },
   5: { label: "スミさんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
   7: { schedule: "preparation", deadline: 12, prerequisites: ["_ev_first_practice", "_tsumugi_contest_progress"],
     label: "中間準備", pin: "tonari", teaser: "tonari", beat: "大会への準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
@@ -326,40 +324,61 @@ function beginEvePractice(progress) {
   save();
 }
 
-async function earlyPractice() {
-  const progress = state.flags._ch1_early ||= {};
-  if (!progress.choice) {
-    if (basicsExperienced() || fullPracticeToday()) {
-      const id = basicsExperienced() ? "remake_preparation_review" : "remake_preparation_retry";
-      await play({ ...DB.dialogues[id], branches: {} }, { bg: TONARI_N });
-    } else {
-      await play("remake_preparation_first", { bg: TONARI_N });
-      progress.choice = "full";
+// DAY3だけを直列化する。LOAD後の別stateには旧taskを再利用しない。
+const earlyPracticeRuns = new WeakMap();
+function earlyPractice() {
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot, phase = owner.phase;
+  if (earlyPracticeRuns.has(owner)) return earlyPracticeRuns.get(owner);
+  const task = Promise.resolve().then(async () => {
+    let progress;
+    const requireCurrent = () => {
+      if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot || owner.phase !== phase
+        || progress && owner.flags._ch1_early !== progress) {
+        throw new DOMException("DAY3 practice owner changed", "AbortError");
+      }
+    };
+    const read = async (scene) => {
+      requireCurrent();
+      const result = await play(scene, { bg: TONARI_N });
+      requireCurrent();
+      if (!result || result.cancelled) throw new DOMException("DAY3 dialogue interrupted", "AbortError");
+    };
+    requireCurrent();
+    await playTsumugiStory(3);
+    requireCurrent();
+    if (flag("_ev_first_practice")) return;
+    progress = owner.flags._ch1_early ||= {};
+    // 現在の通し制作を提供・講評まで終えた保存なら、同じ一台を作り直さない。
+    if (!progress.feedbackRead) {
+      if (!progress.practiceDone) {
+        if (!progress.choice) {
+          const id = basicsExperienced() ? "remake_preparation_review"
+            : fullPracticeToday() ? "remake_preparation_retry" : "remake_preparation_first";
+          await read(id);
+          // 今回のfull-only導線を読み終えた地点を保存する。既存のchoiceを変換しない。
+          progress.choice = "full";
+          save();
+        }
+        beginEvePractice(progress);
+        const cs = await runFullPractice({ coached: true, adjustments: false, kind: "early",
+          isCurrent: () => { requireCurrent(); return true; } });
+        requireCurrent();
+        // 実runnerは提供記録のない中断時にthrowする。false/cancelも完了へ変えない。
+        if (!cs || cs.cancelled || !cs.pullDone) throw new DOMException("DAY3 practice interrupted", "AbortError");
+        progress.failed = cs.failed || null;
+        progress.practiceDone = true;
+        save();
+      }
+      if (progress.failed) await read("remake_preparation_failed");
+      await read("remake_preparation_first_end");
+      progress.feedbackRead = true;
       save();
     }
-  }
-  if (!progress.practiceDone && progress.choice !== "review") {
-    if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。", recommended: recommendedDrill() });
-      save();
-    }
-    beginEvePractice(progress);
-    if (progress.choice === "full") {
-      const cs = await runFullPractice({ coached: true, adjustments: false, kind: "early" });
-      progress.failed = cs.failed || null;
-    } else {
-      const tier = await runDrill(progress.drill);
-      state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
-    }
-    progress.practiceDone = true;
-    save();
-  }
-  if (progress.feedbackRead) return;
-  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-  if (progress.choice === "review") await play("remake_preparation_confirm", { bg: TONARI_N });
-  await play("remake_preparation_first_end", { bg: TONARI_N });
-  progress.feedbackRead = true;
-  save();
+    requireCurrent();
+    setFlag("_ev_first_practice");
+  }).finally(() => earlyPracticeRuns.delete(owner));
+  earlyPracticeRuns.set(owner, task);
+  return task;
 }
 
 async function midPreparation() {
@@ -495,16 +514,13 @@ async function tournamentDay() {
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
-  bc.judge(cs, bc.judgeOf(cs.holes.score), "穴あけ");
   await stepPlace(cs);
   bc.block(cs, "coalfire");
   await runHeat(cs);
-  bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepSteamTime(cs);
   await playTournamentEvent(cs, "waiting", { bg: STAGE });
   bc.block(cs, "steam");
   await runSteamDodge(cs);
-  bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
   await sleep(900);
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
@@ -517,10 +533,9 @@ async function tournamentDay() {
   await waitBenchReady(cs);
   bc.block(cs, "pull");
   if (await runPull(cs) === false) return;
-  if (cs.failed) return failedOut(cs.failed);
+  if (cs.failed) return failedOut(cs.failed, cs);
   await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-  bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
@@ -535,8 +550,7 @@ async function tournamentDay() {
     await waitBenchReady(cs);
     bc.block(cs, "adjust");
     await runCare(cs, { round });
-    if (cs.failed) return failedOut(cs.failed);
-    bc.judge(cs, bc.judgeOf(cs.care.score), `調整${round}`);
+    if (cs.failed) return failedOut(cs.failed, cs);
     await sleep(900);
     bc.clearComments();
     cs.stats = null;
@@ -545,7 +559,7 @@ async function tournamentDay() {
   }
 
   // 審査は完成品と2回の調整の実績で決まる。
-  playBgm("bgm_tournament_wait");
+  playBgm("bgm_judging");
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   await playTournamentEvent(cs, "tasting", { bg: STAGE });
@@ -559,7 +573,7 @@ async function tournamentDay() {
     await play("ch1_tournament_judging", { bg: STAGE });
     await resultCountdown(cs, out.kind);
     retireScreen(); // カウント画面は次の場面で片付く
-    playBgm("bgm_result_emotional");
+    playBgm("bgm_aftermath");
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
@@ -571,7 +585,7 @@ async function tournamentDay() {
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
-    await showGameOver({ rank: out.rank });
+    await showGameOver({ rank: out.rank, cs });
   }
 }
 
@@ -607,6 +621,7 @@ async function entrance() {
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
+  clearContinueHistory(state);
   state.tournament.retryAssist = false;
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
@@ -650,7 +665,7 @@ async function finishAfterTournament() {
 }
 
 export async function showClear() {
-  playBgm("bgm_result_emotional");
+  playBgm("bgm_aftermath");
   showHud(false);
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   const owner = state;
@@ -694,7 +709,7 @@ export async function showClear() {
     }
     playing = false; replay.disabled = false; next.disabled = false;
     if (root.isConnected) {
-      playBgm("bgm_result_emotional");
+      playBgm("bgm_aftermath");
       replay.focus({ preventScroll: true });
     }
   }
@@ -704,19 +719,20 @@ export async function showClear() {
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
 /** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
-async function failedOut(reason) {
+async function failedOut(reason, cs) {
   bc.clearComments();
   save();
-  await smokeWipe(() => showGameOver({ reason }), { color: "dark" });
+  await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
 }
 
 /**
  * 大会コンティニュー。スミさん3台本／交際中の恋人が語りかけ、選択後の一言を見せる。
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
-async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = null, preview = false } = {}) {
   const owner = state;
-  if (state?.phase === "tournament") {
+  const tournament = owner?.tournament;
+  if (!preview && state?.phase === "tournament") {
     recordTournamentLoss(state.tournament);
     save();
   }
@@ -727,9 +743,13 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) 
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
+    context: !preview && owner?.phase === "tournament"
+      ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
+      : craftContinueContext(cs, { chapter: 1, reason, rank }),
     onRetry: async () => {
       if (!owner) { location.reload(); return; }
-      await chooseRetryAssist(owner.tournament);
+      const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
+      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant: root.continueVariant, preview }); return; }
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
@@ -758,5 +778,5 @@ export function devRehearsal() {
 /** テスト・確認用: 大会のGAME OVER画面だけを出す（reason: rank / burnt / cold / leaf） */
 export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
-  return showGameOver({ reason, rank, variant });
+  return showGameOver({ reason, rank, variant, preview: true });
 }

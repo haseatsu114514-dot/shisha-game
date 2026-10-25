@@ -32,10 +32,23 @@ try {
       QA.phoneRun = QA.phone.openLime({ sender: "naru" });
     });
     await page.locator('[data-test="reply-0"]').click();
+    const feedback = page.locator('.lime-note').filter({ hasText: '♡ ほんの少し仲良くなった' });
+    await feedback.waitFor();
+    assert.equal(await feedback.count(), 1, "実返信の微小上昇はLIME内に一度だけ表示する");
+    assert.equal(await page.locator('.gain-card.affinity').count(), 0, "LIME返信は大きな獲得カードと重複しない");
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
+    const feedbackFits = await feedback.evaluate(node => {
+      const r = node.getBoundingClientRect();
+      return r.width > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight
+        && node.scrollWidth <= node.clientWidth + 1;
+    });
+    assert(feedbackFits, "LIME内の微小上昇通知が画面内に収まる");
+    // 通常の獲得カードの重なり・非阻害性は、LIME倍率を使わない実獲得で別途検査する。
+    await page.evaluate(() => QA.stats.gainAffinity("naru", 1));
     await page.waitForSelector(".gain-card.affinity.show");
     await page.waitForTimeout(500);
     assert.equal(await page.locator(".gc-sub").textContent(), "好感度が少し上がった");
-    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 19);
     const layer = await page.evaluate(() => {
       const banners = document.getElementById("banners"), modal = document.getElementById("modal"), wipe = document.getElementById("wipe");
       const r = banners.querySelector(".gain-card").getBoundingClientRect();

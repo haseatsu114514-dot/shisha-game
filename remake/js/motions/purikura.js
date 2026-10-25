@@ -19,6 +19,7 @@ export const PURIKURA_CG = "cg_ageha_first_purikura";
 export const PURIKURA_BGM = ["bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"];
 // 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
 export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
+export const PURIKURA_STRIPS = [PURIKURA_STRIP, `${PURIKURA_STRIP}_soft`, `${PURIKURA_STRIP}_gal`];
 // 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
 const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
@@ -351,7 +352,9 @@ export async function shoot(variant = "a") {
   const owner = state;
   const music = PURIKURA_BGM[Math.floor(Math.random() * PURIKURA_BGM.length)];
   const plan = PLANS[variant] || PLANS.a;
-  const strip = cgUrl(PURIKURA_STRIP), sheetCg = strip ? null : cgUrl(PURIKURA_CG);
+  const strips = PURIKURA_STRIPS.map((id) => cgUrl(id)).filter(Boolean);
+  const strip = strips.length ? strips[Math.floor(Math.random() * strips.length)] : null;
+  const sheetCg = strip ? null : cgUrl(PURIKURA_CG);
   const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
   const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
   // 画像と並行して用意する。取得に失敗しても撮影を止めない。

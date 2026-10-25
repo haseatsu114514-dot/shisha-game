@@ -686,7 +686,11 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     try {
       // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
       const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), { source: "lime" });
+      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
+        source: "lime",
+        // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
+        onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
+      });
     } finally {
       bond.private = false;
     }

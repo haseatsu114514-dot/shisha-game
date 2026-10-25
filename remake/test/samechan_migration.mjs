@@ -155,6 +155,8 @@ console.log("[samechan migration] PASS: all save slots, old schemas, invitations
   const events = []; bus.on("affinity-gain", payload => events.push(payload));
   const flush = () => new Promise(resolve => setTimeout(resolve, 800));
   core.newGame(); core.state.met.samechan = true; core.state.affinity.samechan = 9;
+  // 返信の端数・通知を検証する前提: ♥1の本人紹介は実読了済み。会った印だけで読了を捏造しない。
+  core.state.flags._samechan_first_encounter = true;
   stats.gainAffinity("samechan", 1, { source: "lime" }); await flush();
   assert.equal(core.state.affinity.samechan, 9, "One reply is only a fraction");
   assert(core.state.affinityCarry.samechan > 0 && core.state.affinityCarry.samechan < 1);

@@ -1,0 +1,57 @@
+{
+  "results": [
+    {
+      "label": "pc-equipment-art-fallback",
+      "status": "passed"
+    },
+    {
+      "label": "touch-product-art-legacy-save",
+      "status": "passed"
+    },
+    {
+      "label": "touch-equipment-art-fallback",
+      "status": "passed"
+    },
+    {
+      "label": "compact-product-art-legacy-save",
+      "status": "passed"
+    },
+    {
+      "label": "compact-equipment-art-fallback",
+      "status": "passed"
+    },
+    {
+      "label": "pc-product-art-legacy-save",
+      "status": "passed"
+    }
+  ],
+  "viewports": {
+    "pc": [
+      1280,
+      720
+    ],
+    "touch": [
+      844,
+      390
+    ],
+    "compact": [
+      800,
+      600
+    ]
+  },
+  "browser": "system Chromium, Playwright; touch emulation, not physical device",
+  "quick_suites": "7/7 passed",
+  "checked": [
+    "18 unique flavor package URLs and decode",
+    "new lotos and coal delivery URLs, HTTP 200 and full decode",
+    "held tanukish/amaburst remain text",
+    "list/detail fit",
+    "schema5 old save unchanged on viewing",
+    "flavor purchase preserves unrelated state",
+    "real delivery abort to text and cube purchase on PC/touch/compact"
+  ],
+  "resolved_attempts": [
+    "Initial fallback test tried to buy the already-owned lotos; corrected to unowned cube",
+    "First final PC run started before encoding finished and loaded old coal module; encoding completed and PC rerun passed"
+  ]
+}

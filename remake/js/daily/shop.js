@@ -20,6 +20,7 @@ import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
+import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
@@ -71,7 +72,7 @@ const FLAVOR_BOXES = [
 ];
 const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
-  suyaki_hagal: "bowl_empty_clay.png", flat_charcoal: "coal_flat_cold.png", cube_charcoal: "coal_cold.png",
+  suyaki_hagal: "bowl_empty_clay.png",
 };
 // A real <img> error handler also covers failed/aborted delivery requests.
 // Cropping retains the approved main sheet windows and the measured carton margin.
@@ -104,8 +105,8 @@ function productArt(item, flavor, size = 66) {
   ]);
   const botanical = () => SHOP_FLAVORS.includes(item.id) ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
-  const generated = flavor && (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]);
-  if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", botanical);
+  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
+  if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", flavor ? botanical : textArt);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
   return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();

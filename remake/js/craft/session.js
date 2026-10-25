@@ -12,6 +12,7 @@ import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
+import { clearComments, completed } from "./broadcast.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
 import { availableHoleTemplates } from "./holes_templates.js";
@@ -241,6 +242,7 @@ export async function explainTutorialStep(cs, id) {
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
+  clearComments();
   const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
@@ -444,7 +446,10 @@ export function refreshBench() {
 export function presentBenchResult(panel, title, advice = "") {
   const score = bench?.panel === panel ? bench.cs[panel.dataset.step]?.score ?? 0 : 0;
   const evaluation = evaluationOf(score);
-  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, text: advice, final: true });
+  if (bench?.panel === panel) {
+    reactAudience(bench.cs, evaluation.kind, { force: true, score, title, text: advice, final: true });
+    completed(bench.cs, panel.dataset.step, score);
+  }
   return { evaluation, hasAudience: !!(bench?.panel === panel && bench.audience) };
 }
 
