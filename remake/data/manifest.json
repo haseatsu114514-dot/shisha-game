@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 15:52 UTC",
+ "generated": "2026-10-25 16:00 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -384,6 +384,9 @@
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
+  "cg_naru_after_hours.png",
+  "cg_naru_last_chance.png",
+  "cg_naru_next_entry.png",
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
   "cg_ryuji_purikura.png",
@@ -2147,6 +2150,9 @@
   "cgs/cg_ch2_ageha_purikura_strip.png",
   "cgs/cg_ch2_ageha_purikura_strip_gal.png",
   "cgs/cg_ch2_ageha_purikura_strip_soft.png",
+  "cgs/cg_naru_after_hours.png",
+  "cgs/cg_naru_last_chance.png",
+  "cgs/cg_naru_next_entry.png",
   "sprites/characters/kuze/chr_kuze_wild.png",
   "sprites/characters/kuze/chr_kuze_nervous.png",
   "cgs/cg_kuze_mashiro_childhood.png"

@@ -518,6 +518,56 @@
           "speaker": "",
           "face": "",
           "text": "送信済みの文字を見つめる。味の輪郭は、まだ遠かった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "ageha"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_hideaway.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その頃、旅先の店。なるは作り直した一台を、場所を貸してくれた店主の前へ出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目はうまい。でも、話しながら吸っていたら重くなった。返ってきた感想を、途中で遮らず聞く。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "じゃあ、今からの一口を直します。最初から作り直して、ごまかすんじゃなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主が客の速度で吸う間、なるは何もせず待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "予定より長い沈黙のあと、ようやく小さくうなずきが返る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今度の記録には、なる自身の感想とは違う言葉が一行増えた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
       ],
       "branches": {

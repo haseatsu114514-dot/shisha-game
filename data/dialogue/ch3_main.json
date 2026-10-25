@@ -122,7 +122,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "全国大会の数日前。店の片づけを終えて、なるさんへ電話をかけた。"
+          "text": "東京に来て一週間。店の片づけを終え、なるさんへ電話をかけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくつながらなかった番号。何度目かの呼び出しで、声が返った。"
         },
         {
           "speaker": "hajime",
@@ -132,7 +137,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "今なら。試作会、ひと段落ついたところ"
+          "text": "……おう。今なら話せる。少し、外に出るから待ってろ"
         },
         {
           "type": "condition",
@@ -174,7 +179,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰ったら会う日を決めた。電話の向こうで、まだ片づけの音が続いていた。"
+          "text": "戻ったら会おう、と約束した。行き先は聞かなかった。電話の向こうで、遠くの車が一台通った。"
         }
       ],
       "branches": {
@@ -239,41 +244,88 @@
       "dialogue_id": "ch3_naru_work",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "電話を切る前に、誰かがなるを呼んだ。焼き菓子を持ち寄った店の人が、まだ残っていたらしい。"
+          "type": "hide_portrait",
+          "char_id": "hajime"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "バニラを軸に、焼き菓子の香ばしさを少し。甘さを先に削らないで"
+          "type": "hide_portrait",
+          "char_id": "naru"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "今の、店の人ですか"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "近所の店の新人。試作会をやっててさ。俺も教わってる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……なるさん、忙しいんですね"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "試合のない日も、店は開くからな。お前も、次は皿洗い要員で来い"
+          "type": "show_cg",
+          "cg_id": "cg_naru_next_entry"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "写真には食べかけの焼き菓子と、バニラの袋が並んでいた。なるのノートに、新人の感想が増えていた。"
+          "text": "電話を切ったなるは、地方のイベントホールへ戻った。ラストチャンス予選、地域大会の控室。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地元で負けた選手も、別の地域から来た選手も、ここでは同じスタートだ。なるは傷んだノートを開く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "借りた器具で合わなかった三台。店主が首を振った一口。書き直した日付を、親指がたどった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今日は、ここで出る味を見る"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "本番では、最初に決めた位置へ炭を戻さなかった。会場の風と、吸われた後の甘さを確かめて待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の試喫を終えた審査員が、もう一度なるの台へ戻ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "バニラの奥に、焼き菓子の香りが残っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "全員の集計を終えてから、通過者の名が呼ばれた。なるは両膝に置いていた拳を、ようやくほどいた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……あと、一つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取ったのは、代表決定大会への出場票。はじめへのメッセージ欄を開き、まだ何も打たずに閉じた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
-      ]
+      ],
+      "comment": "第3章DAY7、はじめの全国大会準備と並行する独立予選の地域大会。通話後はなる側へ切り替え、場所・結果ははじめへ伝えない。"
     },
     {
       "dialogue_id": "ch3_tournament_eve",
@@ -412,6 +464,45 @@
           "speaker": "",
           "face": "",
           "text": "スマホには、実際に交わした約束が残っている。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_next_entry"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ夜、別の会場の控室。なるの前にも、明日の分だけの道具が並んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地域大会の出場票と引き換えに渡された番号札を、ケースの上へ置く。代表決定大会は、明日だ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "一回勝っても、まだ終わりじゃない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "荷物を閉じる前に、ノートをいちばん上へ入れ直した。明朝も確かめたいことが、一つだけ残っている。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
       ],
       "comment": "章題「嘘つきたちの夜」の三人場面。久世の見栄、ましろの平気なふり、はじめの強がりを一部明かす。はじめの味覚回復は別の生活場面でましろと積み重ねる。任意の前夜デートはch3_dates。"
@@ -877,6 +968,86 @@
           "speaker": "",
           "face": "",
           "text": "写真を撮り終えると、まずスマホを探した。今度は、知らせたい人がいた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "kuze"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "mashiro"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "steve"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "volk"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "pakki"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その日の夕方、別の会場。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ラストチャンスの代表決定大会も、最後の調整を迎えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さが重くなりかける。なるは炭を小さく動かし、旅先で何度も待った、一口ぶんの間を待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査員が吸い終わる。残った票がすべて置かれるまで、トングを下ろさなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終結果、日本第二代表――ケムリクサ、なる。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_last_chance"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたトロフィーを握る。笑おうとすると、先に目元がゆがんだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……くそ。やっと、勝てた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフから、東京の全国大会も終わったと聞く。なるは目元を拭い、スマホを手に取った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺も行くぞ、はじめ"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
         }
       ],
       "comment": "成功時の台本。失敗時は勝利台本へ進めず、再挑戦へ。"
@@ -964,47 +1135,57 @@
         {
           "speaker": "",
           "face": "",
-          "text": "返事の代わりに、表彰台を横から撮った写真が届いた。客席で見てくれていたらしい。"
+          "text": "少し遅れて、別の会場のトロフィーを抱えた写真が届いた。隣に、第二代表とある。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "おめでとう。昨日の煙、好きだった"
+          "text": "おめでとう。こっちも昨日、勝った"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとうございます。帰ったら、約束の一台を"
+          "text": "……同じ日に、試合だったんですか"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "その前に、俺も一つ。ラストチャンスに出る"
+          "text": "ラストチャンス。地域を抜けて、昨日が最後。俺も世界に行く"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "日本の、もう一枠ですか"
+          "text": "店、ずっと閉まってたから。どこで何をしてたんですか"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "去年は県で負けた。今年は地元でお前に負けた"
+          "text": "知らない店で作らせてもらってた。毎回、いつもの手順が通じなくてな"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "一回こっきりの大会を、何度もイチからな"
+          "text": "去年は県で負けた。今年は地元でお前に負けた。あのまま戻りたくなかった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……次は俺も、見てます"
+          "text": "おめでとうございます。……今度は、同じ舞台ですね"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "あと、もうさん付けはいい。店じゃ、同じ目線で話そうぜ"
+          "text": "ああ。店は戻ってから再開する。待たせた客にも、ちゃんと作る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰ったら、約束の一台を"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "もちろん。あと、もうさん付けはいい。同じ目線で話そうぜ"
         },
         {
           "speaker": "hajime",
@@ -1016,7 +1197,8 @@
           "face": "",
           "text": "その呼び方は、優勝の褒美ではなかった。話し直した二人で決めた呼び方だった。"
         }
-      ]
+      ],
+      "comment": "全国大会と同日の代表決定大会を勝ち抜いた二人が、翌日に結果を伝え合う。なるは東京会場の客席にはいない。"
     },
     {
       "dialogue_id": "ch3_home_customer",
