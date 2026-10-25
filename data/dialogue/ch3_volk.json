@@ -1,10 +1,10 @@
 {
-  "comment": "第3章・東京の鉄の煙。全国大会出場者。第2章には登場しない。",
+  "comment": "第3章・東京の鉄の煙。全国大会出場者。第2章では名乗らない偵察者として顔だけ登場する。",
   "dialogues": [
     {
       "dialogue_id": "ch3_volk_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -53,6 +53,20 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。地方から来て、この辺のシーシャ屋を回っていて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、名前を聞いてもいいですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ヴォルク。ここの店主だ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_volk"
         },
         {
           "speaker": "volk",
@@ -185,7 +199,7 @@
     {
       "dialogue_id": "ch3_volk_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -292,7 +306,7 @@
     {
       "dialogue_id": "ch3_volk_third",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -385,7 +399,7 @@
     {
       "dialogue_id": "ch3_volk_fourth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -502,7 +516,7 @@
     {
       "dialogue_id": "ch3_volk_after_ch3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {
@@ -584,7 +598,7 @@
     {
       "dialogue_id": "ch3_volk_after_ch3_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
       },
       "lines": [
         {

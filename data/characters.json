@@ -195,31 +195,34 @@
     }
   },
   {
-    "id": "nandi",
-    "name": "ナンディ / ナンディ・カルダモン",
+    "id": "kuze",
+    "name": "久世 朔（くぜ さく）",
     "role": "rival_ch3",
-    "age": 31,
-    "nationality": "India",
-    "affiliation": "Prana Dhūm（プラーナ・ドゥーム）",
-    "play_style": "「伝統的なスパイスと生命の煙」",
-    "description": "東京に出店しているインド流シーシャ伝統店の代表。\n本場の中東・南アジアのクラシックスタイルを重んじ、スパイスやハーブを巧みに操る。",
-    "background_secret": "伝統を重んじるがゆえに、現代のフレーバーを内心見下していた時期があった。しかし、日本の若手たちの真剣な姿勢に触れ、新しいものと古いものの融合を模索し始めている。",
-    "favorite_flavor": "パンラースナ",
-    "specialty_flavor": "お香・ハーブ・パンラースナ系",
+    "age": 27,
+    "nationality": "Japan",
+    "affiliation": "余白（東京の個人店）",
+    "play_style": "「相手の判断まで読む勝負師」",
+    "description": "東京の個人店『余白』を営む。客の好みを聞くのがうまく、試作をしない日にもお茶と席を出す。その親切は本心。全国大会では正しい助言を伝える時機まで選び、相手が焦って手順を変える可能性を読む。自分の一台の鮮烈な立ち上がりで直後の比較基準を揺らす策も狙うが、必ず効くとは考えていない。客や他選手の道具には手を加えず、正規の葉と自分の一台で競う。",
+    "background_secret": "予想を外した客の好みをノートに残す。意外な選択に出会うことが好きで、大会でも相手が予想を超えると笑ってしまう。親切を勝負に利用した責任は相手に押しつけず認める。敗北は心から悔しがり、次も勝つために策を練る。",
+    "favorite_flavor": "アフサール ブラックティー",
+    "specialty_flavor": "フローズンシトラスの立ち上がりとブラックティーの余韻",
     "growth_stats": {
-      "primary": "センス",
+      "primary": "洞察",
       "secondary": "技術",
-      "notes": "伝統的なスパイス一本槍だったが、はじめの煙の柔軟さに触れ、いつの間にか現代的なトロピカルフルーツ系フレーバーにカルダモンを隠し味として忍ばせるモダンなスタイルを習得していた。"
+      "notes": "予想が外れた理由を捨てずに記録する。はじめが策を読んでも自分の一台を崩さず作り切った経験を、次の勝負の材料にする。"
     },
     "visual_concepts": [
-      "31s indian man, deep spiritual calm expression, long dark beard, wearing a beautifully patterned traditional kurta, manipulating smoke with graceful hand gestures, surrounding by ethnic spices and brass hookahs",
-      "charismatic indian shisha master, mystical aura, wearing rich gold and deep red ethnic clothing, blowing vibrant thick smoke that seems alive, background filled with antique rugs and warm light"
+      "27 year old Japanese shisha shop owner, approachable smile and attentive eyes, neat dark hair, plain shirt and charcoal apron, holding a small worn notebook in a warm Tokyo lounge, quietly competitive posture",
+      "Japanese male shisha competitor with a calm friendly face, simple dark apron, one hand near a tea cup and the other adjusting charcoal, bright citrus smoke rising over a restrained tea colored lounge"
     ],
     "intro_cutin": {
-      "title": "インド流シーシャの継承者",
-      "line": "スパイスは、嘘をつかない",
+      "title": "微笑む勝負師",
+      "line": "助けたのも、勝ちたいのも本当",
       "face": "normal",
-      "color": "#e0a030"
+      "color": "#8c7564"
+    },
+    "voice": {
+      "first_person": "僕"
     }
   },
   {
@@ -258,7 +261,7 @@
     "nationality": "Russia",
     "affiliation": "東京の強豪店 Железный Дым（ジェレーズヌイ・ドゥイム／鉄の煙）",
     "play_style": "「完璧な熱管理と精度（Точность）」",
-    "description": "データと徹底した温度管理システムによる「ブレない完璧な提供」を行う。機械のように精密なシーシャを作るロシア代表。",
+    "description": "データと徹底した温度管理システムによる「ブレない完璧な提供」を行う。機械のように精密なシーシャを作る、ロシア出身で東京を拠点とする全国出場者。",
     "background_secret": "極寒の地で『絶対に温かい煙を途切れさせない』ために精度を極めた。彼の精密さは、客への冷たい態度ではなく、実は過酷な環境から客を気遣うための深い優しさからきている。軍にいた頃に叩き込まれた偵察と情報収集を、勝負の前に徹底する。第2章では名乗らないまま柚ヶ谷の試煙会・大会前夜の搬入口・県大会の客席に現れ、第3章で理由が分かる。",
     "favorite_flavor": "ダークミント / シガー",
     "specialty_flavor": "高ニコチンのダークリーフ系",

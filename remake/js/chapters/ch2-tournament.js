@@ -146,11 +146,14 @@ function renderReady(owner) {
     button(owner, "制作を始める", "craft-start", async () => {
       const p = progress();
       if (p.entry) restoreResources(state, p.entry);
+      const assisted = p.retryAssist === true;
+      startAttempt(state, null);
+      applyAssistRecovery(state, assisted, maxStamina());
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: OPEN CLOUD";
-      owner.cs.retryAssist = p.retryAssist === true; // 救済は次の一台だけ（#590）
-      startAttempt(state, owner.cs);
-      applyAssistRecovery(state, p.retryAssist, maxStamina()); save();
+      owner.cs.retryAssist = assisted; // 救済は次の一台だけ（#590）
+      p.craft = clone(owner.cs);
+      save();
       await drive(owner);
     }, true),
   ]);
@@ -230,7 +233,10 @@ function renderDefeat(owner) {
 }
 function renderComplete(owner) {
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
+    button(owner, "第三章・東京へ", "chapter-three", async () => {
+      await (await import("./ch3.js")).beginChapterThree();
+    }, true),
+    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
 }
@@ -274,8 +280,16 @@ async function drive(owner) {
       if (!top?.querySelector(`[data-test="${id("menu")}"]`)) top?.append(menuButton(owner));
       beginStep(state); save();
       broadcast.block(cs, STEP_IDS[p.step]);
-      await STEPS[p.step](cs);
+      const completed = await STEPS[p.step](cs);
       if (!live(owner)) return;
+      if (completed === false) {
+        // 吸い出しの画面離脱は敗北ではない。工程前の資源と制作保存地点へ戻す。
+        recoverStep(state);
+        owner.cs = null;
+        save();
+        renderError(owner);
+        return;
+      }
       if (p.step === 8 && !cs.failed) {
         cs.tournamentStory ||= { seen: [] };
         cs.tournamentStory.servedAroma = computeShisha(cs).aroma;

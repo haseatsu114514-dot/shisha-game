@@ -1169,7 +1169,7 @@ woozy slow ambient, 55 bpm, detuned wobbly pads, muffled lo-fi filtering, hazy d
 | ch1 | アダム | 根性 | ch2 | チャコール博士 | 洞察 |
 | ch1 | みんと | 魅力 | ch3 | ましろ | センス |
 | ch1 | 凛 | センス | ch3 | ムカイさん | 魅力 |
-| 施設 | 観音堂 | 根性 | ch3 | ナンディ | 技術 |
+| 施設 | 観音堂 | 根性 | ch3 | 久世 | 洞察 |
 | 施設 | カフェ | センス | ch3 | スティーブ | 洞察 |
 | 施設 | C.STATION | 洞察 | ch3 | ヴォルク | 根性 |
 | 施設 | チョイザップ | 魅力 | ch4 | 王煙楼 | 技術 |

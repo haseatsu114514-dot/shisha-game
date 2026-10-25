@@ -51,6 +51,12 @@ def main():
 
     portrait("sai")
 
+    if catalog.get("tableTalk"):
+        files.add("data/" + catalog["tableTalk"])
+        for block in json.loads(read("data/" + catalog["tableTalk"])).get("dialogues", []):
+            for line in block["lines"]:
+                portrait(line["speaker"], line.get("face", "normal"))
+
     for entry in catalog["scenarios"]:
         path = "data/" + entry["file"]
         files.add(path)

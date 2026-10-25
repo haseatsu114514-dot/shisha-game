@@ -23,11 +23,14 @@ export function rollOdds(bonus) {
 }
 
 export function checkForecast(scenario, state, kind, { support = false } = {}) {
-  const baseBonus = 1 + (support ? 2 : 0);
+  // Momentum from table excitement is public and spent on this roll.
+  const momentum = Number.isInteger(state.momentum) ? state.momentum : 0;
+  const baseBonus = 1 + (support ? 2 : 0) + momentum;
   // The potential is deliberately identical for correct and incorrect guesses.
   const potentialBonus = kind === "prepare" && state.hypothesis ? scenario.rules?.hypothesisBonus || 0 : 0;
   return {
     baseBonus,
+    momentum,
     potentialBonus,
     odds: rollOdds(baseBonus),
     bestOdds: rollOdds(baseBonus + potentialBonus),

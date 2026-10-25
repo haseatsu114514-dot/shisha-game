@@ -1,4 +1,4 @@
-// 大会の中継グラフィック（第1章 SMOKE CROWN CUP・第2章 HAZE: OPEN CLOUD 共通）。
+// 大会の中継グラフィック（第1章〜第3章共通）。
 // 審査員ごとに色を決め、票の帯・持ち点の粒・凡例を同じ色でそろえる。
 import { el } from "../core/util.js";
 import { displayName } from "../core/data.js";
@@ -8,6 +8,7 @@ import { autoSkill } from "./common.js";
 /** 審査員ごとの色と短い呼び名 */
 export const JUDGE_LOOK = {
   maezono: { short: "上園", color: "#ff8db4" },
+  emil: { short: "エミル", color: "#8fb2ff" },
   dr_kemuri: { short: "博士", color: "#5fe2cf" },
   nagumo: { short: "南雲", color: "#f6c95e" },
 };

@@ -3,15 +3,33 @@ import fs from 'node:fs';
 import { DB } from '../js/core/data.js';
 import { temperatureBands } from '../js/craft/temperature-model.js';
 import { tournamentStoryDialogue } from '../js/craft/tournament-story-data.js';
+import { feedbackLine, evaluationOf } from '../js/craft/feedback.js';
 const dialogues = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/tournament_craft.json',import.meta.url))).dialogues;
 Object.assign(DB.dialogues,Object.fromEntries(dialogues.map(d=>[d.dialogue_id,d])));
 DB.flavorById = { mint:{short_name:'ミント',heat_tolerance:1}, strawberry:{short_name:'ストロベリー',heat_tolerance:1.2} };
 const cs={chapter:1,mix:{mint:8,strawberry:4},pack:'normal',tournamentStory:{servedAroma:85,seen:[]}};
 const text=(event,c=cs,r=()=>0)=>tournamentStoryDialogue(c,event,r).lines.map(l=>l.text).join('\n');
-for (const chapter of [1,2]) {
- const c={...cs,chapter}; assert.match(text('opening',c),chapter===1?/なる、アダム、みんと/:/ストロベリー/);
- assert.match(text('waiting',c),chapter===1?/なる選手/:/あげは選手/);
+for (const chapter of [1,2,3]) {
+ const c={...cs,chapter}; assert.match(text('opening',c),chapter===1?/なる、アダム、みんと/:chapter===2?/ストロベリー/:/久世、スティーブ、ヴォルク/);
+ assert.match(text('waiting',c),chapter===1?/なる選手/:chapter===2?/あげは選手/:/久世|スティーブ|ヴォルク/);
 }
+for (const event of ['opening','packed','waiting','tasting']) {
+ const national=tournamentStoryDialogue({...cs,chapter:3,pull:{temp:.5},careHistory:[]},event,()=>.99);
+ assert(!national.lines.some(line=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(line.speaker)),
+  `Chapter 3 ${event} used an earlier rival or judge`);
+}
+// Audience/graphics import the browser audio module, so provide its visibility observer only.
+globalThis.document={addEventListener(){}};
+const [{audienceFor},{JUDGE_LOOK}]=await Promise.all([
+ import('../js/craft/audience.js'),import('../js/craft/tournament-graphics.js'),
+]);
+delete globalThis.document;
+assert.deepEqual(audienceFor('tournament',3),['nagumo','emil','dr_kemuri']);
+assert.equal(new Set(['nagumo','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)).size,3);
+assert.match(feedbackLine('emil','pull',evaluationOf(90)),/奥の味/);
+const nationalBroadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter3;
+assert(nationalBroadcast.rivalComments.length && nationalBroadcast.rivalFeed.length);
+assert(!/なる選手|あげは|神崎|REI|アダム|みんと/.test(JSON.stringify(nationalBroadcast)));
 for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {
  const lines=text('packed',{...cs,pack});assert.match(lines,expected);assert.match(lines,/ミント 8g、ストロベリー 4g/);
  assert(!/成功|失敗|完璧/.test(lines));
@@ -37,4 +55,4 @@ for (const event of ['opening','packed','waiting','tasting']) {
  assert.deepEqual(tournamentStoryDialogue(JSON.parse(saved),event,()=>0),tournamentStoryDialogue(base,event,()=>0));
 }
 assert.equal(JSON.stringify(base),saved,'Dialogue must not alter craft/results');
-console.log('PASS: both tournaments, 3 packings, mix, crowds, served aroma, temperature/care callbacks, legacy saves and no score mutation');
+console.log('PASS: three tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');
