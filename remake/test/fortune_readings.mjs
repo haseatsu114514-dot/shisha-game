@@ -216,16 +216,14 @@ for (const [key, h] of Object.entries(hints.choices)) {
   assert(h.options.includes(h.preferred));
 }
 
+// CIの軽量checkoutにも含まれる正式PNGで、採用画像の固定ハッシュと透過・WebPを検査する。
 const art = spawnSync('python3', ['-c', `
 from PIL import Image
 import hashlib,json,sys
 from pathlib import Path
-root=Path(sys.argv[1]); records=json.loads((root/'asset_sources/portraits/style-unify-20261026/generation.json').read_text())
-record=next(x for x in records if x['character']=='uranaishi' and x['face']=='normal')
-source=root/'asset_sources/portraits/style-unify-20261026/uranaishi/normal-source.png'
+root=Path(sys.argv[1])
 portrait=root/'assets/sprites/characters/uranaishi/chr_uranaishi_normal.png'
-assert hashlib.sha256(source.read_bytes()).hexdigest()==record['source_sha256'], 'adopted source changed'
-assert hashlib.sha256(portrait.read_bytes()).hexdigest()==record['fitted_sha256'], 'adopted portrait changed'
+assert hashlib.sha256(portrait.read_bytes()).hexdigest()=='38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d', 'adopted portrait changed'
 b=Image.open(portrait).convert('RGBA')
 assert b.size==(896,1200)
 alpha=b.getchannel('A');assert alpha.getextrema()==(0,255)
