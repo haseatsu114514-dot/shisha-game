@@ -545,7 +545,7 @@ async function tournamentDay() {
   }
 
   // 審査は完成品と2回の調整の実績で決まる。
-  playBgm("bgm_tournament_wait");
+  playBgm("bgm_judging");
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   await playTournamentEvent(cs, "tasting", { bg: STAGE });
@@ -559,7 +559,7 @@ async function tournamentDay() {
     await play("ch1_tournament_judging", { bg: STAGE });
     await resultCountdown(cs, out.kind);
     retireScreen(); // カウント画面は次の場面で片付く
-    playBgm("bgm_result_emotional");
+    playBgm("bgm_aftermath");
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
@@ -650,7 +650,7 @@ async function finishAfterTournament() {
 }
 
 export async function showClear() {
-  playBgm("bgm_result_emotional");
+  playBgm("bgm_aftermath");
   showHud(false);
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   const owner = state;
@@ -694,7 +694,7 @@ export async function showClear() {
     }
     playing = false; replay.disabled = false; next.disabled = false;
     if (root.isConnected) {
-      playBgm("bgm_result_emotional");
+      playBgm("bgm_aftermath");
       replay.focus({ preventScroll: true });
     }
   }

@@ -93,7 +93,8 @@
     {
       "dialogue_id": "ch2_slump_taste",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "bgm": "bgm_taste_distant"
       },
       "lines": [
         {

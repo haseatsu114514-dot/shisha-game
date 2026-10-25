@@ -200,6 +200,7 @@ export function voteReason(p, cs, final = false) {
   return lines;
 }
 function renderVotes(owner, final = false) {
+  playBgm("bgm_judging");
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
   const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, { dataset: { contestant: value.id, rank: String(value.rank) } }, [
@@ -307,13 +308,14 @@ async function drive(owner) {
       save();
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
-      playBgm("bgm_tournament_wait");
+      playBgm("bgm_judging");
       if (!await commentary(owner, "tasting")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_tournament_wait"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
     else if (p.stage === "defeat") { renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
+      playBgm("bgm_aftermath");
       state.phase = "aftermath"; state.slot = 1; save();
       if (!await read(owner, "farewell")) return;
       checkpoint("tasteless");
