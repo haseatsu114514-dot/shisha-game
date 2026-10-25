@@ -206,7 +206,7 @@ let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
 const FACE_CORRECTION_REVISION = "face-line-20261026";
 function faceCorrectionVersion(rel) {
-  return /^(sprites\/characters\/(minto|ageha)\/|ui\/face_icons\/face_(minto|ageha)\.png$)/.test(rel)
+  return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";
 }
 /** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */

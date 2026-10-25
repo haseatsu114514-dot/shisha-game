@@ -54,7 +54,7 @@ try {
   assert.equal(unknown.name, "？？？");
   assert.equal(unknown.title, "実在したオタクに優しいギャル");
   assert.equal(unknown.line.replace(/\s/g, ""), "「大丈夫？ケガしてない？」");
-  assert(unknown.face.endsWith("chr_ageha_smile.webp"));
+  assert(unknown.face.split("?")[0].endsWith("chr_ageha_smile.webp"));
   assert(!unknown.text.includes("バイブス"));
   assert(!unknown.met && unknown.initialSeen && !unknown.namedSeen && unknown.backgroundLoaded);
   if (shots) await page.screenshot({ path: `${shots}/ageha_unknown_in_story.png` });
@@ -84,7 +84,7 @@ try {
   assert.equal(await page.locator(".cutin .ci-name").textContent(), "あげは");
   assert.equal(await page.locator(".cutin .ci-title").textContent(), "バイブスの天才");
   assert.equal(await page.locator(".cutin .ci-line").textContent(), "「うち超感覚派なんだよね〜」");
-  assert((await page.locator(".cutin .ci-portrait").getAttribute("src")).endsWith("chr_ageha_normal.webp"));
+  assert((await page.locator(".cutin .ci-portrait").getAttribute("src")).split("?")[0].endsWith("chr_ageha_normal.webp"));
   if (shots) await page.screenshot({ path: `${shots}/ageha_professional.png` });
   await page.evaluate(() => T.done);
   assert.equal(await page.evaluate(() => T.intro.needsIntro("ageha")), false);

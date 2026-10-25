@@ -53,7 +53,8 @@ assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/s
 await all.loadAll((p) => progress.push(p));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp?v=face-line-20261026`);
+    const version = id === "ageha" || face === "normal" ? "?v=face-line-20261026" : "";
+    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
   assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-line-20261026`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
