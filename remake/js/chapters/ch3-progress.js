@@ -11,7 +11,7 @@ const LEGACY_SCENES = Object.freeze([
   { id: "ch3_double_apple_incident", day: 3, slot: 1, label: "閉店後の一杯", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_rest_before_recovery", day: 4, slot: 0, label: "作れない日の席", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_daily_cup_1", day: 4, slot: 1, label: "今日の一杯", location: "mukai", bg: "bg_mukai_shop" },
-  { id: "ch3_taste_return", day: 5, slot: 1, label: "林檎の輪郭", location: "mukai", bg: "bg_mukai_shop" },
+  { id: "ch3_taste_return", day: 5, slot: 1, label: "ダブルアップルの輪郭", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_abyss_recovery", day: 6, slot: 0, label: "昨日とは違う今日", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_contact_before_tournament", day: 7, slot: 1, label: "自分からの電話", location: "東京", bg: "bg_street_night" },
   { id: "ch3_naru_work", day: 7, slot: 1, label: "もう一つの予選", location: "東京", bg: "bg_street_night" },
