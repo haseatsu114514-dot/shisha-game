@@ -155,11 +155,15 @@ await suite("first-brew", async check => {
       window.running = T.pull.runCare(cs, { round: 1 });
     });
     await page.locator('[data-test="care-coal-0"]').click();
-    await page.waitForTimeout(3800); await guide(page).click(); await page.waitForTimeout(100);
+    // Wait for the actual countdown completion; CI frame scheduling can take
+    // longer than its nominal duration. Opening help earlier pauses startup.
+    await page.waitForFunction(() => !document.querySelector('[data-test="pull-stop"]').disabled);
+    await guide(page).click(); await page.waitForTimeout(100);
     const sample = () => page.locator('[data-test="pull-temperature"]').getAttribute("aria-valuenow");
     const before = await sample(); await page.waitForTimeout(1600);
     assert.equal(await sample(), before);
-    await guide(page).click(); await page.waitForTimeout(300);
+    await guide(page).click();
+    await page.waitForFunction(value => document.querySelector('[data-test="pull-temperature"]').getAttribute('aria-valuenow') !== value, before);
     assert.notEqual(await sample(), before);
     await page.locator('[data-test="pull-stop"]').click();
     await guide(page).click(); await page.waitForTimeout(100);
@@ -226,7 +230,7 @@ await suite("first-brew", async check => {
     assert(windows.easier.slow > windows.ordinary.slow && windows.easier.window > windows.ordinary.window);
   });
 
-  await check("third-loss-continue-real-entry", async page => {
+  await check("third-recorded-loss-continue-retry", async page => {
     await init(page);
     // 外部BGMの通信はテストしない。小さな有効WAVを返し、実際のCONTINUEを動かす。
     const wav = Buffer.alloc(16044);
@@ -239,7 +243,8 @@ await suite("first-brew", async check => {
       const s = T.core.state;
       Object.assign(s, { phase: "tournament", day: 14 });
       Object.assign(s.tournament, { attempts: 3, losses: 2, lastLossAttempt: 2 });
-      // devGameOver is a read-only preview: record the real third loss first.
+      // devGameOver is a read-only preview; record the third loss through the
+      // production helper before exercising the real CONTINUE/retry controls.
       T.assist.recordTournamentLoss(s.tournament);
       const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
       for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;

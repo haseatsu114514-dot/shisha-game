@@ -1,0 +1,9 @@
+/* 東京編の既存場面カードにだけ添える、進行を変更しない行程表示。 */
+.ch3-wayfinding { flex:0 1 auto; min-height:0; padding:14px 18px; border:1px solid #aebcd44d; border-radius:12px; background:#1c273b; }
+.ch3-wayfinding-title { font-size:17px; color:#d8e4f5; }
+.ch3-wayfinding-stops { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
+.ch3-wayfinding-stop { flex:1 1 280px; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:3px solid #93a6bf; padding-left:12px; overflow-wrap:anywhere; }
+.ch3-wayfinding-stop.next { border-left-color:#efd494; }
+.ch3-wayfinding-stop small { color:#d8e4f5; font-size:15px; }
+.ch3-wayfinding-stop strong { color:#fff6df; font-size:23px; }
+.ch3-wayfinding-stop span { color:#edf2f9; font-size:17px; line-height:1.4; }
