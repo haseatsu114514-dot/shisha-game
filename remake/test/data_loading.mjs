@@ -137,4 +137,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 41 JSON files, max 4 requests, gallery catalog, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 42 JSON files, max 4 requests, gallery catalog, hiyori foundation, venue hosts, cinema, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

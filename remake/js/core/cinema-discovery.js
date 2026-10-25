@@ -10,7 +10,7 @@ export const CINEMA = Object.freeze({
   id: "rojiura_cinema", kind: "spot", region: "home",
   label: "路地裏シネマ", area: "商店街の路地裏",
   x: 47, y: 19, theme: "stadium", glyph: "映",
-  cost: 1000, stamina: -8, stat: "insight", openSlots: [0, 1],
+  cost: 1000, stamina: -8, stat: "insight",
   bg: "bg_rojiura_cinema", preview: "bg_rojiura_cinema",
   first: "cinema_first_screening",
   pool: ["cinema_handmade_shark", "cinema_sound_before_shadow"],

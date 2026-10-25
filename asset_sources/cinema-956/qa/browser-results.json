@@ -1,0 +1,48 @@
+{
+  "name": "cinema",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-introduction-map-and-load",
+      "status": "passed"
+    },
+    {
+      "label": "pc-calendar-screening-and-poor",
+      "status": "passed"
+    },
+    {
+      "label": "pc-screening-art-cancel-and-missing",
+      "status": "passed"
+    },
+    {
+      "label": "pc-first-eligible-visit-and-interruption",
+      "status": "passed"
+    },
+    {
+      "label": "pc-introduction-load-and-missing-art",
+      "status": "passed"
+    },
+    {
+      "label": "touch-introduction-map-and-load",
+      "status": "passed"
+    },
+    {
+      "label": "touch-calendar-screening-and-poor",
+      "status": "passed"
+    },
+    {
+      "label": "touch-screening-art-cancel-and-missing",
+      "status": "passed"
+    },
+    {
+      "label": "touch-first-eligible-visit-and-interruption",
+      "status": "passed"
+    },
+    {
+      "label": "touch-introduction-load-and-missing-art",
+      "status": "passed"
+    }
+  ]
+}

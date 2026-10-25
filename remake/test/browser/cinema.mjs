@@ -106,7 +106,7 @@ await suite("cinema", async check => {
       assert.equal(await page.locator(t("map-go")).count(), 0, "same day re-entry unavailable");
       await page.evaluate(async () => {
         C.core.state.money = 999; C.core.state.visitedDay = {};
-        C.map.interruptMap(null);
+        C.map.interruptMap("__lime__");
       });
       await page.locator(map).waitFor();
       await hit(page, t("pin-rojiura_cinema"));
@@ -125,6 +125,9 @@ await suite("cinema", async check => {
       await page.locator("#vn.active").waitFor();
       await page.waitForFunction(() => [...document.querySelectorAll("#bg .bg-img")]
         .some(node => node.style.backgroundImage.includes("bg_rojiura_cinema")));
+      await page.waitForFunction(() => document.querySelector("#vn .vn-text")?.textContent.includes("座った。")
+        && Number(getComputedStyle(document.querySelector("#vn .vn-box")).opacity) >= 0.99);
+      await assertFits(page, "#vn .vn-controls button");
       await capture(page, mode + "-screening");
       const cancelled = await page.evaluate(async () => {
         C.abort.abort(); return { used: await C.screening, before: C.before, after: C.snapshot() };
@@ -137,6 +140,68 @@ await suite("cinema", async check => {
         icon.querySelector("img").dispatchEvent(new Event("error"));
       });
       assert.equal(await page.locator('.facility-icon-crop').textContent(), "映");
+    }, options);
+
+    await check(`${mode}-first-eligible-visit-and-interruption`, async page => {
+      await setup(page);
+      const sequence = await page.evaluate(async () => {
+        const s = C.core.state;
+        delete s.flags._samechan_quiet_seat_done; s.story.samechan = 3;
+        const first = await C.samechan.visitSamechan(C.samechan.samechanSpot());
+        const afterSeat = C.snapshot();
+        s.day++; const beforeCancel = C.snapshot();
+        const enter = C.vn.hooks.onEnter;
+        C.abort = new AbortController();
+        C.vn.hooks.onEnter = (id, scene) => {
+          enter?.(id, scene);
+          if (id === "samechan_cinema_introduction") C.abort.abort();
+        };
+        const canceled = await C.samechan.visitSamechan(C.samechan.samechanSpot(), { signal: C.abort.signal });
+        const afterCancel = C.snapshot();
+        C.vn.hooks.onEnter = enter;
+        const retried = await C.samechan.visitSamechan(C.samechan.samechanSpot());
+        const afterRetry = C.snapshot();
+        const repeated = await C.samechan.visitSamechan(C.samechan.samechanSpot());
+        return { first, afterSeat, beforeCancel, canceled, afterCancel, retried, afterRetry, repeated, final: C.snapshot() };
+      });
+      assert(sequence.first && sequence.afterSeat.flags._samechan_quiet_seat_done);
+      assert(!sequence.afterSeat.flags._samechan_cinema_introduced, "quiet-seat completion does not introduce early");
+      assert.equal(sequence.canceled, false);
+      for (const key of ["money", "stamina", "story"]) assert.deepEqual(sequence.afterCancel[key], sequence.beforeCancel[key]);
+      assert(!sequence.afterCancel.flags._samechan_cinema_introduced);
+      assert.equal(sequence.afterCancel.flags._samechan_visit.complete, false);
+      assert(sequence.retried && sequence.afterRetry.flags._samechan_cinema_introduced);
+      assert.equal(sequence.afterRetry.money, sequence.beforeCancel.money - 3000);
+      assert(sequence.repeated); assert.deepEqual(sequence.final, sequence.afterRetry);
+    }, options);
+
+    await check(`${mode}-introduction-load-and-missing-art`, async page => {
+      await setup(page);
+      const interrupted = await page.evaluate(async () => {
+        const before = C.snapshot(), enter = C.vn.hooks.onEnter;
+        C.abort = new AbortController();
+        C.vn.hooks.onEnter = (id, scene) => {
+          enter?.(id, scene);
+          if (id === "samechan_cinema_introduction") { C.core.load(); C.abort.abort(); }
+        };
+        const used = await C.samechan.visitSamechan(C.samechan.samechanSpot(), { signal: C.abort.signal });
+        C.vn.hooks.onEnter = enter;
+        return { before, used, after: C.snapshot() };
+      });
+      assert.equal(interrupted.used, false);
+      assert(!interrupted.after.flags._samechan_cinema_introduced);
+      assert.equal(interrupted.after.money, interrupted.before.money);
+      assert.equal(interrupted.after.flags._samechan_visit.complete, false);
+      await page.route("**/img/backgrounds/bg_rojiura_cinema.webp", route => route.fulfill({
+        status: 200, contentType: "image/webp", body: "invalid-image-fixture",
+      }));
+      const missing = await page.evaluate(async () => {
+        C.core.state.flags._samechan_cinema_introduced = true;
+        const before = C.snapshot();
+        const used = await C.cinema.visitCinema();
+        return { used, before, after: C.snapshot() };
+      });
+      assert.equal(missing.used, false); assert.deepEqual(missing.after, missing.before);
     }, options);
   }
 });
