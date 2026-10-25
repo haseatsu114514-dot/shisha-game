@@ -1,5 +1,18 @@
 # #786 人物表示の限定修正
 
+## 2026-10-25 準備夜の看板修正
+
+ひよりアイコン・コロちゃん短縮は #795、営業中背景は #938 で統合済み。残っていた初遭遇の `bg_shishark_preparing_night` ののれんを「焼き鳥屋」へ修正した。以下の古い予約・承認待ちは履歴で、現行の停止条件ではない。
+
+- 既存PNGは1672×941（過去のIssue指示の1280×720は実寸と異なる）。画像生成で文字を直した原画から、文字周辺43×118px（x=580, y=439）だけを合成した。原画のそれ以外の画素は完全一致し、構図・夜景・他の看板を保持。
+- 同じPNGから無劣化WebPを更新。PNGとWebPの復号RGBは完全一致。WebPは209,550→2,002,992 bytesへ増加（文字と背景を再圧縮で劣化させないため）。参照キー・manifest・台詞・状態処理は変更しない。
+- Chromiumの隔離contextで実 `playSamechanEncounter()` を起動し、PC 1280×720／横タッチ844×390で遭遇導入と「コロちゃん」の発話まで操作・撮影・目視。文字の綴り、切れ、構図、実WebP URLを確認。pageerrorは両方0。実機Safari・章到達の通しプレイは未実施。
+- `node tools/ci/run.mjs --kind quick` は7/7成功（既存の台詞WARN 137、ERROR 0）。画素比較、構文、diff、Git safetyも成功。
+
+生成原画・実プロンプト・局所合成手順・hash・再現スクリプト・PC/横タッチのスクリーンショットは [`asset_sources/person-display-786/preparing-sign/`](../../../asset_sources/person-display-786/preparing-sign/) に保存。
+
+---
+
 Worker: `codex-c-task15-20261020-782-f3a71d8c`
 Claim: [39435116120](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39435116120) completed/success、bot6292633706 owner/run一致確認後に実装。
 Base: `0b708e26cd453711b2220753f446e1fc9e76fe7a`
