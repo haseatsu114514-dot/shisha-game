@@ -272,8 +272,59 @@
           "speaker": "",
           "face": "",
           "text": "写真には食べかけの焼き菓子と、バニラの袋が並んでいた。なるのノートに、新人の感想が増えていた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/kemurikusa.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話のあと。ケムリクサでは、新人が試作の感想を書き終えるのを、なるが待っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるのノートには、焼き菓子の香りが出た時刻と、そのあとに残る甘さが並んでいる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "うまい以外でもいい。もう一口欲しかったの、どの辺？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人は最後の欄を指した。終わり際は少し重かった、と小さく付け足す。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そこ、俺も気になった。言ってくれて助かる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の感想の隣に、その言葉を書き込む。次の試作は、なる一人で決めた手順とは少し変わった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
-      ]
+      ],
+      "comment": "電話の後に、なる側の短いカット。新人を教えるだけでなく、感想を聞いて自分の試作を更新する。"
     },
     {
       "dialogue_id": "ch3_tournament_eve",
@@ -775,6 +826,63 @@
           "speaker": "",
           "face": "",
           "text": "その呼び方は、優勝の褒美ではなかった。話し直した二人で決めた呼び方だった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/kemurikusa.png"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_next_entry"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜、ケムリクサ。なるはラストチャンス予選の申込完了画面を閉じた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地域大会の日を店の予定表に書き、留守を頼む相手へ連絡する。練習だけで埋められる日程ではなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "戻った翌日は開ける。いつもの予約も、そのままで頼む"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "機材ケースの留め具を一つずつ確かめる。底には、地元大会で使ったノートを入れた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "次は俺が、勝って帰る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの端に残っていた南雲の言葉――伝わる形。その下に、試してきた日付が続いていた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_mukai_shop.png"
         }
       ]
     },

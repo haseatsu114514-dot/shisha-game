@@ -356,7 +356,7 @@
     },
     {
       "dialogue_id": "ch2_naru_window",
-      "comment": "DAY12夜・みんとの店の帰り（#929の強制イベント）。DAY11の選択の記録がある時だけ読む。言い返した場合は、常連の親子が約束どおりまた来て、なるがあの夜はじめの前で消えた笑い方をしているのを窓越しに見る。聞いた場合は短く言葉を交わすが、前のようには肩を叩かれない。",
+      "comment": "DAY12夜・みんとの店の帰り（#929の強制イベント）。DAY11の選択の記録がある時だけ読む。言い返した場合は、常連の親子が約束どおりまた来て、なるがあの夜はじめの前で消えた笑い方をしているのを窓越しに見る。聞いた場合は短く言葉を交わすが、前のようには肩を叩かれない。 分岐後、はじめの知らない閉店後の練習を短く描く。関係の修復・能力報酬にはしない。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
@@ -372,6 +372,64 @@
           "flag": "_ch2_naru_hurt",
           "next_true": "hurt",
           "next_false": "listened"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜、閉店後のケムリクサ。はじめが帰ったあとも、カウンターの灯りは残っていた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_after_hours"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは同じ配合で作った二台の記録を、隣り合わせに置いた。片方にだけ、途中から甘さが重いとある。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "最初の一口は揃う。……十五分後が、まだ違う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を動かした時刻をたどり、差が出たところへ線を引く。配合の数字は、まだ消さなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "明日は、ここだけ変えてみるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホに県大会の配信予定が灯った。なるは時刻を確かめ、画面を伏せた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの次のページを開く。明日の営業前に試す一台の、最初の行を書いた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
       ],
       "branches": {

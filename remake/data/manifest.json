@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 11:39 UTC",
+ "generated": "2026-10-25 15:50 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -380,6 +380,9 @@
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
+  "cg_naru_after_hours.png",
+  "cg_naru_last_chance.png",
+  "cg_naru_next_entry.png",
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
   "cg_ryuji_purikura.png",
@@ -2142,6 +2145,9 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "cgs/cg_ch2_ageha_purikura_strip.png",
   "cgs/cg_ch2_ageha_purikura_strip_gal.png",
-  "cgs/cg_ch2_ageha_purikura_strip_soft.png"
+  "cgs/cg_ch2_ageha_purikura_strip_soft.png",
+  "cgs/cg_naru_after_hours.png",
+  "cgs/cg_naru_last_chance.png",
+  "cgs/cg_naru_next_entry.png"
  ]
 }

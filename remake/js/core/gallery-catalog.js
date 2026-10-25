@@ -5,6 +5,9 @@ export const GALLERY_TABS = [
   ["purikura", "プリクラ"], ["comic", "漫画"], ["movie", "ムービー"],
 ];
 const labels = {
+  cg_naru_after_hours: "なる・閉店後の一行",
+  cg_naru_last_chance: "なる・勝って帰る日",
+  cg_naru_next_entry: "なる・次の挑戦",
   cg_minto_first_cheki: "みんとの初来店チェキ", cg_minto_cheki: "みんととのチェキ",
   cg_ageha_first_purikura: "あげはとの初プリ", cg_ryuji_purikura: "神崎との職人プリ",
 };
