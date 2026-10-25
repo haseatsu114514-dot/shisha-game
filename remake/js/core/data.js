@@ -37,6 +37,7 @@ export const DB = {
   statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
+  gallery: { items: [] }, // 採用済み漫画・ムービー。候補画像はここへ登録しない。
 };
 
 const DIALOGUE_FILES = [
@@ -92,6 +93,7 @@ export async function loadAll(onProgress = () => {}) {
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
+    ["gallery", "data/gallery.json"],
     ["fortuneTrivia", "data/fortune-trivia.json"],
     ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
@@ -132,6 +134,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.fortuneTrivia = raw.fortuneTrivia;
   DB.fortuneHints = raw.fortuneHints;
   DB.manifest = raw.manifest;
+  DB.gallery = raw.gallery;
   WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {
     if (!key.startsWith("dlg:")) continue;

@@ -1,0 +1,147 @@
+[
+  {
+    "character": "minto",
+    "expression": "smile",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_minto_smile.png",
+    "target": "assets/sprites/characters/minto/chr_minto_smile.png",
+    "before_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+    "status": "restored-original-by-owner-feedback",
+    "after_sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+    "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
+    "runtime_sha256": "6615d4396e54f5749bd78e80ff78f2525a54172d40246649fb4502d5c3bd7acf",
+    "runtime_rgba_equal": true,
+    "review_note": "ユーザー指摘で正面化したv1を不採用。元の頭の傾き・顔向き・笑顔へPNGバイト一致で復元。",
+    "foot_drift_px": 0,
+    "visible_height_drift_px": 0,
+    "rejected_revision": {
+      "character": "minto",
+      "expression": "smile",
+      "status": "applied-local",
+      "version": 1,
+      "preparation": "minto-smile-v1-preparation.json",
+      "after_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
+      "runtime": "remake/img/sprites/characters/minto/chr_minto_smile.webp",
+      "runtime_sha256": "c6d8eb86e5264a2e2731fa6dd4d831ff670dd637da394db95b35480fdd6159b2",
+      "runtime_rgba_equal": true,
+      "review_note": "通常v4を基準に正面寄りの顔・両眼の幅と開きを統一。笑顔・指を頬へ添えるポーズを保持。",
+      "metrics": {
+        "top": 0.19833333333333333,
+        "bottom": 0.98,
+        "ax": 0.5762597616450507,
+        "aspect": 0.7466666666666667
+      },
+      "foot_drift_px": -0.08442144748759972,
+      "visible_height_drift_px": 2.000000000000013
+    }
+  },
+  {
+    "character": "ageha",
+    "expression": "normal",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_normal.png",
+    "target": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "before_sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "status": "applied-local",
+    "version": 1,
+    "preparation": "ageha-normal-v1-preparation.json",
+    "after_sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_normal.webp",
+    "runtime_sha256": "3197f1f53030ec073c821e9b90cf461b3dd498a2ec0c9e54dfa1465db0bf2af9",
+    "runtime_rgba_equal": true,
+    "review_note": "顎の黒白二重縁を弱め、肌と首を連続して再描画。小さな笑みと腰へ添えた手を保持。",
+    "metrics": {
+      "top": 0.16916666666666666,
+      "bottom": 0.98,
+      "ax": 0.5785795596263187,
+      "aspect": 0.7466666666666667
+    },
+    "foot_drift_px": 0.19897118350203868,
+    "visible_height_drift_px": 0.0
+  },
+  {
+    "character": "ageha",
+    "expression": "serious",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_serious.png",
+    "target": "assets/sprites/characters/ageha/chr_ageha_serious.png",
+    "before_sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932",
+    "status": "applied-local",
+    "version": 1,
+    "preparation": "ageha-serious-v1-preparation.json",
+    "after_sha256": "87f44e4fe7033a4af9b32cea84f716dac6731f4aaaa30b8eada2c61b794798f5",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_serious.webp",
+    "runtime_sha256": "a403ecfe7993d22f1f5b3e8779788ead02c95cc168dad3cee5d5a33e57e2a5a4",
+    "runtime_rgba_equal": true,
+    "review_note": "顎の二重縁を弱め、真剣な眉・目とジャケットへ添えた手を保持。",
+    "metrics": {
+      "top": 0.17083333333333334,
+      "bottom": 0.98,
+      "ax": 0.5788564012415195,
+      "aspect": 0.7466666666666667
+    },
+    "foot_drift_px": 0.4173399499616579,
+    "visible_height_drift_px": 0.0
+  },
+  {
+    "character": "ageha",
+    "expression": "smile",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_smile.png",
+    "target": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+    "before_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+    "status": "applied-local",
+    "version": 1,
+    "preparation": "ageha-smile-v1-preparation.json",
+    "after_sha256": "fd0b09bc80802616dfb44c1f70def0c4791748080b4904c6f9a22e7528e2513b",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_smile.webp",
+    "runtime_sha256": "01f0e0bd2752abb9cefa4c2b645b502d18a46a0aa0d1530e5984d34e471ee28d",
+    "runtime_rgba_equal": true,
+    "review_note": "顎の二重縁を弱め、両目を閉じた笑顔を保持。閉じ目を不具合として開いていない。",
+    "metrics": {
+      "top": 0.17083333333333334,
+      "bottom": 0.98,
+      "ax": 0.5793792706682331,
+      "aspect": 0.7466666666666667
+    },
+    "foot_drift_px": 0.27451145024366497,
+    "visible_height_drift_px": 0.0
+  },
+  {
+    "character": "ageha",
+    "expression": "surprise",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_ageha_surprise.png",
+    "target": "assets/sprites/characters/ageha/chr_ageha_surprise.png",
+    "before_sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd",
+    "status": "applied-local",
+    "version": 1,
+    "preparation": "ageha-surprise-v1-preparation.json",
+    "after_sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774",
+    "runtime": "remake/img/sprites/characters/ageha/chr_ageha_surprise.webp",
+    "runtime_sha256": "3d74d763e690053e9e61ad6f2cec491cdabdc4117b971dfae264cc65d42a1e0c",
+    "runtime_rgba_equal": true,
+    "review_note": "顎の二重縁を弱め、両眼を開く驚きと両手を上げたポーズを保持。",
+    "metrics": {
+      "top": 0.17,
+      "bottom": 0.98,
+      "ax": 0.578016910336537,
+      "aspect": 0.7466666666666667
+    },
+    "foot_drift_px": -0.4760062331996977,
+    "visible_height_drift_px": 0.9999999999999898
+  },
+  {
+    "character": "mashiro",
+    "expression": "normal",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_normal.png",
+    "target": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "before_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+    "status": "original-retained-per-owner",
+    "reason": "ユーザー「ましろは破綻そんなしてないなら変えなくてもいい」。元の半目・顔形状に明確な破綻はなく、白縁の濃さは軽微な調整候補。元画像を維持し追加生成を中止。"
+  },
+  {
+    "character": "mashiro",
+    "expression": "serious",
+    "previous": "asset_sources/portraits/face-corrections-followup/previous/chr_mashiro_serious.png",
+    "target": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+    "before_sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+    "status": "original-retained-per-owner",
+    "reason": "ユーザー「ましろは破綻そんなしてないなら変えなくてもいい」。元の半目・顔形状に明確な破綻はなく、白縁の濃さは軽微な調整候補。元画像を維持し追加生成を中止。"
+  }
+]
