@@ -1,6 +1,7 @@
 // 第2章のあげは（#626）: 強制の夜・店に通う回の順番・ダメな日・答え合わせ・試煙会の配合・LIME・控室の分岐。
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { CITY_BACKGROUNDS } from "../js/core/city-locations.js";
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, C_STATION_TASTING_BG, agehaStoryScene, syncAgehaVibes } from "../js/chapters/ch2-story-data.js";
 
 const read = (path) => JSON.parse(fs.readFileSync(new URL(`../../${path}`, import.meta.url), "utf8"));
@@ -17,7 +18,9 @@ assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
 assert.equal(night(9).pin, "ch2_c_station");
 assert.equal(night(9).steps[0].room, undefined);
 assert.equal(night(9).steps[0].bg, C_STATION_TASTING_BG);
-assert.match(C_STATION_TASTING_BG, /^\.\.\/assets\/backgrounds\/bg_c_station_night\.png$/, "C.STATIONの客席（画像の読み込みはブラウザの ch2_story で確認）");
+assert.equal(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station_night, "柚ヶ谷店の客席の夜景を使う");
+assert.match(C_STATION_TASTING_BG, /bg_yuzugaya_c_station_night\.webp$/, "地元店や県大会ホールの背景と区別する");
+assert.notEqual(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station, "昼の通常訪問用背景を変えない");
 assert.doesNotMatch(night(9).label, /試飲|店長同士/);
 assert.deepEqual(night(10).steps.map((s) => s.id), ["ch2_sumi_silence", "remake_ch2_ageha_slump"]);
 assert(!night(8), "8日目はサメのTRPG参加日");

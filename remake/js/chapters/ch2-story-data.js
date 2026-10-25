@@ -1,11 +1,12 @@
 import { AGEHA_AFFINITY_VISITS } from "../core/affinity-stages.js";
+import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 // 章内日で記す。保存日時・夜の予定表へ渡すときだけ通算日に変換する。
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
 // 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
 // room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。contact はその夜に連絡先も交換する。
-// C.STATIONの客席（夜）。#921の柚ヶ谷店専用背景が統合されたら、そちらへ差し替える。
-export const C_STATION_TASTING_BG = "../assets/backgrounds/bg_c_station_night.png";
+// #921の柚ヶ谷店の客席を夜景にした背景。県大会ホールや地元店と区別する。
+export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
