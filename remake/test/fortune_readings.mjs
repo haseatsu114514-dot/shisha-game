@@ -216,12 +216,16 @@ for (const [key, h] of Object.entries(hints.choices)) {
   assert(h.options.includes(h.preferred));
 }
 
+// CIの軽量checkoutにも含まれる正式PNGで、採用画像の固定ハッシュと透過・WebPを検査する。
 const art = spawnSync('python3', ['-c', `
 from PIL import Image
-import json,sys
+import hashlib,json,sys
 from pathlib import Path
-root=Path(sys.argv[1]); a=Image.open(root/'asset_sources/fortune-teller-682/generated.png').convert('RGBA');b=Image.open(root/'assets/sprites/characters/uranaishi/chr_uranaishi_normal.png').convert('RGBA')
-assert a.size==b.size and a.tobytes()==b.tobytes(), 'portrait encoding changed source pixels'
+root=Path(sys.argv[1])
+portrait=root/'assets/sprites/characters/uranaishi/chr_uranaishi_normal.png'
+assert hashlib.sha256(portrait.read_bytes()).hexdigest()=='38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d', 'adopted portrait changed'
+b=Image.open(portrait).convert('RGBA')
+assert b.size==(896,1200)
 alpha=b.getchannel('A');assert alpha.getextrema()==(0,255)
 for p in [(0,0),(b.width-1,0),(0,b.height-1),(b.width-1,b.height-1)]:assert alpha.getpixel(p)==0
 left,top,right,bottom=alpha.point(lambda v:255 if v>2 else 0).getbbox();assert left>0 and top>0 and right<b.width and bottom<b.height, 'portrait cut off at an edge'
