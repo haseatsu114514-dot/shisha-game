@@ -2,8 +2,11 @@
 export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.png', import.meta.url).href;
 export const FACILITY_SHEET_SIZE = Object.freeze([2172, 724]);
 export const FACILITY_EXTRA_SHEET = new URL('../../../assets/ui/map-facilities-extra-579.webp', import.meta.url).href;
+export const CINEMA_ICON = new URL('../../../assets/ui/map-rojiura-cinema.webp', import.meta.url).href;
 // Half-open crops with two source pixels of breathing room. Badge anchors touch an opaque right-side contour.
 export const FACILITY_ICONS = Object.freeze({
+  rojiura_cinema: Object.freeze({ badge: Object.freeze([450, 170]), label: '路地裏シネマ', src: CINEMA_ICON,
+    sheetSize: Object.freeze([512, 512]), rect: Object.freeze([0, 0, 512, 512]) }),
   kannondo: Object.freeze({ badge: Object.freeze([743, 244]), label: '観音堂', rect: Object.freeze([21, 87, 815, 561]) }),
   home: Object.freeze({ badge: Object.freeze([1453, 281]), label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
   kohaku: Object.freeze({ badge: Object.freeze([1994, 293]), label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
@@ -14,6 +17,7 @@ export const FACILITY_ICONS = Object.freeze({
 });
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
+  rojiura_cinema: 'rojiura_cinema',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
@@ -39,12 +43,12 @@ export function facilityIconLayout(id, size = 48) {
   if (!entry) throw new RangeError(`Unknown facility: ${id}`);
   if (!FACILITY_ICON_SIZES.includes(size)) throw new RangeError(`Unsupported icon size: ${size}`);
   const [x, y, width, height] = entry.rect;
-  const [sheetWidth, sheetHeight] = entry.extra ? [1536, 1024] : FACILITY_SHEET_SIZE;
+  const [sheetWidth, sheetHeight] = entry.sheetSize || (entry.extra ? [1536, 1024] : FACILITY_SHEET_SIZE);
   const scale = size / Math.max(width, height);
   return { width: width * scale, height: height * scale,
     sheetWidth: sheetWidth * scale, sheetHeight: sheetHeight * scale,
     badgeX: (entry.badge[0] - x) * scale, badgeY: (entry.badge[1] - y) * scale,
-    left: -x * scale, top: -y * scale, src: entry.extra ? FACILITY_EXTRA_SHEET : FACILITY_SHEET };
+    left: -x * scale, top: -y * scale, src: entry.src || (entry.extra ? FACILITY_EXTRA_SHEET : FACILITY_SHEET) };
 }
 
 export function createFacilityIcon(id, { size = 48, decorative = false, sticker = false, document = globalThis.document } = {}) {
@@ -68,6 +72,11 @@ export function createFacilityIcon(id, { size = 48, decorative = false, sticker 
   image.src = layout.src;
   image.alt = '';
   image.draggable = false;
+  if (id === 'rojiura_cinema') image.onerror = () => {
+    crop.textContent = '映';
+    crop.style.display = 'grid';
+    crop.style.placeItems = 'center';
+  };
   for (const [property, value] of Object.entries({ width: layout.sheetWidth, height: layout.sheetHeight,
     left: layout.left, top: layout.top })) image.style[property] = `${value}px`;
   crop.append(image);
