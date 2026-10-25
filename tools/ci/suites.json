@@ -269,7 +269,10 @@
         "remake/test/browser/ch1_story_feedback.mjs",
         "remake/test/browser/first_brew.mjs",
         "remake/test/browser/minto_delivery.mjs",
-        "remake/test/browser/reel_registration_load.mjs"
+        "remake/test/browser/reel_registration_load.mjs",
+        "remake/js/chapters/ch2*.js",
+        "data/dialogue/ch2*.json",
+        "remake/js/daily/phone.js"
       ],
       "run": [
         "node remake/test/browser/first_brew_finish.mjs",
@@ -1191,7 +1194,10 @@
         "remake/js/daily/phone.js",
         "remake/test/browser/ch1_loading.mjs",
         "remake/test/browser/issue439.mjs",
-        "remake/test/browser/early_contacts_705.mjs"
+        "remake/test/browser/early_contacts_705.mjs",
+        "assets/backgrounds/bg_ch1*",
+        "remake/img/backgrounds/bg_ch1*",
+        "data/lime_messages.json"
       ],
       "run": [
         "node remake/test/browser/ch1_loading.mjs",
@@ -1477,7 +1483,11 @@
         "remake/test/browser/play_feedback.mjs",
         "remake/test/browser/ch1_opening_resume.mjs",
         "remake/test/browser/lover_milestones.mjs",
-        "remake/test/browser/lime_appointment_recovery.mjs"
+        "remake/test/browser/lime_appointment_recovery.mjs",
+        "data/dialogue/*minto*.json",
+        "data/dialogue/*tsumugi*.json",
+        "data/dialogue/*samechan*.json",
+        "remake/js/daily/romance.js"
       ],
       "run": [
         "node remake/test/browser/play_feedback.mjs",
@@ -1586,7 +1596,13 @@
         "remake/test/browser/samechan_entry.mjs",
         "remake/test/browser/samechan_confession.mjs",
         "remake/test/browser/affinity_gates.mjs",
-        "remake/test/browser/relationship_ui.mjs"
+        "remake/test/browser/relationship_ui.mjs",
+        "data/dialogue/*hiyori*.json",
+        "data/dialogue/*samechan*.json",
+        "assets/cgs/*hiyori*",
+        "assets/cgs/*samechan*",
+        "remake/img/cgs/*hiyori*",
+        "remake/img/cgs/*samechan*"
       ],
       "run": [
         "node remake/test/browser/axe_bar_discovery.mjs",
@@ -1614,7 +1630,10 @@
         "remake/js/daily/minto*.js",
         "data/dialogue/minto*.json",
         "assets/sprites/characters/minto/**",
-        "remake/test/minto_progression.mjs"
+        "remake/test/minto_progression.mjs",
+        "data/dialogue/*minto*.json",
+        "assets/cgs/*minto*",
+        "remake/img/cgs/*minto*"
       ],
       "run": [
         "node remake/test/minto_progression.mjs"
@@ -1631,7 +1650,10 @@
         "remake/js/daily/tsumugi*.js",
         "data/dialogue/tsumugi*.json",
         "assets/sprites/characters/tsumugi/**",
-        "remake/test/tsumugi_story.mjs"
+        "remake/test/tsumugi_story.mjs",
+        "data/dialogue/*tsumugi*.json",
+        "assets/cgs/*tsumugi*",
+        "remake/img/cgs/*tsumugi*"
       ],
       "run": [
         "node remake/test/tsumugi_story.mjs"
@@ -1751,7 +1773,8 @@
         "remake/test/browser/sumi_contact.mjs",
         "remake/test/browser/lover_hidden_growth.mjs",
         "remake/test/browser/home_shisha.mjs",
-        "remake/test/browser/home_practice_leaves.mjs"
+        "remake/test/browser/home_practice_leaves.mjs",
+        "remake/js/daily/practice*.js"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -1772,7 +1795,8 @@
         "remake/js/daily/romance.js",
         "remake/js/daily/bonds.js",
         "data/dialogue/*date*.json",
-        "remake/test/browser/lover_date_route.mjs"
+        "remake/test/browser/lover_date_route.mjs",
+        "data/dialogue/*romance*.json"
       ],
       "run": [
         "node remake/test/browser/lover_date_route.mjs"
@@ -1811,7 +1835,9 @@
         "remake/js/daily/tonari.js",
         "remake/test/vn_visual_readiness.mjs",
         "remake/test/browser/tonari_opening.mjs",
-        "remake/test/browser/tutorial_transition.mjs"
+        "remake/test/browser/tutorial_transition.mjs",
+        "remake/css/ch1*.css",
+        "remake/js/daily/tutorial*.js"
       ],
       "run": [
         "node remake/test/vn_visual_readiness.mjs",
