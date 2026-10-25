@@ -169,6 +169,23 @@ await check('LIME .25/carry and fortune once: blocked actual delta has no false 
   f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,9);
   close(s.affinityCarry.naru,.7); // round(2*1.5)*.85*.25 + .0625
 });
+await check('LIME reply feedback follows actual fractional progress, caps, SAVE/LOAD and integer rollover', async f => {
+  let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
+  const deltas = [], opts = { source: 'lime', onGain: delta => deltas.push(delta) };
+  for (let i=0;i<5;i++) { f.stats.gainAffinity('naru',1,opts); s=f.roundTrip(); }
+  assert.equal(deltas.length,5); deltas.forEach(delta=>close(delta,.2125));
+  assert.equal(s.affinity.naru,10); close(s.affinityCarry.naru,.0625);
+  f.tick(); assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,0,'reply feedback must not also show a heart card');
+  s.affinity.naru=19;
+  f.stats.gainAffinity('naru',2,opts); assert.equal(deltas.length,5,'capped carry is not visible progress');
+  s.affinity.naru=18; s.affinityCarry.naru=.9;
+  f.stats.gainAffinity('naru',1,opts); close(deltas.at(-1),.1); assert.equal(s.affinity.naru,19);
+  const n=deltas.length; f.stats.gainAffinity('naru',0,opts); assert.equal(deltas.length,n);
+  // Existing private bond formula is separate from ordinary LIME's quarter scale.
+  s.lovers=['tsumugi']; s.lovePts.tsumugi=9; s.loveLevel.tsumugi=1;
+  f.stats.bond.private=true; f.stats.gainAffinity('tsumugi',3,opts); f.stats.bond.private=false;
+  close(deltas.at(-1),1.5); assert.equal(s.lovePts.tsumugi,10); close(s.loveCarry.tsumugi,.5);
+});
 await check('samechan introduction: cancellation cannot grant846; normal read gives exactly heart1', async f => {
   const s=f.core.state;f.setPlay(async()=>({cancelled:true}));assert.equal(await f.samechan.playSamechanEncounter(),false);
   assert(!s.flags._samechan_first_encounter);assert.equal(f.stats.affinityLevel('samechan'),0);

@@ -38,6 +38,48 @@ await suite("affinity-gates", async check => {
   const run = check;
   check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-lime-fraction-feedback-and-load`, async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const s = G.core.newGame(); s.met.naru = true; s.contacts.push("naru");
+        s.story.naru = 1; s.affinity.naru = 9;
+        s.inbox = [{ id: "qa814", day: s.day, read: true, done: false, log: [],
+          msg: { id: "qa814", sender: "naru", type: "chat", replies: [{ text: "また話そう", affinity: 1, response: "またね" }] } }];
+        G.phone = await import("./js/daily/phone.js");
+        G.phoneDone = G.phone.openLime({ sender: "naru" });
+      });
+      const act = async selector => {
+        const target = page.locator(selector);
+        await target[options.hasTouch ? "tap" : "click"]();
+      };
+      await act('[data-test="reply-0"]');
+      const feedback = page.locator(".lime-note").filter({ hasText: "♡ ほんの少し仲良くなった" });
+      await feedback.waitFor(); assert.equal(await feedback.count(),1);
+      await assertFits(page,".lime-note");
+      await page.locator('[data-test="phone-next"]').waitFor();
+      assert.equal(await page.locator(".gain-card.affinity").count(),0);
+      const read = () => page.evaluate(() => ({ pts:G.core.state.affinity.naru, carry:G.core.state.affinityCarry.naru }));
+      const after = await read(); assert.equal(after.pts,9); assert(Math.abs(after.carry-.2125)<1e-9);
+      await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
+      await page.evaluate(async () => { await G.phoneDone; G.core.saveToSlot("suien_remake_slot1"); G.core.newGame(); G.core.loadFromSlot("suien_remake_slot1"); G.phoneDone=G.phone.openLime({sender:"naru"}); });
+      await page.locator('[data-test="phone-next"]').waitFor();
+      assert.equal(await feedback.count(),0,"history/LOAD must not replay a gain");
+      assert.deepEqual(await read(),after);
+      await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
+      await page.evaluate(async () => {
+        await G.phoneDone;
+        G.core.state.affinity.naru=19;
+        const item=G.core.state.inbox[0]; item.done=false; item.log=[];
+        G.phoneDone=G.phone.openLime({sender:"naru"});
+      });
+      await act('[data-test="reply-0"]');
+      await page.locator('[data-test="phone-next"]').waitFor();
+      assert.equal(await feedback.count(),0,"capped reply must not claim a gain");
+      assert.equal((await read()).pts,19);
+      await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
+      await page.evaluate(() => G.phoneDone);
+    }, options);
+
     await check(`${label}-questions-and-finales`, async page => {
       await setup(page);
       const rows = await page.evaluate(async () => {

@@ -306,6 +306,15 @@ function fortuneMult(id) {
  */
 export const LIME_AFFINITY_SCALE = 0.25;
 
+// LIMEの端数も実際に積もったときだけ、小さな返信内の通知へ渡す。
+// 上限の外に保留した分は上昇として見せず、通常のハート通知と重複させない。
+function reportAffinityGain(opts, payload, carryBefore, carryAfter, cap) {
+  if (opts.source === "lime" && typeof opts.onGain === "function") {
+    const delta = Math.min(cap, payload.pts + carryAfter) - Math.min(cap, payload.prevPts + carryBefore);
+    if (delta > 1e-9) opts.onGain(delta);
+  } else if (payload.pts > payload.prevPts) queueAffinityGain(payload);
+}
+
 export function gainAffinity(id, pts, opts = {}) {
   if (!id || !(pts > 0)) return;
   let mult = 1 + 0.2 * tier01("charm");
@@ -316,20 +325,21 @@ export function gainAffinity(id, pts, opts = {}) {
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
     state.loveCarry ||= {};
-    const value = Math.round(pts * mult) * BOND_PACE + (state.loveCarry[id] || 0);
+    const carryBefore = state.loveCarry[id] || 0;
+    const value = Math.round(pts * mult) * BOND_PACE + carryBefore;
     const got = Math.floor(value + 1e-9);
     state.loveCarry[id] = Math.max(0, value - got);
-    const applied = Math.min(got, Math.max(0, lovePointCap(id) - prevPts));
+    const cap = lovePointCap(id);
+    const applied = Math.min(got, Math.max(0, cap - prevPts));
     if (applied < got) {
       const key = `_${id}_love_waiting_pts`;
       state.flags[key] = (state.flags[key] || 0) + got - applied;
     }
     state.lovePts[id] = prevPts + applied;
-    if (!applied) return 0;
     const before = state.loveLevel[id] || 1;
-    const after = Math.max(before, rankOf(state.lovePts[id]));
-    state.loveLevel[id] = after;
-    queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
+    const after = applied ? Math.max(before, rankOf(state.lovePts[id])) : before;
+    if (applied) state.loveLevel[id] = after;
+    reportAffinityGain(opts, { id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true }, carryBefore, state.loveCarry[id], cap);
     return applied;
   }
   releaseAffinity(id);
@@ -340,16 +350,17 @@ export function gainAffinity(id, pts, opts = {}) {
   state.affinityCarry ||= {};
   // LIME返信のみ、整数丸めの後・端数繰り越しの前に倍率を掛ける（丸めで0にならず微量が累積する）
   const scale = opts.source === "lime" ? LIME_AFFINITY_SCALE : 1;
+  const carryBefore = state.affinityCarry[id] || 0;
   const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
-  const applied = Math.min(got, Math.max(0, affinityPointCap(id) - prevPts));
+  const cap = affinityPointCap(id);
+  const applied = Math.min(got, Math.max(0, cap - prevPts));
 
   if (applied < got) state.flags[waitingKey(id)] = (state.flags[waitingKey(id)] || 0) + got - applied;
   state.affinity[id] = prevPts + applied;
-  if (!applied) return 0;
   const after = affinityLevel(id);
-  queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
+  reportAffinityGain(opts, { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] }, carryBefore, state.affinityCarry[id], cap);
   return applied;
 }
 
