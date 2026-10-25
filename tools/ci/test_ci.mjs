@@ -50,6 +50,33 @@ test("only removed workflows' tests changed owner, nothing selects nothing", () 
   assert.ok(matchesAny("data/dialogue/ch1_main.json", manifest.suites.find((s) => s.id === "ch1-presentation").paths));
 });
 
+test("chapter 3 changes do not start unrelated chapter and feature suites", () => {
+  const changed = [
+    "data/dialogue/ch3_prologue.json",
+    "remake/js/chapters/ch3.js",
+    "remake/css/ch3-kuze-video.css",
+    "assets/backgrounds/bg_ch3_kuze_video.png",
+    "remake/img/backgrounds/bg_ch3_kuze_video.webp",
+    "remake/data/manifest.json",
+    "remake/index.html",
+    "remake/test/browser/ch2_tournament.mjs",
+  ];
+  const selected = new Set(selectSuites(manifest, changed).map((s) => s.id));
+  for (const id of ["ch2-tournament", "ch3-tournament", "game-layout"])
+    assert.ok(selected.has(id), `${id} must run`);
+  for (const id of ["relationships", "minto-progression", "ch1-practice", "playthrough-street"])
+    assert.ok(!selected.has(id), `${id} is unrelated`);
+  assert.ok(selected.size < 25, `chapter 3 selected ${selected.size} browser suites`);
+});
+
+test("shared runtime changes still run every browser suite", () => {
+  const all = manifest.suites.filter((s) => s.kind === "browser").length;
+  for (const file of ["remake/js/core/state.js", "remake/js/vn/engine.js", "data/characters.json"])
+    assert.equal(selectSuites(manifest, [file]).length, all, `${file} must run all suites`);
+  assert.ok(selectSuites(manifest, ["remake/test/browser/save_load.mjs"])
+    .some((s) => s.id === "save-load"));
+});
+
 test("sharding keeps every suite once and stays within the group limit", () => {
   const suites = manifest.suites.filter((s) => s.kind === "browser");
   const groups = shard(suites);
