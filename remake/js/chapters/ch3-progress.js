@@ -12,7 +12,7 @@ export const CH3_INTRO_SCENES = Object.freeze([
   { id: "ch3_taste_return", day: 5, slot: 1, label: "林檎の輪郭", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_abyss_recovery", day: 6, slot: 0, label: "昨日とは違う今日", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_contact_before_tournament", day: 7, slot: 1, label: "自分からの電話", location: "東京", bg: "bg_street_night" },
-  { id: "ch3_naru_work", day: 7, slot: 1, label: "電話の向こうの仕事", location: "東京", bg: "bg_street_night" },
+  { id: "ch3_naru_work", day: 7, slot: 1, label: "もう一つの予選", location: "東京", bg: "bg_street_night" },
   { id: "ch3_kuze_first", day: 8, slot: 0, label: "煙幕", location: "煙幕", bg: "bg_yohaku_shop" },
   { id: "ch3_kuze_advice", day: 11, slot: 0, label: "予想の外側", location: "煙幕", bg: "bg_yohaku_shop" },
   { id: "ch3_steve_low_heat", day: 11, slot: 1, label: "待つためのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop" },

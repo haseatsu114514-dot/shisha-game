@@ -194,7 +194,7 @@ export function naruRiftActive(save = state) {
   );
 }
 
-/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるとの決裂後は継続して臨時休業にする。 */
+/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるは対峙後、行き先を告げず修行へ出るため継続して休業にする。 */
 export function isTemporaryClosed(spot) {
   return !!spot.charId && (
     state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`

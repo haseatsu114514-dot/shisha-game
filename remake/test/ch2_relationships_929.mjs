@@ -88,8 +88,10 @@ for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "rei"]]) {
   const cond = scene.lines.find((l) => l.type === "condition" && l.char_id === id);
   assert(scene.branches[cond.next_false].some((l) => l.flag === `_met_${id}`), `${id}: 初対面なら名乗って面識を記録`);
 }
-assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /笑い方/);
-assert.match(window.branches.listened.map((l) => l.text).join("\n"), /肩は叩かれなかった/);
+assert.match(window.lines.map((l) => l.text || "").join("\n"), /しばらく休業[\s\S]*行き先もない/);
+assert(!all(window).some((l) => l.speaker === "naru" && /明後日|来たよ/.test(l.text || "")), "休業後ははじめに会わない");
+assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /既読[\s\S]*電話に出なかった/);
+assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一回[\s\S]*返事が来ない/);
 
 // 章の最後: はじめのいない場面で、あげはの心の声だけ。才能の壁は両側にあった（本人には言わない嫉妬）
 const heart = tournament.ch2_tournament_ageha_heart;
