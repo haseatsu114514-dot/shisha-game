@@ -1,0 +1,1808 @@
+{
+  "schema": 1,
+  "updated": "2026-10-25",
+  "timezone": "Asia/Tokyo",
+  "policy": {
+    "immutable_sources": "Every image is identified by full commit SHA and path. Existing IDs and source records must not be overwritten.",
+    "editing_base": "Use the image/version explicitly selected by the owner as the fixed base. Change only specified parts; do not substitute the current implementation or regenerate other routes without instruction.",
+    "rejected": "Keep rejection status visible. Browsing an archived rejected image does not adopt it."
+  },
+  "original_contact": {
+    "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+    "path": "asset_sources/review-candidates-20261024/previews/dialogue-all.jpg"
+  },
+  "versions": [
+    {
+      "id": "V01",
+      "title": "最初の6テーマ実装",
+      "note": "初期のSVG・設定切替を含む最初の実画面。生成モックとは区別する。",
+      "date": "2026-10-24T10:40:58Z",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V01-11",
+        "V01-11P",
+        "V01-16",
+        "V01-25",
+        "V01-28",
+        "V01-G"
+      ],
+      "contact": {
+        "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V02",
+      "title": "質感を再構成した最初の版",
+      "note": "煙・紫煙・紙の質感素材を再構成し、光の試作を追加した時点。",
+      "date": "2026-10-24T11:03:31Z",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V02-11",
+        "V02-11P",
+        "V02-16",
+        "V02-25",
+        "V02-28",
+        "V02-G"
+      ],
+      "contact": {
+        "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V03",
+      "title": "16の輪郭・名前札を追った版",
+      "note": "初期モックの角と名前札に寄せて16を修正した時点。",
+      "date": "2026-10-24T11:06:50Z",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V03-11",
+        "V03-11P",
+        "V03-16",
+        "V03-25",
+        "V03-28",
+        "V03-G"
+      ],
+      "contact": {
+        "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V04",
+      "title": "11の名前と16の形・本文2行",
+      "note": "ここは11と16の2行表示を個別に保存した版。他4テーマの新しい画像は記録されていない。",
+      "date": "2026-10-24T11:45:21Z",
+      "source_commit": "2fa2c71e5e930b7900edbc96413da77bff212522",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V04-11",
+        "V04-16"
+      ],
+      "contact": {
+        "source_commit": "2fa2c71e5e930b7900edbc96413da77bff212522",
+        "path": "asset_sources/ui/vn-smoke-11/outline-name-fix/comparison.png"
+      }
+    },
+    {
+      "id": "V05",
+      "title": "操作を右上へ分離した版",
+      "note": "文字・▼との重なりを避け、横幅と16の形を調整した時点。",
+      "date": "2026-10-24T12:08:15Z",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V05-11",
+        "V05-11P",
+        "V05-16",
+        "V05-25",
+        "V05-28",
+        "V05-G"
+      ],
+      "contact": {
+        "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V06",
+      "title": "11の名前調整・青い窓4キャラ",
+      "note": "11の名前と、平成青窓の他キャラ比較を追加した時点。",
+      "date": "2026-10-24T13:12:37Z",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V06-11",
+        "V06-11P",
+        "V06-16",
+        "V06-25",
+        "V06-28",
+        "V06-G",
+        "V06-B-hiyori",
+        "V06-B-minto",
+        "V06-B-ageha",
+        "V06-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V07",
+      "title": "P5を参考に16を再生成した版",
+      "note": "強い角・墨色と紫の紙へ再生成。この尖った方向は後で撤回。",
+      "date": "2026-10-24T19:44:44Z",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "status": "尖った方向は撤回済み・履歴",
+      "entry_ids": [
+        "V07-11",
+        "V07-11P",
+        "V07-16",
+        "V07-25",
+        "V07-28",
+        "V07-G",
+        "V07-B-hiyori",
+        "V07-B-minto",
+        "V07-B-ageha",
+        "V07-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V08",
+      "title": "16を柔らかな紙へ戻した版",
+      "note": "墨紫のペーパーラウンジへ再生成。名前と操作を窓内の見出し段へ。",
+      "date": "2026-10-24T20:15:51Z",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V08-11",
+        "V08-11P",
+        "V08-16",
+        "V08-25",
+        "V08-28",
+        "V08-G",
+        "V08-B-hiyori",
+        "V08-B-minto",
+        "V08-B-ageha",
+        "V08-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V09",
+      "title": "2画面の16・名前位置修正版",
+      "note": "縦持ち2画面の名前と本文2行を確認した保存画像。通常6テーマの新しい一式ではない。",
+      "date": "2026-10-24T20:19:09Z",
+      "source_commit": "03c41906b255d919dc27aade7396d71ba3b84df0",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V09-16"
+      ],
+      "contact": {
+        "source_commit": "03c41906b255d919dc27aade7396d71ba3b84df0",
+        "path": "asset_sources/ui/vn-smoke-11/calm/ds-touch.png"
+      }
+    },
+    {
+      "id": "V10",
+      "title": "名前札と操作を上辺へ出した版",
+      "note": "本文窓を188px高へ。札を本文の外へ出した最初の版。",
+      "date": "2026-10-24T22:01:39Z",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V10-11",
+        "V10-11P",
+        "V10-16",
+        "V10-25",
+        "V10-28",
+        "V10-G",
+        "V10-B-hiyori",
+        "V10-B-minto",
+        "V10-B-ageha",
+        "V10-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V11",
+      "title": "煙を広げ、下側を詰めた版",
+      "note": "本文窓176px・画面下16px。16の文字の模様、25と金枠の左右位置を調整。",
+      "date": "2026-10-25T00:00:08Z",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V11-11",
+        "V11-11P",
+        "V11-16",
+        "V11-25",
+        "V11-28",
+        "V11-G",
+        "V11-B-hiyori",
+        "V11-B-minto",
+        "V11-B-ageha",
+        "V11-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V12",
+      "title": "再生成の直前・PSD書き出し元",
+      "note": "11の操作を左へ、右下の輪郭と▼を内側へ。28本文を上へ。配布済みPSDはこの版。",
+      "date": "2026-10-25T00:11:43Z",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "entry_ids": [
+        "V12-11",
+        "V12-11P",
+        "V12-16",
+        "V12-25",
+        "V12-28",
+        "V12-G",
+        "V12-B-hiyori",
+        "V12-B-minto",
+        "V12-B-ageha",
+        "V12-B-tsumugi"
+      ],
+      "contact": {
+        "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+        "path": "asset_sources/ui/vn-smoke-11/comparison.png"
+      }
+    },
+    {
+      "id": "V13",
+      "title": "直近の6路線再生成【全案没】",
+      "note": "名前札・操作枠まで画像生成した6案。本人指定で全案没。履歴としてのみ表示。",
+      "date": "2026-10-25T00:42:00Z",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "status": "全案没",
+      "entry_ids": [
+        "V13-11",
+        "V13-11P",
+        "V13-16",
+        "V13-25",
+        "V13-28",
+        "V13-G"
+      ],
+      "contact": {
+        "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+        "path": "asset_sources/ui/vn-smoke-11/regenerated/comparison.png"
+      }
+    }
+  ],
+  "families": [
+    {
+      "id": "11",
+      "label": "11 煙だけの輪郭",
+      "originals": [
+        "O26"
+      ]
+    },
+    {
+      "id": "11P",
+      "label": "11 紫の煙",
+      "originals": [
+        "O26",
+        "O17",
+        "M01"
+      ]
+    },
+    {
+      "id": "16",
+      "label": "16 紫の紙／切り紙",
+      "originals": [
+        "O16"
+      ]
+    },
+    {
+      "id": "25",
+      "label": "25 琥珀ラウンジ",
+      "originals": [
+        "O25"
+      ]
+    },
+    {
+      "id": "28",
+      "label": "28 重なる薄紙",
+      "originals": [
+        "O28"
+      ]
+    },
+    {
+      "id": "G",
+      "label": "従来ゴージャス",
+      "originals": []
+    },
+    {
+      "id": "B",
+      "label": "平成の青い窓",
+      "originals": [
+        "R2"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "id": "O16",
+      "label": "旧16／会話案01 紫・切り紙エディトリアル",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/01-dialogue-01.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "93aa4940a8937ee137d9e373947befa227c31f7c",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-16.jpg"
+      },
+      "original_dialogue_number": 1,
+      "original_sheet_number": 16,
+      "sha256": "1fd5acdea59dbb0d1547076309635917353a3d7638129b50cd5ed54911b87b25"
+    },
+    {
+      "id": "O17",
+      "label": "旧17／会話案02 紫・煙の絹",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/02-dialogue-02.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "b39b6af715567b3509fe63050192a442282aad81",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-17.jpg"
+      },
+      "original_dialogue_number": 2,
+      "original_sheet_number": 17,
+      "sha256": "a6d9d62583cdb33a05c8f1cdecd19c4b49b09a87f72b6fdb3e5815b855299017"
+    },
+    {
+      "id": "O18",
+      "label": "旧18／会話案03 紫・夜行メトロ",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/03-dialogue-03.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "d146a877bae43142a8a44e8afeb9e7ce15e54fab",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-18.jpg"
+      },
+      "original_dialogue_number": 3,
+      "original_sheet_number": 18,
+      "sha256": "a6dada077ade562b108afbbafe35c031c7b876ba7b2b9746c21ca07d961ca68b"
+    },
+    {
+      "id": "O19",
+      "label": "旧19／会話案04 紫・アメジストガラス",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/04-dialogue-04.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "ee06fb4919bc121691c9a86c37787280c9b74558",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-19.jpg"
+      },
+      "original_dialogue_number": 4,
+      "original_sheet_number": 19,
+      "sha256": "b4e80cc50d2aa5c7debaac7dab586ade5b1763ff592e7b7e4fa93eb3cddac53f"
+    },
+    {
+      "id": "O20",
+      "label": "旧20／会話案05 紫・深夜のチケット",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/05-dialogue-05.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "d9deaa4bda268a0ab07d68cae72cd906e1ea72db",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-20.jpg"
+      },
+      "original_dialogue_number": 5,
+      "original_sheet_number": 20,
+      "sha256": "6ffaa38da7a36ef753fe66a48b20e72a6a96d7240cbb94451e01b2da4fcacec1"
+    },
+    {
+      "id": "O21",
+      "label": "旧21／会話案06 非紫・生成りZINE",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/06-dialogue-06.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "5c9c4c364d5f86186eb94382a82b0b9e3c0590aa",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-21.jpg"
+      },
+      "original_dialogue_number": 6,
+      "original_sheet_number": 21,
+      "sha256": "f224ef5eb682ebe22deaddabe168b34ca3192d3162aa24cb31d575c7ed18bf6a"
+    },
+    {
+      "id": "O22",
+      "label": "旧22／会話案07 非紫・深緑HMDメタル",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/07-dialogue-07.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "9a5f44b39ce2b74cc25c6ea10e33ea6b8883dc74",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-22.jpg"
+      },
+      "original_dialogue_number": 7,
+      "original_sheet_number": 22,
+      "sha256": "cfb98395ada46a9e9472e5db6a6a57cc31d94ba77a0a31ff13097f309e5104a9"
+    },
+    {
+      "id": "O23",
+      "label": "旧23／会話案08 非紫・朱のグラフィック",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/08-dialogue-08.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "5859be48d789a6d2ad2f8e7ebc4c579b02981afb",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-23.jpg"
+      },
+      "original_dialogue_number": 8,
+      "original_sheet_number": 23,
+      "sha256": "8e73588062d8b11188c1734607c94efe13875ef68f5a001000d4e69e650c7405"
+    },
+    {
+      "id": "O24",
+      "label": "旧24／会話案09 非紫・コバルト計器",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/09-dialogue-09.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "2a3e20a1c3bb5751d300559b1168bec151a93948",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-24.jpg"
+      },
+      "original_dialogue_number": 9,
+      "original_sheet_number": 24,
+      "sha256": "6484df9a6acc64d8f300f8846889edb5e2481bc07712bf2345a25f26781cc077"
+    },
+    {
+      "id": "O25",
+      "label": "旧25／会話案10 非紫・琥珀ラウンジ",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/10-dialogue-10.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "08dd3bf3cb398622362f5e224d04413ebb1723f5",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-25.jpg"
+      },
+      "original_dialogue_number": 10,
+      "original_sheet_number": 25,
+      "sha256": "2faecf22aba2a6e9170fcb584100de6f33a61fb8dd28fb0492fd2186c97f802d"
+    },
+    {
+      "id": "O26",
+      "label": "旧26／会話案11 実験・煙だけの輪郭",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "00f3ed06a275bd179bc68bebd846cd2d5d72eeb1",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-26.jpg"
+      },
+      "original_dialogue_number": 11,
+      "original_sheet_number": 26,
+      "sha256": "390805d3590501432cc287519de335324422008df7269031f6141f7d076b9dbd"
+    },
+    {
+      "id": "O27",
+      "label": "旧27／会話案12 実験・横長レシート",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/12-dialogue-12.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "74db9a1ec7e5c12c2fb1ee90837eb082d17781fd",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-27.jpg"
+      },
+      "original_dialogue_number": 12,
+      "original_sheet_number": 27,
+      "sha256": "5c9e088dfa3ac77c71919c92369984c53f82b846bd65c3ffbf6f6d47755f3e5d"
+    },
+    {
+      "id": "O28",
+      "label": "旧28／会話案13 実験・重なる薄紙",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/13-dialogue-13.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "211f89812de42a1f3c5fd80e0684d26fc8da367d",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-28.jpg"
+      },
+      "original_dialogue_number": 13,
+      "original_sheet_number": 28,
+      "sha256": "474de00d8b11f23d66bba3df5e95965fce4f077a54b35924c47fc626945f8be4"
+    },
+    {
+      "id": "O29",
+      "label": "旧29／会話案14 実験・モジュールタイル",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/14-dialogue-14.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "bce92c93cbd9b40636d6afaa6cbdc26228379900",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-29.jpg"
+      },
+      "original_dialogue_number": 14,
+      "original_sheet_number": 29,
+      "sha256": "27a0a78ea5b71cd57fbeeae0163fa989378ae9363e4c4e82112ad0d41a2f2621"
+    },
+    {
+      "id": "O30",
+      "label": "旧30／会話案15 実験・光だまりの弧",
+      "source_commit": "b757b81454622c42a4b21527220530892fd70a86",
+      "path": "asset_sources/review-candidates-20261024/dialogue/15-dialogue-15.png",
+      "kind": "生成モック（原案）",
+      "status": "原案履歴・当時は本編未組み込み",
+      "git_blob": "4164a255da8724b92797ea47de6a95dddc020a41",
+      "thumbnail": {
+        "source_commit": "24cc5f62245cda45fe4b1f53d7052365630155d3",
+        "path": "asset_sources/review-candidates-20261024/previews/thumb-30.jpg"
+      },
+      "original_dialogue_number": 15,
+      "original_sheet_number": 30,
+      "sha256": "6f861837c7298bb926c94e18a89d1a855f1e9701484b45edcf809120d87977cb"
+    },
+    {
+      "id": "V01-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V01",
+      "git_blob": "078374e9ddcefdc5cf67e54f6346c82dd8724ccf"
+    },
+    {
+      "id": "V01-11P",
+      "label": "11 紫の煙",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V01",
+      "git_blob": "ecf50d885c7117da880a5319e7ea73327b12a3cf"
+    },
+    {
+      "id": "V01-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V01",
+      "git_blob": "183e14168d0d2061cdb05963fa63e8d89c872010"
+    },
+    {
+      "id": "V01-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V01",
+      "git_blob": "3973da739e907a47800940e48c16df76e3b7910e"
+    },
+    {
+      "id": "V01-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V01",
+      "git_blob": "0445d33f59a6d8bb9216e92ccfe913880feaa0e5"
+    },
+    {
+      "id": "V01-G",
+      "label": "従来ゴージャス",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V01",
+      "git_blob": "de1153e3307e8ef0b93b016d4860c9f2999f3025"
+    },
+    {
+      "id": "V02-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V02",
+      "git_blob": "c9457467428f5ad12d5f86d6e61079b7616ab922"
+    },
+    {
+      "id": "V02-11P",
+      "label": "11 紫の煙",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V02",
+      "git_blob": "63596624dd268121ac901f070ae199e1fa7cdbb7"
+    },
+    {
+      "id": "V02-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V02",
+      "git_blob": "64ff4a819bf2fc72618b5b01730fc27f1f5bb8f6"
+    },
+    {
+      "id": "V02-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V02",
+      "git_blob": "9dd441ef04fceb60b8eb0ab2f358894be526d5ee"
+    },
+    {
+      "id": "V02-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V02",
+      "git_blob": "f011e0bb24c0b18cb40a14cb8866750472986606"
+    },
+    {
+      "id": "V02-G",
+      "label": "従来ゴージャス",
+      "source_commit": "f253ec64010667b450196ac596f35ab79e78597b",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V02",
+      "git_blob": "ebb09788e306200f1b541a5ab205668e699a2f7a"
+    },
+    {
+      "id": "V03-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V03",
+      "git_blob": "c9457467428f5ad12d5f86d6e61079b7616ab922",
+      "same_image_as": "V02-11"
+    },
+    {
+      "id": "V03-11P",
+      "label": "11 紫の煙",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V03",
+      "git_blob": "63596624dd268121ac901f070ae199e1fa7cdbb7",
+      "same_image_as": "V02-11P"
+    },
+    {
+      "id": "V03-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V03",
+      "git_blob": "b1ca04baf158242d609e4d9f608ec450ca08776c"
+    },
+    {
+      "id": "V03-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V03",
+      "git_blob": "9dd441ef04fceb60b8eb0ab2f358894be526d5ee",
+      "same_image_as": "V02-25"
+    },
+    {
+      "id": "V03-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V03",
+      "git_blob": "f011e0bb24c0b18cb40a14cb8866750472986606",
+      "same_image_as": "V02-28"
+    },
+    {
+      "id": "V03-G",
+      "label": "従来ゴージャス",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V03",
+      "git_blob": "ebb09788e306200f1b541a5ab205668e699a2f7a",
+      "same_image_as": "V02-G"
+    },
+    {
+      "id": "V04-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "2fa2c71e5e930b7900edbc96413da77bff212522",
+      "path": "asset_sources/ui/vn-smoke-11/outline-name-fix/smoke-two-lines.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V04",
+      "git_blob": "fa7600493d6fbd05de13f4e4cc4885d81859095c"
+    },
+    {
+      "id": "V04-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "2fa2c71e5e930b7900edbc96413da77bff212522",
+      "path": "asset_sources/ui/vn-smoke-11/outline-name-fix/cut-paper-two-lines.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V04",
+      "git_blob": "c745984023d76c14d2371ba94cdb5c6e501b2a38"
+    },
+    {
+      "id": "V05-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V05",
+      "git_blob": "98d857a2061e9d12c0f7e1d3a1880312d91a1910"
+    },
+    {
+      "id": "V05-11P",
+      "label": "11 紫の煙",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V05",
+      "git_blob": "d69ab98ecaa27ad3e8f94cfc86623932a6579507"
+    },
+    {
+      "id": "V05-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V05",
+      "git_blob": "b9fa9167d4d853d13b0dceef4dd1c92be1a0bb0d"
+    },
+    {
+      "id": "V05-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V05",
+      "git_blob": "695c01b97987cf38de621f5656a8d0c73ea44aea"
+    },
+    {
+      "id": "V05-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V05",
+      "git_blob": "20f2097490796b15b0ab913a198c1db03995002f"
+    },
+    {
+      "id": "V05-G",
+      "label": "従来ゴージャス",
+      "source_commit": "6fb56a87550b0fc77e655f9dc6110bc8221564d3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V05",
+      "git_blob": "068aee05e485841afd03b978c892c74f1aa0fd7f"
+    },
+    {
+      "id": "V06-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V06",
+      "git_blob": "962b1838e608822f568400c17369e5ff647849f7"
+    },
+    {
+      "id": "V06-11P",
+      "label": "11 紫の煙",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V06",
+      "git_blob": "f33d4fe25f7c0c9176d5865efc46e8c61c159e2a"
+    },
+    {
+      "id": "V06-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V06",
+      "git_blob": "b9fa9167d4d853d13b0dceef4dd1c92be1a0bb0d",
+      "same_image_as": "V05-16"
+    },
+    {
+      "id": "V06-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V06",
+      "git_blob": "695c01b97987cf38de621f5656a8d0c73ea44aea",
+      "same_image_as": "V05-25"
+    },
+    {
+      "id": "V06-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V06",
+      "git_blob": "20f2097490796b15b0ab913a198c1db03995002f",
+      "same_image_as": "V05-28"
+    },
+    {
+      "id": "V06-G",
+      "label": "従来ゴージャス",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V06",
+      "git_blob": "068aee05e485841afd03b978c892c74f1aa0fd7f",
+      "same_image_as": "V05-G"
+    },
+    {
+      "id": "V06-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V06",
+      "git_blob": "dc2c0422956086498d9288494c744a125b2758da"
+    },
+    {
+      "id": "V06-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V06",
+      "git_blob": "949ee422b2e3640e6b3cd75f113af591ca8afd95"
+    },
+    {
+      "id": "V06-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V06",
+      "git_blob": "89038bf9542ed7a4bf67b63f607e5e616cc9788f"
+    },
+    {
+      "id": "V06-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V06",
+      "git_blob": "2b9f11082f2c5c80bd95eb51d5c56a4fa08de5a7"
+    },
+    {
+      "id": "V07-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "11",
+      "version": "V07",
+      "git_blob": "1fec1589430bf2118234f19ba0c4b6b4962d4348"
+    },
+    {
+      "id": "V07-11P",
+      "label": "11 紫の煙",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "11P",
+      "version": "V07",
+      "git_blob": "afe039c9db115d4db33a0f44faa86af8ac322d07"
+    },
+    {
+      "id": "V07-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "16",
+      "version": "V07",
+      "git_blob": "d532513c8ac54cc82e89db963e272bddb434ef3d"
+    },
+    {
+      "id": "V07-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "25",
+      "version": "V07",
+      "git_blob": "bc673e43adbd61e0a104e26285081d213a1df1eb"
+    },
+    {
+      "id": "V07-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "28",
+      "version": "V07",
+      "git_blob": "44efce792d7ac84817aa0770cf8dc70f1c66c53b"
+    },
+    {
+      "id": "V07-G",
+      "label": "従来ゴージャス",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "尖った方向は撤回済み・履歴",
+      "family": "G",
+      "version": "V07",
+      "git_blob": "8489909d9bd45d29d3ba32f324745035c275478c"
+    },
+    {
+      "id": "V07-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V07",
+      "git_blob": "dcbe3b674acc4db0dfc1b55984edc15056b12334"
+    },
+    {
+      "id": "V07-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V07",
+      "git_blob": "4fddc6d0b177b2e19a69230cf6eb8a63cdb3b6b5"
+    },
+    {
+      "id": "V07-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V07",
+      "git_blob": "5252651b4b4815168497dfd1d7f44ec19f032b5a"
+    },
+    {
+      "id": "V07-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V07",
+      "git_blob": "bc6769c51a30cff78ab699bd52ebef59ef775a21"
+    },
+    {
+      "id": "V08-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V08",
+      "git_blob": "6be4f557d3ecf0f54762886320549a24bdb818d2"
+    },
+    {
+      "id": "V08-11P",
+      "label": "11 紫の煙",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V08",
+      "git_blob": "15db7ecec23e2993fa14fa50d8910fabe9fe5848"
+    },
+    {
+      "id": "V08-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V08",
+      "git_blob": "53851a4d42445c171e104a822013183335796362"
+    },
+    {
+      "id": "V08-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V08",
+      "git_blob": "49ec875e2eb2ad816e56c5b26921da374d5d6f89"
+    },
+    {
+      "id": "V08-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V08",
+      "git_blob": "e50e9263a128ba31512210214255057cc0f42f96"
+    },
+    {
+      "id": "V08-G",
+      "label": "従来ゴージャス",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V08",
+      "git_blob": "dc72f199546de70c3061b9300af6c9f12d09db47"
+    },
+    {
+      "id": "V08-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V08",
+      "git_blob": "2f1ff8f92f44814acb603f3528e8bc4585d202e0"
+    },
+    {
+      "id": "V08-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V08",
+      "git_blob": "95226a92f2600bafb1aac3ede9dfd69070578ac5"
+    },
+    {
+      "id": "V08-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V08",
+      "git_blob": "cf8117b370a0a1664932b7328c8659063ac5c7af"
+    },
+    {
+      "id": "V08-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V08",
+      "git_blob": "623912808a4a4f239b099d315cb64c70cd65fa6f"
+    },
+    {
+      "id": "V09-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "03c41906b255d919dc27aade7396d71ba3b84df0",
+      "path": "asset_sources/ui/vn-smoke-11/calm/ds-touch.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V09",
+      "git_blob": "54ca3a450d8f5caa1ee41e8d4fcccdf320e1aeef"
+    },
+    {
+      "id": "V10-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V10",
+      "git_blob": "c0e2b0fa50aa986582a7d726697b6e9877e068b5"
+    },
+    {
+      "id": "V10-11P",
+      "label": "11 紫の煙",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V10",
+      "git_blob": "59e8624d88074ddc9c7890d9dc69ec536e5b1f48"
+    },
+    {
+      "id": "V10-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V10",
+      "git_blob": "9ab7d0f4883956dcaa5fb78677806eaf1d1ef6a1"
+    },
+    {
+      "id": "V10-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V10",
+      "git_blob": "94f49848af0a5b7bad11b909da39af50af5d60c7"
+    },
+    {
+      "id": "V10-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V10",
+      "git_blob": "cc8f9e93f5f98a96a57c6cd8cf54d5269e19749d"
+    },
+    {
+      "id": "V10-G",
+      "label": "従来ゴージャス",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V10",
+      "git_blob": "7b2e3a6f0e9a5c32f085a245c0de835b70b07175"
+    },
+    {
+      "id": "V10-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V10",
+      "git_blob": "229215ee4a143d1fd2e1d2c38d06cf818ca617a6"
+    },
+    {
+      "id": "V10-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V10",
+      "git_blob": "79c583059d868890cd8c780fc81f7bea64a9892a"
+    },
+    {
+      "id": "V10-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V10",
+      "git_blob": "fe76823d8c603af5507a68d0673dbc7618756ba4"
+    },
+    {
+      "id": "V10-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "07b2092a78bd6c6863ce38b942495d07e2943d54",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V10",
+      "git_blob": "f1ce0b98bd1136f03b8d231fafcd2d538bcce611"
+    },
+    {
+      "id": "V11-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V11",
+      "git_blob": "9593f91c826b22f34bff32ac93fc71e29d4f61a2"
+    },
+    {
+      "id": "V11-11P",
+      "label": "11 紫の煙",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V11",
+      "git_blob": "15a797ee09066fc1740da06c4c4749dab37a2d8d"
+    },
+    {
+      "id": "V11-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V11",
+      "git_blob": "890d98f15ef0616f901e4e209735ab42809659a2"
+    },
+    {
+      "id": "V11-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V11",
+      "git_blob": "80aa2755d19837442595e3e4da4cbd95300b8b25"
+    },
+    {
+      "id": "V11-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V11",
+      "git_blob": "284de987dae804ddba206e91d45419531246ca0e"
+    },
+    {
+      "id": "V11-G",
+      "label": "従来ゴージャス",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V11",
+      "git_blob": "e2577bc0823e30c95aaeacc4bf9e40801b587cd6"
+    },
+    {
+      "id": "V11-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V11",
+      "git_blob": "4858cd09622545744ecbfeda27f6219b410dfe9a"
+    },
+    {
+      "id": "V11-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V11",
+      "git_blob": "7fb7ef19d5035820fd912ccb7f9450403d8fff64"
+    },
+    {
+      "id": "V11-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V11",
+      "git_blob": "945f99706ac8fa8a47ee4dc0da01daa2efbc2e9a"
+    },
+    {
+      "id": "V11-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "afc5ce40a13a3d4641105510b15789194de63aa0",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V11",
+      "git_blob": "82f281105645daf3e1bfd54190d02a6eef3010c5"
+    },
+    {
+      "id": "V12-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11",
+      "version": "V12",
+      "git_blob": "9495e26cfa633a79f40c3087416804f98be75be5"
+    },
+    {
+      "id": "V12-11P",
+      "label": "11 紫の煙",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke-purple.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "11P",
+      "version": "V12",
+      "git_blob": "eaa1006bbd3d9d7616b7d6cade41c8b6fe4f73dd"
+    },
+    {
+      "id": "V12-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/cut-paper.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "16",
+      "version": "V12",
+      "git_blob": "382c3160b7d31f4e538dca8638c552f432f2b6ac"
+    },
+    {
+      "id": "V12-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/amber.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "25",
+      "version": "V12",
+      "git_blob": "8e8768b760494d14464af6d6bd47649daeb9a642"
+    },
+    {
+      "id": "V12-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/tissue.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "28",
+      "version": "V12",
+      "git_blob": "6d83fa64a000a7d72598c78a3fc133ef7308b4dc"
+    },
+    {
+      "id": "V12-G",
+      "label": "従来ゴージャス",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/classic.png",
+      "kind": "実装プレビュー",
+      "status": "実装比較履歴・最終デザイン未確定",
+      "family": "G",
+      "version": "V12",
+      "git_blob": "bffdb040dd8af13230ac4e42542aeb0bb234a6a7"
+    },
+    {
+      "id": "V12-B-hiyori",
+      "label": "青い窓・ひより",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/hiyori.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V12",
+      "git_blob": "9467a15a1d7af6b79857fb18c59a2852c2237fe1"
+    },
+    {
+      "id": "V12-B-minto",
+      "label": "青い窓・みんと",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/minto.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V12",
+      "git_blob": "e4fdead3f2ac3b2329041baf26031e6292d75c71"
+    },
+    {
+      "id": "V12-B-ageha",
+      "label": "青い窓・あげは",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ageha.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V12",
+      "git_blob": "02c7c3374835cbc89bb97af3b449c0bfe9549890"
+    },
+    {
+      "id": "V12-B-tsumugi",
+      "label": "青い窓・つむぎ",
+      "source_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/tsumugi.png",
+      "kind": "実装プレビュー",
+      "status": "本編CONFIGには未追加",
+      "family": "B",
+      "version": "V12",
+      "git_blob": "e7b7f12e774083e3fe87364f554dad96213e15e9"
+    },
+    {
+      "id": "V13-11",
+      "label": "11 煙だけの輪郭",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/smoke-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "11",
+      "version": "V13",
+      "git_blob": "d8dc8b02953a5a06a218a002c34beb232346107c"
+    },
+    {
+      "id": "V13-11P",
+      "label": "11 紫の煙",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/smoke-purple-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "11P",
+      "version": "V13",
+      "git_blob": "8ad8d625197b30ee617877d8eb1aee7e87eb9c6e"
+    },
+    {
+      "id": "V13-16",
+      "label": "16 紫の紙／切り紙",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/paper-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "16",
+      "version": "V13",
+      "git_blob": "8c278f56c901fcdaa1f64569e3bc698ff790f159"
+    },
+    {
+      "id": "V13-25",
+      "label": "25 琥珀ラウンジ",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/amber-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "25",
+      "version": "V13",
+      "git_blob": "09801e4fdd52bf8eeab11cae6a20607f5fef50f5"
+    },
+    {
+      "id": "V13-28",
+      "label": "28 重なる薄紙",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/tissue-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "28",
+      "version": "V13",
+      "git_blob": "69de60bb0f41281b9d1f926f7a4d9ecbf04819db"
+    },
+    {
+      "id": "V13-G",
+      "label": "従来ゴージャス",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/classic-preview.png",
+      "kind": "新原画＋実フォントの静止合成",
+      "status": "全案没",
+      "family": "G",
+      "version": "V13",
+      "git_blob": "ead8b3a9a554bf092e889d98ffd18f7198a54502"
+    },
+    {
+      "id": "M01",
+      "label": "11の紫配色・最初の生成ラフ",
+      "source_commit": "5a6d38ed8348af85d8264acffadad409f519a335",
+      "path": "asset_sources/ui/vn-smoke-11/purple-colorway.png",
+      "kind": "生成モック",
+      "status": "素材履歴",
+      "family": "11P",
+      "git_blob": "0726cc2dadcdacafc927b654c2f380f27ac744f4"
+    },
+    {
+      "id": "M02",
+      "label": "煙・質感再構成の原画",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/faithful/smoke-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "11",
+      "git_blob": "b570a6cd33a649583bbde578efc92d7a6dfcec45"
+    },
+    {
+      "id": "M03",
+      "label": "紫煙・質感再構成の原画",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/faithful/smoke-purple-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "11P",
+      "git_blob": "28352f1b2610a94566ece6e8c7626219b06b56cf"
+    },
+    {
+      "id": "M04",
+      "label": "16・最初の切り紙再構成の原画",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/faithful/cut-paper-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "16",
+      "git_blob": "626b922117c6789f98193e2d7bdf3dcb5a30925e"
+    },
+    {
+      "id": "M05",
+      "label": "28・薄紙の質感再構成の原画",
+      "source_commit": "d5140185e61b16db35cc224a58c3447b10dc09e1",
+      "path": "asset_sources/ui/vn-smoke-11/faithful/tissue-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "28",
+      "git_blob": "fab6cdf083d4cd6303b852a3e269aa4ca2438bab"
+    },
+    {
+      "id": "M06",
+      "label": "16・P5を参考にした原画",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/polish/cut-paper-source.png",
+      "kind": "文字なし素材",
+      "status": "方向撤回済みの素材履歴",
+      "family": "16",
+      "git_blob": "d92fba93d8114422870a5a7780a5051bfd617119"
+    },
+    {
+      "id": "M07",
+      "label": "16・同じP5版の地の文用原画",
+      "source_commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "path": "asset_sources/ui/vn-smoke-11/polish/cut-paper-narration-source.png",
+      "kind": "文字なし素材",
+      "status": "方向撤回済みの素材履歴",
+      "family": "16",
+      "git_blob": "589c927f3da9ea20b0a592d1393e49de70f5e324"
+    },
+    {
+      "id": "M08",
+      "label": "16・柔らかなペーパーラウンジ原画",
+      "source_commit": "1fe6cc758c043609270b298d920b047482c516de",
+      "path": "asset_sources/ui/vn-smoke-11/calm/paper-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "16",
+      "git_blob": "0febba5c1aefaa7cf980516fbe9cb31fc26a1cf0"
+    },
+    {
+      "id": "M09",
+      "label": "平成青窓・文字なし原画",
+      "source_commit": "318aae50d56c8a889dbb38fb7d4424b8351f7a71",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/blue-character-preview/ui-source.png",
+      "kind": "文字なし素材",
+      "status": "素材履歴",
+      "family": "B",
+      "git_blob": "3395bacd79d85d08092dba3045b53b3a32c6b57e"
+    },
+    {
+      "id": "M10",
+      "label": "11 煙だけの輪郭・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/smoke-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "11",
+      "git_blob": "727bc73a6d2b5e4738f1f023a167d8de8ff0c4a7"
+    },
+    {
+      "id": "M11",
+      "label": "11 紫の煙・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/smoke-purple-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "11P",
+      "git_blob": "85a0ebf11cd3f9d509328ae52b5661d150ceb4ed"
+    },
+    {
+      "id": "M12",
+      "label": "16 紫の紙／切り紙・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/paper-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "16",
+      "git_blob": "a4c645a3bc22c33433d03448d8c1fa2fefd95330"
+    },
+    {
+      "id": "M13",
+      "label": "25 琥珀ラウンジ・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/amber-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "25",
+      "git_blob": "3a01a810927a5dab716c7cac25e5475f421983fb"
+    },
+    {
+      "id": "M14",
+      "label": "28 重なる薄紙・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/tissue-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "28",
+      "git_blob": "a9667c7e7dab620648f6c595a8c0f0ba901a72ad"
+    },
+    {
+      "id": "M15",
+      "label": "従来ゴージャス・直近の没原画",
+      "source_commit": "4e822e71b869efcd7e09a11aab4575b978b4eb43",
+      "path": "asset_sources/ui/vn-smoke-11/regenerated/classic-source.png",
+      "kind": "文字なし素材",
+      "status": "全案没",
+      "family": "G",
+      "git_blob": "30ecd133f86466eb4d6706e7976bae4b26450be6"
+    },
+    {
+      "id": "R1",
+      "label": "90年代PC-98風",
+      "source_commit": "645a704cf8821b6055617e244ffcdea319774ea6",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/01-pc98.png",
+      "kind": "生成モック（レトロ原案）",
+      "status": "比較原案・本編未採用",
+      "git_blob": "e1ee23bf76285e17b53445a8aadb967fa6d50483"
+    },
+    {
+      "id": "R2",
+      "label": "平成初期の青い恋愛ADV",
+      "source_commit": "645a704cf8821b6055617e244ffcdea319774ea6",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/02-heisei-blue.png",
+      "kind": "生成モック（レトロ原案）",
+      "status": "比較原案・本編未採用",
+      "family": "B",
+      "git_blob": "ba7338ccfcb6e0e590397a593131c811405eeff0"
+    },
+    {
+      "id": "R3",
+      "label": "平成の桜色",
+      "source_commit": "645a704cf8821b6055617e244ffcdea319774ea6",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/03-heisei-sakura.png",
+      "kind": "生成モック（レトロ原案）",
+      "status": "比較原案・本編未採用",
+      "git_blob": "0cfd710d15514854bba684416e8b52ddd8ed6b3a"
+    },
+    {
+      "id": "R4",
+      "label": "レトロPCデスクトップ",
+      "source_commit": "645a704cf8821b6055617e244ffcdea319774ea6",
+      "path": "asset_sources/ui/vn-smoke-11/retro-variants/04-retro-desktop.png",
+      "kind": "生成モック（レトロ原案）",
+      "status": "比較原案・本編未採用",
+      "git_blob": "278d3f9122a08c201ba10525a6f702805f0c9057"
+    }
+  ],
+  "psd": {
+    "version": "V12",
+    "source_commit": "31827d9e26e7ddbd4dcd2b0693f36a62a908a0db",
+    "path": "asset_sources/ui/vn-smoke-11/psd-export/dialogue-ui-before-regeneration-psd.zip"
+  }
+}
