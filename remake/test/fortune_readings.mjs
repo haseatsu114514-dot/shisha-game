@@ -218,10 +218,16 @@ for (const [key, h] of Object.entries(hints.choices)) {
 
 const art = spawnSync('python3', ['-c', `
 from PIL import Image
-import json,sys
+import hashlib,json,sys
 from pathlib import Path
-root=Path(sys.argv[1]); a=Image.open(root/'asset_sources/fortune-teller-682/generated.png').convert('RGBA');b=Image.open(root/'assets/sprites/characters/uranaishi/chr_uranaishi_normal.png').convert('RGBA')
-assert a.size==b.size and a.tobytes()==b.tobytes(), 'portrait encoding changed source pixels'
+root=Path(sys.argv[1]); records=json.loads((root/'asset_sources/portraits/style-unify-20261026/generation.json').read_text())
+record=next(x for x in records if x['character']=='uranaishi' and x['face']=='normal')
+source=root/'asset_sources/portraits/style-unify-20261026/uranaishi/normal-source.png'
+portrait=root/'assets/sprites/characters/uranaishi/chr_uranaishi_normal.png'
+assert hashlib.sha256(source.read_bytes()).hexdigest()==record['source_sha256'], 'adopted source changed'
+assert hashlib.sha256(portrait.read_bytes()).hexdigest()==record['fitted_sha256'], 'adopted portrait changed'
+b=Image.open(portrait).convert('RGBA')
+assert b.size==(896,1200)
 alpha=b.getchannel('A');assert alpha.getextrema()==(0,255)
 for p in [(0,0),(b.width-1,0),(0,b.height-1),(b.width-1,b.height-1)]:assert alpha.getpixel(p)==0
 left,top,right,bottom=alpha.point(lambda v:255 if v>2 else 0).getbbox();assert left>0 and top>0 and right<b.width and bottom<b.height, 'portrait cut off at an edge'

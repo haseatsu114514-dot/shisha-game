@@ -51,12 +51,13 @@
         "sha256": "1281909f1d2478fe2631538f44247d90aea93013945b464f47161718c8f340ad"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "ab89bd5277249c637273f406b48ab7dc9876cfb219ca5e3fb99e2380b17b674f",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "kumicho",
@@ -118,12 +119,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "bbc208952489047d112b07a57eafa94c8a794ce55867bfb858608ba42aa27338",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "kumicho",
@@ -189,12 +191,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "dd5d8c0cef4b513c6a78a9913e4f18e015fb398e04e3a926e0862d9c146a88c4",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "kumicho",
@@ -248,12 +251,13 @@
         "sha256": "9810183f8e0036c7ec8ead1bde86c4167b22dc57010a309d200ffa16d82a198c"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "355d9b40114d15a9f98840665b672749d4aefa989cb82f4a0da1266c3ecd1d17",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "kumicho",
@@ -307,12 +311,13 @@
         "sha256": "6bf5be6ed60e1f7256a2a74c9b4e0930cd0072f278311d8d9026f1ebc411a875"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "b16229bbfa096c09efe93864055057268ae1a178fc067bc37b28863d98fadf21",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "kumicho",
@@ -366,12 +371,13 @@
         "sha256": "5f04339c937fd59f3605c90ea8c7a97d4df23aa357a626f19867989ddf3fb5ad"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "4ee8c9bb2d90b9fbf895fb105100cce614fa0d9bec71d52a112d7e28a02c8ca3",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "uranaishi",
@@ -433,12 +439,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "volk",
@@ -500,12 +507,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "d27c36f36b074daadb9a860255c4a6cc04c11059d336f198867736630a681533",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "dr_kemuri",
@@ -567,12 +575,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "0930e24deb62543289a70c7b5d860ae7093e27d8440433c8d285c435447fb259",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "dr_kemuri",
@@ -638,12 +647,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "04a82018046cbc1da0be0c97ef1744803a94f11940fa58b48da0548819daf921",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "dr_kemuri",
@@ -709,12 +719,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "1f356d759d6d903ee9f519a672b0d83058d924be93221d24bfe4c4789673b2be",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "dr_kemuri",
@@ -780,12 +791,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "81085482a09e546468a8a7d82840046412ab02810ca845e31ee1b4cce587afb2",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "dr_kemuri",
@@ -851,12 +863,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "90011145efd006bdec73991f39bc69de374401c0fbb77ec8a41b845f9b24a733",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -918,12 +931,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "c931de1b9e2debf7f0123ae0f4711acbb8cc9188be620d7f7f7b4e1ed6ddce52",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -989,12 +1003,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "7d2533517528ff2bb6018c999a96bac84873a049505fb68a5318b05fc048933d",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1060,12 +1075,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "5f2f2ad1e6f6077e28afbd4bc85af58d50b0b2c2ebd9a78509cdccb38c8df853",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1131,12 +1147,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "8b9e698ee9c22f56540b379650c7d793d8d799405ba564209d017584ca62cfdc",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1202,12 +1219,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "c03d23ca3af9e4211cc6a3c4c2472804c13fccdfd1b21785046e54d39490b652",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1273,12 +1291,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "1f33899f5e52d98b0408056acc855ca72b5278455071c00a1df2137a0d1aa4fa",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1344,12 +1363,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "565f9deb6b5e943424802bcf1d14d447ae0b6634ba2d90434c693f61c66d7f39",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1415,12 +1435,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "40324678e274f713cea442fedb574fb1bda3860d877b0efe180351bb76a19e59",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1486,12 +1507,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "a2ea25e44c93f051ff43c30a0c95f59671fccfc6c17ea97785f921a30faabab1",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1557,12 +1579,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "339a52163532241983ea6f5a52da38bf8f2c492c78bcdf6e903d58c3eb210845",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1628,12 +1651,13 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "592c0554bc66aafc3241c301503e8db1b91f47f8a02fd6374130f3ce2d9c2b88",
+    "adopted_date": "2026-10-26"
   },
   {
     "character": "hiyori",
@@ -1699,11 +1723,12 @@
         "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
       }
     ],
-    "status": "candidate-not-runtime-integrated",
+    "status": "adopted-in-remake",
     "limitations": [
       "Generated facial/garment details may differ slightly from original; not pixel-identical.",
-      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical.",
-      "No in-game expression switching or mobile browser acceptance test in this draft."
-    ]
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "a32da87f96d9491a0794abf870fd4d2bcf74624f2157f08a62877edab019bef7",
+    "adopted_date": "2026-10-26"
   }
 ]
