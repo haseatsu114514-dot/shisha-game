@@ -11,8 +11,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 OUT = ROOT / "assets/sprites/characters/kuze"
 CANVAS = (896, 1200)
-HEIGHT = 1155
-TOP = 24
+HEIGHT = 1008
+TOP = 168
 
 
 def build(face: str) -> None:
