@@ -198,12 +198,12 @@
     "id": "kuze",
     "name": "久世 朔（くぜ さく）",
     "role": "rival_ch3",
-    "age": 27,
+    "age": 23,
     "nationality": "Japan",
     "affiliation": "余白（東京の個人店）",
     "play_style": "「相手の判断まで読む勝負師」",
-    "description": "東京の個人店『余白』を営む。客の好みを聞くのがうまく、試作をしない日にもお茶と席を出す。その親切は本心。全国大会では正しい助言を伝える時機まで選び、相手が焦って手順を変える可能性を読む。自分の一台の鮮烈な立ち上がりで直後の比較基準を揺らす策も狙うが、必ず効くとは考えていない。客や他選手の道具には手を加えず、正規の葉と自分の一台で競う。",
-    "background_secret": "予想を外した客の好みをノートに残す。意外な選択に出会うことが好きで、大会でも相手が予想を超えると笑ってしまう。親切を勝負に利用した責任は相手に押しつけず認める。敗北は心から悔しがり、次も勝つために策を練る。",
+    "description": "東京の個人店『余白』を営む23歳。ましろとは幼なじみ。あどけない笑顔と袖の余る服で人懐こく見えるが、勝負では目つきと言葉の速さが一変する。客の好みを聞くのがうまく、試作をしない日にもお茶と席を出す。その親切は本心。全国大会では正しい助言を伝える時機まで選び、相手が焦って手順を変える可能性を読む。自分の一台の鮮烈な立ち上がりで直後の比較基準を揺らす策も狙うが、必ず効くとは考えていない。客や他選手の道具には手を加えず、正規の葉と自分の一台で競う。",
+    "background_secret": "予想を外した客の好みをノートに残す。意外な選択に出会うことが好きで、大会でも相手が予想を超えると楽しそうに笑ってしまう。ましろとは子どもの頃からの友人で、彼女が相手の返事を急がない姿勢も知っている。親切を勝負に利用した責任は相手に押しつけず認める。敗北は心から悔しがり、次も勝つために策を練る。",
     "favorite_flavor": "アフサール ブラックティー",
     "specialty_flavor": "フローズンシトラスの立ち上がりとブラックティーの余韻",
     "growth_stats": {
@@ -212,8 +212,8 @@
       "notes": "予想が外れた理由を捨てずに記録する。はじめが策を読んでも自分の一台を崩さず作り切った経験を、次の勝負の材料にする。"
     },
     "visual_concepts": [
-      "27 year old Japanese shisha shop owner, approachable smile and attentive eyes, neat dark hair, plain shirt and charcoal apron, holding a small worn notebook in a warm Tokyo lounge, quietly competitive posture",
-      "Japanese male shisha competitor with a calm friendly face, simple dark apron, one hand near a tea cup and the other adjusting charcoal, bright citrus smoke rising over a restrained tea colored lounge"
+      "23 year old adult Japanese shisha shop owner with a youthful soft face, playful eyes, slightly oversized long sleeves and a practical apron, small worn notebook, warm approachable smile in his Tokyo shop",
+      "the same young adult competitor on stage, sleeves folded back, delighted unsettling grin and sharply observant eyes; his kindness remains real while he reads the opponent's next choice"
     ],
     "intro_cutin": {
       "title": "微笑む勝負師",
@@ -724,7 +724,7 @@
     "affiliation": "mukai（tonari姉妹店）",
     "play_style": "N/A",
     "description": "第3章、東京のtonari姉妹店mukaiの同僚。一人称は「僕」。いつも眠たげで、ゆるっとした同期のような存在。ダークリーフやシガーリーフを好み、濃く重い煙を好むが、軽い煙の味も分かる。好みと味覚の欠落を同一視しない。相手と話したり一緒に作ったりするうち、同じ煙が近く感じられる時がある。その感想は彼女と作り手の間で生じるもので、人の魂や本物らしさを採点する能力ではない。はじめが作れない日にも、お茶と座る時間を差し出す。巷で噂の凄腕職人シガーマンの正体だが、本人は別に怖い男がいると思って怯えている。ブロンドも作れる。",
-    "background_secret": "シガーマンの正体。噂が大柄な男性像へ膨らんだため、本人は別に怖い人がいると思っている。濃く重い葉を好むがブロンドも作れる。感じ方にむらはあっても、味覚喪失の人物ではない。はじめの回復を一台で起こすのではなく、作れない日の席と、答えを急がない日々を一緒に過ごす。噂の正体は初日に明かさない。",
+    "background_secret": "シガーマンの正体。噂が大柄な男性像へ膨らんだため、本人は別に怖い人がいると思っている。濃く重い葉を好むがブロンドも作れる。東京の余白店主・久世朔とは幼なじみで、一歳違い。感じ方にむらはあっても、味覚喪失の人物ではない。はじめの回復を一台で起こすのではなく、作れない日の席と、答えを急がない日々を一緒に過ごす。噂の正体は初日に明かさない。",
     "favorite_flavor": "シガーリーフ全般",
     "specialty_flavor": "シガーリーフ全般（重厚なシガーリーフミックス）",
     "growth_stats": {

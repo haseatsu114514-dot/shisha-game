@@ -30,12 +30,32 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世は理由を聞かず、水と温かいお茶を置いた。"
+          "text": "久世は袖の余った上着を押さえ、理由を聞かずに水と温かいお茶を置いた。"
         },
         {
           "speaker": "kuze",
           "face": "normal",
           "text": "今日は今日の分でいい。僕の店ではね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんも、同じことを言ってました"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "あ、ましろ。幼なじみなんだ。僕の一つ下で、昔からそういう言い方をする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二人、知り合いだったんですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。僕が急ぐと、あの子がお茶を置く。今日は僕の番"
         },
         {
           "speaker": "hajime",
