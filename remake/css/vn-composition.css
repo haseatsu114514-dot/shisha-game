@@ -5,7 +5,8 @@
 }
 html:root[data-ui-theme] {
   --vn-caption-top:-36px; --vn-body-top:44px; --vn-body-side:96px;
-  --vn-command-width:356px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:8px;
+  --vn-command-width:356px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
+  --vn-next-right:64px; --vn-next-bottom:30px;
   --vn-tab-face:linear-gradient(160deg,#17272c,#0c151c 75%);
   --vn-tab-edge:#91bbb5; --vn-tab-inner:#c9f3e526; --vn-tab-text:#e6f6f1;
   --vn-tab-radius:19px 19px 9px 9px; --vn-tab-shadow:0 3px 9px #0006,0 0 10px #c1eee012;
@@ -16,7 +17,10 @@ html:root[data-ui-theme="smoke-purple"] {
   --vn-tab-shadow:0 3px 9px #0006,0 0 10px #bd83ef1c;
 }
 /* 煙の原画は上辺が低くたわむため、札も16px下げて輪郭へ接続する。 */
-html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) { --vn-caption-top:-20px; --vn-dialogue-width:1240px; --vn-body-side:112px; }
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) {
+  --vn-caption-top:-20px; --vn-dialogue-width:1240px; --vn-body-side:112px;
+  --vn-command-inset:100px; --vn-command-rise:8px; --vn-next-right:80px; --vn-next-bottom:36px;
+}
 html:root[data-ui-theme="cut-paper"] {
   --vn-tab-face:linear-gradient(150deg,#493446,#2e2230 80%);
   --vn-tab-edge:#bd9ea9; --vn-tab-inner:#dbc1bb55; --vn-tab-text:#f6e9e4;
@@ -28,6 +32,7 @@ html:root[data-ui-theme="amber"] {
   --vn-tab-radius:16px 16px 6px 6px; --vn-tab-shadow:0 3px 8px #0006,inset 0 1px 0 #ffe9b72b;
 }
 html:root[data-ui-theme="tissue"] {
+  --vn-body-top:40px; --vn-next-right:72px; --vn-next-bottom:32px;
   --vn-tab-face:linear-gradient(170deg,#f0e8d6,#dbd0b8);
   --vn-tab-edge:#ad9f81; --vn-tab-inner:#8b785748; --vn-tab-text:#3a3632;
   --vn-tab-radius:3px 5px 2px 2px; --vn-tab-shadow:3px 3px 0 #b9ae98,0 5px 8px #0005;
@@ -49,7 +54,7 @@ html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme=
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:44px; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:31px; margin-top:10px; }
-/* 名前札は14px、操作札は6px重ねる。操作を8px上げて本文との間隔を取る。 */
+/* 名前札を上辺へ重ねる。操作札は紙・金枠では少し離し、煙では低い輪郭へ接続する。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-box .vn-name {
   left:var(--vn-name-inset); top:var(--vn-caption-top); width:max-content; min-width:168px; max-width:272px; height:50px;
   padding:0 28px 2px; display:flex; align-items:center; justify-content:center;
@@ -95,14 +100,18 @@ html:root[data-ui-theme] .vn-controls .vn-ctl.on::after {
 }
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-name { text-shadow:0 1px #fff5; }
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover,:focus-visible,.on) { background:#6d533e14; }
-html:root[data-ui-theme] body:not(.game-ds) .vn-next { right:48px; bottom:20px; font-size:18px; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-next {
+  right:var(--vn-next-right); bottom:var(--vn-next-bottom); font-size:18px;
+}
+html:root[data-ui-theme] body:not(.game-ds) .vn-next.show { animation-name:vn-next-nudge; }
+@keyframes vn-next-nudge { 50% { transform:translateY(2px); } }
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices,
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box::before,
-html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-18px -10px -12px; }
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-18px 0 0 -10px; }
 html:root[data-ui-theme="amber"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="amber"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-30px -6px -4px; }
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-box::before,
@@ -121,7 +130,9 @@ html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box:is(.narration,.tho
   inset:0 -6px -4px; background-image:var(--vn-lounge-narration);
 }
 /* 琥珀と金枠は左右へ開き、名前と操作を枠の端へ寄せる。 */
-html:root:is([data-ui-theme="amber"],[data-ui-theme="classic"]) { --vn-name-inset:36px; --vn-command-inset:36px; }
+html:root:is([data-ui-theme="amber"],[data-ui-theme="classic"]) {
+  --vn-name-inset:36px; --vn-command-inset:36px; --vn-next-right:48px; --vn-next-bottom:20px;
+}
 /* 金枠の札には同じ原画の装飾を使い、本文の真鍮の線と揃える。 */
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box .vn-name,
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-controls {

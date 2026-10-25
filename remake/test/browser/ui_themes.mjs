@@ -15,7 +15,7 @@ function fixedCommands(actual,expected,state) {
   assert(actual.every((value,i)=>Math.abs(value-expected[i])<.1),`command cells and labels must not move for ${state}`);
 }
 
-// DOMの枠が近くても、原画の透明な余白で札が浮くことがある。実際のalphaも確認する。
+// 操作札に設けた小さな隙間の下が、透明な余白ではなく原画の上辺かを確認する。
 async function paintedAttachment(page) {
   return page.evaluate(async()=>{
     const box=document.querySelector('.vn-box'), r=box.getBoundingClientRect(), scale=document.querySelector("#stage").getBoundingClientRect().width/1280;
@@ -26,7 +26,8 @@ async function paintedAttachment(page) {
     const context=canvas.getContext('2d');context.drawImage(img,0,0,canvas.width,canvas.height);
     return ['.vn-name','.vn-controls'].map(selector=>{
       const tab=document.querySelector(selector).getBoundingClientRect();
-      const y=Math.round((tab.bottom-r.top)/scale-parseFloat(style.top)+4);
+      const gap=selector==='.vn-name'?4:12;
+      const y=Math.round((tab.bottom-r.top)/scale-parseFloat(style.top)+gap);
       const start=Math.ceil((tab.left-r.left)/scale-parseFloat(style.left)+20);
       const end=Math.floor((tab.right-r.left)/scale-parseFloat(style.left)-20);
       let painted=0,total=0;
@@ -66,7 +67,7 @@ await suite("ui-themes-preview", async check => {
         await page.locator(".vn-next.show").waitFor();
         fixedCommands(await commandGeometry(page),fixedHeader,id+" two lines");
         const attached=await paintedAttachment(page);
-        assert(attached.every(coverage=>coverage>=.75),`tabs must touch the painted surface, without an alpha gap: ${id} ${attached}`);
+        assert(attached.every(coverage=>coverage>=.75),`the painted surface must begin within 4px below names and 12px below controls: ${id} ${attached}`);
         const twoLines = await page.locator(".vn-text").evaluate(el => {
           const range = document.createRange(); range.selectNodeContents(el);
           const rows = [...range.getClientRects()].filter(r=>r.width>0);
@@ -86,9 +87,9 @@ await suite("ui-themes-preview", async check => {
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
             nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top+4*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
-            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2)-8*scale)<=.5*scale,
+            headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -100,9 +101,9 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.contained,"both lines fit inside the text area");
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
-        assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 4px bob");
+        assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 2px bob");
         assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        assert(twoLines.headerAligned,"controls sit 8px above the name tab");
+        assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
         assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
@@ -144,7 +145,7 @@ await suite("ui-themes-preview", async check => {
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(let i=0;i<layouts.length;i++) assert.deepEqual(layouts[i].slice(0,8),layouts[i<2?0:2].slice(0,8),"smoke variants share the wider padded body; other skins share standard body geometry");
+      for(let i=0;i<layouts.length;i++) assert.deepEqual(layouts[i].slice(4,8),layouts[i<2?0:2].slice(4,8),"smoke variants share the wider body; optical text offsets do not change the body geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
       await page.locator(".vn-next.show").waitFor();

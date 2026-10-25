@@ -15,7 +15,7 @@ await suite("conversation-ui", async check => {
           nameTop: parseFloat(getComputedStyle(name).top),
           buttons: [...document.querySelectorAll(".vn-ctl")].map(el => parseFloat(getComputedStyle(el).minHeight)) };
       });
-      assert(Math.abs(geometry.aligned-8)<=.5,"commands sit 8px above the name tab");
+      assert(Math.abs(geometry.aligned-16)<=.5,"commands sit 16px above the name tab");
       assert(geometry.font.includes("Suien Name"));
       assert.equal(geometry.nameTop, -36);
       assert(geometry.buttons.every(height => height >= 44));
