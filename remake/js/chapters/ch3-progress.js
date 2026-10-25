@@ -1,3 +1,5 @@
+import { nextTokyoFreeTime } from "../core/tokyo-clock.js";
+import { syncTokyoVisits, tokyoVisitState } from "../core/tokyo-visits.js";
 // 第3章の東京到着から全国大会前夜。読了した場面だけを確定する。
 // day は章内の日付。通算の value.day は startDay から換算する。
 export const CH3_INTRO_SCENES = Object.freeze([
@@ -53,16 +55,39 @@ export function chapterThreeProgress(value) {
 /** 現在の一場面の正常読了時だけ進める。次の日付は場面順から決める。 */
 export function completeChapterThreeScene(value, sceneId) {
   const progress = chapterThreeProgress(value);
-  if (CH3_INTRO_SCENES[progress.stage]?.id !== sceneId) return false;
+  if (CH3_INTRO_SCENES[progress.stage]?.id !== sceneId || chapterThreeFreeTime(value)) return false;
   progress.stage += 1;
+  setNextChapterThreeTime(value);
+  return true;
+}
+
+function setNextChapterThreeTime(value) {
+  const progress = chapterThreeProgress(value);
   const next = CH3_INTRO_SCENES[progress.stage];
-  if (next) {
+  const free = nextTokyoFreeTime(value, next?.id || "tournament");
+  if (free) {
+    value.day = free.day;
+    value.slot = free.slot;
+  } else if (next) {
     value.day = Math.max(value.day, progress.startDay + next.day - 1);
     value.slot = next.slot;
   } else {
     value.day = Math.max(value.day, progress.startDay + 13);
     value.slot = 0;
   }
-  value.phase = next ? progress.stage <= 1 ? "opening" : "daily" : "tournament";
+  value.phase = free ? "daily" : next ? progress.stage <= 1 ? "opening" : "daily" : "tournament";
+  syncTokyoVisits(value);
+}
+
+export function chapterThreeFreeTime(value) {
+  const progress = chapterThreeProgress(value);
+  return nextTokyoFreeTime(value, CH3_INTRO_SCENES[progress.stage]?.id || "tournament");
+}
+
+export function completeChapterThreeFreeTime(value, windowId) {
+  const window = chapterThreeFreeTime(value);
+  if (!window || window.id !== windowId || value.day !== window.day || value.slot !== window.slot) return false;
+  tokyoVisitState(value).closedSlots.push(window.id);
+  setNextChapterThreeTime(value);
   return true;
 }

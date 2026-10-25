@@ -1,5 +1,5 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
@@ -8,7 +8,8 @@ import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
-  completeChapterThreeScene } from "./ch3-progress.js";
+  completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
+import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 
@@ -90,7 +91,16 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     el("p.ch2-contest-description", { text: description }),
     sceneId ? createChapterThreeWayfinding(state, CH3_INTRO_SCENES, sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
-    el("div.ch2-contest-actions", actions),
+    el("div.ch2-contest-actions", [...actions, ...(["scene", "free", "ready"].includes(name) ? [
+      button(owner, "LIME・恋人との連絡", "lime", async () => {
+        const social = await import("./ch3-social.js");
+        if (!current(owner)) return;
+        const controller = owner.controller = new AbortController();
+        try { await social.openTokyoLime({ signal: controller.signal }); }
+        finally { if (owner.controller === controller) owner.controller = null; }
+        if (current(owner)) await renderStage(owner);
+      }),
+    ] : [])]),
   ]));
 }
 
@@ -231,8 +241,11 @@ async function readScene(owner, scene) {
 
 async function renderStage(owner) {
   if (!current(owner)) return;
+  syncTokyoVisits(state);
   const progress = chapterThreeProgress(state);
   const scene = CH3_INTRO_SCENES[progress.stage];
+  const free = chapterThreeFreeTime(state);
+  if (free) { await renderFreeTime(owner, free); return; }
   if (!scene) {
     card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
       button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
@@ -253,6 +266,37 @@ async function renderStage(owner) {
       await renderStage(owner);
     }, true),
   ], scene.day === 11 ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+}
+
+async function renderFreeTime(owner, window) {
+  const social = await import("./ch3-social.js");
+  const definitions = await social.loadTokyoSocial();
+  if (!current(owner)) return;
+  const plan = dueTokyoVisit(state, window);
+  const id = plan?.characterId;
+  const eligible = id && visitContacts(state, definitions).includes(id)
+    && (!plan.met || !state.flags._story_shuraba_unresolved);
+  const name = id ? displayName(id, state, { context: "private" }) : "";
+  await setBg(bgUrl(window.slot ? "bg_street_night" : "bg_street_day"), { instant: true });
+  if (!current(owner)) return;
+  card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}の約束`,
+    eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
+      : "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。", [
+    ...(eligible ? [button(owner, plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
+      const kind = plan.met ? "date" : "meetup";
+      if (dueTokyoVisit(state, window)?.id !== plan.id) return;
+      if (!await readScene(owner, { id: `ch3_visit_${id}_${kind}`, bg: window.slot ? "bg_street_night" : "bg_street_day" })) return;
+      if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return;
+      completeChapterThreeFreeTime(state, window.id);
+      save();
+      await renderStage(owner);
+    }, true)] : []),
+    button(owner, "この時間は休む", "visit-rest", async () => {
+      if (!completeChapterThreeFreeTime(state, window.id)) return;
+      save();
+      await renderStage(owner);
+    }),
+  ], "合流と散歩は、それぞれ一回の自由時間を使います。", "");
 }
 
 function renderError(owner) {

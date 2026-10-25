@@ -1,0 +1,310 @@
+{
+  "comment": "第3章の予約済み東京訪問。実際の恋人・到着・合流・日時をrunnerで検証してから再生。無料の連絡と同じく成長報酬なし。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_visit_tsumugi_meetup",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、東京駅で待ち合わせた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……人、多いですね。見つけてもらえて、ほっとしました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれて、ありがとう。まずは宿までの道を確かめよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅を出て、二人で宿へ向かった。散歩の約束は、相談した日時のままにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_tsumugi_date",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "この街の線、まだうまく描けなくて。でも、隣にいる人の手なら描けそうです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "描き終わるまで、ここにいましょうか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。今日は、急がずに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの時間を確かめて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_minto_meetup",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、東京駅で待ち合わせた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "いた。……遠くで見つけても、ちゃんと分かるもんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれて、ありがとう。まずは宿までの道を確かめよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅を出て、二人で宿へ向かった。散歩の約束は、相談した日時のままにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_minto_date",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "新しいお店の看板、つい見ちゃう。今度、二人の休みに行きたい場所が増えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は栞さんが気になった方へ行きましょう"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "じゃあ、もうちょっとだけ手、借りるね。迷子にならないように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの時間を確かめて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_rin_meetup",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、東京駅で待ち合わせた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……顔を見ると安心しますね。移動中、少しだけ緊張していました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれて、ありがとう。まずは宿までの道を確かめよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅を出て、二人で宿へ向かった。散歩の約束は、相談した日時のままにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_rin_date",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "いつもなら、この時間は店の連絡を確認しているんですけど。今日は、もう少ししまっておきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も。今日は目の前の人と話したいです"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "はい。……そう言ってもらえると、休暇を取ってよかったと思えます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの時間を確かめて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_samechan_meetup",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、東京駅で待ち合わせた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……見つけた！　都会でも、はじめの顔はすぐ分かるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれて、ありがとう。まずは宿までの道を確かめよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅を出て、二人で宿へ向かった。散歩の約束は、相談した日時のままにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_samechan_date",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "東京だからといって、何でも急ぐ必要はないのじゃ。わしは今、おぬしとゆっくり歩きたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、次の角までゆっくり行こうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。……手もつなぐのじゃ。これは、わしからのお願いじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの時間を確かめて、もう少しだけ歩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_hiyori_meetup",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、東京駅で待ち合わせた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "あ、いた。……ちゃんと休みを取って、来てよかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれて、ありがとう。まずは宿までの道を確かめよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅を出て、二人で宿へ向かった。散歩の約束は、相談した日時のままにした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_visit_hiyori_date",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束した自由時間。東京駅の外で落ち合い、街路樹の続く道を二人で歩いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "知らない道を歩いてるのに、隣にいると落ち着くね。今日は帰ってからの仕事、考えずにいられそう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次の休みの話なら、してもいい？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。それはしたい。二人とも無理しない日を、ちゃんと選ぼう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの時間を確かめて、もう少しだけ歩いた。"
+        }
+      ]
+    }
+  ]
+}

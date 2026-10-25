@@ -8,11 +8,10 @@ const context = vm.createContext({});
 const node = (spec, attrs = {}, children = []) => Array.isArray(attrs)
   ? { spec, children: attrs } : { spec, ...attrs, children };
 const util = new vm.SyntheticModule(["el"], function () { this.setExport("el", node); }, { context });
-const progress = new vm.SourceTextModule(fs.readFileSync(new URL("ch3-progress.js", root), "utf8"), { context });
-await progress.link(() => { throw Error("Unexpected progress dependency"); }); await progress.evaluate();
+const progress = await import("../js/chapters/ch3-progress.js");
 const view = new vm.SourceTextModule(fs.readFileSync(new URL("ch3-wayfinding.js", root), "utf8"), { context });
 await view.link(spec => { assert.equal(spec, "../core/util.js"); return util; }); await view.evaluate();
-const { CH3_INTRO_SCENES: scenes, advanceToChapterThree, completeChapterThreeScene } = progress.namespace;
+const { CH3_INTRO_SCENES: scenes, advanceToChapterThree, completeChapterThreeScene } = progress;
 const { chapterThreeWayfinding: model, createChapterThreeWayfinding: render } = view.namespace;
 const clone = value => JSON.parse(JSON.stringify(value));
 const value = { chapter: 2, day: 28, slot: 1, phase: "cleared", stats: { technique: 30 },

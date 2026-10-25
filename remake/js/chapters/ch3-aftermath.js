@@ -75,7 +75,16 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
-    el("div.ch2-contest-actions", actions),
+    el("div.ch2-contest-actions", [...actions, ...(name !== "error" ? [
+      button(owner, "LIME・恋人との連絡", "lime", async () => {
+        const social = await import("./ch3-social.js");
+        if (!live(owner)) return;
+        const controller = owner.controller = new AbortController();
+        try { await social.openTokyoLime({ signal: controller.signal }); }
+        finally { if (owner.controller === controller) owner.controller = null; }
+        if (live(owner)) await renderStage(owner);
+      }),
+    ] : [])]),
   ]));
 }
 

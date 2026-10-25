@@ -54,7 +54,8 @@
         "node remake/test/ch2_ageha_story.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",
-        "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs"
+        "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
+        "node remake/test/tokyo_visits.mjs"
       ]
     },
     {
@@ -2288,6 +2289,27 @@
       ],
       "run": [
         "node remake/test/browser/ui_themes.mjs"
+      ]
+    },
+    {
+      "id": "tokyo-visits",
+      "title": "Tokyo long-distance LIME and visit reservations",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch3*.js",
+        "remake/js/core/tokyo-*.js",
+        "remake/js/core/state.js",
+        "remake/js/daily/phone.js",
+        "remake/css/daily.css",
+        "data/tokyo_visits.json",
+        "data/dialogue/ch3_visits.json",
+        "remake/test/tokyo_visits.mjs",
+        "remake/test/browser/tokyo_visits.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tokyo_visits.mjs"
       ]
     }
   ]
