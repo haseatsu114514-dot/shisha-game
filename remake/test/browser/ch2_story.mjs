@@ -74,6 +74,29 @@ async function reload(page) {
   await page.locator(t('slot-0')).click();
 }
 await suite('ch2-story', async check => {
+  for (const touch of [false, true]) await check(`day9-yuzugaya-tasting-night-${touch ? 'touch' : 'pc'}`, async page => {
+    await seed(page, { day: 9, slot: 2, pause: 'remake_ch2_ageha_tasting' });
+    await page.waitForFunction(() => window.__storyTrace.includes('remake_ch2_ageha_tasting'));
+    await page.locator('#vn.active .vn-box').waitFor();
+    const bg = await page.locator('#bg > .bg-img').last().evaluate(async node => {
+      const image = new Image();
+      image.src = node.style.backgroundImage.slice(5, -2);
+      await image.decode();
+      return { url: image.src, width: image.naturalWidth, height: image.naturalHeight };
+    });
+    assert(bg.url.endsWith('/assets/backgrounds/bg_yuzugaya_c_station_night.webp'), bg.url);
+    assert.equal(bg.width, 1280); assert.equal(bg.height, 720);
+    await assertFits(page, '#vn.active .vn-box');
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/ch2-story-day9-night-${touch ? 'touch' : 'pc'}-conversation.png` });
+    // 未完読の保存から実LOADし、試煙会を完了して翌朝へ。追加の費用・在庫付与はない。
+    const before = await state(page);
+    await reload(page); await atMap(page, 10, 0);
+    const after = await state(page);
+    assert(after.flags._ch2_read_remake_ch2_ageha_tasting && after.flags._ch2_night_9_done);
+    for (const key of ['money', 'flavorStock', 'owned']) assert.deepEqual(after[key], before[key], key);
+    await reload(page); await atMap(page, 10, 0);
+    assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_tasting')), '既読の試煙会を再生しない');
+  }, { viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
   await check('day2-free-night-then-day3-naru-and-ageha-once', async page => {
     await seed(page, { day: 2 }); await atMap(page, 2, 0);
     const before = await state(page);
