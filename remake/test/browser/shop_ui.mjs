@@ -24,7 +24,7 @@ async function open(page, opts = {}) {
 const HEAVEN = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 'lemon', 'orange', 'grape', 'watermelon', 'cinnamon'];
 const REMAINING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
 const ADOPTED = [...HEAVEN, ...REMAINING];
-const HMD = ['lotos_hagal', 'tanukish_lid', 'amaburst_hms'];
+const HMD = ['tanukish_lid', 'amaburst_hms'];
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 fs.mkdirSync(artifacts, { recursive: true });
 const capture = (page, name) => page.screenshot({ path: path.join(artifacts, `shop-art-${name}.png`) });
@@ -102,7 +102,19 @@ await suite("shop-ui", async check => {
       }
       await page.locator('[data-tab="equip"]').click();
       const equipment = await decodeRows(8);
-      assert.equal(equipment.filter(row => row.url).length, 5, 'Existing three bowls + two charcoal images');
+      assert.equal(equipment.filter(row => row.url).length, 6, 'Three bowls, two regenerated coals and the new lotos image');
+      for (const [id, suffix] of [['lotos_hagal', '/equipment-v2/lotos_hagal.webp'],
+        ['flat_charcoal', '/equipment-v2/flat_charcoal.webp'], ['cube_charcoal', '/equipment-v2/cube_charcoal.webp']]) {
+        assert(equipment.find(row => row.id === id)?.url.endsWith(suffix), `${id} uses its selected illustration`);
+        await tap(page, `detail-${id}`);
+        const image = page.locator('.shop-detail img');
+        await image.evaluate(node => node.decode());
+        assert((await image.getAttribute('src')).endsWith(suffix));
+        await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
+        await assertFits(page, '.shop-detail .shop-product-art');
+        await capture(page, `${platform}-equipment-${id}`);
+        await tap(page, 'shop-detail-close');
+      }
       for (const id of HMD) {
         assert.equal(equipment.find(row => row.id === id)?.text, 'HMD');
         await tap(page, `detail-${id}`);
@@ -134,6 +146,33 @@ await suite("shop-ui", async check => {
         await Promise.all(box.getAnimations().map(animation => animation.finished));
       });
       await assertFits(page, '.shop-detail .shop-product-art');
+    }, options);
+    await run(`${platform}-equipment-art-fallback`, async page => {
+      const aborted = new Set();
+      for (const tail of ['shop/equipment-v2/lotos_hagal.webp', 'shop/equipment-v2/flat_charcoal.webp', 'shop/equipment-v2/cube_charcoal.webp']) {
+        await page.route(`**/img/${tail}`, route => { aborted.add(tail); return route.abort('aborted'); });
+      }
+      await setup(page); await open(page);
+      await page.locator('[data-tab="equip"]').click();
+      for (const [id, label] of [['lotos_hagal', 'HMD'], ['flat_charcoal', '炭'], ['cube_charcoal', '炭']]) {
+        await page.locator(`[data-test="detail-${id}"] .shop-type-mark`).waitFor();
+        await tap(page, `detail-${id}`);
+        const fallback = page.locator('.shop-detail .shop-type-mark');
+        await fallback.waitFor();
+        assert.equal(await fallback.innerText(), label);
+        await tap(page, 'shop-detail-close');
+      }
+      assert.equal(aborted.size, 3);
+      const before = await snapshot(page);
+      const price = await page.evaluate(() => S.data.DB.equipById.cube_charcoal.buy_price);
+      if (platform === 'touch') {
+        await page.locator('[data-test="buy-cube_charcoal"]').tap();
+        await page.locator('[data-test="shop-checkout"]').tap();
+      } else {
+        await tap(page, 'buy-cube_charcoal'); await tap(page, 'shop-checkout');
+      }
+      assert.equal((await snapshot(page)).money, before.money - price);
+      assert(await page.evaluate(() => S.core.state.owned.includes('cube_charcoal')));
     }, options);
     await run(`${platform}-missing-art-fallback`, async page => {
       // Deliberate network abort exercises the real image error event (not a synthetic dispatch).

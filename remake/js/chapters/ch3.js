@@ -249,7 +249,7 @@ async function renderStage(owner) {
       save();
       await renderStage(owner);
     }, true),
-  ], scene.day === 11 ? "余白を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+  ], scene.day === 11 ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
 
 function renderError(owner) {

@@ -373,16 +373,18 @@
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
+  "cg_ch2_ageha_purikura_strip.png",
+  "cg_ch2_ageha_purikura_strip_gal.png",
+  "cg_ch2_ageha_purikura_strip_soft.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
+  "cg_ryuji_purikura.png",
   "cg_tsumugi_confession.png",
-  "cg_tsumugi_smoke_color.png",
-  "cg_ageha_first_purikura.png",
-  "cg_ryuji_purikura.png"
+  "cg_tsumugi_smoke_color.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -2137,6 +2139,9 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "cgs/cg_ch2_ageha_purikura_strip.png",
+  "cgs/cg_ch2_ageha_purikura_strip_gal.png",
+  "cgs/cg_ch2_ageha_purikura_strip_soft.png"
  ]
 }

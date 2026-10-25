@@ -385,7 +385,7 @@ await suite('ch2-tournament',async check=>{
           'Kuze portrait must decode in his first conversation');
         assert.match(await page.locator('#vn.active .vn-name').textContent(),/久世/);
         assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_yohaku_shop')),
-          'Kuze must appear inside 余白');
+          'Kuze must appear inside 煙幕');
         assert.equal(await page.locator(dt('ch3-intro-menu')).count(),0,
           'Saving during Kuze dialogue could commit his name before the first scene completes');
         await page.waitForTimeout(500);

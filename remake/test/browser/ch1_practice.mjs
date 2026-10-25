@@ -23,7 +23,12 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     P.ch1.setupHooks(); P.ui.clearScreen();
     P.vn.vnTest.turbo = !manual; P.vn.vnTest.choose = () => 2;
     P.craft.craftTest.auto = auto;
-    P.entries = []; P.steps = []; P.benches = 0;
+    P.entries = []; P.steps = []; P.benches = 0; P.earlyChoices = [];
+    const choose = P.vn.hooks.onChoice;
+    P.vn.hooks.onChoice = (id, ...args) => {
+      if (["remake_preparation_review", "remake_preparation_retry"].includes(id)) P.earlyChoices.push(args[1]);
+      choose?.(id, ...args);
+    };
     const enter = P.vn.hooks.onEnter;
     P.vn.hooks.onEnter = (id, dlg) => { P.entries.push(id); enter?.(id, dlg); };
     const seen = new WeakSet();
@@ -54,7 +59,7 @@ async function until(page, predicate, touch = false) {
   }
 }
 const finish = (page, touch) => until(page, () => P.done, touch);
-const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches }));
+const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches, earlyChoices: P.earlyChoices }));
 function resourcesUnchanged(s, giftGrams = 0) {
   assert.deepEqual(s.flavorStock, { double_apple: 50 + giftGrams, blueberry: 50, mint: 50 });
   if (giftGrams) {
@@ -67,42 +72,35 @@ function resourcesUnchanged(s, giftGrams = 0) {
 
 await suite("ch1-practice", async run => {
   const check = (...args) => !process.env.TEST_CASES || new RegExp(process.env.TEST_CASES).test(args[0]) ? run(...args) : Promise.resolve();
-  for (const [label, flags, hasChoice] of [
-    ["skipped", { _tutorial_skipped: true }, false],
-    ["legacy-no-history", {}, false],
-    ["legacy-tutorial", { _tutorial_done: true }, true],
-    ["full-success", { _craft_practice_runs: [{ day: 1, kind: "practice", success: true, adjustments: 0 }] }, true],
-    ["full-failed", { _craft_practice_runs: [{ day: 1, kind: "practice", success: false, adjustments: 0 }] }, false],
-    ["same-day-failed", { _craft_practice_runs: [{ day: 3, kind: "practice", success: false, adjustments: 0 }] }, true],
-    ["care-only", { _craft_practice_runs: [{ day: 2, kind: "care", scope: "care", success: true, served: false, adjustments: 2 }] }, false],
+  // 現行newGameから作られる履歴とDAY3途中保存だけを対象にする。
+  for (const [label, flags, reviewIntro] of [
+    ["current-no-full", {}, false],
+    ["current-full-success", { _craft_practice_runs: [{ day: 1, kind: "tutorial", scope: "full", success: true, served: true, adjustments: 0 }] }, true],
+    ["current-prior-failed", { _craft_practice_runs: [{ day: 1, kind: "practice", scope: "full", success: false, served: false, adjustments: 0 }] }, false],
+    ["current-same-day-failed", { _craft_practice_runs: [{ day: 3, kind: "practice", scope: "full", success: false, served: false, adjustments: 0 }] }, true],
+    ["current-care-only", { _craft_practice_runs: [{ day: 2, kind: "care", scope: "care", success: true, served: false, adjustments: 2 }] }, false],
   ]) await check(`early-${label}`, async page => {
     await setup(page); await page.evaluate(flags => { Object.assign(P.core.state.flags, flags); P.run(); }, flags);
     await finish(page); const r = await snapshot(page);
-    assert.equal(r.benches, hasChoice ? 0 : 1); assert(r.state.flags._ev_first_practice);
-    assert.equal(r.entries.some(id => /remake_preparation_(review|retry)$/.test(id)), hasChoice);
-    if (!hasChoice) { const record = r.state.flags._craft_practice_runs.at(-1); assert(record.success && record.served); assert.equal(record.adjustments, 0); }
-    if (label === "same-day-failed") assert(!r.state.flags._craft_practice_runs[0].success);
+    assert.equal(r.benches, 1); assert.deepEqual(r.earlyChoices, []); assert(r.state.flags._ev_first_practice);
+    assert.equal(r.entries.some(id => /remake_preparation_(review|retry)$/.test(id)), reviewIntro);
+    { const record = r.state.flags._craft_practice_runs.at(-1); assert(record.success && record.served); assert.equal(record.adjustments, 0); }
+    if (label === "current-same-day-failed") assert(!r.state.flags._craft_practice_runs[0].success);
     resourcesUnchanged(r.state);
   });
 
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
-    for (const [index, choice] of ["drill", "full", "review"].entries()) await check(`${device}-early-${choice}`, async page => {
+    await check(`${device}-early-full-only`, async page => {
       await setup(page, { manual: true });
-      await page.evaluate(() => { P.core.state.flags._tutorial_done = true; P.run(); });
-      await until(page, () => !!document.querySelector('[data-test="choice-2"]'), touch);
-      assert.equal(await page.evaluate(() => P.benches), 0); await assertFits(page, ".vn-choice");
-      if (choice === "drill") await page.screenshot({ path: `${shots}/${device}-early-menu.png` });
-      await select(page, `[data-test="choice-${index}"]`, touch);
-      if (choice === "drill") {
-        await page.locator('[data-test="drill-heat"]').waitFor(); await assertFits(page, ".big-choice");
-        await page.screenshot({ path: `${shots}/${device}-drill-menu.png` });
-        await select(page, '[data-test="drill-heat"]', touch);
-      }
+      await page.evaluate(() => {
+        P.core.state.flags._craft_practice_runs = [{ day: 1, kind: "tutorial", scope: "full", success: true, served: true, adjustments: 0 }];
+        P.run();
+      });
       await finish(page, touch); const r = await snapshot(page);
-      assert.equal(r.state.flags._ch1_early.choice, choice); assert(r.state.flags._ev_first_practice);
-      if (choice === "drill") { assert.deepEqual(r.steps, ["heat"]); assert.equal(r.state.best.heat, 2); }
-      if (choice === "review") assert.equal(r.benches, 0);
-      if (choice === "full") assert(r.state.flags._craft_practice_runs.at(-1).served);
+      assert.deepEqual(r.earlyChoices, [], "DAY3は選択を挟まず一台制作へ");
+      assert.equal(r.state.flags._ch1_early.choice, "full"); assert(r.state.flags._ev_first_practice);
+      assert.equal(r.benches, 1); assert(r.state.flags._craft_practice_runs.at(-1).served);
+      assert.equal(r.state.flags._craft_practice_runs.at(-1).adjustments, 0);
       resourcesUnchanged(r.state);
       await page.evaluate(() => P.core.saveToSlot("suien_remake_slot1"));
       await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
@@ -111,6 +109,44 @@ await suite("ch1-practice", async run => {
       const { savedAt: _beforeTime, ...beforeState } = r.state;
       const { savedAt: _afterTime, ...afterState } = again.state;
       assert.deepEqual(afterState, beforeState);
+    }, options);
+    await check(`${device}-early-current-interrupted-save-load`, async page => {
+      await setup(page, { auto: null });
+      await page.evaluate(() => P.run());
+      await page.waitForFunction(() => P.core.state.flags._ch1_early?.choice === "full" && P.benches === 1);
+      await page.evaluate(() => P.core.saveToSlot("suien_remake_slot1"));
+      const before = await snapshot(page);
+      assert(!before.state.flags._ch1_early.practiceDone);
+      assert(!before.state.flags._ch1_early.feedbackRead);
+      assert(!before.state.flags._ev_first_practice);
+      await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
+      await page.evaluate(() => { P.core.loadFromSlot("suien_remake_slot1"); P.run(); }); await finish(page);
+      const r = await snapshot(page);
+      assert.equal(r.benches, 1); assert.deepEqual(r.earlyChoices, []);
+      assert.equal(r.state.flags._ch1_early.choice, "full");
+      assert(r.state.flags._ch1_early.practiceDone && r.state.flags._ch1_early.feedbackRead && r.state.flags._ev_first_practice);
+      assert.equal(r.state.flags._craft_practice_runs.filter(run => run.kind === "early").length, 1);
+      assert(r.state.flags._craft_practice_runs.at(-1).served);
+      assert.equal(r.state.stamina, before.state.flags._ch1_early.staminaBefore);
+      resourcesUnchanged(r.state);
+    }, options);
+    await check(`${device}-early-current-unread-feedback-load`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        const onEnter = P.vn.hooks.onEnter;
+        P.vn.hooks.onEnter = (id, d) => { if (id === "remake_preparation_first_end") P.vn.vnTest.turbo = false; onEnter(id, d); };
+        P.run();
+      });
+      await page.waitForFunction(() => P.core.state.flags._ch1_early?.practiceDone && document.querySelector('#vn.active'));
+      await page.evaluate(() => P.core.saveToSlot("suien_remake_slot1"));
+      const before = await snapshot(page);
+      assert(!before.state.flags._ch1_early.feedbackRead); assert(!before.state.flags._ev_first_practice);
+      await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
+      await page.evaluate(() => { P.core.loadFromSlot("suien_remake_slot1"); P.run(); }); await finish(page);
+      const r = await snapshot(page);
+      assert.equal(r.benches, 0); assert.equal(r.state.flags._craft_practice_runs.length, before.state.flags._craft_practice_runs.length);
+      assert.equal(r.state.stamina, before.state.stamina); assert(r.state.flags._ev_first_practice);
+      resourcesUnchanged(r.state);
     }, options);
     await check(`${device}-mid-care`, async page => {
       await setup(page, { day: 7 }); await page.evaluate(() => P.run()); await finish(page);

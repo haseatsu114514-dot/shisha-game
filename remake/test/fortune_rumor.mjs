@@ -26,7 +26,7 @@ const mocks = {
   questionVisitDue: () => false, finaleAtVisit: () => false, spotFollowupDue: () => null, maybeRecruitTrpgMember: async () => {},
   openingStatus: (s, value) => s.kind === "fortune" && value.slot !== 0 ? { ok: false, tag: "昼のみ営業" } : { ok: true },
   trpgSpot: () => null, samechanSpot: () => null, cityGuestAtShop: () => null, hiyoriFirstMeetingReady: () => false,
-  nightPlan: empty, restingToday: () => false, unreadCount: () => 0,
+  fixedNightVisitBlock: () => null, nightPlan: empty, restingToday: () => false, unreadCount: () => 0,
   chooseSpot: async () => { if(mode==="calendar")return "tonari";throw new Error("map boundary"); },
   showScreen: (name,node) => { if(mode==="calendar")Promise.resolve().then(()=>find(node,"tonari-customer").onclick()); return node; }, retire:noop, hiyoriAxeReady:()=>false,
   paidAction:async run=>({value:await run(),spent:10}), coldRisk:()=>false,catchesCold:()=>false,fitActive:()=>false,staminaAfter:n=>core.state.stamina+n,maxStamina:()=>100,staminaRatio:()=>core.state.stamina/100,

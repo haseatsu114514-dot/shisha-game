@@ -447,7 +447,7 @@ for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
     ["ch1_tournament_r2_end", "bgm_tournament_craft"],
     ["ch1_tournament_r3_end", "bgm_tournament_craft"],
     ["remake_round4_end", "bgm_tournament_craft"],
-    ["remake_judging_intro", "bgm_tournament_wait"],
+    ["remake_judging_intro", "bgm_judging"],
   ]) {
     if (bgmCues[`${attempt}:${id}`] !== expected) throw new Error(`Wrong BGM at attempt ${attempt} ${id}: ${bgmCues[`${attempt}:${id}`]}`);
   }
