@@ -81,7 +81,7 @@ for (const key of ["money", "stamina", "stats", "statXp", "flavorStock", "owned"
   "reel", "lovers", "loverSince", "relationshipMemories", "contacts", "inbox", "tournament"])
   assert.deepEqual(tokyo[key], saved[key], `Chapter 3 transition changed ${key}`);
 assert.deepEqual(tokyo.statsAtChapterStart, saved.stats);
-assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 29, stage: 0, titleSeen: false });
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 29, stage: 0, titleSeen: false, prologueStep: 0 });
 const entered = structuredClone(tokyo);
 assert.equal(advanceToChapterThree(tokyo), false);
 assert.deepEqual(tokyo, entered, "Repeated Chapter 3 entry reset progress or date");

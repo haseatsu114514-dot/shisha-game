@@ -1,0 +1,72 @@
+{
+  "character": "つむぎ",
+  "production": "approved high-resolution character portraits only; no walking sprites or identity redraw",
+  "files": [
+    "01-expressions.png",
+    "02-face-hair-parts.png",
+    "03-outfit-palette.png"
+  ],
+  "sources": {
+    "sprites": "assets/sprites/characters/tsumugi/chr_tsumugi_*.png",
+    "canon_prompt": ".claude/skills/character-portrait-remaster/references/tsumugi-v1-prompt.txt"
+  },
+  "excluded_sources": [
+    "assets/proto_walk/",
+    "asset_sources/images/proto_walk/"
+  ],
+  "notes": [
+    "歩行用ドット絵を使わず、すべて正規の高精細立ち絵から切り出した。",
+    "高精細の真横・背面・斜め前後の全身、および高精細の横顔・斜め45度は補完デザイン（未制作）。",
+    "独立した喜び表情は未制作。会釈の笑顔を参考として表示。",
+    "画像から確定できない身長や背面の装飾は勝手に追加しない。"
+  ],
+  "sampled_palette": [
+    {
+      "part": "髪",
+      "description": "ダークブラウン",
+      "hex": "#533C39"
+    },
+    {
+      "part": "瞳",
+      "description": "赤茶",
+      "hex": "#7C4536"
+    },
+    {
+      "part": "肌",
+      "description": "あたたかい明色",
+      "hex": "#F1C1AE"
+    },
+    {
+      "part": "上着",
+      "description": "深いプラム紫",
+      "hex": "#5D4568"
+    },
+    {
+      "part": "スカート・靴下",
+      "description": "黒～チャコール",
+      "hex": "#2C2530"
+    },
+    {
+      "part": "刺繍",
+      "description": "くすんだラベンダー",
+      "hex": "#B88798"
+    },
+    {
+      "part": "葉模様",
+      "description": "黄土～金",
+      "hex": "#B49557"
+    },
+    {
+      "part": "タブレット",
+      "description": "チャコール",
+      "hex": "#2B2D33"
+    }
+  ],
+  "archive": {
+    "status": "historical-reference-only",
+    "source_branch_head": "8ba10f3da03f3dfc94af6ec42d59edf22c25ecdf",
+    "portrait_updated_after_snapshot": "5ef3f679",
+    "archived_date": "2026-10-26",
+    "note": "Use the current portraits in assets/sprites/characters/tsumugi for new work."
+  }
+}

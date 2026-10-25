@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 19:33 UTC",
+ "generated": "2026-10-25 23:13 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -317,6 +317,8 @@
   "bg_cafe_night.png",
   "bg_cafe_overcast_day.png",
   "bg_ch3_hotel_night.png",
+  "bg_ch3_kuze_video.png",
+  "bg_ch3_train_arrival.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
   "bg_eden_shop.png",
@@ -379,6 +381,7 @@
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
+  "cg_ch3_childhood_offered_hand.png",
   "cg_kuze_mashiro_childhood.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
@@ -1869,6 +1872,8 @@
   "backgrounds/bg_cafe_night.png",
   "backgrounds/bg_cafe_overcast_day.png",
   "backgrounds/bg_ch3_hotel_night.png",
+  "backgrounds/bg_ch3_kuze_video.png",
+  "backgrounds/bg_ch3_train_arrival.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_eden_shop.png",
@@ -1921,10 +1926,17 @@
   "cgs/cg_ch1_sumi_training.png",
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
+  "cgs/cg_ch2_ageha_purikura_strip.png",
+  "cgs/cg_ch2_ageha_purikura_strip_gal.png",
+  "cgs/cg_ch2_ageha_purikura_strip_soft.png",
+  "cgs/cg_kuze_mashiro_childhood.png",
   "cgs/cg_minto_casual.png",
   "cgs/cg_minto_cheki.png",
   "cgs/cg_minto_confession.png",
   "cgs/cg_minto_first_cheki.png",
+  "cgs/cg_naru_after_hours.png",
+  "cgs/cg_naru_last_chance.png",
+  "cgs/cg_naru_next_entry.png",
   "cgs/cg_oneesan_first_smoke.png",
   "cgs/cg_rin_confession.png",
   "cgs/cg_ryuji_purikura.png",
@@ -1968,8 +1980,10 @@
   "sprites/characters/kumicho/chr_kumicho_serious.png",
   "sprites/characters/kumicho/chr_kumicho_smile.png",
   "sprites/characters/kumicho/chr_kumicho_surprise.png",
+  "sprites/characters/kuze/chr_kuze_nervous.png",
   "sprites/characters/kuze/chr_kuze_normal.png",
   "sprites/characters/kuze/chr_kuze_smug.png",
+  "sprites/characters/kuze/chr_kuze_wild.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",
@@ -2147,14 +2161,6 @@
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "cgs/cg_ch2_ageha_purikura_strip.png",
-  "cgs/cg_ch2_ageha_purikura_strip_gal.png",
-  "cgs/cg_ch2_ageha_purikura_strip_soft.png",
-  "cgs/cg_naru_after_hours.png",
-  "cgs/cg_naru_last_chance.png",
-  "cgs/cg_naru_next_entry.png",
-  "sprites/characters/kuze/chr_kuze_wild.png",
-  "sprites/characters/kuze/chr_kuze_nervous.png",
-  "cgs/cg_kuze_mashiro_childhood.png"
+  "cgs/cg_ch3_childhood_offered_hand.png"
  ]
 }

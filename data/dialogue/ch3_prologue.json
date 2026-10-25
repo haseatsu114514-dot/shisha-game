@@ -1,0 +1,33 @@
+{
+  "comment": "第三章の冒頭。少年と少女の名前を伏せ、公開大会映像だけを手がかりにする。幼少期の記憶は久世の初訪問で繰り返さない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_childhood_opening",
+      "lines": [
+        { "speaker": "", "text": "ずっと前。東京の小さな公園。" },
+        { "speaker": "", "text": "少年は、描いたばかりのレモンケーキを膝にのせて、お茶を一口飲んだ。" },
+        { "speaker": "", "text": "少年「このお茶、絵のケーキの味がする」" },
+        { "speaker": "", "text": "近くの子が笑った。「お茶なのに？　嘘つき」" },
+        { "type": "show_cg", "cg_id": "cg_ch3_childhood_offered_hand" },
+        { "speaker": "", "text": "少年は絵を伏せた。少女は追いかけず、隣にしゃがんで手を差し出した。" },
+        { "speaker": "", "text": "少女「僕には、お茶。でも好き。いっしょに飲もう」" },
+        { "speaker": "", "text": "少年がその手を取ると、少女は当たり前のように隣へ座った。" },
+        { "type": "show_cg", "cg_id": "cg_kuze_mashiro_childhood" },
+        { "speaker": "", "text": "少年は絵を半分に折り、片方を少女へ渡した。" },
+        { "speaker": "", "text": "少年「……明日も、ここで飲む？」" },
+        { "speaker": "", "text": "少女「うん。友達だもん」" },
+        { "type": "hide_cg" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_train_arrival",
+      "lines": [
+        { "speaker": "", "text": "列車の揺れで、浅い眠りから目を覚ました。" },
+        { "speaker": "", "text": "車内放送が、東京への到着を告げている。窓の向こうに、知らない街が近づいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "……寝てた。もう着くのか" },
+        { "speaker": "", "text": "膝の上には、大会の案内と機材の入った鞄。" },
+        { "speaker": "hajime", "face": "normal", "text": "（勝った日のことなら話せる。でも、東京では何を聞かれるんだろう）" }
+      ]
+    }
+  ]
+}

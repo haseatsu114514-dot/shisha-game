@@ -12,8 +12,10 @@ import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chap
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
+import { showKuzeVideoSite } from "./ch3-kuze-video.js";
 
 const FILES = {
+  ch3_prologue: ["ch3_childhood_opening", "ch3_train_arrival"],
   ch3_main: ["ch3_opening", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
@@ -181,8 +183,12 @@ async function openChapter(advance) {
       save();
     }
     if (!current(owner)) return;
-    playBgm("tonari");
     const progress = chapterThreeProgress(state);
+    if (progress.prologueStep !== undefined && progress.prologueStep < 4) {
+      await renderPrologue(owner);
+      return;
+    }
+    playBgm("tonari");
     if (!progress.titleSeen) {
       await setBg(bgUrl("bg_street_day"), { instant: true });
       if (!current(owner)) return;
@@ -194,6 +200,59 @@ async function openChapter(advance) {
     }
     await renderStage(owner);
   });
+}
+
+async function readPrologue(owner, id, bg) {
+  await setBg(bg ? bgUrl(bg) : null, { instant: true });
+  if (!current(owner)) return false;
+  showScreen("none", null);
+  hud(owner);
+  const controller = owner.controller = new AbortController();
+  try {
+    const result = await play(DB.dialogues[id], { signal: controller.signal });
+    return current(owner) && !!result && !result.cancelled;
+  } finally {
+    if (owner.controller === controller) owner.controller = null;
+  }
+}
+
+async function renderPrologue(owner) {
+  if (!current(owner)) return;
+  const progress = chapterThreeProgress(state);
+  if (progress.prologueStep === 0) {
+    if (!await readPrologue(owner, "ch3_childhood_opening", null)) return;
+    progress.prologueStep = 1;
+    save();
+  }
+  if (progress.prologueStep === 1) {
+    await setBg(bgUrl("bg_ch3_kuze_video"), { instant: true });
+    if (!current(owner)) return;
+    hud(owner);
+    showKuzeVideoSite({
+      onMenu: () => openMenu(owner),
+      onDone: () => perform(owner, async () => {
+        progress.prologueStep = 2;
+        save();
+        await renderPrologue(owner);
+      }),
+    });
+    return;
+  }
+  if (progress.prologueStep === 2) {
+    await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
+      sub: "HAZE: NATIONAL TOKYO 編" });
+    if (!current(owner)) return;
+    progress.titleSeen = true;
+    progress.prologueStep = 3;
+    save();
+  }
+  if (progress.prologueStep === 3) {
+    playBgm("tonari");
+    if (!await readPrologue(owner, "ch3_train_arrival", "bg_ch3_train_arrival")) return;
+    progress.prologueStep = 4;
+    save();
+  }
+  await renderStage(owner);
 }
 
 async function readScene(owner, scene) {
