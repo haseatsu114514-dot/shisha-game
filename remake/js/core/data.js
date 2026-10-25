@@ -203,9 +203,16 @@ export function callName(id, state, opts = {}) {
 
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
 let WEBP = new Set();
+// #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
+const FACE_CORRECTION_REVISION = "face-line-20261026";
+function faceCorrectionVersion(rel) {
+  return /^(sprites\/characters\/(minto|ageha)\/|ui\/face_icons\/face_(minto|ageha)\.png$)/.test(rel)
+    ? `?v=${FACE_CORRECTION_REVISION}` : "";
+}
 /** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */
 export function img(rel) {
-  return WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;
+  const url = WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;
+  return url + faceCorrectionVersion(rel);
 }
 
 // 旧ファイル名 → 最新版（参照だけ差し替える）
@@ -293,12 +300,12 @@ export function faceIconUrl(id, state = null, { context = null } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
   if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
   const folder = SPEAKER_ALIAS[id] || id;
-  return icons.includes(`face_${folder}.png`) ? `${ROOT}assets/ui/face_icons/face_${folder}.png` : null;
+  return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
 }
 
 /** 顔アイコンの全URL（起動時の先読み用） */
 export function allFaceIconUrls() {
-  return (DB.manifest.faceIcons || []).map((f) => `${ROOT}assets/ui/face_icons/${f}`);
+  return (DB.manifest.faceIcons || []).map((f) => img(`ui/face_icons/${f}`));
 }
 
 export function makingUrl(name) {
