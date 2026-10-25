@@ -2457,36 +2457,14 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "一台、最後まで触ったな。今日は引っかかったところだけ確かめるか"
+          "text": "一台、最後まで触ったな。今日は最初から通して確かめるぞ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "最初からやりたければ付き合うぞ。どうする？"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "苦手な工程だけ復習する",
-              "next": "drill"
-            },
-            {
-              "text": "一台を最初から作る",
-              "next": "full"
-            },
-            {
-              "text": "今日は手順だけ確認する",
-              "next": "review"
-            }
-          ]
+          "text": "大会と同じように、一台を最初から作ろう"
         }
-      ],
-      "branches": {
-        "drill": [],
-        "full": [],
-        "review": []
-      }
+      ]
     },
     {
       "dialogue_id": "remake_preparation_retry",
@@ -2502,31 +2480,9 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "今日は一つに絞ってもいい。最初からやり直すか？"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "苦手な工程だけ復習する",
-              "next": "drill"
-            },
-            {
-              "text": "一台を最初から作る",
-              "next": "full"
-            },
-            {
-              "text": "今日は手順だけ確認する",
-              "next": "review"
-            }
-          ]
+          "text": "もう一度、最初から最後まで通して確かめよう"
         }
-      ],
-      "branches": {
-        "drill": [],
-        "full": [],
-        "review": []
-      }
+      ]
     },
     {
       "dialogue_id": "remake_midcheck_review",
