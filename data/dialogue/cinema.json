@@ -27,10 +27,16 @@
       "metadata": { "min_chapter": 2 },
       "lines": [
         { "speaker": "", "face": "", "text": "電球の灯る看板をくぐり、小さな上映室の赤い席に座った。" },
+        { "speaker": "", "face": "", "text": "肘掛けには擦れた跡がある。背もたれに体を預けると、思ったより柔らかかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（サメちゃんの言ってた映画館、ここか）" },
+        { "speaker": "", "face": "", "text": "客席が暗くなる。後ろで紙袋を畳む音がして、それきり静かになった。" },
         { "speaker": "hajime", "face": "normal", "text": "（今日の映画は、空からサメが降ってくるらしい）" },
-        { "speaker": "", "face": "", "text": "吊り糸の見えるサメが現れた瞬間、客席のあちこちで笑いがこぼれた。" },
-        { "speaker": "hajime", "face": "smile", "text": "（わかっていても、この間で来ると笑っちゃうな）" },
-        { "speaker": "", "face": "", "text": "エンドロールが終わるまで席に残った。サメちゃんが語りたくなるのも、少しわかる。" }
+        { "speaker": "", "face": "", "text": "最初の一匹は、どう見ても吊り糸で飛んでいた。" },
+        { "speaker": "", "face": "", "text": "客席から笑いがこぼれる。それでも、次の一匹が来ると皆が画面を見上げた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（あの人、まだ後ろにいるのに気づいてない……！）" },
+        { "speaker": "", "face": "", "text": "気がつくと、俺も肘掛けを握っていた。" },
+        { "speaker": "", "face": "", "text": "エンドロールが終わって明かりが戻る。隣の客が、小さく笑って息をついた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（サメちゃんが長く話したくなるの、少しわかるな）" }
       ]
     },
     {
@@ -51,6 +57,117 @@
         { "speaker": "hajime", "face": "normal", "text": "（来る、……まだか？）" },
         { "speaker": "", "face": "", "text": "待ちきれなくなった頃、画面の端を大きな影が横切った。隣の席で誰かが息をのんだ。" },
         { "speaker": "hajime", "face": "smile", "text": "（見せる前から、こっちの目を引きつけてたんだな）" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_cardboard_planet",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日の一本は、銀色の宇宙船が知らない星に着く映画だった。" },
+        { "speaker": "", "face": "", "text": "船が着陸すると、背景の岩山まで少し揺れた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（今の、船より岩の方が動いてなかったか？）" },
+        { "speaker": "", "face": "", "text": "宇宙服の隊長は、何事もなかったように探検を始めた。" },
+        {
+          "type": "choice",
+          "id": "cinema_planet_attention",
+          "choices": [
+            { "text": "背景の小道具を見る", "next": "props" },
+            { "text": "隊長についていく", "next": "captain" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "帰り際、ロビーの模型が目に留まった。さっきの宇宙船に、よく似ている。" },
+        { "speaker": "hajime", "face": "smile", "text": "（もう少し近くで見てもいいかな）" }
+      ],
+      "branches": {
+        "props": [
+          { "speaker": "", "face": "", "text": "通信機には、見覚えのある台所用品が使われていた。" },
+          { "speaker": "hajime", "face": "smile", "text": "（それ、うちにもある。そこを握るんだ……）" }
+        ],
+        "captain": [
+          { "speaker": "", "face": "", "text": "仲間が怖がるたび、隊長は必ず一人ずつ振り返っていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "（この人だけは置いていかないって、信じられるな）" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "cinema_rubber_monster",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "怪獣が街へ現れた。足元の車が、妙に軽そうに跳ねる。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（着ぐるみの背中、少し開いてる……）" },
+        { "speaker": "", "face": "", "text": "客席のどこかで、くすっと笑う声がした。" },
+        { "speaker": "", "face": "", "text": "怪獣は逃げ遅れた子供の前で止まり、倒れかけた鉄塔を受け止めた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（え、そっちを助けるのか）" },
+        { "speaker": "", "face": "", "text": "最後の怪獣が海へ帰っていくまで、背中の隙間は気にならなかった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（さっき笑ってごめんな。ちょっと好きになった）" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_detective_shadow",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "白黒の探偵映画。窓に映る影だけが、犯人らしい人物を追っていた。" },
+        { "speaker": "", "face": "", "text": "探偵が部屋を出たあと、カメラは机の上の鍵を映し続けた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（わざわざ残したってことは、何かあるよな）" },
+        {
+          "type": "choice",
+          "id": "cinema_mystery_guess",
+          "choices": [
+            { "text": "鍵を覚えておく", "next": "key" },
+            { "text": "人物の様子を見る", "next": "person" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "種明かしで、最初の部屋がもう一度映った。鍵も、人物の手つきも、そこにあった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（最初から見えてたのに。もう一回、確かめたいな）" }
+      ],
+      "branches": {
+        "key": [
+          { "speaker": "", "face": "", "text": "鍵の歯が、一か所だけ欠けている。次の扉が開く場面で、思わず手元を見た。" },
+          { "speaker": "hajime", "face": "surprise", "text": "（今、違う鍵に持ち替えた？）" }
+        ],
+        "person": [
+          { "speaker": "", "face": "", "text": "平気そうに話していた人物が、扉の音にだけ肩を揺らした。" },
+          { "speaker": "hajime", "face": "normal", "text": "（その音、そんなに気になるんだな）" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "cinema_handpainted_sign",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "入口の看板が、新しい絵に替わっていた。" },
+        { "speaker": "", "face": "", "text": "大きな怪鳥と逃げる車。よく見ると、車のタイヤに絵の具の跡が残っている。" },
+        { "speaker": "hajime", "face": "normal", "text": "この看板、手描きですか？" },
+        { "speaker": "", "face": "", "text": "窓口の人がうなずき、隅の小さな鳥を指さした。描き手が毎回忍ばせているらしい。" },
+        { "speaker": "hajime", "face": "smile", "text": "（あ、本当だ。大きい方に気を取られてた）" },
+        { "speaker": "", "face": "", "text": "映画にも怪鳥が現れた。看板ほど大きくはなかったが、車はちゃんと逃げていた。" },
+        { "speaker": "", "face": "", "text": "帰りにもう一度見上げると、小さな鳥まで得意げに見えた。" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_endroll_applause",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "派手な爆発のあと、主人公が煤だらけの顔で笑った。" },
+        { "speaker": "", "face": "", "text": "画面が暗くなってから、少し間を置いて一人が手を叩いた。" },
+        { "speaker": "", "face": "", "text": "前の席でも拍手が始まった。つられて、俺も両手を合わせる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（ここで拍手していいんだ）" },
+        { "speaker": "", "face": "", "text": "明かりがつくと、先ほど手を叩いた客が照れたように立ち上がった。" },
+        { "speaker": "", "face": "", "text": "誰かが小さく「また次も」と言った。窓口の方から、同じ言葉が返ってきた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（次、どんなのをやるんだろう）" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_last_row",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "いつもより後ろの席に座った。前の列には、少し間を空けて二人の客がいる。" },
+        { "speaker": "", "face": "", "text": "静かな追跡場面で、一人が身を乗り出した。もう一人も、少し遅れて前へ傾く。" },
+        { "speaker": "hajime", "face": "normal", "text": "（あの扉を開けてほしくないの、俺だけじゃないな）" },
+        { "speaker": "", "face": "", "text": "扉の向こうから出てきたのは、小さな猫だった。" },
+        { "speaker": "", "face": "", "text": "二人の肩が同時に下がった。俺も背もたれに戻り、口元を押さえた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（今、三人とも同じ顔してたかもしれない）" },
+        { "speaker": "", "face": "", "text": "上映が終わると、二人は言葉を交わさず、少し間を置いて席を立った。" }
       ]
     }
   ]

@@ -103,7 +103,12 @@ assert.equal(state.spotVisits.rojiura_cinema, 1);
 assert.equal(state.slot, 0, "calendar owns slot advancement");
 assert.deepEqual(rewards, [["insight", 4]], "candidate for existing paidAction, not direct growth");
 assert.equal(await visitCinema(), false, "completed action cannot be charged twice");
-state.day++; assert.equal(await visitCinema(), true);
-state.day++; assert.equal(await visitCinema(), true);
+// 再訪プール全体を巡り、追加された上映も精算を一度だけ行う。
+for (const id of CINEMA.pool) {
+  state.day++; state.money += CINEMA.cost;
+  assert(DB.dialogues[id]?.lines?.length, id);
+  assert.equal(await visitCinema(), true);
+  assert.equal(seen.at(-1), id);
+}
 assert.deepEqual(seen, [CINEMA.first, ...CINEMA.pool]);
 console.log("[cinema] discovery, legacy, direct access, funds/slots, cancel/missing/throw/LOAD/abort, re-entry, once-only settlement: PASS");

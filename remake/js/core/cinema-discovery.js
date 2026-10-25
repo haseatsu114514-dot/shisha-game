@@ -13,6 +13,8 @@ export const CINEMA = Object.freeze({
   cost: 1000, stamina: -8, stat: "insight",
   bg: "bg_rojiura_cinema", preview: "bg_rojiura_cinema",
   first: "cinema_first_screening",
-  pool: ["cinema_handmade_shark", "cinema_sound_before_shadow"],
+  pool: ["cinema_cardboard_planet", "cinema_handmade_shark", "cinema_rubber_monster",
+    "cinema_handpainted_sign", "cinema_detective_shadow", "cinema_sound_before_shadow",
+    "cinema_endroll_applause", "cinema_last_row"],
   desc: "サメ映画を大切に上映する小さな名画座。1,000円・体力8・1行動で一作を観る。",
 });
