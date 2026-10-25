@@ -4,6 +4,7 @@
 
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
 import { emit } from "./bus.js";
+import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -296,6 +297,9 @@ export function newGame() {
 
 export function save() {
   if (!state) return;
+  // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
+  try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
+  recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
@@ -376,6 +380,7 @@ export function consumeResumeOnBoot() {
 }
 
 export function wipeSave() {
+  recordGalleryProgress(peekSave());
   try { localStorage.removeItem(SAVE_KEY); } catch { /* noop */ }
 }
 

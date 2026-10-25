@@ -1,0 +1,23 @@
+{
+  "source": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+  "translation_px": [
+    -4,
+    -3
+  ],
+  "before_sha256": "7a41202914b4b90286fb06d4c5c556b98fb9f6200eaccf1398628e59e260a3e4",
+  "after_sha256": "139f234e67220f08e4796bb09e853b0b9b37fc721e8fb8440594eeb26f2e8ddf",
+  "rgba_preserved_under_translation": true,
+  "no_opaque_pixels_clipped": true,
+  "lossless_webp_matches": true,
+  "before_foot_drift": [
+    3.5994373336185532,
+    2.999999999999936
+  ],
+  "after_foot_drift": [
+    -0.40056266638143256,
+    0.0
+  ],
+  "changed_sprites": [
+    "assets/sprites/characters/salaryman/chr_salaryman_smile.png"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "character": "ageha",
+  "expression": "smile",
+  "version": 1,
+  "source": "ageha-smile-v1-source.png",
+  "source_sha256": "da53d34184a244d23e7a67a63c044426229ea9c0731781a6b140eb22cf61f072",
+  "source_size": [
+    1084,
+    1451
+  ],
+  "source_visible_height": 1401,
+  "scale": 0.6930763740185582,
+  "translation": [
+    -11,
+    0
+  ],
+  "preview": "ageha-smile-v1-preview.png",
+  "preview_sha256": "fd0b09bc80802616dfb44c1f70def0c4791748080b4904c6f9a22e7528e2513b",
+  "before_metrics": {
+    "top": 0.17083333333333334,
+    "bottom": 0.98,
+    "ax": 0.5790728962818005,
+    "aspect": 0.7466666666666667
+  },
+  "after_metrics": {
+    "top": 0.17083333333333334,
+    "bottom": 0.98,
+    "ax": 0.5793792706682331,
+    "aspect": 0.7466666666666667
+  },
+  "operation": "uniform downscale and feet-aligned canvas placement; no face compositing"
+}

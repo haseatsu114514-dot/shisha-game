@@ -90,7 +90,8 @@
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
-        "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs"
+        "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
+        "node --experimental-vm-modules remake/test/gallery.mjs"
       ]
     },
     {
@@ -1736,6 +1737,7 @@
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
+        "node remake/test/browser/gallery.mjs",
         "node remake/test/browser/sumi_contact.mjs",
         "node remake/test/browser/lover_hidden_growth.mjs",
         "node remake/test/browser/home_shisha.mjs",
