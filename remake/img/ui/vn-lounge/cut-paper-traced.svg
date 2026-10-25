@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="47 640 1593 255" preserveAspectRatio="none">
+<!-- 原案16の本文・折り返しを画面座標で実装。文字、名前札、操作はHTML側。 -->
+<defs>
+ <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#21112e"/><stop offset=".52" stop-color="#190f25"/><stop offset="1" stop-color="#1d1029"/></linearGradient>
+ <linearGradient id="edge"><stop stop-color="#b767cf"/><stop offset=".5" stop-color="#d48ce8"/><stop offset="1" stop-color="#a952bd"/></linearGradient>
+</defs>
+<!-- 外周の切り紙。左の折り返し、下辺の長い面、右の鋭角を個別に残す。 -->
+<path fill="url(#edge)" d="M95 640 1564 675 1640 869 1572 895 125 895 47 806Z"/>
+<path fill="url(#face)" d="M98 652 1568 685 1638 868 1572 893 1471 870 207 893 49 805Z"/>
+<path fill="#c37bd8" d="M49 805 125 895 207 893Z"/>
+<path fill="#b26cc7" d="M207 893 1471 870 1572 893Z"/>
+<path fill="#d88eeb" d="M95 640 1564 675 1568 685 98 652Z"/>
+<path fill="#281335" d="M98 652 49 805 77 725Z"/>
+<path fill="none" stroke="#b66aca" stroke-width="1" d="M207 893 1572 894 1640 869"/>
+</svg>

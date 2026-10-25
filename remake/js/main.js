@@ -5,6 +5,7 @@ import { loadAll, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
+import { applyUiTheme } from "./core/ui-theme.js";
 import { vnTest } from "./vn/engine.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
@@ -35,7 +36,7 @@ export async function boot() {
   window.visualViewport?.addEventListener("resize", fitStage);
   initLayers();
   initGameLayout();
-  loadConfig();
+  applyUiTheme(loadConfig().uiTheme);
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);

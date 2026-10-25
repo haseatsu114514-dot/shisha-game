@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" preserveAspectRatio="none">
+<defs>
+ <linearGradient id="glass" x2="0" y2="1"><stop stop-color="#2c1608" stop-opacity=".97"/><stop offset=".6" stop-color="#130b05" stop-opacity=".97"/><stop offset="1" stop-color="#251205" stop-opacity=".97"/></linearGradient>
+ <linearGradient id="edge"><stop stop-color="#ffbd57"/><stop offset=".25" stop-color="#a96725"/><stop offset=".7" stop-color="#bd7b2b"/><stop offset="1" stop-color="#ffe0a4"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<rect x="7" y="38" width="1186" height="190" rx="27" fill="url(#glass)"/>
+<rect x="7" y="38" width="1186" height="190" rx="27" fill="none" stroke="#ffc15c" stroke-width="4" opacity=".5" filter="url(#glow)"/>
+<rect x="7" y="38" width="1186" height="190" rx="27" fill="none" stroke="url(#edge)" stroke-width="1.7"/>
+<rect x="13" y="44" width="1174" height="178" rx="22" fill="none" stroke="#ffb84c" stroke-opacity=".35"/>
+<g stroke="#ffbf58" fill="none" stroke-width="1"><path d="m27 57 5-5 5 5-5 5Zm1146 150 5-5 5 5-5 5Z"/></g>
+</svg>

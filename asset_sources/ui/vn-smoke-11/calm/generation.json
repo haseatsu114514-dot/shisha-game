@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "source": "paper-source.png",
+  "source_sha256": "f7e66194ce629f40131f5b0726f8b0df304d7db96980f6a0a2dd85b59771184a",
+  "prompt": "paper-prompt.txt",
+  "runtime": "remake/img/ui/vn-calm/paper.webp",
+  "runtime_sha256": "84f40b85dc3301a35860a68f75afa1c75a1371e4065669b54ea9bcd50499c25a",
+  "crop": [
+    5,
+    92,
+    2167,
+    624
+  ],
+  "method": "alpha>=16 used only to measure bounds plus 12px margin; source alpha unmodified; rectangular crop and lossless WebP encoding",
+  "references": [
+    {
+      "path": "asset_sources/ui/vn-smoke-11/runtime-previews/smoke.png",
+      "commit": "0c11be4a134e622a4ba3ac373e66b1bb7d3ed842",
+      "purpose": "game lighting and mood"
+    },
+    {
+      "path": "asset_sources/ui/vn-smoke-11/faithful/tissue-source.png",
+      "sha256": "f114629f3ce636671ef97c03c478460bccd40bf1412b70254c8a0f62972ac431",
+      "purpose": "paper material"
+    }
+  ],
+  "composition": {
+    "stage": [
+      1280,
+      720
+    ],
+    "box": [
+      1216,
+      248
+    ],
+    "header_top": 22,
+    "header_height": 44,
+    "body_padding": [
+      92,
+      104,
+      28,
+      104
+    ],
+    "body_size": 30,
+    "body_line_height": 48,
+    "name_size": 24,
+    "command_size": 16,
+    "command_width": 352,
+    "columns": 4,
+    "state_specific_header_layout": false,
+    "active_marker": "absolute, no inline label shift"
+  },
+  "qa": {
+    "generation_viewed": true,
+    "actual_game_render_viewed": true,
+    "states": "speech, two lines, narration, thought, inner, choices, AUTO on/off",
+    "viewports": [
+      [
+        1280,
+        768
+      ],
+      [
+        844,
+        438
+      ]
+    ],
+    "fixed_header_data": "positions.json",
+    "all_six_themes": "passed",
+    "blue_four_characters": "passed",
+    "classic_operations": "PC/landscape passed",
+    "DS": "PC/touch passed after latest two-screen layout integration; soft-panel name and two-line portrait screenshot viewed",
+    "quick": "7/7 passed",
+    "integration_base": "e4b686425",
+    "notifications": "PC/touch LIME, rewards and 12 dialogue pages passed"
+  }
+}

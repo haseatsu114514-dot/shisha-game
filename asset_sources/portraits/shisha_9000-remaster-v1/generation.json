@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "character": "shisha_9000",
+  "status": "new portrait candidate; not installed in production",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved style reference",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved style reference",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "files": [
+    {
+      "path": "asset_sources/portraits/shisha_9000-remaster-v1/normal-preview.png",
+      "bytes": 448588,
+      "sha256": "37994b1e38007cb1980d1dbe27070609e00f076bd0b64bc50c25f9cfcbf875b4"
+    },
+    {
+      "path": "asset_sources/portraits/shisha_9000-remaster-v1/normal-prompt.txt",
+      "bytes": 1688,
+      "sha256": "1058cf0114b53a3944d932cd91c1197fe54f20b22f4f4e3c9b8d81fa550af34e"
+    },
+    {
+      "path": "asset_sources/portraits/shisha_9000-remaster-v1/normal-source.png",
+      "bytes": 1109717,
+      "sha256": "3611a4550ab4a1a42b66fe8601ea4fdc9348847dd851b3d33ed257e609381df2"
+    },
+    {
+      "path": "asset_sources/portraits/shisha_9000-remaster-v1/realistic-study.png",
+      "bytes": 1963931,
+      "sha256": "5b7ab2093eabea32ccfc660ff60bb6b130ec1da153f5c8866fea928f8699b602"
+    },
+    {
+      "path": "asset_sources/portraits/shisha_9000-remaster-v1/study-prompt.txt",
+      "bytes": 1397,
+      "sha256": "a96ddc74104481e0e54e758960bfafebe006b130ac40d39abeccf0f497a405f1"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "raw_margin_note": "Original head/foot padding is smaller than requested; preview adds canvas padding without painting.",
+    "preview": "896x1200 RGBA; proportional resize and placement only; cat sits at pet scale, not human height",
+    "limits": [
+      "Normal pose only; expression variants not generated",
+      "No runtime manifest or face icon replacement",
+      "Fine low-alpha fringe preserved; inspect against light/dark backgrounds"
+    ]
+  }
+}

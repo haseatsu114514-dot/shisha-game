@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "items": [
+    {
+      "id": "01-pc98",
+      "label": "R1｜90年代 PC-98風",
+      "description": "濃紺・青緑の二重罫線・ドット文字風。",
+      "status": "static concept, not adopted or wired to runtime",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "bytes": 1915815,
+      "sha256": "84029e17973be620338bebf1f85a658b48d611fadc565bec88e32eda900cca15",
+      "prompt": "01-pc98-prompt.txt",
+      "reference": {
+        "role": "same woman, lounge and dialogue composition; UI alone redesigned",
+        "path": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+        "branch": "codex/review-images-20261024-task5"
+      },
+      "qa": {
+        "inline_generation_viewed": true,
+        "saved_file_viewed": true,
+        "limits": [
+          "Generated mockups may subtly redraw character and background; not pixel-fixed comparisons",
+          "Text and buttons are baked into this concept image; not functional game UI",
+          "No claim of exact historical hardware/font reproduction",
+          "No animation included"
+        ]
+      }
+    },
+    {
+      "id": "02-heisei-blue",
+      "label": "R2｜平成初期 青い恋愛ADV",
+      "description": "青いグラデーション・銀縁・丸い光沢。",
+      "status": "static concept, not adopted or wired to runtime",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "bytes": 2048191,
+      "sha256": "7b7b8c462a6253dd5510aa2b47c3cc42bbd5476d7edbc97f3859e9f545f24a04",
+      "prompt": "02-heisei-blue-prompt.txt",
+      "reference": {
+        "role": "same woman, lounge and dialogue composition; UI alone redesigned",
+        "path": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+        "branch": "codex/review-images-20261024-task5"
+      },
+      "qa": {
+        "inline_generation_viewed": true,
+        "saved_file_viewed": true,
+        "limits": [
+          "Generated mockups may subtly redraw character and background; not pixel-fixed comparisons",
+          "Text and buttons are baked into this concept image; not functional game UI",
+          "No claim of exact historical hardware/font reproduction",
+          "No animation included"
+        ]
+      }
+    },
+    {
+      "id": "03-heisei-sakura",
+      "label": "R3｜平成 桜色の美少女ゲーム",
+      "description": "生成りの不透明な本文面・薔薇・レース・濃い文字。",
+      "status": "static concept, not adopted or wired to runtime",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "bytes": 2305308,
+      "sha256": "4fed6ea80c9352ee00d9e60b28f9380135cd7ec5ad0cb8c886ba21bfacb0f1e6",
+      "prompt": "03-heisei-sakura-prompt.txt",
+      "reference": {
+        "role": "same woman, lounge and dialogue composition; UI alone redesigned",
+        "path": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+        "branch": "codex/review-images-20261024-task5"
+      },
+      "qa": {
+        "inline_generation_viewed": true,
+        "saved_file_viewed": true,
+        "limits": [
+          "Generated mockups may subtly redraw character and background; not pixel-fixed comparisons",
+          "Text and buttons are baked into this concept image; not functional game UI",
+          "No claim of exact historical hardware/font reproduction",
+          "No animation included"
+        ]
+      }
+    },
+    {
+      "id": "04-retro-desktop",
+      "label": "R4｜レトロPC デスクトップ",
+      "description": "紫のタイトルバー・立体ボタン・明るい本文面。",
+      "status": "static concept, not adopted or wired to runtime",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "bytes": 1939530,
+      "sha256": "79da174ea93240b7bb40d3f51830b225979dbeec8121e64af4cf343086ba7812",
+      "prompt": "04-retro-desktop-prompt.txt",
+      "reference": {
+        "role": "same woman, lounge and dialogue composition; UI alone redesigned",
+        "path": "asset_sources/review-candidates-20261024/dialogue/11-dialogue-11.png",
+        "branch": "codex/review-images-20261024-task5"
+      },
+      "qa": {
+        "inline_generation_viewed": true,
+        "saved_file_viewed": true,
+        "limits": [
+          "Generated mockups may subtly redraw character and background; not pixel-fixed comparisons",
+          "Text and buttons are baked into this concept image; not functional game UI",
+          "No claim of exact historical hardware/font reproduction",
+          "No animation included"
+        ]
+      }
+    }
+  ]
+}

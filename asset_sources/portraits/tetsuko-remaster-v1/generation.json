@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "character": "tetsuko",
+  "status": "new portrait candidate; not installed in production",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved style reference",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved style reference",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "source": "user photo attached in this chat, 2026-10-24",
+      "role": "orange-and-white markings, folded ears, round face; raw photo not copied into repository"
+    }
+  ],
+  "files": [
+    {
+      "path": "asset_sources/portraits/tetsuko-remaster-v1/normal-preview.png",
+      "bytes": 141407,
+      "sha256": "9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00"
+    },
+    {
+      "path": "asset_sources/portraits/tetsuko-remaster-v1/normal-prompt.txt",
+      "bytes": 1468,
+      "sha256": "1f4142ded26a06ee4caacb6264690436ff58800dcd5d33b951c965eeb50233eb"
+    },
+    {
+      "path": "asset_sources/portraits/tetsuko-remaster-v1/normal-source.png",
+      "bytes": 1419788,
+      "sha256": "4a6d02b04bf5a8f60f95ad5cc53003d79a92ddbe74ea14aab0e70aef2033265e"
+    },
+    {
+      "path": "asset_sources/portraits/tetsuko-remaster-v1/realistic-study.png",
+      "bytes": 1675221,
+      "sha256": "bfadf15a053abbb3640b467de56a212253697a537999d8271ac9bdb82de69b00"
+    },
+    {
+      "path": "asset_sources/portraits/tetsuko-remaster-v1/study-prompt.txt",
+      "bytes": 1370,
+      "sha256": "3f6756a784bb6f1158990a71fac1eb7d8399027767618be95ebd27effb143204"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "raw_margin_note": "Original head/foot padding is smaller than requested; preview adds canvas padding without painting.",
+    "preview": "896x1200 RGBA; proportional resize and placement only; cat sits at pet scale, not human height",
+    "limits": [
+      "Normal pose only; expression variants not generated",
+      "No runtime manifest or face icon replacement",
+      "Fine low-alpha fringe preserved; inspect against light/dark backgrounds"
+    ]
+  }
+}
