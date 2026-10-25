@@ -202,7 +202,7 @@
     "nationality": "Japan",
     "affiliation": "煙幕（えんまく／東京の個人店）",
     "play_style": "「香りの物語と相手の判断を操る勝負師」",
-    "description": "東京の路地で小さなシーシャ店『煙幕』を一人で切り盛りする23歳。店の大げさな噂は自分で流すが、閉店後の片付けも客の好みの記録も自分で行う。果実と茶などの葉を熱の順番で立たせ、入れていない菓子を連想させる一台が得意。材料を先に見るか、味の名前を伏せるかは客が選べる。ましろとは幼なじみ。小柄であどけない笑顔と軽口が似合うが、勝負では目つきと言葉の速さが一変する。客への親切は本心で、予想外の感想も好き。しかし全国大会では正しい助言を相手が迷う時機に伝え、自分の柑橘の立ち上がりで次の一口の比較基準を揺らそうとする。効果は試喫順や給水によって変わり、客や他選手の道具には手を加えない。",
+    "description": "東京の路地で小さなシーシャ店『煙幕』を一人で切り盛りする23歳。店の大げさな噂は自分で流すが、閉店後の片付けも客の好みの記録も自分で行う。果実と茶などの葉を熱の順番で立たせ、入れていない菓子を連想させる一台が得意。材料を先に見るか、味の名前を伏せるかは客が選べる。ましろとは幼なじみ。小柄であどけない笑顔と軽口が似合う。墨黒のゆるい上着、片側だけ見えるえんじの裏地、小さな幾何柄のスカーフ、ノートを入れた腰のポーチが目印。勝負では目つきと言葉の速さが一変し、相手の手を読んだ瞬間に目を見開いて笑う。客への親切は本心で、予想外の感想も好き。しかし全国大会では正しい助言を相手が迷う時機に伝え、自分の柑橘の立ち上がりで次の一口の比較基準を揺らそうとする。効果は試喫順や給水によって変わり、客や他選手の道具には手を加えない。",
     "background_secret": "子どもの頃から、ましろの次の答えを予想しては外した。彼女は今も久世の香りを菓子に見立てず『茶の味。でも好き』と言う。店の体験を『客の思い込み』だけで片付けられたことが悔しく、自分の熱の技術を全国で証明したい。客の自由な感想を愛しながら、勝負では同じ答えへ誘導したくなる矛盾を持つ。試すことを嫌がる客には材料を明かし、店で嘘の助言はしない。親切を勝負に利用した責任は相手へ押しつけず認める。敗北は本気で悔しがる。",
     "favorite_flavor": "アフサール ブラックティー",
     "specialty_flavor": "フローズンシトラスの立ち上がりとブラックティーの余韻",
@@ -212,10 +212,10 @@
       "notes": "予想と実際の感想を並べて記録する。客の記憶まで自分の技術と呼びたかった弱さを知り、はじめが策を読んでも自分の一台を作り切った経験を次の勝負の材料にする。"
     },
     "visual_concepts": [
-      "23 year old adult Japanese shisha shop owner with a compact 6.5-head silhouette, uneven dark hair, large amber eyes, oversized ivory sleeves, asymmetric ink-blue vest and short apron, worn notebook and an inviting half smile",
-      "the same young adult competitor on stage, notebook raised beside his face, sly narrowed eyes and delighted unsettling grin; his kindness remains real while he reads the opponent's next choice"
+      "23 year old adult Japanese shisha shop owner with a slim compact silhouette, uneven espresso-brown hair and warm amber eyes, worn soot-black zip overshirt with one burgundy lining showing, cream henley, small tiled indigo-burgundy scarf, practical charcoal trousers, indigo notebook pouch and an inviting uneven smile",
+      "the same young adult competitor on stage, one hand spread by his face and notebook in the other, eyebrows uneven and amber eyes suddenly wide in a delighted crooked grin; his kindness remains real while he reads the opponent's next choice"
     ],
-    "spriteScale": 0.93,
+    "spriteScale": 0.99,
     "intro_cutin": {
       "title": "煙幕の勝負師",
       "line": "一口目の話を、二口目で裏切る",
