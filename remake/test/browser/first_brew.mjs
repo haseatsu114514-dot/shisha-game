@@ -239,6 +239,8 @@ await suite("first-brew", async check => {
       const s = T.core.state;
       Object.assign(s, { phase: "tournament", day: 14 });
       Object.assign(s.tournament, { attempts: 3, losses: 2, lastLossAttempt: 2 });
+      // devGameOver is a read-only preview: record the real third loss first.
+      T.assist.recordTournamentLoss(s.tournament);
       const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
       for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;
       for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {

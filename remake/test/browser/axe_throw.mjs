@@ -83,7 +83,8 @@ await suite("axe-throw", async run => {
     await phase(page,'vertical');await page.clock.runFor(950);await pressReady(page);
     await phase(page,'power');await page.clock.runFor(760);await pressReady(page);await phase(page,'flight');
     const frames=[];
-    for(const [label,ms] of [['release',0],['quarter',250],['half',230],['three-quarter',230],['impact',250]]){
+    // Advance whole animation frames, including the release frame before the clock starts.
+    for(const [label,ms] of [['release',0],['quarter',144],['half',128],['three-quarter',112],['impact',144]]){
       if(ms)await page.clock.runFor(ms);
       const shape=page.locator(label==='impact'?'.axe-impacts>g':'.axe-flight');
       frames.push(await shape.evaluate(n=>({pitch:Number(n.dataset.pitch),depth:Number(n.dataset.depth),
@@ -91,7 +92,7 @@ await suite("axe-throw", async run => {
       assert.equal(await shape.locator('image').count(),0);
       if(shotsPath)await page.locator('.axe-target').screenshot({path:shotsPath+'/front-'+label+'.png'});
     }
-    assert(frames[0].pitch===0&&frames[1].pitch< -80&&frames[2].pitch< -170&&frames[3].pitch< -260);
+    assert(frames[0].pitch===0&&frames[1].pitch< -80&&frames[2].pitch< -170&&frames[3].pitch< -260, JSON.stringify(frames));
     assert(frames[1].faces.includes('handle-end'));assert(frames[2].faces.includes('blade-front'));
     assert(frames.every(f=>!f.transform.includes('rotate')));
     for(let i=1;i<frames.length;i++)assert(frames[i].depth>frames[i-1].depth);
