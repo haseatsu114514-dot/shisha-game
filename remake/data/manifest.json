@@ -1828,11 +1828,14 @@
   ]
  },
  "bgm": [
+  "bgm_aftermath.bgm",
   "bgm_axe.bgm",
   "bgm_continue_urgent.mp3",
+  "bgm_judging.bgm",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
+  "bgm_taste_distant.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
   "bgm_trpg.bgm",

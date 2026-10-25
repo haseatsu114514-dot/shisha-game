@@ -15,23 +15,40 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice" } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", isCurrent = null } = {}) {
+  // 呼出し元が指定した制作だけを中断判定する。既存の自由練習等は従来どおり。
+  const checkCurrent = () => {
+    if (isCurrent && !isCurrent()) throw new DOMException("Practice owner changed", "AbortError");
+  };
+  checkCurrent();
   const cs = newSession(coached ? "tutorial" : "rehearsal");
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
   await waitBenchReady(cs);
+  checkCurrent();
   await stepSetup(cs);
+  checkCurrent();
   await stepWater(cs);
+  checkCurrent();
   await stepMix(cs);
+  checkCurrent();
   await stepPack(cs);
+  checkCurrent();
   await runHoles(cs);
+  checkCurrent();
   await stepPlace(cs);
+  checkCurrent();
   await runHeat(cs);
+  checkCurrent();
   await stepSteamTime(cs);
+  checkCurrent();
   await runSteamDodge(cs);
+  checkCurrent();
   await runPull(cs);
+  checkCurrent();
   if (adjustments) for (const round of [1, 2]) {
     if (cs.failed) break;
     await runCare(cs, { round });
+    checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
   retireScreen();

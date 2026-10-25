@@ -51,7 +51,8 @@
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
-        "node remake/test/lover_dates.mjs"
+        "node remake/test/lover_dates.mjs",
+        "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs"
       ]
     },
     {
@@ -83,6 +84,7 @@
         "node remake/test/attack_training.mjs",
         "node remake/test/steam_word_cut.mjs",
         "node remake/test/water_pour.mjs",
+        "node --experimental-vm-modules remake/test/water_pour_lifecycle_743.mjs",
         "node --experimental-vm-modules remake/test/water.mjs",
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",
