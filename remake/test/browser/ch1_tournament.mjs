@@ -74,6 +74,41 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.nico').count(), 0);
   }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
 
+  await check("completion-comment-variety", async page => {
+    await init(page);
+    const groups = await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      await T.open(cs);
+      const before = JSON.stringify(cs), groups = [];
+      for (const step of ["holes", "heat", "steam", "pull", "care"]) {
+        for (const [kind, score] of [["perfect", 95], ["great", 80], ["good", 65], ["miss", 20]]) {
+          const pool = T.data.DB.broadcast.completion[step][kind];
+          const seen = [];
+          for (let i = 0; i < 5; i++) {
+            T.broadcast.completed(cs, step, score);
+            const text = document.querySelector('.nico').textContent.replace(/^【[^】]+】/, "");
+            seen.push(text);
+          }
+          groups.push({ step, kind, seen, pool });
+        }
+      }
+      return { groups, before, after: JSON.stringify(cs) };
+    });
+    assert.equal(groups.after, groups.before, "Comment history changed saved craft state");
+    for (const { step, kind, seen, pool } of groups.groups) {
+      assert.equal(pool.length, 10, `${step}/${kind}: missing variants`);
+      assert.equal(new Set(pool).size, pool.length);
+      assert(seen.every(text => pool.includes(text)), `${step}/${kind}: wrong reaction`);
+      assert.equal(new Set(seen).size, 5, `${step}/${kind}: recent reaction repeated`);
+    }
+    await page.waitForTimeout(1600);
+    const visible = await page.locator('.nico').allTextContents();
+    assert.equal(visible.length, 3);
+    assert.equal(new Set(visible).size, 3, "Duplicate comments within one result");
+    await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
+    assert.equal(await page.locator('.nico').count(), 0);
+  });
+
   await check("delayed-assets-gate", async page => {
     await init(page);
     let release;

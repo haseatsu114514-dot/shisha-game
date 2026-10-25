@@ -12,6 +12,26 @@ const ROWS = 5;
 let nextRow = 0; // 行は順番に回して、同時に流れるコメントが重ならないようにする
 let generation = 0;
 const timers = new Set();
+// 一台の間だけ抽選履歴を保持。表示の消去では忘れず、セーブには書き込まない。
+const recentComments = new WeakMap();
+function pickFresh(cs, pool, count) {
+  const recent = recentComments.get(cs) || [];
+  const available = [...new Set(pool)];
+  const chosen = [];
+  while (chosen.length < count && available.length) {
+    let candidates = available.filter(text => !recent.includes(text));
+    if (!candidates.length) {
+      const oldest = Math.min(...available.map(text => recent.lastIndexOf(text)));
+      candidates = available.filter(text => recent.lastIndexOf(text) === oldest);
+    }
+    const text = pick(candidates);
+    chosen.push(text);
+    available.splice(available.indexOf(text), 1);
+    recent.push(text);
+  }
+  recentComments.set(cs, recent.slice(-24));
+  return chosen;
+}
 
 const live = (cs) => cs?.mode === "tournament";
 
@@ -61,7 +81,7 @@ export function burst(cs, kind, n = null) {
   if (!live(cs) || !pool.length) return;
   n = n ?? (kind === "perfect" ? 3 : 2);
   const cls = ["perfect", "miss", "rival"].includes(kind) ? kind : "";
-  for (let i = 0; i < n; i++) defer(cs, () => comment(cs, pick(pool), { cls }), i * 750);
+  pickFresh(cs, pool, n).forEach((text, i) => defer(cs, () => comment(cs, text, { cls }), i * 750));
 }
 
 /** 点数（0〜100）→ 観客の反応の段階 */
@@ -89,9 +109,19 @@ export function completed(cs, step, score) {
   clearComments();
   const kind = judgeOf(score);
   const label = { holes: "穴あけ", heat: "炭焼き", steam: "蒸らし", pull: "提供", care: "調整" }[step];
-  const pool = DB.broadcast?.nico?.[kind === "great" ? "perfect" : kind] || [];
-  if (label && pool.length) comment(cs, `${label}、${pick(pool)}`, { cls: kind === "great" ? "perfect" : kind });
-  burst(cs, kind === "great" ? "perfect" : kind, 2);
+  const genericKind = kind === "great" ? "perfect" : kind;
+  const cls = genericKind;
+  const specific = DB.broadcast?.completion?.[step]?.[kind] || [];
+  const generic = DB.broadcast?.nico?.[genericKind] || [];
+  const lines = specific.length
+    ? pickFresh(cs, specific, 2).map(text => `【${label || step}】${text}`)
+    : pickFresh(cs, generic, 2).map(text => label ? `${label}、${text}` : text);
+  // 工程らしい反応2本＋短い歓声1本。表示量や待ち時間は増やさない。
+  lines.push(...pickFresh(cs, generic, 1));
+  lines.forEach((text, i) => {
+    if (i === 0) comment(cs, text, { cls });
+    else defer(cs, () => comment(cs, text, { cls }), i * 750);
+  });
 }
 
 /** 結果発表の前に、流れているコメントを片付ける */
