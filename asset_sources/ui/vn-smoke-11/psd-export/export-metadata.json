@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-25",
+  "source_ui_commit": "502c9f9c74ca655ec9afec48839077c0e5b074b3",
+  "scope": "six runtime UI themes immediately before the rejected regeneration",
+  "archive": "dialogue-ui-before-regeneration-psd.zip",
+  "bytes": 45244204,
+  "sha256": "40b4a034d8fdcfff1dafde828365ef04ed568c6122ceed7d8e1709d37169568d",
+  "size": [
+    1280,
+    720
+  ],
+  "profile": "sRGB",
+  "resolution_ppi": 72,
+  "layers_per_psd": 12,
+  "editable_text_layers_per_psd": 7,
+  "fonts": "TTF and SIL OFL licenses bundled",
+  "verification": [
+    {
+      "file": "01_11_smoke.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.10895616319444444,
+        0.08185655381944444,
+        0.11160047743055555
+      ]
+    },
+    {
+      "file": "02_11_smoke-purple.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.10907877604166667,
+        0.07459201388888889,
+        0.11493055555555555
+      ]
+    },
+    {
+      "file": "03_16_paper-lounge.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.047209201388888886,
+        0.03875542534722222,
+        0.04659505208333333
+      ]
+    },
+    {
+      "file": "04_25_amber-lounge.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.12135199652777778,
+        0.15671875,
+        0.17082356770833335
+      ]
+    },
+    {
+      "file": "05_28_layered-paper.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.05703016493055556,
+        0.05254991319444444,
+        0.05822048611111111
+      ]
+    },
+    {
+      "file": "06_classic-gorgeous.psd",
+      "reader": "psd-tools",
+      "native_text_layers": 7,
+      "mean_rgb_difference_from_game": [
+        0.10879991319444444,
+        0.06187282986111111,
+        0.14480902777777777
+      ]
+    }
+  ]
+}
