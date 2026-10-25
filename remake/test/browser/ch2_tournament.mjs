@@ -621,13 +621,13 @@ await suite('ch2-tournament',async check=>{
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');
       vn.hooks.onLine=(id,line)=>{
-        if(id==='ch3_kuze_first'&&line.speaker==='hajime'&&line.text?.includes('お茶'))vn.vnTest.turbo=false;
+        if(id==='ch3_kuze_first'&&line.speaker==='hajime'&&line.text?.includes('今日は飲み物だけで'))vn.vnTest.turbo=false;
       };
     });
     await page.locator(dt('ch3-intro-continue')).click();
     await page.waitForFunction(()=>{
       const s=window.__remake.state;
-      return s.met.kuze&&s.flags._met_kuze&&s.flags._intro_kuze&&document.querySelector('#vn.active .vn-text')?.textContent.includes('お茶');
+      return s.met.kuze&&s.flags._met_kuze&&s.flags._intro_kuze&&document.querySelector('#vn.active .vn-text')?.textContent.includes('今日は飲み物だけで');
     });
     await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
