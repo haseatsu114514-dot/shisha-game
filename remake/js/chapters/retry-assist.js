@@ -11,7 +11,9 @@ export function recordTournamentLoss(tournament) {
 
 export const offersRetryAssist = tournament => (tournament.losses || 0) >= 3;
 
-export async function chooseRetryAssist(tournament) {
+export async function chooseRetryAssist(tournament, isCurrent = () => true) {
+  if (!isCurrent()) return null;
+  const attempt = tournament.attempts;
   tournament.retryAssist = false;
   if (!offersRetryAssist(tournament)) return false;
   const assisted = await modal({
@@ -20,8 +22,11 @@ export async function chooseRetryAssist(tournament) {
     options: [
       { label: "今回だけ下げる", value: true, primary: true, test: "retry-assist-yes" },
       { label: "そのまま挑戦する", value: false, test: "retry-assist-no" },
+      { label: "選択に戻る", value: null, test: "retry-assist-cancel" },
     ],
   });
+  if (!isCurrent() || tournament.attempts !== attempt) return null;
+  if (assisted !== true && assisted !== false) return null;
   tournament.retryAssist = assisted === true;
   return tournament.retryAssist;
 }

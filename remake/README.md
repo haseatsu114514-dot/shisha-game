@@ -15,6 +15,16 @@
 
 第1・2章の大会は、制作開始前→パッキング後→加熱待ち→最終試喫の4会話で一台を追います。配合の実gと詰め方へ反応し、提供時の香り・配合別の適温・2回の調整を講評で回収します。会話は工程時計の開始前／終了後だけに入り、第2章は読了も工程保存へ含めます。台詞の正本は `data/dialogue/tournament_craft.json`。確認: `node remake/test/tournament_story.mjs`、`node remake/test/browser/tournament_story.mjs`、`node remake/test/browser/ch2_tournament.mjs`。
 
+GAME OVER／CONTINUE（#590）:
+
+- 第1章・第2章の大会敗北は共通の20秒画面。焦げ・冷え・葉切れ・実順位と、完了した有限得点だけから冒頭2行を決めます。助言の同点順は穴→炭→完成品→調整1→調整2です。
+- スミさん3台本／成立済み恋人6台本は通常7行、同大会の2敗目から4行。選択期限は短縮せず、最後の問いを保持。選択後は1行を見せ「大会へ進む／タイトルへ」で送れます。20%抽選・恋人の連続出演禁止・第1章みんと除外を維持。
+- 敗北履歴はstate＋大会＋試行を区切るセッション情報。再描画やプレビューでは加算せず、勝利・別大会・NEW GAMEで分離、reloadではリセットします。開始と残5秒だけ時間案内を読み上げ、毎秒の数字は読み上げません。
+- 毎秒の刻み、素材待ち・回転案内・非表示タブ・MENU中の停止、C採用の顔アップを保持。縮小後の操作領域は44px以上。第2章のMENUから敗北後もSAVE/LOADでき、旧ownerは動作しません。
+- 第1〜3章の既存救済入口で「今回だけ下げる」を選ぶと、資源復元後・制作条件の確定前に現在最大体力へ回復します。通常再戦／辞退／取消は既存の開始資源を保持。entry自体は書き換えず、救済は次の一台だけ。第3章固有の敗北会話とカードは維持、第4・5章の大会救済は未接続です。新規章を追加する際は `applyAssistRecovery` を同じ開始境界へ接続します。
+- プレビュー `continue-preview.html` で敗因・順位・弱点・初回／連敗・章を選べます。本セーブは変更しません。
+- 検証: `node --experimental-vm-modules remake/test/continue_context.mjs`、`node remake/test/continue_output.mjs`、既存continue各試験と `browser/ch2_tournament.mjs`。音声出力試験は実WebAudioのSEバスを解析し、BGM有無・15通常音＋5終盤音＋終了音、pause/OFF/muteを検査します。
+
 2026-10-11のGAME OVER読込:
 
 - 大会中にCONTINUEのUIと候補話者の全表情、外部BGMを先読み。素材のデコードが終わり、画面が表示されてから20秒の期限を開始する。

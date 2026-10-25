@@ -309,7 +309,8 @@ async function renderDefeat(owner) {
     p.failure ? "提供できる状態を保てませんでした。大会に持ち込んだ材料と体力から、もう一度挑戦できます。"
       : "同じ大会の最初から再挑戦できます。失敗した挑戦の消費は持ち越しません。", [
       button(owner, "大会に再挑戦", "retry", async () => {
-        await chooseRetryAssist(p);
+        const assisted = await chooseRetryAssist(p, () => live(owner) && progress() === p);
+        if (assisted === null) return;
         if (!live(owner)) return;
         checkpoint("ready");
         renderReady(owner);

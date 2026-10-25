@@ -271,6 +271,7 @@ await suite('ch2-tournament',async check=>{
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     const before=await get(page);
     await press(t('menu'));await press(t('save'));await press(dt('slot-1'));
+    await page.clock.resume();
     await reload(page,1,touch);await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     let s=await get(page);assert.deepEqual(s.flavorStock,before.flavorStock);assert.equal(s.flags._ch2_tournament.step,1);
     for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
@@ -281,6 +282,31 @@ await suite('ch2-tournament',async check=>{
     const snapshot=structuredClone(s.flags._ch2_tournament.votes);
     await reload(page,0,touch);await page.locator(t('votes')).waitFor();s=await get(page);assert.deepEqual(s.flags._ch2_tournament.votes,snapshot);
     assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-9);
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
+  for (const touch of [false,true]) await check(`continue-menu-${touch?'touch':'pc'}`,async page=>{
+    const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:2,failure:'cold'}});
+    await page.locator(t('defeat')).waitFor();
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now()+100));
+    const before=await get(page);
+    await press(t('menu'));
+    const count=await page.locator('.go-count').textContent();
+    await page.clock.runFor(30000);
+    assert.equal(await page.locator('.go-count').textContent(),count);
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-paused'),'true');
+    await press(t('save'));await press(dt('slot-1'));
+    await page.clock.resume();
+    await reload(page,1,touch);
+    await page.locator(t('defeat')).waitFor();
+    const restored=await get(page);
+    assert.equal(restored.flags._ch2_tournament.attempts,before.flags._ch2_tournament.attempts);
+    assert.equal(restored.flags._ch2_tournament.losses,before.flags._ch2_tournament.losses);
+    assert.deepEqual(restored.flags._ch2_tournament.votes,before.flags._ch2_tournament.votes);
+    assert.deepEqual(restored.flavorStock,before.flavorStock);
+    assert.equal(restored.stamina,before.stamina);
+    await press(t('retry')); await page.locator(t('ready')).waitFor();
+    assert.equal((await get(page)).flags._ch2_tournament.attempts,2);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   await check('burn-failure-reload-and-retry',async page=>{
     await seed(page,{stage:'ready',auto:'burn'});await page.locator(t('craft-start')).click();
@@ -295,6 +321,24 @@ await suite('ch2-tournament',async check=>{
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
   });
+  for (const touch of [false,true]) await check(`continue-assist-cancel-${touch?'touch':'pc'}`,async page=>{
+    const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'leaf'}});
+    await page.locator(t('defeat')).waitFor();
+    const speaker=await page.locator(t('defeat')).getAttribute('data-speaker');
+    const variant=await page.locator(t('defeat')).getAttribute('data-variant');
+    const before=await get(page);
+    await press(t('retry'));await press(dt('retry-assist-cancel'));
+    await page.waitForFunction(()=>document.querySelector('.gameover')?.dataset.phase==='speaking');
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-speaker'),speaker);
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-variant'),variant);
+    const after=await get(page);
+    assert.equal(after.flags._ch2_tournament.attempts,3);
+    assert.equal(after.flags._ch2_tournament.losses,3);
+    assert.equal(after.flags._ch2_tournament.retryAssist,false);
+    assert.equal(after.stamina,before.stamina);assert.deepEqual(after.flavorStock,before.flavorStock);
+    await press(t('retry'));await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
   for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{
     const entry={flavorStock:{double_apple:40,mint:12},stamina:30,equip:null,recipes:{},stats:{technique:42,sense:42,guts:42,charm:42,insight:42}};

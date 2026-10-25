@@ -114,6 +114,7 @@
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
+        "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
@@ -1902,6 +1903,7 @@
       ],
       "run": [
         "node remake/test/continue_readiness.mjs",
+        "node remake/test/continue_output.mjs",
         "node remake/test/continue_neon.mjs",
         "SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs"
       ]

@@ -1,3 +1,4 @@
+import { improvementOf } from "./advice.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, clamp, rand } from "../core/util.js";
@@ -333,16 +334,4 @@ export function resultTable(cs, rank) {
     }
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });
-}
-
-function improvementOf(cs) {
-  const parts = cs.parts || {};
-  const weakest = Object.entries(parts).sort((a, b) => a[1] - b[1])[0]?.[0];
-  return {
-    holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
-    heat: "次の練習：炭の芯が光る瞬間を確かめよう。",
-    shisha: "次の練習：配合と、提供時の温度を確かめよう。",
-    care1: "次の練習：1回目の調整で、交換する炭の数を見直そう。",
-    care2: "次の練習：2回目まで葉を残し、最適温で仕上げよう。",
-  }[weakest] || "";
 }

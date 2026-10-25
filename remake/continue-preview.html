@@ -48,6 +48,11 @@
  <option value="stage" selected>暗いステージ（採用中）</option>
  <option value="purple">紫の煙（比較）</option>
  </select>
+ <label>敗因<select id="reason"><option value="rank">順位</option><option value="burnt">焦げ</option><option value="cold">冷え</option><option value="leaf">葉切れ</option></select></label>
+ <label>順位<input id="rank" type="number" min="1" max="4" value="2"></label>
+ <label>弱点<select id="weak"><option value="">不明</option><option>holes</option><option>heat</option><option>shisha</option><option>care1</option><option>care2</option></select></label>
+ <label>敗北回数<input id="loss" type="number" min="1" value="1"></label>
+ <label>章<input id="chapter" type="number" min="1" max="3" value="1"></label>
  <button type="button" id="preview-play">▶ 再生する</button>
  <button type="button" id="preview-retry" disabled>戻る反応</button>
  <button type="button" id="preview-quit" disabled>諦める反応</button>
@@ -94,7 +99,11 @@ function show() {
  msg.textContent = "声なし・20秒でGAME OVER。BGM：BGMer「EMGコール」";
  retry.disabled = quit.disabled = false;
  root = buildGameOver({
-   reason:"rank", rank:2, variant:val.startsWith("premium:")?val:Number(val),
+   context: { chapter: Number(document.getElementById("chapter").value), reason: document.getElementById("reason").value,
+     rank: Number(document.getElementById("rank").value), lossOrdinal: Number(document.getElementById("loss").value),
+     sameReasonOrdinal: Number(document.getElementById("loss").value),
+     parts: { [document.getElementById("weak").value]: 40 }, completedParts: [document.getElementById("weak").value] },
+   variant:val.startsWith("premium:")?val:Number(val),
    soundEffects:se.checked, reducedMotion:motion.checked, layout:layout.value, background:background.value,
    onRetry:()=>complete("retry"), onTitle:()=>complete("quit")
  });

@@ -36,6 +36,8 @@ export function createContinueView({ script, speaker, character, premium, layout
   }
   framePortrait(portrait);
   const caption = el("p.go-speech-text", { "aria-hidden": "true" });
+  const timerLive = el("p.go-a11y.go-time-announcement", { "aria-live": "polite", "aria-atomic": "true" });
+  const description = el("p.go-a11y.go-return-description", { id: "continue-return", text: "大会の最初から作り直します。在庫と体力は保存された大会開始時の値に戻ります。救済を選ぶと体力が最大まで回復します。" });
   const live = el("p.go-a11y", { "aria-live": "polite", "aria-atomic": "true" });
   const dialogue = el("button.go-dialogue", { type: "button", "aria-label": "台詞を送る", dataset: { test: "continue-caption" } }, [caption]);
   const count = el("span.go-count", { text: "20" });
@@ -46,10 +48,10 @@ export function createContinueView({ script, speaker, character, premium, layout
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
-  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "大会に戻る", dataset: { test: "retry" } },
+  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "最初から再挑戦", dataset: { test: "retry" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: topActions ? "する" : "大会に戻る" })]);
-  const quit = el("button.go-choice.go-quit", { type: "button", dataset: { test: "game-over-title" } },
+      el("span.go-choice-label", { text: topActions ? "する" : "最初から再挑戦" })]);
+  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "諦める・タイトルへ戻る", dataset: { test: "game-over-title" } },
     [...(neon ? choiceFrames() : []),
       el("span.go-choice-label", { text: "諦める" })]);
   function choiceFrames() {
@@ -57,6 +59,8 @@ export function createContinueView({ script, speaker, character, premium, layout
       el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];
   }
   const actions = el("div.end-actions", [retry, quit]);
+  retry.setAttribute("aria-describedby", "continue-return");
+  quit.setAttribute("aria-describedby", "continue-return");
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
   const heading = neon ? "コンティニューする？" : "コンティニュー？";
   const titleLabel = el("span.go-title-label", { text: heading });
@@ -75,7 +79,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
       ...(!topActions ? [actions] : []),
-      dialogue, live,
+      dialogue, live, timerLive, description,
       el("div.go-playback", [el("div.go-caption-controls", [next, proceed])]),
     ]),
     el("div.go-effect", { "aria-hidden": "true" }, [effectWord,
@@ -140,7 +144,7 @@ export function createContinueView({ script, speaker, character, premium, layout
   function reaction(data, choice) {
     root.dataset.choice = choice;
     root.dataset.effect = data.effect;
-    face(data.faces[0]);
+    face(data.faces[0], root.dataset.reducedMotion !== "true");
     effectWord.textContent = choice === "retry"
       ? ({ cheer: "っしゃあ！", shark: "ジャバーン！", scan: "再計測" }[data.effect] || "") : "";
     [retry, quit, next, dialogue].forEach(button => { button.disabled = true; });
@@ -168,5 +172,5 @@ export function createContinueView({ script, speaker, character, premium, layout
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
+    announceTime: text => { timerLive.textContent = text; }, setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }
