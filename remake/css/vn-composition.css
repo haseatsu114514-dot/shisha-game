@@ -5,7 +5,7 @@
 }
 html:root[data-ui-theme] {
   --vn-caption-top:-36px; --vn-body-top:44px; --vn-body-side:96px;
-  --vn-command-width:356px; --vn-command-inset:68px;
+  --vn-command-width:356px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:8px;
   --vn-tab-face:linear-gradient(160deg,#17272c,#0c151c 75%);
   --vn-tab-edge:#91bbb5; --vn-tab-inner:#c9f3e526; --vn-tab-text:#e6f6f1;
   --vn-tab-radius:19px 19px 9px 9px; --vn-tab-shadow:0 3px 9px #0006,0 0 10px #c1eee012;
@@ -16,7 +16,7 @@ html:root[data-ui-theme="smoke-purple"] {
   --vn-tab-shadow:0 3px 9px #0006,0 0 10px #bd83ef1c;
 }
 /* 煙の原画は上辺が低くたわむため、札も16px下げて輪郭へ接続する。 */
-html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) { --vn-caption-top:-20px; }
+html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) { --vn-caption-top:-20px; --vn-dialogue-width:1240px; --vn-body-side:112px; }
 html:root[data-ui-theme="cut-paper"] {
   --vn-tab-face:linear-gradient(150deg,#493446,#2e2230 80%);
   --vn-tab-edge:#bd9ea9; --vn-tab-inner:#dbc1bb55; --vn-tab-text:#f6e9e4;
@@ -39,7 +39,7 @@ html:root[data-ui-theme="classic"] {
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box {
   width:var(--vn-dialogue-width); height:var(--vn-dialogue-height);
-  bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 28px;
+  bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 16px;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-text {
   font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
@@ -49,9 +49,9 @@ html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme=
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:44px; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:31px; margin-top:10px; }
-/* 札の下14pxを本文枠へ重ね、背景との隙間を作らない。名前がなくても操作位置は固定。 */
+/* 名前札は14px、操作札は6px重ねる。操作を8px上げて本文との間隔を取る。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-box .vn-name {
-  left:68px; top:var(--vn-caption-top); width:max-content; min-width:168px; max-width:272px; height:50px;
+  left:var(--vn-name-inset); top:var(--vn-caption-top); width:max-content; min-width:168px; max-width:272px; height:50px;
   padding:0 28px 2px; display:flex; align-items:center; justify-content:center;
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
   border-radius:var(--vn-tab-radius); clip-path:none; rotate:none;
@@ -70,7 +70,7 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-controls::before {
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
   right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-command-inset));
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise));
   width:var(--vn-command-width); height:50px; padding:2px 6px; gap:0;
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
@@ -95,7 +95,7 @@ html:root[data-ui-theme] .vn-controls .vn-ctl.on::after {
 }
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-name { text-shadow:0 1px #fff5; }
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover,:focus-visible,.on) { background:#6d533e14; }
-html:root[data-ui-theme] body:not(.game-ds) .vn-next { right:48px; bottom:28px; font-size:18px; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-next { right:48px; bottom:20px; font-size:18px; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices,
 html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
@@ -109,7 +109,9 @@ html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="tissue"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before { inset:-10px -8px -6px; }
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before {
-  inset:-8px -8px -8px; background:url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
+  inset:-8px -8px -8px;
+  background:linear-gradient(90deg,#251e2d00,#251e2d 24px,#251e2d calc(100% - 24px),#251e2d00) center / calc(100% - 112px) calc(100% - 48px) no-repeat,
+    url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
 }
 html:root[data-ui-theme="cut-paper"] body:not(.game-ds) .vn-box {
   background:linear-gradient(#251e2d,#251e2d) center / calc(100% - 120px) calc(100% - 24px) no-repeat;
@@ -118,6 +120,8 @@ html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box:is(.narration,.thought)::before {
   inset:0 -6px -4px; background-image:var(--vn-lounge-narration);
 }
+/* 琥珀と金枠は左右へ開き、名前と操作を枠の端へ寄せる。 */
+html:root:is([data-ui-theme="amber"],[data-ui-theme="classic"]) { --vn-name-inset:36px; --vn-command-inset:36px; }
 /* 金枠の札には同じ原画の装飾を使い、本文の真鍮の線と揃える。 */
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-box .vn-name,
 html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-controls {
@@ -139,7 +143,9 @@ html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl +
 /* 2画面の16も同じ穏やかな素材へ。進行・操作の配置は既存の2画面を維持する。 */
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box::before,
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box:is(.narration,.thought)::before {
-  inset:-20px 0 0; background:url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
+  inset:-20px 0 0;
+  background:linear-gradient(90deg,#251e2d00,#251e2d 8px,#251e2d calc(100% - 8px),#251e2d00) center / calc(100% - 16px) calc(100% - 48px) no-repeat,
+    url("../img/ui/vn-calm/paper.webp") center / 100% 100% no-repeat; clip-path:none;
 }
 html:root[data-ui-theme="cut-paper"] body.game-ds .vn-box .vn-name {
   background:none; clip-path:none; rotate:none; color:var(--vn-lounge-name); text-shadow:0 1px 3px #0008;

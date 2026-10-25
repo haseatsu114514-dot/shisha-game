@@ -18,9 +18,9 @@ function fixedCommands(actual,expected,state) {
 // DOMの枠が近くても、原画の透明な余白で札が浮くことがある。実際のalphaも確認する。
 async function paintedAttachment(page) {
   return page.evaluate(async()=>{
-    const box=document.querySelector('.vn-box'), r=box.getBoundingClientRect(), scale=r.width/1216;
+    const box=document.querySelector('.vn-box'), r=box.getBoundingClientRect(), scale=document.querySelector("#stage").getBoundingClientRect().width/1280;
     const style=getComputedStyle(box,'::before');
-    const src=/^url\(["']?(.*?)["']?\)$/.exec(style.backgroundImage)[1];
+    const src=/url\(["']?([^"')]+)["']?\)/.exec(style.backgroundImage)[1];
     const img=new Image();img.src=src;await img.decode();
     const canvas=document.createElement('canvas');canvas.width=Math.ceil(parseFloat(style.width));canvas.height=Math.ceil(parseFloat(style.height));
     const context=canvas.getContext('2d');context.drawImage(img,0,0,canvas.width,canvas.height);
@@ -79,16 +79,16 @@ await suite("ui-themes-preview", async check => {
           const name = nameEl.getBoundingClientRect();
           const nameRange = document.createRange(); nameRange.selectNodeContents(nameEl);
           const nameGlyph = nameRange.getBoundingClientRect();
-          const scale = box.width / 1216;
+          const scale = document.querySelector("#stage").getBoundingClientRect().width / 1280;
           const overlaps = (a,b) => a.right>b.left && a.left<b.right && a.bottom>b.top && a.top<b.bottom;
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
-            footerClear:next.bottom<=box.bottom-23*scale,
+            footerClear:next.bottom<=box.bottom-15*scale,
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
             nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top+8*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-60*scale,
+            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top+4*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
-            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2))<=.5*scale,
+            headerAligned:Math.abs((name.top+name.height/2)-(controls.top+controls.height/2)-8*scale)<=.5*scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -102,7 +102,7 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 4px bob");
         assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        assert(twoLines.headerAligned,"name and controls share a header centreline");
+        assert(twoLines.headerAligned,"controls sit 8px above the name tab");
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
         assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
@@ -144,7 +144,7 @@ await suite("ui-themes-preview", async check => {
       }
       assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
       assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
-      for(const layout of layouts) assert.deepEqual(layout.slice(0,8),layouts[0].slice(0,8),"all skins share text and body geometry; tab height follows the painted material edge");
+      for(let i=0;i<layouts.length;i++) assert.deepEqual(layouts[i].slice(0,8),layouts[i<2?0:2].slice(0,8),"smoke variants share the wider padded body; other skins share standard body geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
       await page.locator(".vn-next.show").waitFor();
