@@ -271,6 +271,7 @@ await suite('ch2-tournament',async check=>{
     for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
     const before=await get(page);
     await press(t('menu'));await press(t('save'));await press(dt('slot-1'));
+    await page.clock.resume();
     await reload(page,1,touch);await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     let s=await get(page);assert.deepEqual(s.flavorStock,before.flavorStock);assert.equal(s.flags._ch2_tournament.step,1);
     for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
@@ -281,6 +282,31 @@ await suite('ch2-tournament',async check=>{
     const snapshot=structuredClone(s.flags._ch2_tournament.votes);
     await reload(page,0,touch);await page.locator(t('votes')).waitFor();s=await get(page);assert.deepEqual(s.flags._ch2_tournament.votes,snapshot);
     assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-9);
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
+  for (const touch of [false,true]) await check(`continue-menu-${touch?'touch':'pc'}`,async page=>{
+    const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:2,failure:'cold'}});
+    await page.locator(t('defeat')).waitFor();
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now()+100));
+    const before=await get(page);
+    await press(t('menu'));
+    const count=await page.locator('.go-count').textContent();
+    await page.clock.runFor(30000);
+    assert.equal(await page.locator('.go-count').textContent(),count);
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-paused'),'true');
+    await press(t('save'));await press(dt('slot-1'));
+    await page.clock.resume();
+    await reload(page,1,touch);
+    await page.locator(t('defeat')).waitFor();
+    const restored=await get(page);
+    assert.equal(restored.flags._ch2_tournament.attempts,before.flags._ch2_tournament.attempts);
+    assert.equal(restored.flags._ch2_tournament.losses,before.flags._ch2_tournament.losses);
+    assert.deepEqual(restored.flags._ch2_tournament.votes,before.flags._ch2_tournament.votes);
+    assert.deepEqual(restored.flavorStock,before.flavorStock);
+    assert.equal(restored.stamina,before.stamina);
+    await press(t('retry')); await page.locator(t('ready')).waitFor();
+    assert.equal((await get(page)).flags._ch2_tournament.attempts,2);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   await check('burn-failure-reload-and-retry',async page=>{
     await seed(page,{stage:'ready',auto:'burn'});await page.locator(t('craft-start')).click();

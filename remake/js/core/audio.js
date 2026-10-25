@@ -459,6 +459,7 @@ export function createContinueAudio({ enabled = true } = {}) {
       pulse(() => remaining === 0 ? note(70, { to: 45, dur: .2, vol: .22 })
         : note([990, 870, 780, 700, 620][remaining - 1], { dur: .07, vol: .13, type: "triangle" }));
     },
+    quiet() { holdMix = Math.SQRT1_2; clearTimeout(restore); mix(holdMix, 160); },
     choose(choice, effect) {
       holdMix = .5;
       clearTimeout(restore); silence(); mix(holdMix, 120);

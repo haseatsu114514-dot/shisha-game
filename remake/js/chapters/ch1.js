@@ -1,3 +1,4 @@
+import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
@@ -517,7 +518,7 @@ async function tournamentDay() {
   await waitBenchReady(cs);
   bc.block(cs, "pull");
   if (await runPull(cs) === false) return;
-  if (cs.failed) return failedOut(cs.failed);
+  if (cs.failed) return failedOut(cs.failed, cs);
   await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
@@ -535,7 +536,7 @@ async function tournamentDay() {
     await waitBenchReady(cs);
     bc.block(cs, "adjust");
     await runCare(cs, { round });
-    if (cs.failed) return failedOut(cs.failed);
+    if (cs.failed) return failedOut(cs.failed, cs);
     bc.judge(cs, bc.judgeOf(cs.care.score), `調整${round}`);
     await sleep(900);
     bc.clearComments();
@@ -571,7 +572,7 @@ async function tournamentDay() {
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
-    await showGameOver({ rank: out.rank });
+    await showGameOver({ rank: out.rank, cs });
   }
 }
 
@@ -607,6 +608,7 @@ async function entrance() {
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
+  clearContinueHistory(state);
   state.tournament.retryAssist = false;
   const recognition = craftRecognition(cs);
   addMoney(PRIZE);
@@ -704,19 +706,20 @@ export async function showClear() {
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
 /** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
-async function failedOut(reason) {
+async function failedOut(reason, cs) {
   bc.clearComments();
   save();
-  await smokeWipe(() => showGameOver({ reason }), { color: "dark" });
+  await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
 }
 
 /**
  * 大会コンティニュー。スミさん3台本／交際中の恋人が語りかけ、選択後の一言を見せる。
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
-async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = null, preview = false } = {}) {
   const owner = state;
-  if (state?.phase === "tournament") {
+  const tournament = owner?.tournament;
+  if (!preview && state?.phase === "tournament") {
     recordTournamentLoss(state.tournament);
     save();
   }
@@ -727,9 +730,13 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) 
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
+    context: !preview && variant == null && owner?.phase === "tournament"
+      ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
+      : craftContinueContext(cs, { chapter: 1, reason, rank }),
     onRetry: async () => {
       if (!owner) { location.reload(); return; }
-      await chooseRetryAssist(owner.tournament);
+      const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
+      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant, preview }); return; }
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
@@ -758,5 +765,5 @@ export function devRehearsal() {
 /** テスト・確認用: 大会のGAME OVER画面だけを出す（reason: rank / burnt / cold / leaf） */
 export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
-  return showGameOver({ reason, rank, variant });
+  return showGameOver({ reason, rank, variant, preview: true });
 }

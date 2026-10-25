@@ -1,3 +1,5 @@
+import { buildGameOver, warmGameOver } from "./gameover.js";
+import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES } from "../core/data.js";
 import { el } from "../core/util.js";
@@ -68,9 +70,9 @@ async function openMenu(owner) {
     if (choice === "save") await saveFlow();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) { owner.active = false; owner.controller?.abort(); requestResumeOnBoot(); location.reload(); }
+      if (key && loadFromSlot(key)) { owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); requestResumeOnBoot(); location.reload(); }
     }
-    if (choice === "title") { save(); owner.active = false; owner.controller?.abort(); location.reload(); }
+    if (choice === "title") { save(); owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); location.reload(); }
   } finally { owner.menuBusy = false; }
 }
 function hud(owner, visible = false) {
@@ -119,11 +121,11 @@ async function commentary(owner, event) {
 }
 
 export async function runChapterTwoTournament() {
-  if (session) { session.active = false; session.controller?.abort(); }
+  if (session) { session.active = false; session.continueRoot?.cleanupContinue(); session.controller?.abort(); }
   const owner = session = { state, active: true, busy: false, menuBusy: false, cs: null };
   document.body.classList.remove("ch2-city");
   document.body.classList.add("ch2-tournament");
-  window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
+  window.addEventListener("pagehide", () => { owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
     // 全場面が揃うまでDAY14の保存や在庫を変更しない。
     const dialogues = await readDialogues(CHAPTER_DIALOGUE_FILES.ch2Tournament, REQUIRED);
@@ -145,6 +147,7 @@ function renderReady(owner) {
   card(owner, "ready", "一台で、最後まで。", "予選・準決勝はありません。提供後も、客席で吸われた一台を2回調整します。", [
     button(owner, "制作を始める", "craft-start", async () => {
       const p = progress();
+      void warmGameOver();
       if (p.entry) restoreResources(state, p.entry);
       const assisted = p.retryAssist === true;
       startAttempt(state, null);
@@ -213,24 +216,37 @@ function renderVotes(owner, final = false) {
   card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員3人、それぞれの10点が出揃いました。` : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。", "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
+        if (final && p.result.rank === 1) clearContinueHistory(state);
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
     ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は制作の総合評価で順位を決めます。" })]);
 }
-function renderDefeat(owner) {
+async function renderDefeat(owner) {
   const p = progress(); broadcast.clearComments();
   // 同じ敗北の再表示では数え直さない。3敗目から第1章と同じ救済を選べる（#590）。
   recordTournamentLoss(p); save();
-  card(owner, "defeat", p.failure ? "一台を、作り直そう。" : "県代表には届かなかった。",
-    p.failure ? "提供できる状態を保てませんでした。大会に持ち込んだ材料と体力から、もう一度挑戦できます。" : "同じ大会の最初から再挑戦できます。失敗した挑戦の消費は持ち越しません。", [
-      button(owner, "大会に再挑戦", "retry", async () => {
-        await chooseRetryAssist(p);
-        if (!live(owner)) return;
-        checkpoint("ready"); renderReady(owner);
-      }, true),
-    ]);
+  owner.continueRoot?.cleanupContinue();
+  const context = recordContinueContext(owner.state, p, p.attempts,
+    craftContinueContext(p.craft, { chapter: 2, reason: p.failure || "rank", rank: p.result?.rank }));
+  await warmGameOver();
+  if (!live(owner)) return;
+  hud(owner, true); // MENU retains SAVE/LOAD; its modal pauses the shared clock/audio.
+  const root = buildGameOver({ context,
+    onRetry: () => perform(owner, async () => {
+      const assisted = await chooseRetryAssist(p, () => live(owner) && root.isConnected && progress() === p);
+      if (!live(owner) || !root.isConnected || progress() !== p) return;
+      if (assisted === null) { await renderDefeat(owner); return; }
+      owner.cs = null;
+      checkpoint("ready"); renderReady(owner);
+    }),
+    onTitle: () => { if (live(owner)) { owner.active = false; location.reload(); } },
+  });
+  owner.continueRoot = root;
+  root.dataset.test = id("defeat");
+  root.querySelector(".go-retry").dataset.test = id("retry");
+  showScreen("end", root);
 }
 function renderComplete(owner) {
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
@@ -313,7 +329,7 @@ async function drive(owner) {
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
-    else if (p.stage === "defeat") { renderDefeat(owner); return; }
+    else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
       playBgm("bgm_aftermath");
       state.phase = "aftermath"; state.slot = 1; save();

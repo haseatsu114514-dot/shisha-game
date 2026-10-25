@@ -154,3 +154,26 @@
 @keyframes go-urgent-glint { from { opacity: .55; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .gameover[data-layout="neon"] { animation: none; } }
 .gameover[data-layout="neon"][data-reduced-motion="true"] { animation: none; }
+
+/* #590: 前半の勢いから顔と一言へ視線を渡す。 */
+.gameover[data-layout="neon"][data-quiet="true"]:not([data-timed-out="true"]) .go-title { opacity: .55; transition: opacity 160ms; }
+.gameover[data-layout="neon"][data-skip-entry="true"],
+.gameover[data-layout="neon"][data-skip-entry="true"] .go-neon-title { animation: none; }
+.gameover[data-layout="neon"] .go-next { min-width: max(44px, calc(44.1px / var(--k, 1))); min-height: max(44px, calc(44.1px / var(--k, 1))); }
+ .gameover[data-layout="neon"] .go-dialogue {
+  --go-caption-height: max(48px, calc(44.1px / var(--k, 1)));
+  height: var(--go-caption-height); padding-top: calc(var(--go-caption-height) - 48px);
+  top: calc(46px - var(--go-caption-height) + min(0px, calc(106px - max(106px, calc(44.1px / var(--k, 1))))));
+}
+.gameover[data-layout="neon"][data-choice] .go-dialogue {
+  top: calc(min(-2px, calc(106px - max(106px, calc(44.1px / var(--k, 1))))) + 48px - var(--go-caption-height));
+}
+
+.gameover[data-layout="neon"] .end-actions {
+  --go-choice-height: max(106px, calc(44.1px / var(--k, 1)));
+  top: calc(162px - var(--go-choice-height));
+}
+.gameover[data-layout="neon"] .go-choice { height: max(106px, calc(44.1px / var(--k, 1))); }
+.gameover[data-layout="neon"][data-skip-entry="true"] .go-portrait { animation: none; }
+
+.gameover[data-layout="neon"][data-choice]:not([data-timed-out="true"]) .go-title { opacity: .55; }

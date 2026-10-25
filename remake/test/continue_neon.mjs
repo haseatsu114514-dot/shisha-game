@@ -45,7 +45,7 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
     assert.equal(await page.locator(".gameover").getAttribute("data-background"), "stage");
     assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
-    assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
+    assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
     assert.equal(await page.locator(".go-quit").textContent(), "諦める");
     const safe = await page.evaluate(async () => {
       const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
@@ -117,7 +117,7 @@ try {
         await page.screenshot({ path: `${process.env.SHOTS}/proceed-${viewport.width}.png` });
       }
       await page.evaluate(() => document.querySelector(".go-proceed").click());
-      assert.notEqual(await page.locator(".go-speech-text").textContent(), firstLine, "next press advances the existing reaction");
+      assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "leaving", "next press leaves after the full reaction");
       await page.clock.runFor(9000);
       assert.deepEqual(await page.evaluate(() => __decisions), [choice === "retry" ? "retry" : "title"]);
       await page.clock.runFor(9000);
@@ -186,6 +186,36 @@ try {
   assert(await page.locator("#continue-delayed").isVisible());
   await page.clock.runFor(5200);
   assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
+  // #590: actual contextual captions and shortened scripts keep the independent 20-second deadline.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  for (const reason of ["burnt", "cold", "leaf", "rank"]) for (const lossOrdinal of [1, 2, 3]) {
+    await mount({ variant: 0, context: { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal } });
+    const first = await page.locator(".go-speech-text").textContent();
+    assert.match(first, new RegExp({ burnt: "熱", cold: "冷え", leaf: "香り", rank: "3位" }[reason]));
+    const script = await page.evaluate(async context => {
+      const { prepareContinueScript, normalizeContinueContext } = await import("./js/chapters/continue-context.js");
+      const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
+      return prepareContinueScript(SUMI_CONTINUE_SCRIPTS[0], normalizeContinueContext(context));
+    }, { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal });
+    await page.clock.runFor(2500);
+    assert.equal(await page.locator(".go-speech-text").textContent(), script.cues[1].text);
+    await page.clock.runFor(14500);
+    assert.equal(await page.locator(".go-speech-text").textContent(), script.cues.at(-1).text);
+    assert.equal((await reading()).count, "3");
+    assert.deepEqual(await page.evaluate(() => __decisions), []);
+    await page.clock.runFor(3000);
+    assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "gameover");
+  }
+  // Measure every visible input after stage scaling, including the portrait-sized DS stage.
+  for (const viewport of [{ width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport); await mount({ variant: 0, reducedMotion: true });
+    const targets = await page.locator(".go-retry,.go-quit,.go-next,.go-dialogue").evaluateAll(nodes => nodes.map(n => {
+      const r = n.getBoundingClientRect();
+      return { name: n.className, x: r.x, y: r.y, w: r.width, h: r.height, right: r.right, bottom: r.bottom };
+    }));
+    for (const r of targets) assert(r.w >= 44 && r.h >= 44 && r.x >= 0 && r.y >= 0 && r.right <= viewport.width && r.bottom <= viewport.height, JSON.stringify(r));
+  }
+  console.log("PASS: four reasons x first/repeat/third loss, real advice, 7/4 cues with 20 seconds, all scaled inputs >=44px");
   assert.deepEqual(errors, []); assert.deepEqual(missing, []);
   console.log("PASS: reduced motion by option / OS, keyboard retry and deferred mounting; page errors / missing art 0");
 } finally { await browser.close(); }

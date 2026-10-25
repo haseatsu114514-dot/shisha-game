@@ -125,6 +125,7 @@ assert(gameOverStart >= 0 && gameOverEnd > gameOverStart);
 let ready, retryOptions, transition, opened = 0, resumed = 0;
 const ownerContext = vm.createContext({
   state: core.newState(), recordTournamentLoss: stub, save: stub,
+  craftContinueContext: () => ({}), recordContinueContext: () => ({}),
   warmGameOver: () => new Promise(resolve => { ready = resolve; }),
   showHud: stub, stopBgm: stub, SE: { miss: stub }, location: { reload: stub },
   buildGameOver: options => { retryOptions = options; return { isConnected: true }; },

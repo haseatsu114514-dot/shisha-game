@@ -131,7 +131,7 @@ try {
         await page.evaluate(() => document.querySelector('[data-test="continue-next"]').click());
       }
       assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true", "reached the final cue");
-      assert(seen.size >= 8, `most one-line cues were displayed: ${[...seen]}`);
+      assert.equal(seen.size, 7, `all seven cues were displayed: ${[...seen]}`);
       await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
       assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
       const expected = await page.evaluate(async ({ variant, choice }) => {
@@ -140,7 +140,7 @@ try {
         const script = typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant] : PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
         return script.reactions[choice];
       }, { variant, choice });
-      assert.equal(await page.locator(".go-a11y").textContent(), expected.text.join(""));
+      assert.equal(await page.locator(".go-a11y[aria-live]:not(.go-time-announcement)").textContent(), expected.text.join(""));
       assert.equal(await page.locator(".go-speech-text").textContent(), expected.text[0], "reaction starts with its first line");
       assert.deepEqual(await page.evaluate(() => window.__decisions), [], "reaction must precede navigation");
       await geometry();
