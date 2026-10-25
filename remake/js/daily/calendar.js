@@ -536,7 +536,7 @@ async function performSpotAction(spot) {
     else used = false;
   } else if (spot.kind === "spot") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
-    await visitSpot(spot);
+    if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rest") {
     const unwell = currentCondition().health === "red" || !!state.flags._cold_pending

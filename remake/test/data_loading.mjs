@@ -33,7 +33,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// ギャラリー台帳・大会制作会話を含む41ファイルを読み、同時接続が4本を超えない。
+// ギャラリー台帳・大会制作会話・映画館を含む42ファイルを読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -49,11 +49,13 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 41);
-assert.equal(new Set(requests).size, 41);
+assert.equal(requests.length, 42);
+assert.equal(new Set(requests).size, 42);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 41);
+assert.equal(progress.length, 42);
+assert(all.DB.dialogues.samechan_cinema_introduction);
+assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");

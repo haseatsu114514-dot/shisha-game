@@ -7,6 +7,8 @@ import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earn
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
+import { CINEMA_INTRO, cinemaIntroductionDue } from "../core/cinema-discovery.js";
+import { readCinemaIntroduction } from "./cinema.js";
 
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
 export const SAMECHAN_BOND_CHOICE = "bond_q1_samechan";
@@ -120,11 +122,16 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   const count = state.story.samechan || 0;
   const dialogue = pending ? receipt.dialogue : samechanVisitDialogue();
   if (!DB.dialogues[dialogue]?.lines?.length) return false;
+  // 静かな席を読む当日には先取りせず、成立後の次の自主訪問に添える。
+  const introduceCinema = pending && typeof receipt.cinemaIntroduction === "boolean"
+    ? receipt.cinemaIntroduction : cinemaIntroductionDue(state);
+  if (introduceCinema && !DB.dialogues[CINEMA_INTRO]?.lines?.length) return false;
   const owner = state;
+  const current = () => state === owner && `${state.chapter}:${state.day}:${state.slot}` === stamp && !signal?.aborted;
   visiting = true;
   try {
     if (!pending) {
-      state.flags._samechan_visit = { stamp, dialogue, complete: false };
+      state.flags._samechan_visit = { stamp, dialogue, cinemaIntroduction: introduceCinema, complete: false };
       save();
     }
     if (dialogue === "samechan_bond_finale") {
@@ -133,9 +140,11 @@ export async function visitSamechan(spot, { signal = null } = {}) {
       const result = await play(visitScript(dialogue), { signal });
       if ((!result || result.cancelled)) return false;
     }
-    if (state !== owner || signal?.aborted) return false;
+    if (!current()) return false;
     if (dialogue === "samechan_shop_bond_question"
       && state.romanceChoices?.[SAMECHAN_BOND_CHOICE]?.char !== "samechan") return false;
+    if (introduceCinema && !await readCinemaIntroduction({ signal })) return false;
+    if (!current()) return false;
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
@@ -150,9 +159,11 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     gainAffinity("samechan", count === 0 ? 2 : 1);
     earnStat("insight", 4);
     syncSamechanKnowledge();
-    await maybeRecruitTrpgMember("samechan");
-    if (state !== owner) return false;
+    // 紹介・訪問の精算を同期的にまとめ、後続の任意勧誘では再課金しない。
+    if (introduceCinema) state.flags._samechan_cinema_introduced = true;
     state.flags._samechan_visit.complete = true;
+    await maybeRecruitTrpgMember("samechan");
+    if (!current()) return false;
     // calendarが行動・育成の確定後に保存する。支払済み／行動未消費の中間セーブを作らない。
     return true;
   } finally { visiting = false; }

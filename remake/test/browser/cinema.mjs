@@ -88,14 +88,14 @@ await suite("cinema", async check => {
     await check(`${mode}-calendar-screening-and-poor`, async page => {
       await setup(page, { introduced: true, run: true });
       await settled(page);
-      const before = await page.evaluate(() => C.snapshot());
+      const before = await page.evaluate(() => ({ ...C.snapshot(), expectedStamina: C.stats.staminaAfter(-8) }));
       await hit(page, t("pin-rojiura_cinema"));
       await hit(page, t("map-go"));
       await page.waitForFunction(() => C.core.state.slot === 1);
       await page.locator(map).waitFor();
       const after = await page.evaluate(() => C.snapshot());
       assert.equal(after.money, before.money - 1000);
-      assert.equal(after.stamina, before.stamina - 8);
+      assert.equal(after.stamina, before.expectedStamina, "existing condition adjustment applies to base cost 8");
       assert.equal(after.stats.insight, before.stats.insight + 2);
       for (const stat of ["technique", "sense", "guts", "charm"]) assert.equal(after.stats[stat], before.stats[stat]);
       assert.equal(after.spotVisits.rojiura_cinema, 1);
