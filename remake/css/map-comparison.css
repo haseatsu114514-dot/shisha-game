@@ -1,0 +1,29 @@
+/* 候補の見た目は比較ページだけで読み込む。本編は現行のまま。 */
+body[data-map-variant="improved"] .spot-pin { min-width:calc(44px * var(--read-scale)); min-height:calc(44px * var(--read-scale)); }
+body[data-map-variant="improved"] .spot-pin:focus-visible { outline:3px solid #ffe9a8; outline-offset:5px; border-radius:8px; }
+body[data-map-variant="improved"] .spot-pin.sel .sub-label { color:#ffe9a8; border-color:#d4b66a; }
+@media (max-width:900px) {
+ body[data-map-variant="improved"] .map-info {
+  right:16px; bottom:12px; width:calc(1248px / var(--read-scale));
+  transform:scale(var(--read-scale)); transform-origin:bottom right;
+  padding:8px 14px; display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:2px 14px;
+  background:linear-gradient(120deg,#1b1325f5,#12101bf2); border:1px solid #b99b5c;
+  box-shadow:0 4px 20px #0009; border-radius:8px;
+ }
+ body[data-map-variant="improved"] .mi-preview { display:none; }
+ body[data-map-variant="improved"] .mi-banner { grid-column:1; justify-self:start; font-size:16px; letter-spacing:.04em; margin:0; padding:2px 8px; max-width:100%; overflow-wrap:anywhere; }
+ body[data-map-variant="improved"] .mi-area { display:none; }
+ body[data-map-variant="improved"] .mi-desc { grid-column:1; font-size:14px; line-height:1.45; margin:0; }
+ body[data-map-variant="improved"] .mi-tags { grid-column:1; gap:4px; margin:2px 0 0; }
+ body[data-map-variant="improved"] .tag { font-size:14px; padding:1px 7px; }
+ body[data-map-variant="improved"] .mi-foot { grid-column:1; font-size:14px; }
+ body[data-map-variant="improved"] .mi-go,body[data-map-variant="improved"] .mi-no { grid-column:2; grid-row:1 / span 5; align-self:center; font-size:16px; letter-spacing:.06em; min-height:44px; padding:10px; }
+ body[data-map-variant="improved"] .map-info:has(.mi-go + .mi-go) { display:flex; flex-direction:column; max-height:calc(550px / var(--read-scale)); overflow:auto; }
+ body[data-map-variant="improved"] .sub-label { font-size:calc(11px * var(--read-scale)); line-height:1.25; }
+ body[data-map-variant="improved"] .spot-pin.sel .pin-status { font-size:calc(12px * var(--read-scale)); }
+ body[data-map-variant="improved"] .spot-pin:not(.sel) .pin-status { display:none; }
+}
+
+.comparison-close { display:none; }
+body[data-map-variant="improved"] .comparison-close { display:block; position:absolute; right:0; top:-46px; width:44px; height:44px; font-size:24px; color:#ffe9a8; background:#1b1325f5; border:1px solid #b99b5c; border-radius:8px; cursor:pointer; }
+body[data-map-variant="improved"] .map-info[data-collapsed="true"] { display:none; }

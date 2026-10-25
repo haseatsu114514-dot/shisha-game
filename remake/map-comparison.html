@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マップ 現行／改善案比較 — 水煙前線</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#100e18;color:#eee4d3;font:14px system-ui,sans-serif}header{padding:18px 22px;border-bottom:1px solid #806b40}h1{font-size:20px;margin:0 0 8px}p{color:#c6bcc8;margin:6px 0 12px;line-height:1.6}nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}button,select{font:inherit;color:inherit;background:#24202e;border:1px solid #817047;border-radius:6px;padding:9px 12px;min-height:44px;cursor:pointer}button[aria-pressed=true]{background:#d1b470;color:#17121a}main{padding:16px;overflow:auto}.scene{margin:auto;width:844px}iframe{display:block;border:1px solid #74613e;width:100%;height:390px;background:#000}#caption{margin:0 0 10px;font-size:16px;color:#e5c781}#result{min-height:24px;color:#e5c781}small{color:#c6bcc8}
+</style>
+<header>
+<h1>街のマップを見比べる</h1>
+<p>街・ロゴ・店の位置はそのまま。店を選んでから切り替えると、同じ状態で比較できます。ゲームのセーブには保存しません。</p>
+<nav aria-label="比較条件">
+<button data-variant="current" aria-pressed="true">A 現行</button><button data-variant="improved" aria-pressed="false">B 改善案</button>
+<label>画面 <select id="size"><option value="844,390">844 × 390</option><option value="667,375">667 × 375</option><option value="1280,720">PC 1280 × 720</option></select></label>
+<label>街 <select id="city"><option value="home">第1章・地元</option><option value="widehanga">第2章・柚ヶ谷</option></select></label>
+<label>状態 <select id="scenario"><option value="day">昼・イベントあり</option><option value="night">夜・営業時間の確認</option><option value="closed">定休日</option><option value="unknown">紹介前</option></select></label>
+</nav>
+</header>
+<main><div class="scene"><h2 id="caption">A 現行</h2><iframe title="操作できるマップ比較" src="map-comparison-scene.html"></iframe><p id="result" role="status"></p><small>B：小画面の案内を下部に集約。店の再タップは選択を維持し、「ここへ行く」で確認します。行き先の確認まで試せます。</small></div></main>
+<script type="module" src="js/map-comparison.js"></script>
+</html>

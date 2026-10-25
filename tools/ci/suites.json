@@ -1834,7 +1834,8 @@
         "node remake/test/store_logos.mjs",
         "ARTIFACT_DIR=.codex/artifacts/remake-browser/map-facilities node remake/test/browser/facility_map.mjs",
         "ARTIFACT_DIR=.codex/artifacts/remake-browser/map-reveals node remake/test/browser/map_reveals.mjs",
-        "node remake/test/browser/shop_ui.mjs"
+        "node remake/test/browser/shop_ui.mjs",
+        "node remake/test/browser/map_comparison.mjs"
       ],
       "env": {
         "SHOTS": ".codex/artifacts/remake-browser/store-logos"
