@@ -1,0 +1,32 @@
+{
+  "character": "mashiro",
+  "expression": "serious",
+  "version": 1,
+  "source": "mashiro-serious-v1-source.png",
+  "source_sha256": "85451b9140232a1664f0c3715a365f64e28f728664b1f50119571f3d7f484117",
+  "source_size": [
+    951,
+    1654
+  ],
+  "source_visible_height": 1624,
+  "scale": 0.5406403940886699,
+  "translation": [
+    0,
+    0
+  ],
+  "preview": "mashiro-serious-v1-preview.png",
+  "preview_sha256": "cb5c62a1d552cc0766bd1a127c7902f7069ab12e90abb59ee7c0bdd394211a84",
+  "before_metrics": {
+    "top": 0.24833333333333332,
+    "bottom": 0.98,
+    "ax": 0.5005485505556153,
+    "aspect": 0.7466666666666667
+  },
+  "after_metrics": {
+    "top": 0.24833333333333332,
+    "bottom": 0.98,
+    "ax": 0.5008840132656796,
+    "aspect": 0.7466666666666667
+  },
+  "operation": "uniform downscale and feet-aligned canvas placement; no face compositing"
+}

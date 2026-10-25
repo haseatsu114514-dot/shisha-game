@@ -13,14 +13,16 @@
         {
           "label": "通常",
           "expression": "normal",
-          "path": "../../../../assets/sprites/characters/minto/chr_minto_normal.png",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+          "path": "../../../../asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "note": "Initial style reference retained; runtime corrected in eye/jaw review."
         },
         {
           "label": "笑顔",
           "expression": "smile",
-          "path": "../../../../assets/sprites/characters/minto/chr_minto_smile.png",
-          "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/previous/chr_minto_smile.png",
+          "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+          "note": "Initial style reference retained; runtime corrected in face-corrections-followup."
         },
         {
           "label": "ウインク・てへぺろ",
@@ -52,32 +54,37 @@
         {
           "label": "通常",
           "expression": "normal",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_normal.png",
-          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/previous/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "note": "Initial style reference retained; runtime corrected in face-corrections-followup."
         },
         {
           "label": "笑顔",
           "expression": "smile",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_smile.png",
-          "sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84"
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/previous/chr_ageha_smile.png",
+          "sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+          "note": "Initial style reference retained; runtime corrected in face-corrections-followup."
         },
         {
           "label": "真剣",
           "expression": "serious",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_serious.png",
-          "sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932"
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/previous/chr_ageha_serious.png",
+          "sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932",
+          "note": "Initial style reference retained; runtime corrected in face-corrections-followup."
         },
         {
           "label": "驚き",
           "expression": "surprise",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_surprise.png",
-          "sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd"
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/previous/chr_ageha_surprise.png",
+          "sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd",
+          "note": "Initial style reference retained; runtime corrected in face-corrections-followup."
         },
         {
           "label": "悲しみ",
           "expression": "sad",
-          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_sad.png",
-          "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3"
+          "path": "../../../../asset_sources/portraits/jawline-cleanup/ageha-sad-before.png",
+          "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3",
+          "note": "Initial style reference retained; runtime corrected in eye/jaw review."
         }
       ]
     },
@@ -1341,6 +1348,73 @@
           "expression": "smile",
           "path": "../../../../assets/sprites/characters/salaryman/chr_salaryman_smile.png",
           "sha256": "eb715b9f3c06419436ac119c0dbea6c89a21cb03d2c672a39fc78f1114cb9253"
+        }
+      ]
+    },
+    {
+      "id": "eye-jaw-correction-20261024",
+      "title": "みんと通常・あげは悲しみ：目と顎の修正",
+      "status": "applied_local_unpublished",
+      "role": "指定修正。初期の画風基準は上書きしない。最終見た目のユーザー確認は未了。",
+      "images": [
+        {
+          "label": "minto normal corrected",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+        },
+        {
+          "label": "ageha sad corrected",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_sad.png",
+          "sha256": "65502dd68c9de1518d9f32369f68b38d3e9f9d0c4d664d78a06f5df94ccbd383"
+        }
+      ]
+    },
+    {
+      "id": "eye-jaw-followup-20261024",
+      "title": "顎の追加修正 あげは4表情",
+      "status": "applied-local-unpublished",
+      "role": "今回修正した表情の本人参照。初期画風は上記の原画像を参照。",
+      "images": [
+        {
+          "label": "ageha normal",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+        },
+        {
+          "label": "ageha serious",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_serious.png",
+          "sha256": "87f44e4fe7033a4af9b32cea84f716dac6731f4aaaa30b8eada2c61b794798f5"
+        },
+        {
+          "label": "ageha smile",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_smile.png",
+          "sha256": "fd0b09bc80802616dfb44c1f70def0c4791748080b4904c6f9a22e7528e2513b"
+        },
+        {
+          "label": "ageha surprise",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_surprise.png",
+          "sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774"
+        }
+      ],
+      "note": "みんと笑顔v1はユーザー指摘で不採用、元の傾いた笑顔に復元。"
+    },
+    {
+      "id": "minto-smile-frontal-rejected",
+      "title": "みんと笑顔の正面化v1（不採用）",
+      "status": "rejected",
+      "role": "不採用履歴。本人参照や画風の基準に使用しない。",
+      "images": [
+        {
+          "label": "minto smile",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/face-corrections-followup/minto-smile-v1-preview.png",
+          "sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14"
         }
       ]
     }

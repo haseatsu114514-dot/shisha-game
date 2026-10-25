@@ -1,0 +1,32 @@
+{
+  "character": "minto",
+  "expression": "smile",
+  "version": 1,
+  "source": "minto-smile-v1-source.png",
+  "source_sha256": "2d87381afacb87b357598ce33454075d7040a5b228917a363654d9c7ed9528b7",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_visible_height": 1498,
+  "scale": 0.6261682242990654,
+  "translation": [
+    -2,
+    -1
+  ],
+  "preview": "minto-smile-v1-preview.png",
+  "preview_sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14",
+  "before_metrics": {
+    "top": 0.2,
+    "bottom": 0.98,
+    "ax": 0.5763539820105502,
+    "aspect": 0.7466666666666667
+  },
+  "after_metrics": {
+    "top": 0.19833333333333333,
+    "bottom": 0.98,
+    "ax": 0.5762597616450507,
+    "aspect": 0.7466666666666667
+  },
+  "operation": "uniform downscale and feet-aligned canvas placement; no face compositing"
+}
