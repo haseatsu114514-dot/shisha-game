@@ -14,7 +14,7 @@
       ],
       "mode": "RGB",
       "alpha_extrema": null,
-      "status": "pending-owner-selection"
+      "status": "owner-approved"
     },
     {
       "kind": "icon",
@@ -29,7 +29,22 @@
         0,
         255
       ],
-      "status": "pending-owner-selection"
+      "status": "superseded-by-owner-correction"
+    },
+    {
+      "kind": "icon-retro",
+      "file": "icon-retro-source.png",
+      "sha256": "981aa80cc380bed5a7f82a6f64fcacbf1a7116f1d57d59c9a418f4f87f9cf15b",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "status": "owner-requested-retro-revision"
     }
   ]
 }
