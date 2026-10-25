@@ -6,12 +6,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京の路地で、小さな看板を見つけた。「余白」と書いてある。"
+          "text": "東京の路地で、小さな看板を見つけた。「シーシャと茶 余白」。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "入口の大会ポスターには、「久世朔」の名があった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店内のメニューは、お茶が一番上。端に手書きの空欄が残っている。"
         },
         {
           "type": "set_flag",
@@ -20,12 +25,32 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "いらっしゃい。吸う？　座るだけでもいいよ"
+          "text": "いらっしゃい。君、柑橘が好きそう。……あ、まだ何も聞いてなかった"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "吸う？　お茶だけでもいいよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "……今日は、お茶をお願いします"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "お茶だけ、大歓迎。看板に『茶』も書いといて正解だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "メニューの、この空欄は？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕が君の好みを当てて書く欄。……冗談。変えたくなったら、君が書いて"
         },
         {
           "speaker": "",
@@ -45,7 +70,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "あ、ましろ。幼なじみなんだ。僕の一つ下で、昔からそういう言い方をする"
+          "text": "あ、ましろの知り合い？　幼なじみなんだ。僕より一つ下"
         },
         {
           "speaker": "hajime",
@@ -55,7 +80,12 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。僕が急ぐと、あの子がお茶を置く。今日は僕の番"
+          "text": "昔、あの子の次の答えを当てようとして、何度も外した"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "それで空欄を残すようになった。……店名の由来まで話しちゃったね"
         },
         {
           "speaker": "hajime",
@@ -65,7 +95,12 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。君にも勝ちたい。今は客として、ゆっくりして"
+          "text": "うん。君にも勝ちたい。でも今はお客さんだよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "お茶、冷めないうちにどうぞ"
         },
         {
           "speaker": "",
@@ -80,7 +115,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "外れた方が面白い。人の一口って、毎回違うから"
+          "text": "当てたら終わりじゃん。外れた後の方が、ずっと面白い"
         },
         {
           "speaker": "hajime",
@@ -90,7 +125,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。作業台、空けておくよ"
+          "text": "いいよ。作業台、空けておく。僕の予想、また外してね"
         }
       ]
     },
@@ -105,7 +140,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "この前の約束。今日は使っていいよ"
+          "text": "来たね。忘れると思ってたのに。作業台、君の分だよ"
         },
         {
           "speaker": "hajime",
@@ -120,7 +155,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "甘さが後まで残るね。そこは間違いない"
+          "text": "おいしい。最初は軽いのに、甘さだけ最後までいる"
         },
         {
           "speaker": "hajime",
@@ -130,12 +165,42 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "削るかどうかは、君の狙い次第だよ"
+          "text": "僕に決めさせる？　それ、楽だけど損じゃない？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "本当のことは言うよ。削るかどうかは、君の狙い次第"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "敵に、そこまで教えていいんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "おいしい一台に勝つ方が楽しいじゃん。……負けたら、本気で悔しいけど"
         },
         {
           "speaker": "",
           "face": "",
           "text": "久世はノートを伏せ、冷めたお茶を取り替えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶まで、替えてくれるんですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "計算だよ。喉が渇いた相手に勝っても自慢できないじゃん"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……半分はね。君においしく帰ってほしいのも、本当"
         }
       ]
     },
