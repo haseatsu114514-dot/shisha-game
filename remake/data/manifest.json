@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 10:43 UTC",
+ "generated": "2026-10-25 11:05 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -370,6 +370,8 @@
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
   "cg_ch2_ageha_purikura_strip.png",
+  "cg_ch2_ageha_purikura_strip_gal.png",
+  "cg_ch2_ageha_purikura_strip_soft.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
@@ -2130,6 +2132,8 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "sprites/characters/kuze/chr_kuze_smug.png",
-  "cgs/cg_ch2_ageha_purikura_strip.png"
+  "cgs/cg_ch2_ageha_purikura_strip.png",
+  "cgs/cg_ch2_ageha_purikura_strip_gal.png",
+  "cgs/cg_ch2_ageha_purikura_strip_soft.png"
  ]
 }
