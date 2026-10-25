@@ -1,0 +1,50 @@
+{
+  "issue": 956,
+  "tool": "image_gen.imagegen",
+  "created": "2026-10-25",
+  "runtime_registered": false,
+  "images": [
+    {
+      "kind": "background",
+      "file": "background-source.png",
+      "sha256": "1f0e8cc8ce45463adc962c1bab5bdc3ed54b15b7840863f47ac6948dbb6d63ff",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "status": "owner-approved"
+    },
+    {
+      "kind": "icon",
+      "file": "icon-source.png",
+      "sha256": "242df25a0742ea5dda46f8b1a6b3ed8cc229a91c95fcebba590f693087a90631",
+      "size": [
+        1295,
+        1214
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "status": "superseded-by-owner-correction"
+    },
+    {
+      "kind": "icon-retro",
+      "file": "icon-retro-source.png",
+      "sha256": "981aa80cc380bed5a7f82a6f64fcacbf1a7116f1d57d59c9a418f4f87f9cf15b",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "status": "owner-requested-retro-revision"
+    }
+  ]
+}

@@ -44,6 +44,7 @@
         "node --experimental-vm-modules remake/test/daily_consistency.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
+        "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -51,7 +52,17 @@
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
-        "node remake/test/lover_dates.mjs"
+        "node remake/test/lover_dates.mjs",
+        "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs"
+      ]
+    },
+    {
+      "id": "affinity-stages",
+      "title": "Completed conversations and affinity stage boundaries",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/affinity_stages.mjs",
+        "node --experimental-vm-modules --test remake/test/lime_affinity_scale.mjs remake/test/lime_reply_once.mjs"
       ]
     },
     {
@@ -74,6 +85,7 @@
         "node remake/test/attack_training.mjs",
         "node remake/test/steam_word_cut.mjs",
         "node remake/test/water_pour.mjs",
+        "node --experimental-vm-modules remake/test/water_pour_lifecycle_743.mjs",
         "node --experimental-vm-modules remake/test/water.mjs",
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",

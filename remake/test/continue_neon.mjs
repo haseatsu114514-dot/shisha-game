@@ -199,7 +199,9 @@ try {
     }, { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal });
     await page.clock.runFor(2500);
     assert.equal(await page.locator(".go-speech-text").textContent(), script.cues[1].text);
+    assert.notEqual(await page.locator(".gameover").getAttribute("data-quiet"), "true", "the opening keeps its normal sound level");
     await page.clock.runFor(14500);
+    assert.equal(await page.locator(".gameover").getAttribute("data-quiet"), "true", "first and shortened repeat scripts both enter the quiet second half");
     assert.equal(await page.locator(".go-speech-text").textContent(), script.cues.at(-1).text);
     assert.equal((await reading()).count, "3");
     assert.deepEqual(await page.evaluate(() => __decisions), []);

@@ -1,0 +1,23 @@
+{
+  "size": [
+    1672,
+    941
+  ],
+  "changed_bbox": [
+    580,
+    439,
+    623,
+    557
+  ],
+  "png_webp_rgb_identical": true,
+  "files": {
+    "assets/backgrounds/bg_shishark_preparing_night.png": {
+      "sha256": "76459993ababf07e2bf4e2a98116c6a04be1a8a02419d00c8dabd71199daf39f",
+      "bytes": 2555310
+    },
+    "remake/img/backgrounds/bg_shishark_preparing_night.webp": {
+      "sha256": "94e5ea82e122b2540bf2190e9d3b3ecb936ad92308ccd5b5387cb7e8fb715c30",
+      "bytes": 2002992
+    }
+  }
+}

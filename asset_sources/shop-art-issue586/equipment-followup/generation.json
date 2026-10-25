@@ -1,0 +1,125 @@
+{
+  "tool": "image_gen.imagegen",
+  "transparent_background": true,
+  "pillow": "12.3.0",
+  "calls": [
+    {
+      "output": "asset_sources/shop-art-issue586/equipment-followup/lotos-v1.png",
+      "prompt": "asset_sources/shop-art-issue586/equipment-followup/lotos-v1-prompt.txt",
+      "reference": "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+      "selected": false,
+      "sha256": "b807f2ac60ca9b5df22c44fc7c1d905c6c5ebeccad6a68ab288dd7757ffddd2a",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "full_alpha_bbox": [
+        0,
+        23,
+        1237,
+        1236
+      ],
+      "visible_alpha_gt16_bbox": [
+        118,
+        325,
+        1231,
+        940
+      ]
+    },
+    {
+      "output": "asset_sources/shop-art-issue586/equipment-followup/lotos-v2.png",
+      "prompt": "asset_sources/shop-art-issue586/equipment-followup/lotos-v2-prompt.txt",
+      "reference": "asset_sources/shop-art-issue586/equipment-followup/lotos-v1.png",
+      "selected": true,
+      "sha256": "b9c9d0254d5f35373fba8fd3edb6c5793f3321afb4f18b9ac6a12246b583ffb5",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "full_alpha_bbox": [
+        0,
+        35,
+        1180,
+        1087
+      ],
+      "visible_alpha_gt16_bbox": [
+        171,
+        385,
+        1177,
+        938
+      ]
+    },
+    {
+      "output": "asset_sources/shop-art-issue586/equipment-followup/flat_charcoal.png",
+      "prompt": "asset_sources/shop-art-issue586/equipment-followup/flat_charcoal-prompt.txt",
+      "reference": "assets/ui/making/heat_flat_cold.png",
+      "selected": true,
+      "sha256": "8ab9fb89b44e7b162a15288641bca223beca65cd610e91f694ce8486613e4a65",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "full_alpha_bbox": [
+        0,
+        87,
+        1099,
+        1190
+      ],
+      "visible_alpha_gt16_bbox": [
+        172,
+        301,
+        1096,
+        1056
+      ]
+    },
+    {
+      "output": "asset_sources/shop-art-issue586/equipment-followup/cube_charcoal.png",
+      "prompt": "asset_sources/shop-art-issue586/equipment-followup/cube_charcoal-prompt.txt",
+      "reference": "assets/ui/making/heat_cube_cold.png",
+      "selected": true,
+      "sha256": "c38b6a8941cdb6dfc3d76063e7602c059b56dd26450ed378e08e4c9dba176636",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "full_alpha_bbox": [
+        55,
+        21,
+        1216,
+        1240
+      ],
+      "visible_alpha_gt16_bbox": [
+        236,
+        227,
+        1019,
+        1054
+      ]
+    }
+  ],
+  "delivery": "tools/build_shop_equipment_art.py adds transparent padding during WebP encoding; native PNGs remain byte-for-byte intact",
+  "remaining": [
+    "tanukish_lid: selected B comparison is Library-only; source bytes unavailable",
+    "amaburst_hms: reference photo download returned HTTP 403; orange flame accent and side holes required",
+    "three old equipment images to be retired: exact IDs not established"
+  ]
+}

@@ -268,10 +268,7 @@ export const NIGHT_EVENTS = {
   3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
     label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
-    run: async () => {
-      await playTsumugiStory(3);
-      if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
-    } },
+    run: earlyPractice },
   5: { label: "スミさんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。スミさんの話を聞きに、閉店間際のtonariへ──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
   7: { schedule: "preparation", deadline: 12, prerequisites: ["_ev_first_practice", "_tsumugi_contest_progress"],
     label: "中間準備", pin: "tonari", teaser: "tonari", beat: "大会への準備を確かめに、夜のtonariへ──", ...once("_ev_midcheck", midPreparation) },
@@ -327,40 +324,61 @@ function beginEvePractice(progress) {
   save();
 }
 
-async function earlyPractice() {
-  const progress = state.flags._ch1_early ||= {};
-  if (!progress.choice) {
-    if (basicsExperienced() || fullPracticeToday()) {
-      const id = basicsExperienced() ? "remake_preparation_review" : "remake_preparation_retry";
-      await play({ ...DB.dialogues[id], branches: {} }, { bg: TONARI_N });
-    } else {
-      await play("remake_preparation_first", { bg: TONARI_N });
-      progress.choice = "full";
+// DAY3だけを直列化する。LOAD後の別stateには旧taskを再利用しない。
+const earlyPracticeRuns = new WeakMap();
+function earlyPractice() {
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot, phase = owner.phase;
+  if (earlyPracticeRuns.has(owner)) return earlyPracticeRuns.get(owner);
+  const task = Promise.resolve().then(async () => {
+    let progress;
+    const requireCurrent = () => {
+      if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot || owner.phase !== phase
+        || progress && owner.flags._ch1_early !== progress) {
+        throw new DOMException("DAY3 practice owner changed", "AbortError");
+      }
+    };
+    const read = async (scene) => {
+      requireCurrent();
+      const result = await play(scene, { bg: TONARI_N });
+      requireCurrent();
+      if (!result || result.cancelled) throw new DOMException("DAY3 dialogue interrupted", "AbortError");
+    };
+    requireCurrent();
+    await playTsumugiStory(3);
+    requireCurrent();
+    if (flag("_ev_first_practice")) return;
+    progress = owner.flags._ch1_early ||= {};
+    // 現在の通し制作を提供・講評まで終えた保存なら、同じ一台を作り直さない。
+    if (!progress.feedbackRead) {
+      if (!progress.practiceDone) {
+        if (!progress.choice) {
+          const id = basicsExperienced() ? "remake_preparation_review"
+            : fullPracticeToday() ? "remake_preparation_retry" : "remake_preparation_first";
+          await read(id);
+          // 今回のfull-only導線を読み終えた地点を保存する。既存のchoiceを変換しない。
+          progress.choice = "full";
+          save();
+        }
+        beginEvePractice(progress);
+        const cs = await runFullPractice({ coached: true, adjustments: false, kind: "early",
+          isCurrent: () => { requireCurrent(); return true; } });
+        requireCurrent();
+        // 実runnerは提供記録のない中断時にthrowする。false/cancelも完了へ変えない。
+        if (!cs || cs.cancelled || !cs.pullDone) throw new DOMException("DAY3 practice interrupted", "AbortError");
+        progress.failed = cs.failed || null;
+        progress.practiceDone = true;
+        save();
+      }
+      if (progress.failed) await read("remake_preparation_failed");
+      await read("remake_preparation_first_end");
+      progress.feedbackRead = true;
       save();
     }
-  }
-  if (!progress.practiceDone && progress.choice !== "review") {
-    if (progress.choice === "drill" && !progress.drill) {
-      progress.drill = await chooseDrill({ title: "今日の復習", lead: "一つだけ、手を動かして確かめよう。", recommended: recommendedDrill() });
-      save();
-    }
-    beginEvePractice(progress);
-    if (progress.choice === "full") {
-      const cs = await runFullPractice({ coached: true, adjustments: false, kind: "early" });
-      progress.failed = cs.failed || null;
-    } else {
-      const tier = await runDrill(progress.drill);
-      state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
-    }
-    progress.practiceDone = true;
-    save();
-  }
-  if (progress.feedbackRead) return;
-  if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-  if (progress.choice === "review") await play("remake_preparation_confirm", { bg: TONARI_N });
-  await play("remake_preparation_first_end", { bg: TONARI_N });
-  progress.feedbackRead = true;
-  save();
+    requireCurrent();
+    setFlag("_ev_first_practice");
+  }).finally(() => earlyPracticeRuns.delete(owner));
+  earlyPracticeRuns.set(owner, task);
+  return task;
 }
 
 async function midPreparation() {
@@ -496,16 +514,13 @@ async function tournamentDay() {
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
-  bc.judge(cs, bc.judgeOf(cs.holes.score), "穴あけ");
   await stepPlace(cs);
   bc.block(cs, "coalfire");
   await runHeat(cs);
-  bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepSteamTime(cs);
   await playTournamentEvent(cs, "waiting", { bg: STAGE });
   bc.block(cs, "steam");
   await runSteamDodge(cs);
-  bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
   await sleep(900);
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
@@ -521,7 +536,6 @@ async function tournamentDay() {
   if (cs.failed) return failedOut(cs.failed, cs);
   await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-  bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
@@ -537,7 +551,6 @@ async function tournamentDay() {
     bc.block(cs, "adjust");
     await runCare(cs, { round });
     if (cs.failed) return failedOut(cs.failed, cs);
-    bc.judge(cs, bc.judgeOf(cs.care.score), `調整${round}`);
     await sleep(900);
     bc.clearComments();
     cs.stats = null;

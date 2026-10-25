@@ -32,6 +32,8 @@ const overrides={spendableMoney,state, DB:{flavorById:{mint:{}},dialogues:{},lim
  onAction:()=>actionEnds++,presentNow:(...args)=>displayProbe(...args),installReel:()=>installProbe(),
  restingToday:()=>!!state.restDay?.fullDay,
  runNightPlan:async()=>0,nightPlan:()=>[],nightOccupied:()=>false,
+ // This delivery fixture has no night schedule; the synchronous guard returns no block.
+ fixedNightVisitBlock:events=>{assert.deepEqual(Object.keys(events),[]);return null},
  runHomeShisha:async()=>false,maybeConfession:async()=>false,unreadCount:()=>0,
  completeInvitation:()=>{state.pendingInvite=null},
  invitationCost:()=>0,invitationGrowth:()=>({}),isFriendEvent:()=>false,isFinaleEvent:()=>false,CHAR_STAT:{},storeInvitationSpot:()=>false,

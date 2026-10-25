@@ -105,8 +105,12 @@ await suite('hiyori-work-relationship',async run=>{
   await page.waitForFunction(()=>W.core.state.romanceChoices.bond_q1_hiyori&&document.querySelector('#vn.active .vn-next.show'));
   const r=await page.evaluate(()=>{const s=W.core.state;W.savedAffinity=s.affinity.hiyori;const q1=s.flags._hiyori_bond_question_done;W.core.saveToSlot('suien_remake_slot1');W.core.newGame();W.core.loadFromSlot('suien_remake_slot1');return {q1,answer:W.core.state.romanceChoices.bond_q1_hiyori.value};});
   assert(!r.q1);assert.equal(r.answer,0);assert(!await page.evaluate(()=>W.run));
-  const end=await page.evaluate(async()=>{W.vn.hooks.onLine=null;W.vn.vnTest.turbo=true;const resumed=await W.daily.meetHiyoriAtTonari();return {resumed,question:W.core.state.flags._hiyori_bond_question_done,value:W.core.state.romanceChoices.bond_q1_hiyori.value,unchanged:W.core.state.affinity.hiyori===W.savedAffinity,finale:W.bonds.finaleDue('hiyori')};});
-  assert(end.resumed&&end.question&&end.unchanged&&!end.finale,JSON.stringify(end));assert.equal(end.value,0);
+  const end=await page.evaluate(async()=>{W.vn.hooks.onLine=null;W.vn.vnTest.turbo=true;const resumed=await W.daily.meetHiyoriAtTonari();const firstAffinity=W.core.state.affinity.hiyori;
+   const repeat=await W.daily.meetHiyoriAtTonari();return {resumed,repeat,firstAffinity,question:W.core.state.flags._hiyori_bond_question_done,value:W.core.state.romanceChoices.bond_q1_hiyori.value,affinity:W.core.state.affinity.hiyori,saved:W.savedAffinity,
+   released:W.core.state.flags._hiyori_affinity_stage_released_pts||0,finale:W.bonds.finaleDue('hiyori')};});
+  assert(end.resumed&&end.question&&!end.repeat&&!end.finale,JSON.stringify(end));
+  assert.equal(end.released,8);assert.equal(end.affinity,end.saved+end.released);
+  assert.equal(end.affinity,end.firstAffinity);assert.equal(end.value,0);
  });
  await check('load-during-work-stops-old-vn-with-no-new-state-reward',async page=>{
   await setup(page);await page.evaluate(()=>{W.vn.vnTest.turbo=false;W.run=W.daily.playHiyoriEvent('work_talk');});await page.locator('#vn.active .vn-next.show').waitFor();

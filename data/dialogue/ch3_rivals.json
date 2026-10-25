@@ -6,7 +6,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京の路地で、小さな看板を見つけた。「余白」と書いてある。"
+          "text": "東京の路地。短い看板には「煙幕」とだけ書かれていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "薄い仕切りの向こうに鏡があり、店の奥がもう一つあるように見える。"
         },
         {
           "speaker": "",
@@ -20,42 +25,112 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "いらっしゃい。吸う？　座るだけでもいいよ"
+          "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……今日は、お茶をお願いします"
+          "text": "……いえ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕。噂を流したのも僕だけどね。がっかりした？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "思ったより普通の店ですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は飲み物だけで"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "もちろん。煙なしの日にも、席はあるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は袖の余った上着を押さえ、理由を聞かずに水と温かいお茶を置いた。"
+          "text": "久世は理由を聞かず、水と温かい飲み物を置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味の名を伏せる方を選んだ隣の客が、カードを裏返す。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "これ、レモンケーキみたい。何を入れたの？"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "今日は今日の分でいい。僕の店ではね"
+          "text": "柑橘とブラックティー。粉もバターも、ひとかけらもないよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "でも君の二口目にはあったんだ。……僕の手柄は半分かな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ましろちゃんも、同じことを言ってました"
+          "text": "菓子の味まで予想してたんですか"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "あ、ましろ。幼なじみなんだ。僕の一つ下で、昔からそういう言い方をする"
+          "text": "予想は書く。外れた客の答えもね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートには葉と炭の位置、客ごとに違う味の名前が並んでいた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "次に吸うなら、材料から見る？　味の名を伏せる？　選んでいい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "二人、知り合いだったんですね"
+          "text": "次は、材料から見たいです"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。僕が急ぐと、あの子がお茶を置く。今日は僕の番"
+          "text": "了解。答えを当てる試験じゃないし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんから、この店の話を聞きました"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "あ、ましろの知り合い？　幼なじみなんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二人、昔から？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕が茶を菓子って言っても「あれはお茶。でも好き」。ずっとそう"
         },
         {
           "speaker": "hajime",
@@ -65,22 +140,22 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。君にも勝ちたい。今は客として、ゆっくりして"
+          "text": "うん。君にも勝ちたい。でも今は客でいて。飲み物、冷めるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターのノートには、予想を外した客の好みが並んでいた。"
+          "text": "客が帰ると、久世は一人で灰皿を運び、テーブルを拭いた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "当たった記録じゃないんですか"
+          "text": "手伝い、いらないんですか"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "外れた方が面白い。人の一口って、毎回違うから"
+          "text": "東京を裏で動かす組織、片付け係が僕しかいないんだ"
         },
         {
           "speaker": "hajime",
@@ -90,7 +165,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。作業台、空けておくよ"
+          "text": "作業台、空けるよ。僕の予想を外しに来てね"
         }
       ]
     },
@@ -100,27 +175,117 @@
         {
           "speaker": "",
           "face": "",
-          "text": "数日後の余白。久世は約束どおり、作業台を空けていた。"
+          "text": "数日後の煙幕。ましろが客席で一台を吸っていた。"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "この前の約束。今日は使っていいよ"
+          "text": "来たね。今日は特別ゲストがいる。……知り合いだったっけ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "朔、もう会ってるよぉ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "えー、僕の秘密の顔、まだ見せてなかったのに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "店を一人で片づけてるのは、昔から知ってるよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "それは秘密にして。裏から動かしてる人っぽくないから"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとうございます"
+          "text": "ずいぶん仲がいいんですね"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "はじめは大会用の試作を一台作った。久世は最後まで吸った。"
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "子どものころから、朔の話は大きいの"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "甘さが後まで残るね。そこは間違いない"
+          "text": "小さいのは店だけ。……今のは本当"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世は二人の前に自分の一台と葉の袋を並べた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "葉は柑橘とブラックティー。名前を伏せるのが嫌なら、先に見て"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見てから吸います"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。何に感じるかは、教えてほしいけどね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三人は順に一口ずつ吸った。柑橘が先に立ち、茶の香りが後に残る。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕には、ちゃんとお茶。……好きだよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "また外した。ましろの「でも好き」、昔から難しいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺にも、柑橘と茶です。後から少し香ばしくなります"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "同じ葉でも、炭の順番で思い出すものが変わる"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "それを「客の思い込み」って片づけられると、腹が立つ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "珍しい。朔、素直だ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは約束していた作業台で、大会用の試作を一台作った。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "おいしい。最初は軽いのに、甘さが最後まで残る"
         },
         {
           "speaker": "hajime",
@@ -130,12 +295,52 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "削るかどうかは、君の狙い次第だよ"
+          "text": "僕に決めさせる？　それ、楽だけど損じゃない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕は、後半も吸っていたいなぁ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ほら、答えも分かれた。君はどうしたい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ決めません。自分の台でもう一度確かめます"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "そう来るか。僕も全国に出るんだけどな"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "おいしい相手に勝つ方が楽しい。……負けたら悔しいけど"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世はノートを伏せ、冷めたお茶を取り替えた。"
+          "text": "久世はノートを伏せ、二人の冷めた飲み物を取り替えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこまでしてくれるんですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "計算だよ。喉が渇いた相手に勝っても自慢できないじゃん"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……半分はね。おいしく帰ってほしいのも、本当"
         }
       ]
     },

@@ -27,7 +27,16 @@ try {
       R.core.state.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture
       R.shown = 0;
       R.phaseObserver = new MutationObserver(records => {
-        if (records.some(r => r.target.dataset.revealPhase === 'pause')) R.pauseAt = performance.now();
+        const map = records.find(r => r.target.dataset.revealPhase === 'pause')?.target;
+        if (map) {
+          R.pauseAt = performance.now();
+          const visible = selector => {
+            const node = map.querySelector(selector), box = node?.getBoundingClientRect();
+            return !!box && box.width > 0 && box.height > 0 && getComputedStyle(node).visibility !== 'hidden';
+          };
+          R.pauseSnapshot = { label: map.querySelector('.map-unlock-notice')?.textContent,
+            info: visible('.map-info'), guide: visible('.map-guide'), shown: R.shown };
+        }
       });
       R.phaseObserver.observe(document.getElementById('screen'), { subtree: true, attributes: true, attributeFilter: ['data-reveal-phase'] });
       window.reopen = async (options = {}) => {
@@ -69,11 +78,9 @@ try {
       await page.evaluate(() => document.querySelectorAll('.newly-revealed').forEach(pin => pin.getAnimations({ subtree: true }).forEach(a => a.play())));
     }
     // After the unlock label, keep a quiet pause before guides and callbacks.
-    await page.locator('.map[data-reveal-phase="pause"]').waitFor();
-    assert.equal(await currentMap.locator('.map-unlock-notice').textContent(), '');
-    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
-    assert.equal(await currentMap.locator('.map-guide').isVisible(), false);
-    assert.equal(await page.evaluate(() => R.shown), 1);
+    // Screenshot work may outlast the 450ms phase. Assert the snapshot captured at its real entry.
+    await page.waitForFunction(() => R.pauseSnapshot);
+    assert.deepEqual(await page.evaluate(() => R.pauseSnapshot), { label: '', info: false, guide: false, shown: 1 });
     await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
     assert(await currentMap.locator('.map-guide').isVisible());
     assert(await currentMap.locator('.map-info').isVisible());

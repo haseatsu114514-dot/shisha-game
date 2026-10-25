@@ -212,7 +212,10 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       view.announce(cue.text);
       view.face(cue.face, turn && !reduce && !(detail.lossOrdinal >= 3 && index === 0));
       if (sound && index > 0 && turn) audio.beat();
-      if (cue.at >= 10.3) { root.dataset.quiet = "true"; audio.quiet(); }
+    }
+    if (elapsed >= 10.3 && root.dataset.quiet !== "true") {
+      root.dataset.quiet = "true";
+      audio.quiet();
     }
     revealCaption(elapsed);
     const remaining = Math.max(0, Math.ceil(DECISION_SECONDS - countAt));

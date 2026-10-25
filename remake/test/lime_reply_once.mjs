@@ -15,13 +15,15 @@ async function fixture({ lover = false, reply = response } = {}) {
   const original = { inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
   let current = original;
   const bond = { private: false };
+  const notes = [];
   const noop = () => {};
   const imports = {
     'util.js': { el: noop, sleep: async () => {}, fitOneLine: noop, yen: String },
     'data.js': { DB: {}, displayName: String, faceIconUrl: noop },
     'ui.js': { layers: {} }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
-    'stats.js': { gainAffinity: (id, pts) => current.gains.push({ id, pts, private: bond.private }),
+    'travel-budget.js': { spendableMoney: () => 30000 },
+    'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
       affinityLevel: () => 1, applyStats: noop, bond },
     'audio.js': { SE: {} }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
     'spots.js': { hasContact: noop, spotById: noop, isClosed: noop },
@@ -54,8 +56,8 @@ async function fixture({ lover = false, reply = response } = {}) {
       bubbles.push({ text, mine, animate });
       if (!animate) return Promise.resolve();
       const hold = deferred(); held.push(hold); return hold.promise;
-    }, note: noop };
-  return { original, bond, item, ui, picks, bubbles, held, reply,
+    }, note: value => notes.push(value) };
+  return { original, bond, item, ui, picks, bubbles, held, reply, notes,
     run: () => phone.namespace.testRunItem(item, ui, []),
     replaceState() {
       current = { inbox: [], limeRead: [], gains: [], lovers: [] };
@@ -75,6 +77,7 @@ test('two pending selections for the same message settle once before animation',
   assert.equal(f.item.replyState, 'replied'); assert.deepEqual(logs(f.item), expectedLog);
   await f.finish(); await Promise.all([a, b]);
   assert.equal(f.original.gains.length, 1);
+  assert.deepEqual(f.notes, ['♡ ほんの少し仲良くなった']);
 });
 
 test('back/reentry during the sent bubble cannot offer another reply', async () => {
@@ -85,6 +88,7 @@ test('back/reentry during the sent bubble cannot offer another reply', async () 
   await f.finish(); await Promise.all([first, reopened]);
   assert.equal(f.original.gains.length, 1);
   assert.equal(f.bubbles.filter(b => b.animate).length, 1, 'old generation must not start the peer animation');
+  assert.deepEqual(f.notes, ['♡ ほんの少し仲良くなった']);
 });
 
 test('a selected choice whose item was already completed is rejected', async () => {
