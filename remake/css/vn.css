@@ -230,8 +230,8 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
   gap: 14px;
 }
 .vn-choices.show { display: flex; }
-/* 2択だけ少し上へ（16px）。本文枠と3択以上の位置はそのまま。 */
-.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 306px; }
+/* 2択は質問・操作札から離して上へ寄せる。 */
+.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
 .vn-choice {
   width: 720px;
   padding: 16px 30px;

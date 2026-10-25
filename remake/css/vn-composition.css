@@ -105,9 +105,12 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-next {
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-next.show { animation-name:vn-next-nudge; }
 @keyframes vn-next-nudge { 50% { transform:translateY(2px); } }
-html:root[data-ui-theme] body:not(.game-ds) .vn-choices,
-html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+html:root[data-ui-theme] body:not(.game-ds) .vn-choices {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
+}
+/* 全テーマ共通。2択のまとまりを32px上げる。 */
+html:root[data-ui-theme] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(.game-ds) .vn-box::before,
