@@ -831,47 +831,52 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店間際、凛さんに「そこまで歩くよ」と言われた。"
+          "text": "それぞれの仕事を終えた帰り道。凛さんは駅を通り過ぎ、川沿いの少し静かな道を選んだ。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "今日でモニターの一区切り。本国から、受領の返事が来てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、次は仕事じゃない日に"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……覚えてたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さんが予定、空けてくれたでしょう"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "問屋街の帰り道。シャッターの下りた通りに、２人の足音だけが響く。"
+          "text": "街灯の下で立ち止まる。凛さんは鞄から出しかけた試香紙を、使わずに戻した。"
         },
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "……モニター契約、今日で一区切りなんだよね。本国のテストフェーズが終わるから"
-        },
-        {
-          "speaker": "rin",
-          "face": "sad",
-          "text": "だからさ。次に君があの階段を上がってくる理由、なくなるわけ。……それで、ちょっと困ってる"
+          "text": "会う理由がなくなるの、少し怖かった。こっちから誘って、断られるのも"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "困ってる……？"
+          "face": "normal",
+          "text": "俺もです。いつも仕事の話に戻せるから、言わずに済ませてました"
         },
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "私はデータの人だからさ。理由のない訪問って、処理できないの。……君が、理由を作ってよ"
+          "text": "今日は、戻さなくていいよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "街灯の下で立ち止まる。試香紙を弄ぶ指が、ほんの少しだけ落ち着きをなくしている。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（理由なら、もうずっと前からある）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（契約のためじゃなく、この人に会いに行ってた。それを、言葉にするなら……）"
+          "text": "試すような笑い方ではなかった。凛さんが俺の返事を待っていた。"
         },
         {
           "type": "choice",
@@ -902,57 +907,78 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ……契約じゃない理由で、会いに行きます。凛さんに。それが理由です"
+          "text": "凛さんが好きです。俺と付き合ってください"
         },
         {
           "speaker": "rin",
           "face": "surprise",
-          "text": "…………"
+          "text": "……うん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは試香紙を１本、ゆっくり置いた。それから、いつもの余裕が少しだけ剥がれた顔で笑った。"
-        },
-        {
-          "speaker": "rin",
-          "face": "smile",
-          "text": "……ふうん。即答か。モルモットのくせに、生意気"
+          "text": "凛さんは小さく息を吐いてから、もう一度うなずいた。"
         },
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "……ありがと。実はさ、君が階段を上がってくる足音、もうだいぶ前から聞き分けられるんだよね"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "香りより先に、音で分かるの、……重症でしょ"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "今日から君は、モルモットじゃなくて……んー……『匂坂凛の、いちばん大事なサンプル』。非売品"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "門外不出"
+          "text": "私も、君が好き。試香が終わっても帰らないでほしいって、ずっと思ってた"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "それ、結局商品扱いじゃないですか"
+          "face": "normal",
+          "text": "これからは、会いたいって言います"
         },
         {
           "speaker": "rin",
           "face": "smile",
-          "text": "ふふ。いいの。私の在庫で、いちばん手放さないやつだから"
+          "text": "私も。業務連絡に紛れ込ませるの、やめる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんの手が、鞄の持ち手から離れる。差し出された指を、俺から握った。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……冷たい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "少し。でも、このままがいいです"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "じゃあ、駅まではこのまま"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "歩き出しても、指は離れなかった。いつもより遅い足音が、二人分重なった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "それと、今日は名前で呼んでいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "はじめくん。また、明日も連絡して"
         },
         {
           "type": "hide_cg"
         }
-      ]
+      ],
+      "comment": "主人公が好きだと伝え、本人も明言して受け入れる。サンプル・在庫という比喩だけで恋人成立を済ませない。"
     },
     {
       "dialogue_id": "confession_rin_reject",
@@ -1000,42 +1026,52 @@
         {
           "speaker": "",
           "face": "",
-          "text": "SHISHARKを出てから、もう少しだけ一緒に歩いた。"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "……お主、今日は帰るのが遅いのう"
+          "text": "SHISHARKを出て、駅まで少し遠回りした。サメちゃんは、もう店の戸締まりを確かめに戻らなかった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "もう少し、サメちゃんと話したくて"
+          "text": "今日は、サメちゃんに聞いてほしい話があるんです"
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "店のことでは、ないのか？"
+          "face": "normal",
+          "text": "うむ。……店のことでは、ないのじゃな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。あなたといる時間が、俺には大切なんです"
+          "text": "はい。手伝いたいから来る日と、会いたいから来る日があって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最近は、会いたい方が先になりました"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……わしも、お主が来る時刻を、何度も時計で見ておった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "街灯の下で、サメちゃんが足を止めた。コロちゃんを抱く手が、少し強くなる。"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "……わしも、お主が来るのを待っておった"
+          "text": "コロちゃんを抱える腕が少しだけ強くなる。彼女は口を開きかけ、そのまま自分の声で続けた。"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "客としてだけでは、なくてじゃ"
+          "text": "店を褒められるのもうれしい。でも、お主がわしを見て笑うと、もっと落ち着かぬのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、同じです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "なら……続きを聞かせてほしいのじゃ"
         },
         {
           "type": "choice",
@@ -1066,53 +1102,73 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……わしと、か？"
+          "text": "……うむ。わしも、お主が好きじゃ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。サメちゃんと、付き合いたいです"
+          "text": "俺と、付き合ってくれますか"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "そう何度も言うでない！ 顔が熱くなるじゃろう"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "……うむ。わしも、お主が好きじゃ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "これからは、恋人として隣にいてほしいのじゃ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "ventriloquism",
-          "text": "側近よ、今は余の言葉より、お主の声を届けよ",
-          "voice": "korochan"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "……はい、コロちゃん"
+          "text": "付き合う。……今、うなずいたのも見ておったじゃろう！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女が空いた手を、そっとこちらへ伸ばした。俺はその手を握る。"
+          "text": "照れた顔のまま、彼女がもう一度、大きくうなずいた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、側近の返事をしかと記憶せよ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、これは自分で言えたからよいのじゃ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コロちゃんを片腕に抱き直し、空いた方の手が俺の前へ伸びてきた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "恋人なら……手をつないでもよいのじゃろうか"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "これからも、よろしくお願いします"
+          "text": "はい。俺も、つなぎたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指先を重ねると、彼女がぎゅっと握り返した。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "明日、起きても、今の話は続いておるのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "続いてます。朝、おはようって送ります"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "うむ。……もう少し、このまま歩くのじゃ"
+          "text": "うむ。わしも返す。……楽しみにしておる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅が見えても、二人とも手を離すのを少しだけ遅らせた。"
         }
       ]
     },

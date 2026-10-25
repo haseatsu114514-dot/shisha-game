@@ -285,12 +285,14 @@
   },
   "kuze": {
    "faces": [
+    "nervous",
     "normal",
-    "smug"
+    "smug",
+    "wild"
    ],
-   "h": 0.8275,
-   "b": 0.0258,
-   "ax": 0.4809,
+   "h": 0.9875,
+   "b": 0.0092,
+   "ax": 0.5461,
    "aspect": 0.7467
   },
   "steve": {
@@ -376,6 +378,7 @@
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
+  "cg_kuze_mashiro_childhood.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
@@ -2148,6 +2151,9 @@
   "cgs/cg_ch2_ageha_purikura_strip_soft.png",
   "cgs/cg_naru_after_hours.png",
   "cgs/cg_naru_last_chance.png",
-  "cgs/cg_naru_next_entry.png"
+  "cgs/cg_naru_next_entry.png",
+  "sprites/characters/kuze/chr_kuze_wild.png",
+  "sprites/characters/kuze/chr_kuze_nervous.png",
+  "cgs/cg_kuze_mashiro_childhood.png"
  ]
 }

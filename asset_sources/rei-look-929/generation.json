@@ -1,0 +1,176 @@
+[
+  {
+    "id": "A",
+    "name": "A：黒シャツ＋カーディガン",
+    "source": "A/normal-source.png",
+    "source_sha256": "edaefe8f074a6b1f8b93320329ce6200e238d22252be4a4b84e53b72f7dbeb3e",
+    "source_dimensions": [
+      887,
+      1774
+    ],
+    "source_bbox_alpha16": [
+      209,
+      0,
+      697,
+      1748
+    ],
+    "normalized_dimensions": [
+      896,
+      1200
+    ],
+    "normalized_bbox_alpha16": [
+      291,
+      6,
+      621,
+      1188
+    ],
+    "current_bbox_alpha16": [
+      275,
+      6,
+      626,
+      1188
+    ],
+    "visible_height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.2,
+    "normalization": "uniform resize and translation only; source unmodified",
+    "references": [
+      {
+        "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+        "sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "adoption": "unapproved-design-candidate",
+    "limitations": [
+      "Original hair silhouette touches source top edge; regenerate with additional top margin before production.",
+      "Subtle ring count and tattoo geometry differ from brief; refine after design selection.",
+      "In-game browser rendering not verified."
+    ]
+  },
+  {
+    "id": "B",
+    "name": "B：黒ジャケット＋赤インナー",
+    "source": "B/normal-source.png",
+    "source_sha256": "025060e73ee5746115c12b3a9ca25173e1f469bca4e40d47b48c47dbc03302c2",
+    "source_dimensions": [
+      887,
+      1774
+    ],
+    "source_bbox_alpha16": [
+      211,
+      0,
+      698,
+      1747
+    ],
+    "normalized_dimensions": [
+      896,
+      1200
+    ],
+    "normalized_bbox_alpha16": [
+      290,
+      6,
+      619,
+      1188
+    ],
+    "current_bbox_alpha16": [
+      275,
+      6,
+      626,
+      1188
+    ],
+    "visible_height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.16,
+    "normalization": "uniform resize and translation only; source unmodified",
+    "references": [
+      {
+        "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+        "sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "adoption": "unapproved-design-candidate",
+    "limitations": [
+      "Original hair silhouette touches source top edge; regenerate with additional top margin before production.",
+      "Subtle ring count and tattoo geometry differ from brief; refine after design selection.",
+      "In-game browser rendering not verified."
+    ]
+  },
+  {
+    "id": "C",
+    "name": "C：バンド好きの私服",
+    "source": "C/normal-source.png",
+    "source_sha256": "31864a590ade0fc773cdea0f9500156d11981d62c7780dbb9a70dd767c7da174",
+    "source_dimensions": [
+      887,
+      1774
+    ],
+    "source_bbox_alpha16": [
+      211,
+      0,
+      698,
+      1748
+    ],
+    "normalized_dimensions": [
+      896,
+      1200
+    ],
+    "normalized_bbox_alpha16": [
+      290,
+      6,
+      619,
+      1188
+    ],
+    "current_bbox_alpha16": [
+      275,
+      6,
+      626,
+      1188
+    ],
+    "visible_height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.51,
+    "normalization": "uniform resize and translation only; source unmodified",
+    "references": [
+      {
+        "path": "assets/sprites/characters/rei/chr_rei_normal.png",
+        "sha256": "345ae80254656a0a97591f881f251d3dd091e4f65d5020d070d54ac9f7f49edf"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "generated_date": "2026-10-26",
+    "tool": "image_gen.imagegen",
+    "adoption": "unapproved-design-candidate",
+    "limitations": [
+      "Original hair silhouette touches source top edge; regenerate with additional top margin before production.",
+      "Subtle ring count and tattoo geometry differ from brief; refine after design selection.",
+      "In-game browser rendering not verified."
+    ]
+  }
+]
