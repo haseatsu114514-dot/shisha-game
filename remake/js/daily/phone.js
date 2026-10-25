@@ -895,3 +895,56 @@ export function limeCoach(onOpen) {
   SE.phoneReceive();
   return true;
 }
+
+/** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
+export async function openContactLime({ contacts, summary, actions, onAction, signal = null }) {
+  const owner = state;
+  const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
+  let resolveClose;
+  const closed = new Promise(resolve => { resolveClose = resolve; });
+  const alive = () => ui.open && state === owner && !signal?.aborted;
+  const close = () => resolveClose();
+  const backButton = () => el("button.lime-reply.ghost", { text: "‹ トーク一覧へ",
+    dataset: { test: "phone-next" }, onclick: showList });
+  function showList() {
+    if (!alive()) return;
+    ui.gen++;
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "恋人との連絡" }));
+    ui.chat.classList.add("list");
+    ui.chat.replaceChildren();
+    for (const id of contacts()) {
+      const account = accountFor(id);
+      ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [
+        el("div.lcr-face", [avatar(account)]),
+        el("div.lcr-main", [el("div.lcr-name", { text: limeName(account) }), el("div.lcr-preview", { text: summary(id) })]),
+      ]));
+    }
+    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: "連絡先を交換した恋人ができると、ここから連絡できます。" }));
+    ui.actions.replaceChildren(el("button.lime-reply.ghost", { text: "スマホを閉じる", dataset: { test: "phone-close" }, onclick: close }));
+  }
+  function showThread(id) {
+    if (!alive() || !contacts().includes(id)) return;
+    const account = accountFor(id);
+    ui.gen++;
+    ui.lastSide = null;
+    ui.chat.classList.remove("list");
+    ui.chat.replaceChildren();
+    ui.header.replaceChildren(el("button.lime-back.lime-contact-back", { text: "‹", ariaLabel: "トーク一覧へ戻る", dataset: { test: "lime-back" }, onclick: showList }),
+      avatar(account), el("span.lime-name", { text: limeName(account) }));
+    drawHistory(thread(account).filter(item => item.msg?.tokyoVisit), ui);
+    ui.note(summary(id));
+    ui.actions.replaceChildren(...actions(id).map(action => el("button.lime-reply", {
+      text: action.label, dataset: { test: `lime-travel-${action.id}` }, onclick: () => {
+        if (!alive() || !contacts().includes(id)) return;
+        onAction(id, action.id);
+        showThread(id);
+      },
+    })), backButton());
+  }
+  signal?.addEventListener("abort", close, { once: true });
+  if (signal?.aborted) close(); else showList();
+  try { await closed; } finally {
+    signal?.removeEventListener("abort", close);
+    await ui.close();
+  }
+}

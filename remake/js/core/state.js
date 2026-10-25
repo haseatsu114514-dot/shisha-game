@@ -8,7 +8,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 19; // 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 20; // 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -22,6 +22,7 @@ export let state = null;
 export function newState() {
   return {
     schema: SCHEMA,
+    tokyoVisits: emptyTokyoVisits(),
     chapter: 1,
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
     day: 1,
@@ -281,6 +282,7 @@ function migrate(s) {
       stamina: s.stamina, source: "legacy-load",
     };
   }
+  s.tokyoVisits = restoreTokyoVisits(oldSchema < 20 ? null : s.tokyoVisits);
   s.schema = SCHEMA;
   return s;
 }
@@ -409,3 +411,36 @@ export const flag = (name) => !!(state && state.flags[name]);
 export const setFlag = (name, v = true) => { if (state) state.flags[name] = v; };
 export const markMet = (id) => { if (state && id) state.met[id] = true; };
 export const timeOfDay = () => (state && state.slot >= 1 ? "night" : "day");
+
+export const emptyTokyoVisits = () => ({ version: 1, plans: [], offers: {}, closedSlots: [], chats: {} });
+
+/** 保存の構造だけを検査。旧セーブから訪問・読了・関係を推測しない。 */
+function restoreTokyoVisits(raw) {
+  if (!raw || raw.version !== 1 || !Array.isArray(raw.plans)) return emptyTokyoVisits();
+  const restored = emptyTokyoVisits();
+  restored.closedSlots = [...new Set((Array.isArray(raw.closedSlots) ? raw.closedSlots : [])
+    .filter(id => /^d\d+-(noon|night)$/.test(id)))];
+  const validTime = time => time && Number.isInteger(time.day) && time.day > 0 && [0, 1].includes(time.slot)
+    && /^d\d+-(noon|night)$/.test(time.id);
+  for (const plan of raw.plans) {
+    if (!plan || typeof plan.id !== "string" || typeof plan.characterId !== "string"
+      || !["booked", "arrived", "staying", "returned"].includes(plan.status)
+      || !Number.isInteger(plan.arrivalDay) || !Number.isInteger(plan.returnDay) || plan.arrivalDay >= plan.returnDay
+      || !validTime(plan.meetup) || !validTime(plan.date) || plan.meetup.day !== plan.arrivalDay
+      || (plan.meetup.day * 2 + plan.meetup.slot) >= (plan.date.day * 2 + plan.date.slot) || plan.date.day >= plan.returnDay
+      || typeof plan.met !== "boolean" || typeof plan.dateDone !== "boolean"
+      || restored.plans.some(other => other.id === plan.id)) continue;
+    restored.plans.push(structuredClone(plan));
+  }
+  if (raw.chats && typeof raw.chats === "object" && !Array.isArray(raw.chats)) {
+    restored.chats = Object.fromEntries(Object.entries(raw.chats).filter(([, day]) => typeof day === "string"));
+  }
+  if (raw.offers && typeof raw.offers === "object" && !Array.isArray(raw.offers)) {
+    restored.offers = Object.fromEntries(Object.entries(raw.offers).filter(([id, offer]) => offer
+      && offer.characterId === id && Number.isInteger(offer.arrivalDay) && Number.isInteger(offer.returnDay)
+      && offer.arrivalDay < offer.returnDay && validTime(offer.meetup) && validTime(offer.date)
+      && offer.meetup.day === offer.arrivalDay && offer.date.day < offer.returnDay
+      && (offer.meetup.day * 2 + offer.meetup.slot) < (offer.date.day * 2 + offer.date.slot)));
+  }
+  return restored;
+}

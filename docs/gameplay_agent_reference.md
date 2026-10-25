@@ -349,7 +349,9 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 - 登場セリフは `data/dialogue/ch4_mashiro_dubai.json`（friend版・girlfriend版）
 - サメちゃんの第1・2章の交流は現行実装に従う。後半の参加・前夜デート・修羅場・後日談の本編接続は未実装。
 
-### 第3〜5章の遠距離・訪問・同行（2026-10-11確定・未実装）
+### 第3章の遠距離・訪問（第4〜5章の同行は未接続）
+
+- 第3章のLIME・地元恋人の東京訪問は `data/tokyo_visits.json`、合流・散歩の台詞は `data/dialogue/ch3_visits.json`。旅程と所在は `remake/js/core/tokyo-visits.js`、本筋と重ならない時間は `tokyo-clock.js`、入口は章カード。通常訪問は二日前に予約・二日滞在・同時一人で、合流と散歩は各一行動。旧当日招待の共通再調整や海外同行は含めない。現在の遊び方・保存と試験は `remake/README.md` を参照。
 
 - 採用した地域構成、東京訪問の状態遷移、LIME・保留中のお誘いとの統合、海外同行1人またはなし、セーブ・データ構造・実装順は[交際後ゲームプレイ企画](../docs/post_relationship_gameplay_plan_20261011.md)の最新「採用仕様」を参照。調整値とキャラ固有シナリオの制作は別作業。
 - 第5章の自由行動とSHISHA-9000決着後の真エンディング・スタッフロール・タイトル復帰は、[ストーリー構成の第5章](../brand/story_and_structure.md#第5章のゲームシステム既存の規則を継続)を参照。今回の方針保存で本体が実装されたわけではない。

@@ -1,3 +1,4 @@
+import { syncTokyoVisits } from "../core/tokyo-visits.js";
 // 全国大会の勝利後だけ進む第3章の後日談。大会の順位・報酬はここでは変更しない。
 export const CH3_AFTERMATH_SCENES = Object.freeze([
   { id: "ch3_abyss_hotel", dayAfterWin: 0, slot: 1, label: "優勝の夜", location: "東京のホテル", bg: "bg_ch3_hotel_night" },
@@ -49,5 +50,6 @@ export function completeChapterThreeAftermathScene(value, sceneId) {
     value.flags._ch3_cleared = true;
     value.phase = "cleared";
   }
+  syncTokyoVisits(value);
   return true;
 }
