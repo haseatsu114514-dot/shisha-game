@@ -321,6 +321,24 @@ await suite('ch2-tournament',async check=>{
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
   });
+  for (const touch of [false,true]) await check(`continue-assist-cancel-${touch?'touch':'pc'}`,async page=>{
+    const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+    await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'leaf'}});
+    await page.locator(t('defeat')).waitFor();
+    const speaker=await page.locator(t('defeat')).getAttribute('data-speaker');
+    const variant=await page.locator(t('defeat')).getAttribute('data-variant');
+    const before=await get(page);
+    await press(t('retry'));await press(dt('retry-assist-cancel'));
+    await page.waitForFunction(()=>document.querySelector('.gameover')?.dataset.phase==='speaking');
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-speaker'),speaker);
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-variant'),variant);
+    const after=await get(page);
+    assert.equal(after.flags._ch2_tournament.attempts,3);
+    assert.equal(after.flags._ch2_tournament.losses,3);
+    assert.equal(after.flags._ch2_tournament.retryAssist,false);
+    assert.equal(after.stamina,before.stamina);assert.deepEqual(after.flavorStock,before.flavorStock);
+    await press(t('retry'));await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
   for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{
     const entry={flavorStock:{double_apple:40,mint:12},stamina:30,equip:null,recipes:{},stats:{technique:42,sense:42,guts:42,charm:42,insight:42}};

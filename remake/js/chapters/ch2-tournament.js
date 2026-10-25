@@ -223,7 +223,7 @@ function renderVotes(owner, final = false) {
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は制作の総合評価で順位を決めます。" })]);
 }
-async function renderDefeat(owner) {
+async function renderDefeat(owner, variant = null) {
   const p = progress(); broadcast.clearComments();
   // 同じ敗北の再表示では数え直さない。3敗目から第1章と同じ救済を選べる（#590）。
   recordTournamentLoss(p); save();
@@ -233,11 +233,11 @@ async function renderDefeat(owner) {
   await warmGameOver();
   if (!live(owner)) return;
   hud(owner, true); // MENU retains SAVE/LOAD; its modal pauses the shared clock/audio.
-  const root = buildGameOver({ context,
+  const root = buildGameOver({ context, variant,
     onRetry: () => perform(owner, async () => {
       const assisted = await chooseRetryAssist(p, () => live(owner) && root.isConnected && progress() === p);
       if (!live(owner) || !root.isConnected || progress() !== p) return;
-      if (assisted === null) { await renderDefeat(owner); return; }
+      if (assisted === null) { await renderDefeat(owner, root.continueVariant); return; }
       owner.cs = null;
       checkpoint("ready"); renderReady(owner);
     }),

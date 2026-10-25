@@ -22,6 +22,7 @@ export async function chooseRetryAssist(tournament, isCurrent = () => true) {
     options: [
       { label: "今回だけ下げる", value: true, primary: true, test: "retry-assist-yes" },
       { label: "そのまま挑戦する", value: false, test: "retry-assist-no" },
+      { label: "選択に戻る", value: null, test: "retry-assist-cancel" },
     ],
   });
   if (!isCurrent() || tournament.attempts !== attempt) return null;

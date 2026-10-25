@@ -730,13 +730,13 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
-    context: !preview && variant == null && owner?.phase === "tournament"
+    context: !preview && owner?.phase === "tournament"
       ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
       : craftContinueContext(cs, { chapter: 1, reason, rank }),
     onRetry: async () => {
       if (!owner) { location.reload(); return; }
       const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
-      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant, preview }); return; }
+      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant: root.continueVariant, preview }); return; }
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);

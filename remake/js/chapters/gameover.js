@@ -116,6 +116,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     onType: () => { if (active && started && !pauseReasons.size) audio.voice(speaker); } });
   const { root } = view;
   const owner = state;
+  root.continueVariant = speaker === "sumi" ? SUMI_CONTINUE_SCRIPTS.indexOf(baseScript) : `premium:${speaker}`;
   root.dataset.reason = detail.reason;
   root.dataset.lossOrdinal = String(detail.lossOrdinal);
   root.dataset.skipEntry = String(detail.lossOrdinal >= 3);
