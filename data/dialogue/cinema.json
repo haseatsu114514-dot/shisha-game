@@ -1,0 +1,57 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "samechan_cinema_introduction",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        { "speaker": "samechan", "face": "smile", "text": "お主、また顔を出してくれたのう。今日は少し、地元の案内でもしようか" },
+        { "speaker": "hajime", "face": "normal", "text": "サメちゃん、この辺りは昔から詳しいんですか？" },
+        { "speaker": "samechan", "face": "normal", "text": "うむ、わしの地元じゃ。遊びに行くなら、まず水族館……" },
+        { "speaker": "samechan", "face": "serious", "text": "いや、それでは無難すぎる。お主には、とっておきを教えよう" },
+        { "speaker": "samechan", "face": "smile", "text": "路地裏シネマじゃ。小さな映画館なのじゃが、サメ映画の聖地でのう！" },
+        { "speaker": "hajime", "face": "surprise", "text": "聖地。そんなにサメ映画をやってるんですか？" },
+        { "speaker": "samechan", "face": "smile", "text": "手作りのサメが飛ぶようなB級映画まで、ちゃんと上映してくれるのじゃ" },
+        { "speaker": "samechan", "face": "ventriloquism", "voice": "korochan", "text": "側近は、帰るたびに感想が長いのである" },
+        { "speaker": "samechan", "face": "surprise", "text": "そ、それだけ語りたくなるということじゃ！" },
+        { "speaker": "hajime", "face": "smile", "text": "場所、教えてください。時間のある日に観てみます" },
+        { "speaker": "samechan", "face": "smile", "text": "商店街の裏の、電球で囲まれた看板が目印じゃ。観たら、お主の感想も聞かせてくれ" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_first_screening",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "サメの看板をくぐり、小さな上映室の赤い席に座った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（今日の映画は、空からサメが降ってくるらしい）" },
+        { "speaker": "", "face": "", "text": "吊り糸の見えるサメが現れた瞬間、客席のあちこちで笑いがこぼれた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（わかっていても、この間で来ると笑っちゃうな）" },
+        { "speaker": "", "face": "", "text": "エンドロールが終わるまで席に残った。サメちゃんが語りたくなるのも、少しわかる。" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_handmade_shark",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日のサメは、海から上がるたびに大きさが変わった。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（今の場面だけ、ずいぶん小さかったな……）" },
+        { "speaker": "", "face": "", "text": "それでも逃げる役者の顔が真剣で、いつの間にか身を乗り出していた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（作り物だって気づいてるのに、見入ってた）" }
+      ]
+    },
+    {
+      "dialogue_id": "cinema_sound_before_shadow",
+      "metadata": { "min_chapter": 2 },
+      "lines": [
+        { "speaker": "", "face": "", "text": "静かな海の場面で、音楽だけが急に止まった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（来る、……まだか？）" },
+        { "speaker": "", "face": "", "text": "待ちきれなくなった頃、画面の端を大きな影が横切った。隣の席で誰かが息をのんだ。" },
+        { "speaker": "hajime", "face": "smile", "text": "（見せる前から、こっちの目を引きつけてたんだな）" }
+      ]
+    }
+  ]
+}
