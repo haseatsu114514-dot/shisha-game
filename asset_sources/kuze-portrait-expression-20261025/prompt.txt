@@ -1,0 +1,19 @@
+normal: Edit the existing Kuze portrait into an original full-body Japanese visual novel sprite of the same slim 23-year-old Tokyo shisha lounge owner. Preserve espresso-brown shaggy hair with loose curl, amber-brown eyes and youthful face. Replace the apron and vest with a worn soot-black roomy zip hoodie/overshirt, asymmetric dark burgundy lining, cream henley, narrow off-center scarf with small ink-blue/burgundy/ivory geometric tiles, charcoal work trousers, practical black shoes, indigo waist notebook pouch. Plausible real-world fabric, no logos or fantasy uniform. Mild mischievous uneven smile, open hand, transparent background, full body, no copyrighted character costume or exact styling.
+
+smug: Use the new normal portrait as reference and preserve the same face, adult proportions, hair, outfit and painterly finish. For the national tournament, lean forward with one eyebrow raised, eyes wide, a crooked delighted grin, one hand spread beside the face and the other holding the notebook. Clever and charismatic, not sadistic. Full body on transparent background. Avoid the reference character's black-and-white checkerboard scarf, white coat, purple eyes and black-purple hair.
+
+wild: Edit the new smug portrait to an even more exaggerated instant of facial acting when a trick works. Keep every clothing item, body scale and identity consistent. Open both amber eyes wide with tiny focused pupils, uneven eyebrows and a tense asymmetric toothy smile, while remaining playful and human. No hollow glowing eyes, supernatural effects or horror costume. Full body, transparent background, no text.
+
+2026-10-26 owner revision: Remove the scarf from all three faces. Keep the fashionable working clothes; make normal Kuze hold his neck upright and appear like an approachable good young man. Keep the intense transformed expression. The v2 images save this intermediate instruction.
+
+Candidate A: Make a credible mid-thigh reversible charcoal shop coat with an asymmetric oxblood inner facing, one ordinary and one concealed pocket, and blank tasting cards. The visible and hidden sides express Kuze's duality. Upright neck, friendly expression, no scarf.
+
+Candidate B: Make a short boxy ink-black shop jacket with three diagonal tabs on only one side, narrow oxblood lining, pale broken rectangle stitching around a hidden chest card pocket, ivory henley, notebook pouch and practical trousers. Upright neck, friendly expression, no scarf. Owner selected B.
+
+B final normal: Preserve the B jacket and body. Round the cheeks slightly, soften the adult jaw, make warm amber eyes brighter and a little larger, and give him a kind but slightly lopsided smile and barely raised eyebrow. This keeps a cute and subtly suspicious look in ordinary conversation.
+
+B final smug/wild: Preserve the B jacket and adult identity. Transfer the earlier sharp and then wide-eyed playful tournament expressions to that exact outfit, with no scarf. Wild remains a short beat when he sees Hajime's hand move.
+
+Matte revision: Match Hajime, Mashiro, and Steve portraits through clear lines and restrained matte cel shading. Normal: rounder, cute, pleasant but slightly unreadable. Nervous: same outfit and proportions, uncertain smile, notebook close to chest. Smug: playful reading of opponent. Wild: eyes wide and delighted, dynamic forward lean and strong asymmetry, same face and clothes, no scarf. Childhood flashback: original childhood Kuze and Mashiro in Tokyo park, drawn cake and tea, no shisha, warm nostalgic 16:9 visual novel CG.
+
+Childhood CG revision: Mashiro at age five has sleepy half-lidded eyes, a shoulder-length bob with one tiny side braid (adult has two long braids), a fuzzy hooded jacket and sage pinafore (different from her adult outfit). Kuze age six. Kindergarten satchels signal the much earlier time. One opaque sheet carries one cake sketch on its front only.
