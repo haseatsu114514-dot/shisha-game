@@ -3,11 +3,12 @@
 import { state, markMet } from "../core/state.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
-import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, affinityGateWaiting, AFFINITY_RANK_PTS, setStoryAffinityCap, releaseStoryAffinity } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, affinityGateWaiting, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
+
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
-import { samechanSpot } from "./samechan.js";
+import { samechanSpot, samechanVisitDialogue } from "./samechan.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
@@ -29,14 +30,8 @@ export const VISIT_COST = 3000;
 export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rin: "sense" };
 
 // 固有会話の順番。特別回（常連回・総督回など）は関係ができた頃合いに一度だけ挟む
-export const VISIT_SEQ = {
-  sumi: ["ch1_sumi_tutorial", "ch1_sumi_basics", "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final"],
-  tsumugi: ["ch1_tsumugi_first", "ch1_tsumugi_second", "ch1_tsumugi_third", "ch1_tsumugi_fourth", "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color"],
-  naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
-  adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
-  minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
-  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"],
-};
+export { VISIT_SEQ } from "../core/affinity-stages.js";
+import { VISIT_SEQ } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
   rin: ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"],
 };
@@ -162,6 +157,7 @@ export const mintoIdentityRevealDue = () => !state.flags._minto_identity_reveale
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
+  if (questionVisitDue(charId)) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -173,7 +169,10 @@ export function hasNewEvent(spot) {
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
   if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
-  if (spot.charId === "samechan") return !(state.story.samechan || 0) && !!DB.dialogues.samechan_shop_first;
+  if (spot.charId === "samechan") {
+    const scene = samechanVisitDialogue();
+    return !!scene && !scene.startsWith("samechan_shop_repeat_") && !!DB.dialogues[scene]?.lines?.length;
+  }
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;
   return spot.id === "choizap" ? !state.flags._gym_member : !(state.spotVisits?.[spot.id] > 0);
@@ -243,78 +242,84 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 尽きたら、途中の質問の訪問 → 好感度MAXの締めくくり（一度だけ・専用ハガル）→ 通い訪問の小会話の順。
  * 報酬: 固有会話・締めくくり=好感度+10／通い=好感度+5。通常の主要能力は1P。
  */
-export async function visitChar(charId, { welcome = null } = {}) {
+const visitsInFlight = new WeakMap();
+export async function visitChar(charId, { welcome = null, signal = null } = {}) {
   if (charId === "naru" && naruRiftActive(state)) return false;
   const owner = state;
-  let cancelled = false;
-  const read = async (...args) => {
-    const result = await play(...args);
-    cancelled ||= !result || !!result.cancelled;
-    return result;
-  };
-  if (charId === "sumi") await meetHiyoriAtTonari();
-  if (state !== owner) return;
-  syncMintoKnowledge();
-  state.visits[charId] = (state.visits[charId] || 0) + 1;
-  const seq = VISIT_SEQ[charId] || [];
-  const idx = storyCount(charId);
-  // Keep already-connected legacy saves from repeating the newly early exchange.
-  // The original story-count thresholds remain a compatibility path only.
-  if (["naru", "adam"].includes(charId) && hasContact(charId)) {
-    state.flags[`_lime_contact_${charId}`] = true;
-  }
-  const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
-  const followup = spotFollowupDue(charId, state, DB.dialogues);
-  if (followup) await read(followup, { bg });
-  // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
-  if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
-    const result = await read(welcome, { bg });
-    if (state !== owner || result?.cancelled) return;
-  }
-  if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
-    // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
-    await read("ch1_minto_identity_reveal");
-    gainAffinity(charId, 10);
-  } else if (questionVisitDue(charId)) {
-    // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
-    await playQuestionVisit(charId, { bg });
-    gainAffinity(charId, 5);
-  } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
-    await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
-    if (state !== owner || cancelled) return false;
-    state.story[charId] = idx + 1;
-    gainAffinity(charId, 10);
-    releaseStoryAffinity(charId); // #814: 会話を読んで上がった上限まで、保留分を戻す
-    await afterStory(seq[idx], { bg });
-  } else if (finaleAtVisit(charId)) {
-    await playFinale(charId, { bg });
-    gainAffinity(charId, 10);
-  } else {
-    const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map((i) => `remake_repeat_${charId}_${i}`);
-    const n = (state.visits[charId] || 1) - 1;
-    const rainy = isRainy();
-    // 雨の日: つむぎは長居する（仲良くなってから）。ほかの相手も入りの1行が雨になる
-    const rainTalk = rainy && affinityLevel(charId) >= 1 && DB.dialogues[`remake_repeat_${charId}_rain`] ? `remake_repeat_${charId}_rain` : null;
-    const id = rainTalk || pool[n % pool.length];
-    const dlg = DB.dialogues[id];
-    const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
-    await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg });
-    gainAffinity(charId, 5);
-  }
-  if (state !== owner || cancelled) return false;
-  // 回数は紹介を出す条件だけ。実際の紹介を完読するまで喫茶店を解放しない。
-  if (charId === "naru" && storyCount("naru") >= 2 && !state.flags._cafe_introduced
-    && DB.dialogues.ch1_naru_cafe_intro) {
-    const result = await read("ch1_naru_cafe_intro", { bg });
-    if (state !== owner || result?.cancelled) return false;
-    state.flags._cafe_introduced = true;
-  }
-  // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
-  earnStat(CHAR_STAT[charId], 4);
-  markMet(charId);
-  hasContact(charId); // 交換済みの判定をこの場で記録
-  await maybeRecruitTrpgMember(charId);
-  return state === owner;
+  const active = visitsInFlight.get(owner) || new Set();
+  if (active.has(charId) || signal?.aborted) return false;
+  visitsInFlight.set(owner, active); active.add(charId);
+  try {
+    const live = () => state === owner && !signal?.aborted;
+    const read = async (scene, opts = {}) => {
+      if (!live()) return false;
+      const result = await play(scene, { ...opts, signal });
+      return live() && !!result && !result.cancelled;
+    };
+    if (charId === "sumi") await meetHiyoriAtTonari();
+    if (!live()) return false;
+    syncMintoKnowledge();
+    const visit = (state.visits[charId] || 0) + 1;
+    const seq = VISIT_SEQ[charId] || [];
+    const idx = storyCount(charId);
+    // Keep already-connected legacy saves from repeating the newly early exchange.
+    // The original story-count thresholds remain a compatibility path only.
+    if (["naru", "adam"].includes(charId) && hasContact(charId)) {
+      state.flags[`_lime_contact_${charId}`] = true;
+    }
+    const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
+    const followup = spotFollowupDue(charId, state, DB.dialogues);
+    if (followup && !await read(followup, { bg })) return false;
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
+    if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
+      if (!await read(welcome, { bg })) return false;
+    }
+    if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+      // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
+      if (!await read("ch1_minto_identity_reveal")) return false;
+      gainAffinity(charId, 10);
+    } else if (questionVisitDue(charId)) {
+      // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
+      if (!await playQuestionVisit(charId, { bg, signal, deferSave: true }) || !live()) return false;
+      gainAffinity(charId, 5);
+    } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
+      if (!await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg })) return false;
+      state.story[charId] = idx + 1;
+      gainAffinity(charId, 10);
+      if (await afterStory(seq[idx], { bg, signal, deferSave: true }) === false || !live()) return false;
+    } else if (finaleAtVisit(charId)) {
+      if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
+      gainAffinity(charId, 10);
+    } else {
+      const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map((i) => `remake_repeat_${charId}_${i}`);
+      const n = visit - 1;
+      const rainy = isRainy();
+      // 雨の日: つむぎは長居する（仲良くなってから）。ほかの相手も入りの1行が雨になる
+      const rainTalk = rainy && affinityLevel(charId) >= 1 && DB.dialogues[`remake_repeat_${charId}_rain`] ? `remake_repeat_${charId}_rain` : null;
+      const id = rainTalk || pool[n % pool.length];
+      const dlg = DB.dialogues[id];
+      const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
+      if (!await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg })) return false;
+      gainAffinity(charId, 5);
+    }
+    if (!live()) return false;
+    // 回数は紹介を出す条件だけ。実際の紹介を完読するまで喫茶店を解放しない。
+    if (charId === "naru" && storyCount("naru") >= 2 && !state.flags._cafe_introduced
+      && DB.dialogues.ch1_naru_cafe_intro) {
+      if (!await read("ch1_naru_cafe_intro", { bg })) return false;
+      state.flags._cafe_introduced = true;
+    }
+    // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
+    state.visits[charId] = visit;
+    releaseAffinity(charId);
+    earnStat(CHAR_STAT[charId], 4);
+    markMet(charId);
+    hasContact(charId); // 交換済みの判定をこの場で記録
+    await maybeRecruitTrpgMember(charId);
+    return live();
+  } finally { active.delete(charId); }
+
+
 }
 
 export async function visitRival(spot) {

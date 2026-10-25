@@ -38,7 +38,7 @@ const deps={
  '../core/ui.js':{setBg:async()=>{}},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
- '../vn/engine.js':{play:async id=>played.push(id),isPlaying:()=>false},
+ '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };

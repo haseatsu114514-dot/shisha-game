@@ -197,23 +197,25 @@ try {
     await T.spots.visitChar("naru");
     const first = { story: s.story.naru, lv: lv(), open: T.spots.hasNewStory("naru") };
     T.stats.gainAffinity("naru", 30); // LIMEや贈り物で大きく増えても、2本目を読むまで♥2にはならない
-    const capped = { pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_story_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
+    const capped = { pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
     T.vn.backlog().length = 0;
     await T.spots.visitChar("naru");
-    const second = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_story_waiting_pts || 0,
-      read: T.lines().length > 0 };
-    // 第2章では連動しない（第1章の会話が無いため）
+    const second = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0,
+      read: T.lines().length > 0, released: s.flags._naru_affinity_stage_released_pts || 0 };
+    // 第2章でも未読の第1章会話を勝手に完読扱いにしない。
     const ch2 = T.fresh(); ch2.chapter = 2; ch2.met.naru = true; T.stats.gainAffinity("naru", 60);
-    return { first, capped, second, ch2: T.stats.affinityLevel("naru") };
+    return { first, capped, second, ch2: { level: T.stats.affinityLevel("naru"), points: ch2.affinity.naru,
+      waiting: ch2.flags._naru_affinity_waiting_pts || 0 } };
   });
   assert.deepEqual(g.first, { story: 1, lv: 0, open: false }, "2nd talk waits for ♥1");
   assert.equal(g.capped.lv, 1); assert.equal(g.capped.pts, 19, "Capped just below ♥2 until the 2nd talk");
   assert(g.capped.waiting > 0, "The excess is kept, not lost"); assert.equal(g.capped.open, true, "♥1 opens the 2nd talk");
   assert.equal(g.second.story, 2); assert.equal(g.second.lv, 2, "Reading the talk releases the kept points up to the next cap");
-  assert(g.second.pts <= 32 && g.second.waiting < g.capped.waiting);
-  assert(g.ch2 >= 3, "Chapter 2 is not gated by chapter 1 talks");
+  assert.equal(g.second.pts, 32); assert(g.second.waiting - g.second.released < g.capped.waiting);
+  assert.equal(g.ch2.level, 0); assert.equal(g.ch2.points, 8);
+  assert(g.ch2.waiting > 0, "Unread chapter 1 talk still holds later gains");
   await gate.close();
-  console.log("[tsumugi story] PASS: #814 heart opens the next talk, talks cap the next heart, kept points released, chapter 2 free");
+  console.log("[tsumugi story] PASS: #814 heart opens the next talk, talks cap the next heart, kept points released, chapter 2 holds unread gains");
 
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
   for (const day of [3, 11, 13]) {

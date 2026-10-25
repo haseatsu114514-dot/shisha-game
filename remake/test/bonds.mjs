@@ -76,6 +76,7 @@ try {
       for (const [pts, times] of [[1, 100], [2, 100], [5, 40], [10, 10]]) {
         const state = fresh();
         state.stats.charm = charm;
+        state.story.naru = spots.VISIT_SEQ.naru.length; // pace arithmetic after all normal stages
         const mult = 1 + 0.2 * stats.tier01("charm");
         for (let i = 0; i < times; i++) stats.gainAffinity("naru", pts);
         out.push({ charm, pts, times, got: state.affinity.naru, legacy: Math.round(pts * mult) * times, carry: state.affinityCarry.naru });
@@ -83,6 +84,7 @@ try {
     }
     // 占い（一度だけ ×1.5）
     let state = fresh();
+    state.story.rin = spots.VISIT_SEQ.rin.length;
     state.fortune = { char: "rin" };
     stats.gainAffinity("rin", 10);
     const fortune = { got: state.affinity.rin, carry: state.affinityCarry.rin, left: state.fortune };
@@ -107,6 +109,8 @@ try {
     await spots.visitChar("tsumugi");
     const answer = state.romanceChoices.bond_q1_tsumugi?.value;
     for (let i = 0; i < 12; i++) stats.gainAffinity("tsumugi", 10);
+    await spots.visitChar("tsumugi"); // heart4 story must finish before heart5
+    await spots.visitChar("tsumugi"); // remaining heart5 story precedes the finale
     const max = { level: stats.affinityLevel("tsumugi"), due: state.flags._confession_due ?? null };
     return { out, fortune, lover, waiting, answer, max };
   });

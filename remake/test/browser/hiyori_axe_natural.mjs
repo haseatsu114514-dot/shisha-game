@@ -273,7 +273,9 @@ try {
       assert(!final.state.flags._confession_due);
       assert.deepEqual({ day: row.afterReply.day, slot: row.afterReply.slot, money: row.afterReply.money, affinity: row.afterReply.affinity }, row.beforeReply);
       assert(actions.some(a => a.affinity === 33 && a.held > 0), 'Natural paid visits must demonstrate holding affinity at ♥3');
-      assert(final.state.flags._hiyori_affinity_released_pts > 0 && final.state.flags._hiyori_affinity_released_pts <= 15);
+      const stageReleased = final.state.flags._hiyori_affinity_stage_released_pts || 0;
+      assert(stageReleased > 0 && stageReleased <= (final.state.flags._hiyori_affinity_waiting_pts || 0));
+      assert.equal(final.state.flags._hiyori_affinity_released_pts || 0, 0);
       assert(seen.has('intro'));
       assert.deepEqual(errors, []); assert.deepEqual(failedResources, []);
       await page.screenshot({ path: path.join(out, `${label}-complete-map.png`) });
