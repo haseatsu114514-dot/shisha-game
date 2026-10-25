@@ -1,13 +1,20 @@
 # 久世朔・服装と表情の改訂
 
-2026-10-25生成。オーナー提供の王馬小吉の画像は、普段と勝負中の表情差・大胆な顔芸の参考として確認した。衣装や髪色・目の色・柄・ポーズはそのまま写さず、久世の店「煙幕」と既存立ち絵をもとに作成。
+2026-10-25〜26生成。オーナー提供の王馬小吉の画像は、普段と勝負中の表情差・大胆な顔芸の参考として確認した。衣装や髪色・目の色・柄・ポーズはそのまま写さず、久世の店「煙幕」と既存立ち絵をもとに作成。
 
-| 原画 | 採用画像 | 用途 |
+| 原画 | 表示画像 | 用途 |
 | --- | --- | --- |
-| `normal-source.png` | `assets/sprites/characters/kuze/chr_kuze_normal.png` | 店内の人懐っこい顔 |
-| `smug-source.png` | `assets/sprites/characters/kuze/chr_kuze_smug.png` | 大会で相手を読む顔 |
-| `wild-source.png` | `assets/sprites/characters/kuze/chr_kuze_wild.png` | 相手の手が動いた瞬間の顔芸 |
+| `normal-b-final-source.png` | `assets/sprites/characters/kuze/chr_kuze_normal.png` | 首をまっすぐにして客を迎える、少し意味ありげな好青年 |
+| `smug-b-final-source.png` | `assets/sprites/characters/kuze/chr_kuze_smug.png` | 大会で相手を読む顔 |
+| `wild-b-final-source.png` | `assets/sprites/characters/kuze/chr_kuze_wild.png` | 相手の手が動いた瞬間の顔芸 |
 
-原画は各1084×1451、透過。採用版は896×1200へ比率を保って縮小し、中央へ透過パディングした。WebPと立ち絵の計測値は `python3 remake/tools/build_manifest.py --portraits-only kuze` で生成。店で働ける服として墨黒のゆるい上着、片側だけ見えるえんじの裏地、小さな幾何柄のスカーフ、作業ズボンとノート用ポーチを採用した。顔芸は大会の一場面だけに接続。
+原画は各1084×1451、透過。表示版は896×1200へ比率を保って縮小し、中央へ透過パディングした。WebPと立ち絵の計測値は `python3 remake/tools/build_manifest.py --portraits-only kuze` で生成。最初の `normal-source.png` / `smug-source.png` / `wild-source.png` はスカーフ付きの履歴、`*-v2-source.png` はスカーフを外して首をまっすぐにした中間版として保存。顔芸は大会の一場面だけに接続。
+
+## 通常時の衣装候補
+
+- **A `candidate-a-long-coat.png`**: 長めのリバーシブル作業コート。普通のポケットと隠しポケット、片側だけ見えるえんじの裏地で「表と裏」を描く。店主の落ち着きが強い。
+- **B `candidate-b-short-jacket.png`**: 斜めに3本留める短い仕事着。ずれた留め具、切れた四角いステッチ、白紙の味カードで「予想を外す」軽快さを描く。より悪戯っぽい。
+
+オーナーは **B** を選択。短いジャケットと斜めの三本留め具、白紙の味カードを三表情で揃えた。首元は無装飾。通常時はまっすぐ立ち、少し丸い顔と柔らかい目、片側だけ上がる笑顔で可愛さと控えめな胡散臭さを両立。勝負中の表情差分も同じ衣装へ作り直した。
 
 生成指示は [prompt.txt](prompt.txt)。
