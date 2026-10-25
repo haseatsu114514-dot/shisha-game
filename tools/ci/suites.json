@@ -74,6 +74,7 @@
         "node remake/test/attack_training.mjs",
         "node remake/test/steam_word_cut.mjs",
         "node remake/test/water_pour.mjs",
+        "node --experimental-vm-modules remake/test/water_pour_lifecycle_743.mjs",
         "node --experimental-vm-modules remake/test/water.mjs",
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",
