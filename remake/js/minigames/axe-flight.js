@@ -3,7 +3,8 @@
 export const TARGET = { x: 330, y: 245, radius: 164 };
 export const CAMERA = { focal: 700, boardDepth: 650 };
 export const AXE = { blade: { x: 0, y: -28, z: 62 }, handleTip: { x: 0, y: 160, z: -3 } };
-export const FLIGHT = { travel: 920, fall: 360 };
+// Shared presentation clock for solo and versus; scoring/rotation stay in the model.
+export const FLIGHT = { travel: 480, fall: 240 };
 export function turnPoint(point, pitch) {
   const a = pitch * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
   return { x: point.x, y: point.y * c - point.z * s, z: point.y * s + point.z * c };
