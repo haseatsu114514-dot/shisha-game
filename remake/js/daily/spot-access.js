@@ -10,8 +10,10 @@ export const freeGuide = (s, guide) => !!guide?.free && guide.pin === s.id;
 // 表示も入店も同じ解放判定へ。定休日等はピンを隠す理由にはしない。
 export const spotVisible = s => isUnlocked(s);
 
-export function spotAvailability(s, { guide = null } = {}) {
+export function spotAvailability(s, { guide = null, visitBlock = null } = {}) {
   if (!isUnlocked(s)) return { ok: false, why: "locked" };
+  const blocked = visitBlock?.(s);
+  if (blocked) return blocked;
   if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
   if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
   const hours = openingStatus(s, state);

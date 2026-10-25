@@ -34,7 +34,7 @@ import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
-import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan } from "./night-events.js";
+import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 
 const SLEEP_RECOVERY = 14;
@@ -442,10 +442,12 @@ async function takeAction() {
     await afterAction({ exerted: true, spent });
     return;
   }
+  const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
   const spotId = await chooseSpot({
     ...chapterDef.mapOptions?.(),
+    visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
@@ -460,6 +462,8 @@ async function takeAction() {
   const [baseId] = String(spotId).split(":");
   const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
+  const blocked = visitBlock(spot);
+  if (blocked) { toast(blocked.why); return; }
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
     ...facilityGrowth(spot),
     consumed: (result) => result.used && spot.kind === "spot",
