@@ -11,7 +11,9 @@ async function seed(page, { lovers = ["tsumugi", "minto", "rin", "samechan", "hi
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
     const progress = await import("./js/chapters/ch3-progress.js");
     if (!progress.advanceToChapterThree(value)) throw new Error("Natural chapter boundary failed");
+    // This suite starts inside Tokyo; the separate chapter-entry suite plays the prologue.
     value.flags._ch3_intro.titleSeen = true;
+    value.flags._ch3_intro.prologueStep = 4;
     for (const id of [...lovers, "hajime"]) { value.met[id] = true; value.flags[`_intro_${id}`] = true; }
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
     (await import("./js/vn/engine.js")).vnTest.turbo = true;
