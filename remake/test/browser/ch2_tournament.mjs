@@ -96,7 +96,7 @@ async function finishChapterThreePrologue(page,touch=false) {
   await press(dt('ch3-video-select-hajime'));
   await press(dt('ch3-video-play'));
   await press(dt('ch3-video-rewind'));
-  assert.match(await page.locator('.ch3-video-thought').innerText(),/見落としてる/);
+  assert.match(await page.locator('.ch3-video-thought').innerText(),/試したいこと.*勝たないといけない.*準備しよう/);
   await capture(page,touch?'ch3-kuze-video-touch':'ch3-kuze-video-pc');
   await press(dt('ch3-video-continue'));
   await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});

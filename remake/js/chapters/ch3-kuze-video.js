@@ -24,8 +24,8 @@ export function showKuzeVideoSite({ onDone, onMenu }) {
     const commentary = !focused ? video.note : phase === 0
       ? "名店の新人。勤めてまだ数か月。優勝の映像を開く。"
       : phase === 1
-        ? "何を決め手にして勝った？　店の手順をなぞっただけなら、最後に崩れるはずなのに。"
-        : "……僕が、見落としてるのか。どこで自分の判断に変わった？";
+        ? "……何だ、こいつ。派手なところはないのに、最後だけ目が離せない。"
+        : "……あの瞬間。一つ、試したいことができた。僕は勝たないといけないんだ。大会まで、もう少し。準備しよう。";
     const site = el("main.ch3-video-site", { dataset: { test: test("site"), selected, phase: String(phase) } }, [
       el("header.ch3-video-header", [
         el("div.ch3-video-brand", [el("span", { text: "▶" }), el("strong", { text: "SMOKE CHANNEL" })]),
@@ -55,7 +55,7 @@ export function showKuzeVideoSite({ onDone, onMenu }) {
           el("div.ch3-video-actions", [
             focused && phase === 0 ? action("play", "優勝映像を再生", () => { phase = 1; render(); }, true) : null,
             focused && phase === 1 ? action("rewind", "10秒戻して見る", () => { phase = 2; render(); }, true) : null,
-            focused && phase === 2 ? action("continue", "ノートを閉じる", onDone, true) : null,
+            focused && phase === 2 ? action("continue", "準備を始める", onDone, true) : null,
           ]),
         ]),
         el("aside.ch3-video-recommendations", [
