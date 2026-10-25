@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "purpose": "owner-requested commercial-VN composition refinement and regenerated P5-inspired purple dialogue artwork",
+  "baseline_commit": "04c7ef77adb8d03017f1c3a721117b66c3082733",
+  "reference_notes": "P5R official/public presentation, ATRI and Summer Pockets public pages; game screenshot was the image-generation input. Published-game artwork was not bundled.",
+  "items": [
+    {
+      "source": "asset_sources/ui/vn-smoke-11/polish/cut-paper-source.png",
+      "source_sha256": "a9498fed5eb35da9638351cdb771b94e1c9500167b2dd159a58598d9241776aa",
+      "prompt": "cut-paper-prompt.txt",
+      "runtime": "remake/img/ui/vn-polish/cut-paper.webp",
+      "runtime_sha256": "fca426e3293abf8f45bfb7cfd47a2614ab08341b974ac5512cf9d3a88c82d4a2",
+      "crop": [
+        10,
+        70,
+        2164,
+        622
+      ],
+      "crop_method": "rectangular crop and lossless WebP encoding; source preserved; no alpha threshold or painted edits"
+    },
+    {
+      "source": "asset_sources/ui/vn-smoke-11/polish/cut-paper-narration-source.png",
+      "source_sha256": "dd41b66db27ae4645f85a4c54d24be26fc1b850f7c422daadc6fc454eec7fca5",
+      "prompt": "cut-paper-narration-prompt.txt",
+      "runtime": "remake/img/ui/vn-polish/cut-paper-narration.webp",
+      "runtime_sha256": "9a6012292f1c5b3008e726dea95aba9f062da79d2c2cc25e83ec3566e989ffb3",
+      "crop": [
+        10,
+        70,
+        2164,
+        622
+      ],
+      "crop_method": "rectangular crop and lossless WebP encoding; source preserved; no alpha threshold or painted edits"
+    }
+  ],
+  "composition": {
+    "stage": [
+      1280,
+      720
+    ],
+    "box": [
+      1216,
+      224
+    ],
+    "text_padding": [
+      64,
+      92,
+      28,
+      100
+    ],
+    "body_size": 30,
+    "body_line_height": 45,
+    "name_size": 24,
+    "blue_name_size": 26,
+    "commands_size": 16,
+    "commands_hit_height": 44,
+    "name_and_commands": "one attached header, centreline matched per artwork; generated P5 columns follow the painted separators"
+  },
+  "qa": {
+    "native_generation_viewed": true,
+    "actual_browser_render_viewed": true,
+    "paired_scenes": "same Minto sprite, EDEN background and existing dialogue",
+    "before_capture": "baseline vn-lounge.css and disabled new vn-composition.css; browser-rendered, no edited screenshot text",
+    "png_capture": "Playwright stage screenshot, infinite animations disabled only during capture",
+    "ui_themes": "all 6 themes at 1280x768 and 844x438; config; blue four-character comparison passed",
+    "classic_operations": "desktop/landscape passed",
+    "ds_operations": "pc/touch dialogue-choice geometry passed",
+    "quick": "7/7 passed",
+    "text_checker": "shared readable-content checker unchanged",
+    "central_ink_underlay": "CSS opaque centre below generated panels; no source alpha edits"
+  },
+  "screenshots": [
+    {
+      "file": "after-cut-paper.png",
+      "sha256": "855defbf55b7efc58be35be227f95f7f1b970e36dc280c16e741125dd25d5fcc"
+    },
+    {
+      "file": "after-heisei-blue.png",
+      "sha256": "a5648bfb8b4d646df747b359bfa75afc242c6918fa568177a19314923ada1035"
+    },
+    {
+      "file": "after-smoke.png",
+      "sha256": "f10fffad2fbce0c7fc216eb72cdcb9ad82674e83e412e7f966a86fade8f5ea0b"
+    },
+    {
+      "file": "before-cut-paper.png",
+      "sha256": "a03338728c737ad477062b2ab2d5ef0049c3af714c112ed25776869eaa33544f"
+    },
+    {
+      "file": "before-heisei-blue.png",
+      "sha256": "1e7a887b4ea65d60e450dd9cb1f3d5c451d0961d150d4a7f1612d8dca6ebc3e6"
+    },
+    {
+      "file": "before-smoke.png",
+      "sha256": "f26a71691aa3e567e9135b4c4a478b1860cbcb15966d89a654b8437432b03d00"
+    },
+    {
+      "file": "comparison.png",
+      "sha256": "b46c124345c3ee4111e194f56b4a9095b8372b9ae3c3ea40afe56b0ed7a4fd57"
+    },
+    {
+      "file": "narration.png",
+      "sha256": "10f0e63fb3ab6e2afa9721297f8a1ed86fa581d1309993f832897368999fde30"
+    }
+  ]
+}

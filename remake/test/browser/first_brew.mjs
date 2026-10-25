@@ -226,7 +226,7 @@ await suite("first-brew", async check => {
     assert(windows.easier.slow > windows.ordinary.slow && windows.easier.window > windows.ordinary.window);
   });
 
-  await check("third-loss-continue-real-entry", async page => {
+  await check("third-recorded-loss-continue-retry", async page => {
     await init(page);
     // 外部BGMの通信はテストしない。小さな有効WAVを返し、実際のCONTINUEを動かす。
     const wav = Buffer.alloc(16044);
@@ -239,6 +239,9 @@ await suite("first-brew", async check => {
       const s = T.core.state;
       Object.assign(s, { phase: "tournament", day: 14 });
       Object.assign(s.tournament, { attempts: 3, losses: 2, lastLossAttempt: 2 });
+      // devGameOver is a read-only preview; record the third loss through the
+      // production helper before exercising the real CONTINUE/retry controls.
+      T.assist.recordTournamentLoss(s.tournament);
       const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
       for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;
       for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {

@@ -144,6 +144,17 @@ await suite('ch2-tournament',async check=>{
     const scene=id=>`[data-test="ch3-intro-scene"][data-scene="${id}"]`;
     const guide=dt('ch3-wayfinding'),next=dt('ch3-intro-continue'),menu=dt('ch3-intro-menu');
     const checkGuide=async()=>{
+      // Scene visibility precedes the layout observer after LOAD/VN teardown.
+      // Wait for the same containment contract that assertFits checks below.
+      await page.waitForFunction(()=>{
+        const stage=document.querySelector('#stage').getBoundingClientRect();
+        return [...document.querySelectorAll('[data-test="ch3-intro-menu"], [data-test="ch3-intro-continue"]')].every(node=>{
+          const r=node.getBoundingClientRect();
+          return r.width>0&&r.height>0&&r.left>=stage.left-1&&r.top>=stage.top-1
+            &&r.right<=stage.right+1&&r.bottom<=stage.bottom+1
+            &&r.left>=-1&&r.top>=-1&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1;
+        });
+      });
       await assertFits(page,`${guide}, ${guide} .ch3-wayfinding-stop, ${guide} small, ${guide} strong, ${guide} span, ${menu}, ${next}`);
       const separate=await page.locator(guide).evaluate(node=>{
         const r=node.getBoundingClientRect();

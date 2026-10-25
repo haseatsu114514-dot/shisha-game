@@ -1,4 +1,4 @@
-/* 採用した墨紫と真鍮の会話枠。本文の幅・改ページ・入力処理は既存のまま。 */
+/* 会話枠の共通組版。テーマは装飾を変え、本文・操作の安全領域を共有する。 */
 @font-face {
   font-family: "Suien Name";
   src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
@@ -6,9 +6,12 @@
   font-weight: 700;
   font-display: swap;
 }
-/* 会話枠と操作バーを一緒に2px下げ、内部組版と5pxの間隔を保つ。 */
+/* 会話枠と操作バーを一緒に2px下げる。間隔は共通組版で定める。 */
 .vn-box, .vn-controls { translate: 0 2px; }
 :root {
+  --vn-dialogue-width: 1216px;
+  --vn-dialogue-height: 176px;
+  --vn-dialogue-bottom: 16px;
   --vn-lounge-frame: url("../img/ui/vn-lounge/dialogue.svg");
   --vn-lounge-controls: url("../img/ui/vn-lounge/controls.svg");
   --vn-lounge-narration: url("../img/ui/vn-lounge/narration.svg");
@@ -116,6 +119,13 @@ body.game-ds .vn-box .vn-name {
   left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
   font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
 }
-body.game-ds .vn-controls { gap: 0; padding: 3px 5px; height: 50px; }
+/* 2画面表示も操作バーを背景側の右上へ。本文側の▼と交差させない。 */
+body.game-ds .vn-controls {
+  width:min(400px,calc(var(--ds-vw) - 16px));
+  left:calc(var(--ds-vx) + var(--ds-vw) - min(400px,calc(var(--ds-vw) - 16px)) - 8px);
+  top:calc(var(--ds-vy) + 8px); bottom:auto;
+  gap:0; padding:3px 5px; height:50px;
+}
+body.game-ds :is(.vn-text,.vn-inner) { margin-right:24px; }
 body.game-ds .vn-controls .vn-ctl { font-size: 14px; padding: 0 5px; }
 body.game-ds .vn-next { right: 16px; bottom: 5px; }

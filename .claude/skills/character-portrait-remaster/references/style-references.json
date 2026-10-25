@@ -1417,6 +1417,48 @@
           "sha256": "c9fa789541910c2f093d0a3cf9f8c0ffbb336cda17931644f84e5d46278bbe14"
         }
       ]
+    },
+    {
+      "id": "tetsuko-20261024-normal",
+      "title": "てつこ・本人写真の茶オレンジと白",
+      "status": "pending",
+      "role": "本人の修正指示で制作した通常立ち絵候補。採用済み画風の基準にはしない。",
+      "images": [
+        {
+          "label": "通常・原画",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/tetsuko-remaster-v1/normal-source.png",
+          "sha256": "4a6d02b04bf5a8f60f95ad5cc53003d79a92ddbe74ea14aab0e70aef2033265e"
+        }
+      ]
+    },
+    {
+      "id": "shisha_9000-20261024-normal",
+      "title": "SHISHA-9000・脚のある2D立ち絵",
+      "status": "pending",
+      "role": "本人の修正指示で制作した通常立ち絵候補。採用済み画風の基準にはしない。",
+      "images": [
+        {
+          "label": "通常・原画",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/shisha_9000-remaster-v1/normal-source.png",
+          "sha256": "3611a4550ab4a1a42b66fe8601ea4fdc9348847dd851b3d33ed257e609381df2"
+        }
+      ]
+    },
+    {
+      "id": "mukai_master-20261024-normal",
+      "title": "ムカイさん・ダンディ修正版",
+      "status": "pending",
+      "role": "本人の修正指示で制作した通常立ち絵候補。採用済み画風の基準にはしない。",
+      "images": [
+        {
+          "label": "通常・原画",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/mukai_master-remaster-v1/normal-source.png",
+          "sha256": "529bed4e08900c5eabf92fa34df928727851113f437c4d0c6753d168486fa525"
+        }
+      ]
     }
   ]
 }

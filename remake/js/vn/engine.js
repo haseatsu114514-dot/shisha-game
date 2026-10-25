@@ -2,6 +2,7 @@
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
+import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
@@ -188,6 +189,7 @@ export function play(idOrDlg, opts = {}) {
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
+    dom.next.classList.remove("show");
     dom.inner.replaceChildren();
     dom.inner.hidden = true;
     dom.box.classList.remove("has-inner");
@@ -562,8 +564,15 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
+  // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
+  const fontReady = Promise.all([dom.text, dom.name].map(node => {
+    const type = getComputedStyle(node);
+    const font = `${type.fontStyle} ${type.fontWeight} ${type.fontSize} ${type.fontFamily}`;
+    return document.fonts.load(font, node === dom.text ? String(line.text || "あ") : "あ").catch(() => []);
+  }));
   // 先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
-  await waitSceneAssets(Promise.all(images.map((url) => imageReady(url, 15000))), r);
+  const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
+  await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");

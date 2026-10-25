@@ -86,7 +86,8 @@ export function showTitle(preparedArt = null) {
   else prepareTitleArt(art).then(place);
 }
 
-function openConfig() {
+async function openConfig() {
+  const { createUiThemeSelect } = await import("../core/ui-theme.js");
   const row = (label, input) => el("label.cfg-row", [el("span", { text: label }), input]);
   const range = (key, min, max, step) =>
     el("input", {
@@ -105,6 +106,7 @@ function openConfig() {
   return modal({
     title: "設定",
     body: el("div.cfg", [
+      row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; saveConfig(); })),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05)),
       row("効果音 音量", range("seVolume", 0, 1, 0.05)),
       row("文字の速さ", speed),
