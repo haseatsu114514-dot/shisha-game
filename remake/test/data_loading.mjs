@@ -33,7 +33,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 大会制作会話を含む40ファイルを読み、本文の受信中も同時接続が4本を超えない。
+// ギャラリー台帳・大会制作会話を含む41ファイルを読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -49,14 +49,15 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 40);
-assert.equal(new Set(requests).size, 40);
+assert.equal(requests.length, 41);
+assert.equal(new Set(requests).size, 41);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 40);
+assert.equal(progress.length, 41);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
+assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route.enabled, true);
@@ -134,4 +135,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 40 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 41 JSON files, max 4 requests, gallery catalog, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

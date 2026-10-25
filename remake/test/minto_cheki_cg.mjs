@@ -78,7 +78,7 @@ await suite("minto-cheki-cg", async check => {
       await page.waitForFunction(() => K.core.state.slot === 1 && !!document.querySelector('[data-test="pin-minto"]'));
       await page.evaluate(() => { void K.gallery.openGallery(); });
       await page.locator('[data-test="gal-cg_minto_cheki"]').click();
-      assert.match(await page.locator(".gal-viewer.show").evaluate(node => node.style.backgroundImage), /cg_minto_cheki\.webp/);
+      assert.match(await page.locator(".gal-viewer.show .gal-media-image").getAttribute("src"), /cg_minto_cheki\.webp/);
       await page.screenshot({ path: path.join(artifacts, device + "-gallery.png") });
       const loaded = await page.evaluate(() => {
         K.core.loadFromSlot("suien_remake_slot1");
