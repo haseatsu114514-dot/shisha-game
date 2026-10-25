@@ -1,52 +1,141 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch3_nandi_breath",
+      "dialogue_id": "ch3_kuze_first",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "東京のナンディの店。入口で、煮出したスパイスの湯気を浴びた。"
-        },
-        {
-          "speaker": "nandi",
-          "face": "normal",
-          "text": "ナマステ。急いで来たね。最初はお茶にしよう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "練習を見せてもらいたくて"
-        },
-        {
-          "speaker": "nandi",
-          "face": "normal",
-          "text": "もちろん。僕も日本の全国大会に出る。今日は同じ挑戦者だ"
+          "text": "東京の路地で、小さな看板を見つけた。「余白」と書いてある。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ナンディは吸う前に、ゆっくり息を吐いた。肩を上げず、短く一口吸う。"
+          "text": "入口の大会ポスターには、「久世朔」の名があった。"
         },
         {
-          "speaker": "nandi",
+          "type": "set_flag",
+          "flag": "_met_kuze"
+        },
+        {
+          "speaker": "kuze",
           "face": "normal",
-          "text": "香りを追いかける前に、息を戻す。客にも、作る側にも必要だよ"
+          "text": "いらっしゃい。吸う？　座るだけでもいいよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……吸うことばっかり考えてました"
-        },
-        {
-          "speaker": "nandi",
-          "face": "normal",
-          "text": "カレーの味見でも、口いっぱいじゃ次は分からないだろ"
+          "text": "……今日は、お茶をお願いします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "はじめは笑って、置きっぱなしだった水を飲んだ。"
+          "text": "久世は袖の余った上着を押さえ、理由を聞かずに水と温かいお茶を置いた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "今日は今日の分でいい。僕の店ではね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんも、同じことを言ってました"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "あ、ましろ。幼なじみなんだ。僕の一つ下で、昔からそういう言い方をする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二人、知り合いだったんですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。僕が急ぐと、あの子がお茶を置く。今日は僕の番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "久世さんも、全国に出るんですよね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。君にも勝ちたい。今は客として、ゆっくりして"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターのノートには、予想を外した客の好みが並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "当たった記録じゃないんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "外れた方が面白い。人の一口って、毎回違うから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次は、俺も一台作ってみたいです"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。作業台、空けておくよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_kuze_advice",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数日後の余白。久世は約束どおり、作業台を空けていた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "この前の約束。今日は使っていいよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは大会用の試作を一台作った。久世は最後まで吸った。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "甘さが後まで残るね。そこは間違いない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "削った方がいいですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "削るかどうかは、君の狙い次第だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世はノートを伏せ、冷めたお茶を取り替えた。"
         }
       ]
     },
@@ -56,12 +145,31 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スティーブは大きな手で、炭を数ミリずつ外へずらした。"
+          "text": "柄シャツの袖をまくったスティーブは、タイマーとレシピカードを見比べた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブの大きな指が、炭を数ミリずつ外へずらす。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_steve"
         },
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "ロウ・アンド・スロー。うちのバーベキューと同じ"
+          "text": "アメリカの朝食シリアルを食べ終えた後のミルク。あれ、甘いだけじゃないだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少し、香ばしさが残ります"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "そう。ポップコーンを先に起こして、バニラとキャラメルは焦がさない"
         },
         {
           "speaker": "hajime",
@@ -81,7 +189,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "急ぐ用事がある客には、この作り方を勧めない。待つ時間も注文のうちだ"
+          "text": "甘くするのは簡単。二口目も軽く吸わせるのが、俺の仕事"
         },
         {
           "speaker": "hajime",

@@ -20,6 +20,7 @@ import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
+import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues, ROOMS } from "./ch2-city-data.js";
@@ -145,11 +146,14 @@ function renderReady(owner) {
     button(owner, "制作を始める", "craft-start", async () => {
       const p = progress();
       if (p.entry) restoreResources(state, p.entry);
+      const assisted = p.retryAssist === true;
+      startAttempt(state, null);
+      applyAssistRecovery(state, assisted, maxStamina());
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: OPEN CLOUD";
-      owner.cs.retryAssist = p.retryAssist === true; // 救済は次の一台だけ（#590）
-      startAttempt(state, owner.cs);
-      applyAssistRecovery(state, p.retryAssist, maxStamina()); save();
+      owner.cs.retryAssist = assisted; // 救済は次の一台だけ（#590）
+      p.craft = clone(owner.cs);
+      save();
       await drive(owner);
     }, true),
   ]);
@@ -198,23 +202,20 @@ export function voteReason(p, cs, final = false) {
 function renderVotes(owner, final = false) {
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
-  const row = value => el("li.ch2-contest-rival", { dataset: { contestant: value.id } }, [
-    el("b", { text: String(value.rank) }), contestantAvatar(value.id),
-    el("span", { text: displayName(value.id, state) }), el("strong", { text: `${value.points} pt` }),
+  const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, { dataset: { contestant: value.id, rank: String(value.rank) } }, [
+    el("b.rank-medal", { text: String(value.rank) }), contestantAvatar(value.id),
+    el("span", { text: displayName(value.id, state) }), voteStack(p.votes, value.id, "ch2-contest-stack", JUDGES),
+    el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
-  const judges = el("div.ch2-contest-judges", JUDGES.map(judge => {
-    const spent = Object.values(p.votes[judge]).reduce((sum, n) => sum + n, 0);
-    return el("div", { dataset: { judge, spent } }, [el("b", { text: displayName(judge, state) }),
-      el("span", { text: `投入 ${spent} ／ 保留 ${10 - spent}` }),
-      el("small", { text: CONTESTANTS.map(c => `${displayName(c, state)} ${p.votes[judge][c]}`).join(" ・ ") })]);
-  }));
+  const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
   card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員3人、それぞれの10点が出揃いました。` : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。", "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
-    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, reason.map(text => el("p", { text }))) : null,
-      el("ol.ch2-contest-ranking", rows.map(row)), judges,
+    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null,
+      el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は制作の総合評価で順位を決めます。" })]);
 }
 function renderDefeat(owner) {
@@ -232,7 +233,10 @@ function renderDefeat(owner) {
 }
 function renderComplete(owner) {
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
+    button(owner, "第三章・東京へ", "chapter-three", async () => {
+      await (await import("./ch3.js")).beginChapterThree();
+    }, true),
+    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
 }
@@ -276,8 +280,16 @@ async function drive(owner) {
       if (!top?.querySelector(`[data-test="${id("menu")}"]`)) top?.append(menuButton(owner));
       beginStep(state); save();
       broadcast.block(cs, STEP_IDS[p.step]);
-      await STEPS[p.step](cs);
+      const completed = await STEPS[p.step](cs);
       if (!live(owner)) return;
+      if (completed === false) {
+        // 吸い出しの画面離脱は敗北ではない。工程前の資源と制作保存地点へ戻す。
+        recoverStep(state);
+        owner.cs = null;
+        save();
+        renderError(owner);
+        return;
+      }
       if (p.step === 8 && !cs.failed) {
         cs.tournamentStory ||= { seen: [] };
         cs.tournamentStory.servedAroma = computeShisha(cs).aroma;

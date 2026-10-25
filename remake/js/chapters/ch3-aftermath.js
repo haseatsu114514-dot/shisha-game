@@ -1,0 +1,158 @@
+// 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
+import { DB, bgUrl } from "../core/data.js";
+import { el } from "../core/util.js";
+import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { chapterDay } from "../core/chapter-clock.js";
+import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { play } from "../vn/engine.js";
+import { readDialogues } from "./ch2-city-data.js";
+import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
+  chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
+
+const IDS = CH3_AFTERMATH_SCENES.map(scene => scene.id);
+const test = name => `ch3-aftermath-${name}`;
+let session = null;
+const live = owner => session === owner && owner.active && owner.state === state;
+
+function button(owner, label, name, action, primary = false) {
+  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text: label,
+    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
+}
+
+async function perform(owner, action) {
+  if (!live(owner) || owner.busy) return false;
+  owner.busy = true;
+  try { await action(); return live(owner); }
+  catch (error) {
+    if (live(owner)) { console.error("[ch3 aftermath]", error); renderError(owner); }
+    return false;
+  } finally { owner.busy = false; }
+}
+
+async function openMenu(owner) {
+  if (!live(owner) || owner.menuBusy) return;
+  owner.menuBusy = true;
+  try {
+    const choice = await modal({ title: "第三章 MENU", body: "読み終えた場面から再開できます。", options: [
+      { label: "セーブ", value: "save", test: test("save") },
+      { label: "ロード", value: "load", test: test("load") },
+      { label: "タイトルへ戻る", value: "title", test: test("title") },
+      { label: "閉じる", value: null, primary: true },
+    ] });
+    if (!live(owner)) return;
+    if (choice === "save") await saveFlow();
+    if (choice === "load") {
+      const key = await loadFlow({ inGame: true });
+      if (key && loadFromSlot(key)) {
+        owner.active = false;
+        owner.controller?.abort();
+        requestResumeOnBoot();
+        location.reload();
+      }
+    }
+    if (choice === "title") {
+      save();
+      owner.active = false;
+      owner.controller?.abort();
+      location.reload();
+    }
+  } finally { owner.menuBusy = false; }
+}
+
+function menuButton(owner) {
+  return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },
+    onclick: () => openMenu(owner) });
+}
+
+function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  showScreen("ch3-aftermath", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
+    el("header.ch2-contest-header", [
+      el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
+      menuButton(owner),
+    ]),
+    el("p.ch2-contest-description", { text: description }),
+    note ? el("p.ch2-contest-note", { text: note }) : null,
+    el("div.ch2-contest-actions", actions),
+  ]));
+}
+
+/** 勝利確定済み保存から再開できる。敗北・審査途中では状態を一切変更しない。 */
+export async function runChapterThreeAftermath() {
+  if (!canRunChapterThreeAftermath(state)) return false;
+  if (session) { session.active = false; session.controller?.abort(); }
+  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-tournament");
+  document.body.classList.add("ch3-intro", "ch3-aftermath");
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  showScreen("ch3-aftermath-loading", el("main.ch2-contest", [
+    el("h1", { text: "第三章・大会のあと" }),
+    el("p", { role: "status", text: "帰り道の場面を準備しています…" }),
+  ]));
+  window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
+  return perform(owner, async () => {
+    if (!state.flags._ch3_cleared) {
+      // 欠損台本で後日談の日付やstageを進めない。全場面を揃えてから公開する。
+      const dialogues = await readDialogues("ch3_main", IDS);
+      if (!live(owner)) return;
+      Object.assign(DB.dialogues, Object.fromEntries(IDS.map(id => [id, dialogues[id]])));
+    }
+    if (!live(owner)) return;
+    if (!state.flags._ch3_aftermath) {
+      beginChapterThreeAftermath(state);
+      save();
+    } else chapterThreeAftermathProgress(state);
+    await renderStage(owner);
+  });
+}
+
+async function readScene(owner, scene) {
+  const source = DB.dialogues[scene.id];
+  if (!source) throw new Error(`台本がありません: ${scene.id}`);
+  await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+  if (!live(owner)) return false;
+  showScreen("none", null);
+  // 制御行とカットインは読了後のcheckpointまで未確定。会話中の保存は出さない。
+  layers.hud.replaceChildren();
+  layers.hud.classList.remove("show");
+  const controller = new AbortController();
+  owner.controller = controller;
+  const result = await play({ ...source, metadata: { ...source.metadata, bg: "" } }, { signal: controller.signal });
+  if (owner.controller === controller) owner.controller = null;
+  return live(owner) && !!result && !result.cancelled;
+}
+
+async function renderStage(owner) {
+  if (!live(owner)) return;
+  const progress = chapterThreeAftermathProgress(state);
+  const scene = CH3_AFTERMATH_SCENES[progress.stage];
+  if (!scene) {
+    await setBg(bgUrl("bg_ageha_shop"), { instant: true });
+    if (!live(owner)) return;
+    card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
+      button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
+      button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
+    ], "次の章は、今後の更新で追加されます。");
+    return;
+  }
+  await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+  if (!live(owner)) return;
+  card(owner, "scene", `DAY ${chapterDay(state)}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}`,
+    `${scene.location}で、次の話を聞く。`, [
+    button(owner, "続きを読む", "continue", async () => {
+      if (!await readScene(owner, scene)) return;
+      if (!completeChapterThreeAftermathScene(state, scene.id)) return;
+      save();
+      await renderStage(owner);
+    }, true),
+  ], scene.dayAfterWin === 0 ? "全国大会の夜" : scene.dayAfterWin === 1 ? "全国大会の翌日" : "帰郷してから", scene.id);
+}
+
+function renderError(owner) {
+  card(owner, "error", "第3章の後日談を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。", [
+    button(owner, "もう一度読み込む", "retry", () => runChapterThreeAftermath(), true),
+  ]);
+}
