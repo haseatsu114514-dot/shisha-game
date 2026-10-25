@@ -1,0 +1,68 @@
+[
+  {
+    "scene": "night",
+    "size": [
+      1672,
+      941
+    ],
+    "allowed_regions": [
+      [
+        580,
+        439,
+        43,
+        118
+      ],
+      [
+        227,
+        233,
+        34,
+        86
+      ]
+    ],
+    "outside_regions_unchanged": true,
+    "png_webp_rgb_identical": true,
+    "files": {
+      "assets/backgrounds/bg_shishark_preparing_night.png": {
+        "sha256": "6b4181b1121de3f2df012ec39bb94ea007c9c7a0e1b3662ce5ad155ff22f5eb4",
+        "bytes": 2553771
+      },
+      "remake/img/backgrounds/bg_shishark_preparing_night.webp": {
+        "sha256": "11343368960cc4d2da442184f3d5a16d9e5130ee7bd8e84515936f3629693273",
+        "bytes": 2001612
+      }
+    }
+  },
+  {
+    "scene": "open",
+    "size": [
+      1672,
+      941
+    ],
+    "allowed_regions": [
+      [
+        580,
+        439,
+        43,
+        118
+      ],
+      [
+        227,
+        233,
+        34,
+        86
+      ]
+    ],
+    "outside_regions_unchanged": true,
+    "png_webp_rgb_identical": true,
+    "files": {
+      "assets/backgrounds/bg_shishark.png": {
+        "sha256": "dee9f834784ecfc05fda0cb784cfe7f23f518dcad1203761c523b94b6b329a0d",
+        "bytes": 2669298
+      },
+      "remake/img/backgrounds/bg_shishark.webp": {
+        "sha256": "fa68c849894620521f8830cc3de259f5a46f1d1a62c49ad8412bcc038891a838",
+        "bytes": 2114530
+      }
+    }
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "night-pc",
+    "background": [
+      "url(\"http://127.0.0.1:8123/remake/img/backgrounds/bg_shishark_preparing_night.webp\")"
+    ],
+    "korochan": true,
+    "errors": []
+  },
+  {
+    "name": "night-touch",
+    "background": [
+      "url(\"http://127.0.0.1:8123/remake/img/backgrounds/bg_shishark_preparing_night.webp\")"
+    ],
+    "korochan": true,
+    "errors": []
+  },
+  {
+    "name": "open-pc",
+    "background": [
+      "url(\"http://127.0.0.1:8123/remake/img/backgrounds/bg_shishark.webp\")"
+    ],
+    "korochan": null,
+    "errors": []
+  },
+  {
+    "name": "open-touch",
+    "background": [
+      "url(\"http://127.0.0.1:8123/remake/img/backgrounds/bg_shishark.webp\")"
+    ],
+    "korochan": null,
+    "errors": []
+  }
+]
