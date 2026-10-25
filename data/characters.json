@@ -232,23 +232,23 @@
     "age": 30,
     "nationality": "USA",
     "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
-    "play_style": "「繊細な超低温管理とアメリカンフレーバーの妙技」",
-    "description": "ピザとバーベキューが好きな大柄な職人。料理と同じように、低温で待つ手間を惜しまない。\nSupreme SmokeやPerfectaなど、火の扱いやクセが強いアメリカ産フレーバーを極めて低い温度帯でじっくり育て上げ、芳醇な味わいを引き出す達人。",
-    "background_secret": "実は過去に高熱で高級フレーバーをダメにしたトラウマがあり、それ以来「絶対に焦がさない」という強迫観念から超低温管理の技術が生まれた。",
-    "favorite_flavor": "Mountain Fog（マウンテンフォグ）",
-    "specialty_flavor": "Mountain Fog（マウンテンフォグ）",
+    "play_style": "「アメリカの懐かしい菓子を、超低温で軽い一口に仕立てる研究家」",
+    "description": "ふくよかな体格の白人アメリカ人。レトロな柄シャツに眼鏡、タイマーと手書きのレシピカードを持ち歩く。ピザとバーベキューも好きだが、シーシャでは米国産の菓子系葉を扱い、朝食のシリアルミルクや焼きマシュマロを思わせる甘さを研究する。ポップコーン、バニラ、キャラメルの香りを低温で順に立たせ、二口目に甘さを重く残さない。大きな手で炭を数ミリずつ動かす繊細な職人。",
+    "background_secret": "かつて急いで炭を足し、大切な菓子系ミックスを焦がした。以来『絶対に焦がさない』ためのタイマーと記録を続けるが、慎重すぎて香りの山を逃すこともある。予想外に軽い二口目を客が喜ぶと、レシピカードの余白へその反応を書き足す。",
+    "favorite_flavor": "アルファーヘブン ポップコーン",
+    "specialty_flavor": "ポップコーン・バニラ・キャラメルで作るシリアルミルク風の低温ミックス",
     "growth_stats": {
       "primary": "技術",
       "secondary": "センス",
-      "notes": "超低温での安全管理に固執していたが、はじめの『相手を信じて少し火力を攻める』姿勢を見て、いつの間にかアメリカンフレーバーの香りを一気に爆発させる高温域のコントロールも身につけていた。"
+      "notes": "焦がす怖さから低温に固執していたが、はじめの『今の一口を見て調整する』姿勢を受け、タイマーの数字だけでなく客の二口目も見るようになる。"
     },
     "visual_concepts": [
-      "30s overweight american man, friendly but very focused, wearing a casual snapback cap and oversized graphic t-shirt, large hands delicately adjusting small charcoals with tweezers, eating a slice of pizza on the side",
-      "large american guy with a beard, gentle giant vibe, wearing a zip-up hoodie, sitting in a laid-back western style lounge, expertly handling American flavor tobacco with surgical precision"
+      "30-year-old obese white American shisha craftsman, round body and warm focused eyes behind vintage glasses, short dark hair and neat beard, colorful retro patterned camp shirt under a dark work apron, a tiny analog timer in one large hand and a handwritten recipe card in the other",
+      "nostalgic American cereal-milk and marshmallow researcher in a Tokyo diner-like lounge, cheerful when serving guests but exacting about seconds and millimeters of low-temperature heat; never a caricature of his size or nationality"
     ],
     "intro_cutin": {
-      "title": "低温の巨匠",
-      "line": "火は小さく、ゆっくりね",
+      "title": "甘さの研究家",
+      "line": "二口目まで、軽く甘く",
       "face": "normal",
       "color": "#f07a3a"
     }
