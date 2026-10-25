@@ -223,6 +223,7 @@ const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home"
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 const BG_NO_NIGHT_TINT = new Set([
   "bg_rojiura_cinema.png",
+  "bg_rojiura_cinema_space.png", "bg_rojiura_cinema_monster.png", "bg_rojiura_cinema_detective.png",
   "bg_eden_shop.png", "bg_ageha_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
   "bg_hideaway.png", "kemurikusa.png", "peppermint.png", "bg_tournament_stage.png", "bg_c_station_lobby.png",
 ]);

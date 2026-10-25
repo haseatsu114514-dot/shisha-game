@@ -7,13 +7,13 @@ const context = vm.createContext({});
 const discovery = new vm.SourceTextModule(await source("core/cinema-discovery.js"), { context });
 await discovery.link(() => { throw new Error("Unexpected dependency"); });
 await discovery.evaluate();
-const { CINEMA, cinemaDiscovered, cinemaIntroductionDue } = discovery.namespace;
+const { CINEMA, CINEMA_FILMS, cinemaDiscovered, cinemaIntroductionDue } = discovery.namespace;
 const dialogues = JSON.parse(await fs.readFile(new URL("../../data/dialogue/cinema.json", import.meta.url), "utf8"));
 const DB = { dialogues: Object.fromEntries(dialogues.dialogues.map(scene => [scene.dialogue_id, scene])) };
 const game = () => ({ chapter: 2, day: 4, slot: 0, phase: "daily", money: 5000, stamina: 80,
   flags: { _samechan_quiet_seat_done: true }, met: { samechan: true }, spotVisits: {}, visitedDay: {} });
 let state = game(), result = { cancelled: false }, ready = true, playing = false, enter = async () => {};
-let seen = [], rewards = [], notices = [];
+let seen = [], rewards = [], notices = [], backgrounds = [];
 const stateModule = new vm.SyntheticModule(["state"], function () { this.setExport("state", state); }, { context });
 function replace(value) { state = value; stateModule.setExport("state", value); }
 const ports = {
@@ -25,7 +25,9 @@ const ports = {
     earnStat: (...args) => rewards.push(args),
   },
   "../core/travel-budget.js": { spendableMoney: value => value.money },
-  "../vn/engine.js": { isPlaying: () => playing, play: async id => { seen.push(id); await enter(); return result; } },
+  "../vn/engine.js": { isPlaying: () => playing, play: async (id, options) => {
+    seen.push(id); backgrounds.push(options?.bg); await enter(); return result;
+  } },
   "../core/cinema-discovery.js": discovery,
 };
 const module = new vm.SourceTextModule(await source("daily/cinema.js"), { context });
@@ -109,6 +111,10 @@ for (const id of CINEMA.pool) {
   assert(DB.dialogues[id]?.lines?.length, id);
   assert.equal(await visitCinema(), true);
   assert.equal(seen.at(-1), id);
+  assert.equal(backgrounds.at(-1), CINEMA_FILMS[DB.dialogues[id].metadata.cinema_film].bg,
+    "each film uses its matching background");
 }
 assert.deepEqual(seen, [CINEMA.first, ...CINEMA.pool]);
+assert.equal(Object.keys(CINEMA_FILMS).length, 4, "a small fixed repertoire");
+assert.equal(new Set(backgrounds.filter(Boolean)).size, 4, "all four screening backgrounds are used");
 console.log("[cinema] discovery, legacy, direct access, funds/slots, cancel/missing/throw/LOAD/abort, re-entry, once-only settlement: PASS");

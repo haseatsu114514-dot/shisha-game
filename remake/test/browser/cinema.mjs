@@ -203,5 +203,31 @@ await suite("cinema", async check => {
       });
       assert.equal(missing.used, false); assert.deepEqual(missing.after, missing.before);
     }, options);
+
+    await check(`${mode}-matching-film-backgrounds`, async page => {
+      await setup(page, { introduced: true });
+      for (const [genre, id] of [
+        ["space", "cinema_cardboard_planet"], ["monster", "cinema_rubber_monster"],
+        ["detective", "cinema_detective_shadow"],
+      ]) {
+        await page.evaluate(async id => {
+          const { CINEMA } = await import("./js/core/cinema-discovery.js");
+          const s = C.core.state; s.day++; s.slot = 1;
+          s.spotVisits = { rojiura_cinema: CINEMA.pool.indexOf(id) + 1 };
+          C.vn.vnTest.turbo = false;
+          C.abort = new AbortController(); C.before = C.snapshot();
+          C.screening = C.cinema.visitCinema({ signal: C.abort.signal });
+        }, id);
+        await page.locator("#vn.active").waitFor();
+        await page.waitForFunction(genre => [...document.querySelectorAll("#bg .bg-img")].some(node =>
+          node.style.backgroundImage.includes(`bg_rojiura_cinema_${genre}.webp`) && !node.dataset.tint), genre);
+        await page.waitForFunction(() => document.querySelector("#vn .vn-next.show"));
+        await capture(page, `${mode}-${genre}-screening`);
+        const result = await page.evaluate(async () => {
+          C.abort.abort(); return { used: await C.screening, before: C.before, after: C.snapshot() };
+        });
+        assert.equal(result.used, false); assert.deepEqual(result.after, result.before);
+      }
+    }, options);
   }
 });

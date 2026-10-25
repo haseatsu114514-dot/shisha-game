@@ -4,7 +4,7 @@ import { imageReady, toast } from "../core/ui.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { CINEMA, CINEMA_INTRO, cinemaDiscovered, cinemaIntroductionDue } from "../core/cinema-discovery.js";
+import { CINEMA, CINEMA_FILMS, CINEMA_INTRO, cinemaDiscovered, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 
 const active = new WeakSet();
 const introductions = new WeakSet();
@@ -36,16 +36,18 @@ export async function visitCinema({ signal = null } = {}) {
   const count = state.spotVisits?.rojiura_cinema || 0;
   const id = count === 0 ? CINEMA.first : CINEMA.pool[(count - 1) % CINEMA.pool.length];
   if (!DB.dialogues[id]?.lines?.length) return false;
+  const film = CINEMA_FILMS[DB.dialogues[id].metadata?.cinema_film];
+  if (!film) return false;
   active.add(owner);
   try {
     // 未登録・読込失敗でも課金しない。候補原画を自動採用して回避しない。
-    const bg = sceneBg(CINEMA.bg, "day").url;
+    const bg = sceneBg(film.bg, "day").url;
     if (!await imageReady(bg, 4000)) {
       if (current()) toast("上映を始められませんでした。街へ戻ります");
       return false;
     }
     if (!current()) return false;
-    const result = await play(id, { bg: CINEMA.bg, signal });
+    const result = await play(id, { bg: film.bg, signal });
     if (!current() || !result || result.cancelled || !cinemaDiscovered(state)
       || spendableMoney(state) < CINEMA.cost) return false;
     addMoney(-CINEMA.cost);

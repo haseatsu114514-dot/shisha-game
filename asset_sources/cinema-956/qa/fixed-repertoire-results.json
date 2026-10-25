@@ -1,0 +1,169 @@
+{
+  "repertoire": {
+    "shark": "サメが港を襲い、灯台の光で海へ誘う",
+    "space": "嵐の星で通信機を直し、仲間全員を救出する",
+    "monster": "怪獣が鉄塔を支えて子供を逃がし、海へ帰る",
+    "detective": "鍵の傷と証言の矛盾から犯人を見抜く"
+  },
+  "stories": "初回1 + 再訪11 = 4作品それぞれ3通り。全回で顛末とはじめの感想を読む",
+  "quick": "9/9 PASS",
+  "browser": "12/12 PASS; PC and emulated landscape touch, 3 genre backgrounds at night without tint, interruption consumes nothing",
+  "layout": {
+    "records": 65,
+    "renders": 260,
+    "diagnostics": 0,
+    "errors": []
+  },
+  "runtime_stories": {
+    "pc": {
+      "ids": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence",
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence"
+      ],
+      "choices": [
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 1
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 1
+        }
+      ],
+      "affinity": {},
+      "pool": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence"
+      ]
+    },
+    "touch": {
+      "ids": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence",
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence"
+      ],
+      "choices": [
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 1
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 1
+        }
+      ],
+      "affinity": {},
+      "pool": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_space_radio",
+        "cinema_monster_footprints",
+        "cinema_detective_silence"
+      ]
+    }
+  },
+  "approval": "3点とも採用する（本人、同チャット）",
+  "independent_review": "not performed"
+}

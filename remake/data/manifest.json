@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 10:56 UTC",
+ "generated": "2026-10-25 11:39 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -332,6 +332,9 @@
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
   "bg_rojiura_cinema.png",
+  "bg_rojiura_cinema_detective.png",
+  "bg_rojiura_cinema_monster.png",
+  "bg_rojiura_cinema_space.png",
   "bg_ryuji_shop.png",
   "bg_shishark.png",
   "bg_shishark_preparing_night.png",
@@ -1874,6 +1877,9 @@
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_rojiura_cinema.png",
+  "backgrounds/bg_rojiura_cinema_detective.png",
+  "backgrounds/bg_rojiura_cinema_monster.png",
+  "backgrounds/bg_rojiura_cinema_space.png",
   "backgrounds/bg_ryuji_shop.png",
   "backgrounds/bg_shishark.png",
   "backgrounds/bg_shishark_preparing_night.png",

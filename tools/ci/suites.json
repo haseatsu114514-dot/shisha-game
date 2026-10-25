@@ -2242,8 +2242,8 @@
         "remake/js/core/data.js",
         "remake/test/browser/cinema.mjs",
         "assets/ui/map-rojiura-cinema.webp",
-        "assets/backgrounds/bg_rojiura_cinema.png",
-        "remake/img/backgrounds/bg_rojiura_cinema.webp"
+        "assets/backgrounds/bg_rojiura_cinema*.png",
+        "remake/img/backgrounds/bg_rojiura_cinema*.webp"
       ],
       "run": [
         "node remake/test/browser/cinema.mjs"
