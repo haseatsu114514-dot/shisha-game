@@ -138,6 +138,52 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
+  // Chapter 3 guide uses existing story/save inputs; exercise normal user controls in both sizes.
+  for(const touch of [false,true]) await check(`chapter-three-wayfinding-first-slice-${touch?'touch':'pc'}`,async page=>{
+    const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+    const scene=id=>`[data-test="ch3-intro-scene"][data-scene="${id}"]`;
+    const guide=dt('ch3-wayfinding'),next=dt('ch3-intro-continue'),menu=dt('ch3-intro-menu');
+    const checkGuide=async()=>{
+      await assertFits(page,`${guide}, ${guide} .ch3-wayfinding-stop, ${guide} small, ${guide} strong, ${guide} span, ${menu}, ${next}`);
+      const separate=await page.locator(guide).evaluate(node=>{
+        const r=node.getBoundingClientRect();
+        return [...document.querySelectorAll('[data-test="ch3-intro-menu"], [data-test="ch3-intro-continue"]')].every(button=>{
+          const b=button.getBoundingClientRect();
+          return r.bottom<=b.top||b.bottom<=r.top||r.right<=b.left||b.right<=r.left;
+        });
+      });
+      assert(separate,'The guide must not cover the original MENU or continue control');
+    };
+    await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
+    await page.evaluate(async()=>{const c=await import('./js/core/state.js');c.state.phase='cleared';c.state.flags._ch2_cleared=true;c.save();});
+    const before=await get(page);await press(t('chapter-three'));
+    await page.locator(scene('ch3_opening')).waitFor();await checkGuide();
+    assert.match(await page.locator(guide).innerText(),/東京駅/);
+    assert.doesNotMatch(await page.locator(guide).innerText(),/mukai|煙幕|鉄の煙/);
+    if(touch)await press(next);
+    else {
+      // Reach the existing button through native keyboard focus, then activate it.
+      for(let i=0;i<8;i++){
+        if(await page.evaluate(()=>document.activeElement?.dataset.test==='ch3-intro-continue'))break;
+        await page.keyboard.press('Tab');
+      }
+      assert.equal(await page.evaluate(()=>document.activeElement?.dataset.test),'ch3-intro-continue');
+      await page.keyboard.press('Enter');
+    }
+    await page.locator(scene('ch3_mukai_arrival')).waitFor();await checkGuide();
+    assert.match(await page.locator(guide).innerText(),/直前に読んだ場面[\s\S]*東京駅/);
+    assert.match(await page.locator(guide).innerText(),/これから読む場面[\s\S]*mukai/);
+    assert.equal((await get(page)).flags._ch3_intro.stage,1);
+    await reload(page,0,touch);await page.locator(scene('ch3_mukai_arrival')).waitFor();await checkGuide();
+    assert.equal((await get(page)).flags._ch3_intro.stage,1,'Real slot reload must resume the unread arrival');
+    await press(next);await page.locator(scene('ch3_mukai_intro')).waitFor();await checkGuide();
+    const after=await get(page);assert.equal(after.flags._ch3_intro.stage,2);
+    assert.match(await page.locator(guide).innerText(),/新しい店の朝/);
+    for(const key of ['money','stamina','stats','flavorStock','lovers','keepsakes','relationshipMemories'])
+      assert.deepEqual(after[key],before[key],`Guide changed ${key}`);
+    await press(menu);await page.getByRole('button',{name:'閉じる',exact:true})[touch?'tap':'click']();
+    await checkGuide();assert.equal((await get(page)).flags._ch3_intro.stage,2);
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   await check('abandoned-pull-keeps-the-vote-and-recovers-the-step',async page=>{
     await seed(page,{stage:'ready',auto:'good'});
     await page.locator(t('ready')).waitFor();
