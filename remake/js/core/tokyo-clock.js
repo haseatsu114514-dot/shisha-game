@@ -10,6 +10,14 @@ export const TOKYO_FREE_TIMES = Object.freeze([
   { id: "d12-noon", before: "ch3_volk_first", day: 12, slot: 0 },
   { id: "d13-night", before: "tournament", day: 13, slot: 1 },
 ]);
+const TOKYO_FREE_TIMES_V2 = Object.freeze(TOKYO_FREE_TIMES.map(window => ({ ...window, before: ({
+  "d5-noon": "ch3_work_without_taste",
+  "d8-night": "ch3_kuze_mukai_visit",
+  "d9-noon": "ch3_taste_return",
+  "d9-night": "ch3_taste_return",
+  "d10-noon": "ch3_taste_return",
+  "d10-night": "ch3_taste_return",
+})[window.id] || window.before })));
 
 export function tokyoTime(value, window) {
   return { ...window, day: value.flags._ch3_intro.startDay + window.day - 1 };
@@ -20,7 +28,8 @@ export const timeNumber = time => time.day * 2 + time.slot;
 export function nextTokyoFreeTime(value, before) {
   if (!value.flags?._ch3_intro) return null;
   const closed = value.tokyoVisits?.closedSlots || [];
-  return TOKYO_FREE_TIMES.filter(window => window.before === before && !closed.includes(window.id)
+  const windows = value.flags._ch3_intro.routeVersion === 2 ? TOKYO_FREE_TIMES_V2 : TOKYO_FREE_TIMES;
+  return windows.filter(window => window.before === before && !closed.includes(window.id)
       && value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
         && (plan.meetup.id === window.id || plan.date.id === window.id)))
     .map(window => tokyoTime(value, window)).find(window => timeNumber(window) >= timeNumber(value)) || null;
