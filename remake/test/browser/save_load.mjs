@@ -200,6 +200,8 @@ await suite("save-load", async check => {
       await page.waitForFunction(() => !document.querySelector("#wipe.cover, #wipe.black, #screen .map[data-revealing='true']"));
       const target = page.locator(`[data-test="pin-${id}"]`);
       await target.scrollIntoViewIfNeeded();
+      // The map toggles an already-selected pin closed. Selecting a destination is idempotent here.
+      if (await target.evaluate(node => node.classList.contains("sel"))) return;
       const point = await target.evaluate(node => {
         for (const part of [node, node.querySelector(".ico")].filter(Boolean)) {
           const r = part.getBoundingClientRect();
@@ -270,20 +272,24 @@ await suite("save-load", async check => {
     // scene must still run; no runNightPlan call or completion flag is injected.
     for (const slot of [0, 1]) {
       await pin("rest"); await press('[data-test="map-go"]');
-      await page.waitForFunction(expected => {
-        const map = document.querySelector("#screen .map:not(.done)");
-        return map && map.dataset.night === String(expected === 1);
-      }, slot + 1);
       if (slot === 0) {
+        await page.waitForFunction(() => {
+          const map = document.querySelector("#screen .map:not(.done)");
+          return map && map.dataset.night === "true";
+        });
         before = await progress();
         assert.equal(before.slot, 1);
         await assertBlocked();
       }
     }
-    await page.waitForFunction(async () => {
-      const { state } = await import("./js/core/state.js");
-      return state.day === 12 && state.slot === 0 && !!document.querySelector("#screen .map:not(.done)");
-    });
+    const stateHandle = await page.evaluateHandle(async () => (await import("./js/core/state.js")).state);
+    // Observe the real fixed scene before its completion and overnight transition.
+    await page.locator('.mo[data-motion="sketch"]').waitFor();
+    await page.waitForFunction(state => state.flags._ev_tsumugi_sketch
+      && state.flags._tsumugi_contest_submitted, stateHandle);
+    await page.waitForFunction(state => state.day === 12 && state.slot === 0
+      && !!document.querySelector("#screen .map:not(.done)"), stateHandle);
+    await stateHandle.dispose();
     const finished = await page.evaluate(async () => {
       const { state } = await import("./js/core/state.js");
       return { sketch: state.flags._ev_tsumugi_sketch, submitted: state.flags._tsumugi_contest_submitted };
