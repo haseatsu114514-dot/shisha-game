@@ -693,6 +693,46 @@
           "speaker": "",
           "face": "",
           "text": "彼女はメモを束ねて、ようやく隣の椅子に座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃんが休む場所も、この店にありますか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "わしの、か？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは客席を見回して、返事をしなかった。コロちゃんだけが膝の上でこちらを向く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が帰るまで、ここで座ってませんか。直すところは、明日一緒に見つけましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……今日は、もう見つけんでもよいかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今はサメちゃんの話を聞きたいです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "なら、映画の話をしてよいか。店とは関係のない、長い話じゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "話が始まると、束ねたメモが鞄にしまわれた。俺の水が空くまで、彼女は席を立たなかった。"
         }
       ]
     },
@@ -764,18 +804,43 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "わ、わしにか？ ……そうか"
+            "text": "わ、わしにか？ 店の様子を見に、ではなくて？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。店が休みでも、一緒に過ごしたいです"
           },
           {
             "speaker": "samechan",
             "face": "ventriloquism",
-            "text": "側近よ、煙で顔を隠すな",
+            "text": "側近よ、今の返答を聞き逃すでない",
             "voice": "korochan"
           },
           {
             "speaker": "samechan",
+            "face": "surprise",
+            "text": "聞こえておる！ じゃから、少し待つのじゃ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "コロちゃんを膝に寝かせてから、サメちゃんがもう一度俺を見る。"
+          },
+          {
+            "speaker": "samechan",
             "face": "normal",
-            "text": "コロちゃん！ ……わしも、お主と話すのが楽しみじゃ"
+            "text": "わしも、用事を探しておった。お主を誘う理由じゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "理由がなくても、連絡してください"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "……なら、今度の休みに。まだ店のことでいっぱいじゃが、その日だけは空けておくのじゃ"
           }
         ],
         "friend": [
@@ -933,23 +998,38 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……二人だけ、か"
+            "text": "二人だけ……か"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "手伝いの礼でも、店の相談でもなくてじゃ"
           },
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "わしも、お主とそういう時間を過ごしたいのじゃ"
+            "text": "わしも、お主に会いたい。……今度は、わしからそう言うのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うれしいです。俺も、ちゃんと伝えたいことがあります"
           },
           {
             "speaker": "samechan",
             "face": "ventriloquism",
-            "text": "勇者はじめよ、側近の返事を聞き届けよ",
+            "text": "では余は、帰路の安全だけ見守るのである",
             "voice": "korochan"
           },
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "コロちゃん！ わしが言うたじゃろう！"
+            "text": "う、うむ。それは頼むのじゃ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女はコロちゃんを抱き直すと、自分で俺の隣の位置を選んだ。"
           }
         ],
         "friend": [
@@ -983,18 +1063,54 @@
       "lines": [
         {
           "speaker": "samechan",
-          "face": "serious",
-          "text": "……海で泳ぐのは、あまり得意ではないのじゃ。サメ好きと泳ぎは、別の話じゃぞ"
+          "face": "normal",
+          "text": "……わし、泳ぐのは苦手じゃ。海が嫌いなのではないのじゃが"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ、足のつくところでゆっくりしましょうか"
+          "text": "じゃあ、岸から見るだけにしましょうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "サメが好きなのに、と笑わんのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "好きなものと、できることは別です。俺も、海を見ながら話したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはしばらくこちらを見て、それから肩の力を抜いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……海を見たい、とは言ってよいのじゃな。泳げぬままでも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。疲れたら、座って見ましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余もまた、陸からの視察を所望する",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる"
+          "text": "コロちゃんは、濡れては困るからのう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑うと、彼女は俺の掌に指を重ねた。隠していたことを話したあとも、帰りの歩幅は変わらなかった。"
         },
         {
           "type": "set_flag",
@@ -1076,6 +1192,26 @@
           "speaker": "samechan",
           "face": "smile",
           "text": "……うむ。お主が呼ぶなら、それでよい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "普段は、サメちゃんって呼んでもいいですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "もちろんじゃ。どちらも、わしの名前じゃからのう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……二人の時に、たまに今の呼び方もしてくれると、うれしいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "呼び方を選べることが、少し特別だった。手をつなぎ直すと、彼女が肩を寄せてきた。"
         }
       ]
     }
