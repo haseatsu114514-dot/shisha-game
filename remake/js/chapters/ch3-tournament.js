@@ -265,6 +265,7 @@ function voteReason(p, cs, final = false) {
 }
 
 function renderVotes(owner, final = false) {
+  playBgm("bgm_judging");
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
   const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, {
@@ -398,14 +399,15 @@ async function drive(owner) {
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
-      playBgm("bgm_tournament_wait");
+      playBgm("bgm_judging");
       if (!await commentary(owner, "tasting")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_tournament_wait"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
       if (p.result?.rank !== 1) throw new Error("全国大会の結果と勝利場面が一致しません");
+      playBgm("bgm_aftermath");
       if (!await read(owner, "national_result")) return;
       state.flags._ch3_tournament_won = true;
       state.flags._ch3_japan_first_representative = true;
