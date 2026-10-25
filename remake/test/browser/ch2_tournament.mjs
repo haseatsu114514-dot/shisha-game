@@ -86,6 +86,24 @@ async function reload(page,slot=0,touch=false) {
   await page.evaluate(()=>{window.__remake.vnTest.turbo=true;window.__remake.vnTest.choose=()=>0;});
   await press(dt(`slot-${slot}`));
 }
+async function finishChapterThreePrologue(page,touch=false) {
+  const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
+  await page.locator(dt('ch3-video-site')).waitFor();
+  const atVideo=await get(page);
+  assert.equal(atVideo.flags._ch3_intro.prologueStep,1);
+  assert.equal(atVideo.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
+  await assertFits(page,'.ch3-video-site, .ch3-video-recommendation, .ch3-video-caption, .ch3-video-player-controls, .ch3-video-thought');
+  await press(dt('ch3-video-select-hajime'));
+  await press(dt('ch3-video-play'));
+  await press(dt('ch3-video-rewind'));
+  assert.match(await page.locator('.ch3-video-thought').innerText(),/見落としてる/);
+  await capture(page,touch?'ch3-kuze-video-touch':'ch3-kuze-video-pc');
+  await press(dt('ch3-video-continue'));
+  await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});
+  const reached=await get(page);
+  assert.equal(reached.flags._ch3_intro.prologueStep,4);
+  assert.equal(reached.flags._ch3_intro.titleSeen,true);
+}
 // play() の入口で、実VNと同じ名乗り・カットインの副作用を作ってから制御を止める。
 // onLine で throw すると非同期表示側の拒否となり、play() の失敗を再現できない。
 async function installChapterThreeMeetingFault(page) {
@@ -138,6 +156,29 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
+  await check('chapter-three-prologue-resumes-anonymous-video',async page=>{
+    await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
+    await page.evaluate(async()=>{const core=await import('./js/core/state.js');core.state.phase='cleared';core.state.flags._ch2_cleared=true;core.save();});
+    const before=await get(page);
+    await page.locator(t('chapter-three')).click();
+    await page.locator(dt('ch3-video-site')).waitFor();
+    assert((await page.evaluate(()=>window.__texts)).some(line=>line.includes('友達だもん')));
+    const onVideo=await get(page);
+    assert.equal(onVideo.flags._ch3_intro.prologueStep,1);
+    await reload(page);
+    await page.locator(dt('ch3-video-site')).waitFor();
+    assert.equal((await get(page)).flags._ch3_intro.prologueStep,1);
+    assert.equal((await get(page)).met.kuze,undefined);
+    await page.locator(dt('ch3-video-select-hajime')).click();
+    await page.locator(dt('ch3-video-play')).click();
+    await reload(page);
+    await page.locator(dt('ch3-video-site')).waitFor();
+    assert.equal(await page.locator(dt('ch3-video-rewind')).count(),0,'Interrupted viewing starts at the video, not a completed rewind');
+    await finishChapterThreePrologue(page);
+    const after=await get(page);
+    for(const key of ['money','stamina','stats','flavorStock','lovers','relationshipMemories'])
+      assert.deepEqual(after[key],before[key],`Prologue changed ${key}`);
+  });
   // Chapter 3 guide uses existing story/save inputs; exercise normal user controls in both sizes.
   for(const touch of [false,true]) await check(`chapter-three-wayfinding-first-slice-${touch?'touch':'pc'}`,async page=>{
     const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
@@ -168,6 +209,7 @@ await suite('ch2-tournament',async check=>{
     await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
     await page.evaluate(async()=>{const c=await import('./js/core/state.js');c.state.phase='cleared';c.state.flags._ch2_cleared=true;c.save();});
     const before=await get(page);await press(t('chapter-three'));
+    await finishChapterThreePrologue(page,touch);
     await page.locator(scene('ch3_opening')).waitFor();await checkGuide();
     assert.match(await page.locator(guide).innerText(),/東京駅/);
     assert.doesNotMatch(await page.locator(guide).innerText(),/mukai|煙幕|鉄の煙/);
@@ -434,6 +476,7 @@ await suite('ch2-tournament',async check=>{
     });
     const before=await get(page);
     await page.locator(t('chapter-three')).click();
+    await finishChapterThreePrologue(page);
     const scene=id=>`[data-test="ch3-intro-scene"][data-scene="${id}"]`;
     const continueButton=dt('ch3-intro-continue');
     await page.locator(scene('ch3_opening')).waitFor();
@@ -540,6 +583,7 @@ await suite('ch2-tournament',async check=>{
     await page.locator(dt('ch3-intro-error')).waitFor();
     assert.deepEqual(await get(page),prior,'Missing later Kuze dialogue must not advance the chapter or consume resources');
     bad=false;await page.locator(dt('ch3-intro-reload')).click();
+    await finishChapterThreePrologue(page);
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor();
     const entered=await get(page);
     assert.equal(entered.chapter,3);assert.equal(entered.day,29);assert.equal(entered.flags._ch3_intro.stage,0);

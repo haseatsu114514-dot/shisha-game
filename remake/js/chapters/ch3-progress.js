@@ -38,7 +38,7 @@ export function advanceToChapterThree(value) {
   value.slot = 0;
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
-  value.flags._ch3_intro = { startDay: value.day, stage: 0, titleSeen: false };
+  value.flags._ch3_intro = { startDay: value.day, stage: 0, titleSeen: false, prologueStep: 0 };
   return true;
 }
 
@@ -48,7 +48,9 @@ export function chapterThreeProgress(value) {
   const progress = value.flags._ch3_intro ||= { startDay: value.day, stage: 0, titleSeen: false };
   if (!Number.isInteger(progress.startDay) || progress.startDay < 1
     || !Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > CH3_INTRO_SCENES.length
-    || typeof progress.titleSeen !== "boolean") throw new Error("東京編の保存地点を確認できません");
+    || typeof progress.titleSeen !== "boolean"
+    || (progress.prologueStep !== undefined && (!Number.isInteger(progress.prologueStep)
+      || progress.prologueStep < 0 || progress.prologueStep > 4))) throw new Error("東京編の保存地点を確認できません");
   return progress;
 }
 
