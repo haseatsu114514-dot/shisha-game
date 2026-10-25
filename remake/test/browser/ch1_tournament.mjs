@@ -36,6 +36,44 @@ async function init(page) {
 }
 
 await suite("ch1-tournament", async check => {
+  for (const touch of [false, true]) await check(`completion-comments-${touch ? "touch" : "pc"}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      await T.open(cs);
+      T.broadcast.block(cs, "foil");
+      T.session.stepPanel("holes", "穴あけ");
+    });
+    await page.waitForTimeout(2900);
+    assert.equal(await page.locator('.nico').count(), 0, "Comments appeared during play");
+    await page.evaluate(async () => {
+      cs.holes = { score: 95 };
+      const { resultCard } = await import("./js/craft/common.js");
+      window.confirmResult = resultCard(document.querySelector(".bench-panel"), { title: "穴あけ 結果" });
+    });
+    await page.locator('.nico').first().waitFor();
+    assert.match(await page.locator('.nico').first().textContent(), /穴あけ/);
+    await page.locator('[data-test="step-next"]').click();
+    await page.evaluate(async () => {
+      await window.confirmResult;
+      T.session.stepPanel("place", "炭の配置");
+    });
+    assert.equal(await page.locator('.nico').count(), 0, "Visible comments survived next step");
+    await page.waitForTimeout(1800);
+    assert.equal(await page.locator('.nico').count(), 0, "Pending comments survived next step");
+    // Result reactions still match a lower score; fast AUTO-style transitions cancel all timers.
+    await page.evaluate(() => {
+      T.session.stepPanel("holes", "穴あけ");
+      cs.holes.score = 20;
+      T.session.presentBenchResult(document.querySelector(".bench-panel"), "穴あけ 結果");
+    });
+    assert.match(await page.locator('.nico.miss').first().textContent(), /穴あけ/);
+    assert.equal(await page.locator('.nico:not(.miss)').count(), 0);
+    await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
+    await page.waitForTimeout(1800);
+    assert.equal(await page.locator('.nico').count(), 0);
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+
   await check("delayed-assets-gate", async page => {
     await init(page);
     let release;

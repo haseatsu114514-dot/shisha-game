@@ -1,7 +1,7 @@
 // 大会の生放送レイヤー（旧版 #24/#20/#26・N4）。本番（tournament）のときだけ出る。
 // ・ニコ動風コメント: 工程の出来に観客が反応して右から左へ流れる
 // ・点数は作業台の上の SCORE（総合スコア TH42）に一本化した。以前の「体感スコア」の札は出さない
-// ・MC の前振り＋ライバルの進行実況: 工程の頭でパッキーが煽り、ライバルの動きも順に流す
+// ・MC の前振りは固定の人物欄へ。流れるコメントは工程の結果確認中だけ出す
 // 文面は remake/data/broadcast.json。
 import { el, pick } from "../core/util.js";
 import { DB } from "../core/data.js";
@@ -75,28 +75,23 @@ export function judge(cs, result) {
   if (lines?.length) tickerSay(`パッキー「${pick(lines)}」`);
 }
 
-/** 工程の頭: MC の前振り＋その工程らしい観客の声＋ライバルの進行をひとつ */
+/** 工程の頭では固定のMC欄だけを更新。観客コメントは完了時に出す。 */
 export function block(cs, step) {
   if (!live(cs)) return;
   clearComments();
   const bc = DB.broadcast || {};
   if (bc.mc?.[step]) tickerSay(`パッキー「${bc.mc[step]}」`);
-  burst(cs, "block", 1);
-  const sp = bc.step?.[step];
-  if (sp?.length) defer(cs, () => comment(cs, pick(sp)), 900);
-  const feed = cs.chapter === 3 ? bc.chapter3?.rivalFeed || [] : cs.chapter === 2 ? [
-    "あげは、パッキングを終えました。台には最後まで同じ一台です",
-    "神崎選手は炭の位置を確かめています",
-    "REI選手、蒸らしに入りました",
-    "あげは、吸い出しへ。ここから提供です",
-    "神崎選手、提供した一台を確かめています",
-    "REI選手、客席の一台を調整しています",
-  ] : bc.rivalFeed || [];
-  cs.feedIdx = cs.feedIdx || 0;
-  if (cs.feedIdx < feed.length) {
-    const r = feed[cs.feedIdx++];
-    defer(cs, () => { tickerSay(`パッキー「${r}」`); burst(cs, "rival", 1); }, 2700);
-  }
+}
+
+/** 結果を確認している間だけ、その工程の出来への反応を流す。 */
+export function completed(cs, step, score) {
+  if (!live(cs)) return;
+  clearComments();
+  const kind = judgeOf(score);
+  const label = { holes: "穴あけ", heat: "炭焼き", steam: "蒸らし", pull: "提供", care: "調整" }[step];
+  const pool = DB.broadcast?.nico?.[kind === "great" ? "perfect" : kind] || [];
+  if (label && pool.length) comment(cs, `${label}、${pick(pool)}`, { cls: kind === "great" ? "perfect" : kind });
+  burst(cs, kind === "great" ? "perfect" : kind, 2);
 }
 
 /** 結果発表の前に、流れているコメントを片付ける */

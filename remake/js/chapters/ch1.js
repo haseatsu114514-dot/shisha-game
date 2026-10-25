@@ -495,16 +495,13 @@ async function tournamentDay() {
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
-  bc.judge(cs, bc.judgeOf(cs.holes.score), "穴あけ");
   await stepPlace(cs);
   bc.block(cs, "coalfire");
   await runHeat(cs);
-  bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepSteamTime(cs);
   await playTournamentEvent(cs, "waiting", { bg: STAGE });
   bc.block(cs, "steam");
   await runSteamDodge(cs);
-  bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
   await sleep(900);
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
@@ -520,7 +517,6 @@ async function tournamentDay() {
   if (cs.failed) return failedOut(cs.failed);
   await play("ch1_tournament_served", { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-  bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
@@ -536,7 +532,6 @@ async function tournamentDay() {
     bc.block(cs, "adjust");
     await runCare(cs, { round });
     if (cs.failed) return failedOut(cs.failed);
-    bc.judge(cs, bc.judgeOf(cs.care.score), `調整${round}`);
     await sleep(900);
     bc.clearComments();
     cs.stats = null;
