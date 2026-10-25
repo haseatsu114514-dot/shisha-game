@@ -1,0 +1,147 @@
+{
+  "scope": "追加上映の実Chromium再生と選択分岐。PCと横持ちタッチエミュレーション。",
+  "screenings_per_mode": 16,
+  "choices_per_mode": 4,
+  "runtime": {
+    "pc": {
+      "ids": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row"
+      ],
+      "choices": [
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 1
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 1
+        }
+      ],
+      "affinity": {},
+      "pool": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row"
+      ]
+    },
+    "touch": {
+      "ids": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row",
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row"
+      ],
+      "choices": [
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 0
+        },
+        {
+          "id": "cinema_cardboard_planet",
+          "labels": [
+            "背景の小道具を見る",
+            "隊長についていく"
+          ],
+          "index": 1
+        },
+        {
+          "id": "cinema_detective_shadow",
+          "labels": [
+            "鍵を覚えておく",
+            "人物の様子を見る"
+          ],
+          "index": 1
+        }
+      ],
+      "affinity": {},
+      "pool": [
+        "cinema_cardboard_planet",
+        "cinema_handmade_shark",
+        "cinema_rubber_monster",
+        "cinema_handpainted_sign",
+        "cinema_detective_shadow",
+        "cinema_sound_before_shadow",
+        "cinema_endroll_applause",
+        "cinema_last_row"
+      ]
+    }
+  },
+  "layout": {
+    "records": 61,
+    "renders": 244,
+    "diagnostics": 0,
+    "errors": [],
+    "all_fonts_ready": true,
+    "all_pages_fit": true
+  },
+  "lint": "ERROR 0 / WARN 0",
+  "settlement_regression": "PASS; complete revisit pool"
+}

@@ -2218,6 +2218,44 @@
         "ARTIFACT_DIR": ".codex/artifacts/water-pour"
       },
       "chrome": "playwright"
+    },
+    {
+      "id": "cinema-logic",
+      "title": "Cinema discovery and settlement",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/cinema.mjs"
+      ]
+    },
+    {
+      "id": "cinema",
+      "title": "Chapter 2 cinema introduction and facility",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 10,
+      "paths": [
+        "data/dialogue/cinema.json",
+        "remake/js/core/cinema-discovery.js",
+        "remake/js/daily/cinema.js",
+        "remake/js/daily/samechan.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/facility-icons.js",
+        "remake/js/daily/map-reveals.js",
+        "remake/js/core/data.js",
+        "remake/test/browser/cinema.mjs",
+        "assets/ui/map-rojiura-cinema.webp",
+        "assets/backgrounds/bg_rojiura_cinema*.png",
+        "remake/img/backgrounds/bg_rojiura_cinema*.webp"
+      ],
+      "run": [
+        "node remake/test/browser/cinema.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/cinema",
+        "COMPARISON_DIR": ".codex/artifacts/cinema/screens"
+      },
+      "chrome": "playwright"
     }
   ]
 }

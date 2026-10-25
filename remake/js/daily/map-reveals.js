@@ -26,7 +26,7 @@ export function startSpotReveal({ pop, settle = () => {}, done, delay = 650, dur
 }
 
 export function spotRevealNotice(spot) {
-  const guide = { cafe: "なる", kannon: "アダム", choizap: "みんと", c_station: "なる", axe_bar: "スミ", fortune: "つむぎ" }[spot.id];
+  const guide = { cafe: "なる", kannon: "アダム", choizap: "みんと", c_station: "なる", axe_bar: "スミ", fortune: "つむぎ", rojiura_cinema: "サメちゃん" }[spot.id];
   return guide ? `${guide}から聞いた${spot.label}に行けるようになった` : `${spot.label}に行けるようになった`;
 }
 export function newlyRevealedSpots(game, region, spots) {

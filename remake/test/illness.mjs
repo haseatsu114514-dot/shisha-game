@@ -35,12 +35,12 @@ const values = {
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
-  "data.js": { DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
+  "data.js": { sceneBg: () => ({}), DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
-  "engine.js": { play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
+  "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
@@ -59,7 +59,7 @@ const values = {
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null, samechanVisitDialogue: () => null },
 };
-const files = { "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 
 const modules = new Map(), pending = new Map();
 function load(name) {

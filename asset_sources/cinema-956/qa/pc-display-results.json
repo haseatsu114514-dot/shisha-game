@@ -1,0 +1,12 @@
+{
+  "name": "cinema",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "pc-screening-art-cancel-and-missing",
+      "status": "passed"
+    }
+  ]
+}

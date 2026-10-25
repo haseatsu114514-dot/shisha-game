@@ -9,6 +9,8 @@ import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { samechanSpot, samechanVisitDialogue } from "./samechan.js";
+import { cinemaSpot, visitCinema } from "./cinema.js";
+import { cinemaDiscovered } from "../core/cinema-discovery.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
@@ -96,10 +98,10 @@ export const SPOT_PREVIEW = {
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
 /** 好感度の上がらない施設（#621・#784）。自分で選んだ1回の行動で、主な能力1つに2P。
  *  それ以外の行動は従来どおり最大2能力に各1P。 */
-export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe", "axe_bar"]);
+export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe", "axe_bar", "rojiura_cinema"]);
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
-export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot()].filter(Boolean)];
+export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot()].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
@@ -205,6 +207,7 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
@@ -340,6 +343,7 @@ export async function visitRival(spot) {
 
 /** 施設スポット。場所ごとの成長・体力変化と、時々会う街の人の小話。 */
 export async function visitSpot(spot) {
+  if (spot.id === "rojiura_cinema") return visitCinema();
   if (!openingStatus(spot, state).ok) return false;
   refreshPlaceCue(spot.id);
   if (spot.cost) addMoney(-spot.cost);
