@@ -1,0 +1,241 @@
+{
+  "date": "2026-10-25",
+  "tool": "image_gen.imagegen",
+  "status": "six newly generated UI design candidates; not adopted in runtime",
+  "sources_unmodified": true,
+  "preview": "original generated PNGs placed by browser CSS over an unchanged real-game scene; live HTML lettering; no frame clipping or crop; static composition study rather than gameplay integration",
+  "scene": "scene.png",
+  "body_target_height": 176,
+  "items": [
+    {
+      "id": "smoke",
+      "label": "11 煙だけの輪郭",
+      "source": "smoke-source.png",
+      "source_sha256": "cbe61f0ab7ad71685c4953ed7fafbc5b81d67d6d1c7d3105d67dac89c368d308",
+      "prompt": "smoke-prompt.txt",
+      "reference": "../faithful/smoke-source.png",
+      "size": [
+        2171,
+        724
+      ],
+      "alpha_bounds": [
+        16,
+        163,
+        2152,
+        645
+      ],
+      "middle_reading_extent": [
+        334,
+        611
+      ],
+      "name_center": [
+        374.5,
+        250
+      ],
+      "command_extent": [
+        1437,
+        2066,
+        250
+      ],
+      "command_centers": [
+        1521,
+        1671,
+        1821,
+        1973
+      ]
+    },
+    {
+      "id": "smoke-purple",
+      "label": "11 紫の煙",
+      "source": "smoke-purple-source.png",
+      "source_sha256": "6f4db9dd80a500531b1c24388fbd97df205d925d1cd72084ee939a87790ba9fe",
+      "prompt": "smoke-purple-prompt.txt",
+      "reference": "../faithful/smoke-purple-source.png",
+      "size": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        17,
+        109,
+        2156,
+        626
+      ],
+      "middle_reading_extent": [
+        244,
+        609
+      ],
+      "name_center": [
+        392.5,
+        180
+      ],
+      "command_extent": [
+        1369,
+        2037,
+        180
+      ],
+      "command_centers": [
+        1461,
+        1616,
+        1767,
+        1932
+      ]
+    },
+    {
+      "id": "paper",
+      "label": "16 墨紫のペーパーラウンジ",
+      "source": "paper-source.png",
+      "source_sha256": "26d7da5f2650e492e810ab891391fb270d5394170f55a76669c98eeadd095781",
+      "prompt": "paper-prompt.txt",
+      "reference": "../calm/paper-source.png",
+      "size": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        11,
+        100,
+        2162,
+        632
+      ],
+      "middle_reading_extent": [
+        209,
+        585
+      ],
+      "name_center": [
+        385,
+        182
+      ],
+      "command_extent": [
+        1420,
+        2082,
+        155
+      ],
+      "command_centers": [
+        1529,
+        1677,
+        1823,
+        1970
+      ]
+    },
+    {
+      "id": "amber",
+      "label": "25 琥珀ラウンジ",
+      "source": "amber-source.png",
+      "source_sha256": "82c9038e8a9b7222440521e9f4f8bb9707ec35ddd74beb8d39b0a8e94823b446",
+      "prompt": "amber-prompt.txt",
+      "reference": null,
+      "size": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        33,
+        179,
+        2139,
+        547
+      ],
+      "middle_reading_extent": [
+        257,
+        542
+      ],
+      "name_center": [
+        411.5,
+        225
+      ],
+      "command_extent": [
+        1455,
+        2036,
+        225
+      ],
+      "command_centers": [
+        1533,
+        1677,
+        1818,
+        1961
+      ]
+    },
+    {
+      "id": "tissue",
+      "label": "28 重なる薄紙",
+      "source": "tissue-source.png",
+      "source_sha256": "d63e152d841523fd10aa85e43165706a47a90b7fbb5fa3565f6a938331876d46",
+      "prompt": "tissue-prompt.txt",
+      "reference": "../faithful/tissue-source.png",
+      "size": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        15,
+        112,
+        2158,
+        633
+      ],
+      "middle_reading_extent": [
+        195,
+        583
+      ],
+      "name_center": [
+        435.5,
+        168
+      ],
+      "command_extent": [
+        1437,
+        2093,
+        164
+      ],
+      "command_centers": [
+        1513,
+        1666,
+        1817,
+        1980
+      ]
+    },
+    {
+      "id": "classic",
+      "label": "従来のゴージャス・再構成",
+      "source": "classic-source.png",
+      "source_sha256": "dc1e20b11f25a99852eef183d512bec0de40c71509957b4d7801b83531e9ebfb",
+      "prompt": "classic-prompt.txt",
+      "reference": null,
+      "size": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        23,
+        197,
+        2149,
+        593
+      ],
+      "middle_reading_extent": [
+        294,
+        576
+      ],
+      "name_center": [
+        374.5,
+        250
+      ],
+      "command_extent": [
+        1407,
+        2080,
+        250
+      ],
+      "command_centers": [
+        1528,
+        1669,
+        1816,
+        1964
+      ]
+    }
+  ],
+  "qa": {
+    "sources_and_six_previews_visually_reviewed": true,
+    "two_lines_name_controls_next_no_overlap": "6/6 passed",
+    "viewport_containment": "6/6 passed",
+    "source_files_unchanged_sha256": "6/6 passed",
+    "quick_after_main_merge": "7/7 passed",
+    "runtime_adopted": false
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>6路線・新しい会話ウインドウ原案</title>
+<style>
+@font-face{font-family:Reading;src:url('../../../../remake/fonts/ZenKakuGothicNew-Medium.woff2');font-weight:500}
+@font-face{font-family:Mincho;src:url('../../../../remake/fonts/ZenOldMincho-Blue-Regular.woff2');font-weight:400}
+@font-face{font-family:Name;src:url('../../../../remake/fonts/ZenOldMincho-Name-Bold.woff2');font-weight:700}
+*{box-sizing:border-box}body{margin:0;background:#19151e;color:#eee}
+#stage{position:relative;width:1280px;height:720px;overflow:hidden;background:url('scene.png') center/cover}
+.art{position:absolute;pointer-events:none}.name,.commands{position:absolute;transform:translateY(-50%);height:34px;line-height:34px;color:#f1e8de;text-shadow:0 1px 2px #0007}
+.name{font:700 22px/34px Name;text-align:center;transform:translate(-50%,-50%);width:180px;letter-spacing:.1em}
+.commands{font:500 16px/34px Reading}.commands span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dialogue{position:absolute;left:128px;width:1024px;font:500 28px/44px Reading;letter-spacing:.035em;white-space:pre;color:#f5eee8;text-shadow:0 1px 3px #0009}
+.next{position:absolute;left:1132px;font:16px/20px Reading;color:#eee5dc;text-shadow:0 1px 2px #0008}
+.serif .dialogue{font-family:Mincho;font-weight:400}.tissue .name,.tissue .commands{color:#38342f;text-shadow:none}
+</style><main id="stage"><img class="art" alt="新しく生成した会話窓"><div class="name">ひより</div><div class="commands"><span>AUTO</span><span>SKIP</span><span>LOG</span><span>用語</span></div><div class="dialogue">今日はここで、ゆっくりしていってね。
+お茶も用意するから、少しだけ待っていて。</div><span class="next">▼</span></main>
+<script type="module">
+const data=await(await fetch('generation.json')).json();
+const id=new URLSearchParams(location.search).get('theme')||'smoke';
+const item=data.items.find(x=>x.id===id)||data.items[0];
+const [w,h]=item.size,[top,bottom]=item.middle_reading_extent;
+const sx=1248/w,sy=data.body_target_height/(bottom-top),left=16,y=710-item.alpha_bounds[3]*sy;
+const stage=document.querySelector('#stage');stage.className=item.id;
+if(['paper','amber','classic'].includes(item.id))stage.classList.add('serif');
+const art=document.querySelector('.art');art.src=item.source;Object.assign(art.style,{left:left+'px',top:y+'px',width:w*sx+'px',height:h*sy+'px'});
+Object.assign(document.querySelector('.name').style,{left:left+item.name_center[0]*sx+'px',top:y+item.name_center[1]*sy+'px'});
+const [x0,x1,cy]=item.command_extent;Object.assign(document.querySelector('.commands').style,{left:left+x0*sx+'px',top:y+cy*sy+'px',width:(x1-x0)*sx+'px'});
+document.querySelectorAll('.commands span').forEach((node,i)=>node.style.left=(item.command_centers[i]-x0)*sx+'px');
+document.querySelector('.dialogue').style.top=y+top*sy+36+'px';
+document.querySelector('.next').style.top=y+bottom*sy-46+'px';
+await Promise.all([art.decode(),document.fonts.load('500 28px Reading'),document.fonts.load('400 28px Mincho','今日はここで'),document.fonts.load('700 22px Name','ひより')]);
+await document.fonts.ready;window.previewReady=true;
+</script></html>
