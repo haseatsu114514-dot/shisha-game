@@ -23,7 +23,10 @@ async function setup(page, day = 5, slot = 0) {
     QA.vn.backlog().length = 0; QA.ui.clearScreen();
     QA.error = null;
     QA.run = (nightEvents = {}) => QA.calendar.runDaily({ nightEvents }).catch(e => QA.error = e.stack);
-    QA.auto = setInterval(() => document.querySelector('[data-test="after-none"]')?.click(), 20);
+    QA.auto = setInterval(() => {
+      document.querySelector('[data-test="shift-order-0"]')?.click();
+      document.querySelector('[data-test="after-none"]')?.click();
+    }, 20);
   }, { day, slot });
 }
 

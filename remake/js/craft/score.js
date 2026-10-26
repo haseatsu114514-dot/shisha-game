@@ -1,3 +1,4 @@
+import { masteryBonus } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
 //   総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
@@ -90,6 +91,8 @@ export function bonusOf(cs = null) {
   if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }
+  const mastery = cs && cs.mode === "tournament" ? masteryBonus(state, cs.mix, DB.flavorById) : 0;
+  if (mastery > 0) { b += mastery; notes.push(`フレーバーの熟練度 +${mastery.toFixed(1)}`); }
   return { bonus: b, notes };
 }
 

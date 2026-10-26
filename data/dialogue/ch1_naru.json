@@ -3,8 +3,16 @@
     {
       "dialogue_id": "ch1_naru_cafe_intro",
       "lines": [
-        { "speaker": "naru", "face": "normal", "text": "昼にひと息つくなら、喫茶こはくもいいよ。焼き菓子もうまいんだ" },
-        { "speaker": "hajime", "face": "normal", "text": "喫茶こはく、覚えておくよ" }
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "昼にひと息つくなら、喫茶こはくもいいよ。焼き菓子もうまいんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "喫茶こはく、覚えておくよ"
+        }
       ]
     },
     {
@@ -375,6 +383,11 @@
             "flag": "_lime_contact_naru"
           }
         ]
+      },
+      "metadata": {
+        "flavor_lesson": {
+          "vanilla": 1
+        }
       }
     },
     {
@@ -646,7 +659,12 @@
           "text": "……【センス】が少し上がった。"
         }
       ],
-      "branches": {}
+      "branches": {},
+      "metadata": {
+        "flavor_lesson": {
+          "vanilla": 1
+        }
+      }
     },
     {
       "dialogue_id": "ch1_naru_fourth",

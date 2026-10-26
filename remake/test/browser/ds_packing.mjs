@@ -134,7 +134,7 @@ try {
         assert(fit.panel > 0 && fit.panel <= fit.screen + 1, `mix panel overflows the touch screen: ${JSON.stringify(fit)}`);
       }
       for (let n=0;n<10;n++) await hit(p,"mix-plus-double_apple",device.touch);
-      for (let n=0;n<2;n++) await hit(p,"mix-plus-mint",device.touch);
+      for (let n=0;n<2;n++) await hit(p,"mix-plus-lemon",device.touch);
       await hit(p,"mix-ok",device.touch); await b(p,"pack-confirm").waitFor();
       for (const selector of [".pack-aroma", ".pack-vessel", ".pack-caption", ".pack-confirm"]) {
         assert(await p.locator(selector).isVisible(), `${selector} must be displayed`);

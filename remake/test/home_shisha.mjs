@@ -128,11 +128,6 @@ state.owned.push(rig.PRO_RIG);
 assert.deepEqual([rig.homeRig().id, rig.homeRig().growth], [rig.PRO_RIG, 0.75]);
 state.owned = state.owned.filter((id) => id !== rig.PRO_RIG);
 
-// 一番低い能力（同じ値なら並び順、上限の能力は除く）
-assert.equal(home.lowestStat({ technique: 20, sense: 12, guts: 30, charm: 12, insight: 25 }, 48), "sense");
-assert.equal(home.lowestStat({ technique: 48, sense: 48, guts: 48, charm: 48, insight: 40 }, 48), "insight");
-assert.equal(home.lowestStat({ technique: 48, sense: 48, guts: 48, charm: 48, insight: 48 }, 48), null);
-
 // 聞くかどうか: 葉12g未満・今日もう吸った・大会前夜・台なしでは聞かない
 state.flavorStock = { lemon: 6, mint: 5 };
 state.stamina = 80;
@@ -156,7 +151,7 @@ for (const flavor of flavors) for (const mode of ["home", "drill", "rehearsal", 
   assert(info.score >= 80, `${mode}/${flavor.id}: 単体を種類数だけで減点しない`);
   assert.equal(home.tasteOf(info), "great", `${flavor.id}: 単体の完成した香り`);
   assert(!info.notes.some(note => note.includes("他の香りが隠れている")));
-  if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "mint", "課題フレーバー条件は維持");
+  if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "lemon", "第1章の課題はレモン");
 }
 state = newGame(); state.owned.push(rig.SUMI_RIG); state.flavorStock = { mint: 50 }; state.stamina = 80;
 const single = home.applyHomeShisha({ mint: 12 }, rig.homeRig());
@@ -168,7 +163,7 @@ assert.equal(home.tasteOf({ recipe: lemonade, score: 100 }), "great");
 assert.equal(home.tasteOf({ recipe: null, score: 88 }), "fine");
 assert.equal(home.tasteOf({ recipe: null, score: 68 }), "meh");
 
-// 一服: 葉12g減る・体力 −6・行動の枠は変わらない・レシピ帳へ（センスのおまけなし）・一番低い能力が卓上台で0.5P
+// 一服: 葉12g・体力24（根性で軽減）・行動枠不変・レシピ帳へ。熟練度のみ、能力成長なし
 state = newGame();
 state.stats = { technique: 20, sense: 12, guts: 30, charm: 14, insight: 25 };
 state.statXp = Object.fromEntries(STAT_KEYS.map((k) => [k, 0]));
@@ -176,24 +171,23 @@ state.owned.push(rig.SUMI_RIG);
 state.flavorStock = { lemon: 20, mint: 20 };
 state.stamina = 80;
 const slotBefore = state.slot;
+const statsBefore = structuredClone({stats:state.stats,xp:state.statXp});
 const r1 = home.applyHomeShisha({ lemon: 9, mint: 3 }, rig.homeRig());
 assert.deepEqual(state.flavorStock, { lemon: 11, mint: 17 });
-assert.equal(state.stamina, 74);
+assert.equal(state.stamina, 58);
 assert.equal(state.slot, slotBefore, "行動の枠は使わない");
 assert.equal(r1.taste, "great");
 assert.equal(r1.info.golden, "hit");
 assert.equal(r1.found?.id, "ice_lemonade");
 assert(state.recipes.ice_lemonade?.home);
-assert.equal(r1.stat, "sense");
+assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore,"レシピ発見を含め、家ではステータスは育たない");
+assert.deepEqual(state.flavorMastery,{lemon:4.5,mint:1.5});
 assert.equal(home.homeShishaOffer(), null, "同じ日に二度は聞かない");
-assert.equal(home.growHomeStat(r1.stat, rig.homeRig()), 0, "0.5Pは次の1Pまでの進みとして持ち越す");
-assert.equal(state.statXp.sense, 0.5);
-assert.equal(home.growHomeStat("sense", rig.homeRig()), 1, "2晩で1P");
-assert.equal(state.stats.sense, 13);
-// 大会公式モデルの台は0.75P
-state.owned.push(rig.PRO_RIG);
-home.growHomeStat("charm", rig.homeRig());
-assert.equal(state.statXp.charm, 0.75);
+// 大会公式モデルも熟練度のみ。6gずつなら半分ずつ育つ。
+state.day++;state.owned.push(rig.PRO_RIG);
+home.applyHomeShisha({lemon:6,mint:6},rig.homeRig());
+assert.deepEqual(state.flavorMastery,{lemon:8.25,mint:5.25});
+assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore);
 
 // 場面の台本: 全角48字以内・手動改行なし・心の声は（）で閉じる
 const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0);
@@ -221,4 +215,4 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   s.flags._ch2_taste_distant = true; assert.equal(home.tasteDistant(s), true, "During the chapter 2 slump");
   s.chapter = 3; assert.equal(home.tasteDistant(s), false, "Later chapters own their own recovery scenes");
 }
-console.log("[home shisha] PASS: rigs, kuji from ch1, lowest stat, offer rules, recipe mix, taste, 12g/-6/no slot, 0.5P vs 0.75P, lines");
+console.log("[home shisha] PASS: rigs, kuji from ch1, offer rules, recipe mix, taste, 12g/24 stamina/no slot, proportional mastery only, no stat gain, lines");

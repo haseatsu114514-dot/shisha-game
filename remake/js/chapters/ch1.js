@@ -46,7 +46,7 @@ import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } f
 import { playChapterPreview } from "./ch1-preview.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
-import { giveSumiRig } from "../daily/home-rig.js";
+import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 
@@ -198,7 +198,7 @@ async function dailyPart() {
   syncNightQueue(NIGHT_EVENTS);
   const deferFlags = state.deferredNightEvents.filter((entry) => entry.chapter === state.chapter).flatMap((entry) => entry.doneKeys || []);
   await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N), deferFlags });
-  await runDaily({ nightEvents: NIGHT_EVENTS });
+  await runDaily({ nightEvents: NIGHT_EVENTS, beforeHomecoming: giveEarlyHomeRig });
   await tournamentDay();
 }
 
@@ -470,9 +470,9 @@ async function tournamentDay() {
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
     // 本番用フレーバーを仕入れていなければ、スミさんのお情け（強制購入はしない）
-    const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
+    const stocked = flavorStock("lemon") >= 12;
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
-    if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
+    if (!stocked) addFlavorStock("lemon", 12 - flavorStock("lemon")); // スミさんの「一回分」
     captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");

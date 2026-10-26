@@ -180,7 +180,7 @@ await test("walk home on the map: saved with location, no train ride, no money",
   const s = fresh(150); s.flags._ch2_region = "widehanga"; s.stamina = 70; core.save();
   await open(); button("station-open").click(); button("station-destination-home").click();
   assert.equal(button("station-confirm"), null, "The disabled train button is replaced by walking");
-  assert.match(button("station-walk").textContent, /体力−40/);
+  assert.match(button("station-walk").textContent, /かなり疲れる/);
   const beforeRides = rides; await button("station-walk").click();
   assert.equal(rides, beforeRides, "Walking does not play the train");
   assert.deepEqual([core.state.money, core.state.stamina, core.state.flags._ch2_region], [150, 30, "home"]);

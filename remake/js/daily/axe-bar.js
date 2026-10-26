@@ -52,7 +52,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const status = owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
         : owner.money < AXE_BAR.playCost ? "プレイには3,000円必要。記録を見るだけなら無料。"
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
-        : `参加 ${yen(AXE_BAR.playCost)}・体力10・1行動。途中でやめた場合は消費しません。`;
+        : `参加 ${yen(AXE_BAR.playCost)}・体力を使う・1行動。途中でやめた場合は消費しません。`;
       const lesson = el("button.btn.ghost.axe-bar-lesson", { type: "button", text: "マキに教わる・無料1投", dataset: { test: "axe-bar-lesson" }, onclick: async () => {
         if (lessonOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;

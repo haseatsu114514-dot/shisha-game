@@ -1,3 +1,4 @@
+import { learnFlavorStory, masteryLabel } from "../core/flavor-mastery.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
@@ -298,6 +299,9 @@ function finish(cancelled = false) {
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
   if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
+  if (!cancelled && meta.flavor_lesson) for (const gain of learnFlavorStory(state, r.dlg, DB.flavorById)) {
+    toast(`${DB.flavorById[gain.id]?.short_name || gain.id} ${masteryLabel(state, gain.id, DB.flavorById)}`, { kind: "good" });
+  }
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");

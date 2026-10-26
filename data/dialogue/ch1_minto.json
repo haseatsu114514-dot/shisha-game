@@ -748,6 +748,11 @@
             "text": "はいそこ、ちゃんとついてきて♡"
           }
         ]
+      },
+      "metadata": {
+        "flavor_lesson": {
+          "mint": 1
+        }
       }
     },
     {
@@ -1021,7 +1026,10 @@
         }
       ],
       "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png",
+        "flavor_lesson": {
+          "mint": 1
+        }
       }
     },
     {

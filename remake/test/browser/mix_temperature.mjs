@@ -40,7 +40,9 @@ const expectBands = async (page, t, selector) => {
 async function prepare(page, mode = "tournament") {
   await page.evaluate(async mode => {
     const core = await import("./js/core/state.js"); core.newGame();
-    core.state.flavorStock = { double_apple: 50, vanilla: 24 }; // mint comes from the real regulation
+    core.state.flavorStock = { double_apple: 50, vanilla: 24 };
+    // この温度回帰は既に開始済みの旧ミント大会を継続する経路。新大会の私物レモンはflavor_masteryで検証する。
+    if (mode === "tournament") { core.state.schema = 20; core.state.phase = "tournament"; core.save(); core.load(); }
     const session = await import("./js/craft/session.js");
     const steps = await import("./js/craft/steps.js"), steam = await import("./js/craft/steam.js");
     const pull = await import("./js/craft/pull.js"), conditions = await import("./js/craft/conditions.js");
@@ -171,7 +173,7 @@ await suite("mix-temperature", async check => {
       for (const [id, mix] of [["basic", { double_apple: 9, mint: 3 }], ["peaky", { nightside_earlgrey: 12 }],
         ["peaky-dobaj", { nightside_earlgrey: 9, vanilla: 3 }]]) {
         await page.evaluate(async () => {
-          QA.cs = QA.session.newSession("drill");
+          QA.cs = QA.session.newSession("drill"); QA.cs.staffPractice = true;
           await QA.session.openBench(QA.cs).ready;
           QA.run = QA.steps.stepMix(QA.cs);
         });

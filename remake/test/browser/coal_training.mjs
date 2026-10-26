@@ -63,6 +63,7 @@ try {
       Q.vn.vnTest.turbo = true;
       Q.shift = Q.tonari.doBaito();
     });
+    await page.locator('[data-test="shift-order-0"]').click();
     await page.locator('[data-test="after-none"]').waitFor();
     assert.equal(await page.locator('[data-test="after-cube-coals"]').count(), 0);
     await page.locator('[data-test="after-none"]').click(); await page.evaluate(() => Q.shift);

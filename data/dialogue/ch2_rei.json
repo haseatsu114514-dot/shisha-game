@@ -3,7 +3,10 @@
     {
       "dialogue_id": "ch2_rei_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png",
+        "flavor_lesson": {
+          "rose": 1
+        }
       },
       "lines": [
         {

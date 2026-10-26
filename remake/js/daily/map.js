@@ -175,7 +175,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       const known = knowsOwner(s);
       const charName = s.charId && known ? displayName(s.charId, state) : null;
-      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
+      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う（根性で軽減）") : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const previewId = s.preview || SPOT_PREVIEW[s.id];
       const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
@@ -252,7 +252,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
                 renderPins(); idleInfo();
               });
               // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
-              if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った（体力−${WALK_HOME_STAMINA}）`); }
+              if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った。かなり疲れた`); }
               else await trainRide(arrive, { from: trip.from, to: trip.to });
               if (!stationActive()) return;
               // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
@@ -262,12 +262,12 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           };
         const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
           dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
-        const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: `歩いて帰る（体力−${WALK_HOME_STAMINA}）`,
+        const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: "歩いて帰る（かなり疲れる）",
           dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
         info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
           el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
-          walkHome ? el("p.mi-desc", { text: `電車に乗れないので、歩いて帰れる。お金は使わず、体力をかなり使う（今の体力 ${state.stamina}）。時間は進まない。` }) : null,
+          walkHome ? el("p.mi-desc", { text: "電車に乗れないので、歩いて帰れる。お金は使わず、かなり疲れる。時間は進まない。" }) : null,
           walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
       };
       const openStationAfterFailure = () => {

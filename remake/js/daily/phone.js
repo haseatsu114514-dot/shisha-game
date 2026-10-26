@@ -540,8 +540,11 @@ function phoneShell({ time, title }) {
     ui.cancel?.();
     overlay.classList.remove("show");
     await sleep(300);
-    layers.modal.classList.remove("show");
-    layers.modal.replaceChildren();
+    // LIMEからの誘いは閉じる間に次の行動へ進む。新しい注文画面などは消さない。
+    if (overlay.parentNode === layers.modal) {
+      layers.modal.classList.remove("show");
+      overlay.remove();
+    }
   };
   return ui;
 }

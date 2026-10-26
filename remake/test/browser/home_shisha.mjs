@@ -45,7 +45,10 @@ await suite("home-shisha", async check => {
       assert.equal(before.owned.filter(id => id === "home_rig_set").length, 1);
       assert.equal(before.flavorStock.double_apple, 50, "The rig includes one box, granted only once");
 
-      await offer(page); await hit("home-shisha-mix");
+      await offer(page);
+      assert.match(await page.locator(".home-shisha-dialog").innerText(), /寝る前の家シーシャ/);
+      assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /体力\s*[+＋−-]?\d/);
+      await hit("home-shisha-mix");
       await hit("home-plus-lemon"); await hit("home-mix-cancel"); await hit("home-shisha-skip");
       await page.waitForFunction(() => homeDone === false);
       assert.deepEqual(await snapshot(page), before, "Cancelled mixing must not consume anything");
@@ -64,7 +67,7 @@ await suite("home-shisha", async check => {
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit("home-mix-ok"); await page.waitForFunction(() => homeDone === true);
       const after = await snapshot(page);
-      assert.deepEqual(after, { ...before, flavorStock: { ...before.flavorStock, lemon: 11, mint: 17 }, stamina: 74, statXp: { sense: .5 } });
+      assert.deepEqual(after, { ...before, flavorStock: { ...before.flavorStock, lemon: 11, mint: 17 }, stamina: 58, statXp: {} });
       await page.evaluate(async () => {
         const core = await import("./js/core/state.js"); core.load(); core.save(); core.load();
         window.repeatOffer = (await import("./js/daily/home-shisha.js")).homeShishaOffer();
@@ -78,8 +81,8 @@ await suite("home-shisha", async check => {
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit("home-recipe-ice_lemonade"); await page.waitForFunction(() => homeDone === true);
-      assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 68,
-        stats: { ...before.stats, sense: 13 }, statXp: { sense: 0 } });
+      assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 36,
+        stats: before.stats, statXp: {} });
     }, options);
   }
 
@@ -99,7 +102,7 @@ await suite("home-shisha", async check => {
         s.owned.push("home_rig_set", ...(rig === "home_rig_pro" ? [rig] : []));
         s.recipes.ice_lemonade = { day: 3 };
         Object.assign(s.flags, { _ev_salaryman: true, _ev_first_practice: true, _ev_day5: true,
-          _ev_midcheck: true, _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
+          _ev_midcheck: true, _sumi_double_apple_received: true, _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
           _hiyori_meeting_done: true, _hiyori_message_delivered: true, _lime_tut: true,
           _lime_opened: true, _morning_8: true, _home_tonight: true });
         Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -117,8 +120,8 @@ await suite("home-shisha", async check => {
         } else await page.waitForFunction(() => homeDone === true);
       }
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
-      const expected = timing === "before" ? before : { ...before, stamina: 74,
-        flavorStock: { lemon: 12, mint: 16 }, stats: { ...before.stats, sense: 13 }, statXp: { sense: .75 + growth - 1 } };
+      const expected = timing === "before" ? before : { ...before, stamina: 58,
+        flavorStock: { lemon: 12, mint: 16 }, stats: before.stats, statXp: before.statXp };
       const savedResources = Object.fromEntries(Object.keys(before).map(key => [key, saved[key]]));
       const continueSave = async () => {
         await page.reload();

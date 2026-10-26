@@ -5,10 +5,10 @@ import path from "node:path";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url);
 const dataRoot = new URL("../../data/dialogue/", import.meta.url);
-const actual = new Set(["core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
+const actual = new Set(["core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
   "daily/fortune-rumor.js", "daily/weather.js", "daily/tonari.js", "daily/spots.js", "daily/fortune.js", "daily/spot-access.js",
   "daily/spot-people.js", "daily/map-reveals.js", "daily/tsumugi-schedule.js", "chapters/tsumugi-story.js", "daily/calendar.js"]);
-const DB = { dialogues: {}, characters: { naru: { name: "なる" } }, fortuneTrivia: {}, flavors: [], recipes: [], baito: [] };
+const DB = { flavorById: {}, dialogues: {}, characters: { naru: { name: "なる" } }, fortuneTrivia: {}, flavors: [], recipes: [], baito: [] };
 for (const name of ["ch1_events", "ch1_tsumugi", "remake_ch1"]) for (const d of JSON.parse(fs.readFileSync(new URL(`${name}.json`, dataRoot))).dialogues) DB.dialogues[d.dialogue_id] = d;
 const trace = [], storage = new Map(); let core, mode = "normal", release, writes = 0, syncCalls = 0;
 const ctx = vm.createContext({ console, Date, Math, AbortController, setTimeout, clearTimeout,
