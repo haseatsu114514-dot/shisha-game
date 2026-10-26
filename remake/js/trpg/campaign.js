@@ -40,7 +40,8 @@ export function participantStatus(state, person) {
   const override = (state.trpg?.shifts || []).find(s => s.id === person.id && s.chapter === state.chapter
     && s.day === state.day && s.slot === state.slot);
   const temporaryClosed = state.flags?.[`_temporary_closed_${person.id}`] === `${state.chapter}:${state.day}`;
-  const shift = override ? override.busy : !temporaryClosed && (person.shifts || []).some(s =>
+  // 夜の卓は各店の営業が終わるまで待つ。通常シフトは昼だけを遮り、個別の予定は夜も優先する。
+  const shift = override ? override.busy : state.slot === 0 && !temporaryClosed && (person.shifts || []).some(s =>
     s.slot === state.slot && s.days.includes(state.day % 7));
   if (shift) return { ok: false, reason: override?.reason || person.workLabel || "シフト中" };
   const invite = state.pendingInvite;

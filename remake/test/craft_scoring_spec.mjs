@@ -28,17 +28,17 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー5社・表記統一・禁止語チェック
-assert.equal(flavors.length, 65); // #929: アフサール新作ストロベリー（第2章の県大会支給葉）を追加
+assert.equal(flavors.length, 77); // 人物に結びつく11種とマウンテンミストを追加
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
   "アフサール": "afsahr",
   "ナイトサイド": "nightside",
-  "フォースフェクト": "forcefect",
+  "フォースフェクタ": "forcefect",
 };
 for (const f of flavors) {
   assert(f.maker in MAKER_SPECS, `Invalid maker on ${f.id}: ${f.maker}`);
-  assert.equal(f.leaf, "blond");
+  assert.equal(f.leaf, ["dark_earlgrey", "siga"].includes(f.id) ? "dark" : "blond");
   assert(!f.name.includes("ドバージュ") && !f.name.includes("アブサル"), `Legacy brand name in ${f.id}: ${f.name}`);
   assert(!f.description.includes("キレ"), `Forbidden word キレ in ${f.id}: ${f.description}`);
   assert(!f.description.includes("配合"), `Ununified word 配合 in ${f.id}: ${f.description}`);

@@ -80,7 +80,7 @@ export const MAKER_SPECS = Object.freeze({
     bonuses: Object.freeze({ aroma: 5, heatStability: 2, taste: 6, smoke: 2, duration: 3, draw: 0 }),
   }),
   forcefect: Object.freeze({
-    id: "forcefect", label: "フォースフェクト", widthFactor: 0.72,
+    id: "forcefect", label: "フォースフェクタ", widthFactor: 0.72,
     bonuses: Object.freeze({ aroma: 8, heatStability: 0, taste: 3, smoke: 1, duration: 0, draw: 2 }),
   }),
   nightside: Object.freeze({

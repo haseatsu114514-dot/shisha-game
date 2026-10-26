@@ -13,6 +13,7 @@ import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { showKuzeVideoSite } from "./ch3-kuze-video.js";
+import { openShop } from "../daily/shop.js";
 
 const FILES = {
   ch3_prologue: ["ch3_childhood_opening", "ch3_train_arrival"],
@@ -94,6 +95,10 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", [...actions, ...(["scene", "free", "ready"].includes(name) ? [
+      button(owner, "東京の店で葉を買う", "shop", async () => {
+        await openShop({ branch: "tokyo" });
+        if (current(owner)) await renderStage(owner);
+      }),
       button(owner, "LIME・恋人との連絡", "lime", async () => {
         const social = await import("./ch3-social.js");
         if (!current(owner)) return;
