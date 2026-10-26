@@ -24,13 +24,30 @@ export function tokyoTime(value, window) {
 }
 export const timeNumber = time => time.day * 2 + time.slot;
 
+// 訪問の旧予約は保持するが、新しいジム利用は必須場面と重ならない時間だけ。
+const LEGACY_GYM_CONFLICTS = new Set(["d13-night"]);
+const V2_GYM_CONFLICTS = new Set(["d9-noon", "d10-night", "d13-night"]);
+export function tokyoGymWindowAllowed(value, window) {
+  return !(value.flags?._ch3_intro?.routeVersion === 2 ? V2_GYM_CONFLICTS : LEGACY_GYM_CONFLICTS).has(window.id);
+}
+
+/** 既存の約束を別の自由行動で上書きしない。読取のみで訪問の所在は更新しない。 */
+export function tokyoWindowReserved(value, window) {
+  const pending = value.pendingInvite;
+  if (pending && (pending.day ?? value.day) === window.day && pending.slot === window.slot) return true;
+  return !!value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
+    && [plan.meetup, plan.date].some(time => time?.id === window.id && timeNumber(time) === timeNumber(window)));
+}
+
 /** 古い保存の過ぎた空き時間を再演しない。本筋のstageは増やさない。 */
 export function nextTokyoFreeTime(value, before) {
   if (!value.flags?._ch3_intro) return null;
   const closed = value.tokyoVisits?.closedSlots || [];
   const windows = value.flags._ch3_intro.routeVersion === 2 ? TOKYO_FREE_TIMES_V2 : TOKYO_FREE_TIMES;
-  return windows.filter(window => window.before === before && !closed.includes(window.id)
-      && value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
-        && (plan.meetup.id === window.id || plan.date.id === window.id)))
-    .map(window => tokyoTime(value, window)).find(window => timeNumber(window) >= timeNumber(value)) || null;
+  return windows.filter(window => window.before === before && !closed.includes(window.id))
+    .map(window => tokyoTime(value, window))
+    .filter(window => value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
+        && (plan.meetup.id === window.id || plan.date.id === window.id))
+      || (value.flags._gym_member && tokyoGymWindowAllowed(value, window) && !tokyoWindowReserved(value, window)))
+    .find(window => timeNumber(window) >= timeNumber(value)) || null;
 }

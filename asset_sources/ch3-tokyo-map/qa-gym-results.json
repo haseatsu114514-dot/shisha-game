@@ -1,0 +1,24 @@
+{
+  "name": "ch3-map-activities",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "map-and-gym-pc",
+      "status": "passed"
+    },
+    {
+      "label": "map-and-gym-touch",
+      "status": "passed"
+    },
+    {
+      "label": "gym-interruption-and-rest",
+      "status": "passed"
+    },
+    {
+      "label": "map-image-failure-is-closable",
+      "status": "passed"
+    }
+  ]
+}

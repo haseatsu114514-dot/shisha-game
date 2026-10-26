@@ -1,0 +1,24 @@
+{
+  "name": "ch3-map-assets",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": null,
+  "results": [
+    {
+      "label": "day-pc",
+      "status": "passed"
+    },
+    {
+      "label": "night-pc",
+      "status": "passed"
+    },
+    {
+      "label": "day-touch",
+      "status": "passed"
+    },
+    {
+      "label": "night-touch",
+      "status": "passed"
+    }
+  ]
+}

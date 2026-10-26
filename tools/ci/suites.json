@@ -46,6 +46,8 @@
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
+        "node remake/test/ch3_map.mjs",
+        "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -651,6 +653,26 @@
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
+    },
+    {
+      "id": "ch3-map-activities",
+      "title": "Tokyo map and nationwide gym membership",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3.js",
+        "remake/js/chapters/ch3-map*.js",
+        "remake/js/chapters/ch3-wayfinding.js",
+        "remake/js/chapters/ch3-activit*.js",
+        "remake/js/core/tokyo-clock.js",
+        "remake/css/ch3-wayfinding.css",
+        "data/dialogue/ch3_activities.json",
+        "assets/backgrounds/bg_tokyo_map_*.png",
+        "remake/img/backgrounds/bg_tokyo_map_*.webp",
+        "remake/test/browser/ch3_map_activities.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_map_activities.mjs"]
     },
     {
       "id": "ch3-tournament",
