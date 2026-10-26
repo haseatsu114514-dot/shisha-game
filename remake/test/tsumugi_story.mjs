@@ -290,7 +290,7 @@ try {
     await T.story.playTsumugiStory(10);
     s.flags._morning_11 = true;
     s.flags._lime_tut = 1; // DAY11まで遊んだ状態。初回LIME案内の操作は別の検証で扱う。
-    s.flavors.push("blueberry"); s.flavorStock.blueberry = 50;
+    s.flavors.push("blueberry", "lemon"); s.flavorStock.blueberry = 50; s.flavorStock.lemon = 50;
     const { craftTest } = await import("./js/craft/session.js"); craftTest.auto = "good";
     T.vn.backlog().length = 0;
     T.trace = [];
@@ -299,7 +299,7 @@ try {
       hook?.(id, line);
       if (T.trace.at(-1) !== id) T.trace.push(id);
     };
-    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("早寝")));
+    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("通しリハーサル")));
     T.ch1.resumeGame().catch(e => { window.calendarError = e.message; });
   });
   for (const day of [11, 12, 13]) {
