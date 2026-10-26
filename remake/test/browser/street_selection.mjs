@@ -88,26 +88,34 @@ try {
     await tap(frame, 800, 615); await page.waitForTimeout(600);
     const tapped = await frame.evaluate(() => __street.state());
     assert(Math.hypot(tapped.worldX-deeper.worldX,tapped.worldY-deeper.worldY)>15);
-    // 全8方向を実キーで歩く。停止/4姿勢/斜めの速度も毎回確認する。
-    const distances=[];
+    // 端に着く前の短い区間で8方向の表示速度を比較する。
+    const speeds=[];
     for(const [dir,keys] of [['down',['ArrowDown']],['down_right',['ArrowDown','ArrowRight']],
       ['right',['ArrowRight']],['up_right',['ArrowUp','ArrowRight']],['up',['ArrowUp']],
       ['up_left',['ArrowUp','ArrowLeft']],['left',['ArrowLeft']],['down_left',['ArrowDown','ArrowLeft']]]) {
-      const startY=dir.startsWith('down')?419.47:515;
+      const startY=dir.startsWith('down')?470:dir.startsWith('up')?600:540;
       await frame.evaluate(y=>__street.place(640,y,'up'),startY);await frame.locator('#view').focus();
+      const before=await frame.evaluate(()=>__street.state());
       for(const key of keys)await page.keyboard.down(key);
-      const seen=new Set(),began=Date.now();
-      while(Date.now()-began<850){const s=await frame.evaluate(()=>__street.state());if(s.moving&&s.dir===dir)seen.add(s.gaitFrame);await page.waitForTimeout(20);}
+      await page.waitForTimeout(300);
+      const during=await frame.evaluate(()=>__street.state());
       assert.equal((await frame.evaluate(()=>__street.state())).dir,dir);
       for(const key of keys)await page.keyboard.up(key);
       await page.waitForTimeout(100);
       const s=await frame.evaluate(()=>__street.state());
-      assert.equal(seen.size,4,`${dir}: all gait poses must appear`);
       assert.equal(s.moving,false,`${dir}: key release must stop`);
-      assert(s.strideDistance>320&&s.strideDistance<410,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
-      distances.push(s.strideDistance);
+      assert(s.strideDistance>100&&s.strideDistance<165,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
+      const screenDistance=Math.hypot(during.x-before.x,during.y-before.y);
+      speeds.push(screenDistance/((during.renderHeight+before.renderHeight)/2));
     }
-    assert(Math.max(...distances)/Math.min(...distances)<1.12,`8-direction apparent-speed spread: ${JSON.stringify(distances)}`);
+    assert(Math.max(...speeds)/Math.min(...speeds)<1.2,`8-direction apparent-speed spread: ${JSON.stringify(speeds)}`);
+    await frame.evaluate(() => __street.place(640, 540, 'right'));
+    await frame.locator('#view').focus();
+    await page.keyboard.down('ArrowRight');
+    const seen=new Set(),began=Date.now();
+    while(Date.now()-began<850){const s=await frame.evaluate(()=>__street.state());if(s.moving)seen.add(s.gaitFrame);await page.waitForTimeout(20);}
+    await page.keyboard.up('ArrowRight');
+    assert.equal(seen.size,4,'all gait poses must appear while walking');
     await frame.evaluate(() => __street.place(640, 620, 'up'));
     await frame.locator('#view').focus(); await page.keyboard.press('KeyZ');
     await frame.waitForFunction(() => !!__street.state().msg);

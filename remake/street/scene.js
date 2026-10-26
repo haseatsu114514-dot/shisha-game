@@ -1,7 +1,7 @@
 // 旧ハリボテ試作の8方向・反転・タップ/ダッシュを本編用の遠近通り/4コマへ。
 // 親のinfo/enter/visited/back/pausedだけを使用し、保存・訪問・報酬を変更しない。
-import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, STRIDE_LENGTH, camera, moveOnFloor, groundDistance, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
-import { drawWalker } from './gait.js';
+import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, STRIDE_LENGTH, camera, moveOnFloor, groundDistance, walkingPoint, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
+import { drawWalker, walkerFrame } from './gait.js';
 const $ = (s) => document.querySelector(s), canvas = $('#view'), ctx = canvas.getContext('2d');
 const params = new URLSearchParams(location.search), night = params.get('night') === '1';
 const dirs = ['down', 'down_right', 'right', 'up_right', 'up'];
@@ -9,7 +9,7 @@ const mirror = { down_left: 'down_right', left: 'right', up_left: 'up_right' };
 let host, ready = false, wasPaused = true, alwaysRun = false, target = null, message = '', travel = false, dragging = false;
 let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, strideDistance=0, moving = false, last = performance.now();
 const gaitPhase = () => strideDistance/STRIDE_LENGTH%1;
-const gaitFrame = () => moving ? Math.floor(gaitPhase()*4) : 1;
+const gaitFrame = () => walkerFrame(gaitPhase(), moving);
 const keys = new Set();
 const stop = () => { keys.clear(); target = null; moving = false; dragging = false; };
 const paused = () => !host || host.paused() || document.hidden;
@@ -86,7 +86,7 @@ function update(dt) {
   let dx=Number(keys.has('ArrowRight')||keys.has('KeyD'))-Number(keys.has('ArrowLeft')||keys.has('KeyA'));
   let dy=Number(keys.has('ArrowDown')||keys.has('KeyS'))-Number(keys.has('ArrowUp')||keys.has('KeyW'));
   let goal;
-  if (target) { goal={x:target.x,y:target.y}; dx=goal.x-foot().x; dy=goal.y-foot().y; }
+  if (target) { goal={x:target.x,y:target.y}; const destination=walkingPoint(unproject(goal.x,goal.y)), current=walkingPoint(player); dx=destination.x-current.x; dy=destination.y-current.y; }
   const len=Math.hypot(dx,dy), run=alwaysRun||keys.has('ShiftLeft')||keys.has('ShiftRight');
   moving=len>.0001;
   if (!moving) { if (target) { const {door:d,back}=target; target=null; if(back)host.back();else if(d)enter(d); } return; }
