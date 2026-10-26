@@ -363,7 +363,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
       if (!guide && state.chapter <= 2) {
-        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 44 };
+        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 15 };
         const travelReady = stationDestinations(state, regions || [], region?.id).length > 0;
         pins.append(el(`button.spot-pin.pin-station${travelReady ? "" : ".station-waiting"}`, {
           type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
