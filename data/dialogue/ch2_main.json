@@ -567,7 +567,7 @@
         },
         {
           "type": "bg",
-          "bg": "res://assets/backgrounds/bg_street_night.png"
+          "bg": "res://assets/backgrounds/bg_ch2_venue_bench_night.png"
         }
       ],
       "branches": {
@@ -608,6 +608,9 @@
             "flag": "_ch2_audience_welcome"
           }
         ]
+      },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_venue_bench_night.png"
       }
     },
     {
