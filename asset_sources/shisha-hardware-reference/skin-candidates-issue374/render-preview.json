@@ -1,0 +1,11 @@
+{
+  "status": "review_only",
+  "physical_fit": null,
+  "units": "source image pixels; display scale is an illustration, not measured product dimensions",
+  "items": {
+    "handle-01-yoshio": { "connection": [172, 912], "end": [1469, 100] },
+    "handle-02-shishark-blue": { "connection": [214, 925], "end": [1468, 78] },
+    "mouthpiece-01-crystal-drop": { "connection": [412, 1004], "end": [1233, 220] },
+    "mouthpiece-02-starmoon-charm": { "connection": [348, 813], "end": [1363, 184] }
+  }
+}

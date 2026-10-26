@@ -83,6 +83,19 @@ PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画
 
 ## 接続候補の機械検証（#437 接続契約v1）
 
+### 原画を組み合わせる実表示プレビュー（2026-10-26）
+
+[`remake/appearance-preview.html`](../../../remake/appearance-preview.html) は採用原画を別々の層で「ホース→ハンドル→任意の短いチップ」に配置する比較ページ。正本の4デザインを再生成・描き換えず、表示上の一様拡縮と回転で接続する。明暗背景・未選択・2ハンドル×2チップを比較でき、確定と取消も操作できる。本編・GAME OVER・本編セーブには接続しない。
+
+画像上の接続中心は [`render-preview.json`](render-preview.json) に記録した原画px。画面上の長さ340/46は図示上の比率で、実測寸法や実物の嵌合を証明しない。正式カタログの `distribution_assets_ready:false`、`runtime_integrated:false`、`physical_fit:null` と未確定径は保持する。原画の光彩・半透明の縁を残した確認段階で、配信用仕上げ・手持ちの確認・本編の選択導線が残る。
+
+実ChromiumでPCと844×390横タッチ、既定を含む9組、全画像の復号、確定・取消・本編ストレージ無変更を確認。既存の外観選択/SAVEテスト6件とカタログ26件も成功。外観テストは後から追加されたギャラリー保存処理の実モジュールも読ませ、旧fixtureの依存欠落を修正した。実機・縦回転・人物の手持ち・物理適合は未確認。
+
+| 暗背景 | 明背景 |
+|---|---|
+| ![PC暗背景](preview-qa/pc-dark.png) | ![PC明背景](preview-qa/pc-light.png) |
+| ![横持ち暗背景](preview-qa/touch-dark.png) | ![横持ち明背景](preview-qa/touch-light.png) |
+
 同じ `candidates.json` に各項目の `connection` と、トップレベルの `connection_contract` を追加する。別カタログ・runtimeデータは作らない。契約v1はデザイン採用段階専用で、`approval_scope: design_only`、`runtime_integrated: false` と `adoption.distribution_assets_ready: false` を維持する。
 
 - `connection_contract.version` は整数 `1`。`candidate_pairs` は検討対象の組を `{handle_id, mouthpiece_id, physical_fit}` で列挙する。現在は採用2ハンドル×2マウスピースの4組。存在する採用IDをハンドル→マウスピースの順で参照し、同じ組の重複・逆順・同カテゴリ・未知ID・未採用IDを拒否する。配列にない組を自動補完しない。候補がない場合は空配列を許容する。
