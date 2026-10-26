@@ -156,7 +156,7 @@ try {
         await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
-        for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);
+        for(let n=0;n<2;n++)await activate(p,"mix-plus-lemon",touch);
         assert.equal(await button(p,"mix-ok").isEnabled(),true);
         await p.screenshot({path:path.join(dir,`${device}-${mode}-mix.png`)});
         await activate(p,"mix-ok",touch);await button(p,"pack-confirm").waitFor();
@@ -170,7 +170,7 @@ try {
         assert.equal(after.marker,"preserved");assert.deepEqual(after.lovers,before.lovers);assert.deepEqual(after.memory,before.memory);
         assert.equal(after.runs.length,before.runs.length+1);assert.equal(after.runs.at(-1).served,true);
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
-        assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,mint:2});
+        assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,lemon:2});
         await p.screenshot({path:path.join(dir,`${device}-${mode}-result.png`)});
         await activate(p,"hud-menu",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
