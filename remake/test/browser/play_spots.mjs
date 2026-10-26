@@ -163,13 +163,14 @@ await suite("play-spots", async runCheck => {
     await setup(page);
     const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     await go(page, "axe_bar");
-    const afterIntro = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     const introduced = JSON.parse(before); introduced.flags._intro_maki = true;
-    assert.deepEqual(JSON.parse(afterIntro), introduced, "Entry saves only the completed Maki introduction");
+    assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
     await phase(page, "choice"); await hit(page, "axe-action"); await phase(page, "horizontal");
     await page.reload(); await page.locator(t("title-new")).waitFor();
-    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), afterIntro);
+    assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))), introduced,
+      "Cancellation saves only the completed introduction, without committing the unfinished throws");
   });
 
   for (const where of ["menu", "game", "load", "pagehide", "screen"]) await check("axe-abort-" + where, async page => {
