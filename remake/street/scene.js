@@ -7,11 +7,11 @@ const params = new URLSearchParams(location.search), night = params.get('night')
 const dirs = ['down', 'down_right', 'right', 'up_right', 'up'];
 const mirror = { down_left: 'down_right', left: 'right', up_left: 'up_right' };
 let host, ready = false, wasPaused = true, alwaysRun = false, target = null, message = '', travel = false, dragging = false;
-let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, strideDistance=0, moving = false, last = performance.now();
-const gaitPhase = () => strideDistance/STRIDE_LENGTH%1;
+let player = { ...SPAWN }, cam = camera(SPAWN), walked = 0, strideDistance=0, gaitDistance=0, moving = false, last = performance.now();
+const gaitPhase = () => gaitDistance/STRIDE_LENGTH%1;
 const gaitFrame = () => walkerFrame(gaitPhase(), moving);
 const keys = new Set();
-const stop = () => { keys.clear(); target = null; moving = false; dragging = false; };
+const stop = () => { keys.clear(); target = null; moving = false; gaitDistance = 0; dragging = false; };
 const paused = () => !host || host.paused() || document.hidden;
 const focus = () => canvas.focus({ preventScroll: true });
 function fit() { $('#stage').style.setProperty('--k', Math.min(innerWidth / VIEW.w, innerHeight / VIEW.h)); }
@@ -89,10 +89,10 @@ function update(dt) {
   if (target) { goal={x:target.x,y:target.y}; const destination=walkingPoint(unproject(goal.x,goal.y)), current=walkingPoint(player); dx=destination.x-current.x; dy=destination.y-current.y; }
   const len=Math.hypot(dx,dy), run=alwaysRun||keys.has('ShiftLeft')||keys.has('ShiftRight');
   moving=len>.0001;
-  if (!moving) { if (target) { const {door:d,back}=target; target=null; if(back)host.back();else if(d)enter(d); } return; }
+  if (!moving) { gaitDistance=0; if (target) { const {door:d,back}=target; target=null; if(back)host.back();else if(d)enter(d); } return; }
   player.dir=direction(dx,dy);
   const moved=moveOnFloor(player,dx,dy,dt,run,goal),distance=groundDistance(player,moved.player);
-  Object.assign(player,moved.player); moving=distance>1e-6; walked+=distance;strideDistance+=moved.distance;cam=camera(player);
+  Object.assign(player,moved.player); moving=distance>1e-6; walked+=distance;strideDistance+=moved.distance;gaitDistance=moving?gaitDistance+moved.distance:0;cam=camera(player);
   if (target && moved.arrived) { const {door:d,back}=target; stop(); if(back)host.back();else if(d)enter(d); return; }
   if (!target && player.z===0 && dy>0) { stop(); host.back(); }
 }

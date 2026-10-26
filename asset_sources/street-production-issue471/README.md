@@ -6,6 +6,8 @@
 
 生成は内蔵image_gen。画像は新しい専用ファイルへ保存し、既存の試作用原画・背景・歩行絵を上書きしていない。昼夜は1664×936のままWebPへ変換。歩行絵は既存 `tools/proto_walk_sheet.py` の共通縮尺/足元揃え/64色を使う4行用ラッパー `tools/street_walk_cycle_sheet.py` で変換。オーナーの「奥で見えなくなる/扉より小さい」指摘で144dotを採用し、さらに「歩き方/ズームが不自然」を受け、左右の接地と中間姿勢の4コマへ。2コマの72/144版は比較用。原画からの縮小であり、72dotの拡大ではない。
 
+2026-10-26 の歩行修正: 上記原画の3行目は全方向で1行目と同じ脚が前へ出ていた。`hajime-opposite-contact-{down,down-right,right,up-right,up}.png` を各方向の反対脚接地の原画として生成し、5方向の3行目へ合成した `hajime-walk-cycle-opposite-contact-original.png` を新しい変換元にした。ゲーム用144dotシートは下記と同じ `tools/street_walk_cycle_sheet.py` の設定でこの変換元から再作成。脚の前後と靴底をゲーム用シートでも確認した。
+
 変換: `python3 tools/street_walk_cycle_sheet.py asset_sources/street-production-issue471/hajime-walk-cycle-pose-original.png --out-dir assets/street_walk --name hajime_walk_cycle --sizes 144 --rows 4 --colors 64 --mirror-step '' --no-preview`。4行は行間が狭いため塊の結合を1pxとし、20体を分離できなければ停止する。等分切り出しで帽子/靴を切らない。今回の等分切り出し初回は不採用にし、分離後の全コマを確認した。横移動の根元を足の重心から胴の中心へ揃え、歩幅で腰が左右にずれないようにした。
 
 オーナーの「全方向歩いて検証」「歩くたびしゃがむ」「横の足が変」を受け、実キーで8方向/32姿勢を採取。最初の4コマは移動テストが通っても、横/斜めの脚が同じで上半身の縮尺も変わるため視覚QA不合格とした。`hajime-four-pose-guide.png` の赤/青は左右の脚を区別する制作参照のみで、ゲームに色線を表示しない。接地/中間姿勢を修正し、描画時の上半身は方向ごとに同じ登録姿勢を使う。上下のボブは除去し、脚の4コマだけを移動距離に連動させる。歩行速度は0.45から0.75（約1.67倍）、ダッシュは0.8から1.2へ変更した。ゲームの体力・時間等の消費ではなく、このCanvas内の移動速度だけ。

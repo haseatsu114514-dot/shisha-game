@@ -6,6 +6,8 @@ export const SPAWN = { x: 0, z: .04, dir: 'up' };
 export const CHARACTER_HEIGHT = 302.4;
 // 背景上の移動量を人物高で校正する。奥行きの二乗で縦移動を遅くしない。
 export const WALK_SPEED = 420, RUN_SPEED = 660, STRIDE_LENGTH = 250;
+// 通りの縦方向は遠近で画面上の距離が短い。端までの所要時間を横歩きと揃える。
+export const SIDE_SPEED = 1.1, DEPTH_SPEED = .55;
 const CAMERA_ZOOM_EXPONENT = .55;
 export const DOORS = [
   { id: 'cafe', rect: [54, 270, 150, 270], foot: [235, 592], label: [160, 252] },
@@ -52,14 +54,19 @@ function unprojectWalkingPoint(x,y) {
 export function moveOnFloor(player, dx, dy, dt, run=false, goal=null) {
   const start=walkingPoint(player),len=Math.hypot(dx,dy);
   if(len<1e-6)return { player:{...player},distance:0,arrived:!!goal };
-  const speed=run?RUN_SPEED:WALK_SPEED,k=dy/len*speed/FLOOR.rise;
+  // 斜めも向きを変えず、横・奥行きそれぞれの距離に応じて速さを決める。
+  const nx=dx/len,ny=dy/len;
+  const pace=1/Math.hypot(nx/SIDE_SPEED,ny/DEPTH_SPEED);
+  const speed=(run?RUN_SPEED:WALK_SPEED)*pace;
+  const k=ny*speed/FLOOR.rise;
   const step=speed*start.scale*(Math.abs(k)<1e-9?dt:Math.expm1(k*dt)/k);
   const goalPoint=goal?walkingPoint(unproject(goal.x,goal.y)):null;
   const remaining=goalPoint?Math.hypot(goalPoint.x-start.x,goalPoint.y-start.y):Infinity;
   const amount=Math.min(step,remaining);
-  const next=constrain(unprojectWalkingPoint(start.x+dx/len*amount,start.y+dy/len*amount));
+  const next=constrain(unprojectWalkingPoint(start.x+nx*amount,start.y+ny*amount));
   const end=walkingPoint(next),scale=(start.scale+end.scale)/2;
-  return {player:next,distance:Math.hypot(end.x-start.x,end.y-start.y)/scale,
+  // 遠近による画面上の歩幅差を補正し、向きが変わっても足運びの周期を保つ。
+  return {player:next,distance:Math.hypot(end.x-start.x,end.y-start.y)/scale/pace,
     arrived:!!goalPoint&&Math.hypot(end.x-goalPoint.x,end.y-goalPoint.y)<1e-4};
 }
 export function toScreen(x, y, cam) { return { x: x * cam.zoom + cam.tx, y: y * cam.zoom + cam.ty }; }

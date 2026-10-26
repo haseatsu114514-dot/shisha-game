@@ -104,9 +104,12 @@ try {
       await page.waitForTimeout(100);
       const s=await frame.evaluate(()=>__street.state());
       assert.equal(s.moving,false,`${dir}: key release must stop`);
-      assert(s.strideDistance>100&&s.strideDistance<165,`${dir}: speed relative to actor outside expected range: ${s.strideDistance}`);
+      assert.equal(s.gaitPhase,0,`${dir}: next walk must restart from the standing pose`);
+      assert(s.strideDistance>100&&s.strideDistance<165,`${dir}: walk cycle outside expected range: ${s.strideDistance}`);
       const screenDistance=Math.hypot(during.x-before.x,during.y-before.y);
-      speeds.push(screenDistance/((during.renderHeight+before.renderHeight)/2));
+      const diagonal=keys.length===2;
+      const pace=diagonal?1/Math.hypot(1/Math.SQRT2/1.1,1/Math.SQRT2/.55):dir==='right'||dir==='left'?1.1:.55;
+      speeds.push(screenDistance/((during.renderHeight+before.renderHeight)/2)/pace);
     }
     assert(Math.max(...speeds)/Math.min(...speeds)<1.2,`8-direction apparent-speed spread: ${JSON.stringify(speeds)}`);
     await frame.evaluate(() => __street.place(640, 540, 'right'));
@@ -128,7 +131,7 @@ try {
     await unchanged();
     await page.locator('[data-test="street-back"]').click(); await page.waitForSelector('.map:not(.done)');
     assert.equal(await page.evaluate(() => T.result), 'pending'); await unchanged();
-    pass(`${label}: arcade/Hajime, fixed horizon/readable size, all 8 actual key directions/4 poses/equal speed/stop, ${touch ? 'touch' : 'pointer'}, cost zero`);
+    pass(`${label}: arcade/Hajime, fixed horizon/readable size, 8 directions/4 poses/balanced pacing/stop, ${touch ? 'touch' : 'pointer'}, cost zero`);
 
     for (const [kind, id, door, why] of [
       ['locked', 'cafe', 'cafe', 'まだ知らない場所'], ['met-only', 'cafe', 'cafe', 'まだ知らない場所'], ['closed', 'naru', 'kemurikusa', '本日定休日'],
