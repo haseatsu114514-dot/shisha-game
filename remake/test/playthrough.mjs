@@ -161,9 +161,11 @@ for (;;) {
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-screen.gameover") ? "GAME OVER" : document.querySelector(".end-title")?.textContent || "",
       rain: document.querySelector("#screen .map:not(.done)")?.dataset.rain === "true",
-      feel: /[1-9]/.test(document.querySelector('[data-test="arcade-score"] .arcade-num')?.textContent || ""),
+      feel: !!document.querySelector('.bench .bench-audience') && !document.querySelector('.arcade-score'),
       nico: !!document.querySelector(".nico"),
-      rtFeel: !!document.querySelector('[data-test="result-score"]'),
+      rtFeel: !!document.querySelector('.result-table .rt-judge-comment')
+        && !!document.querySelector('.result-table .craft-evaluation')
+        && !document.querySelector('[data-test="result-score"], .rt-meter'),
       // 会話中に前の画面（作業台・結果表・マップ等）が後ろに見えていないか
       leak: document.querySelector("#vn")?.classList.contains("active") && !!document.querySelector("#screen > *") && getComputedStyle(document.querySelector("#screen")).visibility !== "hidden",
       // 優勝の夜の LIME の後ろに結果表が残っていないか
@@ -486,7 +488,7 @@ log(`rain maps=${rainMaps} / slot load=${slotLoaded} / fortune day=${s.fortuneDa
 if (!rainMaps) throw new Error("no rainy map shown");
 if (!slotLoaded) throw new Error("manual save/load not verified");
 if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not visited");
-// 実況: 大会中に総合スコア（SCORE）が増えて流れるコメントが出て、結果表に SCORE が載る
+// 実況と観客の反応、結果表の印と審査員コメントで手応えを伝える
 log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
 if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
 // グラム在庫: 大会では課題のレモンも私物から減る（再挑戦は会場入り前に戻す）。

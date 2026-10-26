@@ -401,6 +401,7 @@ export function wipeSave() {
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
   uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
+  craftAssist: "normal", // 通常／ゆっくり／反復操作をおまかせ。物語と保存の進行は変えない。
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時

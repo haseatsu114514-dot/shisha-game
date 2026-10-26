@@ -46,6 +46,7 @@ try {
       window.cs = T.session.newSession("drill"); T.session.openBench(cs);
       window.holesRun = T.holes.runHoles(cs);
     });
+    assert.equal(await page.locator('.arcade-score').count(), 0, 'The bench shows reactions without a numeric SCORE');
     await page.waitForSelector('[data-test="hole-start"]');
     assert.equal(await page.locator(".countdown, .foil-cursor").count(), 0);
     assert.equal(await page.locator('.ht-option').count(), 1);
@@ -120,7 +121,8 @@ try {
     assert.match(summary, /奥 PERFECT：0\.08秒早い/);
     assert.match(summary, /手前左 GOOD：0\.35秒遅い/);
     assert.match(summary, /手前右 GOOD：0\.35秒早い/);
-    assert.match(summary, /全体のタイミング精度 80%.*平均誤差 0\.26秒/);
+    assert.match(summary, /芯が光る瞬間を捉えた炭がある/);
+    assert.doesNotMatch(summary, /タイミング精度|平均誤差/);
     assert.equal(await page.locator('[data-test="coal-timing-0"]').textContent(), first);
     assert.equal(await page.evaluate(() => cs.heat.timingAccuracy === cs.heat.score), true);
     // DOM出現直後は結果カードが下から入場中。実際の完了を待って最終配置を測る。

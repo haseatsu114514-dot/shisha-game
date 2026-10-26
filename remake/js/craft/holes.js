@@ -6,7 +6,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
-import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
+import { gradeOf, autoSkill, operationAuto, craftEase, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
 
@@ -86,7 +86,7 @@ export async function runHoles(cs) {
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
-  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
+  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (craftEase(cs) ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
   // ---- 画面
@@ -319,7 +319,7 @@ export async function runHoles(cs) {
   t0 = gameClock.now();
   raf = requestAnimationFrame(loop);
 
-  const auto = autoSkill();
+  const auto = operationAuto(cs);
   if (auto) simulate(auto);
   await finishedP;
 
@@ -338,7 +338,7 @@ export async function runHoles(cs) {
     grade: res.grade,
     lines: [
       `テンプレート：${template.label}`,
-      `均等度 ${Math.round(res.evenness * 100)}%　／　円形精度 ${Math.round(res.precision * 100)}%`,
+      res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
       `外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
       res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",

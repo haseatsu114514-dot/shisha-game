@@ -5,7 +5,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
-import { gradeOf, autoSkill, skill, resultCard } from "./common.js";
+import { gradeOf, operationAuto, skill, resultCard } from "./common.js";
 import { buildHeatView, coalSpots } from "./heat_view.js";
 import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
@@ -35,7 +35,7 @@ export async function runHeat(cs) {
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
-      `全体のタイミング精度 ${res.timingAccuracy}% ／ 平均誤差 ${res.meanAbsoluteError.toFixed(2)}秒`,
+      res.just === coalCount(cs) ? "すべて芯が光る瞬間を捉えた" : res.just ? "芯が光る瞬間を捉えた炭がある" : "次は芯の光をよく見よう",
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
@@ -149,7 +149,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 
-  const auto = autoSkill();
+  const auto = operationAuto(cs);
   if (auto) {
     (async () => {
       for (const c of coals) {

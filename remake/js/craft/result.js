@@ -1,7 +1,7 @@
 import { improvementOf } from "./advice.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
-import { el, sleep, clamp, rand } from "../core/util.js";
+import { el, sleep, rand } from "../core/util.js";
 import { faceIconUrl, displayName, portraitInfo } from "../core/data.js";
 import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
@@ -9,7 +9,7 @@ import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
-import { evaluationOf } from "./feedback.js";
+import { evaluationOf, feedbackLine } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
 
@@ -300,16 +300,13 @@ export function resultTable(cs, rank) {
       const review = evaluationOf(score || 0);
       return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
     };
-    const score = el("b.arcade-num", { text: String(cs.arcade?.total || 0).padStart(6, "0") });
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]].map(([k, v]) =>
-        el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: `${Math.round(v || 0)} / 100` }),
-          el("i.rt-meter", { "aria-hidden": "true" }, [el("b", { style: { width: `${clamp(v || 0, 0, 100)}%` } })])])),
+        el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
-      cs.arcade?.total ? el("div.rt-part.score", { dataset: { test: "result-score" } }, [el("span", { text: "SCORE" }), score]) : null,
+      el("small.rt-judge-comment", { text: `上園「${feedbackLine("maezono", "pull", evaluationOf(P.shisha || 0))}」` }),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
-      el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、あなたには届かなかった。" }),
       el("small.rt-next-tip", { text: improvementOf(cs) }),
     ]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
@@ -324,7 +321,6 @@ export function resultTable(cs, rank) {
       el("div.rt-layout", [el("section.rt-ranking", [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), btn,
     ]);
     showScreen("result", screen);
-    if (cs.arcade?.total) countUp(score, 0, cs.arcade.total, 1400, (n) => String(n).padStart(6, "0"));
     if (rank === 1) {
       SE.fanfare();
       // 紙吹雪は画面の枠の中だけで降らせる（下へ抜けた分でスクロールを作らない）。
