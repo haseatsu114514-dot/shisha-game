@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大会当日・日付切り替え比較 — 水煙前線</title>
+<link rel="stylesheet" href="css/base.css">
+<style>
+  :root { color-scheme: dark; }
+  body { position: static; min-height: 100vh; overflow: auto; margin: 0; background: radial-gradient(circle at 50% -20%, #453278, transparent 55%), #100c1e; color: #f8f1ff; font-family: var(--font), sans-serif; }
+  .preview { max-width: 1640px; margin: auto; padding: 28px clamp(16px, 3vw, 44px) 48px; }
+  .eyebrow { margin: 0 0 8px; color: #d8b67b; font-size: 12px; font-weight: 800; letter-spacing: .26em; }
+  h1 { margin: 0; font-size: clamp(26px, 3vw, 44px); line-height: 1.35; }
+  .intro { max-width: 740px; margin: 10px 0 22px; color: #c9bddb; font-size: 15px; line-height: 1.7; }
+  .toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  button { cursor: pointer; min-height: 44px; padding: 9px 17px; border: 1px solid #b59bd6; border-radius: 7px; background: #352754; color: #fff; font: 700 14px var(--font), sans-serif; }
+  button:hover { background: #4a356f; }
+  button:focus-visible { outline: 3px solid #efca82; outline-offset: 3px; }
+  button:disabled { opacity: .55; cursor: wait; }
+  .primary { border-color: #e7c383; background: #79532e; }
+  .primary:hover { background: #94683b; }
+  #status { color: #d7c9e8; font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .option { min-width: 0; overflow: hidden; border: 1px solid #665583; border-radius: 12px; background: #21182f; box-shadow: 0 16px 40px #0004; }
+  .screen { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #090716; }
+  .scene { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; transform-origin: top left; overflow: hidden; background: radial-gradient(circle at 50% 75%, #46336c 0, #1a1231 57%, #0c091b); }
+  .scene::before { content: ""; position: absolute; inset: 0; opacity: .35; background: repeating-linear-gradient(0deg, transparent 0 59px, #b29bc522 60px), repeating-linear-gradient(90deg, transparent 0 79px, #b29bc522 80px); }
+  .scene-after { position: absolute; inset: 0; display: grid; place-content: center; gap: 16px; text-align: center; color: #e5d4ff; }
+  .scene-after strong { font-size: 96px; line-height: 1; }
+  .scene-after small { font-size: 30px; letter-spacing: .2em; }
+  .scene[data-day="14"] .scene-after { color: #ffe7ae; }
+  .fx { position: absolute; inset: 0; }
+  .option-copy { padding: 16px 18px 18px; }
+  .option-copy h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 19px; }
+  .letter { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 1px solid #e5c485; border-radius: 50%; color: #e5c485; font: 700 13px sans-serif; }
+  .option-copy p { min-height: 3.4em; margin: 0 0 14px; color: #cbbfdb; font-size: 13px; line-height: 1.65; }
+  .option-copy button { width: 100%; }
+  .note { margin: 18px 0 0; color: #a99bbd; font-size: 12px; }
+  .custom { position: absolute; inset: 0; overflow: hidden; background: #34246a; color: #fff; }
+  .custom .large-day { position: absolute; left: 0; right: 0; top: 210px; text-align: center; font-size: 112px; font-weight: 900; letter-spacing: .08em; }
+  .custom .large-day small { margin-right: 22px; color: #dcd1f4; font-size: 46px; letter-spacing: .3em; }
+  .custom .caption { position: absolute; left: 0; right: 0; top: 365px; text-align: center; color: #e4d7fb; font-size: 27px; font-weight: 700; letter-spacing: .18em; }
+  .custom .line { position: absolute; left: 160px; right: 160px; top: 430px; height: 2px; background: #dcc3f6; opacity: .75; }
+  .custom .mark { position: absolute; left: 0; right: 0; top: 470px; text-align: center; color: #ffe3a9; font-size: 58px; font-weight: 900; letter-spacing: .16em; }
+  .custom .glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 115%, #fbd59199, transparent 57%); }
+  .custom .ring { position: absolute; left: 50%; top: 50%; width: 540px; height: 540px; margin: -270px; border: 3px solid #ead4aa; border-radius: 50%; box-shadow: 0 0 36px #f7d9a766, inset 0 0 32px #f7d9a744; }
+  .custom .beam { position: absolute; top: -130px; width: 280px; height: 900px; opacity: .75; transform-origin: 50% 0; background: linear-gradient(#ffedcaa8, #f8cf7c22 52%, transparent); clip-path: polygon(47% 0, 53% 0, 100% 100%, 0 100%); }
+  .custom .beam.left { left: 220px; transform: rotate(-18deg); }
+  .custom .beam.right { right: 220px; transform: rotate(18deg); }
+  .custom .eyeline { position: absolute; top: 590px; left: 0; right: 0; height: 4px; background: #ffdea1; box-shadow: 0 0 35px 12px #f2c87688; }
+  .custom.arena { background: radial-gradient(circle at 50% 90%, #7d5367, #34246a 57%, #17112e); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; max-width: 650px; } .option-copy p { min-height: 0; } }
+  @media (prefers-reduced-motion: reduce) { .custom *, .custom { animation: none !important; } }
+</style>
+</head>
+<body>
+<main class="preview">
+  <p class="eyebrow">SMOKE CROWN CUP / MOTION STUDY</p>
+  <h1>大会当日へ、日付が変わる瞬間</h1>
+  <p class="intro">前夜の DAY 13 から大会当日の DAY 14 へ。現行の夜明け演出を基準に、見せる情報と高揚感を変えた3案を比較できます。</p>
+  <div class="toolbar"><button class="primary" id="play-all" type="button">3案を同時に再生</button><span id="status" role="status" aria-live="polite">各案も個別に再生できます。</span></div>
+  <div class="grid">
+    <section class="option" data-variant="a"><div class="screen"><div class="scene" data-day="13"><div class="scene-after"><strong>DAY 13</strong><small>大会前夜</small></div><div class="fx"></div></div></div><div class="option-copy"><h2><span class="letter">A</span>夜明けの延長</h2><p>現行の波の幕と数字めくりをそのまま再生。大会当日の朝への自然なつながりを確認する基準案。</p><button type="button">Aを再生</button></div></section>
+    <section class="option" data-variant="b"><div class="screen"><div class="scene" data-day="13"><div class="scene-after"><strong>DAY 13</strong><small>大会前夜</small></div><div class="fx"></div></div></div><div class="option-copy"><h2><span class="letter">B</span>カウントがゼロへ</h2><p>現行の紫の幕と数字めくりを使い、残り1日が消える瞬間から「大会当日」を大きく見せる案。</p><button type="button">Bを再生</button></div></section>
+    <section class="option" data-variant="c"><div class="screen"><div class="scene" data-day="13"><div class="scene-after"><strong>DAY 13</strong><small>大会前夜</small></div><div class="fx"></div></div></div><div class="option-copy"><h2><span class="letter">C</span>会場の光へ</h2><p>現行の夜明けの地平線をスポットライトへ展開。日付の切り替えから本番の舞台へ勢いをつなぐ案。</p><button type="button">Cを再生</button></div></section>
+  </div>
+  <p class="note">このページは演出比較用です。ゲームの保存データは読み書きしません。動きを減らす設定では簡易表示になります。</p>
+</main>
+<script type="module">
+import { nightToMorning } from './js/core/transitions.js';
+import { move, reducedMotion, EASE } from './js/core/transition-kit.js';
+import { sleep } from './js/core/util.js';
+
+const options = [...document.querySelectorAll('.option')];
+const allButton = document.getElementById('play-all');
+const status = document.getElementById('status');
+const busy = new Set();
+
+function fit() {
+  for (const option of options) {
+    const screen = option.querySelector('.screen');
+    option.querySelector('.scene').style.transform = `scale(${screen.clientWidth / 1280})`;
+  }
+}
+new ResizeObserver(fit).observe(document.querySelector('.grid'));
+fit();
+
+function reset(option) {
+  const scene = option.querySelector('.scene');
+  scene.dataset.day = '13';
+  scene.querySelector('.scene-after').innerHTML = '<strong>DAY 13</strong><small>大会前夜</small>';
+  scene.querySelector('.fx').replaceChildren();
+}
+function nextDay(option) {
+  const scene = option.querySelector('.scene');
+  scene.dataset.day = '14';
+  scene.querySelector('.scene-after').innerHTML = '<strong>DAY 14</strong><small>大会当日</small>';
+}
+function part(className, text = '') { const node = document.createElement('div'); node.className = className; node.textContent = text; return node; }
+async function show(node, delay = 0, ms = 350) {
+  if (delay) await sleep(delay);
+  await move(node, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], ms, { easing: EASE.out });
+}
+async function flipText(node, before, after) {
+  node.innerHTML = `<span class="tr-flip"><i>${before}</i><i style="transform:rotateX(-90deg);opacity:0">${after}</i></span>`;
+  const [oldValue, newValue] = node.querySelector('.tr-flip').children;
+  await move(oldValue, [{ transform: 'rotateX(0)', opacity: 1 }, { transform: 'rotateX(90deg)', opacity: 0 }], 170, { easing: EASE.in });
+  await move(newValue, [{ transform: 'rotateX(-90deg)', opacity: 0 }, { transform: 'rotateX(0)', opacity: 1 }], 230, { easing: EASE.out });
+}
+async function custom(option, variant) {
+  const host = option.querySelector('.fx');
+  const reduced = reducedMotion();
+  const layer = part(`custom ${variant === 'c' ? 'arena' : ''}`);
+  layer.style.opacity = '0';
+  host.append(layer);
+  await move(layer, [{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }, { opacity: 1, clipPath: 'inset(0 0 0 0)' }], reduced ? 120 : 540, { easing: EASE.in });
+  nextDay(option);
+  if (variant === 'c') {
+    const glow = part('glow'), left = part('beam left'), right = part('beam right'), ring = part('ring'), day = part('large-day'), caption = part('caption', 'SMOKE CROWN CUP'), mark = part('mark', '大会当日'), eyeline = part('eyeline');
+    day.innerHTML = '<small>DAY</small><span>13</span>';
+    layer.append(glow, left, right, ring, day, caption, mark, eyeline);
+    if (!reduced) {
+      await show(day);
+      await flipText(day.querySelector('span'), '13', '14');
+      await Promise.all([show(left, 0, 550), show(right, 0, 550), show(ring, 0, 550)]);
+      await show(caption, 50); await show(mark, 100, 500);
+      await sleep(650);
+      await move(layer, [{ opacity: 1, clipPath: 'inset(0 0 0 0)' }, { opacity: 0, clipPath: 'inset(0 0 100% 0)' }], 680, { easing: EASE.out });
+    } else { day.querySelector('span').textContent = '14'; await sleep(1100); }
+  } else {
+    const day = part('large-day'), caption = part('caption', 'SMOKE CROWN CUP まで あと 1 日'), line = part('line'), mark = part('mark', '大会当日');
+    day.innerHTML = '<small>DAY</small><span>13</span>';
+    layer.append(day, caption, line, mark);
+    mark.style.opacity = '0';
+    if (!reduced) {
+      await show(day);
+      await show(caption, 100); await show(line, 0, 200);
+      await flipText(day.querySelector('span'), '13', '14');
+      await move(caption, [{ opacity: 1 }, { opacity: 0 }], 240);
+      caption.textContent = 'SMOKE CROWN CUP まで あと 0 日';
+      await show(caption, 0, 260);
+      await sleep(260);
+      caption.textContent = 'SMOKE CROWN CUP';
+      await show(mark, 0, 500);
+      await sleep(640);
+      await move(layer, [{ opacity: 1, clipPath: 'inset(0 0 0 0)' }, { opacity: 0, clipPath: 'inset(0 0 100% 0)' }], 660, { easing: EASE.out });
+    } else { day.querySelector('span').textContent = '14'; caption.textContent = 'SMOKE CROWN CUP'; mark.style.opacity = '1'; await sleep(1100); }
+  }
+  layer.remove();
+}
+async function play(option) {
+  if (busy.has(option)) return;
+  busy.add(option);
+  const button = option.querySelector('button');
+  button.disabled = true;
+  reset(option);
+  try {
+    if (option.dataset.variant === 'a') await nightToMorning(option.querySelector('.fx'), async () => { nextDay(option); return { fromDay: 13, day: 14, fromLeft: 1, left: 0, weather: null }; });
+    else await custom(option, option.dataset.variant);
+  } catch (error) {
+    status.textContent = `再生エラー: ${error.message}`;
+    console.error(error);
+  } finally { button.disabled = false; busy.delete(option); allButton.disabled = false; }
+}
+for (const option of options) option.querySelector('button').addEventListener('click', () => play(option));
+allButton.addEventListener('click', async () => {
+  if (busy.size) return;
+  allButton.disabled = true;
+  status.textContent = '3案を再生中…';
+  await Promise.all(options.map(play));
+  status.textContent = '再生終了。もう一度再生できます。';
+});
+</script>
+</body>
+</html>
