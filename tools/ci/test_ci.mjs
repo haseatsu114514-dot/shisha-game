@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
-import { BASE_SPARSE, globToRegExp, loadManifest, matchesAny, ROOT, selectSuites, shard } from "./lib.mjs";
+import { BASE_SPARSE, PR_BROWSER_MAX_WEIGHT, browserSuites, globToRegExp, loadManifest, matchesAny, ROOT, selectSuites, shard } from "./lib.mjs";
 
 const manifest = loadManifest();
 
@@ -44,7 +44,7 @@ test("suite manifest is complete and consistent", () => {
 
 test("only removed workflows' tests changed owner, nothing selects nothing", () => {
   assert.equal(selectSuites(manifest, ["README.md"]).length, 0);
-  assert.equal(selectSuites(manifest, ["tools/ci/suites.json"]).length, manifest.suites.filter((s) => s.kind === "browser").length);
+  assert.equal(selectSuites(manifest, ["tools/ci/suites.json"]).length, 0);
   const craft = selectSuites(manifest, ["remake/js/craft/water-pour.js"]).map((s) => s.id);
   assert.ok(craft.includes("water-pour"));
   assert.ok(matchesAny("data/dialogue/ch1_main.json", manifest.suites.find((s) => s.id === "ch1-presentation").paths));
@@ -69,12 +69,18 @@ test("chapter 3 changes do not start unrelated chapter and feature suites", () =
   assert.ok(selected.size < 25, `chapter 3 selected ${selected.size} browser suites`);
 });
 
-test("shared runtime changes still run every browser suite", () => {
-  const all = manifest.suites.filter((s) => s.kind === "browser").length;
-  for (const file of ["remake/js/core/state.js", "remake/js/vn/engine.js", "data/characters.json"])
-    assert.equal(selectSuites(manifest, [file]).length, all, `${file} must run all suites`);
-  assert.ok(selectSuites(manifest, ["remake/test/browser/save_load.mjs"])
-    .some((s) => s.id === "save-load"));
+test("PR browser selection keeps related short suites and changed tests", () => {
+  const all = browserSuites(manifest);
+  for (const file of ["remake/js/core/state.js", "remake/js/vn/engine.js", "data/characters.json"]) {
+    const selected = selectSuites(manifest, [file]);
+    assert.ok(selected.length > 0 && selected.length < all.length, `${file} should select a focused set`);
+    assert.ok(selected.every((s) => s.weight <= PR_BROWSER_MAX_WEIGHT));
+  }
+  assert.deepEqual(selectSuites(manifest, ["remake/js/core/train-icon.js"]).map((s) => s.id),
+    ["home-rig-backgrounds", "maps-and-shop"]);
+  assert.ok(selectSuites(manifest, ["remake/test/browser/play_spots.mjs"])
+    .some((s) => s.id === "play-spots"), "a changed browser test runs its long suite");
+  assert.equal(browserSuites(manifest).length, all.length, "nightly still has every suite");
 });
 
 test("sharding keeps every suite once and stays within the group limit", () => {

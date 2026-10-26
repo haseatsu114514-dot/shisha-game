@@ -1,16 +1,12 @@
 {
-  "$comment": "CI test suites. Quick suites run on every event. Browser suites run when a changed file matches one of their paths (or a path in always_all). Add a test here instead of adding a workflow.",
+  "$comment": "Quick suites run on every event. PR browser suites are path-selected and limited to short suites, except when their browser test files change. The nightly run executes every browser suite. Add a test here instead of adding a workflow.",
   "always_all": [
     ".github/workflows/ci.yml",
-    "tools/ci/**",
     "remake/test/browser/package.json",
     "remake/test/browser/package-lock.json",
     "remake/tools/serve_preview.py",
     "remake/test/browser/support.mjs",
-    "remake/js/core/**",
-    "remake/js/vn/**",
-    "remake/css/base.css",
-    "data/characters.json"
+    "remake/css/base.css"
   ],
   "suites": [
     {
@@ -1860,7 +1856,8 @@
         "remake/test/store_logos.mjs",
         "remake/test/browser/facility_map.mjs",
         "remake/test/browser/map_reveals.mjs",
-        "remake/test/browser/shop_ui.mjs"
+        "remake/test/browser/shop_ui.mjs",
+        "remake/js/core/train-icon.js"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
