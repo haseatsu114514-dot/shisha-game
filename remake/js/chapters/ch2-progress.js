@@ -17,7 +17,7 @@ export function dayOneProgress(value) {
   return value.flags._ch2_day1 ||= { startDay: value.day, stage: "departure", titleSeen: false };
 }
 
-// オーナー承認: DAY8夜だけサメがTRPGに参加できる。通常の勤務や入部条件は変えない。
+// DAY8夜の旧セーブ互換用の空き枠。現行の卓は営業後に集まるため通常シフトでは塞がれない。
 // 既存保存の明示的な個別予定を上書きせず、再開しても同じ予定を重複登録しない。
 export function scheduleChapterTwoTrpgNight(value, startDay) {
   if (value?.chapter !== 2 || !Number.isInteger(startDay) || startDay < 1
