@@ -86,23 +86,12 @@ async function reload(page,slot=0,touch=false) {
   await page.evaluate(()=>{window.__remake.vnTest.turbo=true;window.__remake.vnTest.choose=()=>0;});
   await press(dt(`slot-${slot}`));
 }
-async function finishChapterThreePrologue(page,touch=false) {
-  const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
-  await page.locator(dt('ch3-video-site')).waitFor();
-  const atVideo=await get(page);
-  assert.equal(atVideo.flags._ch3_intro.prologueStep,1);
-  assert.equal(atVideo.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
-  await assertFits(page,'.ch3-video-site, .ch3-video-recommendation, .ch3-video-caption, .ch3-video-player-controls, .ch3-video-thought');
-  await press(dt('ch3-video-select-hajime'));
-  await press(dt('ch3-video-play'));
-  await press(dt('ch3-video-rewind'));
-  assert.match(await page.locator('.ch3-video-thought').innerText(),/試したいこと.*勝たないといけない.*準備しよう/);
-  await capture(page,touch?'ch3-kuze-video-touch':'ch3-kuze-video-pc');
-  await press(dt('ch3-video-continue'));
+async function finishChapterThreePrologue(page) {
   await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_opening"]').waitFor({timeout:60000});
   const reached=await get(page);
   assert.equal(reached.flags._ch3_intro.prologueStep,4);
   assert.equal(reached.flags._ch3_intro.titleSeen,true);
+  assert.equal(reached.met.kuze,undefined,'The anonymous prologue must not reveal Kuze to Hajime');
 }
 // play() の入口で、実VNと同じ名乗り・カットインの副作用を作ってから制御を止める。
 // onLine で throw すると非同期表示側の拒否となり、play() の失敗を再現できない。
@@ -156,25 +145,47 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
-  await check('chapter-three-prologue-resumes-anonymous-video',async page=>{
-    await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
-    await page.evaluate(async()=>{const core=await import('./js/core/state.js');core.state.phase='cleared';core.state.flags._ch2_cleared=true;core.save();});
+  await check('chapter-three-prologue-resumes-anonymous-research',async page=>{
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js'),s=core.newGame();
+      Object.assign(s,{chapter:3,day:29,slot:0,phase:'opening'});
+      s.flags={_elapsed_calendar:true,_ch2_cleared:true,
+        _ch3_intro:{startDay:29,stage:0,titleSeen:false,prologueStep:0,routeVersion:2}};
+      Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
+      core.saveConfig();core.save();
+      const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+      window.__texts=[];
+      vn.hooks.onLine=(id,line)=>{
+        if(line.text)window.__texts.push(line.text);
+        if(id==='ch3_kuze_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
+      };
+      void (await import('./js/chapters/ch3.js')).resumeChapterThree();
+    });
     const before=await get(page);
-    await page.locator(t('chapter-three')).click();
-    await page.locator(dt('ch3-video-site')).waitFor();
+    await page.waitForFunction(()=>window.__remake.state.flags._ch3_intro?.prologueStep===1
+      && document.querySelector('#vn.active .vn-text')?.textContent.includes('机のパソコン'));
     assert((await page.evaluate(()=>window.__texts)).some(line=>line.includes('友達だもん')));
-    const onVideo=await get(page);
-    assert.equal(onVideo.flags._ch3_intro.prologueStep,1);
-    await reload(page);
-    await page.locator(dt('ch3-video-site')).waitFor();
+    assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_ch3_kuze_video')));
+    assert.equal((await get(page)).flags._ch3_intro.prologueStep,1);
+    await page.reload();await page.locator(dt('title-load')).click();
+    await page.evaluate(async()=>{
+      const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+      window.__researchReplayLines=[];
+      vn.hooks.onLine=(id,line)=>{
+        if(line.text)window.__researchReplayLines.push({id,text:line.text});
+        if(id==='ch3_kuze_research'&&line.text?.includes('机のパソコン'))vn.vnTest.turbo=false;
+      };
+    });
+    await page.locator(dt('slot-0')).click();
+    await page.waitForFunction(()=>document.querySelector('#vn.active .vn-text')?.textContent.includes('机のパソコン'));
     assert.equal((await get(page)).flags._ch3_intro.prologueStep,1);
     assert.equal((await get(page)).met.kuze,undefined);
-    await page.locator(dt('ch3-video-select-hajime')).click();
-    await page.locator(dt('ch3-video-play')).click();
-    await reload(page);
-    await page.locator(dt('ch3-video-site')).waitFor();
-    assert.equal(await page.locator(dt('ch3-video-rewind')).count(),0,'Interrupted viewing starts at the video, not a completed rewind');
+    await page.evaluate(()=>{window.__remake.vnTest.turbo=true;});
+    await page.keyboard.press('Enter');
     await finishChapterThreePrologue(page);
+    const replay=await page.evaluate(()=>window.__researchReplayLines);
+    assert(replay.every(line=>line.id!=='ch3_childhood_opening'),'Completed childhood memory must not replay');
+    assert(replay.some(line=>line.text.includes('試したいことができた')),'The research must finish as story dialogue');
     const after=await get(page);
     for(const key of ['money','stamina','stats','flavorStock','lovers','relationshipMemories'])
       assert.deepEqual(after[key],before[key],`Prologue changed ${key}`);
@@ -209,7 +220,7 @@ await suite('ch2-tournament',async check=>{
     await seed(page,{stage:'complete'});await page.locator(t('complete')).waitFor();
     await page.evaluate(async()=>{const c=await import('./js/core/state.js');c.state.phase='cleared';c.state.flags._ch2_cleared=true;c.save();});
     const before=await get(page);await press(t('chapter-three'));
-    await finishChapterThreePrologue(page,touch);
+    await finishChapterThreePrologue(page);
     await page.locator(scene('ch3_opening')).waitFor();await checkGuide();
     assert.match(await page.locator(guide).innerText(),/東京駅/);
     assert.doesNotMatch(await page.locator(guide).innerText(),/mukai|煙幕|鉄の煙/);
