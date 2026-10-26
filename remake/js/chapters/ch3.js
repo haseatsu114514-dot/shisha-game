@@ -12,12 +12,11 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
-import { showKuzeVideoSite } from "./ch3-kuze-video.js";
 import { openShop } from "../daily/shop.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 
 const FILES = {
-  ch3_prologue: ["ch3_childhood_opening", "ch3_train_arrival"],
+  ch3_prologue: ["ch3_childhood_opening", "ch3_kuze_research", "ch3_train_arrival"],
   ch3_main: ["ch3_opening", "ch3_registration", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
@@ -245,18 +244,9 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 1) {
-    await setBg(bgUrl("bg_ch3_kuze_video"), { instant: true });
-    if (!current(owner)) return;
-    hud(owner);
-    showKuzeVideoSite({
-      onMenu: () => openMenu(owner),
-      onDone: () => perform(owner, async () => {
-        progress.prologueStep = 2;
-        save();
-        await renderPrologue(owner);
-      }),
-    });
-    return;
+    if (!await readPrologue(owner, "ch3_kuze_research", "bg_ch3_kuze_video")) return;
+    progress.prologueStep = 2;
+    save();
   }
   if (progress.prologueStep === 2) {
     await chapterTitle({ no: "第三章", name: "嘘つきたちの夜", read: "SMOKE AND MIRRORS",
