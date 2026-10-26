@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-26 14:38 UTC",
+ "generated": "2026-10-26 15:30 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -352,6 +352,8 @@
   "bg_street_overcast_day.png",
   "bg_street_overcast_night.png",
   "bg_title.png",
+  "bg_tokyo_map_day.png",
+  "bg_tokyo_map_night.png",
   "bg_tonari_customer_hands.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
@@ -2042,6 +2044,8 @@
   "backgrounds/bg_street_overcast_day.png",
   "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
+  "backgrounds/bg_tokyo_map_day.png",
+  "backgrounds/bg_tokyo_map_night.png",
   "backgrounds/bg_tonari_customer_hands.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
@@ -2067,7 +2071,9 @@
   "cgs/cg_ch2_ageha_purikura_strip.png",
   "cgs/cg_ch2_ageha_purikura_strip_gal.png",
   "cgs/cg_ch2_ageha_purikura_strip_soft.png",
+  "cgs/cg_ch3_childhood_offered_hand.png",
   "cgs/cg_kuze_mashiro_childhood.png",
+  "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
   "cgs/cg_minto_cheki.png",
   "cgs/cg_minto_confession.png",
@@ -2196,7 +2202,10 @@
   "ui/character_intros/hajime.png",
   "ui/character_intros/hiyori.png",
   "ui/character_intros/kumicho.png",
+  "ui/character_intros/kuze.png",
   "ui/character_intros/maezono.png",
+  "ui/character_intros/maki.png",
+  "ui/character_intros/mashiro.png",
   "ui/character_intros/minto.png",
   "ui/character_intros/nagumo.png",
   "ui/character_intros/naru.png",
@@ -2204,9 +2213,13 @@
   "ui/character_intros/pakki.png",
   "ui/character_intros/rei.png",
   "ui/character_intros/rin.png",
+  "ui/character_intros/sai.png",
   "ui/character_intros/samechan.png",
+  "ui/character_intros/steve.png",
   "ui/character_intros/sumi.png",
   "ui/character_intros/tsumugi.png",
+  "ui/character_intros/uranaishi.png",
+  "ui/character_intros/volk.png",
   "ui/continue/approval_stamp.png",
   "ui/continue/backdrop.png",
   "ui/continue/backdrop_stage.png",
@@ -2298,15 +2311,6 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "cgs/cg_ch3_childhood_offered_hand.png",
-  "ui/character_intros/mashiro.png",
-  "ui/character_intros/volk.png",
-  "ui/character_intros/kuze.png",
-  "ui/character_intros/steve.png",
-  "ui/character_intros/maki.png",
-  "ui/character_intros/sai.png",
-  "ui/character_intros/uranaishi.png",
-  "cgs/cg_mashiro_double_apple.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
  ]
 }

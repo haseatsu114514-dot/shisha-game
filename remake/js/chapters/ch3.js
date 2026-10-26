@@ -14,6 +14,7 @@ import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { showKuzeVideoSite } from "./ch3-kuze-video.js";
 import { openShop } from "../daily/shop.js";
+import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 
 const FILES = {
   ch3_prologue: ["ch3_childhood_opening", "ch3_train_arrival"],
@@ -96,7 +97,19 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     el("p.ch2-contest-description", { text: description }),
     sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
-    el("div.ch2-contest-actions", [...actions, ...(["scene", "free", "ready"].includes(name) ? [
+    el("div.ch2-contest-actions", [...actions,
+      ...(["free", "ready"].includes(name) ? [button(owner, "東京の地図", "map", async () => {
+        const { openChapterThreeMap } = await import("./ch3-map.js");
+        if (!current(owner)) return;
+        const window = chapterThreeFreeTime(state);
+        const selection = await openChapterThreeMap(state, chapterThreeScenes(state), {
+          freeTime: !!window, allowGym: !!window && chapterThreeGymAvailability(state, window.id).ok,
+        });
+        if (!current(owner)) return;
+        if (selection !== "gym" || !window) return;
+        await trainInTokyo(owner, window.id);
+        if (current(owner)) await renderStage(owner);
+      })] : []), ...(["scene", "free", "ready"].includes(name) ? [
       button(owner, "東京の店で葉を買う", "shop", async () => {
         await openShop({ branch: "tokyo" });
         if (current(owner)) await renderStage(owner);
@@ -270,9 +283,11 @@ async function readScene(owner, scene) {
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
   const restoreMeeting = meetingCheckpoint(dialogue);
   const background = bgUrl(scene.bg);
+  // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない。
+  showScreen("none", null);
+  hud(owner);
   await setBg(background, { instant: true });
   if (!current(owner)) return false;
-  showScreen("none", null);
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
   const controller = new AbortController();
@@ -373,11 +388,13 @@ async function renderFreeTime(owner, window) {
   const eligible = id && visitContacts(state, definitions).includes(id)
     && (!plan.met || !state.flags._story_shuraba_unresolved);
   const name = id ? displayName(id, state, { context: "private" }) : "";
-  await setBg(bgUrl(window.slot ? "bg_street_night" : "bg_street_day"), { instant: true });
+  const gym = chapterThreeGymAvailability(state, window.id);
+  await setBg(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { instant: true });
   if (!current(owner)) return;
-  card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}の約束`,
+  card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}${plan ? "の約束" : "の自由時間"}`,
     eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
-      : "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。", [
+      : plan ? "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。"
+        : "次の予定まで、少し時間がある。街で体を動かすか、休んで過ごそう。", [
     ...(eligible ? [button(owner, plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
       const kind = plan.met ? "date" : "meetup";
       if (dueTokyoVisit(state, window)?.id !== plan.id) return;
@@ -387,12 +404,25 @@ async function renderFreeTime(owner, window) {
       save();
       await renderStage(owner);
     }, true)] : []),
+    ...(gym.ok ? [button(owner, "チョイザップで体を動かす", "gym", async () => {
+      await trainInTokyo(owner, window.id);
+      if (current(owner)) await renderStage(owner);
+    }, true)] : []),
     button(owner, "この時間は休む", "visit-rest", async () => {
-      if (!completeChapterThreeFreeTime(state, window.id)) return;
-      save();
+      if (!restChapterThreeFreeTime(window.id, { isCurrent: () => current(owner) })) return;
       await renderStage(owner);
     }),
-  ], "合流と散歩は、それぞれ一回の自由時間を使います。", "");
+  ], plan ? "合流と散歩は、それぞれ一回の自由時間を使います。"
+    : "会員証は東京でも使えます。トレーニングは一日一回、追加料金はかかりません。", "");
+}
+
+async function trainInTokyo(owner, windowId) {
+  if (!current(owner) || !chapterThreeGymAvailability(state, windowId).ok) return false;
+  showScreen("none", null);
+  hud(owner);
+  const controller = owner.controller = new AbortController();
+  try { return await visitChapterThreeGym(windowId, { signal: controller.signal, isCurrent: () => current(owner) }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 function renderError(owner) {

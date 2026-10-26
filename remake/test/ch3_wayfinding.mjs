@@ -35,10 +35,12 @@ const missing = freeze({ chapter: 3, flags: {} }); assert.equal(model(missing, s
 const guide = render(frozen, scenes, scenes[2].id);
 const walk = n => [n, ...(n.children || []).filter(Boolean).flatMap(walk)];
 assert.equal(guide["aria-label"], "東京の行程");
-for (const n of walk(guide)) {
-  assert(!/^(button|a|input|select)(?:[.#]|$)/.test(n.spec), "Guide must not add an action");
-  assert(!n.onclick, "Guide must not register a progress callback");
-}
+const actions = walk(guide).filter(n => /^(button|a|input|select)(?:[.#]|$)/.test(n.spec));
+assert.equal(actions.length, 1, "Only the read-only map may add a control");
+assert.equal(actions[0].dataset.test, "ch3-map-open");
+assert.equal(actions[0].text, "東京の地図");
+assert.equal(typeof actions[0].onclick, "function");
+for (const n of walk(guide).filter(n => n !== actions[0])) assert(!n.onclick, "No story progress callback in the guide");
 const strings = walk(guide).map(n => n.text || "").join(" ");
 assert(strings.includes(scenes[2].label)); assert(!strings.includes(scenes[15].label), "No future-scene spoiler");
-console.log("ch3-wayfinding: checkpoint projection, serialized resume, invalid-state and passive DOM contracts PASS (no browser/disk LOAD)");
+console.log("ch3-wayfinding: checkpoint projection, serialized resume, invalid-state and read-only map entry contracts PASS (no browser/disk LOAD)");

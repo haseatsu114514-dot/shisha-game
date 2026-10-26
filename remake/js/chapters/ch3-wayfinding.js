@@ -20,7 +20,7 @@ export function chapterThreeWayfinding(value, scenes) {
   };
 }
 
-/** 表示中のscene IDに一致するときだけ添える。既存の「続きを読む」とMENUが操作入口。 */
+/** 表示中のscene IDに一致するときだけ添える。地図は閲覧だけで行程を進めない。 */
 export function createChapterThreeWayfinding(value, scenes, sceneId) {
   const model = chapterThreeWayfinding(value, scenes);
   if (!model || model.target.id !== sceneId) return null;
@@ -29,8 +29,22 @@ export function createChapterThreeWayfinding(value, scenes, sceneId) {
     el("strong", { text: scene.location }),
     el("span", { text: `DAY ${scene.day}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}` }),
   ]);
+  const mapButton = el("button.btn.ch3-wayfinding-map", {
+    type: "button", text: "東京の地図", dataset: { test: "ch3-map-open" },
+    onclick: async () => {
+      if (mapButton.disabled) return;
+      mapButton.disabled = true;
+      try {
+        const { openChapterThreeMap } = await import("./ch3-map.js");
+        if (mapButton.isConnected) await openChapterThreeMap(value, scenes, { sceneId, allowGym: false });
+      } finally {
+        mapButton.disabled = false;
+        if (mapButton.isConnected) mapButton.focus({ preventScroll: true });
+      }
+    },
+  });
   return el("aside.ch3-wayfinding", { "aria-label": "東京の行程", dataset: { test: "ch3-wayfinding" } }, [
-    el("p.ch3-wayfinding-title", { text: "東京の行程" }),
+    el("div.ch3-wayfinding-heading", [el("p.ch3-wayfinding-title", { text: "東京の行程" }), mapButton]),
     el("div.ch3-wayfinding-stops", [
       model.previous ? node("直前に読んだ場面", model.previous) : null,
       node("これから読む場面", model.target, true),
