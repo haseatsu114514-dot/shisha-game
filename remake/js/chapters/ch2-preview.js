@@ -3,6 +3,7 @@ import { DB, loadAll } from "../core/data.js";
 import { newState, setState, state } from "../core/state.js";
 import { el } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
+import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { initLayers, layers, setBg, imageReady } from "../core/ui.js";
 import { unlockAudio } from "../core/audio.js";
 import { play, vnTest } from "../vn/engine.js";
@@ -136,7 +137,7 @@ function mapPin(stop, index) {
       if (ROOMS[stop.id]) renderStopMenu(stop);
       else renderMap();
       say(`${stop.name}での挨拶を読みました。${visited.size}か所、全${STOPS.length}か所。`);
-      focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`));
+      focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-station" : `ch2-preview-pin-${stop.id}`));
     }),
   }, [
     el("span.ch2-pin-num", { text: read ? "✓" : String(index + 1), "aria-hidden": "true" }),
@@ -185,7 +186,7 @@ async function visitInside(stop) {
   if (!await showMapBackground()) return;
   renderMap();
   say(`${stop.name}の見学を終えました。`);
-  focusTest(allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`);
+  focusTest(allRead() ? "ch2-preview-station" : `ch2-preview-pin-${stop.id}`);
 }
 
 function allRead() { return arrivalRead && visited.size === STOPS.length; }
@@ -195,7 +196,7 @@ function renderMap() {
   layers.hud.replaceChildren();
   const station = el("li", { style: { left: "15%", top: "34%" } }, [
     el("button.ch2-pin.station", { type: "button", disabled: busy, dataset: { test: "ch2-preview-station" }, "aria-label": "駅へ戻り、試遊を終える", onclick: () => perform(returnHome) }, [
-      el("span.ch2-pin-num", { text: "↖", "aria-hidden": "true" }),
+      el("span.ch2-pin-num.train-icon", { html: TRAIN_ICON_SVG }),
       el("span.ch2-pin-title", { text: "駅へ戻る" }),
       el("span.ch2-pin-caption", { text: "地元へ戻る" }),
     ]),
@@ -221,7 +222,6 @@ function renderMap() {
         `${visited.size} / ${STOPS.length}`, el("small", { text: "か所読了" }),
       ]),
       el("p", { text: allRead() ? "今日はここまで。駅へ戻り、地元の店へ持ち帰ろう。" : "店と会場で短い挨拶ができます。途中でも、駅から地元へ戻れます。" }),
-      button("駅へ戻る", "ch2-preview-return", () => perform(returnHome), allRead() ? "btn primary" : "btn"),
     ]),
     el("footer.ch2-map-footer", [
       el("p", { text: "第2章・街歩き試遊　｜　初日の街歩き・県大会未収録・セーブ変更なし" }),
