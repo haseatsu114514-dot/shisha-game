@@ -2,10 +2,10 @@ import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 寝る前の一服（家シーシャ・#638 オーナー依頼）。昼と夜に行動したうえでの“ちょい足し”で、行動の枠は使わない。
 // 一日の終わり（帰宅のあと・就寝の前）に聞く。自分の葉を12g決めたら、あとは短い場面が進む。
 // 自分で配合すれば模索になり（美味しい／普通／イマイチ）、面倒ならレシピ帳から作れる。
-// 伸びるのはその時点で一番低い能力（台で量が違う: 卓上台 0.5P・大会公式モデル 0.75P）。体力を少し使う。
+// 育つのは配合したフレーバーの熟練度だけ。ステータスは増えず、体力24を使う。
 import { DB } from "../core/data.js";
-import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat, statCap, addStamina, staminaAfter, maxStamina } from "../core/stats.js";
+import { state, save } from "../core/state.js";
+import { addStamina, staminaAfter, maxStamina } from "../core/stats.js";
 import { coldRisk } from "../core/illness.js";
 import { el } from "../core/util.js";
 import { modal, toast } from "../core/ui.js";
@@ -23,12 +23,6 @@ const HOME_BG = "res://assets/backgrounds/bg_home_night.png";
 const leafName = (id) => String(DB.flavorById?.[id]?.short_name || DB.flavorById?.[id]?.name || id).split(" ").pop();
 const familyOf = (id) => DB.flavorById?.[id]?.family || id;
 const dayKey = (s) => `${s.chapter || 1}:${s.day}`;
-
-/** その時点で一番低い能力（上限に届いた能力は除く。同じ値なら並び順）。全部上限なら null */
-export function lowestStat(stats = state.stats, cap = statCap()) {
-  const open = STAT_KEYS.filter((k) => (stats?.[k] || 0) < cap);
-  return open.sort((a, b) => (stats[a] || 0) - (stats[b] || 0))[0] || null;
-}
 
 /** 味の手応え。レシピどおりならたいてい美味しい、組み合わせが散ると普通、噛み合わないとイマイチ */
 export function tasteOf(info) {
@@ -80,15 +74,10 @@ export function applyHomeShisha(mix, rig, s = state) {
   s.flags._home_shisha_day = dayKey(s);
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
-  // 自分で組んで当てたレシピはレシピ帳へ（伸びは一番低い能力だけにするので、センスのおまけは付けない）
+  // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。
   const found = info.recipe && !s.recipes?.[info.recipe.id] ? info.recipe : null;
   if (found) (s.recipes ||= {})[found.id] = { day: s.day, home: true };
-  return { info, taste, found, stat: lowestStat(s.stats) };
-}
-
-/** 一番低い能力を台の分だけ伸ばす（1P未満は次の1Pまでの進みとして持ち越す）。1Pに届いたら通常の能力アップ通知 */
-export function growHomeStat(stat, rig) {
-  return stat ? gainStat(stat, rig.growth) : 0;
+  return { info, taste, found };
 }
 
 // ---------------------------------------------------------------- 画面

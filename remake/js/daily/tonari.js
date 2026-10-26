@@ -1,4 +1,4 @@
-import { gainFlavorExperience, masteryLabel, staffFlavors, staffStock } from "../core/flavor-mastery.js";
+import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
@@ -268,7 +268,6 @@ async function serveShiftOrder() {
     { speaker: "hajime", face: "normal", text: "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した。" },
   ] }, { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return;
-  gainFlavorExperience(state, order.mixes[index], 2, DB.flavorById);
+  // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
-  toast(Object.keys(order.mixes[index]).map(id => `${DB.flavorById[id]?.short_name || id} ${masteryLabel(state, id, DB.flavorById)}`).join(" ／ "));
 }

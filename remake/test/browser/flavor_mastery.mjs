@@ -24,11 +24,13 @@ await suite('flavor-mastery',async check=>{
   await page.evaluate(async()=>{
    const core=await import('./js/core/state.js');const s=core.newGame();s.flavorStock={lemon:50};s.weatherSeed=0;s.day=8;
    const craft=await import('./js/craft/session.js');craft.craftTest.auto='good';
-   window.practiceDone=false;void (await import('./js/craft/practice.js')).runFullPractice({staffPractice:true,kind:'self'}).then(()=>practiceDone=true);
+   window.practiceDone=false;void (await import('./js/craft/practice.js')).runFullPractice({staffPractice:true,kind:'self'}).then(cs=>{window.finishedPractice=cs;practiceDone=true;});
   });
   await page.waitForFunction(()=>practiceDone,null,{timeout:120000});
-  const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,runs:__remake.state.flags._craft_practice_runs}));
+  const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,runs:__remake.state.flags._craft_practice_runs,mix:finishedPractice.mix,own:finishedPractice.practiceSpent.own}));
   assert(Object.values(result.xp).reduce((a,b)=>a+b,0)>=2);assert.equal(result.runs.length,1);assert.equal(result.runs[0].served,true);
+  const total=Object.values(result.mix).reduce((a,b)=>a+b,0),budget=2+4*Object.values(result.own).reduce((a,b)=>a+b,0)/total;
+  for(const [id,g] of Object.entries(result.mix))assert.equal(result.xp[id],Math.round(budget*g/total*1000)/1000,'staff practice divides experience by grams');
  });
  await check('first-lemon-errand' ,async page=>{
   await page.evaluate(async()=>{
@@ -39,6 +41,23 @@ await suite('flavor-mastery',async check=>{
   const bought=await page.evaluate(()=>({money:__remake.state.money,lemon:__remake.state.flavorStock.lemon,mint:__remake.state.flavorStock.mint||0}));
   assert.deepEqual(bought,{money:30000,lemon:50,mint:0});
   await page.locator('[data-test="shop-leave"]').click();await page.waitForFunction(()=>errandDone);
+ });
+ await check('lime-shift-order-survives-close',async page=>{
+  await page.evaluate(async()=>{
+   const core=await import('./js/core/state.js');const s=core.newGame();s.day=3;s.phase='daily';s.flavorStock={lemon:50};
+   (await import('./js/vn/engine.js')).vnTest.turbo=true;
+   const {doBaito}=await import('./js/daily/tonari.js');const {openLime}=await import('./js/daily/phone.js');
+   window.shiftDone=false;
+   void openLime({beforeClose:()=>{void doBaito({called:true}).then(()=>shiftDone=true);}});
+  });
+  await page.locator('[data-test="phone-close"]').click();
+  await page.locator('[data-test="shift-order-0"]').waitFor();
+  await page.waitForTimeout(400); // スマホの閉じる処理が新しい注文を消さないこと
+  await page.locator('[data-test="shift-order-0"]').click();
+  await page.locator('[data-test="after-none"]').click();await page.waitForFunction(()=>shiftDone);
+  const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,stock:__remake.state.flavorStock,money:__remake.state.money}));
+  assert.deepEqual(result.xp,{},'customer orders never grant flavor experience');
+  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=43000);
  });
  await check('lemon-tournament-consumes' ,async page=>{
   await page.evaluate(async()=>{

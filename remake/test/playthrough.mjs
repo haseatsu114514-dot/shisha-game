@@ -19,7 +19,7 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
 // （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
@@ -193,6 +193,8 @@ for (;;) {
   }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {
+    log("stall-detail", JSON.stringify({ snap, limeCoach, limeOpened, fortuneTried,
+      text: await page.locator('body').innerText() }));
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/stuck.png` });
     if (errors.length) log("errors before stall:", JSON.stringify(errors));
     throw new Error(`stuck: ${key}`);
@@ -362,7 +364,7 @@ for (;;) {
   if (snap.screen === "shop") {
     const firstErrandVisit = await page.evaluate(() => !window.__remake.state.flags._errand_shop_done
       && !!document.querySelector(".shop-errand"));
-    // スミさんの頼み（ミント）を買うまでは店を出られない
+    // スミさんの頼み（レモン）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
       const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
@@ -386,7 +388,7 @@ for (;;) {
       log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
       if (firstErrandVisit) {
         if (JSON.stringify(after) !== JSON.stringify(before) || await page.$('.kuji-card.reveal'))
-          throw new Error("First mint errand allowed a kuji purchase");
+          throw new Error("First lemon errand allowed a kuji purchase");
         firstKujiBlocked = true;
       } else {
         if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
@@ -459,9 +461,9 @@ if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=
 if (!s.reel.introDone) throw new Error("slot intro not shown");
 // 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない
 if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pending.length}`);
-// 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
-log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
-if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
+// 1日目の案内: レモンの仕入れ→偵察→スミさんから私物として贈られる。
+log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} lemon=${s.flavors.includes("lemon")}`);
+if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("lemon") || !s.flags._lemon_gift_read) throw new Error("day1 errands not completed as guided");
 // スミさんの配達（DAY2 昼 PEPPERMINT・夜 EDEN）: 初来店を配達の場面で通す
 log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
 if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
@@ -487,15 +489,16 @@ if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not 
 // 実況: 大会中に総合スコア（SCORE）が増えて流れるコメントが出て、結果表に SCORE が載る
 log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
 if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
-// グラム在庫: 大会では詰んだ分だけ減る（再挑戦は会場入り前に戻す）。課題のミントは主催支給で減らない
+// グラム在庫: 大会では課題のレモンも私物から減る（再挑戦は会場入り前に戻す）。
 log(`stock: before=${JSON.stringify(stock0)} after=${JSON.stringify(s.flavorStock)}`);
 if (!stock0 || s.flavorStock.double_apple !== stock0.double_apple - 9) throw new Error("flavor stock not consumed as expected");
-if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("supplied mint should not be consumed");
+if (s.flavorStock.lemon !== stock0.lemon - 3) throw new Error("private lemon should be consumed");
+if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("unused mint should not be consumed");
 // 常連ノート: バイトで接客した客が記録されている
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
-if (!firstKujiBlocked) throw new Error("First mint errand kuji refusal not verified");
+if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);

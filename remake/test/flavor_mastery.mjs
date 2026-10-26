@@ -18,6 +18,9 @@ let s=core.newGame();
 assert.equal(masteryLevel(s,'lemon'),1);
 for(let i=0;i<MASTERY_THRESHOLDS.length;i++){s.flavorMastery.lemon=MASTERY_THRESHOLDS[i];assert.equal(masteryLevel(s,'lemon'),i+1);}
 s.flavorMastery={};
+gainFlavorExperience(s,{lemon:6,mint:6},6,DB.flavorById);
+assert.deepEqual(s.flavorMastery,{lemon:3,mint:3},'6g + 6g splits experience equally');
+s.flavorMastery={};
 gainFlavorExperience(s,{lemon:9,mint:3},6,DB.flavorById);
 assert.deepEqual(s.flavorMastery,{lemon:4.5,mint:1.5});
 gainFlavorExperience(s,{dobaj_mint:12},6,DB.flavorById);assert.equal(masteryLevel(s,'mint'),2);

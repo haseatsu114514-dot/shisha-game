@@ -6,8 +6,8 @@ import { state, save } from "../core/state.js";
 import { emit } from "../core/bus.js";
 import { play, vnTest } from "../vn/engine.js";
 
-export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（伸び 0.5P）
-export const PRO_RIG = "home_rig_pro";    // 大会公式モデルの台（伸び 0.75P・くじの景品）
+export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（試作の熟練度経験値6）
+export const PRO_RIG = "home_rig_pro";    // 大会公式モデルの台（試作の熟練度経験値7.5・くじの景品）
 export const RIG_SCENE = "ch1_sumi_home_rig";
 const FALLBACK_GROWTH = { [SUMI_RIG]: 0.5, [PRO_RIG]: 0.75 };
 
@@ -20,7 +20,7 @@ export function homeRig(s = state) {
   return { id, name: gear?.name || id, growth: Number(gear?.home_growth) || FALLBACK_GROWTH[id] };
 }
 
-/** スミさんから卓上台を受け取る（一度だけ）。中間準備の最後に呼ぶ */
+/** スミさんから卓上台を受け取る（一度だけ）。DAY2の帰宅前に呼ぶ。中間準備は未受領セーブのフォールバック */
 export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
   if (state.owned?.includes(SUMI_RIG) && state.flags._sumi_double_apple_received) return false;
   const owner = state;
