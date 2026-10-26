@@ -2348,23 +2348,25 @@
       "title": "Flavor mastery, inventory and daily stamina budgets",
       "kind": "quick",
       "run": [
-        "node remake/test/flavor_mastery.mjs"
+        "node remake/test/flavor_mastery.mjs",
+        "node remake/test/flavor_expression.mjs",
+        "node remake/test/mastery_balance.mjs",
+        "node remake/test/craft_review.mjs"
       ]
     },
     {
-      "id": "story-assist-rules",
-      "title": "Story craft assist and tournament rule sheets",
+      "id": "tournament-rules",
+      "title": "Tournament rule sheets",
       "kind": "browser",
       "paths": [
-        "remake/js/scenes/craft-assist.js",
         "remake/js/scenes/rule-sheet.js",
         "remake/js/craft/common.js",
         "remake/js/core/state.js",
         "remake/css/rule-sheet.css",
-        "remake/test/browser/story_assist_rules.mjs"
+        "remake/test/browser/tournament_rules.mjs"
       ],
       "run": [
-        "node remake/test/browser/story_assist_rules.mjs"
+        "node remake/test/browser/tournament_rules.mjs"
       ],
       "weight": 1,
       "timeout": 8
@@ -2405,6 +2407,34 @@
       "run": [
         "node remake/test/browser/recent_intros.mjs"
       ]
+    },
+    {
+      "id": "flavor-expression",
+      "title": "Compact flavor features, forecasts and actual cup review",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 8,
+      "paths": [
+        "data/flavors.json",
+        "remake/js/core/flavor-mastery.js",
+        "remake/js/craft/flavor-*.js",
+        "remake/js/craft/steps.js",
+        "remake/js/craft/score.js",
+        "remake/js/craft/result.js",
+        "remake/js/craft/advice.js",
+        "remake/js/daily/shop.js",
+        "remake/css/flavor-guide.css",
+        "remake/css/tournament.css",
+        "remake/index.html",
+        "remake/test/browser/flavor_expression.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/flavor_expression.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/flavor-expression"
+      },
+      "chrome": "playwright"
     }
   ]
 }

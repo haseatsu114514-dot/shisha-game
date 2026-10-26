@@ -10,7 +10,7 @@ import { tier01, star } from "../core/stats.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
-import { operationAuto, craftEase, resultCard, keys, popStamp } from "./common.js";
+import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
@@ -49,7 +49,7 @@ export async function runSteamDodge(cs) {
   const stock = refreshStock();
   const effect = refreshEffect();
   const tutorial = cs.mode === "tutorial";
-  const eased = tutorial || craftEase(cs);
+  const eased = tutorial || cs.retryAssist;
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
@@ -297,7 +297,7 @@ export async function runSteamDodge(cs) {
     await countdown();
     if (!isCurrent()) return;
     running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
-    const auto = operationAuto(cs);
+    const auto = autoSkill();
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
     else await new Promise((resolve) => {
       const gameClock = createCraftClock(panel);
@@ -394,7 +394,7 @@ export async function runSteamDodge(cs) {
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
       cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
-      "蒸らしで入った熱を、吸い出しで最適温へ整える",
+      "蒸らしで入った熱を、吸い出しで適温へ整える",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],
   });

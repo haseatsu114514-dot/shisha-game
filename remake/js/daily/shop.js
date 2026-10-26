@@ -22,7 +22,8 @@ import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
-import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
+import { flavorThermalGuide } from "../craft/temperature-model.js";
+import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -235,23 +236,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const detail = (item, flavor) => {
       if (!live()) return;
       const current = !flavor && DB.equipById[state.equip[item.type]];
-      const cmp = !flavor ? compareEquipment(item.id, current?.id) : null;
       const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: shopProductName(item), className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
-        el("p", { text: flavor ? shopText(item.description) : item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
-        cmp ? el("small.shop-compare", {
-          dataset: { test: "shop-equip-compare" },
-          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
-          text: cmp.rows.map((r) => `${r.label}：${r.value}`).join(" ／ "),
-        }) : null,
-        fGuide ? el("small.shop-flavor-guide", {
-          dataset: { test: "shop-flavor-guide" },
-          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
-          text: `${shopText(fGuide.makerLabel)}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
-        }) : null,
+        flavor ? flavorFeatureCard(item, { description: shopText(item.description), makerLabel: shopText(fGuide?.makerLabel || "") })
+          : equipmentGuide(item, current?.id),
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {
@@ -260,7 +251,9 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const name = `${shopProductName(item)}${flavor ? ` 1箱（${FLAVOR_BOX_GRAMS}g）` : ""}`;
       return el(`div.shop-row.product${selected ? ".selected" : ""}${needed ? ".errand" : ""}`, [
         el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${name}の詳細`, onclick: () => detail(item, flavor) }, [
-          productArt(item, flavor), el("span.shop-main", [el("b", { text: name })]),
+          productArt(item, flavor), el("span.shop-main", [el("b", { text: name }),
+            el("small.shop-feature-tags", { text: flavor ? flavorTags(item) : equipmentUse(item).use }),
+          ]),
         ]),
         el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] })]),
         el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? item.price : item.buy_price) }),

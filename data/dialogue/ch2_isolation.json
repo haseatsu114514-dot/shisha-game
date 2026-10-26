@@ -358,7 +358,7 @@
       "dialogue_id": "ch2_naru_window",
       "comment": "DAY12夜。DAY11の選択を残したまま、ケムリクサの長期休業となるの不在を示す。はじめには行き先を明かさず、読者だけが旅先での修行を見る。報酬・即時和解なし。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_kemurikusa_outside_night.png"
       },
       "lines": [
         {
@@ -434,7 +434,7 @@
         },
         {
           "type": "bg",
-          "bg": "res://assets/backgrounds/bg_street_night.png"
+          "bg": "res://assets/backgrounds/bg_kemurikusa_outside_night.png"
         }
       ],
       "branches": {

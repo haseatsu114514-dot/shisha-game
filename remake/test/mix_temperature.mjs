@@ -63,7 +63,7 @@ for (const flavor of flavors) {
       assert.equal(check(temp, bands), expected, `${flavor.id} ${name} ${temp}`);
       assert.equal(pullResult(temp, 2, 0, bands)[name === "ideal" ? "inZone" : "optimal"], expected);
       const effect = thermalBand(temp, bands);
-      if (name === "optimal") assert.equal(effect.id === "optimal", expected);
+      if (name === "optimal") assert.equal(effect.id === "optimal", expected && bands.expressionWeight < .999);
       else assert.equal(effect.id === "ready" || effect.id === "optimal", expected);
       if (isIdealTemperature(temp, bands)) {
         assert.equal(envAt(temp, bands).fire, 0); assert.equal(envAt(temp, bands).dark, 0); assert.equal(effect.haze, 0);
@@ -72,22 +72,22 @@ for (const flavor of flavors) {
     }
   }
   near(pullResult(bands.center, 2, 0, bands).score, 100);
-  for (const edge of bands.optimal) assert.equal(pullResult(edge, 2, 0, bands).score, 90);
-  for (const edge of bands.ideal) assert.equal(pullResult(edge, 2, 0, bands).score, 65);
+  for (const edge of bands.optimal) assert.equal(pullResult(edge, 2, 0, bands).score, Math.round(90 + 10 * bands.expressionWeight));
+  for (const edge of bands.ideal) assert.equal(pullResult(edge, 2, 0, bands).score, Math.round(65 + 35 * bands.expressionWeight));
   assert.equal(pullResult(bands.center, 5, 5, bands).score, 84);
   assert.equal(pullResult(bands.center, 3, 0, bands, 2).score, 92);
   assert.equal(pullResult(bands.center, 2, 0, bands).score, pullResult(bands.center, 2, 5, bands).score);
   for (let i = 0; i <= 200; i++) {
     const temp = i / 200, effect = envAt(temp, bands);
     for (const value of Object.values(effect).filter(v => typeof v === "number")) assert(Number.isFinite(value));
-    assert.equal(effect.rainbow > 0, isOptimalTemperature(temp, bands), `${flavor.id} rainbow at ${temp}`);
+    assert.equal(effect.rainbow > 0, isOptimalTemperature(temp, bands) && bands.expressionWeight < .999, `${flavor.id} rainbow at ${temp}`);
     if (isIdealTemperature(temp, bands)) assert.equal(effect.fire + effect.dark + effect.sparks, 0);
   }
 }
 assert.equal(thermalBand(.76, mint).id, "ready");
 assert.equal(envAt(.76, mint).fire, 0);
 assert(visualTemperature(.76, mint) > mint.ideal[1] && visualTemperature(.76, mint) < DANGER_TEMP);
-console.log(`[mix temperature] PASS: ${boundaryCases} inclusive green/rainbow edge cases; scoring and continuous effects agree`);
+console.log(`[mix temperature] PASS: ${boundaryCases} inclusive green/rainbow edges; expressive blends stay green across their tasty range`);
 
 assert.deepEqual([DANGER_TEMP, BURST_TEMP, COLD_OUT], [.90, 1, .06]);
 for (const bands of [vanilla, apple, mint, ...flavors.map(f => temperatureBands({ mix: { [f.id]: 12 } }))]) {
@@ -154,19 +154,32 @@ near(hotter.totalWidthScale, reference.totalWidthScale);
 near(hotter.ideal[1] - hotter.ideal[0], reference.ideal[1] - reference.ideal[0]);
 for (const flavor of flavors) {
   const bands = temperatureBands({ mix: { [flavor.id]: 12 } });
-  for (const [temp, expected] of [[bands.center, 100], ...bands.optimal.map(t => [t, 90]), ...bands.ideal.map(t => [t, 65])]) {
+  for (const [temp, expected] of [[bands.center, 100], ...bands.optimal.map(t => [t, 90 + 10 * bands.expressionWeight]),
+    ...bands.ideal.map(t => [t, 65 + 35 * bands.expressionWeight])]) {
     near(temperatureFitness(temp, bands), expected);
-    assert.equal(pullResult(temp, 2, 0, bands).score, expected);
+    assert.equal(pullResult(temp, 2, 0, bands).score, Math.round(expected));
     for (const delta of [-1e-9, 1e-9]) {
       assert(Math.abs(temperatureFitness(temp + delta, bands) - expected) < 1e-5);
-      assert.equal(pullResult(temp + delta, 2, 0, bands).score, expected);
+      assert.equal(pullResult(temp + delta, 2, 0, bands).score, Math.round(expected));
     }
   }
   for (const sign of [-1, 1]) {
     const edge = sign < 0 ? bands.ideal[0] : bands.ideal[1];
-    near(temperatureFitness(edge + sign * .01, bands), 65 - .01 * 360);
+    near(temperatureFitness(edge + sign * .01, bands), 65 + 35 * bands.expressionWeight - .01 * 360);
     assert.equal(temperatureFitness(edge + sign, bands), 0);
   }
   for (const [at, expected] of [[.42, bands.ideal[0]], [.49, bands.optimal[0]], [.54, bands.center], [.59, bands.optimal[1]], [.66, bands.ideal[1]]]) near(visualTemperature(at, bands), expected);
 }
-console.log("[mix temperature] PASS: position/width independence, 100/90/65 both-sided continuity, fixed slope 360, shared visual anchors");
+assert.equal(mint.expressionWeight, 1, "AF mint must support low/high expression");
+for (const temp of [mint.ideal[0], mint.center, mint.ideal[1]]) {
+  assert.equal(temperatureFitness(temp, mint), 100);
+  assert.equal(thermalBand(temp, mint).id, "ready");
+  assert.equal(envAt(temp, mint).rainbow, 0);
+}
+assert.equal(vanilla.expressionWeight, 0, "Unconfigured leaves retain their focused heat curve");
+assert.equal(thermalBand(vanilla.center, vanilla).id, "optimal");
+const mixedExpression = temperatureBands({ mix: { mint: 3, vanilla: 9 } });
+near(mixedExpression.expressionWeight, .25);
+near(temperatureFitness(mixedExpression.ideal[0], mixedExpression), 73.75);
+assert.equal(thermalBand(mixedExpression.center, mixedExpression).id, "optimal");
+console.log("[mix temperature] PASS: position/width independence, continuous classic/expressive curves, fixed outside slope 360 and shared visual anchors");

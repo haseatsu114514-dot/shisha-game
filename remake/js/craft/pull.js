@@ -13,7 +13,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
-import { gradeOf, autoSkill, operationAuto, craftEase, skill, resultCard, keys } from "./common.js";
+import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { burnCoals, HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
@@ -22,6 +22,7 @@ import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
+import { mixExpression } from "./flavor-profile.js";
 import { createCraftClock } from "./clock.js";
 
 export { IDEAL } from "./conditions.js";
@@ -83,7 +84,7 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "針を止めた位置で吸い方が変わる。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。光る芯ほど変化が大きく、中央のキープは温度を保つ（左寄りで微減・右寄りで微増）。吸い終えて温度が変わってから、次の針を止められる。温度計の緑が適温、虹色が最適温。蒸らしで集中できたほど芯が広がり、針がゆっくり動く",
+    hint: "右で温度を上げ、左で下げる。中央はキープ。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
@@ -130,7 +131,7 @@ async function pullGame(cs, mode) {
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  const baseCool = mode.drift ? rand(0.006, 0.013) * (craftEase(cs) ? .55 : 1) : 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
   let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
@@ -209,9 +210,12 @@ async function pullGame(cs, mode) {
     thermometer.preview(running && !drawing && !finished ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     if (choosing) return;
     const inZone = isIdealTemperature(T, bands);
-    const optimal = isOptimalTemperature(T, bands);
+    const expressive = bands.expressionWeight >= .999;
+    const optimal = !expressive && isOptimalTemperature(T, bands);
+    const position = (T - ideal[0]) / (ideal[1] - ideal[0]);
+    const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
     // 今の温度を短い一語で。温度計の印と同じ色にする。
-    const [state, tone] = optimal ? ["最適温", "optimal"] : inZone ? ["適温", "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+    const [state, tone] = optimal ? ["最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
@@ -291,7 +295,7 @@ async function pullGame(cs, mode) {
     cancelAnimationFrame(raf);
     moveNeedle(at);
     pulls++;
-    const duration = operationAuto(cs) ? 120 : DRAW_MS[z.id];
+    const duration = autoSkill() ? 120 : DRAW_MS[z.id];
     const from = coreTemp, to = clamp(from + heatDelta(cs, delta), 0, 1), sway = T - coreTemp;
     play.dataset.draw = z.id;
     play.style.setProperty("--draw-duration", `${duration}ms`);
@@ -375,7 +379,7 @@ async function pullGame(cs, mode) {
     if (!coals) {
       cs.careCoals = { count: 0, picks: [] };
       lead.textContent = "消耗した炭のまま整える。熱は落ちていく";
-      await sleep(operationAuto(cs) ? 60 : 700);
+      await sleep(autoSkill() ? 60 : 700);
       choice.remove();
       choosing = false;
       play.hidden = false;
@@ -388,10 +392,10 @@ async function pullGame(cs, mode) {
     const { picks } = await burnCoals(cs, stage, { count: coals, compact: true });
     coolRate *= coalLifeFactor(picks);
     cs.careCoals = { count: coals, picks };
-    await sleep(operationAuto(cs) ? 40 : 450);
+    await sleep(autoSkill() ? 40 : 450);
     choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = operationAuto(cs) ? 200 : 1400;
+    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       const k = Math.min(1, (gameClock.now() - started) / dur);
       coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
@@ -425,7 +429,7 @@ async function pullGame(cs, mode) {
     render();
   } else serve();
 
-  const auto = operationAuto(cs);
+  const auto = autoSkill();
   if (auto && !failed) {
     (async () => {
       await sleep(60);
@@ -474,6 +478,8 @@ async function pullGame(cs, mode) {
   }
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, safeLimit);
+  const expression = mixExpression(cs, T);
+  const tasteLine = `今回：${expression.label} ／ 甘い印象 ${expression.values.sweetness.toFixed(1)}・清涼 ${expression.values.cooling.toFixed(1)}（強さ／10）`;
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
@@ -484,7 +490,8 @@ async function pullGame(cs, mode) {
       title: "提供",
       summary: ["お客さんへシーシャを提供した。しばらく吸ってもらおう"],
       lines: [
-        optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
+        inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
+        tasteLine,
         `${pulls}回吸った`,
       ],
     });
@@ -494,7 +501,8 @@ async function pullGame(cs, mode) {
   await resultCard(panel, {
     title: `${mode.title} 結果`,
     lines: [
-      optimal ? "最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
+      inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
+      tasteLine,
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],

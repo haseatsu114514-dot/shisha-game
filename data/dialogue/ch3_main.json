@@ -27,6 +27,41 @@
       ]
     },
     {
+      "dialogue_id": "ch3_registration",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京駅から全国大会の会場へ向かった。まだステージは暗く、入口には参加受付の札が出ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "県大会代表の、はじめです。参加登録に来ました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付のスタッフが名簿に印を付け、封筒から競技規則を一枚取り出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「出場が決まった方にも、当日の手順をここで確認していただきます」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かりました。材料と、調整の回数も確かめます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付台に広げた紙に目を落とした。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_individuality_doubt",
       "lines": [
         {

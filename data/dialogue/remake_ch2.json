@@ -229,6 +229,9 @@
             "text": "じゃ、ハジメっちだ。明日はお互い、ちゃんと寝てこよ"
           }
         ]
+      },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_venue_bench_night.png"
       }
     },
     {
@@ -335,6 +338,9 @@
             "text": "tonariの蒸野はじめです。よろしくお願いします"
           }
         ]
+      },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_venue_bench_night.png"
       }
     }
   ]

@@ -1,5 +1,5 @@
 // 温度のイメージ。実際の温度だけを読み、採点・雑念・機材には干渉しない。
-// 序盤は灰色→暖かい色、適温は穏やかな緑、最適温だけに静かな虹を描く。
+// 序盤は灰色→暖かい色、適温は穏やかな緑。低め・高めを作り分ける配合は中央だけを虹で強調しない。
 // 超えるとだんだん火事のように黄色→赤の炎と黒煙が増え、
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
@@ -24,8 +24,10 @@ const RUINED = {
 };
 const BURNT = RUINED.burnt;
 const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"], leaf: ["#4a3f31", "#161109"] };
+const fullExpression = bands => (bands.expressionWeight || 0) >= .999;
 export function thermalBand(temp, bands = temperatureBands()) {
   const t = clamp(Number.isFinite(temp) ? temp : 0, 0, 1);
+  if (fullExpression(bands) && isIdealTemperature(t, bands)) return { ...BANDS.find(b => b.id === "ready"), label: "おいしく作れる範囲" };
   if (isOptimalTemperature(t, bands)) return { id: "optimal", label: "最適温", ink: "#ffe9ff", glow: ["#d3b9ff", .2], haze: 0, smoke: ["#ffffff", 0] };
   return BANDS.find(b => t < visualTemperature(b.until, bands) || (b.id === "ready" && t === bands.ideal[1]));
 }
@@ -66,7 +68,8 @@ export function envAt(temp, bands = temperatureBands()) {
   const env = { bg: a.bg.map((c, i) => mixColor(c, b.bg[i], k)), flame: fa.flame.map((c, i) => mixColor(c, fb.flame[i], fk)) };
   for (const key of ["frost", "warmth", "rainbow", "halo", "fire", "reach", "dark", "soft", "sparks"]) env[key] = a[key] + (b[key] - a[key]) * k;
   // 虹は温度計の虹と同じ範囲だけ。緑の適温帯には炎・陽炎を出さない。
-  if (!isOptimalTemperature(temp, bands)) { env.rainbow = 0; env.halo = 0; }
+  if (fullExpression(bands) || !isOptimalTemperature(temp, bands)) { env.rainbow = 0; env.halo = 0; }
+  if (fullExpression(bands) && isIdealTemperature(temp, bands)) env.bg = ["rgb(33,68,62)", "rgb(16,30,36)"];
   if (isIdealTemperature(temp, bands)) { env.fire = 0; env.sparks = 0; }
   return env;
 }

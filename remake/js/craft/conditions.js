@@ -1,5 +1,8 @@
 // 穴の数・天候は採点の直減点ではなく、実際の温度の動きへつなぐ。
 import { clamp } from "../core/util.js";
+import { DB } from "../core/data.js";
+import { state } from "../core/state.js";
+import { mixMasteryProfile } from "../core/flavor-mastery.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 import { steamClimate } from "./steam-climate.js";
@@ -40,8 +43,15 @@ export function steamTemperatureRange(cs, seconds) {
   if (!seconds) return null;
   const selected = { ...cs, steamSeconds: seconds };
   const prediction = cs.steamPrediction ?? { precision: 0, offset: 0, transfer: 1 };
-  const precision = clamp(prediction.precision ?? 0, 0, 1);
-  const nominal = temperatureAfterSteam(selected, seconds, prediction);
+  const basePrecision = clamp(prediction.precision ?? 0, 0, 1);
+  const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
+  const precision = basePrecision + (1 - basePrecision) * mastery.forecastGain;
+  // 洞察と慣れで読み取れる分だけ予測へ反映。実温度や許容帯そのものは変えない。
+  const observed = cs.steamVariation ? {
+    offset: cs.steamVariation.offset * precision * .6,
+    transfer: 1 + (cs.steamVariation.transfer - 1) * precision * .6,
+  } : prediction;
+  const nominal = temperatureAfterSteam(selected, seconds, observed);
   const margin = (steamClimate(cs.environment).rainy ? .085 : .075) - precision * .04;
   const step = .05 - .025 * precision;
   // 端で片側だけを切ると、予測の中心が移る際に上位の洞察ほど幅が広く見えてしまう。
@@ -77,7 +87,7 @@ export function heatDelta(cs, delta) {
     * (delta > 0 ? coalWarmth(cs).pullResponse : 1);
 }
 
-/** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
+/** 提供時の温度で評価。表情を作り分けられる葉は適温帯内の低め・高めも成功。 */
 export function pullResult(temp, pulls, _justs, bands = temperatureBands(), safePulls = 3) {
   const inZone = isIdealTemperature(temp, bands);
   const optimal = isOptimalTemperature(temp, bands);

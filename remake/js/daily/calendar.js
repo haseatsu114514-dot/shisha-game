@@ -219,7 +219,6 @@ async function openMenu() {
       { label: "ロード", value: "load", test: "menu-load" },
       { label: "用語集", value: "glossary" },
       { label: "大会の規則", value: "rules", test: "menu-rules" },
-      { label: "制作補助", value: "craft-assist", test: "menu-craft-assist" },
       { label: "タイトルへ戻る", value: "title", test: "menu-title" },
       { label: "閉じる", value: null, primary: true },
     ],
@@ -235,7 +234,6 @@ async function openMenu() {
   }
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-  if (v === "craft-assist") await (await import("../scenes/craft-assist.js")).openCraftAssistSettings();
   // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
   // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
   if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
