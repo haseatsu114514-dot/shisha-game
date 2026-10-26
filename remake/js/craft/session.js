@@ -135,10 +135,8 @@ export function openBench(cs, { steps = [] } = {}) {
   // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
-  // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
-  const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -149,7 +147,7 @@ export function openBench(cs, { steps = [] } = {}) {
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker, cs);
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score,
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   const background = bg();
   const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]);
@@ -347,51 +345,22 @@ export function strainBench(cs, stamina = 4) {
   return true;
 }
 
-// ---------------------------------------------------------------- 総合スコア（TH42）
+// ---------------------------------------------------------------- 旧SCORE保存との互換
 
 // 工程の点（0〜100）1点あたりの重み。穴・炭・完成品・調整1・調整2を各20%にする。
 // 完成品の20%は配合・蒸らし・吸い出しで分ける。満点は100,000点。
 const SCORE_WEIGHT = { mix: 50, holes: 200, heat: 200, steam: 50, pull: 100, care1: 200, care2: 200, care: 200 };
-const SCORE_DIGITS = 6;
-function buildScoreBoard(cs) {
-  const num = el("b.arcade-num", { text: "0".repeat(SCORE_DIGITS) });
-  const root = el("div.arcade-score", { dataset: { test: "arcade-score" }, "aria-live": "polite", "aria-label": "スコア 0" }, [el("span.arcade-label", { text: "SCORE" }), num]);
-  let shown = cs.arcade?.total || 0, raf = 0;
-  const paint = (v) => { num.textContent = String(Math.round(v)).padStart(SCORE_DIGITS, "0"); };
-  paint(shown);
-  return { root, roll(target, gain, label) {
-    root.setAttribute("aria-label", `スコア ${target}`);
-    if (gain) {
-      const pop = el("div.arcade-pop", [`${gain > 0 ? "+" : ""}${gain.toLocaleString("en-US")}`, label ? el("small", { text: label }) : null]);
-      root.append(pop);
-      setTimeout(() => pop.remove(), 1300);
-      root.classList.remove("bump"); void root.offsetWidth; root.classList.add("bump");
-    }
-    cancelAnimationFrame(raf);
-    const from = shown, started = performance.now(), dur = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 700;
-    const step = (now) => {
-      const k = dur ? Math.min(1, (now - started) / dur) : 1;
-      shown = from + (target - from) * (1 - (1 - k) ** 3);
-      paint(shown);
-      if (k < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-  } };
-}
 /**
  * 工程の点をスコアへ入れる。key は工程名（mix/holes/heat/steam/pull/care1/care2）。"heat:1" のような部分点は、
  * 同じ工程の最終点が入ると置き換わる。やり直した工程は前の点と入れ替える。
  */
-export function scoreStep(cs, key, score, label = "") {
+export function scoreStep(cs, key, score) {
   cs.arcade ??= { total: 0, parts: {} };
   const step = key.split(":")[0];
-  const before = cs.arcade.total;
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
   cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
-  // 回数は得点キーに保持し、ヘッダーのポップだけ「調整」に揃える。
-  const displayLabel = ["care", "care1", "care2"].includes(step) ? "調整" : label;
-  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, displayLabel);
+  // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
 }
 

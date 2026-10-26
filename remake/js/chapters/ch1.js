@@ -510,7 +510,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
-  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。点数は作業台の SCORE に入る
+  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。
   await stepSetup(cs);
   bc.block(cs, "mix");
   await stepMix(cs);

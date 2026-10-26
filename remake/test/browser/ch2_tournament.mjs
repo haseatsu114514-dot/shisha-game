@@ -52,7 +52,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     const reason=await page.locator(t('vote-reason')).innerText();
     const last=s.flags._ch2_tournament.lastVotes,got=Object.values(last).reduce((a,v)=>a+(v.points.hajime||0),0);
     if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason,/上位2人にも入らなかった/);
-    assert.match(reason,/いちばん低いのは「(アルミ穴あけ|炭の温度|蒸らしと吸い出し|一度目の調整)」/);
+    assert.match(reason,/(アルミ穴あけ|炭の温度|蒸らしと吸い出し|一度目の調整)：[◎○△].*「.+」/);
     await assertFits(page,'.ch2-contest-reason p');
     if(reloadCare && round===3) {
       assert.equal(s.flags._ch2_tournament.craft.careHistory.length,1);
@@ -295,7 +295,7 @@ await suite('ch2-tournament',async check=>{
     });
     await page.locator(t('votes')).waitFor();
     const reason=await page.locator(t('vote-reason')).innerText();
-    assert.match(reason,/いちばん低いのは「アルミ穴あけ」（20点）/);
+    assert.match(reason,/アルミ穴あけ：△.*「.+」/);
     assert(!reason.includes('パッキング'));
     const after=await get(page);assert.deepEqual(after.flags._ch2_tournament,before.snapshot);
     assert.equal(after.stamina,before.stamina);

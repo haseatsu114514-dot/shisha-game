@@ -35,7 +35,7 @@ export async function runHeat(cs) {
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
-      `全体のタイミング精度 ${res.timingAccuracy}% ／ 平均誤差 ${res.meanAbsoluteError.toFixed(2)}秒`,
+      res.just === coalCount(cs) ? "すべて芯が光る瞬間を捉えた" : res.just ? "芯が光る瞬間を捉えた炭がある" : "次は芯の光をよく見よう",
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
