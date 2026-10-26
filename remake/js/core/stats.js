@@ -2,7 +2,7 @@
 import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { DB } from "./data.js";
-import { pendingAffinityStage, pendingLoveStage, questionComplete } from "./affinity-stages.js";
+import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
 import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
@@ -164,17 +164,11 @@ export function affinityLevel(id) {
   return lv;
 }
 
-/** 旧値は下げず、新たな獲得分だけ未読段階の次の閾値直前で保留する。 */
+/** 通常好感度の獲得と段階会話の既読は独立。質問・専用ルートの前提は各callerで判定する。 */
 export function affinityPointCap(id) {
-  const stage = pendingAffinityStage(state, id, DB);
-  const cap = stage && stage.level < 5 ? AFFINITY_RANK_PTS[stage.level + 1] - 1 : Infinity;
-  // 第1章の固定物語だけでつむぎは♥1/♥2。未読の個別会話から先へは進めない。
-  const fixedTsumugiLevel = id === "tsumugi"
-    ? state.flags._tsumugi_contest_submitted ? 2 : state.flags._tsumugi_contest_research ? 1 : 0
-    : 0;
-  return Math.max(state.affinity[id] || 0, AFFINITY_RANK_PTS[fixedTsumugiLevel],
-    Math.min(cap, affinityGateWaiting(id) ? AFFINITY_RANK_PTS[3] : Infinity));
+  return Infinity;
 }
+
 const releasedPoints = id => (Number(state.flags[`_${id}_affinity_released_pts`]) || 0)
   + (Number(state.flags[`_${id}_affinity_stage_released_pts`]) || 0);
 

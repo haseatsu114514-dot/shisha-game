@@ -3,7 +3,7 @@
 import { state, markMet } from "../core/state.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
-import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, affinityGateWaiting, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
 
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
@@ -120,30 +120,18 @@ const NIGHT_STORIES = new Set([
   "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
-/**
- * #814 ハートと会話イベントの連動（第1章の固有会話がある人物）。
- * k番目（0始まり）の会話は ♥k 以上で開く。読んだ会話の数より多いハートには上がらない。
- * 全部読んだら上限なし。第2章以降・恋人・固有会話の無い人物は対象外。
- */
-// 師匠の修業回は進行の柱なので、ハートでは止めない。
+/** 通常段階会話は章をまたいでも既存の必要ハートで解放し、最古未読を一訪問一本だけ読む。 */
+// 師匠の修業と恋人・専用ルートは、この通常列のハート判定で止めない。
 const HEART_STORY_EXEMPT = new Set(["sumi"]);
 const heartStoryTarget = (id, s) => !!VISIT_SEQ[id] && !HEART_STORY_EXEMPT.has(id)
-  && s?.chapter === 1 && !(s.lovers || []).includes(id);
-export function storyAffinityCap(id, s = state) {
-  if (!heartStoryTarget(id, s)) return Infinity;
-  const read = s.story?.[id] || 0;
-  if (read >= VISIT_SEQ[id].length || read + 1 >= AFFINITY_RANK_PTS.length) return Infinity;
-  return AFFINITY_RANK_PTS[read + 1] - 1;
-}
+  && !(s?.lovers || []).includes(id);
+/** 旧公開portは保持するが、通常好感度を会話数で制限しない。 */
+export function storyAffinityCap(id, s = state) { return Infinity; }
 setStoryAffinityCap(storyAffinityCap);
-/**
- * 会話 dialogueId を今のハートで開けるか（第1章の固有会話だけ）。
- * ♥3の質問待ち（affinityGateWaiting）で止まっている間は♥3で足りる。質問へ進む会話を塞がない。
- */
 export function storyHeartReady(charId, index, s = state) {
   if (!heartStoryTarget(charId, s)) return true;
-  const need = Math.min(index, affinityGateWaiting(charId) ? 3 : AFFINITY_RANK_PTS.length - 1);
-  return affinityLevel(charId) >= need;
+  const need = Math.min(index, AFFINITY_RANK_PTS.length - 1);
+  return (s?.affinity?.[charId] || 0) >= AFFINITY_RANK_PTS[need];
 }
 const storyAvailable = (id) => (!NIGHT_STORIES.has(id) || state.slot >= 1) && storyOpenByHeart(id);
 function storyOpenByHeart(id) {

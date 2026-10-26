@@ -203,7 +203,7 @@ try {
             await click('.spot-pin.guide'); await click('[data-test="map-go"]'); continue;
           }
           const invite = await page.evaluate(() => Q.core.state.inbox.some(i => !i.done && i.msg.accept_event === 'hiyori_tonari_return' && i.day === Q.core.state.day));
-          if (invite && snap.slot === 0 && (snap.flags._hiyori_affinity_waiting_pts > 0 || snap.day >= 11)) {
+          if (invite && snap.slot === 0 && (snap.affinity >= 33 || snap.day >= 11)) {
             await click('[data-test="hud-phone"]'); await click('[data-test="lime-chat-sumi"]'); continue;
           }
           const selected = await page.evaluate(({ workGoal, giftGoal }) => {
@@ -283,9 +283,9 @@ try {
       assert(!closing.flags._hiyori_real_self_known);
       assert(!final.state.flags._confession_due);
       assert.deepEqual({ day: row.afterReply.day, slot: row.afterReply.slot, money: row.afterReply.money, affinity: row.afterReply.affinity }, row.beforeReply);
-      assert(actions.some(a => a.affinity === 33 && a.held > 0), 'Natural paid visits must demonstrate holding affinity at ♥3');
+      assert(actions.some(a => a.affinity > 33 && a.held === 0), 'Natural paid visits can grow above heart3 without waiting for route completion');
       const stageReleased = final.state.flags._hiyori_affinity_stage_released_pts || 0;
-      assert(stageReleased > 0 && stageReleased <= (final.state.flags._hiyori_affinity_waiting_pts || 0));
+      assert.equal(stageReleased,0);assert.equal(final.state.flags._hiyori_affinity_waiting_pts || 0,0);
       assert.equal(final.state.flags._hiyori_affinity_released_pts || 0, 0);
       assert(seen.has('intro'));
       assert.deepEqual(errors, []); assert.deepEqual(failedResources, []);
