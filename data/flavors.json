@@ -1854,8 +1854,8 @@
     },
     {
       "id": "mountain_mist",
-      "name": "アルファーヘブン マウンテンミスト",
-      "short_name": "AF マウンテンミスト",
+      "name": "フォースフェクタ マウンテンミスト",
+      "short_name": "フォースフェクタ マウンテンミスト",
       "category": "fruit",
       "price": 1650,
       "description": "レモンとライムの軽い酸味が重なる、爽やかなブロンドリーフ。熱を急がず、二口目まで柑橘の輪郭を残したい。",
@@ -1879,7 +1879,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "forcefect"
     },
     {
       "id": "popcorn",

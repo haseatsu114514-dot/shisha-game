@@ -34,7 +34,7 @@ const expectedPrefixToMaker = {
   "ドバジ": "dobaj",
   "アフサール": "afsahr",
   "ナイトサイド": "nightside",
-  "フォースフェクト": "forcefect",
+  "フォースフェクタ": "forcefect",
 };
 for (const f of flavors) {
   assert(f.maker in MAKER_SPECS, `Invalid maker on ${f.id}: ${f.maker}`);
