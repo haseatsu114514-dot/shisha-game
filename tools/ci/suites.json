@@ -2323,6 +2323,32 @@
       "run": [
         "node remake/test/browser/tokyo_visits.mjs"
       ]
+    },
+    {
+      "id": "flavor-mastery",
+      "title": "Flavor mastery, inventory and daily stamina budgets",
+      "kind": "quick",
+      "run": [
+        "node remake/test/flavor_mastery.mjs"
+      ]
+    },
+    {
+      "id": "flavor-mastery-browser",
+      "title": "Flavor mastery and private leaves in actual UI",
+      "kind": "browser",
+      "paths": [
+        "remake/js/core/flavor-mastery.js",
+        "remake/js/craft/steps.js",
+        "remake/js/daily/tonari.js",
+        "remake/js/daily/home-shisha.js",
+        "data/dialogue/ch1_minto.json",
+        "remake/test/browser/flavor_mastery.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/flavor_mastery.mjs"
+      ],
+      "weight": 3,
+      "timeout": 10
     }
   ]
 }

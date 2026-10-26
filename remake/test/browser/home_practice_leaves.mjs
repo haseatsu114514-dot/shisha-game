@@ -87,16 +87,16 @@ await suite("shop-practice-stock", async check => {
     await confirmWaterSetup(page, { touch: !!options.hasTouch });
     await page.locator('[data-test="mix-ok"]').waitFor();
     const press = locator => options.hasTouch ? locator.tap() : locator.click();
-    assert.equal(await page.locator('.flavor-row').count(), 18);
+    assert.equal(await page.locator('.flavor-row').count(), 3);
     assert.equal(await page.locator('.fr-stock').count(), 0);
-    for (let n = 0; n < 10; n++) await press(page.locator('[data-test="mix-plus-blueberry"]'));
+    for (let n = 0; n < 10; n++) await press(page.locator('[data-test="mix-plus-lemon"]'));
     for (let n = 0; n < 2; n++) await press(page.locator('[data-test="mix-plus-mint"]'));
-    assert.equal(await page.locator('.flavor-row[data-flavor="blueberry"] .fr-g').textContent(), "10g");
+    assert.equal(await page.locator('.flavor-row[data-flavor="lemon"] .fr-g').textContent(), "10g");
     assert.equal(await page.locator('[data-test="mix-ok"]').isEnabled(), true);
     await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
     await press(page.locator('[data-test="mix-ok"]'));
     await page.waitForFunction(() => window.__practice.done, null, { timeout: 120000 });
-    assert.deepEqual(await page.evaluate(() => window.__practice.mix), { blueberry: 10, mint: 2 });
+    assert.deepEqual(await page.evaluate(() => window.__practice.mix), { lemon: 10, mint: 2 });
     assert.deepEqual((await snapshot(page)).stock, {});
   }, options);
 
@@ -125,7 +125,7 @@ await suite("shop-practice-stock", async check => {
   await check("tournament-caps-and-consumes-only-carried-leaves", async page => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), craft = await import("./js/craft/session.js"), steps = await import("./js/craft/steps.js");
-      core.newGame(); core.state.flavorStock = { double_apple: 10, mint: 3 }; core.state.flavors = ["double_apple", "mint"];
+      core.newGame(); core.state.flavorStock = { double_apple: 10, lemon: 3 }; core.state.flavors = ["double_apple", "lemon"];
       craft.craftTest.auto = null;
       window.__mix = craft.newSession("tournament"); craft.openBench(__mix);
       window.__mixDone = false; steps.stepMix(__mix).then(() => { window.__mixDone = true; });
@@ -134,8 +134,8 @@ await suite("shop-practice-stock", async check => {
     assert.equal(await page.locator('[data-test="mix-plus-blueberry"]').count(), 0);
     for (let n = 0; n < 12; n++) await page.locator('[data-test="mix-plus-double_apple"]').click();
     assert.equal(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-g').textContent(), "10g");
-    for (let n = 0; n < 2; n++) await page.locator('[data-test="mix-plus-mint"]').click();
+    for (let n = 0; n < 2; n++) await page.locator('[data-test="mix-plus-lemon"]').click();
     await page.locator('[data-test="mix-ok"]').click(); await page.waitForFunction(() => window.__mixDone);
-    assert.deepEqual(await page.evaluate(async () => (await import("./js/core/state.js")).state.flavorStock), { double_apple: 0, mint: 3 });
+    assert.deepEqual(await page.evaluate(async () => (await import("./js/core/state.js")).state.flavorStock), { double_apple: 0, lemon: 1 });
   });
 });

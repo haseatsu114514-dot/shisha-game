@@ -144,7 +144,7 @@ await suite('ch1-feedback', async check => {
       const result = await page.evaluate(() => ({ lines: F.vn.backlog().map(l => l.text), s: F.core.state,
         saved: JSON.parse(localStorage.getItem(F.core.SAVE_KEY)) }));
       assert(result.lines.some(t => /美味しい/.test(t))); assert(!result.lines.some(t => /イマイチ/.test(t)));
-      assert.equal(result.s.flavorStock.mint, 38); assert.equal(result.s.stamina, 74);
+      assert.equal(result.s.flavorStock.mint, 38); assert.equal(result.s.stamina, 56);
       assert.equal(result.s.slot, 0); assert.equal(result.saved.flavorStock.mint, 38);
     }, options);
   }

@@ -1,9 +1,10 @@
-// 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY7 の中間準備＝中盤の修行のあとに譲られる）と、くじの大会公式モデルの台。
+import { modal } from "../core/ui.js";
+// 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY2以降の帰宅前に譲られる）と、くじの大会公式モデルの台。
 // 寝る前の一服の流れは home-shisha.js。ここは台の持ち物と受け取りだけ（会話の差し込みから呼ぶので軽く保つ）。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { emit } from "../core/bus.js";
-import { play } from "../vn/engine.js";
+import { play, vnTest } from "../vn/engine.js";
 
 export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（伸び 0.5P）
 export const PRO_RIG = "home_rig_pro";    // 大会公式モデルの台（伸び 0.75P・くじの景品）
@@ -38,7 +39,22 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
     emit("notice", { text: "ダブルアップルを1箱（50g）もらった" });
   }
   const name = DB.equipById?.[SUMI_RIG]?.name || "卓上台";
-  emit("notice", { text: `「${name}」をもらった。寝る前に家で一服できる（自分の葉を12g使う）` });
+  emit("notice", { text: `「${name}」をもらった。家のメニューで夜の試作を予定できる（葉12g・体力24）` });
   if (!deferSave) save(); // 有料訪問は calendar の支払い・行動確定と同時に保存する
   return true;
+}
+
+/** DAY2から、体調を崩していない夜にお下がりを渡す。旧セーブでも次の夜に受け取れる。 */
+export async function giveEarlyHomeRig() {
+  if (state.chapter !== 1 || state.day < 2 || state.day >= 14 || state.restDay?.fullDay
+      || state.owned?.includes(SUMI_RIG) && state.flags._sumi_double_apple_received) return;
+  const owner = state;
+  if (!await giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" }) || state !== owner) return;
+  const { homeShishaOffer } = await import("./home-shisha.js");
+  if (!homeShishaOffer() || vnTest.turbo) return;
+  const tonight = await modal({ title: "今夜、試してみる？", body: "自分の葉12g・体力24を使う。今日は寝て、別の日に家のメニューから試作を予定してもいい。",
+    options: [{ label: "今日は休む", value: false, test: "rig-rest", primary: true }, { label: "今夜、試作してみる", value: true, test: "rig-try-tonight" }] });
+  if (state !== owner) return;
+  if (tonight) state.flags._home_trial_plan = `${state.chapter}:${state.day}`;
+  save();
 }

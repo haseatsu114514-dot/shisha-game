@@ -158,7 +158,7 @@ await suite("ch1-tournament", async check => {
         const { chapter, vn, intro } = T;
         const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
-        Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
+        Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
@@ -266,27 +266,26 @@ await suite("ch1-tournament", async check => {
     await init(page);
     await page.evaluate(() => {
       T.core.state.money = 0; T.core.state.day = 7;
-      T.core.state.flavorStock.blueberry = 1;
-      T.core.state.flavors.push("blueberry");
+      T.core.state.flavorStock.lemon = 1;
+      T.core.state.flavors.push("lemon");
       window.preparing = T.preparation.prepareFlavorStock();
     });
-    await page.locator('[data-test="prep-flavor-blueberry"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
-    await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
     await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     await page.evaluate(() => window.preparing);
-    const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.blueberry, flavor: T.core.state.flags._prep_flavor }));
-    assert.deepEqual(prepared, { money: 0, stock: 51, flavor: "blueberry" });
+    const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.lemon, flavor: T.core.state.flags._prep_flavor }));
+    assert.deepEqual(prepared, { money: 0, stock: 51, flavor: "lemon" });
     await page.evaluate(async () => {
       window.cs = T.session.newSession("rehearsal"); await T.open(cs);
       window.mixing = T.steps.stepMix(cs);
     });
     await page.locator('[data-test="mix-ok"]').click();
     await page.evaluate(() => window.mixing);
-    assert.deepEqual(await page.evaluate(() => cs.mix), { blueberry: 10, mint: 2 });
-    assert.equal(await page.evaluate(() => T.core.state.flavorStock.blueberry), 51);
+    assert.deepEqual(await page.evaluate(() => cs.mix), { lemon: 10, mint: 2 });
+    assert.equal(await page.evaluate(() => T.core.state.flavorStock.lemon), 51);
     await page.evaluate(async () => {
       T.session.craftTest.auto = "good";
       await T.practice.runCarePractice({ kind: "midweek" }); T.core.save();
@@ -296,7 +295,7 @@ await suite("ch1-tournament", async check => {
     const record = await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1));
     assert.equal(record.day, 7); assert.equal(record.kind, "midweek");
     assert.equal(record.scope, "care"); assert.equal(record.success, true); assert.equal(record.served, false);
-    assert.deepEqual(record.mix, { blueberry: 10, mint: 2 }); assert.equal(record.adjustments, 2);
+    assert.deepEqual(record.mix, { lemon: 10, mint: 2 }); assert.equal(record.adjustments, 2);
     assert.deepEqual(record.scores, {}); assert.equal(record.careScores.length, 2);
   });
 

@@ -175,7 +175,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       const known = knowsOwner(s);
       const charName = s.charId && known ? displayName(s.charId, state) : null;
-      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
+      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : `体力 −${Math.abs(s.stamina)}（根性で軽減）`) : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const previewId = s.preview || SPOT_PREVIEW[s.id];
       const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;

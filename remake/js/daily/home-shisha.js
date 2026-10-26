@@ -1,3 +1,4 @@
+import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 寝る前の一服（家シーシャ・#638 オーナー依頼）。昼と夜に行動したうえでの“ちょい足し”で、行動の枠は使わない。
 // 一日の終わり（帰宅のあと・就寝の前）に聞く。自分の葉を12g決めたら、あとは短い場面が進む。
 // 自分で配合すれば模索になり（美味しい／普通／イマイチ）、面倒ならレシピ帳から作れる。
@@ -16,7 +17,7 @@ import { mixPercents } from "../craft/mix-ratio.js";
 import { homeRig } from "./home-rig.js";
 
 export const HOME_GRAMS = 12;
-export const HOME_STAMINA = -6;
+export const HOME_STAMINA = -24;
 const HOME_BG = "res://assets/backgrounds/bg_home_night.png";
 
 const leafName = (id) => String(DB.flavorById?.[id]?.short_name || DB.flavorById?.[id]?.name || id).split(" ").pop();
@@ -70,8 +71,12 @@ export function homeShishaOffer(s = state, { eve = false } = {}) {
 
 /** 一服の結果を反映する（葉を減らす・体力・レシピ帳）。呼び出し側は同じ同期処理で成長も付与してから保存する */
 export function applyHomeShisha(mix, rig, s = state) {
-  for (const [id, g] of Object.entries(mix)) addFlavorStock(id, -g);
+  const entries = Object.entries(mix || {});
+  if (s.flags._home_shisha_day === dayKey(s) || entries.some(([id, g]) => !DB.flavorById[id] || !Number.isFinite(g) || g <= 0 || flavorStock(id) < g)
+      || entries.reduce((sum, [, g]) => sum + g, 0) !== HOME_GRAMS) return null;
+  for (const [id, g] of entries) addFlavorStock(id, -g);
   addStamina(HOME_STAMINA);
+  gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
@@ -111,7 +116,7 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
   const intros = INTROS[rig.id] || INTROS.home_rig_set;
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
     { speaker: "hajime", face: "normal", text: (distant ? DISTANT_TASTE_LINES : TASTE_LINES)[result.taste] }];
-  if (result.stat) lines.push({ speaker: "hajime", face: "normal", text: `（煙を眺めていたら、苦手な${STAT_JA[result.stat]}のことが浮かんできた）` });
+  lines.push({ speaker: "hajime", face: "normal", text: "（この配合の感触、覚えておこう。片付けたら今日は寝よう）" });
   return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG }, lines };
 }
 
@@ -131,7 +136,7 @@ async function chooseMix() {
       redraw();
     };
     const row = el("div.home-mix-row", [
-      el("span.home-mix-name", { text: `${leafName(id)}（残り${flavorStock(id)}g）` }),
+      el("span.home-mix-name", { text: `${leafName(id)}（残り${flavorStock(id)}g） ${masteryLabel(state, id, DB.flavorById)}` }),
       el("button.fr-btn", { text: "−", "aria-label": `${leafName(id)}を1g減らす`, dataset: { test: `home-minus-${id}` }, onclick: () => change(-1) }),
       g,
       el("button.fr-btn", { text: "＋", "aria-label": `${leafName(id)}を1g足す`, dataset: { test: `home-plus-${id}` }, onclick: () => change(1) }),
@@ -176,7 +181,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   let mix = null;
   while (!mix) {
     const how = await modal({ title: "寝る前の一服", className: "home-shisha-dialog",
-      body: `${rig.name}で一服する？ 自分の葉を${HOME_GRAMS}g使い、体力を少し使う。苦手な能力に手がかりが見えるかも。`,
+      body: `${rig.name}で一服する？ 自分の葉を${HOME_GRAMS}g使い、体力を24使って試作する。使った味の熟練度が育つ。`,
       options: [
         { label: "自分で配合する", value: "mix", primary: true, test: "home-shisha-mix" },
         ...(canRecipe ? [{ label: "レシピ帳から作る", value: "recipe", test: "home-shisha-recipe" }] : []),
@@ -187,13 +192,13 @@ export async function runHomeShisha({ eve = false } = {}) {
   }
   const result = applyHomeShisha(mix, rig);
   // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。
-  const got = growHomeStat(result.stat, rig);
+  if (!result) return false;
   save();
   if (result.found) toast(`📖 レシピ帳に書き加えた「${result.found.name}」`, { kind: "good" });
   if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good" });
   await play(homeShishaDialogue(result, rig, Math.random, { distant: tasteDistant() }));
   if (state !== owner) return true;
-  if (result.stat && !got) emit("notice", { text: `寝る前に一服した。苦手な【${STAT_JA[result.stat]}】に、手がかりが見えた` });
+  toast(Object.keys(mix).map(id => `${leafName(id)} ${masteryLabel(state, id, DB.flavorById)}`).join(" ／ "), { kind: "good" });
   save();
   return true;
 }

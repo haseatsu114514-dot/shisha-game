@@ -284,7 +284,7 @@ body.game-ds .bench[data-step="mix"] .mix-list { overflow: visible; padding: 0; 
 body.game-ds .bench[data-step="mix"] .mix-list .flavor-row { min-height: 0; display: flex; padding: 7px 8px; gap: 7px; }
 body.game-ds .bench[data-step="mix"] .fr-package, body.game-ds .bench[data-step="mix"] .fr-package .shop-product-art { width: 36px; height: 44px; }
 body.game-ds .bench[data-step="mix"] .fr-name b { font-size: 15px; }
-body.game-ds .bench[data-step="mix"] .fr-name small:not(.fr-ratio):not(.fr-reg):not(.fr-stock) { display: none; }
+body.game-ds .bench[data-step="mix"] .fr-name small:not(.fr-ratio):not(.fr-reg):not(.fr-stock):not(.fr-mastery) { display: none; }
 body.game-ds .bench[data-step="mix"] .fr-btn { width: 44px; height: 44px; }
 body.game-ds .bench[data-step="mix"] .fr-g { width: 34px; font-size: 18px; }
 /* 温度計は上画面の右端（作業の絵の横）。配合の見込みと吸い出しの温度計を同じ位置・同じ大きさで出す。

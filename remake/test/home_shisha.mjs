@@ -156,7 +156,7 @@ for (const flavor of flavors) for (const mode of ["home", "drill", "rehearsal", 
   assert(info.score >= 80, `${mode}/${flavor.id}: 単体を種類数だけで減点しない`);
   assert.equal(home.tasteOf(info), "great", `${flavor.id}: 単体の完成した香り`);
   assert(!info.notes.some(note => note.includes("他の香りが隠れている")));
-  if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "mint", "課題フレーバー条件は維持");
+  if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "lemon", "第1章の課題はレモン");
 }
 state = newGame(); state.owned.push(rig.SUMI_RIG); state.flavorStock = { mint: 50 }; state.stamina = 80;
 const single = home.applyHomeShisha({ mint: 12 }, rig.homeRig());
@@ -178,7 +178,7 @@ state.stamina = 80;
 const slotBefore = state.slot;
 const r1 = home.applyHomeShisha({ lemon: 9, mint: 3 }, rig.homeRig());
 assert.deepEqual(state.flavorStock, { lemon: 11, mint: 17 });
-assert.equal(state.stamina, 74);
+assert.equal(state.stamina, 58);
 assert.equal(state.slot, slotBefore, "行動の枠は使わない");
 assert.equal(r1.taste, "great");
 assert.equal(r1.info.golden, "hit");

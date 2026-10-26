@@ -243,13 +243,13 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
 /**
  * 1日目だけ、自由行動の前にスミさんのおつかいを2つ実地でやる（旧版 N18/N19）。
- * ① Dr.fookah でミントを仕入れる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
+ * ① Dr.fookah でレモンを仕入れ、大会用に贈られる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
  * 偵察を終えたら退勤済みのまま帰宅。参加登録と配達2件は翌日へ。
  */
 async function day1Errands() {
   const f = state.flags;
-  const mint = DB.flavorById.mint;
-  if (!f._errand_shop_done && (!mint || ownsFlavor("mint"))) f._errand_shop_done = true;
+  const lemon = DB.flavorById.lemon;
+  if (!f._errand_shop_done && (!lemon || ownsFlavor("lemon"))) f._errand_shop_done = true;
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
       await play("remake_day1_errand_shop", { bg: TONARI_BG });
@@ -257,11 +257,17 @@ async function day1Errands() {
       save();
     }
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
-    await openShop({ errand: "mint", expense: true });
+    await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
     toast("スミ「仕入れ、ご苦労さん」", { ms: 3200 });
     save();
     await bannersIdle();
+  }
+  if (!f._lemon_gift_read) {
+    const gift = await play("remake_lemon_gift", { bg: TONARI_BG });
+    if (gift?.cancelled) return;
+    f._lemon_gift_read = true;
+    save();
   }
   const naru = spotById("naru");
   if (!naru || (!f._errand_naru_visited && (isClosed(naru) || spendableMoney(state) < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
@@ -484,6 +490,7 @@ async function takeAction() {
 }
 
 async function performSpotAction(spot) {
+  const actionOwner = state;
   const scheduledGuestSpot = hiyoriShopLocation();
   const scheduledCityVisit = cityGuestAtShop(spot);
   if (!openingStatus(spot, state).ok) return { used: false, exerted: false };
@@ -519,10 +526,16 @@ async function performSpotAction(spot) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return { used: false, exerted };
+    if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
-    if (sub === "baito") await doBaito();
+    if (sub === "practice") {
+      const { runFullPractice } = await import("../craft/practice.js");
+      addStamina(-16);
+      await play("remake_staff_practice", { bg: TONARI_BG });
+      await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
+      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+    } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -543,6 +556,22 @@ async function performSpotAction(spot) {
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rest") {
+    if (state.owned?.some(id => ["home_rig_set", "home_rig_pro"].includes(id))) {
+    const { homeShishaOffer } = await import("./home-shisha.js");
+    const dayKey = `${state.chapter}:${state.day}`;
+    const eligible = homeShishaOffer(state, { eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) });
+    const choice = await modal({ title: "自宅での過ごし方", body: "休養は体力＋55。夜の試作は自分の葉12g・体力24を使う。普段の睡眠は体力＋14。",
+      options: [{ label: "家で休む（1行動）", value: "rest", test: "home-rest" },
+        ...(eligible ? [{ label: state.flags._home_trial_plan === dayKey ? "今夜の試作を取りやめる" : "今夜、自宅で試作する（予約）", value: "trial", test: "home-plan-trial" }] : []),
+        { label: "戻る", value: null, test: "home-back" }] });
+    if (!choice) return { used: false, exerted };
+    if (choice === "trial") {
+      state.flags._home_trial_plan = state.flags._home_trial_plan === dayKey ? null : dayKey;
+      save();
+      toast(state.flags._home_trial_plan ? "今夜の試作を予定した。外出を終えたら自宅へ" : "今夜は試作せずに眠る");
+      return { used: false, exerted };
+    }
+    }
     const unwell = currentCondition().health === "red" || !!state.flags._cold_pending
       || state.restDay?.chapter === state.chapter && state.restDay.day === state.day && !!state.restDay.illnessHealth;
     if (unwell) {
@@ -746,7 +775,10 @@ async function endDay({ returnedToTonari = false } = {}) {
   }
   await bannersIdle();
   // 寝る前の一服（家シーシャ・#638）: 行動の枠は使わないちょい足し。大会前夜は聞かない
-  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
+  if (state.flags._home_trial_plan === `${state.chapter}:${state.day}`) {
+    if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
+    delete state.flags._home_trial_plan;
+  }
   await advanceDay();
 }
 

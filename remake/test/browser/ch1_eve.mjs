@@ -19,7 +19,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       const s = E.core.newGame();
       Object.assign(s, { phase: "daily", day, slot: 2, stamina: 57, weatherSeed: 4 });
       s.flavors.push("blueberry", "mint");
-      s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50 };
+      s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 };
       for (const ev of Object.values(E.ch1.NIGHT_EVENTS)) for (const key of ev.doneKeys || []) s.flags[key] = true;
       delete s.flags._ev_last_night; delete s.flags._tsumugi_contest_eve;
       for (const step of E.story.TSUMUGI_STORY.filter(step => step.day < 13)) s.flags[step.flag] = true;
@@ -112,7 +112,7 @@ await suite("ch1-eve", async check => {
         assert(result.done && s.flags._ev_last_night && s.flags._tsumugi_contest_eve);
         assert.equal(result.entries.filter(id => id === "ch1_tsumugi_eve").length, 1);
         assert.equal(s.flags._last_night, branch);
-        assert.deepEqual(s.flavorStock, { double_apple: 50, blueberry: 50, mint: 50 });
+        assert.deepEqual(s.flavorStock, { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 });
         assert.equal(s.day, 13); assert.equal(s.slot, 2); assert.equal(s.reel.count, 0);
         if (branch === "practice") {
           assert.equal(result.benches, 1);
