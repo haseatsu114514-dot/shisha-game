@@ -42,6 +42,7 @@
         "python3 tools/audit_dialogue_art.py",
         "node --experimental-vm-modules remake/test/data_loading.mjs",
         "node --experimental-vm-modules remake/test/daily_consistency.mjs",
+        "node --experimental-vm-modules remake/test/naru_chapter_context.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",

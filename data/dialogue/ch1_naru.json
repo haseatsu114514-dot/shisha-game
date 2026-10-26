@@ -832,69 +832,10 @@
       "dialogue_id": "ch1_naru_fifth",
       "lines": [
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "お、来たな。大会前の最後の一服ってとこか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。……あの、なるさん。本番、よろしくお願いします"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "おう。──なあ、はじめ。お前、大会で勝つ気ある？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "もちろんです。出るからには優勝します"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "そうか。なら言っとく。──俺は本気で潰しに行く。手加減はしない"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "教えたことも全部込みで、お前を正面から叩く"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……っ"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "教わった技も使えよ。俺の許可なんて、いちいち要らねえから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "──望むところです。俺も、全部出します"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "そうこなくちゃ。お前の手で、どうなるか見たいんだ"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "よし。じゃあ約束な。どっちが勝っても、終わったら一服しようぜ。勝った方が作る"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "差し出された拳に、拳を合わせる。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（最初は、すごい人だとしか思えなかった。今は、この人に勝ちたいと心から思う）"
+          "type": "condition",
+          "condition_type": "naru_local_match_finished",
+          "next_true": "after_local_match",
+          "next_false": "before_local_match"
         },
         {
           "type": "remember",
@@ -906,7 +847,112 @@
           "text": "……【根性】が少し上がった。"
         }
       ],
-      "branches": {}
+      "branches": {
+        "before_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。大会前の最後の一服ってとこか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……あの、なるさん。本番、よろしくお願いします"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "おう。──なあ、はじめ。お前、大会で勝つ気ある？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "もちろんです。出るからには優勝します"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "そうか。なら言っとく。──俺は本気で潰しに行く。手加減はしない"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "教えたことも全部込みで、お前を正面から叩く"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "教わった技も使えよ。俺の許可なんて、いちいち要らねえから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "──望むところです。俺も、全部出します"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "そうこなくちゃ。お前の手で、どうなるか見たいんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "よし。じゃあ約束な。どっちが勝っても、終わったら一服しようぜ。勝った方が作る"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "差し出された拳に、拳を合わせる。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（最初は、すごい人だとしか思えなかった。今は、この人に勝ちたいと心から思う）"
+          }
+        ],
+        "after_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。今日はゆっくり吸ってけよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……なるさんに教わった手つき、まだ確かめたいんです"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "使ってみて、変えたいとこも出てきたろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "はい。教わった通りにするだけじゃなくて、俺の一台にしたいです"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "言うようになったな。俺の許可なんて、いちいち要らねえから"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "どこが変わったか、次に吸うのを楽しみにしてる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（最初は、すごい人だとしか思えなかった。今は、自分の一台をこの人に確かめてほしい）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_naru_promise",

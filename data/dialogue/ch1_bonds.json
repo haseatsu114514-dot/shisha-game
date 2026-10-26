@@ -481,9 +481,10 @@
       },
       "lines": [
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "お、来たな。……大会前の最後の一服じゃなかったのか？"
+          "type": "condition",
+          "condition_type": "naru_local_match_finished",
+          "next_true": "after_local_match",
+          "next_false": "before_local_match"
         },
         {
           "speaker": "hajime",
@@ -571,7 +572,23 @@
             "insight": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "before_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。……大会前の最後の一服じゃなかったのか？"
+          }
+        ],
+        "after_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。……また一服したくなったか？"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_adam_bond_finale",

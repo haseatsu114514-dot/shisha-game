@@ -99,6 +99,10 @@ function romanceChosen(id) {
 
 /** 会話の条件分岐（hooks.evalCondition）: lover / romance_open。知らない型は undefined */
 export function bondCondition(line) {
+  if (line.condition_type === "naru_local_match_finished") {
+    const chapter = state.chapter || 1;
+    return chapter >= 2 || chapter === 1 && ["aftermath", "cleared"].includes(state.phase);
+  }
   if (line.condition_type === "lover") return isLover(line.char_id);
   if (line.condition_type === "romance_open") return romanceOpen(line.char_id);
   return undefined;
