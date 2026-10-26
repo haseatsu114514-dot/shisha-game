@@ -83,8 +83,8 @@ export function applyHomeShisha(mix, rig, s = state) {
 // ---------------------------------------------------------------- 画面
 
 const INTROS = {
-  home_rig_set: ["部屋の明かりを落として、卓上台に炭をのせる。", "一日の終わり。小さな台に、今日の葉を詰める。", "窓を少し開けて、寝る前の一服を組む。"],
-  home_rig_pro: ["本番と同じ台に炭をのせる。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で、寝る前の一服を組む。"],
+  home_rig_set: ["部屋の明かりを落として、卓上台に炭をのせる。", "一日の終わり。小さな台に、今日の葉を詰める。", "窓を少し開けて、寝る前の家シーシャを組む。"],
+  home_rig_pro: ["本番と同じ台に炭をのせる。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で、家シーシャを組む。"],
 };
 const TASTE_LINES = {
   great: "（……美味しい。香りがきれいに出ている）",
@@ -141,7 +141,7 @@ async function chooseMix() {
     if (ok) ok.disabled = total() !== HOME_GRAMS;
   };
   const body = el("div.home-mix", [el("p", { text: "自分の葉を1gずつ。合計12gで一服する。" }), ...rows.map((r) => r.row), totalLine]);
-  const picked = modal({ title: "寝る前の一服", className: "home-shisha-dialog", body, options: [
+  const picked = modal({ title: "家シーシャ", className: "home-shisha-dialog", body, options: [
     { label: "これで吸う", value: true, primary: true, test: "home-mix-ok" },
     { label: "やめる", value: false, test: "home-mix-cancel" },
   ] });
@@ -154,7 +154,7 @@ async function chooseRecipe() {
   const options = (DB.recipes || []).filter((r) => state.recipes?.[r.id] && recipeMix(r))
     .map((r) => ({ label: r.name, value: r.id, test: `home-recipe-${r.id}` }));
   if (!options.length) return null;
-  const id = await modal({ title: "レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。量は決まった配合で詰める。",
+  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。量は決まった配合で詰める。",
     options: [...options, { label: "戻る", value: null, test: "home-recipe-back" }] });
   return id ? recipeMix(DB.recipes.find((r) => r.id === id)) : null;
 }
@@ -169,11 +169,11 @@ export async function runHomeShisha({ eve = false } = {}) {
   const canRecipe = (DB.recipes || []).some((r) => state.recipes?.[r.id] && recipeMix(r));
   let mix = null;
   while (!mix) {
-    const how = await modal({ title: "寝る前の一服", className: "home-shisha-dialog",
-      body: `${rig.name}で一服する？ 自分の葉を${HOME_GRAMS}g使い、体力を24使って試作する。使った味の熟練度が育つ。`,
+    const how = await modal({ title: "寝る前の家シーシャ", className: "home-shisha-dialog",
+      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉を${HOME_GRAMS}g使い、体力は大きく減る。使った味の熟練度が育つ。`,
       options: [
-        { label: "自分で配合する", value: "mix", primary: true, test: "home-shisha-mix" },
-        ...(canRecipe ? [{ label: "レシピ帳から作る", value: "recipe", test: "home-shisha-recipe" }] : []),
+        { label: "家シーシャをする（自分で配合）", value: "mix", primary: true, test: "home-shisha-mix" },
+        ...(canRecipe ? [{ label: "家シーシャをする（レシピ帳）", value: "recipe", test: "home-shisha-recipe" }] : []),
         { label: "今日は寝る", value: null, test: "home-shisha-skip" },
       ] });
     if (!how || state !== owner) return false;

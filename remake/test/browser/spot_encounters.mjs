@@ -305,7 +305,7 @@ await suite("spot-encounters", async check => {
         visits: E.core.state.spotVisits[ex.spot], visitedToday: E.core.state.visitedDay[ex.spot] }), { ex });
       assert.equal(r.error, undefined); assert(r.unchanged && r.seen);
       assert.equal(r.cost, ex.spot === "cafe" ? 800 : 0);
-      assert.equal(r.stamina, ex.spot === "choizap" ? -8 : 12);
+      assert.equal(r.stamina, ex.spot === "choizap" ? -8 : -4);
       assert.equal(r.gain, 2); // #784: 喫茶こはくも観音堂・ジムと同じく主な能力に2P
       assert.equal(r.chosen, platform === "pc"); assert.equal(r.visits, 2); assert.equal(r.visitedToday, 8);
     }, options);

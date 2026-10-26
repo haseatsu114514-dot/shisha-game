@@ -97,7 +97,7 @@ function meTab() {
       ...rows,
       el("div.st-misc", [
         el("div", { text: `所持金 ${yen(state.money)}` }),
-        el("div", { text: `体力 ${condition.label} ── ${condition.hint}。睡眠で＋14。カフェ・参拝は消耗4、シーシャ店は16。` }),
+        el("div", { text: `体力 ${condition.label} ── ${condition.hint}。眠ると回復し、外出すると行き先に応じて疲れる。` }),
       ]),
       note,
     ]),

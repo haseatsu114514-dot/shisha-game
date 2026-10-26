@@ -556,29 +556,13 @@ async function performSpotAction(spot) {
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rest") {
-    if (state.owned?.some(id => ["home_rig_set", "home_rig_pro"].includes(id))) {
-    const { homeShishaOffer } = await import("./home-shisha.js");
-    const dayKey = `${state.chapter}:${state.day}`;
-    const eligible = homeShishaOffer(state, { eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) });
-    const choice = await modal({ title: "自宅での過ごし方", body: "休養は体力＋55。夜の試作は自分の葉12g・体力24を使う。普段の睡眠は体力＋14。",
-      options: [{ label: "家で休む（1行動）", value: "rest", test: "home-rest" },
-        ...(eligible ? [{ label: state.flags._home_trial_plan === dayKey ? "今夜の試作を取りやめる" : "今夜、自宅で試作する（予約）", value: "trial", test: "home-plan-trial" }] : []),
-        { label: "戻る", value: null, test: "home-back" }] });
-    if (!choice) return { used: false, exerted };
-    if (choice === "trial") {
-      state.flags._home_trial_plan = state.flags._home_trial_plan === dayKey ? null : dayKey;
-      save();
-      toast(state.flags._home_trial_plan ? "今夜の試作を予定した。外出を終えたら自宅へ" : "今夜は試作せずに眠る");
-      return { used: false, exerted };
-    }
-    }
     const unwell = currentCondition().health === "red" || !!state.flags._cold_pending
       || state.restDay?.chapter === state.chapter && state.restDay.day === state.day && !!state.restDay.illnessHealth;
     if (unwell) {
       const plan = nightPlan(chapterDef.nightEvents, { resting: true });
       const booked = state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1;
       const choice = await modal({ title: "家で休む", className: "rest-modal",
-        body: `今は${state.slot === 0 ? "昼" : "夜"}。残り${2 - state.slot}枠${booked ? "のうち夜は約束へ、それ以外" : ""}を休養に使えます。通常の夜の予定は後日へ。<br>${plan.length ? `今日の予定：${plan.map(ev => ev.label || "大切な予定").join("・")}には参加します。<br>` : ""}${booked ? `${displayName(state.pendingInvite.sender, state)}との今夜のLIMEの約束には参加します。<br>` : ""}回復は1枠につき体力+${spot.stamina}（上限まで）。`,
+        body: `今は${state.slot === 0 ? "昼" : "夜"}。残り${2 - state.slot}枠${booked ? "のうち夜は約束へ、それ以外" : ""}を休養に使えます。通常の夜の予定は後日へ。<br>${plan.length ? `今日の予定：${plan.map(ev => ev.label || "大切な予定").join("・")}には参加します。<br>` : ""}${booked ? `${displayName(state.pendingInvite.sender, state)}との今夜のLIMEの約束には参加します。<br>` : ""}しっかり休めば体力が大きく戻ります。`,
         options: [{ label: "半日休む（1行動）", value: "half", test: "rest-half" },
           { label: "今日は残りを全部休む", value: "full", test: "rest-full", primary: true },
           { label: "戻る", value: null, test: "rest-cancel" }] });
@@ -593,7 +577,7 @@ async function performSpotAction(spot) {
         await restAtHome({ ...spot, stamina: spot.stamina * restSlots }, { fullDay: true });
         state.flags._home_tonight = true;
         syncNightQueue(chapterDef.nightEvents);
-        toast(`${restSlots}枠を休養へ${booked ? "。夜の約束には参加" : ""}。体力 ${state.stamina}/${maxStamina()}。通常の夜の予定は後日へ`, { ms: 4000 });
+        toast(`${restSlots}枠を休養へ${booked ? "。夜の約束には参加" : ""}。体力が回復した。通常の夜の予定は後日へ`, { ms: 4000 });
       } else await restAtHome(spot);
     } else await restAtHome(spot);
   } else if (spot.kind === "fortune") {
@@ -774,11 +758,9 @@ async function endDay({ returnedToTonari = false } = {}) {
     await play(`remake_homecoming_${state.day % 3}`);
   }
   await bannersIdle();
-  // 寝る前の一服（家シーシャ・#638）: 行動の枠は使わないちょい足し。大会前夜は聞かない
-  if (state.flags._home_trial_plan === `${state.chapter}:${state.day}`) {
-    if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
-    delete state.flags._home_trial_plan;
-  }
+  // 夜の行動を終え、余力があるときだけ家シーシャを選べる。大会前夜は聞かない。
+  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
+  delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
   await advanceDay();
 }
 

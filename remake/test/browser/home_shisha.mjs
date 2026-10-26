@@ -45,7 +45,10 @@ await suite("home-shisha", async check => {
       assert.equal(before.owned.filter(id => id === "home_rig_set").length, 1);
       assert.equal(before.flavorStock.double_apple, 50, "The rig includes one box, granted only once");
 
-      await offer(page); await hit("home-shisha-mix");
+      await offer(page);
+      assert.match(await page.locator(".home-shisha-dialog").innerText(), /寝る前の家シーシャ/);
+      assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /体力\s*[+＋−-]?\d/);
+      await hit("home-shisha-mix");
       await hit("home-plus-lemon"); await hit("home-mix-cancel"); await hit("home-shisha-skip");
       await page.waitForFunction(() => homeDone === false);
       assert.deepEqual(await snapshot(page), before, "Cancelled mixing must not consume anything");
