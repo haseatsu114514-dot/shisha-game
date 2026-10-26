@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ロード画面プレビュー — 水煙前線</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/loading.css">
+<style>
+body { display: block; overflow: auto; padding: 20px; }
+.controls { max-width: 1000px; margin: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.controls h1, .controls p { width: 100%; margin: 0; }
+.controls h1 { font-size: 24px; }
+.controls button, .demo-scene button { min-height: 44px; padding: 8px 16px; background: #32243e; color: #f4ede0; border: 1px solid #cfb37a; border-radius: 4px; cursor: pointer; }
+.controls button:disabled { opacity: .45; cursor: default; }
+.preview-frame { position: relative; margin: 20px auto; overflow: hidden; }
+#loading-demo { width: 1280px; height: 720px; position: absolute; transform-origin: top left; background: #211a2c; }
+.demo-scene { height: 100%; display: grid; place-content: center; text-align: center; font-size: 26px; }
+#result { min-height: 2em; }
+</style>
+</head>
+<body>
+<div class="controls">
+<h1>ロード画面・２コマ漫画の確認</h1>
+<p>所要時間は試験用の模擬処理です。漫画枠は仮表示で、本編の素材・セーブは読み書きしません。</p>
+<button data-demo="plain">素材なし（約２秒）</button>
+<button data-demo="comic">２コマ枠あり（約２秒）</button>
+<button data-demo="fast">短い処理（画面を出さない）</button>
+<button data-demo="error">処理失敗を確認</button>
+<button id="cancel" disabled>中断</button>
+<p id="result" role="status">確認する項目を選んでください。</p>
+</div>
+<div class="preview-frame"><div id="loading-demo"><div class="demo-scene"><p>次の場面</p><button id="underlying">本編側の操作（待機中は無効）</button></div></div></div>
+<script type="module" src="js/loading-preview.js"></script>
+</body>
+</html>

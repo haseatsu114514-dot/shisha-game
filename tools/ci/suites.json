@@ -10,6 +10,27 @@
   ],
   "suites": [
     {
+      "id": "loading-prefetch",
+      "title": "Bounded preparation queue and retries",
+      "kind": "quick",
+      "run": ["node remake/test/loading_prefetch.mjs"]
+    },
+    {
+      "id": "loading-gate",
+      "title": "Loading gate and two-panel comic lifecycle",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/loading*.js",
+        "remake/js/loading-preview.js",
+        "remake/css/loading.css",
+        "remake/loading-preview.html",
+        "remake/test/browser/loading_gate.mjs"
+      ],
+      "run": ["node remake/test/browser/loading_gate.mjs"]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",
