@@ -7,6 +7,7 @@ const tileNine = (col, row) => ({ url: nine, size: [1254, 1254], box: [col * 418
 const tileThree = (col) => ({ url: three, size: [2172, 724], box: [col * 724, 0, 724, 724] });
 
 export const CHARACTER_FLAVOR_ART = {
+  spring_water: { url: new URL("../../img/shop/character-flavors/spring-water.webp", import.meta.url).href, size: [512, 512], box: [102, 38, 319, 457] },
   white_gummy_bear: tileNine(0, 0),
   red_gummy_bear: tileNine(1, 0),
   mountain_mist: tileNine(2, 0),

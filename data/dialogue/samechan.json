@@ -15,7 +15,7 @@
     "romance_available": true,
     "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
     "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
-    "favorite_flavor": "スプリングウォーター",
+    "favorite_flavor": "アフサール スプリングウォーター",
     "specialty_flavor": null,
     "spriteScale": 0.91,
     "growth_stats": {
@@ -419,7 +419,10 @@
         "bg": "res://assets/backgrounds/bg_shishark.png",
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
-        "bgm_on_speaker": "samechan"
+        "bgm_on_speaker": "samechan",
+        "flavor_lesson": {
+          "spring_water": 1
+        }
       },
       "lines": [
         {
@@ -447,6 +450,37 @@
           "speaker": "samechan",
           "face": "serious",
           "text": "うむ。今日はここから見ておるそうじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "今日はスプリングウォーターにしたのじゃ。わしの好きな葉なのじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水の名前なのに、香りはしっかりあるんですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。香水みたいじゃろう。吸ったあとに残る、すうっとした感じが好きなのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前から想像していたのと違いました。ひとつの葉だけでも、こんなに香るんですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "アフサールの箱じゃ。柚ヶ谷のDr.fookahにも置いてあるぞ。お主も気になったら試すとよい"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の海にもふさわしい香りである",
+          "voice": "korochan"
         }
       ]
     },

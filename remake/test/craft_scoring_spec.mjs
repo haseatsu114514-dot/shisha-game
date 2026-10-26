@@ -28,7 +28,7 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー5社・表記統一・禁止語チェック
-assert.equal(flavors.length, 77); // 人物に結びつく11種とマウンテンミストを追加
+assert.equal(flavors.length, 78); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
@@ -240,9 +240,13 @@ assert.equal(flavorFamilyGrams({ dobaj_mint: 3, absal_double_apple: 9 }, "double
 assert.equal(giftBowlEffect({ equip: { bowl: "suyaki_minto" }, mix: { dobaj_mint: 3, double_apple: 9 } })?.bonus, 1);
 assert.equal(giftBowlEffect({ equip: { bowl: "suyaki_adam" }, mix: { mint: 3, absal_double_apple: 9 } })?.bonus, 1);
 
+// ミント課題は再開中の旧大会だけ。新規のレモン課題とは区別する。
+assert.equal(evaluateMix({ mode: "tournament", mix: { absal_double_apple: 9, dobaj_mint: 3 }, equip: { bowl: "silicone_bowl" } }).regOk, false);
+s.flags._legacy_mint_tournament = true;
 const crossMix = evaluateMix({ mode: "tournament", mix: { absal_double_apple: 9, dobaj_mint: 3 }, equip: { bowl: "silicone_bowl" } });
 assert.equal(crossMix.regOk, true, "dobaj_mint should satisfy mint regulation");
 assert.equal(crossMix.recipe?.id, "sumi_basic", "Cross-brand double_apple + mint should match sumi_basic");
+delete s.flags._legacy_mint_tournament;
 assert.equal(isSuyakiBowl("suyaki_hagal"), true);
 assert.equal(isSuyakiBowl("silicone_bowl"), false);
 
