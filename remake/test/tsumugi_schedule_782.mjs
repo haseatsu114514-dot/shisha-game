@@ -52,6 +52,7 @@ await schedule.link(() => { throw Error("Unexpected schedule import"); });
 await schedule.evaluate();
 const mocks = {
   "state.js": { state, save: () => saves.push(JSON.stringify(state)) },
+  "stats.js": { ensureAffinityLevel: () => 0 },
   "engine.js": { play: async id => plays.push(id) },
   "spots.js": { hasContact: () => true },
 };

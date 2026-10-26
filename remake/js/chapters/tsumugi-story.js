@@ -1,5 +1,6 @@
 // つむぎの取材・コンテスト。本筋の読了と個人的な親しさは分ける。
 import { state, save } from "../core/state.js";
+import { ensureAffinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { hasContact } from "../daily/spots.js";
 import { TSUMUGI_STORY } from "../daily/tsumugi-schedule.js";
@@ -27,9 +28,10 @@ export async function playTsumugiStory(untilDay, { sketch = null, deferFlags = [
       state.flags[step.flag] = true;
       state.flags._tsumugi_story_day = `${state.chapter}:${state.day}`;
     }
+    const gained = step.level ? ensureAffinityLevel("tsumugi", step.level) : 0;
     hasContact("tsumugi");
     // 再開時の補完も、次の行動を選ぶ前に保存する。
-    if (unread || backfilled) save();
+    if (unread || backfilled || gained) save();
     backfilled = false;
   }
 }

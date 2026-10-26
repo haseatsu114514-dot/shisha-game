@@ -1,6 +1,6 @@
 // 固定物語と通常在店で、同じ日程・読了条件を参照する。
 export const TSUMUGI_STORY = [
-  { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research" },
+  { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
   { day: 3, dialogue: "ch1_tsumugi_work_in_progress", flag: "_tsumugi_contest_progress" },
   { day: 11, dialogue: "ch1_tsumugi_sketch", flag: "_tsumugi_contest_submitted" },
   { day: 13, dialogue: "ch1_tsumugi_eve", flag: "_tsumugi_contest_eve" },
