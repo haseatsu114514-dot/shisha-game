@@ -146,7 +146,7 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
     if(stage<0)throw new Error(`Unknown Chapter 3 scene: ${sceneId}`);
     const scene=CH3_INTRO_SCENES[stage],s=core.newGame();
     Object.assign(s,{chapter:3,day:28+scene.day,slot:scene.slot,phase:'daily'});
-    s.flags={_elapsed_calendar:true,_ch3_intro:{startDay:29,stage,titleSeen:true}};
+    s.flags={_elapsed_calendar:true,_ch3_intro:{startDay:29,stage,titleSeen:true,routeVersion:2}};
     for(const who of known){s.met[who]=true;s.flags['_met_'+who]=true;s.flags['_intro_'+who]=true;}
     Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
     core.saveConfig();core.save();
@@ -595,7 +595,7 @@ await suite('ch2-tournament',async check=>{
     await page.locator(dt('ch3-intro-continue')).click();
     await page.locator(dt('ch3-intro-error')).waitFor();
     let s=await get(page);
-    assert.equal(s.flags._ch3_intro.stage,12);
+    assert.equal(s.flags._ch3_intro.stage,11);
     for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
     assert.equal(s.flags._ch3_unrelated_meeting_test,true,'Unrelated state must survive the local rollback');
     await page.locator(dt('ch3-intro-menu')).click();
@@ -605,15 +605,15 @@ await suite('ch2-tournament',async check=>{
       const core=await import('./js/core/state.js');
       return core.readSlot(core.SAVE_SLOTS[1].key);
     });
-    assert.equal(saved.flags._ch3_intro.stage,12,'The error MENU must save the unread scene');
+    assert.equal(saved.flags._ch3_intro.stage,11,'The error MENU must save the unread scene');
     for(const value of [saved.met.kuze,saved.flags._met_kuze,saved.flags._intro_kuze])assert.equal(value,undefined);
     assert.equal(saved.flags._ch3_unrelated_meeting_test,true);
     await page.locator(dt('ch3-intro-reload')).click();
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
     await page.locator(dt('ch3-intro-continue')).click();
-    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_advice"]').waitFor();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_mukai_visit"]').waitFor();
     s=await get(page);
-    assert.equal(s.flags._ch3_intro.stage,13);
+    assert.equal(s.flags._ch3_intro.stage,12);
     for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,true);
   });
   await check('chapter-three-real-vn-abort-rolls-back-kuze-intro',async page=>{
@@ -632,7 +632,7 @@ await suite('ch2-tournament',async check=>{
     await page.evaluate(async()=>{void (await import('./js/chapters/ch3.js')).resumeChapterThree();});
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
     const s=await get(page);
-    assert.equal(s.flags._ch3_intro.stage,12);
+    assert.equal(s.flags._ch3_intro.stage,11);
     for(const value of [s.met.kuze,s.flags._met_kuze,s.flags._intro_kuze])assert.equal(value,undefined);
   });
   await check('chapter-three-mukai-cancel-preserves-loaded-owner',async page=>{

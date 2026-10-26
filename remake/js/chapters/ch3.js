@@ -7,7 +7,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { readDialogues } from "./ch2-city-data.js";
-import { CH3_INTRO_SCENES, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
+import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
@@ -19,9 +19,9 @@ const FILES = {
   ch3_main: ["ch3_opening", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
-    "ch3_daily_cup_1", "ch3_taste_return"],
+    "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
-  ch3_rivals: ["ch3_kuze_first", "ch3_kuze_advice", "ch3_steve_low_heat"],
+  ch3_rivals: ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
 };
 
@@ -91,7 +91,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
       menuButton(owner),
     ]),
     el("p.ch2-contest-description", { text: description }),
-    sceneId ? createChapterThreeWayfinding(state, CH3_INTRO_SCENES, sceneId) : null,
+    sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", [...actions, ...(["scene", "free", "ready"].includes(name) ? [
       button(owner, "LIME・恋人との連絡", "lime", async () => {
@@ -155,7 +155,7 @@ export function resumeChapterThree() {
     import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
     return true;
   }
-  if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === CH3_INTRO_SCENES.length) {
+  if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length) {
     import("./ch3-tournament.js").then(module => module.runChapterThreeTournament());
     return true;
   }
@@ -302,7 +302,7 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   syncTokyoVisits(state);
   const progress = chapterThreeProgress(state);
-  const scene = CH3_INTRO_SCENES[progress.stage];
+  const scene = chapterThreeScenes(state)[progress.stage];
   const free = chapterThreeFreeTime(state);
   if (free) { await renderFreeTime(owner, free); return; }
   if (!scene) {
@@ -324,7 +324,7 @@ async function renderStage(owner) {
       save();
       await renderStage(owner);
     }, true),
-  ], scene.day === 11 ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+  ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
 
 async function renderFreeTime(owner, window) {

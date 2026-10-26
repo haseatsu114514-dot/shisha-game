@@ -220,6 +220,25 @@
       ]
     },
     {
+      "dialogue_id": "ch3_kuze_mukai_visit",
+      "lines": [
+        { "speaker": "", "text": "mukaiの開店前。仕込み中のはじめが顔を上げると、入口に久世がいた。" },
+        { "speaker": "kuze", "face": "normal", "text": "今日は客で来たよ。君がここで作る一台、飲んでみたくて" },
+        { "speaker": "hajime", "face": "normal", "text": "県大会の動画だけじゃ足りませんでした？" },
+        { "speaker": "kuze", "face": "normal", "text": "見直したけど、映像じゃ最後の一口まで分からないから" },
+        { "speaker": "", "text": "はじめは今分かる範囲をましろに伝え、二人で炭の位置を決めた。" },
+        { "speaker": "", "text": "久世は名前を伏せずに材料を見てから吸う。" },
+        { "speaker": "kuze", "face": "normal", "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする" },
+        { "speaker": "hajime", "face": "normal", "text": "まだ、毎回同じようには作れません" },
+        { "speaker": "kuze", "face": "normal", "text": "僕もだよ。だから、次の一台を見たい" },
+        { "speaker": "kuze", "face": "normal", "text": "……大会でもね" },
+        { "speaker": "", "text": "久世は笑って代金を払い、空のグラスを自分で下げた。はじめも、また話したいと思った。" },
+        { "speaker": "mashiro", "face": "normal", "text": "朔、楽しそうだったね。勝負する時も、ああいう顔をするよ" },
+        { "speaker": "hajime", "face": "normal", "text": "……俺も、楽しみです。少し怖いですけど" },
+        { "speaker": "", "text": "親しくなった相手と、同じ舞台に立つ日が近づいていた。久世が何を準備しているかは、まだ分からない。" }
+      ]
+    },
+    {
       "dialogue_id": "ch3_kuze_advice",
       "lines": [
         {

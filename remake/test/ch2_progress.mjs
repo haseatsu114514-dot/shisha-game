@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { advanceToChapterTwo } from "../js/chapters/ch2-progress.js";
-import { CH3_INTRO_SCENES, advanceToChapterThree, chapterThreeProgress,
+import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene } from "../js/chapters/ch3-progress.js";
 
 const value = newState();
@@ -81,17 +81,27 @@ for (const key of ["money", "stamina", "stats", "statXp", "flavorStock", "owned"
   "reel", "lovers", "loverSince", "relationshipMemories", "contacts", "inbox", "tournament"])
   assert.deepEqual(tokyo[key], saved[key], `Chapter 3 transition changed ${key}`);
 assert.deepEqual(tokyo.statsAtChapterStart, saved.stats);
-assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 29, stage: 0, titleSeen: false, prologueStep: 0 });
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 29, stage: 0, titleSeen: false, prologueStep: 0, routeVersion: 2 });
 const entered = structuredClone(tokyo);
 assert.equal(advanceToChapterThree(tokyo), false);
 assert.deepEqual(tokyo, entered, "Repeated Chapter 3 entry reset progress or date");
 
 const ids = CH3_INTRO_SCENES.map(scene => scene.id);
+const legacy = structuredClone(entered);
+delete legacy.flags._ch3_intro.routeVersion;
+legacy.flags._ch3_intro.stage = 9;
+legacy.day = 34;
+assert.equal(chapterThreeScenes(legacy).length, 18);
+assert.equal(chapterThreeScenes(legacy)[legacy.flags._ch3_intro.stage].id, "ch3_abyss_recovery",
+  "An existing save must resume its unread scene without replaying the revised route");
+assert(completeChapterThreeScene(legacy, "ch3_abyss_recovery"));
+assert.equal(chapterThreeScenes(legacy)[legacy.flags._ch3_intro.stage].id, "ch3_naru_contact_before_tournament");
 assert.deepEqual(ids, [
   "ch3_opening", "ch3_mukai_arrival", "ch3_mukai_intro", "ch3_individuality_doubt",
   "ch3_tokyo_shop_gap", "ch3_double_apple_incident", "ch3_rest_before_recovery",
-  "ch3_daily_cup_1", "ch3_taste_return", "ch3_abyss_recovery",
-  "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_kuze_first", "ch3_kuze_advice",
+  "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_naru_contact_before_tournament",
+  "ch3_naru_work", "ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_taste_return",
+  "ch3_abyss_recovery", "ch3_kuze_advice",
   "ch3_steve_low_heat", "ch3_volk_first", "ch3_strategy", "ch3_tournament_eve",
 ], "Chapter 3 introduction must keep the canonical scene order through the tournament eve");
 const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "ch3_rivals", "ch3_volk"].flatMap(name =>

@@ -24,7 +24,7 @@ import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
-import { CH3_INTRO_SCENES, chapterThreeProgress } from "./ch3-progress.js";
+import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
 
@@ -161,7 +161,7 @@ async function commentary(owner, event) {
 
 export async function runChapterThreeTournament() {
   if (state?.chapter !== 3 || (!state.flags._ch3_tournament &&
-    (chapterDay(state) < 14 || chapterThreeProgress(state).stage < CH3_INTRO_SCENES.length))) return false;
+    (chapterDay(state) < 14 || chapterThreeProgress(state).stage < chapterThreeScenes(state).length))) return false;
   if (session) { session.active = false; session.controller?.abort(); }
   const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null, cs: null };
   document.body.classList.remove("ch3-intro", "ch2-city", "ch2-main");

@@ -15,7 +15,7 @@ async function seed(page, auto = "good") {
       money: 35000, flavorStock: { double_apple: 100, mint: 100 }, weatherSeed: 5 });
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] },
-      _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true } };
+      _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     for (const who of ["hajime", "pakki", "kuze", "steve", "volk", "dr_kemuri", "nagumo"])
