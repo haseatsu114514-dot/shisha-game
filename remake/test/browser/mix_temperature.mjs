@@ -16,11 +16,14 @@ const bandsOf = async (page, selector = ".mix-temperature, .thermo") => {
   const scaleX = tube.width / bar.offsetWidth;
   if (!root.isConnected || tube.height <= 0) throw new Error("Thermometer detached or has no measurable tube");
   const bounds = selector => {
-    const band = root.querySelector(selector).getBoundingClientRect();
+    const node = root.querySelector(selector);
+    if (node.hidden) return null;
+    const band = node.getBoundingClientRect();
     return horizontal ? [(band.left - tube.left - bar.clientLeft * scaleX) / (bar.clientWidth * scaleX), (band.right - tube.left - bar.clientLeft * scaleX) / (bar.clientWidth * scaleX)]
       : [(tube.bottom - band.bottom) / tube.height, (tube.bottom - band.top) / tube.height];
   };
   return { t: Number(root.dataset.tolerance), ideal: bounds(horizontal ? ".mix-thermal-ideal" : ".thermo-zone"), optimal: bounds(horizontal ? ".mix-thermal-optimal" : ".thermo-optimal"),
+    expressionMode: root.dataset.expressionMode,
     gradient: getComputedStyle(root.querySelector(horizontal ? ".mix-thermal-scale" : ".thermo-scale")).backgroundImage };
 });
 };
@@ -29,8 +32,10 @@ const expectBands = async (page, t, selector) => {
   near(bands.t, t);
   const model = await page.evaluate(() => QA.conditions.temperatureBands(QA.cs));
   for (const [key, expected] of [["ideal", model.ideal], ["optimal", model.optimal]]) {
+    if (key === "optimal" && model.expressionWeight >= .999) { assert.equal(bands[key], null, "Expressive blends must not mark only the middle as best"); continue; }
     expected.forEach((value, i) => near(bands[key][i], value, key));
   }
+  assert.equal(bands.expressionMode, model.expressionWeight >= .999 ? "broad" : "focused");
   assert(bands.gradient.includes("linear-gradient"));
   // The green color itself moves, in addition to the band outlines.
   const greenStop = /rgb\(103, 210, 163\) ([\d.]+)%/.exec(bands.gradient);
@@ -92,8 +97,10 @@ await suite("mix-temperature", async check => {
       await repeatClick(page, "mix-plus-mint", 4); await expectBands(page, 1);
       await repeatClick(page, "mix-minus-vanilla", 6); await repeatClick(page, "mix-plus-mint", 6);
       const preview = await expectBands(page, 1.2);
-      assert.equal(await page.locator(".mix-ideal").textContent(), "適温");
-      assert.equal(await page.locator(".mix-optimal").textContent(), "最適温");
+      assert.equal(await page.locator(".mix-ideal").textContent(), "おいしい範囲");
+      assert.equal(await page.locator(".mix-optimal").textContent(), "低め／高め");
+      assert.equal(await page.locator('[data-test="mix-optimal"]').isVisible(), false);
+      assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /低めと高めで香りが変わる/);
       assert.doesNotMatch(await page.locator(".mix-temperature-legend").textContent(), /[\d%]/);
       assert.doesNotMatch(await page.locator(".mix-temperature").getAttribute("aria-label"), /[\d%]/);
       assert.equal(await page.locator('[data-test="mix-ratio-mint"]').textContent(), "比率 100%");
@@ -114,7 +121,7 @@ await suite("mix-temperature", async check => {
         QA.run = QA.steps.stepSteamTime(QA.cs);
       });
       await page.locator('[data-test="timer-start"]').waitFor(); await expectBands(page, preview.t);
-      assert.match(await page.locator('[data-test="steam-forecast-text"]').textContent(), /適温|最適温/);
+      assert.match(await page.locator('[data-test="steam-forecast-text"]').textContent(), /適温|おいし/);
       await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => QA.run);
       // Desktop exercises the live steam clock. Other profiles use the existing auto hook for completion.
       await page.evaluate(name => { QA.session.craftTest.auto = name === "desktop" ? null : "good"; QA.run = QA.steam.runSteamDodge(QA.cs); }, name);
@@ -138,7 +145,8 @@ await suite("mix-temperature", async check => {
         background: document.querySelector(".bench").dataset.thermalBand,
         score: QA.cs.arcade.parts.pull, strain: QA.cs.strain || 0 }));
       assert.equal(result.pull.optimal, true); assert.equal(result.pull.inZone, true);
-      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "optimal");
+      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "ready");
+      assert.equal(result.pull.score, 100);
       assert.equal(result.score, result.pull.score * 100); assert.equal(result.strain, 0);
       await finishResult(page);
 
@@ -267,10 +275,30 @@ await suite("mix-temperature", async check => {
         for (const band of [bands.ideal, bands.optimal]) for (const temp of [band[0] - 1e-7, band[0], band[0] + 1e-7, band[1] - 1e-7, band[1], band[1] + 1e-7]) {
           meter.update(temp); steam.update(temp);
           const actual = conditions.pullResult(temp, 2, 0, bands), effect = thermal.thermalBand(temp, bands);
-          rows.push({ id: flavor.id, temp, ideal: meter.root.classList.contains("ok"), optimal: meter.root.classList.contains("optimal"),
+          rows.push({ id: flavor.id, temp, expressive: bands.expressionWeight >= .999,
+            ideal: meter.root.classList.contains("ok"), optimal: meter.root.classList.contains("optimal"),
             steamIdeal: steam.root.classList.contains("ok"), steamOptimal: steam.root.classList.contains("optimal"), actual,
             ready: effect.id === "ready" || effect.id === "optimal", rainbow: effect.id === "optimal" });
         }
+      }
+      // Reusing a meter must update its expression mode even when center and width are unchanged.
+      const switched = { mix: { orange: 12 } };
+      const switchedMeter = thermometer.buildThermometer({ cs: switched });
+      const switchedGauge = thermometer.buildMixTemperatureGauge(switched);
+      session.stepPanel("pull", "味の作り分け").append(switchedMeter.root, switchedGauge.root);
+      const modes = [];
+      for (const id of ["orange", "double_apple", "orange"]) {
+        switched.mix = { [id]: 12 };
+        const bands = conditions.temperatureBands(switched);
+        switchedMeter.update(bands.center); switchedGauge.updateBands();
+        modes.push({ id, center: bands.center, width: bands.totalWidthScale,
+          mode: switchedMeter.root.dataset.expressionMode,
+          centerHidden: switchedMeter.root.querySelector(".thermo-optimal").hidden,
+          horizontalCenterHidden: switchedGauge.root.querySelector(".mix-thermal-optimal").hidden,
+          optimal: switchedMeter.root.classList.contains("optimal"),
+          text: switchedMeter.root.getAttribute("aria-valuetext"),
+          lowScore: conditions.pullResult(bands.ideal[0], 2, 0, bands).score,
+          highScore: conditions.pullResult(bands.ideal[1], 2, 0, bands).score });
       }
       const a = session.newSession("drill"), b = session.newSession("drill");
       a.mix = { mint: 12 }; b.mix = { vanilla: 12 };
@@ -290,14 +318,22 @@ await suite("mix-temperature", async check => {
       const vanillaBase = { ...base, mix: { vanilla: 12 }, pull: { ...base.pull, temp: .61, over: false } };
       const vanillaRisk = score.computeShisha(vanillaBase).burnRisk;
       const vanillaCenterRisk = score.computeShisha({ ...vanillaBase, pull: { ...vanillaBase.pull, temp: .432 } }).burnRisk;
-      return { rows, isolated, mintRisk, mintCenterRisk, afRisk, afCenterRisk, vanillaRisk, vanillaCenterRisk };
+      return { rows, modes, isolated, mintRisk, mintCenterRisk, afRisk, afCenterRisk, vanillaRisk, vanillaCenterRisk };
     });
     for (const row of results.rows) {
-      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal, JSON.stringify(row));
+      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal && !row.expressive, JSON.stringify(row));
       assert.equal(row.steamIdeal, row.ideal); assert.equal(row.steamOptimal, row.optimal);
       assert.equal(row.ready, row.ideal); assert.equal(row.rainbow, row.optimal);
     }
     assert(results.rows.length >= 768); assert(results.isolated);
+    assert.deepEqual(results.modes.map(m => m.mode), ["focused", "broad", "focused"]);
+    assert.deepEqual(results.modes.map(m => m.centerHidden), [false, true, false]);
+    assert.deepEqual(results.modes.map(m => m.horizontalCenterHidden), [false, true, false]);
+    assert.deepEqual(results.modes.map(m => m.optimal), [true, false, true]);
+    assert.equal(new Set(results.modes.map(m => m.center)).size, 1);
+    assert.equal(new Set(results.modes.map(m => m.width)).size, 1);
+    assert.match(results.modes[1].text, /おいしく作れる範囲/);
+    assert.equal(results.modes[1].lowScore, 100); assert.equal(results.modes[1].highScore, 100);
     assert.equal(results.mintRisk, results.mintCenterRisk);
     assert.equal(results.afRisk - results.afCenterRisk, 12);
     assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 6);

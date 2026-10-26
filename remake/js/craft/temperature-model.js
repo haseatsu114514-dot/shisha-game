@@ -34,8 +34,11 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
   const totalWidthScale = makerWidth * equipWidth;
   const center = .54 * t;
   const halfIdeal = .12 * totalWidthScale, halfOptimal = .05 * totalWidthScale;
+  // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
+  const expressionWeight = entries.reduce((sum, [id, w]) =>
+    sum + (flavorById?.[id]?.thermal_expression?.quality === "range" ? w : 0), 0);
   return Object.freeze({
-    t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale,
+    t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight,
     ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),
     optimal: Object.freeze([center - halfOptimal, center + halfOptimal]),
   });
@@ -53,14 +56,17 @@ export function visualTemperature(at, bands = temperatureBands()) {
   return to[i - 1] + (to[i] - to[i - 1]) * ((at - from[i - 1]) / (from[i] - from[i - 1]));
 }
 
-/** 温度だけの適合度。葉ダメージ・整数丸め・最終品質点とは別の連続値。 */
+/** 温度だけの適合度。表情対応の葉は良好帯内で同品質、帯外では連続して低下する。 */
 export function temperatureFitness(temp, bands = temperatureBands()) {
   const distance = Math.abs(temp - bands.center);
   const narrow = (bands.optimal[1] - bands.optimal[0]) / 2;
   const safe = (bands.ideal[1] - bands.ideal[0]) / 2;
-  const value = distance <= narrow ? 100 - 10 * distance / narrow
+  const focused = distance <= narrow ? 100 - 10 * distance / narrow
     : distance <= safe ? 90 - 25 * (distance - narrow) / (safe - narrow)
       : 65 - (distance - safe) * 360;
+  const expressive = 100 - Math.max(0, distance - safe) * 360;
+  const weight = Number.isFinite(bands.expressionWeight) ? Math.max(0, Math.min(1, bands.expressionWeight)) : 0;
+  const value = focused + (expressive - focused) * weight;
   return Math.max(0, Math.min(100, value));
 }
 

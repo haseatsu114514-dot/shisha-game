@@ -58,6 +58,7 @@ export function newSession(mode) {
     environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
     steamVariation,
     steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
+    masteryAtStart: { ...state.flavorMastery }, // 練習後の成長で、作り終えた一台の評価を変えない
     equip: { ...state.equip },
     mix: {},
     mixInfo: null,

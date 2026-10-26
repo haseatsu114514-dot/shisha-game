@@ -1,4 +1,5 @@
-import { improvementOf } from "./advice.js";
+import { improvementOf, goodPointOf } from "./advice.js";
+import { actualExpressionCard } from "./flavor-guide.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, clamp, rand } from "../core/util.js";
@@ -303,6 +304,7 @@ export function resultTable(cs, rank) {
     const score = el("b.arcade-num", { text: String(cs.arcade?.total || 0).padStart(6, "0") });
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
+      Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]].map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: `${Math.round(v || 0)} / 100` }),
           el("i.rt-meter", { "aria-hidden": "true" }, [el("b", { style: { width: `${clamp(v || 0, 0, 100)}%` } })])])),
@@ -310,6 +312,7 @@ export function resultTable(cs, rank) {
       cs.arcade?.total ? el("div.rt-part.score", { dataset: { test: "result-score" } }, [el("span", { text: "SCORE" }), score]) : null,
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、あなたには届かなかった。" }),
+      goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
     ]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [

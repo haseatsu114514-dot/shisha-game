@@ -1,0 +1,60 @@
+/* 素材の特徴と完成予想は同じ尺度。長文と細かな比較は開いたときだけ読む。 */
+.flavor-feature-card, .flavor-forecast, .flavor-actual, .equipment-guide { --guide-ink: var(--text, #e4ddd2); --guide-muted: var(--text-dim, #cdbda6); --guide-fill: #c4ab7a; --guide-track: #c4ab7a26; color: var(--guide-ink); }
+.flavor-feature-card { clear: both; padding-top: 10px; }
+.flavor-guide-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.flavor-guide-tags span { padding: 2px 9px; border: 1px solid currentColor; border-radius: 14px; font-size: 13px; }
+.flavor-axes { display: grid; gap: 8px; text-align: left; width: 100%; }
+.flavor-axis { display: grid; grid-template-columns: 6em minmax(50px, 1fr) 3em; gap: 8px; align-items: center; min-height: 22px; font-size: 14px; line-height: 1.3; }
+.flavor-axis-label { white-space: nowrap; }
+.flavor-axis-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--guide-muted); }
+.flavor-axis-track { position: relative; display: block; height: 9px; border: 1px solid var(--guide-fill); border-radius: 3px; background: var(--guide-track); }
+.flavor-axis-track i { position: absolute; top: 0; bottom: 0; left: 0; width: var(--axis-high); background: var(--guide-fill); border-radius: 1px; }
+.flavor-axes.is-forecast .flavor-axis { grid-template-columns: 5em minmax(38px, 1fr) 4.6em; }
+.flavor-axes.is-forecast .flavor-axis-track i { left: var(--axis-low); width: calc(var(--axis-high) - var(--axis-low)); min-width: 2px; background: repeating-linear-gradient(120deg, var(--guide-fill) 0 3px, transparent 3px 5px); border-inline: 1px solid var(--guide-fill); }
+.flavor-guide-caption { display: block; margin: 8px 0; color: var(--guide-muted); font-size: 12px; line-height: 1.4; }
+.flavor-guide-note { margin: 8px 0; font-size: 14px; line-height: 1.5; }
+.flavor-guide-more { margin-top: 8px; font-size: 13px; line-height: 1.6; text-align: left; }
+.flavor-guide-more summary { cursor: pointer; min-height: 30px; padding: 5px 0; color: var(--guide-muted); }
+.flavor-guide-more p { margin: 5px 0; font-size: inherit; line-height: inherit; }
+.flavor-heat-choices { display: grid; gap: 4px; margin-top: 9px; text-align: left; font-size: 13px; line-height: 1.4; }
+.flavor-heat-choices b { color: var(--guide-muted); font-weight: 500; }
+.flavor-forecast > b { display: block; font-size: 17px; }
+.flavor-actual > b { display: block; margin-bottom: 8px; font-size: 15px; }
+body:not(.game-ds) .bench[data-step="mix"] .mix-vessel { height: 230px; }
+body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { top: auto; height: 332px; transform: scale(.69); transform-origin: 50% 100%; }
+.mix-taste .flavor-guide-note, .mix-taste .flavor-guide-more p { min-height: 0; margin: 5px 0; font-size: 13px; line-height: 1.5; }
+.mix-taste .flavor-guide-caption { font-size: 12px; }
+.mix-taste-compact { display: none; }
+.fr-feature { padding: 0; min-height: 30px; display: flex; align-items: center; justify-content: space-between; gap: 7px; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
+.fr-feature::after { content: "特徴 ›"; flex: none; font-size: 11px; font-weight: 400; color: var(--text-dim); }
+.fr-feature:hover b { text-decoration: underline; text-underline-offset: 4px; }
+.flavor-guide-more summary:focus-visible, .fr-feature:focus-visible, .equipment-compare:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.equipment-compare { margin-bottom: 12px; }
+.equipment-guide p { margin: 7px 0; font-size: 16px; line-height: 1.5; }
+.equipment-guide-rows { margin: 8px 0; display: grid; grid-template-columns: minmax(6em, auto) 1fr; gap: 8px 14px; font-size: 13px; line-height: 1.5; }
+.equipment-guide-rows dt { color: var(--guide-muted); }
+.equipment-guide-rows dd { margin: 0; }
+.equipment-compare-list { display: grid; gap: 14px; }
+.equipment-compare-list > section > b { font-size: 18px; }
+.equipment-compare-list > section + section { border-top: 1px solid #c4ab7a44; padding-top: 12px; }
+.shop-dialog :is(.flavor-feature-card, .equipment-guide) { --guide-ink: #38283f; --guide-muted: #76667e; --guide-fill: #80628f; --guide-track: #80628f22; }
+.shop-paper .shop-main .shop-feature-tags { display: block; font-size: 12px; line-height: 1.4; margin-top: 2px; }
+.shop-dialog .flavor-guide-more { font-size: 14px; }
+.shop-dialog .flavor-guide-more summary { color: #69497e; }
+body.game-ds .bench[data-step="mix"] .mix-taste-compact { display: block; }
+.flavor-forecast-compact > summary { min-height: 34px; padding: 7px 0; cursor: pointer; color: var(--guide-muted); font-size: 13px; line-height: 1.4; }
+body.game-ds .bench[data-step="mix"] .fr-feature { min-height: 36px; }
+body.game-ds .bench[data-step="mix"] .fr-feature::after { font-size: 11px; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  body:not(.game-ds) .bench[data-step="mix"] .mix-vessel { height: 150px; }
+  body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { transform: scale(.45); }
+  body:not(.game-ds) .bench[data-step="mix"] .flavor-axis { font-size: var(--landscape-text); grid-template-columns: 1fr auto; gap: 5px 8px; }
+  body:not(.game-ds) .bench[data-step="mix"] .flavor-axis-label { grid-area: 1 / 1; }
+  body:not(.game-ds) .bench[data-step="mix"] .flavor-axis-value { grid-area: 1 / 2; }
+  body:not(.game-ds) .bench[data-step="mix"] .flavor-axis-track { grid-area: 2 / 1 / 3 / -1; }
+  /* 主役名は右の葉一覧でも読める。狭い横画面では予想の棒へ高さを回す。 */
+  body:not(.game-ds) .bench[data-step="mix"] .flavor-forecast > b { display: none; }
+  body:not(.game-ds) .bench[data-step="mix"] :is(.flavor-guide-caption, .flavor-heat-choices, .flavor-guide-more) { font-size: var(--landscape-text); }
+  body:not(.game-ds) .bench[data-step="mix"] .fr-feature { min-height: var(--landscape-target); }
+  body:not(.game-ds) .bench[data-step="mix"] .fr-feature::after { font-size: var(--landscape-text); }
+}
