@@ -233,23 +233,23 @@
     "age": 30,
     "nationality": "USA",
     "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
-    "play_style": "「アメリカの懐かしい菓子を、超低温で軽い一口に仕立てる研究家」",
-    "description": "ふくよかな体格の白人アメリカ人。レトロな柄シャツに眼鏡、タイマーと手書きのレシピカードを持ち歩く。ピザとバーベキューも好きだが、シーシャでは米国産の菓子系葉を扱い、朝食のシリアルミルクや焼きマシュマロを思わせる甘さを研究する。ポップコーン、バニラ、キャラメルの香りを低温で順に立たせ、二口目に甘さを重く残さない。大きな手で炭を数ミリずつ動かす繊細な職人。",
-    "background_secret": "かつて急いで炭を足し、大切な菓子系ミックスを焦がした。以来『絶対に焦がさない』ためのタイマーと記録を続けるが、慎重すぎて香りの山を逃すこともある。予想外に軽い二口目を客が喜ぶと、レシピカードの余白へその反応を書き足す。",
-    "favorite_flavor": "アルファーヘブン ポップコーン",
-    "specialty_flavor": "ポップコーン・バニラ・キャラメルで作るシリアルミルク風の低温ミックス",
+    "play_style": "「レモンライムの爽快さを、二口目まで軽く残す低温の研究家」",
+    "description": "ふくよかな体格の白人アメリカ人。レトロな柄シャツに眼鏡、タイマーと手書きのレシピカードを持ち歩く。ピザとバーベキューも好きだが、シーシャではレモンライム系のマウンテンミストを好む。低温で熱を待ち、レモンの立ち上がりからライムの後味までを軽くつなぐ。大きな手で炭を数ミリずつ動かす繊細な職人。",
+    "background_secret": "かつて急いで炭を足し、柑橘の輪郭を飛ばしてしまった。以来、熱を急がないためのタイマーと記録を続けるが、慎重すぎて香りの山を逃すこともある。予想外に軽い二口目を客が喜ぶと、レシピカードの余白へその反応を書き足す。",
+    "favorite_flavor": "マウンテンミスト（レモンライム系）",
+    "specialty_flavor": "マウンテンミストのレモンとライムを低温で順に立たせる一台",
     "growth_stats": {
       "primary": "技術",
       "secondary": "センス",
-      "notes": "焦がす怖さから低温に固執していたが、はじめの『今の一口を見て調整する』姿勢を受け、タイマーの数字だけでなく客の二口目も見るようになる。"
+      "notes": "柑橘の香りを飛ばす怖さから低温に固執していたが、はじめの『今の一口を見て調整する』姿勢を受け、タイマーの数字だけでなく客の二口目も見るようになる。"
     },
     "visual_concepts": [
       "30-year-old obese white American shisha craftsman, round body and warm focused eyes behind vintage glasses, short dark hair and neat beard, colorful retro patterned camp shirt under a dark work apron, a tiny analog timer in one large hand and a handwritten recipe card in the other",
-      "nostalgic American cereal-milk and marshmallow researcher in a Tokyo diner-like lounge, cheerful when serving guests but exacting about seconds and millimeters of low-temperature heat; never a caricature of his size or nationality"
+      "lemon-lime shisha craftsman in a Tokyo diner-like lounge, cheerful when serving guests but exacting about seconds and millimeters of low-temperature heat; never a caricature of his size or nationality"
     ],
     "intro_cutin": {
-      "title": "甘さの研究家",
-      "line": "二口目まで、軽く甘く",
+      "title": "柑橘の研究家",
+      "line": "二口目まで、軽く爽やかに",
       "face": "normal",
       "color": "#f07a3a"
     }

@@ -1533,6 +1533,35 @@
       "maker": "af"
     },
     {
+      "id": "mountain_mist",
+      "name": "アルファーヘブン マウンテンミスト",
+      "short_name": "AF マウンテンミスト",
+      "category": "fruit",
+      "price": 1650,
+      "description": "レモンとライムの軽い酸味が重なる、爽やかなブロンドリーフ。熱を急がず、二口目まで柑橘の輪郭を残したい。",
+      "heat_tolerance": 1.1,
+      "smoke_weight": 0.75,
+      "steam_bias": -0.4,
+      "chapter_min": 3,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 8,
+        "sweet_natural": 4,
+        "sweet_confection": 1,
+        "cooling": 4,
+        "assertiveness": 5,
+        "acquired_taste": 2,
+        "smoke_body": 3,
+        "sourness": 7,
+        "spiciness": 1,
+        "floral": 1,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
       "id": "popcorn",
       "name": "アルファーヘブン ポップコーン",
       "short_name": "AF ポップコーン",
