@@ -2364,6 +2364,25 @@
       ],
       "weight": 3,
       "timeout": 10
+    },
+    {
+      "id": "recent-intros",
+      "title": "New cast introduction artwork and first-encounter state",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 6,
+      "paths": [
+        "remake/test/browser/recent_intros.mjs",
+        "remake/js/vn/intro*.js",
+        "remake/css/intro.css",
+        "remake/data/manifest.json",
+        "assets/ui/character_intros/**",
+        "remake/img/ui/character_intros/**",
+        "asset_sources/character-intros/recent-cast/**"
+      ],
+      "run": [
+        "node remake/test/browser/recent_intros.mjs"
+      ]
     }
   ]
 }
