@@ -10,3 +10,13 @@
 .craft-preview-end h1, .craft-preview-end p { margin: 0; }
 .craft-preview-end .btn { justify-content: center; }
 @media (max-width: 900px) { .craft-preview-nav { gap: 12px; padding: 0 12px; font-size: 12px; } .craft-preview-nav small { display: none; } }
+
+/* The previous look is available only in the comparison preview. */
+#stage[data-loading-study="plain"] .loading-gate { background: #100d19; animation: none; }
+#stage[data-loading-study="plain"] .loading-gate::before,
+#stage[data-loading-study="plain"] .loading-gate::after { display: none; }
+#stage[data-loading-study="plain"] .loading-card { width: 1120px; padding: 0; border: 0; background: none; box-shadow: none; transform: none; animation: none; }
+#stage[data-loading-study="plain"] .loading-panels { gap: 20px; }
+#stage[data-loading-study="plain"] .loading-emblem { display: none; }
+#stage[data-loading-study="plain"] .loading-status { right: 42px; bottom: 30px; font-weight: 500; font-style: normal; letter-spacing: .16em; }
+#stage[data-loading-study="plain"] .loading-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }

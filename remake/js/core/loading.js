@@ -54,7 +54,16 @@ export async function withLoading(prepare, {
   const locked = [...host.children].map(node => [node, node.inert]);
   const wasBusy = host.getAttribute("aria-busy");
   const overlay = el("section.loading-gate", { role: "dialog", "aria-modal": "true", "aria-label": "読み込み", tabindex: "-1" });
-  const status = el("p.loading-status", { role: "status", "aria-label": label, text: "LOADING…" });
+  const status = el("p.loading-status", { role: "status", "aria-label": label });
+  const emblem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  emblem.setAttribute("class", "loading-emblem");
+  emblem.setAttribute("viewBox", "0 0 36 42");
+  emblem.setAttribute("aria-hidden", "true");
+  for (const d of ["M8 36C2 29 17 27 10 18S8 8 12 4", "M18 39C10 30 27 25 19 17S18 7 21 2", "M28 35C22 29 35 23 28 16S29 8 30 5"]) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d); path.setAttribute("pathLength", "100"); emblem.append(path);
+  }
+  status.append(emblem, el("span", { text: "LOADING…" }));
   const content = el("div.loading-comic");
   overlay.append(el("div.loading-card", [content]), status);
   let settled = false;

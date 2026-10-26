@@ -34,7 +34,16 @@ export async function boot() {
   if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";
   const loadingPreview = query.get("loading") === "comic";
   if (loadingPreview) {
-    document.querySelector(".craft-preview-nav small").textContent = "確認用に約2秒読み込み、自動で制作画面へ";
+    const plain = query.get("look") === "plain";
+    document.getElementById("stage").dataset.loadingStudy = plain ? "plain" : "paper";
+    const link = (text, href, current) => el("a", { text, href, "aria-current": current ? "page" : null });
+    document.querySelector(".craft-preview-nav").replaceChildren(
+      el("b", { text: "ロード画面の比較" }),
+      link("紙面と煙の表示", "craft-preview.html?loading=comic", !plain),
+      link("前の表示", "craft-preview.html?loading=comic&look=plain", plain),
+      link("制作ミニゲーム", "craft-preview.html", false),
+      el("small", { text: "確認用に約2秒で制作へ移ります・セーブには影響しません" }),
+    );
   }
   // Only this preview supplies a simulated extra asset. The game never adds a delay.
   await openBench(cs, { entryAssets: loadingPreview ? new Promise(resolve => setTimeout(resolve, 2200)) : null }).ready;

@@ -654,4 +654,20 @@ const image = await withLoading(async ({ report }) => {
 
 既存の「けむりのとなり 暴走編」第25話「メニュー改訂」をロード用に採用しました。原画は `asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png`、配信用は `img/loading/adam-chaos.webp`（約489KiB）です。原画の文字・絵・左右は変更せず、CSSの表示領域で25話の２コマだけを左→右に表示します。シート内の他の３話は表示しません。番外編の位置づけは素材台帳で管理し、ギャラリー全体の作品採用には広げません。
 
-ロードの見せ方は『あつまれ どうぶつの森』の右下に小さく出る島アイコンの配置を参考に、中央の漫画へ視線を集め、待機表示だけを画面の隅へ寄せています（[任天堂の案内](https://www.nintendo.com/en-gb/Support/Purchases-Subscriptions/Games/How-to-Back-Up-and-Restore-Island-Save-Data-Animal-Crossing-New-Horizons--1818137.html)でも右下の島表示を説明）。固有のアイコンは流用せず、小さな点と文字で表現します。低減モーション指定では点の明滅を止めます。
+ロードの見せ方は『あつまれ どうぶつの森』の右下に小さく出る島アイコンの配置を参考に、中央の漫画へ視線を集め、待機表示だけを画面の隅へ寄せています（[任天堂の案内](https://www.nintendo.com/en-gb/Support/Purchases-Subscriptions/Games/How-to-Back-Up-and-Restore-Island-Save-Data-Animal-Crossing-New-Horizons--1818137.html)でも右下の島表示を説明）。固有のアイコンは流用しません。現在は本編の紫・既存の煙モチーフ・一枚の紙面で構成し、待機表示は独自の煙の線と「LOADING…」だけです。低減モーション指定では登場アニメーションと煙の動きを止めます。
+
+
+### 市販ゲームのロード画面から採った方針
+
+文字の少なさに加え、ゲーム固有の図形・素材感・動きをロードにも通す方針です。下表の「取り入れる点」は本作向けのデザイン判断であり、他作品の画像・ロゴ・アニメ素材は同梱しません。
+
+| 調査対象と参照資料 | 確認できる事例／取り入れる点 |
+| --- | --- |
+| [Persona 5・Easy Alliesのレビュー](https://easyallies.com/review/persona-5) | 主人公の回転する絵と短い待機表示。汎用の点から、作品固有の煙のマークへ置き換える参考 |
+| [NieR:Automata・ロード画面のUI事例](https://interfaceingame.com/screenshots/nierautomata-loading/) | 本編のUIとロード画面の関係を比較。ロードだけ別のWeb部品に見せず、色数・線・余白の規則を本編と揃える参考 |
+| [Hades・ロード画面のUI事例](https://interfaceingame.com/screenshots/hades-loading/) | ロードを一枚の画面として構成する参考。画像を二つ独立して置かず、一枚の紙面としてまとめる |
+| [ウマ娘・公式の4周年案内](https://dmg.umamusume.jp/news/detail/?id=2419) | ロード中の「1コマ」「ヒミツ」を公式が案内。キャラの短編を待ち時間のコンテンツにする方針の参考。表示要素を増やす根拠にはしない |
+
+本作は、既存漫画の暖色に合わせた紙の縁、背面の低彩度の紫の面、既存の煙の図形、小さく動く煙の待機マークでまとめています。漫画の文字・絵・読み順は変えません。画面には説明や題名を追加せず、準備完了時の自動遷移も維持します。登場は160〜260msで、待機の最低秒数や読了の確認は追加しません。
+
+比較入口は `/remake/craft-preview.html?loading=comic`（紙面と煙の表示）と `/remake/craft-preview.html?loading=comic&look=plain`（前の表示）。上のリンクで往復できます。旧表示の切り替えは試遊ページ内だけで、本編の設定やセーブには追加しません。

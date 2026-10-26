@@ -1,11 +1,20 @@
-.loading-gate { position: absolute; inset: 0; z-index: 110; display: grid; place-items: center; background: #100d19; color: #f4ede0; pointer-events: auto; }
-.loading-card { width: 1120px; text-align: center; }
-.loading-comic:empty { display: none; }
-.loading-panels { width: 1120px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+/* A printed comic intermission: one sheet, an ink backdrop, and a smoke mark. */
+.loading-gate { position: absolute; inset: 0; z-index: 110; isolation: isolate; overflow: hidden; display: grid; place-items: center; background: #100b18; color: #ede2ce; pointer-events: auto; animation: loading-appear 160ms ease-out both; }
+.loading-gate::before { content: ""; position: absolute; inset: -70px -90px; z-index: -1; background: url("../img/ui/vn-lounge/smoke-purple.svg") center / 132% auto no-repeat; opacity: .24; transform: rotate(-14deg); pointer-events: none; }
+.loading-gate::after { content: ""; position: absolute; inset: 160px -80px; z-index: -1; background: #291638; clip-path: polygon(0 15%, 100% 0, 100% 85%, 0 100%); transform: rotate(-3deg); pointer-events: none; }
+.loading-card { width: 1144px; padding: 16px; background: #e9dfca; border: 1px solid #fff4dc99; box-shadow: 0 20px 48px #0006; transform: rotate(-.65deg); animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both; }
+/* With no decoded comic, the intermission remains just the ink and its mark. */
+.loading-card:has(.loading-comic:empty) { visibility: hidden; }
+.loading-panels { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .loading-panels figure { margin: 0; min-width: 0; }
-.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: 6 / 5; background: #201929; }
+.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: 6 / 5; background: #e9dfca; }
 .loading-panels img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.loading-status { position: absolute; right: 42px; bottom: 30px; display: flex; align-items: center; gap: 12px; margin: 0; color: #cfbca0; font-size: 17px; letter-spacing: .16em; }
-.loading-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: loading-breathe 1.4s ease-in-out infinite; }
-@keyframes loading-breathe { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .loading-status::before { animation: none; } }
+.loading-status { position: absolute; right: 44px; bottom: 26px; display: flex; align-items: center; gap: 10px; margin: 0; color: #e1d1b4; font-size: 17px; font-weight: 900; font-style: italic; letter-spacing: .08em; }
+.loading-emblem { width: 36px; height: 42px; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.loading-emblem path { stroke-dasharray: 35 65; animation: loading-smoke 2.8s ease-in-out infinite; }
+.loading-emblem path:nth-child(2) { animation-delay: -.9s; }
+.loading-emblem path:nth-child(3) { animation-delay: -1.8s; }
+@keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes loading-sheet { from { opacity: 0; transform: translateY(8px) rotate(-.65deg); } to { opacity: 1; transform: translateY(0) rotate(-.65deg); } }
+@keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -65; opacity: .15; } }
+@media (prefers-reduced-motion: reduce) { .loading-gate, .loading-card, .loading-emblem path { animation: none; } .loading-emblem path { stroke-dasharray: none; opacity: .8; } }
