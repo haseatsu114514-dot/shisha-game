@@ -1,25 +1,26 @@
 {
   "tool": "image_gen",
-  "source": "source.png",
-  "reference": "remake/img/shop/heaven10/lemon.webp",
+  "source": "afsahr-source.png",
+  "reference": "remake/img/shop/remaining8/lychee.webp",
   "delivery": "remake/img/shop/character-flavors/spring-water.webp",
   "flavor_id": "spring_water",
   "maker": "afsahr",
-  "prompt": "Create ONE new game inventory product package illustration for the single shisha flavor SPRING WATER, using the attached fictional product only as a style/scale reference. Transparent background. Square canvas. Entire upright small rectangular black carton in 3/4 front view, all edges within canvas, centered with generous transparent margins. Premium anime game item rendering with crisp painted detail, matching the provided black carton material and viewing angle. This is fictional AFSАHR brand: replace the wing/halo symbol with a small simple silver geometric droplet emblem, do NOT use any real brand logo. Front artwork: a luminous turquoise and clear blue freshwater spring flowing between pale stones, elegant water ripple, fresh silver-blue brushstroke near upper middle. No fruit, no berries, no mint leaves, no shark illustration, no ocean salt, no people, no hookah or smoke. The flavor is a clean aromatic perfume-like spring-water flavor, rather than literally plain drinking water. Keep the image readable as a small game shop icon. No words, letters, numerals, label text or watermark anywhere. Generate the artwork and make the resulting original file available for incorporation into this repository.",
-  "sha256": "ea30758bf15ba5c593c0b24ac020086c166533a4887bfed80f51d3e1f9b4e0d2",
+  "prompt": "Correct the SPRING WATER shisha game product artwork to use the AFSАHR fictional manufacturer packaging, matching reference 1 (the pale green lychee carton). Reference 2 is the previous spring-water image whose water flavor identity should be retained but whose black carton and droplet logo are WRONG. Output ONE isolated upright rectangular carton on a truly transparent background, square canvas. Match reference 1's 3/4 perspective, compact proportions, softly rendered matte paper, gentle light, generous margins, and sparse graphic packaging layout. The carton must be PALE ICE BLUE / silver blue, with a subtle turquoise diagonal ribbon matching the lychee carton's orange diagonal ribbon layout. At upper front and on the right side use the SAME dark simple sunrise-over-horizontal-water-lines emblem from reference 1, drawn clearly at small icon size. No droplet logo, no angel-wing logo, no black carton. Lower front illustration is a simple elegant graphic of crystal-clear fresh spring water emerging between pale rocks with blue ripples and a few sparkling droplets, in the clean geometric/low-poly painted graphic style of reference 1's lychee drawing. Not a giant detailed photographic scene. No fruit, lychee, mint, ocean salt, sharks, people or hookah. No words, letters, numerals, readable labels or watermark. This is an original fictional game asset, not a reproduction of a real product.",
+  "sha256": "b8f10256e53f42cf652291a444145e0c3b8478a18e583cbdc78465377ba4dd33",
   "delivery_size": [
     512,
     512
   ],
   "delivery_visible_box": [
-    104,
-    49,
-    307,
-    415
+    102,
+    38,
+    319,
+    457
   ],
   "source_size": [
-    1280,
-    1280
+    1254,
+    1254
   ],
-  "lfs_upload": "pending: execution environment GitHub credentials unavailable"
+  "lfs_upload": "pending: execution environment GitHub credentials unavailable",
+  "supersedes": "source.png / black-carton-generation.json (manufacturer carton mismatch)"
 }
