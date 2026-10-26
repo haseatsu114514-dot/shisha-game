@@ -5,6 +5,7 @@ import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
+import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -248,8 +249,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
                 if (!stationActive()) return;
                 await setMapBackground();
                 if (!stationActive()) return;
-                root.querySelector("[data-test=station-open]").textContent = `駅・街移動（${item.label}）`;
                 renderPins(); idleInfo();
+                root.dataset.stationArrived = item.id;
               });
               // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
               if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った。かなり疲れた`); }
@@ -274,6 +275,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),
           el("button.mi-go", { text: "戻る", onclick: cancel }));
       };
+      if (!destinations.length) {
+        info.replaceChildren(el("div.mi-banner", { text: "駅" }),
+          el("p.mi-desc", { text: "今日はこの街で過ごそう。街へ出かける用事ができたら、ここから電車に乗れる。" }));
+        return;
+      }
       info.replaceChildren(el("div.mi-banner", { text: "駅・行き先を選ぶ" }),
         el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ 片道 ${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
         ...destinations.map(item => el("button.mi-go", { type: "button", text: `${item.label} ／ ${yen(STATION_FARE)}`,
@@ -356,6 +362,19 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
         dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
+      if (!guide && state.chapter <= 2) {
+        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 44 };
+        const travelReady = stationDestinations(state, regions || [], region?.id).length > 0;
+        pins.append(el(`button.spot-pin.pin-station${travelReady ? "" : ".station-waiting"}`, {
+          type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
+          dataset: { test: "station-open", spot: "station" },
+          "aria-label": travelReady ? "駅から電車で街を移動する" : "駅。今は街移動の予定がない",
+          onclick: openStation,
+        }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
+          el("div.sub-label", { text: "駅" })]));
+        markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
+          style: { left: `${station.x}%`, top: `${station.y}%` } }));
+      }
       if (freshPins.length) {
         revealing = true;
         root.dataset.revealing = "true";
@@ -400,10 +419,6 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       markers,
       pins,
-      stationDestinations(state, regions || [], region?.id).length && !guide
-        ? el("nav.map-regions", { "aria-label": "駅から街移動" }, [el("button", {
-          type: "button", text: `駅・街移動（${region.label}）`, dataset: { test: "station-open" }, onclick: openStation,
-        })]) : null,
       canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
         if (moving || revealing || root.classList.contains("done")) return;
         SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);

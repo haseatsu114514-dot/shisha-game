@@ -197,7 +197,7 @@ await suite("play-spots", async runCheck => {
       await travel(page, "widehanga"); const before = await value(page);
       await page.locator(t("pin-trpg_bar")).waitFor();
       assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
-      await assertFits(page, ".spot-pin, .map-regions button");
+      await assertFits(page, ".spot-pin");
       assert.deepEqual(await value(page), before);
       await go(page, "trpg_bar"); await page.locator(t("trpg-club-found")).waitFor();
       assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 2/);
