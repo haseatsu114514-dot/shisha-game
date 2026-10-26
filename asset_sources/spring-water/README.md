@@ -9,9 +9,9 @@
 
 実装は `data/flavors.json`、`data/dialogue/samechan.json`、`shop-catalogs.js`、`shop-art-character-flavors.js`。
 
-GitHubのCLI認証が無効のため画像のGit LFSアップロードは未完。原画・配布画像の実体はこの作業環境に保存済み。アップロード完了まで公開しない。
+2026-10-26、既存のローカルGitHub認証で原画・配布画像のGit LFS実体3点（2,928,773 bytes）を送信済み。送信前に各ファイルのSHA-256とサイズを照合した。
 
-認証復旧後、このcheckoutで現在の採用画像2件と保存済み旧原画の3オブジェクトだけを送る（約3MB）。
+送信済みの採用画像2件と旧原画の3オブジェクトは以下。再送が必要な場合も対象をこの3点に限定する（約3MB）。
 
 ```sh
 git lfs push --object-id origin ea30758bf15ba5c593c0b24ac020086c166533a4887bfed80f51d3e1f9b4e0d2 b8f10256e53f42cf652291a444145e0c3b8478a18e583cbdc78465377ba4dd33 e05a8092232e55fbff9da04335feb8c2f65d1305e776cadaa2f19e1f06c772b0
