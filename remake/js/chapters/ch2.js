@@ -194,8 +194,14 @@ async function introduceStop(id, background) {
 }
 
 async function visit(stop) {
+  const owner = session;
   if (!await scene(`ch2_city_${stop.id}`, stop.sceneLabel || stop.name)) return;
   recordCityVisit(state, stop.id); save();
+  if (stop.id === "c_station" && !state.flags._ch2_rules_read) {
+    await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    if (!current(owner)) return;
+    state.flags._ch2_rules_read = true; save();
+  }
   if (deliveryPending(state, stop.id)) {
     if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶", ROOMS[stop.id])) return;
     finishChapterTwoDelivery(state, stop.id); save();
@@ -334,11 +340,14 @@ async function openMenu() {
   const owner = session;
   const choice = await modal({ title: "MENU", body: `第${state.chapter}章・DAY ${chapterDay(state)} ／ 場面の区切りで自動セーブしています。`, options: [
     { label: "セーブ", value: "save", test: test("save") }, { label: "ロード", value: "load", test: test("load") },
-    { label: "ステータス・人間関係", value: "status", test: test("status") }, { label: "タイトルへ戻る", value: "title", test: test("title") },
+    { label: "ステータス・人間関係", value: "status", test: test("status") },
+    { label: "大会の規則", value: "rules", test: test("rules") },
+    { label: "タイトルへ戻る", value: "title", test: test("title") },
     { label: "閉じる", value: null, primary: true },
   ] });
   if (!current(owner)) return;
   if (choice === "save") await saveFlow();
+  if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   if (choice === "load") {
     const key = await loadFlow({ inGame: true });
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }

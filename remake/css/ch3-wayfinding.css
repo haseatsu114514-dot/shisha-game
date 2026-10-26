@@ -1,9 +1,62 @@
 /* 東京編の既存場面カードにだけ添える、進行を変更しない行程表示。 */
 .ch3-wayfinding { flex:0 1 auto; min-height:0; padding:14px 18px; border:1px solid #aebcd44d; border-radius:12px; background:#1c273b; }
 .ch3-wayfinding-title { font-size:17px; color:#d8e4f5; }
+.ch3-wayfinding-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.ch3-wayfinding-map { min-height:38px; padding:7px 14px; font-size:16px; }
 .ch3-wayfinding-stops { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; }
 .ch3-wayfinding-stop { flex:1 1 280px; min-width:0; display:flex; flex-direction:column; gap:3px; border-left:3px solid #93a6bf; padding-left:12px; overflow-wrap:anywhere; }
 .ch3-wayfinding-stop.next { border-left-color:#efd494; }
 .ch3-wayfinding-stop small { color:#d8e4f5; font-size:15px; }
 .ch3-wayfinding-stop strong { color:#fff6df; font-size:23px; }
 .ch3-wayfinding-stop span { color:#edf2f9; font-size:17px; line-height:1.4; }
+
+/* Native dialog keeps keyboard/pointer input inside the map, above the scaled game stage. */
+.ch3-map-dialog { width:min(1160px,96vw); max-width:96vw; max-height:94dvh; margin:auto; padding:16px; border:1px solid #c0a972; border-radius:14px; color:#f3ebdc; background:#171b29; font-family:var(--font); }
+.ch3-map-dialog[open] { display:flex; flex-direction:column; gap:12px; }
+.ch3-map-dialog::backdrop { background:#080a13c9; backdrop-filter:blur(3px); }
+.ch3-map-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex:none; }
+.ch3-map-header h2 { margin:0; font-size:24px; color:#f4dfaf; }
+.ch3-map-header p { margin:2px 0 0; font-size:13px; color:#bdcbdc; }
+.ch3-map-close { min-height:40px; padding:8px 18px; }
+.ch3-map-content { display:grid; grid-template-columns:minmax(0,1fr) 200px; align-items:start; gap:14px; min-height:0; }
+.ch3-map-canvas { position:relative; justify-self:center; align-self:center; width:min(100%,calc((94dvh - 150px) * 16 / 9)); aspect-ratio:16 / 9; overflow:hidden; border:1px solid #74849a; border-radius:8px; background:#283344; }
+.ch3-map-art { display:block; width:100%; height:100%; object-fit:cover; }
+.ch3-map-art[hidden] { display:none; }
+.ch3-map-markers { position:absolute; inset:0; }
+.ch3-map-pin { position:absolute; transform:translate(-50%,-50%); display:grid; place-items:center; width:34px; height:34px; padding:0; border:2px solid #f4d38a; border-radius:50%; background:#222638ef; color:#fff5df; font:700 15px var(--font); cursor:pointer; z-index:2; }
+.ch3-map-pin.current { outline:3px solid #ffe9a877; outline-offset:3px; }
+.ch3-map-pin.gym { border-color:#91d5de; }
+.ch3-map-pin[aria-pressed="true"], .ch3-map-place[aria-pressed="true"] { background:#705b31; }
+.ch3-map-pin:focus-visible, .ch3-map-place:focus-visible { outline:3px solid #fff; outline-offset:2px; }
+.ch3-map-landmark { position:absolute; transform:translate(-50%,-50%); padding:2px 5px; border-radius:3px; background:#111a29db; color:#edf1ed; font-size:12px; line-height:1.2; white-space:nowrap; pointer-events:none; }
+.ch3-map-sidebar { min-width:0; max-height:calc(94dvh - 150px); overflow:auto; overscroll-behavior:contain; padding:1px 4px 3px; }
+.ch3-map-details { margin-bottom:10px; padding:10px; border:1px solid #6c7d96; border-radius:7px; background:#222b3c; }
+.ch3-map-details h3 { margin:0 0 6px; font-size:18px; overflow-wrap:anywhere; }
+.ch3-map-details p { margin:6px 0; font-size:13px; line-height:1.5; }
+.ch3-map-gym { width:100%; padding:8px; min-height:44px; font-size:13px; white-space:normal; }
+.ch3-map-list { display:flex; flex-direction:column; gap:4px; }
+.ch3-map-place { display:flex; align-items:center; gap:7px; width:100%; min-height:36px; padding:5px 7px; border:1px solid #738196; border-radius:5px; background:#232c3b; color:#f8f0e1; font:14px var(--font); text-align:left; cursor:pointer; }
+.ch3-map-place-number { flex:none; display:grid; place-items:center; width:23px; height:23px; border-radius:50%; background:#121a28; color:#f9dba1; font-size:12px; }
+.ch3-map-place small { margin-left:auto; color:#ffe9ac; }
+.ch3-map-note { flex:none; margin:0; font-size:12px; line-height:1.45; color:#c4d2e4; }
+.ch3-map-image-error { position:absolute; left:4%; right:4%; bottom:6px; margin:0; padding:8px; background:#111a29ee; border-radius:5px; font-size:13px; text-align:center; z-index:1; }
+.ch3-map-image-error[hidden] { display:none; }
+@media (max-height:500px) {
+  .ch3-map-dialog { padding:10px; }
+  .ch3-map-dialog[open] { display:grid; grid-template-columns:minmax(0,1fr) 185px; grid-template-rows:auto minmax(0,1fr) auto; gap:8px; }
+  .ch3-map-header { grid-column:2; grid-row:1; flex-direction:column; align-items:stretch; gap:5px; }
+  .ch3-map-header h2 { font-size:19px; }
+  .ch3-map-header p { font-size:11px; }
+  .ch3-map-content { display:contents; }
+  .ch3-map-canvas { grid-column:1; grid-row:1 / 3; width:min(100%,calc((94dvh - 56px) * 16 / 9)); }
+  .ch3-map-sidebar { grid-column:2; grid-row:2; max-height:calc(94dvh - 160px); }
+  .ch3-map-close { width:100%; min-width:0; min-height:36px; padding:6px 14px; font-size:14px; align-items:center; }
+  .ch3-map-landmark { font-size:10px; }
+  .ch3-map-pin { width:32px; height:32px; font-size:13px; }
+  .ch3-map-note { grid-column:1 / -1; grid-row:3; font-size:11px; }
+}
+@media (max-width:540px) and (min-height:501px) {
+  .ch3-map-content { grid-template-columns:1fr; }
+  .ch3-map-sidebar { max-height:32dvh; }
+  .ch3-map-canvas { width:100%; }
+}

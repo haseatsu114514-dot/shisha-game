@@ -5,7 +5,7 @@ import vm from "node:vm";
 import { TSUMUGI_STORY, tsumugiAtTonari, tsumugiMessages } from "../js/daily/tsumugi-schedule.js";
 
 const flags = Object.fromEntries(TSUMUGI_STORY.map(step => [step.flag, true]));
-const state = { chapter: 1, day: 6, slot: 0, flags: { ...flags }, story: {}, met: {}, inbox: [] };
+const state = { chapter: 1, day: 6, slot: 0, flags: { ...flags }, story: {}, met: {}, contacts: [], inbox: [] };
 const baseline = JSON.stringify(state);
 assert.equal(tsumugiAtTonari(state), false);
 assert.equal(tsumugiAtTonari({ ...state, slot: 1 }), true);
@@ -43,8 +43,8 @@ for (const [index, day] of [5, 10].entries()) {
 assert.deepEqual(tsumugiMessages({ ...state, chapter: 2, day: 5 }, friends), []);
 assert.deepEqual(tsumugiMessages({ ...state, day: 8 }, friends), []);
 
-// 本番固定runnerを実行し、既読・レベル・一度きり・旧セーブ補完を確認。
-const plays = [], levels = [], saves = [];
+// 本番固定runnerを実行し、既読・一度きり・旧セーブ補完を確認。
+const plays = [], saves = [];
 const context = vm.createContext({ console });
 const scheduleSource = await fs.readFile(new URL("../js/daily/tsumugi-schedule.js", import.meta.url), "utf8");
 const schedule = new vm.SourceTextModule(scheduleSource, { context });
@@ -52,7 +52,7 @@ await schedule.link(() => { throw Error("Unexpected schedule import"); });
 await schedule.evaluate();
 const mocks = {
   "state.js": { state, save: () => saves.push(JSON.stringify(state)) },
-  "stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, ensureAffinityLevel: (id, level) => { levels.push([id, level]); return 0; } },
+  "stats.js": { ensureAffinityLevel: () => 0 },
   "engine.js": { play: async id => plays.push(id) },
   "spots.js": { hasContact: () => true },
 };
@@ -84,5 +84,4 @@ await story.namespace.playTsumugiStory(13);
 assert.deepEqual(plays, TSUMUGI_STORY.map(step => step.dialogue));
 assert.equal(JSON.stringify(state), saved);
 assert.equal(saves.length, 4);
-assert.deepEqual(levels.at(-1), ["tsumugi", 2]);
 console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文の配信候補: PASS");

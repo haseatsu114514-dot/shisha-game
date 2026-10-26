@@ -2,7 +2,7 @@
 export const MASTERY_THRESHOLDS = [0, 6, 18, 36, 60];
 const MASTERY_MAX_XP = MASTERY_THRESHOLDS.at(-1);
 export const flavorFamily = (id, flavors = {}) => flavors[id]?.family || id;
-export const masteryXp = (s, id, flavors = {}) => Math.min(MASTERY_MAX_XP, Math.max(0, Number(s.flavorMastery?.[flavorFamily(id, flavors)]) || 0));
+export const masteryXp = (s, id, flavors = {}) => Math.min(MASTERY_MAX_XP, Math.max(0, Number(s?.flavorMastery?.[flavorFamily(id, flavors)]) || 0));
 export const masteryLevel = (s, id, flavors = {}) => MASTERY_THRESHOLDS.filter(x => masteryXp(s, id, flavors) >= x).length;
 export function masteryLabel(s, id, flavors = {}) {
   const level = masteryLevel(s, id, flavors);
@@ -29,10 +29,24 @@ export function learnFlavorStory(s, dialogue, flavors = {}) {
   (s.flavorLessons ||= []).push(key);
   return gainFlavorExperience(s, lesson, 12, flavors);
 }
-export function masteryBonus(s, mix, flavors = {}) {
+// ゲーム内の調整値。基本情報はLv.1から開示し、使い慣れた葉ほど予測と仕上げが安定する。
+// 配合の重さで平均するため、熟練した葉を少量足しても一杯全体の効果にはならない。
+export function mixMasteryProfile(s, mix, flavors = {}) {
   const entries = Object.entries(mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
-  const total = entries.reduce((sum, [, g]) => sum + g, 0);
-  return total ? entries.reduce((sum, [id, g]) => sum + (masteryLevel(s, id, flavors) - 1) * .75 * g / total, 0) : 0;
+  const largest = entries.reduce((max, [, g]) => Math.max(max, g), 0);
+  const total = entries.reduce((sum, [, g]) => sum + g / largest, 0);
+  const weighted = total ? entries.reduce((sum, [id, g]) => sum + (masteryLevel(s, id, flavors) - 1) / 4 * (g / largest) / total, 0) : 0;
+  const progress = Math.max(0, Math.min(1, weighted));
+  return {
+    level: 1 + 4 * progress,
+    progress,
+    bonus: 8 * progress,
+    aromaBonus: 6 * progress,
+    forecastGain: .45 * progress,
+  };
+}
+export function masteryBonus(s, mix, flavors = {}) {
+  return mixMasteryProfile(s, mix, flavors).bonus;
 }
 
 // 毎日3種類・各6g。日付と保存済みseedで固定し、出入りやLOADで再抽選しない。

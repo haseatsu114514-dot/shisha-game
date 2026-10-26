@@ -132,7 +132,7 @@ assert(Math.abs(timingCs.heat.timings[0].errorSeconds + .08) < 1e-12);
 assert.equal(timingCs.heat.score, Math.round((100 + 62 + 78) / 3));
 assert.equal(timingCs.heat.timingAccuracy, timingCs.heat.score);
 assert(Math.abs(timingCs.heat.meanAbsoluteError - .26) < 1e-12);
-assert(find("step-summary").children.at(-1).text.includes("80%"));
+assert(find("step-summary").children.at(-1).text.includes("芯が光る瞬間を捉えた炭がある"));
 const frozen = JSON.stringify(timingCs.heat.timings);
 for (const fn of find("coal-0").listeners.pointerdown) fn({ preventDefault() {} });
 await frame(now + 2000); assert.equal(JSON.stringify(timingCs.heat.timings), frozen);
@@ -146,7 +146,7 @@ assert.equal(expiredCs.heat.over, 3);
 assert(expiredCs.heat.timings.every((timing) => timing.automatic && timing.errorSeconds > 0 && timing.rating === "MISS"));
 assert.equal(expiredCs.heat.timingAccuracy, 28);
 nextButton().onclick(); await expiredRun;
-console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, score-aligned summary and auto removal");
+console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, qualitative summary and auto removal");
 async function steam(ratio) {
   now = 1000; frames.clear(); spawned = 0;
   const cs = { mode: "tournament", condition: conditionForRatio(ratio), steamMin: 3 };

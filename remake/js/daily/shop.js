@@ -3,7 +3,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
-import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME } from "./shop-catalogs.js";
+import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME } from "./shop-catalogs.js";
 import { el, yen } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -20,13 +20,16 @@ import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
+import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
-import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
+import { flavorThermalGuide } from "../craft/temperature-model.js";
+import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
   "mint", "double_apple", "blueberry", "strawberry", "vanilla", "pineapple", "coconut", "mango",
   "lemon", "peach", "orange", "grape", "melon", "watermelon", "banana", "cinnamon", "rose", "lychee",
+  "cardamom", "lavender", "cola", "raspberry", "gum_cinnamon", "bombshell", "white_musk",
 ];
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
@@ -96,16 +99,16 @@ export function flavorPackageArt(id, size = 54) {
   const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
     el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
   ]);
-  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id];
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
   return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
 }
 function productArt(item, flavor, size = 66) {
   const textArt = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [
     el("span.shop-type-mark", { style: flavor ? { fontSize: "11px", letterSpacing: "0", whiteSpace: "nowrap" } : {}, text: flavor ? "フレーバー" : item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] || "機材" }),
   ]);
-  const botanical = () => SHOP_FLAVORS.includes(item.id) ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
+  const botanical = () => FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)] ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
-  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
+  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", flavor ? botanical : textArt);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
@@ -118,6 +121,10 @@ const rinUnavailable = () => rinVisitReason(state);
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
+  if (opts.branch === "tokyo") {
+    if (state.chapter !== 3) return null;
+    return openCounter({ flavorIds: TOKYO_FLAVORS, stockChapter: 3, shopName: TOKYO_SHOP_NAME });
+  }
   if (opts.branch === "widehanga") {
     if (state.chapter < 2) return null;
     return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop });
@@ -168,7 +175,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
     const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
-    setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
+    setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });
@@ -229,23 +236,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const detail = (item, flavor) => {
       if (!live()) return;
       const current = !flavor && DB.equipById[state.equip[item.type]];
-      const cmp = !flavor ? compareEquipment(item.id, current?.id) : null;
       const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: shopProductName(item), className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
-        el("p", { text: flavor ? shopText(item.description) : item.description }),
         el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(item.price)}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `装備中：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
-        cmp ? el("small.shop-compare", {
-          dataset: { test: "shop-equip-compare" },
-          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
-          text: cmp.rows.map((r) => `${r.label}：${r.value}`).join(" ／ "),
-        }) : null,
-        fGuide ? el("small.shop-flavor-guide", {
-          dataset: { test: "shop-flavor-guide" },
-          style: { display: "block", fontSize: "11px", lineHeight: "1.35", opacity: "0.92" },
-          text: `${shopText(fGuide.makerLabel)}（適温帯幅 ${fGuide.widthLabel}） ／ ${fGuide.tempBandLabel}`,
-        }) : null,
+        flavor ? flavorFeatureCard(item, { description: shopText(item.description), makerLabel: shopText(fGuide?.makerLabel || "") })
+          : equipmentGuide(item, current?.id),
       ]), options: [{ label: "一覧に戻る", value: null, primary: true, test: "shop-detail-close" }] });
     };
     const productRow = (item, flavor) => {
@@ -254,7 +251,9 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const name = `${shopProductName(item)}${flavor ? ` 1箱（${FLAVOR_BOX_GRAMS}g）` : ""}`;
       return el(`div.shop-row.product${selected ? ".selected" : ""}${needed ? ".errand" : ""}`, [
         el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${name}の詳細`, onclick: () => detail(item, flavor) }, [
-          productArt(item, flavor), el("span.shop-main", [el("b", { text: name })]),
+          productArt(item, flavor), el("span.shop-main", [el("b", { text: name }),
+            el("small.shop-feature-tags", { text: flavor ? flavorTags(item) : equipmentUse(item).use }),
+          ]),
         ]),
         el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] })]),
         el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? item.price : item.buy_price) }),

@@ -79,6 +79,7 @@
     "3": {
       "before_eve": [
         "ch3_opening",
+        "ch3_registration",
         "ch3_mukai_arrival",
         "ch3_mukai_intro",
         "ch3_individuality_doubt",
@@ -120,6 +121,7 @@
         "ch3_mashiro_recovery",
         "ch3_naru_reconcile",
         "ch3_home_customer",
+        "ch3_tsumugi_result",
         "ch3_ageha_reunion"
       ],
       "on_loss": [

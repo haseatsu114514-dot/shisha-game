@@ -17,6 +17,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let trial = null;
   let reflection = null;
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
+  let foundingChoice = null;
   let disposed = false, resources = null, busy = false, completed = false, root = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
@@ -97,16 +98,20 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         el("span.trpg-kicker", { text: "六角サイからの提案" }),
         el("h2", { text: "ここで、部活を作ってみませんか？" }),
         ...club.lines.map(clubLine),
-        button("断ろうとする", "trpg-club-found", () => {
-          // 断るつもりが、気づけば入部届に署名している（サイの笑顔に逆らえないオチ・#641）
-          if (foundTrpgClub(getState(), catalog)) { save(); justFounded = true; render("「" + catalog.club.name + "」の部長になりました（いつの間にか）。仲のいい相手に会って、声をかけてみよう。"); }
-        }, state.phase !== "daily"),
+        ...[
+          ["店の仕事があると伝える", "trpg-club-choice-time", "proposal_time"],
+          ["知り合いを誘うのは苦手と伝える", "trpg-club-choice-people", "proposal_people"],
+        ].map(([label, test, choice]) => button(label, test, () => {
+          // どちらの断り文句も「手伝う」返事に言い換えられる。
+          if (foundTrpgClub(getState(), catalog)) { save(); foundingChoice = choice; justFounded = true; render("「" + catalog.club.name + "」の部長になりました（いつの間にか）。仲のいい相手と対面した時に、部活へ誘ってみよう。"); }
+        }, state.phase !== "daily")),
       ]));
       root.append(el("p", { text: "好感度MAXの友人も恋人も、興味があれば入部。勧誘に追加の時間はかかりません。本の購入も時間を使いません。" }));
       host.replaceChildren(root); root.focus({ preventScroll: true }); return;
     }
     if (justFounded && club.branches.founded) {
-      root.append(el("section.trpg-club-proposal.trpg-club-founded", { dataset: { test: "trpg-club-founded" } }, club.branches.founded.map(clubLine)));
+      root.append(el("section.trpg-club-proposal.trpg-club-founded", { dataset: { test: "trpg-club-founded" } },
+        [...(club.branches[foundingChoice] || []), ...club.branches.founded].map(clubLine)));
       justFounded = false;
     }
     const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });
@@ -175,7 +180,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       }
       card.append(copy); books.append(card);
     }
-    root.append(books, el("footer.trpg-campaign-footer", { text: "部員の空いている夜に招集。中断した本は、また遊べます。" }));
+    root.append(books, el("footer.trpg-campaign-footer", { text: "営業が終わるまで待ってから、空いている部員と集まる。中断した本は、また遊べます。" }));
     host.replaceChildren(root); root.focus({ preventScroll: true });
   }
 

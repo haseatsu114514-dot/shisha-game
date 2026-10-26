@@ -67,6 +67,8 @@
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
+        "node remake/test/ch3_map.mjs",
+        "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -672,6 +674,26 @@
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
+    },
+    {
+      "id": "ch3-map-activities",
+      "title": "Tokyo map and nationwide gym membership",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3.js",
+        "remake/js/chapters/ch3-map*.js",
+        "remake/js/chapters/ch3-wayfinding.js",
+        "remake/js/chapters/ch3-activit*.js",
+        "remake/js/core/tokyo-clock.js",
+        "remake/css/ch3-wayfinding.css",
+        "data/dialogue/ch3_activities.json",
+        "assets/backgrounds/bg_tokyo_map_*.png",
+        "remake/img/backgrounds/bg_tokyo_map_*.webp",
+        "remake/test/browser/ch3_map_activities.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_map_activities.mjs"]
     },
     {
       "id": "ch3-tournament",
@@ -2347,8 +2369,28 @@
       "title": "Flavor mastery, inventory and daily stamina budgets",
       "kind": "quick",
       "run": [
-        "node remake/test/flavor_mastery.mjs"
+        "node remake/test/flavor_mastery.mjs",
+        "node remake/test/flavor_expression.mjs",
+        "node remake/test/mastery_balance.mjs",
+        "node remake/test/craft_review.mjs"
       ]
+    },
+    {
+      "id": "tournament-rules",
+      "title": "Tournament rule sheets",
+      "kind": "browser",
+      "paths": [
+        "remake/js/scenes/rule-sheet.js",
+        "remake/js/craft/common.js",
+        "remake/js/core/state.js",
+        "remake/css/rule-sheet.css",
+        "remake/test/browser/tournament_rules.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tournament_rules.mjs"
+      ],
+      "weight": 1,
+      "timeout": 8
     },
     {
       "id": "flavor-mastery-browser",
@@ -2386,6 +2428,34 @@
       "run": [
         "node remake/test/browser/recent_intros.mjs"
       ]
+    },
+    {
+      "id": "flavor-expression",
+      "title": "Compact flavor features, forecasts and actual cup review",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 8,
+      "paths": [
+        "data/flavors.json",
+        "remake/js/core/flavor-mastery.js",
+        "remake/js/craft/flavor-*.js",
+        "remake/js/craft/steps.js",
+        "remake/js/craft/score.js",
+        "remake/js/craft/result.js",
+        "remake/js/craft/advice.js",
+        "remake/js/daily/shop.js",
+        "remake/css/flavor-guide.css",
+        "remake/css/tournament.css",
+        "remake/index.html",
+        "remake/test/browser/flavor_expression.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/flavor_expression.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/flavor-expression"
+      },
+      "chrome": "playwright"
     }
   ]
 }

@@ -218,6 +218,7 @@ async function openMenu() {
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
       { label: "用語集", value: "glossary" },
+      { label: "大会の規則", value: "rules", test: "menu-rules" },
       { label: "タイトルへ戻る", value: "title", test: "menu-title" },
       { label: "閉じる", value: null, primary: true },
     ],
@@ -232,6 +233,7 @@ async function openMenu() {
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
+  if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
   // 会話や作業の途中（行動の体力だけ引かれた状態など）は残さず、行動前のオートセーブへ戻す（#638）
   if (v === "title") { if (isChoosingDestination()) save(); location.reload(); }
@@ -294,6 +296,10 @@ async function registerTournament() {
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
   await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
+  if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
+    await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    state.flags._ch1_rules_read = true;
+  }
   state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }

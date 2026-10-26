@@ -81,6 +81,36 @@ await suite('flavor-mastery',async check=>{
   });
   assert.equal(result.day1,false);assert(result.after.owned.includes('home_rig_set'));assert.equal(result.after.stock.double_apple,50);assert.deepEqual(result.loaded,result.after);
  });
+ for(const touch of [false,true])await check(`spring-water-${touch?'touch':'pc'}`,async page=>{
+  await page.evaluate(async()=>{
+   const core=await import('./js/core/state.js');const s=core.newGame();s.chapter=2;s.day=4;s.phase='daily';
+   window.SW={core,shop:await import('./js/daily/shop.js')};
+   void SW.shop.openShop({branch:'widehanga'});
+  });
+  const row=page.locator('.shop-row.product').filter({has:page.locator('[data-test="buy-spring_water"]')});
+  await row.waitFor();const image=row.locator('[data-product-art="spring_water"] img');
+  await image.evaluate(im=>im.decode());assert.match(await image.getAttribute('src'),/spring-water.webp/);
+  await row.screenshot({path:`.codex/artifacts/remake-browser/spring-water-product-${touch?'touch':'pc'}.png`});
+  await page.locator('[data-test="buy-spring_water"]').click();await page.locator('[data-test="shop-checkout"]').click();
+  assert.deepEqual(await page.evaluate(()=>({stock:SW.core.state.flavorStock.spring_water,money:SW.core.state.money})),{stock:50,money:28250});
+  await page.locator('[data-test="shop-leave"]').click();
+  const result=await page.evaluate(async()=>{
+   const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;
+   await vn.play('samechan_shop_repeat_0');const first=SW.core.state.flavorMastery.spring_water;
+   await vn.play('samechan_shop_repeat_0');SW.core.save();SW.core.load();
+   return {first,after:SW.core.state.flavorMastery.spring_water,stock:SW.core.state.flavorStock.spring_water};
+  });
+  assert.deepEqual(result,{first:12,after:12,stock:50});
+  await page.evaluate(async()=>{
+   const s=SW.core.state;s.flavorStock={spring_water:50};
+   const craft=await import('./js/craft/session.js');const steps=await import('./js/craft/steps.js');
+   window.cs=craft.newSession('rehearsal');cs.staffPractice=true;craft.openBench(cs);window.mixDone=false;void steps.stepMix(cs).then(()=>mixDone=true);
+  });
+  const mixRow=page.locator('[data-flavor="spring_water"]');await mixRow.waitFor();
+  assert.match(await mixRow.innerText(),/熟練度 Lv.2\/5/);
+  for(let i=0;i<12;i++)await page.locator('[data-test="mix-plus-spring_water"]').click();
+  assert(await page.locator('[data-test="mix-ok"]').isEnabled());
+ },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
  await check('read-lesson-once' ,async page=>{
   const result=await page.evaluate(async()=>{
    const core=await import('./js/core/state.js');core.newGame();

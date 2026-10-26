@@ -160,13 +160,20 @@ await suite('ch2-story', async check => {
     await page.locator(t('rest-full')).tap(); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000); assert(Object.values(s.stats).every(n => n === 31));
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-  await check('eve-checkpoint-and-night-map-failure-retry', async page => {
+  await check('eve-checkpoint-and-venue-background-failure-retry', async page => {
     let bad = true;
-    await page.route('**/bg_widehanga_map_night.webp', r => bad ? r.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' }) : r.continue());
+    let failures = 0, retries = 0;
+    await page.route('**/bg_ch2_venue_bench_night.webp', r => {
+      if (!bad) { retries++; return r.continue(); }
+      failures++;
+      return r.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' });
+    });
     await seed(page, { day: 13, slot: 2 }); await page.locator(t('ch2-main-error')).waitFor();
+    assert(failures > 0, 'The eve background failure must be injected');
     let s = await state(page); assert.equal(s.day, 27); assert(s.flags._ch2_read_ch2_tsumugi_color);
     assert(!s.flags._ch2_eve_done); assert(!s.met.ageha);
     bad = false; await page.locator(t('ch2-main-retry')).click(); await page.locator(end).waitFor();
+    assert(retries > 0, 'Retry must request the recovered venue background');
     s = await state(page); assert.equal(s.day, 28); assert(s.flags._ch2_eve_done); assert(s.met.ageha);
     const trace = await page.evaluate(() => window.__storyTrace);
     assert.equal(trace.filter(id => id === 'ch2_tsumugi_color').length, 1);

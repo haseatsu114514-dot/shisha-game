@@ -18,6 +18,7 @@ import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
 import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
+import { evaluationOf, feedbackLine } from "../craft/feedback.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
@@ -67,11 +68,13 @@ async function openMenu(owner) {
     const choice = await modal({ title: "全国大会 MENU", body: "途中の工程は、その工程の始めから再開できます。", options: [
       { label: "セーブ", value: "save", test: id("save") },
       { label: "ロード", value: "load", test: id("load") },
+      { label: "大会の規則", value: "rules", test: id("rules") },
       { label: "タイトルへ戻る", value: "title", test: id("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
+    if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) {
@@ -247,8 +250,9 @@ function voteReason(p, cs, final = false) {
   const parts = partScores(cs, p.voted - 1);
   if (parts.length) {
     const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);
-    lines.push(final ? `いちばん低かったのは「${weakest.label}」（${Math.round(weakest.score)}点）。`
-      : `いちばん低いのは「${weakest.label}」（${Math.round(weakest.score)}点）。ここを上げると、次の票が動きやすい。`);
+    const step = weakest.label === "アルミ穴あけ" ? "holes" : weakest.label === "炭の温度" ? "heat" : weakest.label.includes("調整") ? "care" : "pull";
+    const judge = step === "pull" ? "emil" : "dr_kemuri";
+    lines.push(`${weakest.label}：${evaluationOf(weakest.score).mark}　${displayName(judge, state)}「${feedbackLine(judge, step, evaluationOf(weakest.score))}」`);
   }
   const affected = JUDGES.filter(judge => last[judge]?.tactic?.affected);
   if (affected.length) {
@@ -291,7 +295,7 @@ function renderVotes(owner, final = false) {
       ]) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]),
       judges,
-      el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら制作の総合評価で順位を決める。" }),
+      el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら一台の出来栄えで順位を決める。" }),
     ]);
 }
 

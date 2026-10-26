@@ -1,0 +1,26 @@
+{
+  "tool": "image_gen.imagegen",
+  "generation_count": 1,
+  "reference": "assets/backgrounds/bg_ch2_ageha_entry.webp",
+  "source_size": [
+    1672,
+    941
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "85c24dbba295732cb0cbe7e54960e927acdb3fa71bf363c33dc8f8acb05c8e91",
+  "delivery": "remake/img/backgrounds/bg_ch2_ageha_closed_night.webp",
+  "delivery_size": [
+    1280,
+    720
+  ],
+  "delivery_bytes": 187840,
+  "delivery_sha256": "b4d61859439d68000b2a5b4120c3ed9de06077c710b218314d72df20974c8d0d",
+  "delivery_box": [
+    0,
+    0,
+    1280,
+    720
+  ],
+  "processing": "Format conversion and uniform resizing only; original retained unchanged.",
+  "fallback": "assets/backgrounds/bg_ch2_ageha_closed_night.png"
+}

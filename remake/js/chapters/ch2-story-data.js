@@ -1,5 +1,5 @@
 import { AGEHA_AFFINITY_VISITS } from "../core/affinity-stages.js";
-import { CITY_BACKGROUNDS } from "../core/city-locations.js";
+import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 // 章内日で記す。保存日時・夜の予定表へ渡すときだけ通算日に変換する。
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
@@ -40,19 +40,19 @@ export const CH2_NIGHTS = [
   { day: 12, pin: "minto", label: "みんとの心配", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
     // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
-    { id: "ch2_naru_window", file: "ch2_isolation", when: ({ flags }) =>
+    { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>
       !flags._ch2_read_ch2_tsumugi_color && !!(flags._ch2_naru_listened || flags._ch2_naru_hurt) },
   ] },
   { day: 13, pin: "tonari", label: "大会前夜", steps: [
     { id: "ch2_tsumugi_color", file: "ch2_isolation" },
-    { id: "remake_ch2_eve_arrival", file: "remake_ch2" },
+    { id: "remake_ch2_eve_arrival", file: "remake_ch2", bg: CH2_SCENE_BACKGROUNDS.venueBench },
     // #929: あげはが搬入の確認へ行った間に、REIと一曲。前夜を読み終えた保存には足さない
-    { id: "remake_ch2_eve_rei", file: "remake_ch2", when: ({ flags }) =>
+    { id: "remake_ch2_eve_rei", file: "remake_ch2", bg: CH2_SCENE_BACKGROUNDS.venueBench, when: ({ flags }) =>
       !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done },
     { id: "remake_ch2_eve_choices", file: "ch2_choice_echoes", when: ({ flags }) =>
       !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done
       && !!(flags._ch2_rest_taken || flags._ch2_naru_listened || flags._ch2_naru_hurt) },
-    { id: "ch2_pre_tournament_realisation", file: "ch2_main", flag: "_ch2_eve_done" },
+    { id: "ch2_pre_tournament_realisation", file: "ch2_main", bg: CH2_SCENE_BACKGROUNDS.venueBench, flag: "_ch2_eve_done" },
   ] },
 ];
 

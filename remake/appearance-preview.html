@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>採用外観の接続比較 | 水煙前線</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#17151e;color:#eee9e2;font:16px/1.6 sans-serif}main{max-width:960px;margin:auto;padding:24px}h1{font-size:24px;margin:0 0 10px}.note{color:#c5bacb}#image{background:#24232c;border:1px solid #766576;border-radius:12px;margin:18px 0}#image.light{background:#eee5d7}svg{display:block;width:100%;height:auto}.btn,button{min-height:44px;background:#322b3b;color:#fff;border:1px solid #8b748e;border-radius:7px;padding:8px 14px;font:inherit}button{cursor:pointer}.modal-actions,.tools{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}label{min-width:0}p{margin:12px 0}#status{min-height:26px}@media(max-width:600px){main{padding:16px}h1{font-size:20px}}
+</style>
+<main>
+<h1>ハンドルと短いチップの接続比較</h1>
+<p class="note">採用済み4デザインの原画による組み合わせ確認です。原画の光彩と透過縁は未仕上げ。実物の適合・手持ち・本編への反映は未確認です。</p>
+<div id="image"></div>
+<div class="tools"><button id="background">明るい背景に切替</button><button id="restore">確定した選択に戻す</button></div>
+<section id="chooser"></section><p id="status" role="status"></p>
+<p class="note">このページは本編セーブを読み書きしません。価格・能力・通常制作の進行も変更しません。</p>
+</main>
+<script type="module">
+import { appearanceOptions, emptyAppearance } from './js/appearance/model.js';
+import { chooseAppearance } from './js/appearance/select.js';
+import { appearancePreview } from './js/appearance/render-preview.js';
+const sourceRoot='../asset_sources/shisha-hardware-reference/skin-candidates-issue374/';
+const chooser=document.querySelector('#chooser'),picture=document.querySelector('#image'),status=document.querySelector('#status');
+let committed=emptyAppearance(),generation=0;
+try{
+ const [source,geometry]=await Promise.all(['candidates.json','render-preview.json'].map(async path=>{
+  const response=await fetch(sourceRoot+path);if(!response.ok)throw new Error('外観資料を読み込めませんでした');return response.json();
+ }));
+ const options=appearanceOptions(source);
+ const draw=value=>picture.replaceChildren(appearancePreview(value,options,source,geometry));
+ async function edit(){
+  const owner=++generation;chooser.replaceChildren();
+  const result=chooseAppearance(chooser,committed,options);
+  // The production chooser's pending-render copy is replaced only in this review page.
+  chooser.querySelector('p').textContent='ハンドルとチップは別々に選べます。確定するまで表示だけを比較します。';
+  const draft=()=>Object.fromEntries(['handle','mouthpiece'].map(category=>[category,chooser.querySelector(`[data-test="appearance-${category}"]`).value||null]));
+  chooser.addEventListener('change',()=>{if(owner===generation)draw(draft());},{once:false,signal:(window.previewAbort||=new AbortController()).signal});
+  draw(committed);
+  const selected=await result;if(owner!==generation)return;
+  if(selected){committed=selected;status.textContent='このページ内の選択を確定しました。';}else status.textContent='変更を取り消しました。';
+  window.previewAbort.abort();window.previewAbort=null;void edit();
+ }
+ document.querySelector('#restore').onclick=()=>{generation++;window.previewAbort?.abort();window.previewAbort=null;status.textContent='確定した選択へ戻しました。';void edit();};
+ document.querySelector('#background').onclick=event=>{picture.classList.toggle('light');event.target.textContent=picture.classList.contains('light')?'暗い背景に切替':'明るい背景に切替';};
+ void edit();
+}catch(error){status.textContent=error.message;}
+</script>
+</html>

@@ -1,4 +1,4 @@
-import { masteryBonus } from "../core/flavor-mastery.js";
+import { mixMasteryProfile } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
 //   総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
@@ -13,7 +13,7 @@ import { coalWarmth } from "./coals.js";
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
-export const NAGUMO_BAR = 72;
+export const NAGUMO_BAR = 84;
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {
@@ -68,7 +68,9 @@ export function computeShisha(cs) {
   const overheatedRisk = overheated ? Math.round(12 * (1 - 0.5 * (maker.makerWeights?.dobaj || 0))) : 0;
   const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (cs.pack === "fluffy" ? 5 : 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
   const gift = giftBowlEffect(cs);
-  const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma, 0, 100);
+  const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
+  // 慣れた葉ほど香りを再現しやすい。甘さ・清涼感などの強さを品質点にしない。
+  const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma + mastery.aromaBonus, 0, 100);
   const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste, 0, 100);
   const duration = clamp(baseHeatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
   const rawQuality = aroma * 0.25 + heatStability * 0.15 + (100 - burnRisk) * 0.15 + taste * 0.10 + smoke * 0.10
@@ -91,7 +93,8 @@ export function bonusOf(cs = null) {
   if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }
-  const mastery = cs && cs.mode === "tournament" ? masteryBonus(state, cs.mix, DB.flavorById) : 0;
+  const mastery = cs && cs.mode === "tournament"
+    ? mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById).bonus : 0;
   if (mastery > 0) { b += mastery; notes.push(`フレーバーの熟練度 +${mastery.toFixed(1)}`); }
   return { bonus: b, notes };
 }

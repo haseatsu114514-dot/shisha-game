@@ -28,17 +28,17 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー5社・表記統一・禁止語チェック
-assert.equal(flavors.length, 65); // #929: アフサール新作ストロベリー（第2章の県大会支給葉）を追加
+assert.equal(flavors.length, 78); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
   "アフサール": "afsahr",
   "ナイトサイド": "nightside",
-  "フォースフェクト": "forcefect",
+  "フォースフェクタ": "forcefect",
 };
 for (const f of flavors) {
   assert(f.maker in MAKER_SPECS, `Invalid maker on ${f.id}: ${f.maker}`);
-  assert.equal(f.leaf, "blond");
+  assert.equal(f.leaf, ["dark_earlgrey", "siga"].includes(f.id) ? "dark" : "blond");
   assert(!f.name.includes("ドバージュ") && !f.name.includes("アブサル"), `Legacy brand name in ${f.id}: ${f.name}`);
   assert(!f.description.includes("キレ"), `Forbidden word キレ in ${f.id}: ${f.description}`);
   assert(!f.description.includes("配合"), `Ununified word 配合 in ${f.id}: ${f.description}`);
@@ -240,9 +240,13 @@ assert.equal(flavorFamilyGrams({ dobaj_mint: 3, absal_double_apple: 9 }, "double
 assert.equal(giftBowlEffect({ equip: { bowl: "suyaki_minto" }, mix: { dobaj_mint: 3, double_apple: 9 } })?.bonus, 1);
 assert.equal(giftBowlEffect({ equip: { bowl: "suyaki_adam" }, mix: { mint: 3, absal_double_apple: 9 } })?.bonus, 1);
 
+// ミント課題は再開中の旧大会だけ。新規のレモン課題とは区別する。
+assert.equal(evaluateMix({ mode: "tournament", mix: { absal_double_apple: 9, dobaj_mint: 3 }, equip: { bowl: "silicone_bowl" } }).regOk, false);
+s.flags._legacy_mint_tournament = true;
 const crossMix = evaluateMix({ mode: "tournament", mix: { absal_double_apple: 9, dobaj_mint: 3 }, equip: { bowl: "silicone_bowl" } });
 assert.equal(crossMix.regOk, true, "dobaj_mint should satisfy mint regulation");
 assert.equal(crossMix.recipe?.id, "sumi_basic", "Cross-brand double_apple + mint should match sumi_basic");
+delete s.flags._legacy_mint_tournament;
 assert.equal(isSuyakiBowl("suyaki_hagal"), true);
 assert.equal(isSuyakiBowl("silicone_bowl"), false);
 

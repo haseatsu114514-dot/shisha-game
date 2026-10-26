@@ -27,6 +27,41 @@
       ]
     },
     {
+      "dialogue_id": "ch3_registration",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京駅から全国大会の会場へ向かった。まだステージは暗く、入口には参加受付の札が出ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "県大会代表の、はじめです。参加登録に来ました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付のスタッフが名簿に印を付け、封筒から競技規則を一枚取り出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「出場が決まった方にも、当日の手順をここで確認していただきます」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かりました。材料と、調整の回数も確かめます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付台に広げた紙に目を落とした。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_individuality_doubt",
       "lines": [
         {
@@ -513,7 +548,12 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "HAZE: NATIONAL TOKYO！　一台を、最後の調整まで！"
+          "text": "シーシャ勝負・第壱条ッ！ HAZE: NATIONAL TOKYOは、前夜に決めた一台で勝負！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "第弐条ッ！ 提供してから二度の調整まで、同じ一台を仕上げてください！ ぷぷぷっ！"
         },
         {
           "speaker": "pakki",
@@ -607,12 +647,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スティーブはカードの時間を確かめ、ポップコーンの香ばしさを低温で起こす。"
+          "text": "スティーブはカードの時間を確かめ、マウンテンミストの柑橘を低温で立たせる。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクが記録した室温に線を引いた。開場後の空気へ、計算を更新している。"
+          "text": "ヴォルクは新発売のナイトサイド ブラストミントを詰め、開場後の室温に合わせて計算を更新した。"
         },
         {
           "speaker": "",
@@ -1239,6 +1279,107 @@
           "text": "机の上には、まだ世界大会の案内がある。今は、客の返事を待った。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_tsumugi_result",
+      "comment": "第1章の公募取材・応募・大会前夜の『結果が出たら知らせます』を帰郷後に回収。恋愛・好感度には連動しない。旧セーブには未読の約束を捏造しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の客を送り出したtonari。つむぎが、いつもの席からタブレットを持ってきた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。公募の結果が出ました"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_eve",
+          "next_true": "result_promised",
+          "next_false": "result_unseen"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……入選しました。会場で展示してもらえるそうです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には入選の知らせと、応募した絵が並んでいた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tsumugi_heart_art"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariの窓と、みんなの手元。猫もいる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。あの夜、自分で選んで出した絵のままです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "店の名前も、ちゃんと見えるな。おめでとう、つむぎ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……ありがとうございます。ここで描けて、よかったです"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "おめでとう、つむぎちゃん。直接聞けてうれしい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんも、全国大会、おめでとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人の結果の話を終えると、つむぎは席に戻って、次の白いページを開いた。"
+        }
+      ],
+      "branches": {
+        "result_promised": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大会の前、つむぎちゃんが『頑張って』って言ってくれたね。結果も知らせてくれるって"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。はじめさんが戻ったら、直接伝えようと思って"
+          }
+        ],
+        "result_unseen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariを描いていた、あの公募の？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。応募した絵を、見てください"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_ageha_reunion",
