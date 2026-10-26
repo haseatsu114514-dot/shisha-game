@@ -11,7 +11,7 @@ let installProbe=async()=>{}, displayProbe=async()=>{};
 let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
 const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
-const overrides={spendableMoney,state, DB:{flavorById:{mint:{}},dialogues:{},lime:[]},
+const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},lime:[]},
  save:()=>saves.push(structuredClone(state)),
  el:()=>({classList:{add:noop,remove:noop},remove:noop}), sleep:asyncNoop,
  layers:{fx:{append:noop},modal:{classList:{contains:()=>false}}},

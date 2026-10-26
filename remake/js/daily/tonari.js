@@ -1,8 +1,9 @@
+import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
-import { showScreen, setBg, toast, retire } from "../core/ui.js";
+import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
@@ -37,9 +38,10 @@ export function tonariMenu() {
       el("div.sub-choices", [
         opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
-          ? "夜の寄り道。参加3000円・体力10・行動1回。3投を一緒に楽しむ"
+          ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
@@ -54,7 +56,7 @@ export async function tonariCustomer({ signal = null } = {}) {
   customerVisits.add(owner);
   try {
     const live = () => state === owner && !signal?.aborted;
-    addStamina(-10);
+    addStamina(-16);
     const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG, signal });
     if (!live() || !greeting || greeting.cancelled) return false;
     await meetHiyoriAtTonari();
@@ -106,6 +108,7 @@ async function baitoShift({ called }) {
   } else {
     await customerEvent(condition);
   }
+  await serveShiftOrder();
   const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
@@ -244,4 +247,27 @@ export function chooseDrill({ title = "自主練", lead = "苦手な工程を反
       )),
     ]));
   });
+}
+
+const SHIFT_ORDERS = [
+  { text: "甘すぎない、柑橘のさっぱりしたものを", mixes: [{ lemon: 9, mint: 3 }, { orange: 9, lemon: 3 }], labels: ["レモン＋ミント", "オレンジ＋レモン"] },
+  { text: "果物の甘さで、ミントは抜きにして", mixes: [{ blueberry: 9, peach: 3 }, { grape: 8, orange: 4 }], labels: ["ブルーベリー＋ピーチ", "グレープ＋オレンジ"] },
+  { text: "お菓子みたいに、甘くて丸い味がいいな", mixes: [{ vanilla: 8, coconut: 4 }, { peach: 8, vanilla: 4 }], labels: ["バニラ＋ココナッツ", "ピーチ＋バニラ"] },
+  { text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"] },
+];
+async function serveShiftOrder() {
+  const owner = state;
+  const key = `_shift_order_${state.chapter}:${state.day}`;
+  if (state.flags[key]) return;
+  const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
+  const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
+  const index = await modal({ title: "今日の注文", body: `「${order.text}」 店の葉で一台を作る。`,
+    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
+  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
+  const result = await play({ dialogue_id: "shift_flavor_order", lines: [
+    { speaker: "hajime", face: "normal", text: "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した。" },
+  ] }, { bg: TONARI_BG });
+  if (state !== owner || result?.cancelled) return;
+  // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
+  state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
 }

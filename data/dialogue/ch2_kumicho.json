@@ -125,7 +125,10 @@
     {
       "dialogue_id": "ch2_kumicho_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png",
+        "flavor_lesson": {
+          "dragonfruit": 1
+        }
       },
       "lines": [
         {

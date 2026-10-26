@@ -359,7 +359,11 @@
       "dialogue_id": "ch1_rin_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "夜の側のサンプル"
+        "topic": "夜の側のサンプル",
+        "flavor_lesson": {
+          "rose": 1,
+          "lychee": 1
+        }
       },
       "lines": [
         {
@@ -490,7 +494,10 @@
     {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "flavor_lesson": {
+          "blueberry": 1
+        }
       },
       "lines": [
         {

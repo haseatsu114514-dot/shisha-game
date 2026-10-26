@@ -1395,7 +1395,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "Dr.fookahに行って、ミントを仕入れてこい。大会の課題フレーバーだ"
+          "text": "Dr.fookahに行って、レモンを仕入れてこい。大会の課題フレーバーだ"
         },
         {
           "speaker": "hajime",
@@ -1405,7 +1405,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "今回のミントの代金は、店の経費だ"
+          "text": "今回のレモンの代金は、店の経費だ"
         },
         {
           "speaker": "sumi",
@@ -1588,7 +1588,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（大会の課題もミントだけど……一軒でこの量は、さすがに多いような）"
+          "text": "（大会の課題はレモンだけど……一軒でこの量は、さすがに多いような）"
         },
         {
           "speaker": "sumi",
@@ -2733,6 +2733,72 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "ありがとうございます。お疲れさまでした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_lemon_gift",
+      "metadata": { "flavor_lesson": { "lemon": 1 } },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "仕入れ、ご苦労さん。そのレモンは、お前にやる。大会に出るんだろ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、店の仕入れじゃなかったんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "大会の葉は私物持ち込みだからな。最初の一箱はプレゼントだ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "試作でも使っていい。本番の分は残しとけよ。足りなくなったら自分で買い足すんだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "レモンって、どう使うのがいいんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "鋭い酸味で味の輪郭を締める葉だ。ミントと合わせても、甘い葉に少し足してもいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただし熱をかけすぎると香りが飛ぶ。最初は炭を中心に寄せすぎず、香りを確かめろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "酸味を生かして、熱を強くしすぎない。覚えておきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。このレモンで、いろいろ試してみます。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_staff_practice",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "余ってるフレーバーなら、まかないで練習に使っていいぞ。今日の分だけな。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ほかに試したい味があるなら、自分の葉も混ぜてみろ。使った分は減るからな。"
         }
       ]
     }

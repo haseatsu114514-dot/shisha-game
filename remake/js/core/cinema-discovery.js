@@ -24,5 +24,5 @@ export const CINEMA = Object.freeze({
     "cinema_handpainted_sign", "cinema_detective_shadow", "cinema_sound_before_shadow",
     "cinema_endroll_applause", "cinema_last_row", "cinema_space_radio",
     "cinema_monster_footprints", "cinema_detective_silence"],
-  desc: "四本ほどのB級映画を繰り返しかける小さな名画座。サメ映画も定番。1,000円・体力8・1行動。",
+  desc: "四本ほどのB級映画を繰り返しかける小さな名画座。サメ映画も定番。1,000円・体力を使う・1行動。",
 });

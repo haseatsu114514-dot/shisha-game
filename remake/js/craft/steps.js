@@ -1,3 +1,4 @@
+import { staffFlavors, staffStock, spendPracticeMix, masteryLabel } from "../core/flavor-mastery.js";
 // 選ぶ工程: 機材・配合・詰め・炭の配置・蒸らし時間。
 import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
@@ -18,13 +19,15 @@ import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
 
-// 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
+// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給。
 export const REGULATION = {
-  1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" },
+  1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
   // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
 };
-export const regulationFor = (cs) => (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
+export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
+  ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
+  : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
 // スミさんの手本（チュートリアル中だけ、工程の頭に出す）
 const LESSON = {
@@ -199,22 +202,25 @@ export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
 }
 
 export async function stepMix(cs) {
+  const owner = state;
   await waitBenchReady(cs, "mix");
+  if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
   // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
-  const supplyId = reg ? reg.supply || reg.flavor : null;
+  const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
-  if (!consumes) ids = [...new Set([...SHOP_FLAVORS, ...ids])].filter((id) => DB.flavorById[id]);
-  if (reg && !ids.includes(supplyId)) ids.unshift(supplyId);
+  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
+  if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
+  if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
-  const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
-  const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
-  cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
+  const limit = (id) => cs.staffPractice ? staffStock(state, id) + flavorStock(id) : (consumes && !supplied(id) ? flavorStock(id) : Infinity);
+  const practiceFlavor = cs.mode === "rehearsal" && !cs.staffPractice ? state.flags._prep_flavor : null;
+  cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? (practiceFlavor === "lemon" ? { lemon: 10, mint: 2 } : { [practiceFlavor]: 10, lemon: 2 }) : {};
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
@@ -280,6 +286,8 @@ export async function stepMix(cs) {
         supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
           : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
           : el("small", { text: f?.description || "" }),
+        el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
+        cs.staffPractice ? el("small.fr-stock", { text: `まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g（まかない優先）` }) : null,
         ratio,
       ]),
       el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
@@ -312,19 +320,27 @@ export async function stepMix(cs) {
     okBtn.addEventListener("click", () => { SE.select(); resolve(); });
     if (autoSkill()) {
       // 上手=スミさんの基本形（ダブルアップル＋ミント）／下手=規定ぎりぎりの雑な配合
-      if (autoSkill() === "good" || cs.mode === "tutorial") { cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 9, mint: 3 } : { double_apple: 9, mint: 3 }; }
+      if (autoSkill() === "good" || cs.mode === "tutorial") {
+        const sideFlavor = regulationFor(cs)?.flavor || "mint";
+        const mainFlavor = practiceFlavor && ids.includes(practiceFlavor) ? practiceFlavor : "double_apple";
+        cs.mix = mainFlavor === sideFlavor ? { [mainFlavor]: 12 } : { [mainFlavor]: 9, [sideFlavor]: 3 };
+      }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
         const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
         cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
+      if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
+      if (cs.staffPractice || consumes) cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
       setTimeout(() => okBtn.click(), 60);
     }
   });
+  if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
+  if (cs.staffPractice) { cs.practiceSpent = spendPracticeMix(state, cs.mix); if (!cs.practiceSpent) throw new Error("練習用の葉が不足しています"); }
   cs.mixInfo = evaluateMix(cs);
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）

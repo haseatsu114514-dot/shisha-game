@@ -147,6 +147,7 @@ await suite("full-day-rest", async check => {
       await mapAt(page, 4, 0); await goHome(page, touch);
       await page.getByText(/スミさんとの今夜のLIMEの約束には参加/).waitFor();
       await page.locator('[data-test="rest-full"]').click();
+      await page.locator('[data-test="shift-order-0"]').click();
       await page.locator('[data-test="after-none"]').waitFor();
       const before = await page.evaluate(() => ({ shifts: R.core.state.baitoCount, money: R.core.state.money,
         expired: R.core.state.inbox.some(item => item.originId === "rest-booked" && item.result === "expired") }));

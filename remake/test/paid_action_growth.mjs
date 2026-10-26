@@ -75,6 +75,7 @@ try {
     for (const after of ["none", "sumi"]) {
       reset();
       const timer = setInterval(() => {
+        document.querySelector('[data-test="shift-order-0"]')?.click();
         document.querySelector(`[data-test="after-${after}"]`)?.click();
       }, 20);
       try {
@@ -117,7 +118,7 @@ try {
   assert.deepEqual(report.forced, { xp: 0, sameReel: true });
   assert.deepEqual(report.rinRefusal, { spent: 0, unchanged: true, spins: 0 });
   for (const entry of report.cases) {
-    const recovery = ["cafe", "kannon", "rest"].includes(entry.name);
+    const recovery = entry.name === "rest";
     assert.equal(entry.spins > 0, !recovery, JSON.stringify(entry));
     if (recovery) assert.equal(entry.earned, 0);
     else {

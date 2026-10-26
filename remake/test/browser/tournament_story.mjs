@@ -68,7 +68,7 @@ await suite('tournament-story',async check=>{
     await page.evaluate(()=>{
       const {core,chapter,story,data,vn,session}=window.tournamentFixture;
       const s=core.newGame();
-      Object.assign(s,{day:14,phase:'tournament',stamina:100,flavorStock:{double_apple:60,mint:30}});
+      Object.assign(s,{day:14,phase:'tournament',stamina:100,flavorStock:{double_apple:60,mint:30,lemon:30}});
       s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
       for(const step of story.TSUMUGI_STORY)s.flags[step.flag]=true;
       for(const id of Object.keys(data.DB.characters))s.flags[`_intro_${id}`]=true;

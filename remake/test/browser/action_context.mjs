@@ -39,6 +39,7 @@ async function setup(page, day = 4, slot = 1) {
       }
     }).observe(document.getElementById('fx'), { childList: true, subtree: true });
     C.afterTimer = setInterval(() => {
+      document.querySelector('[data-test="shift-order-0"]')?.click();
       document.querySelector('[data-test="after-none"]')?.click();
       document.querySelector('[data-test="reel-intro"]')?.click();
       document.querySelector('[data-test="drill-heat"]')?.click();

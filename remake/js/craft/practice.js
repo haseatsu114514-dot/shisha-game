@@ -1,3 +1,5 @@
+import { gainFlavorExperience, masteryDay } from "../core/flavor-mastery.js";
+import { DB } from "../core/data.js";
 // 日常で一台を通して作り、提供後の調整も実際に練習する。
 import { newSession, openBench, waitBenchReady } from "./session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, evaluateMix } from "./steps.js";
@@ -15,13 +17,17 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", isCurrent = null } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null } = {}) {
   // 呼出し元が指定した制作だけを中断判定する。既存の自由練習等は従来どおり。
+  const owner = state;
   const checkCurrent = () => {
+    if (state !== owner) throw new DOMException("Practice owner changed", "AbortError");
     if (isCurrent && !isCurrent()) throw new DOMException("Practice owner changed", "AbortError");
   };
   checkCurrent();
   const cs = newSession(coached ? "tutorial" : "rehearsal");
+  cs.staffPractice = staffPractice;
+  if (staffPractice) { cs.eventTitle = "PRACTICE"; cs.eventNote = "まかないで練習"; }
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
   await waitBenchReady(cs);
   checkCurrent();
@@ -51,6 +57,13 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
     checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
+  const key = !coached && `_mastery_practice_${masteryDay(state)}_${kind}`;
+  if (cs.pullDone && !state.flags[key] && !coached) {
+    const own = Object.values(cs.practiceSpent?.own || {}).reduce((a, b) => a + b, 0);
+    const total = Object.values(cs.mix).reduce((a, b) => a + b, 0);
+    gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById);
+    state.flags[key] = true;
+  }
   retireScreen();
   return cs;
 }

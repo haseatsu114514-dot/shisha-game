@@ -321,7 +321,7 @@
       "not_for_sale": true,
       "value": "home_rig_set",
       "home_growth": 0.5,
-      "description": "スミさんにもらった、ミャアの小さな卓上台。店のお下がり。寝る前の一服で、その日の粗が見えてくる（#638）。"
+      "description": "スミさんにもらった、ミャアの小さな卓上台。店のお下がり。体力のある夜に自分の葉を試し、フレーバーの熟練度を育てられる。"
     },
     {
       "id": "home_rig_pro",
@@ -335,7 +335,7 @@
       "not_for_sale": true,
       "value": "home_rig_pro",
       "home_growth": 0.75,
-      "description": "大会の本番で使われるのと同じ台。家で吸っても手の感覚がそのまま残り、寝る前の一服の伸びがいい（くじの景品・#638）。"
+      "description": "大会の本番で使われるのと同じ台。家で試作したフレーバーの熟練度が、少し育ちやすくなる。くじの景品。"
     },
     {
       "id": "suyaki_hiyori",

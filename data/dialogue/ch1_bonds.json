@@ -319,7 +319,10 @@
       "dialogue_id": "ch1_sumi_bond_finale",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
-        "bond_finale": "sumi"
+        "bond_finale": "sumi",
+        "flavor_lesson": {
+          "cardamom": 1
+        }
       },
       "lines": [
         {

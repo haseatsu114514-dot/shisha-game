@@ -78,7 +78,7 @@ await suite("ch1-presentation", async check => {
         for (const id of ["blueberry", "lemon", "vanilla", "coconut", "mango", "grape"]) { V.core.state.flavors.push(id); V.core.state.flavorStock[id] = 30; }
         V.cs = V.craft.newSession("tournament"); await V.craft.openBench(V.cs).ready; V.running = V.steps.stepMix(V.cs);
       });
-      await page.locator('[data-test="mix-plus-mint"]').waitFor();
+      await page.locator('[data-test="mix-plus-lemon"]').waitFor();
       assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
       assert.match(await page.locator('.mix-temperature-legend').textContent(), /未選択/);
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
@@ -90,12 +90,12 @@ await suite("ch1-presentation", async check => {
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /グレープ/);
       for (let i = 0; i < 9; i++) await select(page, '[data-test="mix-plus-grape"]', touch);
       assert(await page.locator('[data-test="mix-ok"]').isDisabled());
-      for (let i = 0; i < 2; i++) await select(page, '[data-test="mix-plus-mint"]', touch);
+      for (let i = 0; i < 2; i++) await select(page, '[data-test="mix-plus-lemon"]', touch);
       assert(!await page.locator('[data-test="mix-ok"]').isDisabled());
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.grape), 20);
-      assert.equal(await page.evaluate(() => V.core.state.flavorStock.mint), undefined); // Real supplied mint, not owned stock.
+      assert.equal(await page.evaluate(() => V.core.state.flavorStock.lemon), 28); // 課題のレモンも私物から消費。
     }, options);
     await check(`${device}-gift-bowl-leaf-plane`, async page => {
       await setup(page);

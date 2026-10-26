@@ -164,7 +164,7 @@ await suite('hiyori-hagal', async allCheck => {
       await page.evaluate(async () => {
         // This is an explicit equipment UI fixture, not natural inventory acquisition.
         H.shop.addFlavorStock('peach', 50); H.shop.addFlavorStock('mint', 50);
-        H.cs = H.session.newSession('drill'); await H.session.openBench(H.cs).ready;
+        H.cs = H.session.newSession('drill'); H.cs.staffPractice = true; await H.session.openBench(H.cs).ready;
         H.running = H.steps.stepSetup(H.cs);
       });
       const choose = page.locator('[data-test="opt-suyaki_hiyori"]');

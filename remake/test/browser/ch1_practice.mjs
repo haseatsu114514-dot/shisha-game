@@ -16,7 +16,7 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     if (fresh) {
       const s = P.core.newGame();
       Object.assign(s, { phase: "daily", day, slot: 2, stamina: 80, weatherSeed: 4 });
-      s.flavors.push("double_apple", "blueberry", "mint"); s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50 };
+      s.flavors.push("double_apple", "blueberry", "mint"); s.flavorStock = { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 };
       Object.assign(s.flags, { _tsumugi_contest_progress: true, _hiyori_meeting_done: true, _prep_flavor: "blueberry" });
       for (const id of ["sumi", "tsumugi", "hiyori"]) P.intro.markIntroSeen(id);
     } else P.core.load();
@@ -61,7 +61,7 @@ async function until(page, predicate, touch = false) {
 const finish = (page, touch) => until(page, () => P.done, touch);
 const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches, earlyChoices: P.earlyChoices }));
 function resourcesUnchanged(s, giftGrams = 0) {
-  assert.deepEqual(s.flavorStock, { double_apple: 50 + giftGrams, blueberry: 50, mint: 50 });
+  assert.deepEqual(s.flavorStock, { double_apple: 50 + giftGrams, blueberry: 50, mint: 50, lemon: 50 });
   if (giftGrams) {
     assert.equal(s.flags._sumi_double_apple_received, true);
     assert.equal(s.owned.filter(id => id === "home_rig_set").length, 1);

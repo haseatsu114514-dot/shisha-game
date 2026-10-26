@@ -167,7 +167,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
-    const firstErrand = errand === "mint" && expense && expenseFlag === "_errand_mint_expensed" && !session.flags._errand_shop_done;
+    const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
     setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
@@ -186,7 +186,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
       refusedAt = now;
       SE.error();
-      toast("スミ「今日は頼んだミントだけだ。ほかの買い物は、買い出しが終わってからにしろ」", { kind: "warn" });
+      toast(`スミ「今日は頼んだ${errandName}だけだ。ほかの買い物は、買い出しが終わってからにしろ」`, { kind: "warn" });
     };
     const pointTo = (button, active) => {
       if (firstErrand) {
@@ -210,7 +210,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     };
     const change = (id, delta) => {
       if (!live()) return;
-      if (firstErrand && delta > 0 && id !== "mint") { refuseOtherPurchase(); return; }
+      if (firstErrand && delta > 0 && id !== errand) { refuseOtherPurchase(); return; }
       const { item, flavor } = lookup(id);
       if (!item || !flavor && (!forSale(item, stockChapter) || state.owned.includes(id))) return;
       const n = Math.max(0, Math.min(flavor ? 99 : 1, (cart.get(id) || 0) + delta));
@@ -223,7 +223,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         el("button.shop-step", { text: "−", disabled: !n, "aria-label": `${name}を1つ減らす`, dataset: { test: `minus-${item.id}` }, onclick: () => change(item.id, -1) }),
         el("output", { text: n, "aria-label": `${name}の購入数`, dataset: { test: `quantity-${item.id}` } }),
         pointTo(el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
-          item.id === "mint" && !n && flavorStock("mint") < minStock),
+          item.id === errand && !n && flavorStock(errand) < minStock),
       ]);
     };
     const detail = (item, flavor) => {
@@ -293,14 +293,14 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
         if (firstErrand) {
           const step = done ? "leave" : count ? "purchase" : tab !== "flavor" ? "return-tab"
-            : category !== "all" && category !== DB.flavorById.mint.category ? "return-filter" : "select";
+            : category !== "all" && category !== DB.flavorById[errand].category ? "return-filter" : "select";
           errandBox.dataset.guideStep = step;
           errandBox.textContent = {
-            select: `① ミントの「＋」を押す → ② 下の「購入する」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
-            purchase: "② ↓ 下の「購入する」を押して、ミントの仕入れを確定しよう",
+            select: `① ${errandName}の「＋」を押す → ② 下の「購入する」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
+            purchase: `② ↓ 下の「購入する」を押して、${errandName}の仕入れを確定しよう`,
             leave: "③ ←「店を出る」を押して、スミさんのところへ戻ろう",
-            "return-tab": "①「フレーバー」に戻り、ミントを選ぼう。今日はミントだけ仕入れる",
-            "return-filter": "①「すべて」か「清涼」に戻り、ミントの「＋」を押そう",
+            "return-tab": `①「フレーバー」に戻り、${errandName}を選ぼう。今日は頼まれた葉だけ仕入れる`,
+            "return-filter": `①「すべて」に戻り、${errandName}の「＋」を押そう`,
           }[step];
         }
       }
@@ -329,7 +329,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (!live() || confirming) return;
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
-      if (firstErrand && rows.some(r => !r.flavor || r.item.id !== "mint")) { refuseOtherPurchase(); return; }
+      if (firstErrand && rows.some(r => !r.flavor || r.item.id !== errand)) { refuseOtherPurchase(); return; }
       if (spendableMoney(state) < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);

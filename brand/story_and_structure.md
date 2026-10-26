@@ -42,7 +42,7 @@ tonariで昔の約束を続ける二人と、ケムリクサで勝者だけで�
 
 | 章 | 章題 | 大会／相手 | 課題 |
 |---|---|---|---|
-| 1 | 煙がつなぐ街 | SMOKE CROWN CUP／なる・アダム・みんと | ミント2g以上 |
+| 1 | 煙がつなぐ街 | SMOKE CROWN CUP／なる・アダム・みんと | レモン2g以上 |
 | 2 | 才能の壁（Hollow Crown） | HAZE: OPEN CLOUD／あげは・神崎竜二・零-REI- | ストロベリー |
 | 3 | 嘘つきたちの夜（SMOKE AND MIRRORS） | HAZE: NATIONAL TOKYO／久世朔・スティーブ・ヴォルク | 自由、ましろと作戦会議 |
 | 4 | 継承の煙（Legacy Smoke） | HAZE: GRAND SMOKE／なる・王煙楼・シェイク | 自由。はじめは和の一台、ダブルアップルは混ぜない |
