@@ -1,8 +1,8 @@
-import { staffFlavors, staffStock, spendPracticeMix, masteryLabel } from "../core/flavor-mastery.js";
+import { staffFlavors, staffStock, spendPracticeMix, masteryLabel, mixMasteryProfile } from "../core/flavor-mastery.js";
 // 選ぶ工程: 機材・配合・詰め・炭の配置・蒸らし時間。
 import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
-import { toast } from "../core/ui.js";
+import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
@@ -17,7 +17,8 @@ import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTrain
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
 import { mixPercents } from "./mix-ratio.js";
-import { makerMixProfile, compareEquipment, EQUIP_CATEGORY_GUIDE } from "./temperature-model.js";
+import { makerMixProfile } from "./temperature-model.js";
+import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 
 // 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給。
 export const REGULATION = {
@@ -81,14 +82,19 @@ export async function stepSetup(cs) {
       continue;
     }
     const currentId = state.equip[type];
-    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", EQUIP_CATEGORY_GUIDE[type] || "手持ちの機材から選ぶ"));
+    const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
+    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
+    panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
+      onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div.equipment-compare-list", owned.map(item =>
+        el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))),
+      options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] }),
+    }));
     cs.equip[type] = await choose(panel, owned.map((e) => {
       const disabled = suyaki && e.id === "tanukish_lid";
-      const cmp = compareEquipment(e.id, currentId);
-      const diffLine = cmp?.rows?.[0] ? `【${cmp.rows[0].label}】${cmp.rows[0].value}` : "";
+      const guide = equipmentUse(e);
       return {
         value: e.id, label: e.name,
-        desc: diffLine ? `${e.description} ／ ${diffLine}` : e.description,
+        desc: `${guide.use}${guide.caution ? ` ／ 注意：${guide.caution}` : ""}`,
         disabled, badge: disabled ? "素焼き非対応" : e.id === currentId ? "装備中" : null,
         auto: !disabled && e.id === currentId,
       };
@@ -224,15 +230,17 @@ export async function stepMix(cs) {
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
+  const compactTaste = el("div.mix-taste-compact", { dataset: { test: "mix-taste-compact" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
   const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
+  const temperatureHint = el("small", { text: "上が高温" });
   const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
     el("b", { text: "温度帯" }),
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
-    el("small", { text: "上が高温／線は中心" }),
+    temperatureHint,
   ]);
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このフレーバーで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
@@ -246,15 +254,27 @@ export async function stepMix(cs) {
     const aroma = cs.mode === "tournament" && cs.chapter === 2
       ? { headline: "苺の輪郭が、つかめない", detail: "ミックスは見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。", tags: ["味覚の不調"] }
       : mixTaste(cs.mix);
-    taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }),
-      el("div.mix-taste-tags", aroma.tags.map(text => el("span", { text }))));
+    const tasteDisrupted = cs.mode === "tournament" && cs.chapter === 2;
+    if (tasteDisrupted) {
+      for (const host of [taste, compactTaste]) host.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }));
+    } else {
+      const masteryState = cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state;
+      const mastery = mixMasteryProfile(masteryState, cs.mix, DB.flavorById);
+      const precision = mastery.progress;
+      const compactOpen = compactTaste.querySelector(".flavor-forecast-compact")?.open;
+      taste.replaceChildren(mixForecastCard(cs, { precision, mastery, aroma }));
+      compactTaste.replaceChildren(mixForecastCard(cs, { precision, mastery, aroma, compact: true }));
+      if (compactOpen) compactTaste.querySelector(".flavor-forecast-compact")?.setAttribute("open", "");
+    }
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
-    idealLine.textContent = bands.selected ? "適温" : "未選択";
-    optimalLine.textContent = bands.selected ? "最適温" : "葉を加えると表示";
+    const expressive = bands.expressionWeight >= .999;
+    idealLine.textContent = bands.selected ? expressive ? "おいしい範囲" : "適温の目安" : "未選択";
+    optimalLine.textContent = bands.selected ? expressive ? "低め／高め" : "合わせやすい" : "葉を加えると表示";
+    temperatureHint.textContent = expressive ? "上が高温／味が変わる" : "上が高温／線は中心";
     const m = info.maker;
     const synergyText = m.makerCount <= 1 ? "単一メーカー" : `${m.makerCount}社ミックス`;
-    temperaturePreview.title = `装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
+    temperaturePreview.title = `${expressive ? "緑はおいしく作れる範囲。低めと高めで香りが変わる。" : "緑は適温の目安。中央はこの配合で合わせやすい温度。"} 装備×メーカー適温幅 ×${m.totalWidthScale.toFixed(2)}（${synergyText}）`;
     regLine.textContent = reg ? `${info.regOk ? "✓" : "✗"} ${reg.label}` : "";
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
@@ -267,6 +287,8 @@ export async function stepMix(cs) {
 
   const rows = ids.map((id) => {
     const f = DB.flavorById[id];
+    const tags = flavorTags(f), shortTag = tags.split("・")[0];
+    const stockTag = shortTag ? ` · ${shortTag}` : "";
     const g = el("span.fr-g", { text: "0g" });
     const ratio = el("small.fr-ratio", { dataset: { test: `mix-ratio-${id}` } });
     const change = (d) => {
@@ -282,10 +304,13 @@ export async function stepMix(cs) {
     const row = el("div.flavor-row", { dataset: { flavor: id } }, [
       el("span.fr-package", [flavorPackageArt(id, 54)]),
       el("div.fr-name", [
-        el("b", { text: f?.short_name || f?.name || id }),
-        supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
-          : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
-          : el("small", { text: f?.description || "" }),
+        el("button.fr-feature", { type: "button", dataset: { test: `flavor-info-${id}` }, "aria-label": `${f?.short_name || f?.name || id}の特徴を見る`,
+          onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog", body: flavorFeatureCard(f, { description: f?.description }),
+            options: [{ label: "配合に戻る", primary: true, test: "flavor-info-close" }] }),
+        }, [el("b", { text: f?.short_name || f?.name || id })]),
+        supplied(id) ? el("small.fr-reg", { text: `課題（支給）${stockTag}` })
+          : consumes ? el("small.fr-stock", { text: `残り${flavorStock(id)}g${stockTag}` })
+          : el("small", { text: tags }),
         el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
         cs.staffPractice ? el("small.fr-stock", { text: `まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g（まかない優先）` }) : null,
         ratio,
@@ -310,6 +335,7 @@ export async function stepMix(cs) {
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
     el("div.mix-list", [el("div.mix-list-head", [
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
+      compactTaste,
       hint ? el("div.mix-hint", { dataset: { test: "mix-hint" }, text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null,
     ]), ...rows.map((r) => r.row)]),
     temperaturePreview,
@@ -365,9 +391,9 @@ export async function stepPack(cs) {
   await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
-    { value: "fluffy", label: "ふんわり", surface: "葉の間に空気を残す", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
-    { value: "normal", label: "ノーマル", surface: "均等にならす", desc: "熱が素直に入り、崩れにくい基本の詰め方" },
-    { value: "firm", label: "デンスパック", surface: "隙間を詰める", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
+    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
+    { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
+    { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
   let selected = options.find(o => o.value === cs.pack) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
@@ -389,7 +415,7 @@ export async function stepPack(cs) {
     el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }),
     vessel, caption,
     el("div.pack-choices", { role: "group", "aria-label": "詰め方を見比べる" }, choices),
-    el("div.pack-footer", [el("small", { text: "ボウルを見比べて、詰め方を選ぼう" }), confirm]),
+    el("div.pack-footer", [el("small", { text: "葉の量はそのまま。詰め方を見比べよう" }), confirm]),
   ]));
   draw();
   cs.pack = await new Promise(resolve => {

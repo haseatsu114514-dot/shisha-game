@@ -1,4 +1,5 @@
-import { improvementOf } from "./advice.js";
+import { improvementOf, goodPointOf } from "./advice.js";
+import { actualExpressionCard } from "./flavor-guide.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, rand } from "../core/util.js";
@@ -302,11 +303,13 @@ export function resultTable(cs, rank) {
     };
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
+      Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]].map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
       el("small.rt-judge-comment", { text: `上園「${feedbackLine("maezono", "pull", evaluationOf(P.shisha || 0))}」` }),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
+      goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
     ]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [

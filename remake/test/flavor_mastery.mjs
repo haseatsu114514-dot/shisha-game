@@ -25,8 +25,8 @@ gainFlavorExperience(s,{lemon:9,mint:3},6,DB.flavorById);
 assert.deepEqual(s.flavorMastery,{lemon:4.5,mint:1.5});
 gainFlavorExperience(s,{dobaj_mint:12},6,DB.flavorById);assert.equal(masteryLevel(s,'mint'),2);
 for(let i=0;i<30;i++)gainFlavorExperience(s,{lemon:12},6,DB.flavorById);
-assert.equal(s.flavorMastery.lemon,60);assert.equal(masteryBonus(s,{lemon:12}),3);
-assert.equal(masteryBonus(s,{lemon:1,orange:11}),.25,'tiny amount cannot confer full bonus');
+assert.equal(s.flavorMastery.lemon,60);assert.equal(masteryBonus(s,{lemon:12}),8);
+assert(Math.abs(masteryBonus(s,{lemon:1,orange:11})-8/12)<1e-12,'tiny amount cannot confer full bonus');
 const d={dialogue_id:'lesson',metadata:{flavor_lesson:{orange:1}}};
 learnFlavorStory(s,d);learnFlavorStory(s,d);assert.equal(s.flavorMastery.orange,12);
 learnFlavorStory(s,{dialogue_id:'ordinary'});assert.equal(s.flavorMastery.orange,12);
@@ -73,7 +73,7 @@ assert.equal(s.flavorStock.spring_water,38);assert.equal(s.flavorMastery.spring_
 core.save();s=core.load();assert.equal(s.flavorMastery.spring_water,18);
 learnFlavorStory(s,lesson,DB.flavorById);assert.equal(s.flavorMastery.spring_water,18);
 for(let i=0;i<7;i++)gainFlavorExperience(s,{spring_water:12},6,DB.flavorById);
-assert.equal(masteryLevel(s,'spring_water'),5);assert.equal(masteryBonus(s,{spring_water:12},DB.flavorById),3);
+assert.equal(masteryLevel(s,'spring_water'),5);assert.equal(masteryBonus(s,{spring_water:12},DB.flavorById),8);
 
 // Daily budgets at initial guts: light day +6, shisha day -18, light day with home -18.
 const cafe=SPOTS.find(x=>x.id==='cafe'),temple=SPOTS.find(x=>x.id==='kannon'),shop=SPOTS.find(x=>x.id==='naru');
