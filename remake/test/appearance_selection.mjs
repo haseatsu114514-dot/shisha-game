@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
 const catalogPath = "asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json";
 const document = JSON.parse(fs.readFileSync(path.join(root, catalogPath)));
 const equipment = JSON.parse(fs.readFileSync(path.join(root, "data/equipment.json"))).equipment;
-const files = ["appearance/model.js", "appearance/select.js", "core/state.js", "core/util.js", "core/rules.js", "core/bus.js",
+const files = ["appearance/model.js", "appearance/select.js", "core/state.js", "core/util.js", "core/rules.js", "core/bus.js", "core/gallery-progress.js",
   "craft/steps.js", "craft/coals.js", "craft/temperature-model.js"];
 const texts = new Map(files.map(file => ["/remake/js/" + file, fs.readFileSync(path.join(root, "remake/js", file), "utf8")]));
 
