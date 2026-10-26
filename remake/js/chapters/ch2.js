@@ -194,8 +194,14 @@ async function introduceStop(id, background) {
 }
 
 async function visit(stop) {
+  const owner = session;
   if (!await scene(`ch2_city_${stop.id}`, stop.sceneLabel || stop.name)) return;
   recordCityVisit(state, stop.id); save();
+  if (stop.id === "c_station" && !state.flags._ch2_rules_read) {
+    await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    if (!current(owner)) return;
+    state.flags._ch2_rules_read = true; save();
+  }
   if (deliveryPending(state, stop.id)) {
     if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶", ROOMS[stop.id])) return;
     finishChapterTwoDelivery(state, stop.id); save();

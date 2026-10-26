@@ -223,6 +223,8 @@ await suite('ch2-tournament',async check=>{
       assert.equal(await page.evaluate(()=>document.activeElement?.dataset.test),'ch3-intro-continue');
       await page.keyboard.press('Enter');
     }
+    await page.locator('[data-test="rule-sheet"]').waitFor();
+    await press(dt('rule-sheet-close'));
     await page.locator(scene('ch3_mukai_arrival')).waitFor();await checkGuide();
     assert.match(await page.locator(guide).innerText(),/直前に読んだ場面[\s\S]*東京駅/);
     assert.match(await page.locator(guide).innerText(),/これから読む場面[\s\S]*mukai/);
@@ -485,6 +487,8 @@ await suite('ch2-tournament',async check=>{
     for(const key of ['money','stamina','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
       assert.deepEqual(s[key],before[key],`Chapter 3 entry changed ${key}`);
     await page.locator(continueButton).click();
+    await page.locator('[data-test="rule-sheet"]').waitFor();
+    await page.locator(dt('rule-sheet-close')).click();
     await page.locator(scene('ch3_mukai_arrival')).waitFor();
     assert.equal((await get(page)).flags._ch3_intro.stage,1);
     // 1場面を確定後にロード。冒頭が再生されず、次の場面から続く。

@@ -324,6 +324,11 @@ async function renderStage(owner) {
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readScene(owner, scene)) return;
+      if (scene.id === "ch3_opening" && !state.flags._ch3_rules_read) {
+        await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+        if (!current(owner)) return;
+        state.flags._ch3_rules_read = true; save();
+      }
       if (!completeChapterThreeScene(state, scene.id)) return;
       save();
       await renderStage(owner);

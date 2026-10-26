@@ -26,7 +26,7 @@ import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
-import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
@@ -490,6 +490,13 @@ async function tournamentDay() {
   await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
+  const regulation = regulationFor({ mode: "tournament" });
+  const challenge = regulation?.flavor === "mint" ? "ミント" : "レモン";
+  const source = regulation?.supply ? "葉は主催者が支給します！" : "葉は自分で持ち込むこと！";
+  await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
+    { speaker: "pakki", face: "excited", text: `シーシャ勝負・第壱条ッ！ 課題の${challenge}を2g以上！ ${source}` },
+    { speaker: "pakki", face: "excited", text: "第弐条ッ！ 一台を作って提供、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！" },
+  ] }, { bg: STAGE });
   await assetsReady;
   await entrance();
 

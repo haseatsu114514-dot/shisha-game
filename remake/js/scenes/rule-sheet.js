@@ -21,7 +21,7 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
     el("p.rule-sheet-lead", { text: "出場前に確認する項目" }),
     article("一", "課題", challenge),
     article("二", "材料", stock),
-    article("三", "一台の進行", "一台を制作し、吸い出して提供する。その一台を調整しながら仕上げる。"),
+    article("三", "一台の進行", "一台を制作し、吸い出して提供する。その後も同じ一台を二度調整する。"),
     el("p.rule-sheet-foot", { text: "大会運営委員会" }),
   ]);
 }

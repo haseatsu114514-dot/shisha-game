@@ -53,6 +53,10 @@ async function receiptToIntro(page, touch) {
   await tap(page, '[data-test="map-go"]', touch);
   for (let n = 0; n < 200; n++) {
     if (await page.locator('[data-test="reel-intro"]').isVisible()) return;
+    if (await page.locator('[data-test="rule-sheet"]').isVisible()) {
+      assert.match(await page.locator('[data-test="rule-sheet"]').innerText(), /レモン.*2g以上/);
+      await tap(page, '[data-test="rule-sheet-close"]', touch);
+    }
     await advanceDialogue(page, touch);
     await page.waitForTimeout(80);
   }

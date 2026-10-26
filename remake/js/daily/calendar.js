@@ -298,6 +298,10 @@ async function registerTournament() {
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
   await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
+  if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
+    await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    state.flags._ch1_rules_read = true;
+  }
   state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
