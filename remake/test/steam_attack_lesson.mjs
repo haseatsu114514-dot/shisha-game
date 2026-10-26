@@ -15,6 +15,7 @@ await suite('attack-lesson', async check => {
     });
     for(const points of [32,33]) {
       await page.evaluate(points=>M.start(points),points);
+      await page.locator('[data-test="shift-order-0"]').click();
       await page.locator('[data-test="after-none"]').waitFor();
       assert.equal(await page.locator('[data-test="after-attack"]').count(),points>=33?1:0);
       if(points>=33) {
@@ -22,6 +23,8 @@ await suite('attack-lesson', async check => {
         await page.evaluate(()=>M.shift);
         assert.equal(await page.evaluate(()=>M.core.state.flags._sumi_attack_learned),true);
         await page.evaluate(()=>{M.core.load();M.shift=M.tonari.doBaito();});
+        await page.locator('[data-test="shift-order-0"], [data-test="after-none"]').first().waitFor();
+        if (await page.locator('[data-test="shift-order-0"]').count()) await page.locator('[data-test="shift-order-0"]').click();
         await page.locator('[data-test="after-none"]').waitFor();
         assert.equal(await page.locator('[data-test="after-attack"]').count(),0,'Learned lesson offered again');
       }

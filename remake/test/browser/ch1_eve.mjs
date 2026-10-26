@@ -264,15 +264,15 @@ await suite("ch1-eve", async check => {
   await check("stock-rescue-before-full-practice", async page => {
     await setup(page);
     await page.evaluate(() => {
-      E.core.state.money = 0; E.core.state.flavorStock.blueberry = 1;
+      E.core.state.money = 0; E.core.state.flavorStock.lemon = 1;
       E.vn.vnTest.choose = () => 0; E.run();
     });
-    await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
     await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click(); await finish(page);
     const result = await snapshot(page);
-    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.blueberry, 51);
-    assert(result.state.flags._prep_flavor_expensed);
+    assert.equal(result.state.money, 0); assert.equal(result.state.flavorStock.lemon, 51);
+    assert(result.state.flags._prep_lemon_expensed);
     assert.equal(result.state.flags._craft_practice_runs.length, 1);
   });
 

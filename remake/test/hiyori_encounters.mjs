@@ -125,7 +125,10 @@ await suite("hiyori-encounters", async (check) => {
         H.contact = which === "work" ? H.tonari.doBaito() : H.tonari.tonariCustomer();
       }, path);
       // 接客・配達台詞とシフト演出の完了を待つ。メニュー表示前の全シフトを10秒に制限しない。
-      if (path === "work") await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
+      if (path === "work") {
+        await page.locator('[data-test="shift-order-0"]').click({ timeout: 30000 });
+        await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
+      }
       await page.evaluate(() => H.contact);
       const result = await page.evaluate(() => ({ report: H.core.state.flags._hiyori_sumi_message_done,
         relay: H.core.state.flags._hiyori_message_delivered, known: H.core.state.flags._hiyori_real_self_known }));

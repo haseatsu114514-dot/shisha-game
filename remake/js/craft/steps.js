@@ -320,7 +320,11 @@ export async function stepMix(cs) {
     okBtn.addEventListener("click", () => { SE.select(); resolve(); });
     if (autoSkill()) {
       // 上手=スミさんの基本形（ダブルアップル＋ミント）／下手=規定ぎりぎりの雑な配合
-      if (autoSkill() === "good" || cs.mode === "tutorial") { cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 9, mint: 3 } : { double_apple: 9, mint: 3 }; }
+      if (autoSkill() === "good" || cs.mode === "tutorial") {
+        const sideFlavor = regulationFor(cs)?.flavor || "mint";
+        const mainFlavor = practiceFlavor && ids.includes(practiceFlavor) ? practiceFlavor : "double_apple";
+        cs.mix = mainFlavor === sideFlavor ? { [mainFlavor]: 12 } : { [mainFlavor]: 9, [sideFlavor]: 3 };
+      }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
         const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
